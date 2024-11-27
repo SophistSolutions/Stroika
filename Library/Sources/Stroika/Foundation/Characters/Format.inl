@@ -68,18 +68,15 @@ namespace Stroika::Foundation::Characters {
     {
         return fFmtStr_.getx_ ();
     }
-   
- template <typename /*Common::StdCompat::formattable<wchar_t>*/... ARGS>
+    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (ARGS&&... args) const
     {
-        return VFormat (*this, Common::StdCompat::make_wformat_args (args...));
-//        return fFmtStr_ (args...);
+        return Common::StdCompat::vformat (this->getx_ (), Common::StdCompat::make_wformat_args (args...));
     }
-    template <typename/*Common::StdCompat::formattable<wchar_t>*/... ARGS>
+    template <Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
     [[nodiscard]] inline String FormatString<char>::operator() (const locale& loc, ARGS&&... args) const
     {
-         return VFormat (loc, *this, Common::StdCompat::make_wformat_args (args...));
-//        return fFmtStr_ (loc, args...);
+        return Common::StdCompat::vformat (loc, this->getx_ (), Common::StdCompat::make_wformat_args (args...));
     }
 
     /*
@@ -137,6 +134,5 @@ namespace Stroika::Foundation::Characters {
     {
         return VFormat (loc, f, Common::StdCompat::make_wformat_args (args...));
     }
-
 
 }

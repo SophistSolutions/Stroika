@@ -2224,6 +2224,35 @@ static_assert (Stroika::Foundation::Configuration::StdCompat::formattable<std::t
 #endif
 
 /**
+ mmandLine.cpp:121:20: error: unable to find string literal operator ‘operator""_f’ with ‘const char [17]’, ‘long unsigned int’ arguments
+  121 |             return "(-{} {}|--{}={})"_f(*fSingleCharName, argName, *fLongName, argName);
+      |                    ^~~~~~~~~~~~~~~~~~~~
+CommandLine.cpp:124:20: error: unable to find string literal operator ‘operator""_f’ with ‘const char [11]’, ‘long unsigned int’ arguments
+  124 |             return "(-{}|--{})"_f(*fSingleCharName, *fLongName);
+      |                    ^~~~~~~~~~~~~~
+ * 
+ */
+#ifndef qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy
+#if defined(__GNUC__)
+// FIRST SEEN BROKEN IN GCC 13 and 12 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
+// also broken in g++-14???
+#define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
+
+#elif defined(__clang__)
+#define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy 1
+
+#else
+#define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy 0
+#endif
+#endif
+
+#if qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy
+#define Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA(...) typename
+#else
+#define Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA(...) __VA_ARGS__
+#endif
+
+/**
  *  Only triggers warning with valgrind - no other indication of problem (produces right results). But just in case,
  *  do workaround regardless.
  * 
