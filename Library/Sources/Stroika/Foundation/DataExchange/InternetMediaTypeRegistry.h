@@ -452,6 +452,11 @@ namespace Stroika::Foundation::DataExchange {
         inline const InternetMediaType kAudioMP4{Types::kAudio, "mp4"sv};
 
         /**
+         *  \brief audio/x-wav
+         */
+        inline const InternetMediaType kAudioWAV{Types::kAudio, "x-wav"sv};
+
+        /**
          *  \brief image/png
          */
         inline const InternetMediaType kPNG{Types::kImage, "png"sv};
