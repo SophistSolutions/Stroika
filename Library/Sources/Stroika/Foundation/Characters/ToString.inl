@@ -323,6 +323,11 @@ namespace Stroika::Foundation::Characters {
                 return Common::DefaultNames<T>{}.GetName (t);
             }
         }
+        template <typename OPTIONS>
+        inline String ToString(const StringBuilder<OPTIONS>& sb)
+        {
+            return sb.template As<String> ();
+        }
         template <floating_point T>
         inline String ToString (T t)
         {
