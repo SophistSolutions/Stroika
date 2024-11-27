@@ -39,9 +39,8 @@ void WebService::Server::ExpectedMethod (const Request& request, const Set<Strin
         "WebService::Server::ExpectedMethod", "request={}, methods={}, fromInMessage={}"_f, request, methods, fromInMessage)};
 #endif
     if (not methods.Contains (request.httpMethod ())) {
-        Execution::Throw (ClientErrorException (
-            Characters::Format ("Received HTTP method '{}'{}, but expected one from {}"_f, request.httpMethod (),
-                                (fromInMessage ? (L" from '"sv + *fromInMessage + L"'"sv).As<wstring> ().c_str () : L""), methods)));
+        Execution::Throw (ClientErrorException{"Received HTTP method '{}'{}, but expected one from {}"_f(
+            request.httpMethod (), (fromInMessage ? (L" from '"sv + *fromInMessage + L"'"sv).As<wstring> ().c_str () : L""), methods)});
     }
 }
 

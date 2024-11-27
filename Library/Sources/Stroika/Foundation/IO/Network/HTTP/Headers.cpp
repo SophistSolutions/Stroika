@@ -399,7 +399,7 @@ optional<String> Headers::LookupOne (const String& name) const
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kContentLength)) {
         auto cl = this->contentLength ();
-        return cl ? Characters::Format ("{}"_f, *cl) : optional<String>{};
+        return cl ? "{}"_f(*cl) : optional<String>{};
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kContentEncoding)) {
         return fContentEncoding_ ? fContentEncoding_->As<String> () : optional<String>{};
@@ -739,7 +739,7 @@ Collection<KeyValuePair<String, String>> Headers::As () const
         results.Add ({HeaderName::kCacheControl, fCacheControl_->As<String> ()});
     }
     if (auto cl = this->contentLength ()) {
-        results.Add ({HeaderName::kContentLength, Characters::Format ("{}"_f, static_cast<long long> (*cl))});
+        results.Add ({HeaderName::kContentLength, "{}"_f(static_cast<long long> (*cl))});
     }
     if (fContentEncoding_) {
         results.Add ({HeaderName::kContentEncoding, fContentEncoding_->As<String> ()});

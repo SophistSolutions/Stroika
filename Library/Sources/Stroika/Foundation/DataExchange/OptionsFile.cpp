@@ -56,27 +56,25 @@ String OptionsFile::LoggerMessage::FormatMessage () const
     }
     switch (fMsg) {
         case Msg::eSuccessfullyReadFile:
-            return Characters::Format ("Successfully read configuration file {}."_f, fFileName);
+            return "Successfully read configuration file {}."_f(fFileName);
         case Msg::eFailedToWriteFile:
-            return Characters::Format ("Failed to write file {}: {}."_f, fFileName, details);
+            return "Failed to write file {}: {}."_f(fFileName, details);
         case Msg::eFailedToReadFile:
-            return Characters::Format ("Failed to read file {}: {}."_f, fFileName, details);
+            return "Failed to read file {}: {}."_f(fFileName, details);
         case Msg::eFailedToParseReadFile:
-            return Characters::Format ("Error analyzing configuration file {} - using defaults{}."_f, fFileName, details);
+            return "Error analyzing configuration file {} - using defaults{}."_f(fFileName, details);
         case Msg::eFailedToParseReadFileBadFormat:
-            return Characters::Format ("Error analyzing configuration file (because bad format) {} - using defaults{}."_f, fFileName, details);
+            return "Error analyzing configuration file (because bad format) {} - using defaults{}."_f(fFileName, details);
         case Msg::eFailedToCompareReadFile:
-            return Characters::Format ("Failed to compare configuration file: {}{}."_f, fFileName, details);
+            return "Failed to compare configuration file: {}{}."_f(fFileName, details);
         case Msg::eWritingConfigFile_SoDefaultsEditable:
-            return Characters::Format ("Writing configuration file {} because not found (and so defaults are more easily seen and editable){}."_f,
-                                       fFileName, details);
+            return "Writing configuration file {} because not found (and so defaults are more easily seen and editable){}."_f(fFileName, details);
         case Msg::eWritingConfigFile_BecauseUpgraded:
-            return Characters::Format ("Writing configuration file {} in a new location because the software has been upgraded{}."_f, fFileName, details);
+            return "Writing configuration file {} in a new location because the software has been upgraded{}."_f(fFileName, details);
         case Msg::eWritingConfigFile_BecauseSomethingChanged:
-            return Characters::Format ("Writing configuration file {} because something changed (e.g. a default, or field added/removed){}."_f,
-                                       fFileName, details);
+            return "Writing configuration file {} because something changed (e.g. a default, or field added/removed){}."_f(fFileName, details);
         case Msg::eFailedToWriteInUseValues:
-            return Characters::Format ("Failed to write default (in use) values to file: {}{}."_f, fFileName, details);
+            return "Failed to write default (in use) values to file: {}{}."_f(fFileName, details);
         default:
             RequireNotReached ();
             return String{};

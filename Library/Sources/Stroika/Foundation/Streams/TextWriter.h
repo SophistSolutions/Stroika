@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
      *  \par Example Usage
      *      \code
      *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDoneInclude);
-     *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
+     *          textOut.Write ("{}\r\n"_f (headLine));
      *          ...
      *      \endcode
      *
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
      *  \par Example Usage
      *      \code
      *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude);
-     *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
+     *          textOut.Write ("{}\r\n"_f (headLine));
      *          ...
      *      \endcode
      *

@@ -30,6 +30,9 @@ namespace Stroika::Foundation::Characters {
      * 
      *  See https://www.iana.org/assignments/character-sets/character-sets.xhtml
      * 
+     *  \note - despite the name sounding similar to 'character set' - its really more of a combination
+     *        of character set and character encoding.
+     * 
      *  \note charset names are intrinsically compared case insensitively (@todo find reference for this but empirically its clear).
      */
     class Charset {
@@ -76,6 +79,7 @@ namespace Stroika::Foundation::Characters {
         /**
          */
         static inline const Charset kUTF8{"UTF-8"sv};
+
     }
 
 }

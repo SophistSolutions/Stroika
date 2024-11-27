@@ -57,7 +57,7 @@ namespace {
             , fFlushFlag{flushFlag}
             , fFileName_{fileName}
         {
-            auto activity = LazyEvalActivity ([&] () -> String { return Characters::Format ("opening {} for write access"_f, fFileName_); });
+            auto            activity = LazyEvalActivity ([&] () -> String { return "opening {} for write access"_f(fFileName_); });
             DeclareActivity currentActivity{&activity};
 #if qStroika_Foundation_Common_Platform_Windows
             int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
@@ -121,7 +121,7 @@ namespace {
         {
             Require (not elts.empty ());
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format ("writing to {}"_f, fFileName_); });
+            auto            activity = LazyEvalActivity ([&] () -> String { return "writing to {}"_f(fFileName_); });
             DeclareActivity currentActivity{&activity};
             const byte*     i   = elts.data ();
             const byte*     end = elts.data () + elts.size ();
@@ -140,7 +140,7 @@ namespace {
             // normally nothing todo - write 'writes thru' (except if fFlushFlag)
             if (fFlushFlag == FlushFlag::eToDisk) {
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                auto activity = LazyEvalActivity{[&] () -> String { return Characters::Format ("flushing data to {}"_f, fFileName_); }};
+                auto            activity = LazyEvalActivity{[&] () -> String { return "flushing data to {}"_f(fFileName_); }};
                 DeclareActivity currentActivity{&activity};
 #if qStroika_Foundation_Common_Platform_POSIX
                 ThrowPOSIXErrNoIfNegative (::fsync (fFD_));

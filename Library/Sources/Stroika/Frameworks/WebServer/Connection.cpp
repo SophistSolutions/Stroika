@@ -200,7 +200,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     fSocketStream_ = SocketStream::New (fSocket_);
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     {
-        String socketName = Characters::Format ("{}-{}"_f, (long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
+        String socketName = "{}-{}"_f((long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
         fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
             fSocketStream_,
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
@@ -370,7 +370,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         DbgTrace ("Handing request {} to interceptor chain"_f, request ().ToString ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-        WriteLogConnectionMsg_ (Characters::Format ("Handing request {} to interceptor chain"_f, request ()));
+        WriteLogConnectionMsg_ ("Handing request {} to interceptor chain"_f(request ()));
 #endif
         try {
             fInterceptorChain_.HandleMessage (*fMessage_.get ());
@@ -380,7 +380,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             DbgTrace ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ (Characters::Format ("Interceptor-Chain caught exception handling message: {}"_f, current_exception ()));
+            WriteLogConnectionMsg_ ("Interceptor-Chain caught exception handling message: {}"_f(current_exception ()));
 #endif
         }
 

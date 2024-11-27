@@ -43,9 +43,9 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
                     Execution::Throw (kException_);
                 }
                 case Z_ERRNO:
-                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("ZLIB Z_ERRNO (errno={})"_f, errno)});
+                    Execution::Throw (Execution::RuntimeErrorException{"ZLIB Z_ERRNO (errno={})"_f(errno)});
                 default:
-                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("ZLIB ERR {}"_f, err)});
+                    Execution::Throw (Execution::RuntimeErrorException{"ZLIB ERR {}"_f(err)});
             }
         }
     }

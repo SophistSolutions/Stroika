@@ -57,7 +57,7 @@ WMICollector::PerInstanceData_::PerInstanceData_ (const String& objectName, cons
 #endif
     PDH_STATUS x = ::PdhOpenQuery (NULL, NULL, &fQuery_);
     if (x != 0) {
-        Execution::Throw (Exception{Characters::Format ("PdhOpenQuery: {}"_f, x)});
+        Execution::Throw (Exception{"PdhOpenQuery: {}"_f(x)});
     }
     counterNames.Apply ([this] (String i) { AddCounter (i); });
 }
@@ -76,11 +76,11 @@ void WMICollector::PerInstanceData_::AddCounter (const String& counterName)
 {
     Require (not fCounters_.ContainsKey (counterName));
     PDH_HCOUNTER newCounter = nullptr;
-    PDH_STATUS x = ::PdhAddCounter (fQuery_, Characters::Format ("\\{}({})\\{}"_f, fObjectName_, fInstance_, counterName).c_str (), NULL, &newCounter);
+    PDH_STATUS   x = ::PdhAddCounter (fQuery_, "\\{}({})\\{}"_f(fObjectName_, fInstance_, counterName).c_str (), NULL, &newCounter);
     if (x != 0) {
         [[maybe_unused]] bool isPDH_CSTATUS_NO_OBJECT  = (x == PDH_CSTATUS_NO_OBJECT);
         [[maybe_unused]] bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
-        Execution::Throw (Exception{Characters::Format ("PdhAddCounter: {}"_f, x)});
+        Execution::Throw (Exception{"PdhAddCounter: {}"_f(x)});
     }
     fCounters_.Add (counterName, newCounter);
 }
@@ -92,7 +92,7 @@ double WMICollector::PerInstanceData_::GetCurrentValue (const String& counterNam
     PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, nullptr, &counterVal);
     if (x != 0) {
         [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (x == PDH_INVALID_DATA);
-        Execution::Throw (Exception{Characters::Format ("PdhGetFormattedCounterValue: {}"_f, x)});
+        Execution::Throw (Exception{"PdhGetFormattedCounterValue: {}"_f(x)});
     }
     return counterVal.doubleValue;
 }
@@ -134,7 +134,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
     if (status != 0) {
         //PDH_CSTATUS_INVALID_DATA
         [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (status == PDH_INVALID_DATA);
-        Execution::Throw (Exception{Characters::Format ("PdhGetFormattedCounterArray: {}"_f, status)});
+        Execution::Throw (Exception{"PdhGetFormattedCounterArray: {}"_f(status)});
     }
 
     Mapping<String, double> result;

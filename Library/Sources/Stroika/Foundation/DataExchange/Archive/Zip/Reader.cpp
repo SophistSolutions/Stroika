@@ -2638,7 +2638,7 @@ public:
                 err = ::unzGoToNextFile_ (fZipFile_);
                 if (err != UNZ_OK) [[unlikely]] {
                     using namespace Characters;
-                    Execution::Throw (Execution::RuntimeErrorException{Characters::Format ("error {} with zipfile in unzGoToNextFile"_f, err)});
+                    Execution::Throw (Execution::RuntimeErrorException{"error {} with zipfile in unzGoToNextFile"_f(err)});
                     break;
                 }
             }

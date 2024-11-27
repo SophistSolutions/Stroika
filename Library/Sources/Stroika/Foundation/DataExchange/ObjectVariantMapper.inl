@@ -527,9 +527,8 @@ namespace Stroika::Foundation::DataExchange {
             RequireNotNull (intoObjOfTypeT);
             Require (intoObjOfTypeT->empty ());
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
-            auto                       decodingClassActivity = Execution::LazyEvalActivity{[&] () -> String {
-                return Characters::Format ("Decoding {:.100} into class {}"_f, d, type_index{typeid (ACTUAL_CONTAINER_TYPE)});
-            }};
+            auto decodingClassActivity = Execution::LazyEvalActivity{
+                [&] () -> String { return "Decoding {:.100} into class {}"_f(d, type_index{typeid (ACTUAL_CONTAINER_TYPE)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
@@ -1138,7 +1137,7 @@ namespace Stroika::Foundation::DataExchange {
 
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
             auto decodingClassActivity =
-                Execution::LazyEvalActivity{[&] () -> String { return Characters::Format ("Encoding {:.50}"_f, type_index{typeid (CLASS)}); }};
+                Execution::LazyEvalActivity{[&] () -> String { return "Encoding {:.50}"_f(type_index{typeid (CLASS)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             Mapping<String, VariantValue> m;
@@ -1177,8 +1176,8 @@ namespace Stroika::Foundation::DataExchange {
 #endif
             RequireNotNull (intoObjOfTypeT);
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
-            auto decodingClassActivity = Execution::LazyEvalActivity{
-                [&] () -> String { return Characters::Format ("Decoding {:.100} into class {}"_f, d, type_index{typeid (CLASS)}); }};
+            auto decodingClassActivity =
+                Execution::LazyEvalActivity{[&] () -> String { return "Decoding {:.100} into class {}"_f(d, type_index{typeid (CLASS)}); }};
             Execution::DeclareActivity da{&decodingClassActivity};
 #endif
             if (options.fBeforeTo) {
@@ -1187,8 +1186,8 @@ namespace Stroika::Foundation::DataExchange {
             Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
             for (const auto& i : fields) {
 #if qStroika_Foundation_DataExchange_ObjectVariantMapper_Activities
-                auto decodingFieldActivity = Execution::LazyEvalActivity{
-                    [&] () -> String { return Characters::Format ("Decoding field {}"_f, i.fSerializedFieldName_); }};
+                auto decodingFieldActivity =
+                    Execution::LazyEvalActivity{[&] () -> String { return "Decoding field {}"_f(i.fSerializedFieldName_); }};
                 [[maybe_unused]] Execution::DeclareActivity daf{&decodingFieldActivity};
 #endif
                 optional<VariantValue> o = m.Lookup (i.fSerializedFieldName_);

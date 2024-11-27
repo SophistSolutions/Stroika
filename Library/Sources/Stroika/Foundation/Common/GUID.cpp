@@ -63,8 +63,8 @@ Common::GUID::GUID (const Memory::BLOB& src)
 
 Characters::String Common::GUID::ToString () const
 {
-    return Characters::Format ("{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}"_f, Data1, Data2, Data3, Data4[0],
-                               Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
+    return "{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}"_f(Data1, Data2, Data3, Data4[0], Data4[1], Data4[2],
+                                                                                      Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
 }
 
 Common::GUID::operator Memory::BLOB () const

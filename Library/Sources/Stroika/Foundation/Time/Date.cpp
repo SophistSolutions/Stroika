@@ -168,8 +168,7 @@ String Date::Format (const String& formatPattern) const
 {
     // some format's locale independent
     if (formatPattern == kISO8601Format) {
-        return Characters::Format ("{:04}-{:02}-{:02}"_f, (int)(this->GetYear ()), (unsigned int)(this->GetMonth ()),
-                                   (unsigned int)(this->GetDayOfMonth ()));
+        return "{:04}-{:02}-{:02}"_f((int)(this->GetYear ()), (unsigned int)(this->GetMonth ()), (unsigned int)(this->GetDayOfMonth ()));
     }
     else {
         return Format (locale{}, formatPattern);

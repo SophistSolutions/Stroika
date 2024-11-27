@@ -57,7 +57,7 @@ namespace {
             , fSeekable_{seekable}
             , fFileName_{fileName}
         {
-            auto activity = LazyEvalActivity{[&] () -> String { return Characters::Format ("opening {} for read access"_f, fFileName_); }};
+            auto            activity = LazyEvalActivity{[&] () -> String { return "opening {} for read access"_f(fFileName_); }};
             DeclareActivity currentActivity{&activity};
 #if qStroika_Foundation_Common_Platform_Windows
             errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
@@ -164,7 +164,7 @@ namespace {
             Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            auto readingFromFileActivity = LazyEvalActivity{[&] () -> String { return Characters::Format ("reading from {}"_f, fFileName_); }};
+            auto            readingFromFileActivity = LazyEvalActivity{[&] () -> String { return "reading from {}"_f(fFileName_); }};
             DeclareActivity currentActivity{&readingFromFileActivity};
 
             if (blockFlag == NoDataAvailableHandling::eDontBlock) {

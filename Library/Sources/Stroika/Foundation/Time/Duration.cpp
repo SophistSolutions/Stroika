@@ -309,7 +309,7 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
 
     auto fmtDate = [suffix] (int timeInSelectedUnit, const String& singularUnit, const String& pluralUnit) -> String {
         String label = Linguistics::MessageUtilities::Manager::sThe.PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
-        return Characters::Format (L"{} {} {}"_f, timeInSelectedUnit, label, suffix);
+        return "{} {} {}"_f(timeInSelectedUnit, label, suffix);
     };
 
     constexpr InternalNumericFormatType_ kShowAsMinutesIfLess_ = 55 * kSecondsPerMinute_;

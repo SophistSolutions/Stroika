@@ -274,7 +274,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
             if (not extraMsg.empty ()) {
                 extraMsg << ", "sv;
             }
-            extraMsg << Characters::Format ("stopped by signal {}"_f, int (*wStopSig));
+            extraMsg << "stopped by signal {}"_f(int (*wStopSig));
         }
         if (not extraMsg.empty ()) {
             sb << ": "sv + extraMsg.str ();
@@ -295,7 +295,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     {
         Characters::StringBuilder extraMsg;
         if (err) {
-            extraMsg << Characters::Format ("error: {}"_f, *err);
+            extraMsg << "error: {}"_f(*err);
         }
         if (not extraMsg.empty ()) {
             sb << ": "sv << extraMsg.str ();
@@ -644,7 +644,7 @@ namespace {
                 DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, thisEXEPath_cstr);
 #endif
                 auto            activity = LazyEvalActivity ([&] () -> String {
-                    return Characters::Format (L"executing {}"_f, Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
+                    return "executing {}"_f(Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
                 });
                 DeclareActivity currentActivity{&activity};
                 ThrowPOSIXErrNo (e);

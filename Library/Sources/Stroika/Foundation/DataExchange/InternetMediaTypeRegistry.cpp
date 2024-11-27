@@ -739,8 +739,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
             return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
-                if (auto fs = Common::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (
-                        Characters::Format ("MIME\\Database\\Content Type\\{}\\Extension"_f, ct))) {
+                if (auto fs = Common::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup ("MIME\\Database\\Content Type\\{}\\Extension"_f(ct))) {
                     return fs.As<String> ();
                 }
                 return nullopt;
@@ -793,10 +792,9 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         {
             Require (fileSuffix[0] == '.');
             return fSuffix2MediaTypeCache_.LookupValue (fileSuffix, [] (const FileSuffixType& fileSuffix) -> optional<InternetMediaType> {
-                using Characters::Format;
                 using Common::Platform::Windows::RegistryKey;
                 // only do registry lookup if needed, since (probably) more costly than local map lookup
-                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Format ("{}\\Content Type"_f, fileSuffix))) {
+                if (auto oct = RegistryKey{HKEY_CLASSES_ROOT}.Lookup ("{}\\Content Type"_f(fileSuffix))) {
                     InternetMediaType mediaType{oct.As<String> ()};
                     return mediaType;
                 }

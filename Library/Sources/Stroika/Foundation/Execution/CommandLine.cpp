@@ -118,18 +118,18 @@ String CommandLine::Option::GetArgumentDescription (bool includeArg) const
     String argName = this->fHelpArgName.value_or ("ARG"sv);
     if (fSingleCharName and fLongName) {
         if (includeArg) {
-            return Characters::Format ("(-{} {}|--{}={})"_f, *fSingleCharName, argName, *fLongName, argName);
+            return "(-{} {}|--{}={})"_f(*fSingleCharName, argName, *fLongName, argName);
         }
         else {
-            return Characters::Format ("(-{}|--{})"_f, *fSingleCharName, *fLongName);
+            return "(-{}|--{})"_f(*fSingleCharName, *fLongName);
         }
     }
     else if (this->fSingleCharName) {
         if (includeArg) {
-            return Characters::Format ("-{} {}"_f, *fSingleCharName, argName);
+            return "-{} {}"_f(*fSingleCharName, argName);
         }
         else {
-            return Characters::Format ("-{}"_f, *fSingleCharName);
+            return "-{}"_f(*fSingleCharName);
         }
     }
     else if (fLongName) {
@@ -322,12 +322,10 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
         }
     }
     if (o.fRequired and not found and arguments.empty ()) {
-        Execution::Throw (InvalidCommandLineArgument{
-            Characters::Format ("Command line argument '{}' required but not provided"_f, o.GetArgumentDescription ())});
+        Execution::Throw (InvalidCommandLineArgument{"Command line argument '{}' required but not provided"_f(o.GetArgumentDescription ())});
     }
     if (found and o.fSupportsArgument and o.fIfSupportsArgumentThenRequired and arguments.empty ()) {
-        Execution::Throw (InvalidCommandLineArgument{
-            Characters::Format ("Command line argument {} provided, but without required argument"_f, o.GetArgumentDescription ())});
+        Execution::Throw (InvalidCommandLineArgument{"Command line argument {} provided, but without required argument"_f(o.GetArgumentDescription ())});
     }
     return make_tuple (found, arguments);
 }

@@ -172,13 +172,12 @@ namespace {
              */
             if (requestPayload.size () != 4) {
                 DbgTrace ("requestPayload={}"_f, requestPayload);
-                Throw (Execution::Exception{Characters::Format ("Invalid payload length (got {}, expected 4)"_f, requestPayload.size ())});
+                Throw (Execution::Exception{"Invalid payload length (got {}, expected 4)"_f(requestPayload.size ())});
             }
             uint16_t startingAddress = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
             uint16_t quantity = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2)); // allowed 1..maxSecondValue
             if (not(minSecondValue <= quantity and quantity <= maxSecondValue)) {
-                Throw (Execution::Exception{Characters::Format ("Invalid quantity parameter ({}): expected value from {}..{}"_f, quantity,
-                                                                minSecondValue, maxSecondValue)});
+                Throw (Execution::Exception{"Invalid quantity parameter ({}): expected value from {}..{}"_f(quantity, minSecondValue, maxSecondValue)});
             }
             return pair<uint16_t, uint16_t>{startingAddress, quantity};
         };

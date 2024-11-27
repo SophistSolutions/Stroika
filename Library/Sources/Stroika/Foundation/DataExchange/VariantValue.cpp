@@ -720,13 +720,13 @@ String VariantValue::AsString_ () const
         case Type::eInteger: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
-            return Characters::Format ("{}"_f, v->fVal);
+            return "{}"_f(v->fVal);
         }
         case Type::eUnsignedInteger: {
             // Note - unsigned numbers converted to DECIMAL still as text representation
             auto v = Debug::UncheckedDynamicCast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
             AssertNotNull (v);
-            return Characters::Format ("{}"_f, v->fVal);
+            return "{}"_f(v->fVal);
         }
         case Type::eFloat: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<FloatType_>*> (fVal_.get ());

@@ -57,7 +57,7 @@ namespace {
             } break;
             case SQLITE_CONSTRAINT: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{Characters::Format ("SQLITE_CONSTRAINT: {}"_f, errMsgDetails)});
+                    Execution::Throw (Exception{"SQLITE_CONSTRAINT: {}"_f(errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_CONSTRAINT"sv};
@@ -78,7 +78,7 @@ namespace {
             } break;
             case SQLITE_MISUSE: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{Characters::Format ("SQLITE_MISUSE: {}"_f, errMsgDetails)});
+                    Execution::Throw (Exception{"SQLITE_MISUSE: {}"_f(errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_MISUSE"sv};
@@ -87,7 +87,7 @@ namespace {
             } break;
             case SQLITE_ERROR: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{Characters::Format ("SQLITE_ERROR: {}"_f, errMsgDetails)});
+                    Execution::Throw (Exception{"SQLITE_ERROR: {}"_f(errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_ERROR"sv};
@@ -100,10 +100,10 @@ namespace {
             } break;
         }
         if (errMsgDetails) {
-            Execution::Throw (Exception{Characters::Format ("SQLite Error: %s (code %d)"_f, errMsgDetails, errCode)});
+            Execution::Throw (Exception{"SQLite Error: {} (code {})"_f(errMsgDetails, errCode)});
         }
         else {
-            Execution::Throw (Exception{Characters::Format ("SQLite Error: {}"_f, errCode)});
+            Execution::Throw (Exception{"SQLite Error: {}"_f(errCode)});
         }
     }
     void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)

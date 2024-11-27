@@ -331,7 +331,7 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToSh
             break;
 #endif
         }
-        sb << Characters::Format ("{:02x}"_f, static_cast<unsigned int> (b));
+        sb << "{:02x}"_f(static_cast<unsigned int> (b));
     }
     return sb;
 }
@@ -389,20 +389,20 @@ String BLOB::ToString (size_t maxBytesToShow) const
     };
     if (size () > maxBytesToShow) {
         if (allBytesAscii) {
-            return Characters::Format ("[{} bytes: '{}' ...]"_f, size (), quoteAscii4Display (String{this->As<string> ()}));
+            return "[{} bytes: '{}' ...]"_f(size (), quoteAscii4Display (String{this->As<string> ()}));
         }
         else {
             String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/ellipsis with LimitLength ()
             size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;
-            return Characters::Format ("[{} bytes: {}]"_f, size (), hexStr.LimitLength (maxStrLen));
+            return "[{} bytes: {}]"_f(size (), hexStr.LimitLength (maxStrLen));
         }
     }
     else {
         if (allBytesAscii) {
-            return Characters::Format ("[{} bytes: '{}']"_f, size (), quoteAscii4Display (String{this->As<string> ()}));
+            return "[{} bytes: '{}']"_f(size (), quoteAscii4Display (String{this->As<string> ()}));
         }
         else {
-            return Characters::Format ("[{} bytes: {}]"_f, size (), AsHex ());
+            return "[{} bytes: {}]"_f(size (), AsHex ());
         }
     }
 }

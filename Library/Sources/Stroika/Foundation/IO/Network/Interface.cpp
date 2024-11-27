@@ -758,7 +758,7 @@ namespace {
                             case DOT11_CIPHER_ALGO_WEP:
                                 return "WEP"sv;
                             default:
-                                return Characters::Format ("{}"_f, static_cast<int> (s));
+                                return "{}"_f(static_cast<int> (s));
                         }
                     };
                     wInfo.fCipher = mapCipher (pConnectInfo->wlanSecurityAttributes.dot11CipherAlgorithm);

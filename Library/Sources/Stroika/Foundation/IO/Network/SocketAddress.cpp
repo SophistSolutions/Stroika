@@ -36,7 +36,7 @@ String SocketAddress::ToString () const
 {
     if (IsInternetAddress ()) {
         using namespace Characters::Literals;
-        return Characters::ToString (GetInternetAddress ()) + ":"sv + Characters::Format ("{}"_f, GetPort ());
+        return Characters::ToString (GetInternetAddress ()) + ":"sv + "{}"_f(GetPort ());
     }
     else {
         return Characters::ToString (Memory::BLOB{reinterpret_cast<const byte*> (&fSocketAddress_),

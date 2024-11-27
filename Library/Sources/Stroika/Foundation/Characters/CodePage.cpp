@@ -532,7 +532,7 @@ namespace {
  ********************************************************************************
  */
 CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage)
-    : fMsg_{Characters::Format ("Code page {} not supported"_f, codePage).AsNarrowSDKString ()}
+    : fMsg_{"Code page {} not supported"_f(codePage).AsNarrowSDKString ()}
     , fCodePage_{codePage}
 {
 }

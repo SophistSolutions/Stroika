@@ -573,9 +573,8 @@ namespace {
                     fResultNodeList = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), fCtx);
                     if (fCtx->lastError.level != XML_ERR_NONE and fCtx->lastError.level != XML_ERR_WARNING) {
                         // lookup domain in xmlErrorDomain, and lastError.code in xmlParserErrors
-                        Execution::ThrowIfNull (fResultNodeList, Execution::RuntimeErrorException{
-                                                                     Characters::Format ("Error parsing xpath {}: (domain {}, code {})"_f,
-                                                                                         e, fCtx->lastError.domain, fCtx->lastError.code)});
+                        Execution::ThrowIfNull (fResultNodeList, Execution::RuntimeErrorException{"Error parsing xpath {}: (domain {}, code {})"_f(
+                                                                     e, fCtx->lastError.domain, fCtx->lastError.code)});
                     }
                     Execution::ThrowIfNull (fResultNodeList);
                 }

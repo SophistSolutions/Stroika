@@ -541,10 +541,10 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
         out << Execution::GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
-        Execution::Throw (Execution::Exception{Characters::Format (L"Unable to create process ID tracking file {}"_f, _GetPIDFileName ())});
+        Execution::Throw (Execution::Exception{"Unable to create process ID tracking file {}"_f(_GetPIDFileName ())});
     }
     if (_GetServicePID () != Execution::GetCurrentProcessID ()) {
-        Execution::Throw (Execution::Exception{Characters::Format ("Unable to create process ID tracking file {} (race?)"_f, _GetPIDFileName ())});
+        Execution::Throw (Execution::Exception{"Unable to create process ID tracking file {} (race?)"_f(_GetPIDFileName ())});
     }
     fRunThread_.load ().Join ();
 }

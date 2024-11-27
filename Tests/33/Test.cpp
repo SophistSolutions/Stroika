@@ -660,7 +660,7 @@ namespace {
             using namespace Characters::Literals;
             mapper.Add<RGBColor> (
                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
-                    return L"#" + Characters::Format ("{:2x}{:2x}{:2x}"_f, obj->red, obj->green, obj->blue);
+                    return L"#" + "{:2x}{:2x}{:2x}"_f(obj->red, obj->green, obj->blue);
                 },
                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
                     String tmpInBuf = d.As<String> ();

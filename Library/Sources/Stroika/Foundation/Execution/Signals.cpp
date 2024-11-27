@@ -71,7 +71,7 @@ Characters::String Execution::SignalToName (SignalID signal)
 #endif
 
         default:
-            return Characters::Format ("Signal# {}"_f, signal);
+            return "Signal# {}"_f(signal);
     }
 }
 

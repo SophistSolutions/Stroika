@@ -79,7 +79,7 @@ namespace {
         Assert (hour >= 0 and hour < 24);
         Assert (minutes >= 0 and minutes < 60);
         Assert (secs >= 0 and secs < 60);
-        return Characters::Format ("{:02}:{:02}:{:02}"_f, hour, minutes, secs);
+        return "{:02}:{:02}:{:02}"_f(hour, minutes, secs);
     }
 }
 

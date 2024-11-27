@@ -139,19 +139,19 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombined
     StringBuilder sb{message};
     sb += " ";
     if (errCode.category () == generic_category ()) {
-        sb += Characters::Format ("{{errno: {}}}"_f, errCode.value ());
+        sb += "{{errno: {}}}"_f(errCode.value ());
     }
     else if (errCode.category () == system_category ()) {
 #if qStroika_Foundation_Common_Platform_POSIX
-        sb += Characters::Format ("{{errno: {}}}"_f, errCode.value ());
+        sb += "{{errno: {}}}"_f(errCode.value ());
 #elif qStroika_Foundation_Common_Platform_Windows
-        sb += Characters::Format ("{{Windows error: {}}}"_f, errCode.value ());
+        sb += "{{Windows error: {}}}"_f(errCode.value ());
 #else
-        sb += Characters::Format ("{{system error: {}}}"_f, errCode.value ());
+        sb += "{{system error: {}}}"_f(errCode.value ());
 #endif
     }
     else {
-        sb += Characters::Format ("{{{}: {}}}"_f, Characters::String::FromNarrowSDKString (errCode.category ().name ()), errCode.value ());
+        sb += "{{{}: {}}}"_f(Characters::String::FromNarrowSDKString (errCode.category ().name ()), errCode.value ());
     }
     return sb;
 }

@@ -1740,7 +1740,7 @@ namespace {
         String                    b = L"…";
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
-                String x = Characters::Format ("{}"_f, b);
+                String x = "{}"_f(b);
                 EXPECT_TRUE (x == b);
             }
             catch (...) {

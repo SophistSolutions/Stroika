@@ -494,14 +494,14 @@ String ThreadPool::ToString () const
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         if (fThreadPoolName_) {
-            sb << Characters::Format ("pool-name: '{}'"_f, *fThreadPoolName_) << ", "sv;
+            sb << "pool-name: '{}'"_f(*fThreadPoolName_) << ", "sv;
         }
     }
-    sb << Characters::Format ("pending-task-count: {}"_f, GetPendingTasksCount ()) << ", "sv;
-    sb << Characters::Format ("running-task-count: {}"_f, GetRunningTasks ().size ()) << ", "sv;
+    sb << "pending-task-count: {}"_f(GetPendingTasksCount ()) << ", "sv;
+    sb << "running-task-count: {}"_f(GetRunningTasks ().size ()) << ", "sv;
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-        sb << Characters::Format ("pool-thread-count: {}"_f, fThreads_.size ());
+        sb << "pool-thread-count: {}"_f(fThreads_.size ());
     }
     sb << "}"sv;
     return sb;
@@ -541,7 +541,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
 ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
     shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
-    StringBuilder entryName = Characters::Format ("TPE #{}"_f, fNextThreadEntryNumber_++); // make name so short cuz unix only shows first 15 chars - http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
+    StringBuilder entryName = "TPE #{}"_f(fNextThreadEntryNumber_++); // make name so short cuz unix only shows first 15 chars - http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
     entryName += " {"sv + fThreadPoolName_.value_or ("anonymous-thread-pool"sv) + "}"sv;
     Thread::Ptr t = Thread::New ([r] () { r->Run (); }, Thread::eAutoStart, entryName); // race condition for updating this number, but who cares - its purely cosmetic...
     return TPInfo_{t, r};

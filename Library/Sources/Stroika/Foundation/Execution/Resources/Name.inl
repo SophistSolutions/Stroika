@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Execution::Resources {
     {
 #if qStroika_Foundation_Common_Platform_Windows
         if (fIntName_.has_value ()) {
-            return Characters::Format ("#{}"_f, *fIntName_);
+            return "#{}"_f(*fIntName_);
         }
 #endif
         return String::FromSDKString (fName_);
