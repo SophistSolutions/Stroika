@@ -465,7 +465,7 @@ namespace {
         STRING Test6_Helper_ (const STRING& a, int depth)
         {
             STRING b = a;
-            b += a;
+            b        = b + a;
             if (depth > 0) {
                 b = Test6_Helper_<STRING> (b, depth - 1) + Test6_Helper_<STRING> (b, depth - 1);
             }
@@ -1300,7 +1300,7 @@ namespace {
         StringBuilder             result;
         Character                 buf[]{'a', 'b', 'c', 'd'};
         for (int i = 0; i < 10; ++i) {
-            result.Append (std::begin (buf), std::begin (buf) + Memory::NEltsOf (buf));
+            result.Append (span{buf});
         }
         EXPECT_EQ (result.size (), 4 * 10);
         EXPECT_EQ (result, "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");

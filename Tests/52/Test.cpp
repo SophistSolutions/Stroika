@@ -347,10 +347,10 @@ namespace {
         const WIDESTRING_IMPL KBase = L"1234568321";
         WIDESTRING_IMPL       w;
         for (int i = 0; i < 10; ++i) {
-            w += KBase;
+            w = w + KBase;
         }
 #if qStroika_HasComponent_googletest
-        EXPECT_TRUE (w.length () == KBase.length () * 10);
+        EXPECT_EQ (w.length (), KBase.length () * 10u);
 #endif
     }
 }
@@ -362,10 +362,10 @@ namespace {
         const wchar_t   KBase[] = L"1234568321";
         WIDESTRING_IMPL w;
         for (int i = 0; i < 10; ++i) {
-            w += KBase;
+            w = w + KBase;
         }
 #if qStroika_HasComponent_googletest
-        EXPECT_TRUE (w.length () == wcslen (KBase) * 10);
+        EXPECT_EQ (w.length (), wcslen (KBase) * 10u);
 #endif
     }
 }
@@ -377,10 +377,10 @@ namespace {
         const wchar_t   KBase[] = L"1234568321";
         WIDESTRING_IMPL w;
         for (int i = 0; i < 100; ++i) {
-            w += KBase;
+            w = w + KBase;
         }
 #if qStroika_HasComponent_googletest
-        EXPECT_TRUE (w.length () == wcslen (KBase) * 100);
+        EXPECT_EQ (w.length (), wcslen (KBase) * 100u);
 #endif
     }
 }
@@ -393,7 +393,7 @@ namespace {
             WIDESTRING_IMPL tmp = src + src;
             tmp                 = tmp + src;
             tmp                 = src + tmp;
-            EXPECT_TRUE (tmp.length () == src.length () * 4);
+            EXPECT_EQ (tmp.length (), src.length () * 4u);
         }
     }
     template <typename WIDESTRING_IMPL>
@@ -1382,24 +1382,24 @@ namespace {
         }
 #endif
 
-        Tester (L"Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
+        Tester ("Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .90, &failedTests);
-        Tester (L"Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
+        Tester ("Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .51, &failedTests);
-        Tester (L"Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
+        Tester ("Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
                 Test_StructWithStringsFillingAndCopying<String>, L"Characters::String", 65000, 0.49, &failedTests);
-        Tester (L"Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
+        Tester ("Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
                 Test_StructWithStringsFillingAndCopying2<String>, L"Characters::String", 66000, 0.45, &failedTests);
-        Tester (L"Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
+        Tester ("Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
                 Test_SimpleStringAppends1_<String>, L"Characters::String", 1350000, 4.9, &failedTests);
-        Tester (L"Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
+        Tester ("Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
                 Test_SimpleStringAppends2_<String>, L"Characters::String", 1500000, 4.1, &failedTests);
-        Tester (L"Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
+        Tester ("Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
                 Test_SimpleStringAppends3_<String>, L"Characters::String", 360000, 78, &failedTests);
-        Tester (L"String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
-        Tester (L"wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
+        Tester ("String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
+        Tester ("wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
                 L"Characters::String", 6000, 1.4, &failedTests);
-        Tester (L"String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Characters::String", 2700000, 1.7, &failedTests);
+        Tester ("String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Characters::String", 2700000, 1.7, &failedTests);
         struct MemStreamOfChars_ : public MemoryStream::Ptr<Characters::Character> {
             MemStreamOfChars_ ()
                 : Ptr{MemoryStream::New<Characters::Character> ()}
