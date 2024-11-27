@@ -124,12 +124,12 @@ namespace Stroika::Foundation::Characters {
      ************************************ Format ************************************
      ********************************************************************************
      */
-    template <typename CHAR_T, typename... ARGS>
+    template <typename CHAR_T, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
     inline String Format (const FormatString<CHAR_T>& f, ARGS&&... args)
     {
         return VFormat (f, Common::StdCompat::make_wformat_args (args...));
     }
-    template <typename CHAR_T, typename... ARGS>
+    template <typename CHAR_T, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
     inline String Format (const locale& loc, const FormatString<CHAR_T>& f, ARGS&&... args)
     {
         return VFormat (loc, f, Common::StdCompat::make_wformat_args (args...));

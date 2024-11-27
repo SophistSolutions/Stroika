@@ -666,7 +666,7 @@ namespace {
             EXPECT_TRUE (Format (format.c_str (), L"x").length () == i);
         }
 #endif
-        EXPECT_EQ (Characters::Format ("{}.{}{}{}"_f, 1, 0, L"a", L"1x"), "1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
+        EXPECT_EQ ("{}.{}{}{}"_f(1, 0, L"a", L"1x"), "1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
     }
 }
 
@@ -1947,13 +1947,13 @@ namespace {
         //         DbgTrace2 (L"t2: cidr= {}, s1={}, s2={}, s3={}", IO::Network::CIDR{"192.168.244.0/24"}, "s1", String{"s2"}, string{"s3"});
 
         auto pp = "{}"_f(1);
-        DbgTrace (L"pp={}"_f, pp);
+        DbgTrace ("pp={}"_f, pp);
         EXPECT_EQ (pp, "1");
 
         {
             String big = "1"_k.Repeat (1000);
             EXPECT_EQ (big.size (), 1000u);
-            String a = Characters::Format ("BIG shortened '{:.10}'"_f, big);
+            String a = "BIG shortened '{:.10}'"_f(big);
             DbgTrace ("a={}"_f, a);
             EXPECT_EQ (a.size (), 26u);
             EXPECT_EQ (a, "BIG shortened '1111111111'");

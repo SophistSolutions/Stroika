@@ -455,14 +455,12 @@ namespace {
 
         // worth noting if these fail
         if (not defaultContextAvailableCipherAlgorithms.ContainsAny (defaultContextStandardCipherAlgorithms)) {
-            Stroika::Frameworks::Test::WarnTestIssue (
-                Characters::Format ("defaultContextAvailableCipherAlgorithms missing standard algorithms: {}"_f,
-                                    defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms));
+            Stroika::Frameworks::Test::WarnTestIssue ("defaultContextAvailableCipherAlgorithms missing standard algorithms: {}"_f(
+                defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms));
         }
         if (not defaultContextAvailableDigestAlgorithms.ContainsAny (defaultContextStandardDigestAlgorithms)) {
-            Stroika::Frameworks::Test::WarnTestIssue (
-                Characters::Format ("defaultContextAvailableDigestAlgorithms missing standard algorithms: {}"_f,
-                                    defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms));
+            Stroika::Frameworks::Test::WarnTestIssue ("defaultContextAvailableDigestAlgorithms missing standard algorithms: {}"_f(
+                defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms));
         }
         // for openssl v3 could also check with legacy provider loaded...
 #endif
@@ -558,8 +556,7 @@ namespace {
                     DbgTrace ("Skipping provider={}, due to exception: {}"_f, provider, Characters::ToString (current_exception ()));
                 }
                 else {
-                    Stroika::Frameworks::Test::WarnTestIssue (
-                        Characters::Format ("Skipping provider={}, due to exception: {}"_f, provider, current_exception ()));
+                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping provider={}, due to exception: {}"_f(provider, current_exception ()));
                 }
                 continue;
             }
@@ -621,9 +618,8 @@ namespace {
                     }
                     if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)) {
                         // maybe this cipher/digest combo fails only on some inputs
-                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Cipher {}, Digest {} failed {} times (not {})"_f, ci,
-                                                                                      di, nFailsForThisCipherDigestCombo,
-                                                                                      NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)));
+                        Stroika::Frameworks::Test::WarnTestIssue ("Cipher {}, Digest {} failed {} times (not {})"_f(
+                            ci, di, nFailsForThisCipherDigestCombo, NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)));
                     }
                 }
             }
@@ -642,16 +638,16 @@ namespace {
                     // Look at why each failed - but if innocuous, then add to list of known failures. This generally comes up only
                     // when we upgrade to new major openssl release.
                     Stroika::Frameworks::Test::WarnTestIssue (
-                        Characters::Format ("For provider={}, nCipherTests={}, nFailures={}, new-failures={}, remove-failures={}, "
-                                            "failingCiphers={}, passing-ciphrs={}"_f,
-                                            provider, nCipherTests, nFailures, Set<String>{failingCiphers.Elements ()} - kLastSeenAllFailingCiphers_,
-                                            kLastSeenAllFailingCiphers_ - failingCiphers.Elements (), failingCiphers, passingCiphers));
+                        "For provider={}, nCipherTests={}, nFailures={}, new-failures={}, remove-failures={}, "
+                        "failingCiphers={}, passing-ciphrs={}"_f(
+                            provider, nCipherTests, nFailures, Set<String>{failingCiphers.Elements ()} - kLastSeenAllFailingCiphers_,
+                            kLastSeenAllFailingCiphers_ - failingCiphers.Elements (), failingCiphers, passingCiphers));
                 }
                 static const Set<String> kStandardCipherAlgorithmNames{
                     OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
                 if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("For provider={}, some standard ciphers failed: {}"_f, provider,
-                                                                                  failingCiphers.Elements () ^ kStandardCipherAlgorithmNames));
+                    Stroika::Frameworks::Test::WarnTestIssue ("For provider={}, some standard ciphers failed: {}"_f(
+                        provider, failingCiphers.Elements () ^ kStandardCipherAlgorithmNames));
                 }
             }
         }

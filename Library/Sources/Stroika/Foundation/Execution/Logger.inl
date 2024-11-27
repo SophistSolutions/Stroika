@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Execution {
         }
         else {
 #if qStroika_Foundation_Debug_DefaultTracingOn
-            DbgTrace ("...suppressed by WouldLog: {}"_f, Characters::Format (fmt, args...));
+            DbgTrace ("...suppressed by WouldLog: {}"_f, fmt (args...));
 #endif
         }
     }

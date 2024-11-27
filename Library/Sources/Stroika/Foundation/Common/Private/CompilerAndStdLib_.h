@@ -2234,10 +2234,7 @@ CommandLine.cpp:124:20: error: unable to find string literal operator ‘operato
  */
 #ifndef qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy
 #if defined(__GNUC__)
-// FIRST SEEN BROKEN IN GCC 13 and 12 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
-// also broken in g++-14???
 #define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
-
 #else
 #define qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy 0
 #endif

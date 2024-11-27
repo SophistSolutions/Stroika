@@ -146,7 +146,7 @@ namespace {
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_, Characters::Format ("select MAX(ScanId) from Scans where  ScanTypeIDRef='{}';"_f, (int)scanKind)};
+                    Statement s{fDB_, "select MAX(ScanId) from Scans where  ScanTypeIDRef='{}';"_f((int)scanKind)};
                     DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

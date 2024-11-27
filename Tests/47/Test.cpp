@@ -229,10 +229,10 @@ namespace {
                     using namespace Characters::Literals;
                     Characters::StringBuilder sb;
                     sb << "{"sv;
-                    sb << "k1: "sv << Characters::Format ("{:.10e}"_f, k1) << ","sv;
-                    sb << "k2: "sv << Characters::Format ("{:.10e}"_f, k2) << ","sv;
-                    sb << "tunerInfoD: "sv << Characters::Format ("{:.10e}"_f, tunerInfoD) << ","sv;
-                    sb << "tunerInfoM: "sv << Characters::Format ("{:.10e}"_f, tunerInfoM);
+                    sb << "k1: "sv << "{:.10e}"_f(k1) << ","sv;
+                    sb << "k2: "sv << "{:.10e}"_f(k2) << ","sv;
+                    sb << "tunerInfoD: "sv << "{:.10e}"_f(tunerInfoD) << ","sv;
+                    sb << "tunerInfoM: "sv << "{:.10e}"_f(tunerInfoM);
                     sb << "}"sv;
                     return sb;
                 }

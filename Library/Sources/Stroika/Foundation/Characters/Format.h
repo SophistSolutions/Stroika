@@ -191,9 +191,9 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief Like std::format, except returning stroika String, and taking _f (FormatString) string as argument (which can be ASCII, but still produce UNICODE output).
      */
-    template <typename CHAR_T, typename... ARGS>
+    template <typename CHAR_T, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
     String Format (const FormatString<CHAR_T>& f, ARGS&&... args);
-    template <typename CHAR_T, typename... ARGS>
+    template <typename CHAR_T, Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA (Common::StdCompat::formattable<wchar_t>)... ARGS>
     String Format (const locale& l, const FormatString<CHAR_T>& f, ARGS&&... args);
 
 }

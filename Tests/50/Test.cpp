@@ -52,8 +52,8 @@ namespace {
             catch (...) {
                 // suppress macOS warn here - just not such locale installed
 #if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (
-                    "test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f, localeName));
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f(localeName));
 #endif
             }
         };

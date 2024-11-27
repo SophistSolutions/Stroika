@@ -368,7 +368,7 @@ namespace {
             }
             void Test_roundtrip_IPV6NumericHostname_ ()
             {
-                String v                 = Characters::Format ("http://[::1]:{}/"_f, 9080);
+                String v                 = "http://[::1]:{}/"_f(9080);
                 URI    ShowAsExternalURI = v;
                 EXPECT_EQ (ShowAsExternalURI.As<String> (), "http://[::1]:9080/");
             }
@@ -571,8 +571,8 @@ GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
             catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qStroika_Foundation_Common_Platform_Linux
                 if (e.code () == errc::no_such_file_or_directory) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format ("Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f,
-                                                                                  current_exception ())); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                    Stroika::Frameworks::Test::WarnTestIssue ("Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f(
+                        current_exception ())); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                     return;
                 }
 #endif
