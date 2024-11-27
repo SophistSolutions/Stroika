@@ -119,9 +119,9 @@ namespace Stroika::Foundation::Characters {
 
         constexpr wstring_view                                             get () const;
         constexpr qStroika_Foundation_Characters_FMT_PREFIX_::wstring_view getx_ () const;
-        template <Common::StdCompat::formattable<wchar_t>... ARGS>
+        template <typename/*Common::StdCompat::formattable<wchar_t>*/... ARGS>
         [[nodiscard]] inline String operator() (ARGS&&... args) const;
-        template <Common::StdCompat::formattable<wchar_t>... ARGS>
+        template </*Common::StdCompat::formattable<wchar_t>*/typename... ARGS>
         [[nodiscard]] inline String operator() (const locale& loc, ARGS&&... args) const;
     };
 
