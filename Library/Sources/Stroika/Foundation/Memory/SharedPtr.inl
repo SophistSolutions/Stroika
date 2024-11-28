@@ -485,16 +485,6 @@ namespace Stroika::Foundation::Memory {
     }
 }
 
-namespace Stroika::Foundation::Execution {
-    template <typename T>
-    inline void ThrowIfNull (const Memory::SharedPtr<T>& p)
-    {
-        if (p.get () == nullptr) [[unlikely]] {
-            Execution::Throw (bad_alloc{}, "ThrowIfNull (SharedPtr<T> ()) - throwing bad_alloc ()");
-        }
-    }
-}
-
 namespace std {
     template <typename TO_TYPE_T, typename FROM_TYPE_T>
     inline Stroika::Foundation::Memory::SharedPtr<TO_TYPE_T> dynamic_pointer_cast (const Stroika::Foundation::Memory::SharedPtr<FROM_TYPE_T>& sp) noexcept

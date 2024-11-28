@@ -63,12 +63,15 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
 }
 
 namespace Stroika::Foundation::Execution {
+    namespace Private_ {
+        using ConstVoidStar = const void*;
+    }
 
     /**
      * \brief   Template specialization for ThrowIfNull (), for thing being thrown HRESULT - really throw HRESULTErrorException
      */
     template <>
-    void ThrowIfNull (const void* p, const HRESULT& hr);
+    void ThrowIfNull (const Private_::ConstVoidStar& p, const HRESULT& hr);
 
 }
 

@@ -121,16 +121,31 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <equality_comparable_with<nullptr_t> T, typename E>
-    inline void ThrowIfNull (T p, const E& e)
+    inline void ThrowIfNull (const T& p, const E& e)
     {
         if (p == nullptr) [[unlikely]] {
             Throw (e, "ThrowIfNull (nullptr) - throwing bad_alloc"); // todo fix trace message to depend on 'E'
         }
     }
     template <equality_comparable_with<nullptr_t> T>
-    inline void ThrowIfNull (T p)
+    inline void ThrowIfNull (const T& p)
     {
         static const bad_alloc kException_;
+        ThrowIfNull (p, kException_);
+    }
+    template <equality_comparable_with<nullopt_t> T, typename E>
+    inline void ThrowIfNull (const T& p, const E& e)
+        requires (not equality_comparable_with<nullptr_t, T>)
+    {
+        if (p == nullopt) [[unlikely]] {
+            Throw (e, "ThrowIfNull (nullopt) - throwing bad_optional_access"); // todo fix trace message to depend on 'E'
+        }
+    }
+    template <equality_comparable_with<nullopt_t> T>
+    inline void ThrowIfNull (const T& p)
+        requires (not equality_comparable_with<nullptr_t, T>)
+    {
+        static const bad_optional_access kException_;
         ThrowIfNull (p, kException_);
     }
 

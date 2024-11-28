@@ -93,9 +93,15 @@ namespace Stroika::Foundation::Execution {
      *  If the first argument is null, throw the second argument exception (which defaults to bad_alloc)
      */
     template <equality_comparable_with<nullptr_t> T, typename E>
-    void ThrowIfNull (T p, const E& e);
+    void ThrowIfNull (const T& p, const E& e);
     template <equality_comparable_with<nullptr_t> T>
-    void ThrowIfNull (T p);
+    void ThrowIfNull (const T& p);
+    template <equality_comparable_with<nullopt_t> T, typename E>
+    void ThrowIfNull (const T& p, const E& e)
+        requires (not equality_comparable_with<nullptr_t, T>);
+    template <equality_comparable_with<nullopt_t> T>
+    void ThrowIfNull (const T& p)
+        requires (not equality_comparable_with<nullptr_t, T>);
 
     /** 
      *  \def IgnoreExceptionsForCall - ignore all exceptions for the given argument call (evaluate arg)

@@ -310,7 +310,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 
 /*
  ********************************************************************************
- ************** Execution::ProcessRunner::BackgroundProcess *********************
+ **************** Execution::ProcessRunner::BackgroundProcess *******************
  ********************************************************************************
  */
 ProcessRunner::BackgroundProcess::BackgroundProcess ()
@@ -820,7 +820,7 @@ namespace {
             };
             auto readTilEOF = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
                 WaitForIOReady waiter{fd};
-                bool                      eof = false;
+                bool           eof = false;
                 while (not eof) {
                     (void)waiter.WaitQuietly (1s);
                     readALittleFromProcess (fd, stream, write2StdErrCache, &eof);
@@ -882,8 +882,8 @@ namespace {
             int status = 0;
             int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
                             //  Wait for child
-            int result = Handle_ErrNoResultInterruption (
-                [childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
+            int result =
+                Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
@@ -1190,7 +1190,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     String                                         cmdLine          = fCommandLine_.value_or (String{});
-    optional<filesystem::path>                               workingDir       = GetWorkingDirectory ();
+    optional<filesystem::path>                     workingDir       = GetWorkingDirectory ();
     Streams::InputStream::Ptr<byte>                in               = GetStdIn ();
     Streams::OutputStream::Ptr<byte>               out              = GetStdOut ();
     Streams::OutputStream::Ptr<byte>               err              = GetStdErr ();
@@ -1365,7 +1365,7 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
             Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
         }
         Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
-                                                                                createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
+                                                                     createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
         Verify (::CloseHandle (processInfo.hProcess)); // We can recover the process handle from the process id if needed
         Verify (::CloseHandle (processInfo.hThread));
     }

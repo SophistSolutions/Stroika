@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Execution {
         optional<String>                                               fCommandLine_;
         optional<filesystem::path>                                     fExecutable_;
         Containers::Sequence<String>                                   fArgs_; // ignored if fExecutable empty
-        optional<filesystem::path>                                               fWorkingDirectory_;
+        optional<filesystem::path>                                     fWorkingDirectory_;
         Streams::InputStream::Ptr<byte>                                fStdIn_;
         Streams::OutputStream::Ptr<byte>                               fStdOut_;
         Streams::OutputStream::Ptr<byte>                               fStdErr_;

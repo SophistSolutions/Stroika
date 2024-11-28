@@ -13,8 +13,9 @@
 namespace Stroika::Foundation::Execution {
     // Instead of #include "Stroika/Foundation/Execution/Throw.h"
     template <equality_comparable_with<nullptr_t> T>
-    void ThrowIfNull (T p);
+    void ThrowIfNull (const T& p);
 }
+
 namespace Stroika::Foundation::Memory {
 
     /*

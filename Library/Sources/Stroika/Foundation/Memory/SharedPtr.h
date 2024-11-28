@@ -292,11 +292,6 @@ namespace Stroika::Foundation::Memory {
     [[deprecated ("Since Stroika v3.0d8")]] constexpr bool kSharedPtr_IsFasterThan_shared_ptr = false;
 }
 
-namespace Stroika::Foundation::Execution {
-    template <typename T>
-    void ThrowIfNull (const Memory::SharedPtr<T>& p);
-}
-
 namespace std {
 
     /**

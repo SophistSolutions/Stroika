@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Memory {
 
     /**
      */
-    template <typename EXCEPT, typename T>
+    template <typename T, typename EXCEPT = bad_optional_access>
     const T& ValueOfOrThrow (const optional<T>& t, const EXCEPT& throwIfNull = {});
 
     /**

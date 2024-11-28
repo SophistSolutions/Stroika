@@ -164,13 +164,11 @@ namespace Stroika::Foundation::Memory {
      ******************************** ValueOfOrThrow ********************************
      ********************************************************************************
      */
-    template <typename EXCEPT, typename T>
+    template <typename T, typename EXCEPT>
     inline const T& ValueOfOrThrow (const optional<T>& t, const EXCEPT& throwIfNull)
     {
-        if (t) [[likely]] {
-            return *t;
-        }
-        Execution::Throw (throwIfNull);
+        Execution::ThrowIfNull (t, throwIfNull);
+        return *t;
     }
 
     /*
