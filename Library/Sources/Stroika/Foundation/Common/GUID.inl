@@ -6,7 +6,7 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     *********************************** Common::GUID *******************************
+     ********************************* Common::GUID *********************************
      ********************************************************************************
      */
 #if qStroika_Foundation_Common_Platform_Windows
@@ -83,4 +83,23 @@ namespace Stroika::Foundation::Common {
         }
     }
 
+}
+
+/*
+     ********************************************************************************
+     ********* formatter<Stroika::Foundation::Common::GUID, char/wchar_t> ***********
+     ********************************************************************************
+     */
+template <class FmtContext>
+inline typename FmtContext::iterator qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, wchar_t>::format (
+    const Stroika::Foundation::Common::GUID& s, FmtContext& ctx) const
+{
+    return inherited::format (s.As<Stroika::Foundation::Characters::String> ().As<wstring> (), ctx);
+}
+template <class FmtContext>
+inline typename FmtContext::iterator
+qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, char>::format (const Stroika::Foundation::Common::GUID& s,
+                                                                                                        FmtContext& ctx) const
+{
+    return inherited::format (s.As<string> (), ctx);
 }

@@ -48,6 +48,11 @@ namespace {
                 EXPECT_EQ (guidFromStr, guidFromArray); // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
             }
         }
+        {
+            using namespace Characters;
+            Common::GUID guidFromStr{"61e4d49d-8c26-3480-f5c8-564e155c67a6"};
+            EXPECT_EQ ("GUID={}"_f(guidFromStr), "61e4d49d-8c26-3480-f5c8-564e155c67a6");
+        }
     }
 }
 

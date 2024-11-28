@@ -127,6 +127,25 @@ namespace Stroika::Foundation::Common {
 
 }
 
+/*
+ *  Already default-implemented in ToString() code, but this implementation is better (because by default
+ *  'range version' used) and this takes precedence.
+ */
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, wchar_t>
+    : qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::wstring, wchar_t> {
+    using inherited = qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::wstring, wchar_t>;
+    template <class FmtContext>
+    typename FmtContext::iterator format (const Stroika::Foundation::Common::GUID& s, FmtContext& ctx) const;
+};
+template <>
+struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, char>
+    : qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::string, wchar_t> {
+    using inherited = qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::string, char>;
+    template <class FmtContext>
+    typename FmtContext::iterator format (const Stroika::Foundation::Common::GUID& s, FmtContext& ctx) const;
+};
+
 namespace Stroika::Foundation::DataExchange {
     template <typename T>
     struct DefaultSerializer; // Forward declare to avoid mutual include issues
