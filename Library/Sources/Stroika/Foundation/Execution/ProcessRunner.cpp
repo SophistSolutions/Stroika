@@ -67,7 +67,7 @@ namespace {
     inline void CLOSE_ (int& fd) noexcept
     {
         if (fd >= 0) {
-            IgnoreExceptionsForCall (Execution::Handle_ErrNoResultInterruption ([fd] () -> int { return ::close (fd); }));
+            IgnoreExceptionsForCall (Handle_ErrNoResultInterruption ([fd] () -> int { return ::close (fd); }));
             fd = -1;
         }
     }
@@ -422,7 +422,7 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     }
     Characters::StringBuilder sb;
     if (not fExecutable_.has_value ()) [[unlikely]] {
-        Execution::Throw (Execution::Exception{"need command-line or executable path to run a process"sv});
+        Throw (Execution::Exception{"need command-line or executable path to run a process"sv});
     }
     sb << IO::FileSystem::FromPath (*fExecutable_);
     for (const String& i : fArgs_) {
@@ -431,13 +431,13 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     return sb;
 }
 
-optional<String> ProcessRunner::GetWorkingDirectory ()
+optional<filesystem::path> ProcessRunner::GetWorkingDirectory ()
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return fWorkingDirectory_;
 }
 
-void ProcessRunner::SetWorkingDirectory (const optional<String>& d)
+void ProcessRunner::SetWorkingDirectory (const optional<filesystem::path>& d)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     fWorkingDirectory_ = d;
@@ -540,7 +540,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
     catch (...) {
         SetStdIn (oldStdIn);
         SetStdOut (oldStdOut);
-        Execution::ReThrow ();
+        ReThrow ();
     }
 }
 
@@ -589,9 +589,9 @@ namespace {
             ::CLOSE_ (jStderr[0]);
             ::CLOSE_ (jStderr[1]);
         });
-        Execution::Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
-        Execution::Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
-        Execution::Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
+        Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
+        Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
+        Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
         // assert cuz code below needs to be more careful if these can overlap 0..2
         Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
         Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
@@ -608,7 +608,7 @@ namespace {
         StackBuffer<char>  execDataArgsBuffer;
         StackBuffer<char*> execArgsPtrBuffer;
         {
-            Sequence<String> commandLine{Execution::CommandLine{cmdLine}.GetArguments ()};
+            Sequence<String> commandLine{CommandLine{cmdLine}.GetArguments ()};
             Sequence<size_t> argsIdx;
             size_t           bufferIndex{};
             execArgsPtrBuffer.GrowToSize_uninitialized (commandLine.size () + 1);
@@ -819,7 +819,7 @@ namespace {
                 }
             };
             auto readTilEOF = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
-                Execution::WaitForIOReady waiter{fd};
+                WaitForIOReady waiter{fd};
                 bool                      eof = false;
                 while (not eof) {
                     (void)waiter.WaitQuietly (1s);
@@ -882,7 +882,7 @@ namespace {
             int status = 0;
             int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
                             //  Wait for child
-            int result = Execution::Handle_ErrNoResultInterruption (
+            int result = Handle_ErrNoResultInterruption (
                 [childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
@@ -1016,8 +1016,8 @@ namespace {
                         o.Write (span{buf, nBytesRead});
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = '\0';
-                    DbgTrace ("read from process (fd=%p) nBytesRead = %d: %s", p, nBytesRead, buf);
+                    buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = byte{'\0'};
+                    DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, p, nBytesRead, buf);
 #endif
                 }
             };
@@ -1061,7 +1061,7 @@ namespace {
                                     if (lastErr != ERROR_SUCCESS and lastErr != ERROR_NO_MORE_FILES and lastErr != ERROR_PIPE_BUSY and
                                         lastErr != ERROR_NO_DATA) {
                                         DbgTrace ("in RunExternalProcess_ - throwing {} while fill in stdin"_f, lastErr);
-                                        Execution::ThrowSystemErrNo (lastErr);
+                                        ThrowSystemErrNo (lastErr);
                                     }
                                 }
                                 Assert (written <= static_cast<size_t> (e - p));
@@ -1074,7 +1074,7 @@ namespace {
                                 if (p < e and written == 0) {
                                     // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
                                     // send it data - back off a little
-                                    Execution::Sleep (100ms);
+                                    Sleep (100ms);
                                 }
 #if 0
                                     // Do timeout handling at a higher level
@@ -1082,7 +1082,7 @@ namespace {
                                         DbgTrace (_T ("process timed out (writing initial data) - so throwing up!"));
                                         // then we've timed out - kill the process and DON'T return the partial result!
                                         (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
-                                        Execution::Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
+                                        Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
                                     }
 #endif
                             }
@@ -1176,7 +1176,7 @@ namespace {
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
             }
-            Execution::ReThrow ();
+            ReThrow ();
         }
     }
 }
@@ -1190,7 +1190,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     String                                         cmdLine          = fCommandLine_.value_or (String{});
-    optional<String>                               workingDir       = GetWorkingDirectory ();
+    optional<filesystem::path>                               workingDir       = GetWorkingDirectory ();
     Streams::InputStream::Ptr<byte>                in               = GetStdIn ();
     Streams::OutputStream::Ptr<byte>               out              = GetStdOut ();
     Streams::OutputStream::Ptr<byte>               err              = GetStdErr ();
@@ -1201,7 +1201,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
         SDKString      currentDirBuf_;
-        const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
+        const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->c_str (), currentDirBuf_.c_str ()) : nullptr;
 #if qStroika_Foundation_Common_Platform_POSIX
         Process_Runner_POSIX_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -1218,14 +1218,14 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 pid_t Execution::DetachedProcessRunner (const String& commandLine)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"Execution::DetachedProcessRunner", L"commandline=%s", commandLine.c_str ()};
+    TraceContextBumper ctx{L"Execution::DetachedProcessRunner", L"commandline={}"_f, commandLine};
 #endif
     filesystem::path exe;
     Sequence<String> args;
     {
-        Sequence<String> tmp{Execution::CommandLine{commandLine}.GetArguments ()};
+        Sequence<String> tmp{CommandLine{commandLine}.GetArguments ()};
         if (tmp.size () == 0) [[unlikely]] {
-            Execution::Throw (Execution::Exception{"invalid command argument to DetachedProcessRunner"sv});
+            Throw (Exception{"invalid command argument to DetachedProcessRunner"sv});
         }
         exe  = IO::FileSystem::ToPath (tmp[0]);
         args = tmp;
@@ -1364,7 +1364,7 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
             }
             Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
         }
-        Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
+        Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
                                                                                 createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
         Verify (::CloseHandle (processInfo.hProcess)); // We can recover the process handle from the process id if needed
         Verify (::CloseHandle (processInfo.hThread));

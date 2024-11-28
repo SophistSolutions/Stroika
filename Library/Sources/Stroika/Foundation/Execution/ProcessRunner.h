@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Execution {
 
         // IDEA HERE IS FROM KDJ - Do something like python/perl stuff for managing subprocesses easily.
 
-    // Look input stream, output stream(or streams - stdout/stderr) - and some kind of extenral process control
+    // Look input stream, output stream(or streams - stdout/stderr) - and some kind of external process control
     // so can say WIAT or Termiante.
     //
     // Simple portable wrapper.
@@ -157,8 +157,8 @@ namespace Stroika::Foundation::Execution {
         /**
          * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
          */
-        nonvirtual optional<String> GetWorkingDirectory ();
-        nonvirtual void             SetWorkingDirectory (const optional<String>& d);
+        nonvirtual optional<filesystem::path> GetWorkingDirectory ();
+        nonvirtual void                       SetWorkingDirectory (const optional<filesystem::path>& d);
 
     public:
         /**
@@ -206,8 +206,8 @@ namespace Stroika::Foundation::Execution {
          *  ProcessRunner, and replaces the stdout, and replaces its stdout stream with one that captures
          *  results as a string.
          *
-         *  Each overload that takes a 'processResult' argument recieves the numeric value the process
-         *  exited with (if it called exit - that is - didnt terminate by signal etc). However, if that
+         *  Each overload that takes a 'processResult' argument receives the numeric value the process
+         *  exited with (if it called exit - that is - didn't terminate by signal etc). However, if that
          *  parameter is missing (nullptr) - Run () will throw an exception if the called process returns
          *  non-zero.
          *
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Execution {
          *  Note that 'in' will be sent to the stdin of the subprocess, 'out' will be read from the
          *  stdout of the subprocess and error will be read from the stderr of the subprocess.
          *
-         *  Each of these CAN be null, and will if so, that will be interpretted as an empty stream
+         *  Each of these CAN be null, and will if so, that will be interpreted as an empty stream
          *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
          *
          *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Execution {
         optional<String>                                               fCommandLine_;
         optional<filesystem::path>                                     fExecutable_;
         Containers::Sequence<String>                                   fArgs_; // ignored if fExecutable empty
-        optional<String>                                               fWorkingDirectory_;
+        optional<filesystem::path>                                               fWorkingDirectory_;
         Streams::InputStream::Ptr<byte>                                fStdIn_;
         Streams::OutputStream::Ptr<byte>                               fStdOut_;
         Streams::OutputStream::Ptr<byte>                               fStdErr_;
