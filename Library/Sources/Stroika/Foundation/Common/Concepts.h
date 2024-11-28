@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Common {
      */
     template <class _Ty>
     concept Boolean_testable = Private_::_Boolean_testable_impl<_Ty> && requires (_Ty&& __t) {
-        { !static_cast<_Ty&&> (__t) } -> _Boolean_testable_impl;
+        { !static_cast<_Ty&&> (__t) } -> Private_::_Boolean_testable_impl;
     };
 
     /**
