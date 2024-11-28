@@ -140,7 +140,7 @@ struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation
 };
 template <>
 struct qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, char>
-    : qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::string, wchar_t> {
+    : qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::string, char> {
     using inherited = qStroika_Foundation_Characters_FMT_PREFIX_::formatter<std::string, char>;
     template <class FmtContext>
     typename FmtContext::iterator format (const Stroika::Foundation::Common::GUID& s, FmtContext& ctx) const;
