@@ -12,6 +12,7 @@
 #include <system_error>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
 /**
@@ -24,10 +25,10 @@
  *      This means that any code which wishes to report an exception can catch these two types, and use
  *      the 'what()' method to report the text of the exception message.
  *
- *      Sadly, there is no documentation (I'm aware of) or specification of the characterset/code page reported
+ *      Sadly, there is no documentation (I'm aware of) or specification of the character set/code page reported
  *      back by the what () on an exception. It tends to be ascii. Stroika guarantees that all exceptions it throws
  *      will use the current SDK characters (@see SDKString). But - its best to check for inheriting from
- *      Exception<>, since the SDK characterset might not allow representing some unicode characters.
+ *      Exception<>, since the SDK character set might not allow representing some unicode characters.
  */
 
 namespace Stroika::Foundation::Execution {
@@ -96,10 +97,10 @@ namespace Stroika::Foundation::Execution {
     void ThrowIfNull (const T& p, const E& e);
     template <equality_comparable_with<nullptr_t> T>
     void ThrowIfNull (const T& p);
-    template <equality_comparable_with<nullopt_t> T, typename E>
+    template <Common::Weak_Equality_Comparable_With<nullopt_t> T, typename E>
     void ThrowIfNull (const T& p, const E& e)
         requires (not equality_comparable_with<nullptr_t, T>);
-    template <equality_comparable_with<nullopt_t> T>
+    template <Common::Weak_Equality_Comparable_With<nullopt_t> T>
     void ThrowIfNull (const T& p)
         requires (not equality_comparable_with<nullptr_t, T>);
 

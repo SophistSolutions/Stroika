@@ -150,6 +150,33 @@ namespace Stroika::Foundation::Common {
     template <typename...>
     using True = true_type;
 
+    namespace Private_ {
+        template <class _Ty>
+        concept _Boolean_testable_impl = convertible_to<_Ty, bool>;
+    }
+
+    /**
+     *  \brief handy re-usable concept, with the obvious meaning, and strangely omitted from std-c++ (though used in exposition).
+     */
+    template <class _Ty>
+    concept Boolean_testable = Private_::_Boolean_testable_impl<_Ty> && requires (_Ty&& __t) {
+        { !static_cast<_Ty&&> (__t) } -> _Boolean_testable_impl;
+    };
+
+    /**
+     * \brief equality_comparable_with, but less strict - just checks if it can be equality compared!
+     * 
+     *      INSPIRATION: https://godbolt.org/z/qevGWKan4
+     *      static_assert (equality_comparable_with<nullopt_t, optional<int>>); // note this fails
+     */
+    template <class _Ty1, class _Ty2>
+    concept Weak_Equality_Comparable_With = requires (const remove_reference_t<_Ty1>& __x, const remove_reference_t<_Ty2>& __y) {
+        { __x == __y } -> Boolean_testable;
+        { __x != __y } -> Boolean_testable;
+    };
+    static_assert (not equality_comparable_with<nullopt_t, optional<int>>);
+    static_assert (Weak_Equality_Comparable_With<nullopt_t, optional<int>>);
+
     /**
      */
     template <typename OT>

@@ -273,6 +273,26 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Execution, ThrowIfNullCheck)
+    {
+        auto  throwFailureCalls = [] () { 
+            {
+                void* p = nullptr;
+                ThrowIfNull (p);
+            }
+            {
+                //static_assert (equality_comparable_with<nullopt_t, optional<int>>);
+                optional<int> p;
+                ThrowIfNull (p);
+            }
+            
+            };
+
+        IgnoreExceptionsForCall (throwFailureCalls);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Execution, kInnerOuterExceptionStackHandlingWhile)
     {
         constexpr Execution::Activity kActivityOuter_{"OUTER"sv};

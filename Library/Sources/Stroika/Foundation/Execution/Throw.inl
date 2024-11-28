@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Execution {
         static const bad_alloc kException_;
         ThrowIfNull (p, kException_);
     }
-    template <equality_comparable_with<nullopt_t> T, typename E>
+    template <Common::Weak_Equality_Comparable_With<nullopt_t> T, typename E>
     inline void ThrowIfNull (const T& p, const E& e)
         requires (not equality_comparable_with<nullptr_t, T>)
     {
@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Execution {
             Throw (e, "ThrowIfNull (nullopt) - throwing bad_optional_access"); // todo fix trace message to depend on 'E'
         }
     }
-    template <equality_comparable_with<nullopt_t> T>
+    template <Common::Weak_Equality_Comparable_With<nullopt_t> T>
     inline void ThrowIfNull (const T& p)
         requires (not equality_comparable_with<nullptr_t, T>)
     {
