@@ -286,6 +286,19 @@ namespace {
             EXPECT_EQ (b.size (), 5u);
             EXPECT_EQ (b[0], static_cast<byte> ('h'));
         }
+        {
+            using namespace Memory;
+            auto b  = "hello"_blob;
+            auto b2 = b.As<Streams::InputStream::Ptr<byte>> ().ReadAll ();
+            EXPECT_EQ (b, b2);
+        }
+        {
+            using namespace Memory;
+            auto                            b   = "hello"_blob;
+            Streams::InputStream::Ptr<byte> b2s = b;
+            auto                            b2  = b2s.ReadAll ();
+            EXPECT_EQ (b, b2);
+        }
     }
 }
 
