@@ -275,7 +275,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Execution, ThrowIfNullCheck)
     {
-        auto  throwFailureCalls = [] () { 
+        auto throwFailureCalls = [] () {
             {
                 void* p = nullptr;
                 ThrowIfNull (p);
@@ -285,8 +285,7 @@ namespace {
                 optional<int> p;
                 ThrowIfNull (p);
             }
-            
-            };
+        };
 
         IgnoreExceptionsForCall (throwFailureCalls);
     }
