@@ -51,7 +51,7 @@ namespace {
         {
             using namespace Characters;
             Common::GUID guidFromStr{"61e4d49d-8c26-3480-f5c8-564e155c67a6"};
-            EXPECT_EQ ("GUID={}"_f(guidFromStr), "61e4d49d-8c26-3480-f5c8-564e155c67a6");
+            EXPECT_EQ ("{}"_f(guidFromStr), "61e4d49d-8c26-3480-f5c8-564e155c67a6");
         }
     }
 }
