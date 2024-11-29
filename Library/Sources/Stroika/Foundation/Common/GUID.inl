@@ -86,10 +86,10 @@ namespace Stroika::Foundation::Common {
 }
 
 /*
-     ********************************************************************************
-     ********* formatter<Stroika::Foundation::Common::GUID, char/wchar_t> ***********
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ********* formatter<Stroika::Foundation::Common::GUID, char/wchar_t> ***********
+ ********************************************************************************
+ */
 template <class FmtContext>
 inline typename FmtContext::iterator qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, wchar_t>::format (
     const Stroika::Foundation::Common::GUID& s, FmtContext& ctx) const
@@ -101,5 +101,5 @@ inline typename FmtContext::iterator
 qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, char>::format (const Stroika::Foundation::Common::GUID& s,
                                                                                                         FmtContext& ctx) const
 {
-    return this->inherited::format (s.As<string> (), ctx);
+    return this->inherited::format (s.As<std::string> (), ctx);
 }
