@@ -94,7 +94,7 @@ template <class FmtContext>
 inline typename FmtContext::iterator qStroika_Foundation_Characters_FMT_PREFIX_::formatter<Stroika::Foundation::Common::GUID, wchar_t>::format (
     const Stroika::Foundation::Common::GUID& s, FmtContext& ctx) const
 {
-    return this->inherited::format (s.As<Stroika::Foundation::Characters::String> ().As<wstring> (), ctx);
+    return this->inherited::format (s.As<Stroika::Foundation::Characters::String> ().As<std::wstring> (), ctx);
 }
 template <class FmtContext>
 inline typename FmtContext::iterator
