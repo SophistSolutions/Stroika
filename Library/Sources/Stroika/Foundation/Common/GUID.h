@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          *  For now, only supported formats are
-         *      o   String          -- format: {61e4d49d-8c26-3480-f5c8-564e155c67a6}
+         *      o   String          -- format: 61e4d49d-8c26-3480-f5c8-564e155c67a6
          *      o   string          -- same
          *      o   BLOB
          *      o   array<uint8_t, 16> or array<byte, 16>
