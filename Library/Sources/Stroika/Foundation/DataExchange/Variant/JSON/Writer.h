@@ -34,8 +34,8 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *          will NOT necessarily be the same as the start object, because VariantValue supports more builtin types
      *          than JSON (e.g. Date). If you map a date to JSON, and back, you will get a String.
      *
-     *  \note   Writing NAN/INF values (if fAllowNANInf set - default) - transoforms those values to strings, but on roundtrip
-     *          automatically transforms them back to the correct IEEE floating point type (if you coence the VariantValue
+     *  \note   Writing NAN/INF values (if fAllowNANInf set - default) - transforms those values to strings, but on roundtrip
+     *          automatically transforms them back to the correct IEEE floating point type (if you coerce the VariantValue
      *          return from parsing to a floating point type).
      *
      *  \par Example Usage
