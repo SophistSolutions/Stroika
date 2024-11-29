@@ -204,7 +204,7 @@ filesystem::path FileSystem::CreateTmpFile (const String& baseName, const filesy
     String basename = FromPath (baseNamePath.stem ());
     String ext      = FromPath (baseNamePath.extension ());
     if (ext.empty ()) {
-        ext = "txt"sv;
+        ext = ".txt"sv;
     }
     constexpr int kMaxAttempts_{100};
     for (int attempts = 0; attempts < kMaxAttempts_; ++attempts) {
