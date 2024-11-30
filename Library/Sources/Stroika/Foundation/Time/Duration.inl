@@ -211,8 +211,7 @@ namespace Stroika::Foundation::Time {
             switch (fRepType_) {
                 case eEmpty_:
                     return String{};
-                case eString_:
-                    return String{fStringRep_}; // unclear about this case? Maybe remap?
+                case eString_: // unclear about this case? -- different answer than with no argument precision
                 case eNumeric_:
                     return UnParseTime_ (count (), p);
             }
