@@ -1608,6 +1608,11 @@ namespace Stroika::Foundation::Characters {
     wostream& operator<< (wostream& out, const String& s);
     ostream&  operator<< (ostream& out, const String& s);
 
+#if qStroika_HasComponent_googletest
+    // For googletest compatability
+    void PrintTo (const String& s, std::ostream* os);
+#endif
+
     /**
      * Protected helper Rep class.
      * 
