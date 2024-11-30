@@ -109,7 +109,7 @@ namespace {
 
         // todo must set default precision because of the thread_local thing
         unsigned int usePrecision =
-            options.GetPrecision ().value_or (FloatConversion::ToStringOptions::kDefaultPrecision).GetEffectivePrecision<FLOAT_TYPE> ();
+            options.GetPrecision ().value_or (FloatConversion::Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
         s.precision (usePrecision);
 
         {
