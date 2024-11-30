@@ -198,9 +198,9 @@ namespace {
 #endif
                 }
                 else {
-                    EXPECT_TRUE (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);   // which == kTargetTM_DMY_
-                    EXPECT_TRUE (resultTM.tm_min == kTargetTM_MDY_.tm_min);   // ..
-                    EXPECT_TRUE (resultTM.tm_hour == kTargetTM_MDY_.tm_hour); // ..
+                    EXPECT_EQ (resultTM.tm_sec, kTargetTM_MDY_.tm_sec);   // which == kTargetTM_DMY_
+                    EXPECT_EQ (resultTM.tm_min, kTargetTM_MDY_.tm_min);   // ..
+                    EXPECT_EQ (resultTM.tm_hour, kTargetTM_MDY_.tm_hour); // ..
                     // libstdc++ returns 21, and visual studio 121 - clang libc++ -1879 - all reasonable - DONT CHECK THIS - undefined for 2-digit year -- LGP 2021-03-08
                     if (tmget.date_order () == time_base::mdy or
                         (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
@@ -213,8 +213,8 @@ namespace {
 #endif
                     }
                     else if (tmget.date_order () == time_base::dmy) {
-                        EXPECT_TRUE (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);
-                        EXPECT_TRUE (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+                        EXPECT_EQ (resultTM.tm_mday, kTargetTM_DMY_.tm_mday);
+                        EXPECT_EQ (resultTM.tm_mon, kTargetTM_DMY_.tm_mon);
                     }
                 }
             }
@@ -307,40 +307,40 @@ namespace {
             TimeOfDay t2{2};
             EXPECT_TRUE (t < t2);
             EXPECT_TRUE (not t2.Format (locale{}).empty ());
-            EXPECT_TRUE (t2.GetHours () == 0);
-            EXPECT_TRUE (t2.GetMinutes () == 0);
-            EXPECT_TRUE (t2.GetSeconds () == 2);
+            EXPECT_EQ (t2.GetHours (), 0);
+            EXPECT_EQ (t2.GetMinutes (), 0);
+            EXPECT_EQ (t2.GetSeconds (), 2);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
             TimeOfDay t2{5 * 60 * 60 + 3 * 60 + 49};
-            EXPECT_TRUE (t2.GetHours () == 5);
-            EXPECT_TRUE (t2.GetMinutes () == 3);
-            EXPECT_TRUE (t2.GetSeconds () == 49);
+            EXPECT_EQ (t2.GetHours (), 5);
+            EXPECT_EQ (t2.GetMinutes (), 3);
+            EXPECT_EQ (t2.GetSeconds (), 49);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
             TimeOfDay t2{24 * 60 * 60 - 1};
-            EXPECT_TRUE (t2.GetHours () == 23);
-            EXPECT_TRUE (t2.GetMinutes () == 59);
-            EXPECT_TRUE (t2.GetSeconds () == 59);
-            EXPECT_TRUE (t2 == TimeOfDay::kMax);
+            EXPECT_EQ (t2.GetHours (), 23);
+            EXPECT_EQ (t2.GetMinutes (), 59);
+            EXPECT_EQ (t2.GetSeconds (), 59);
+            EXPECT_EQ (t2, TimeOfDay::kMax);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-            EXPECT_TRUE (TimeOfDay::Parse ("3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
-            EXPECT_TRUE (TimeOfDay::Parse ("3PM", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
-            EXPECT_TRUE (TimeOfDay::Parse ("3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-            EXPECT_TRUE (TimeOfDay::Parse ("3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-            EXPECT_TRUE (TimeOfDay::Parse ("16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
+            EXPECT_EQ (TimeOfDay::Parse ("3pm", locale::classic ()).GetAsSecondsCount (), 15 * 60 * 60u);
+            EXPECT_EQ (TimeOfDay::Parse ("3PM", locale::classic ()).GetAsSecondsCount (), 15 * 60 * 60u);
+            EXPECT_EQ (TimeOfDay::Parse ("3am", locale::classic ()).GetAsSecondsCount (), 3 * 60 * 60u);
+            EXPECT_EQ (TimeOfDay::Parse ("3:00", locale::classic ()).GetAsSecondsCount (), 3 * 60 * 60u);
+            EXPECT_EQ (TimeOfDay::Parse ("16:00", locale::classic ()).GetAsSecondsCount (), 16 * 60 * 60u);
         }
         {
             // Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
             //      -- LGP 2011-10-08
-            EXPECT_TRUE (TimeOfDay::Parse ("3pm").GetAsSecondsCount () == 15 * 60 * 60);
-            EXPECT_TRUE (TimeOfDay::Parse ("3am").GetAsSecondsCount () == 3 * 60 * 60);
-            EXPECT_TRUE (TimeOfDay::Parse ("3:00").GetAsSecondsCount () == 3 * 60 * 60);
-            EXPECT_TRUE (TimeOfDay::Parse ("16:00").GetAsSecondsCount () == 16 * 60 * 60);
+            EXPECT_EQ (TimeOfDay::Parse ("3pm").GetAsSecondsCount (), 15 * 60 * 60u);
+            EXPECT_EQ (TimeOfDay::Parse ("3am").GetAsSecondsCount (), 3 * 60 * 60u);
+            EXPECT_EQ (TimeOfDay::Parse ("3:00").GetAsSecondsCount (), 3 * 60 * 60u);
+            EXPECT_EQ (TimeOfDay::Parse ("16:00").GetAsSecondsCount (), 16 * 60 * 60u);
         }
         try {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
@@ -403,8 +403,8 @@ namespace {
         }
         try {
             Date d = Date::Parse ("09/14/1752", Date::kMonthDayYearFormat);
-            EXPECT_TRUE (d == Date::kGregorianCalendarEpoch.fYMD);
-            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_EQ (d, Date::kGregorianCalendarEpoch.fYMD);
+            EXPECT_EQ (d.Format (Date::kISO8601Format), "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         catch (...) {
@@ -473,23 +473,23 @@ namespace {
         }
         {
             Date d = Date{Date::JulianDayNumber{2455213}};
-            EXPECT_TRUE (d.Format () == "1/16/10");
+            EXPECT_EQ (d.Format (), "1/16/10");
         }
         {
             Date d = Date{2012y / May / 1d};
-            EXPECT_TRUE (d.GetJulianRep () == 2456049); //https://aa.usno.navy.mil/data/JulianDate
+            EXPECT_EQ (d.GetJulianRep (), 2456049); //https://aa.usno.navy.mil/data/JulianDate
         }
         {
             EXPECT_TRUE (Date::ToJulianRep (Date::FromJulianRep (0)) == 0);
             for (int i = 0; i < 10 * 1000; ++i) {
                 // just a random sampling to assure reversible/consistent
-                EXPECT_TRUE (Date::ToJulianRep (Date::FromJulianRep (i * 300)) == i * 300u);
+                EXPECT_EQ (Date::ToJulianRep (Date::FromJulianRep (i * 300)), i * 300u);
             }
         }
         {
             Date d = 1906y / May / 12d;
             d      = d + 1;
-            EXPECT_TRUE (d == (1906y / May / 13d));
+            EXPECT_EQ (d, (1906y / May / 13d));
         }
     }
 }
@@ -601,10 +601,10 @@ namespace {
                     d  = Date{nYear, d.GetMonth (), d.GetDayOfMonth ()};
                     dt = DateTime{dt, d};
                 }
-                EXPECT_TRUE (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
+                EXPECT_EQ (now, dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
             }
             else {
-                EXPECT_TRUE (now == DateTime::Parse (now.Format (DateTime::kShortLocaleFormatPattern), DateTime::kShortLocaleFormatPattern));
+                EXPECT_EQ (now, DateTime::Parse (now.Format (DateTime::kShortLocaleFormatPattern), DateTime::kShortLocaleFormatPattern));
             }
         }
         {
@@ -688,21 +688,21 @@ namespace {
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04:00", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
-                EXPECT_TRUE ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+                EXPECT_EQ (tdu, (DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_ = Date {Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-0400", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
-                EXPECT_TRUE ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+                EXPECT_EQ (tdu, ( DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth {29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
-                EXPECT_TRUE ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+                EXPECT_EQ (tdu, ( DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
         }
         {
@@ -747,28 +747,28 @@ namespace {
         TraceContextBumper ctx{"DateTimeTimeT_"};
         {
             DateTime d{Date{Year{2000}, April, DayOfMonth{20}}};
-            EXPECT_TRUE (d.As<time_t> () == 956188800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_EQ (d.As<time_t> (), 956188800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3pm", locale{})};
-            EXPECT_TRUE (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_EQ (d.As<time_t> (), 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3pm")};
-            EXPECT_TRUE (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_EQ (d.As<time_t> (), 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3am")};
-            EXPECT_TRUE (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3:00")};
-            EXPECT_TRUE (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             const time_t kTEST = 802234800;
             DateTime     d     = DateTime{kTEST};
-            EXPECT_TRUE (d.As<time_t> () == kTEST); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_EQ (d.As<time_t> (), kTEST); // source - http://www.onlineconversion.com/unix_time.htm
         }
     }
 }
@@ -805,9 +805,9 @@ namespace {
             EXPECT_EQ (Duration{0}.Format (), "0 seconds");
         }
         {
-            EXPECT_TRUE (Duration{3}.As<time_t> () == 3);
-            EXPECT_TRUE (Duration{3}.As<String> () == "PT3S");
-            EXPECT_TRUE (Duration{3}.Format () == L"3 seconds");
+            EXPECT_EQ (Duration{3}.As<time_t> (), 3);
+            EXPECT_EQ (Duration{3}.As<String> (), "PT3S");
+            EXPECT_EQ (Duration{3}.Format (), "3 seconds");
         }
         const int kSecondsPerDay = TimeOfDay::kMaxSecondsPerDay;
         {
