@@ -792,7 +792,7 @@ namespace {
                                          "}";
             VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
-            EXPECT_TRUE (mv[L"Automated Backups"].GetType () == VariantValue::eMap);
+            EXPECT_EQ (mv[L"Automated Backups"].GetType (), VariantValue::eMap);
             map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
             outputMap[L"MaxFiles"]               = 123456789;
             mv[L"Output"]                        = outputMap;
@@ -809,7 +809,7 @@ namespace {
                 locale                           prevLocale = locale::global (locale{"C"});
                 Streams::MemoryStream::Ptr<byte> tmpStrm    = Streams::MemoryStream::New<byte> ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
-                EXPECT_TRUE (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                EXPECT_EQ (jsonExampleWithUpdatedMaxFilesReference, tmpStrm.As<string> ());
                 locale::global (prevLocale);
             }
             try {
@@ -843,7 +843,7 @@ namespace {
             }
             stringstream tnmStrStrm{encoded};
             VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tnmStrStrm);
-            EXPECT_TRUE (v1 == v);
+            EXPECT_EQ (v1, v);
         };
         f ();
         try {
@@ -871,10 +871,10 @@ namespace {
                                          "}";
             VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
-            EXPECT_TRUE (mv["T1"].GetType () == VariantValue::eString);
-            EXPECT_TRUE (mv["T1"] == String{});
-            EXPECT_TRUE (mv["T2"].GetType () == VariantValue::eNull);
-            EXPECT_TRUE (mv["T3"].GetType () == VariantValue::eMap);
+            EXPECT_EQ (mv["T1"].GetType (), VariantValue::eString);
+            EXPECT_EQ (mv["T1"], String{});
+            EXPECT_EQ (mv["T2"].GetType (), VariantValue::eNull);
+            EXPECT_EQ (mv["T3"].GetType (), VariantValue::eMap);
         }
     }
 }
@@ -904,7 +904,7 @@ namespace {
                 EXPECT_TRUE (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
             }
             else {
-                EXPECT_TRUE (v1 == v);
+                EXPECT_EQ (v1, v);
             }
         };
         auto doAll = [f] () {
@@ -1072,7 +1072,7 @@ namespace {
         auto roundTripCheck = [] (const VariantValue& vv) {
             String       inputAsJSON = Variant::JSON::Writer{}.WriteAsString (vv);
             VariantValue v           = Variant::JSON::Reader{}.Read (inputAsJSON);
-            EXPECT_TRUE (v == vv);
+            EXPECT_EQ (v, vv);
         };
         roundTripCheck (VariantValue{3});
         roundTripCheck (VariantValue{L"x"});
@@ -1127,7 +1127,7 @@ namespace {
         auto WriteJSON_ = [] (const Streams::OutputStream::Ptr<byte>& out) {
             using namespace DataExchange::Variant::JSON;
             const Writer::Options kOptions_{false};
-            Writer (kOptions_).Write (kTestVariant_, out);
+            Writer{kOptions_}.Write (kTestVariant_, out);
         };
         auto ReadJSON_ = [] (const Streams::InputStream::Ptr<byte>& in) {
             using namespace DataExchange::Variant::JSON;
@@ -1150,6 +1150,21 @@ namespace {
             EXPECT_TRUE (not sharedMemStream.AvailableToRead ().has_value ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
             sharedMemStream.CloseWrite ();
             EXPECT_TRUE (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSONWriterNumberPrecision)
+    {
+        {
+            Variant::JSON::Writer w{};
+            EXPECT_EQ (w.WriteAsString (VariantValue{Math::kPi}), "3.14159"); // defaults to 6 digits of precision
+        }
+        {
+            using namespace Characters;
+            Variant::JSON::Writer w{Variant::JSON::Writer::Options{.fFloatOptions = FloatConversion::ToStringOptions{FloatConversion::Precision{10}}}};
+            EXPECT_EQ (w.WriteAsString (VariantValue{Math::kPi}), "3.141592654"); // so try 10 digits
         }
     }
 }
