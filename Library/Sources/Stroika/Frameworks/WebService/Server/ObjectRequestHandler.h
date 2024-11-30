@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 
 #include "Stroika/Frameworks/WebServer/RequestHandler.h"
 
@@ -98,6 +99,10 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
          *  \see PickOutNamedArguments
          */
         optional<Iterable<String>> fTreatBodyAsListOfArguments;
+
+        /**
+         */
+        optional<DataExchange::Variant::JSON::Writer::Options> fJSONWriterOptions;
 
         /**
          */
