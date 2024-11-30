@@ -534,8 +534,8 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
             char buf[10 * 1024];
             buf[0] = '\0';
 #if __cpp_lib_to_chars
-            auto [ptr, ec] = p == FloatConversion::Precision::kFull ? to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::fixed)
-                                                                    : to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::fixed,
+            auto [ptr, ec] = p == FloatConversion::Precision::kFull ? to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::general)
+                                                                    : to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::general,
                                                                                 p.GetEffectivePrecision<InternalNumericFormatType_> ());
             Assert (ec == errc{}); // that buffer should always be big enuf
             *ptr = '\0';
