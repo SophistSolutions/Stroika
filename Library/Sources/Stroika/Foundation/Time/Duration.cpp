@@ -534,12 +534,16 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         if (timeLeft > 0.0) {
             char buf[10 * 1024];
             buf[0]         = '\0';
+#if __cpp_lib_to_chars
             auto [ptr, ec] = p == FloatConversion::Precision::kFull
                                  ? std::to_chars (buf, buf + Memory::NEltsOf (buf), static_cast<double> (timeLeft), std::chars_format::fixed)
                                  : std::to_chars (buf, buf + Memory::NEltsOf (buf), static_cast<double> (timeLeft),
                                                   std::chars_format::fixed, p.GetEffectivePrecision<double> ());
             Assert (ec == std::errc{}); // that buffer should always be big enuf
             *ptr = '\0';
+#else
+            Verify (::snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
+#endif
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
             result += "S";
