@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     private:
         // if missing, implies == kFull
-        optional<unsigned int> fPrecision;
+        optional<unsigned int> fPrecision_;
 
     public:
         bool operator== (const Precision&) const = default;

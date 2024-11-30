@@ -33,11 +33,11 @@ String FloatConversion::Precision::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    if (fPrecision) {
-        sb << "Precision:"sv << *fPrecision;
+    if (fPrecision_) {
+        sb << "Precision:"sv << *fPrecision_;
     }
     else {
-        sb << "FULL";
+        sb << "FULL"sv;
     }
     sb << "}"sv;
     return sb;
@@ -104,7 +104,7 @@ namespace {
 
         s.imbue (options.GetUseLocale ());
 
-        //  must set explictly (even if defaulted)  because of the thread_local thing
+        //  must set explicitly (even if defaulted)  because of the thread_local thing
         s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
         // todo must set default precision because of the thread_local thing

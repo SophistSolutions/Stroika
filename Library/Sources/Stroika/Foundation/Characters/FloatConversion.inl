@@ -19,18 +19,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ********************************************************************************
      */
     constexpr Precision::Precision (unsigned int p)
-        : fPrecision{p}
+        : fPrecision_{p}
     {
     }
     constexpr Precision::Precision (FullFlag)
-        : fPrecision{}
+        : fPrecision_{}
     {
     }
     template <floating_point T>
     constexpr unsigned int Precision::GetEffectivePrecision () const
     {
         // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
-        return fPrecision.value_or (numeric_limits<T>::max_digits10);
+        return fPrecision_.value_or (numeric_limits<T>::max_digits10);
     }
     /**
      *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
