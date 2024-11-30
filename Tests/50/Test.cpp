@@ -205,11 +205,11 @@ namespace {
                     if (tmget.date_order () == time_base::mdy or
                         (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
 #if qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
-                        EXPECT_TRUE (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
-                        EXPECT_TRUE (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+                        EXPECT_EQ (resultTM.tm_mday, kTargetTM_DMY_.tm_mday); // sadly wrong values
+                        EXPECT_EQ (resultTM.tm_mon, kTargetTM_DMY_.tm_mon);
 #else
-                        EXPECT_TRUE (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
-                        EXPECT_TRUE (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
+                        EXPECT_EQ (resultTM.tm_mday, kTargetTM_MDY_.tm_mday);
+                        EXPECT_EQ (resultTM.tm_mon, kTargetTM_MDY_.tm_mon);
 #endif
                     }
                     else if (tmget.date_order () == time_base::dmy) {
@@ -236,7 +236,7 @@ namespace {
         // disable for now cuz fails SO OFTEN
         String     formatByLocale = startDateOrTime.Format (l);
         DATEORTIME andBack        = DATEORTIME::Parse (formatByLocale, l);
-        EXPECT_TRUE (startDateOrTime == andBack);
+        EXPECT_EQ (startDateOrTime, andBack);
     }
     template <typename DATEORTIME>
     void TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime)
@@ -348,11 +348,11 @@ namespace {
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
             // NOTE - these values are wrong, but since using locale code, not easy to fix/workaround - but to note XCode locale stuff still
             // somewhat broken...
-            EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "00:01:41");
-            EXPECT_TRUE (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01");
+            EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "00:01:41");
+            EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "0:01");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (locale{}), "01:01:41");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01:41");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01");
 #else
             EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "12:01:41 AM");
             EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "12:01 AM");
@@ -375,7 +375,7 @@ namespace {
         }
         {
             TimeOfDay threePM = TimeOfDay::Parse ("3pm", locale::classic ());
-            EXPECT_TRUE (threePM.Format (locale::classic ()) == "15:00:00"); // UGH!!!
+            EXPECT_EQ (threePM.Format (locale::classic ()), "15:00:00"); // UGH!!!
             TestRoundTripFormatThenParseNoChange_ (threePM);
         }
     }
@@ -420,7 +420,7 @@ namespace {
             Date d = Date::kGregorianCalendarEpoch.fYMD;
             EXPECT_TRUE (d < DateTime::Now ().GetDate ());
             EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
-            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_EQ (d.Format (Date::kISO8601Format), "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -438,8 +438,8 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
-            EXPECT_TRUE ((Date::Parse ("11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::November, DayOfMonth (3)}));
-            EXPECT_TRUE (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == "11/03/2001");
+            EXPECT_EQ (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat), (Date{Year{2001}, Time::November, DayOfMonth (3)}));
+            EXPECT_EQ (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat), "11/03/2001");
         }
         catch (...) {
             // See qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy if this is triggered
@@ -480,7 +480,7 @@ namespace {
             EXPECT_EQ (d.GetJulianRep (), 2456049u); //https://aa.usno.navy.mil/data/JulianDate
         }
         {
-            EXPECT_TRUE (Date::ToJulianRep (Date::FromJulianRep (0)) == 0);
+            EXPECT_EQ (Date::ToJulianRep (Date::FromJulianRep (0)), 0u);
             for (int i = 0; i < 10 * 1000; ++i) {
                 // just a random sampling to assure reversible/consistent
                 EXPECT_EQ (Date::ToJulianRep (Date::FromJulianRep (i * 300)), i * 300u);
@@ -925,6 +925,8 @@ namespace {
             // Support precision of duration reps
             using Characters::FloatConversion::Precision;
             {
+                // @todo fix precision handling - off - document 1.4 sb precision 2 (not 1)
+                // and currently sometimes preserve string arg - but that can voildate precision - not clear how to handle?
                 const Duration d1 = Duration{"PT1.4S"};
                 EXPECT_EQ (d1.As<String> (), "PT1.4S");
             }
@@ -944,24 +946,24 @@ namespace {
         TraceContextBumper ctx{"DateTimeWithDuration_"};
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3:00")};
-            EXPECT_TRUE (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
             const Duration k30Days = Duration{"P30D"};
             DateTime       d2      = d + k30Days;
-            EXPECT_TRUE (d2.GetDate ().GetYear () == Year{1995});
-            EXPECT_TRUE (d2.GetDate ().GetMonth () == July);
-            EXPECT_TRUE (d2.GetDate ().GetDayOfMonth () == DayOfMonth{4});
-            EXPECT_TRUE (d2.GetTimeOfDay () == d.GetTimeOfDay ());
+            EXPECT_EQ (d2.GetDate ().GetYear (), Year{1995});
+            EXPECT_EQ (d2.GetDate ().GetMonth (), July);
+            EXPECT_EQ (d2.GetDate ().GetDayOfMonth (), DayOfMonth{4});
+            EXPECT_EQ (d2.GetTimeOfDay (), d.GetTimeOfDay ());
         }
         {
             DateTime n1 = DateTime{Date{Year{2015}, June, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{"P100Y"};
-            EXPECT_TRUE (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
+            EXPECT_EQ (n2.GetDate ().GetYear (), Year{(int)n1.GetDate ().GetYear () - 100});
 #if 0
             // @todo - Improve - increment by 100 years not as exact as one might like @todo --LGP 2015-06-09
             EXPECT_TRUE (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());
             EXPECT_TRUE (n2.GetDate ().GetDayOfMonth () == n1.GetDate ().GetDayOfMonth ());
 #endif
-            EXPECT_TRUE (n2.GetTimeOfDay () == n1.GetTimeOfDay ());
+            EXPECT_EQ (n2.GetTimeOfDay (), n1.GetTimeOfDay ());
         }
     }
 }
@@ -972,7 +974,7 @@ namespace {
         TraceContextBumper ctx{"TZOffsetAndDaylightSavingsTime_"};
         /*
          * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
-         * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
+         * see any good portable way to change that (setenv (TZ) does't work on visual studio.net 2010).
          *
          * This test wont always work, but at least for now seems to work on the systems i test on.
          *
@@ -1002,18 +1004,18 @@ namespace {
     {
         TraceContextBumper ctx{"std_duration_"};
         const Duration     k30Seconds = Duration{30.0};
-        EXPECT_TRUE (k30Seconds.As<time_t> () == 30);
-        EXPECT_TRUE (k30Seconds.As<String> () == "PT30S");
-        EXPECT_TRUE (k30Seconds.As<chrono::duration<double>> () == chrono::duration<double>{30.0});
-        EXPECT_TRUE (Duration{chrono::duration<double> (4)}.As<time_t> () == 4);
+        EXPECT_EQ (k30Seconds.As<time_t> (), 30);
+        EXPECT_EQ (k30Seconds.As<String> (), "PT30S");
+        EXPECT_EQ (k30Seconds.As<chrono::duration<double>> (), chrono::duration<double>{30.0});
+        EXPECT_EQ (Duration{chrono::duration<double> (4)}.As<time_t> (), 4);
         EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::milliseconds{50}}.As<Time::DurationSeconds::rep> (), 0.050));
         EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::microseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000050));
         EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::nanoseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000000050));
         EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::nanoseconds{1}}.As<Time::DurationSeconds::rep> (), 0.000000001));
-        EXPECT_TRUE (Duration{5.0}.As<chrono::milliseconds> () == chrono::milliseconds{5000});
-        EXPECT_TRUE (Duration{-5.0}.As<chrono::milliseconds> () == chrono::milliseconds{-5000});
-        EXPECT_TRUE (Duration{1.0}.As<chrono::nanoseconds> () == chrono::nanoseconds{1000 * 1000 * 1000});
-        EXPECT_TRUE (Duration{1} == Duration{chrono::seconds{1}});
+        EXPECT_EQ (Duration{5.0}.As<chrono::milliseconds> (), chrono::milliseconds{5000});
+        EXPECT_EQ (Duration{-5.0}.As<chrono::milliseconds> (), chrono::milliseconds{-5000});
+        EXPECT_EQ (Duration{1.0}.As<chrono::nanoseconds> (), chrono::nanoseconds{1000 * 1000 * 1000});
+        EXPECT_EQ (Duration{1}, Duration{chrono::seconds{1}});
     }
 }
 
@@ -1026,8 +1028,8 @@ namespace {
         Range<Duration> d2 = Range<Duration>::FullRange ();
         EXPECT_TRUE (d1.empty ());
         EXPECT_TRUE (not d2.empty ());
-        EXPECT_TRUE (d2.GetLowerBound () == Duration::min ());
-        EXPECT_TRUE (d2.GetUpperBound () == Duration::max ());
+        EXPECT_EQ (d2.GetLowerBound (), Duration::min ());
+        EXPECT_EQ (d2.GetUpperBound (), Duration::max ());
     }
 }
 
@@ -1041,40 +1043,40 @@ namespace {
             DiscreteRange<Date> d2 = DiscreteRange<Date>::FullRange ();
             EXPECT_TRUE (d1.empty ());
             EXPECT_TRUE (not d2.empty ());
-            EXPECT_TRUE (d2.GetLowerBound () == Date::kMin);
-            EXPECT_TRUE (d2.GetUpperBound () == Date::kMax);
+            EXPECT_EQ (d2.GetLowerBound (), Date::kMin);
+            EXPECT_EQ (d2.GetUpperBound (), Date::kMax);
         }
         {
             DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
             unsigned int        i = 0;
             for (Date d : dr) {
                 ++i;
-                EXPECT_TRUE (d.GetYear () == Year{1903});
-                EXPECT_TRUE (d.GetMonth () == April);
+                EXPECT_EQ (d.GetYear (), Year{1903});
+                EXPECT_EQ (d.GetMonth (), April);
                 if (i == 1) {
-                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{5});
+                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{5});
                 }
                 else {
-                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{6});
+                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{6});
                 }
             }
-            EXPECT_TRUE (i == 2);
+            EXPECT_EQ (i, 2u);
         }
         {
             DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
             unsigned int        i = 0;
             for (Date d : dr.Elements ()) {
                 ++i;
-                EXPECT_TRUE (d.GetYear () == Year{1903});
-                EXPECT_TRUE (d.GetMonth () == April);
+                EXPECT_EQ (d.GetYear (), Year{1903});
+                EXPECT_EQ (d.GetMonth (), April);
                 if (i == 1) {
-                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{5});
+                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{5});
                 }
                 else {
-                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{6});
+                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{6});
                 }
             }
-            EXPECT_TRUE (i == 2);
+            EXPECT_EQ (i, 2u);
         }
         {
             DiscreteRange<Date> dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
@@ -1093,8 +1095,8 @@ namespace {
             Range<DateTime> d2 = Range<DateTime>::FullRange ();
             EXPECT_TRUE (d1.empty ());
             EXPECT_TRUE (not d2.empty ());
-            EXPECT_TRUE (d2.GetLowerBound () == DateTime::kMin);
-            EXPECT_TRUE (d2.GetUpperBound () == DateTime::kMax);
+            EXPECT_EQ (d2.GetLowerBound (), DateTime::kMin);
+            EXPECT_EQ (d2.GetUpperBound (), DateTime::kMax);
         }
         {
             Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
