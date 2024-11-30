@@ -161,6 +161,8 @@ namespace Stroika::Foundation::Time {
          *      o   std::chrono::milliseconds etc...
          *
          *  Note - if 'empty' - As<> for numeric types returns 0.
+         * 
+         *  \note Precision - if given - refers to the precision of the seconds part of the ISO-8601 duration string.
          *
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 
