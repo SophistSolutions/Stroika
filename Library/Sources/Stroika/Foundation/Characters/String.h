@@ -67,12 +67,10 @@
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
  *              sure - think through...
  *
- *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
+ *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now) ; see Replace() API in this function? - maybe overload?
  *
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implementation and make sure
  *              it is all correct for each (especially SetStorage () stuff looks questionable)
- *
- *      @todo   Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
  *
  *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operator+) API. See/maybe use new
  *              Stroika Range type?
@@ -158,13 +156,14 @@ namespace Stroika::Foundation::Characters {
      *          TODO WRITEUP AND MAYBE MAKE IMMUTABLE
      * 
      *          Current Mutating methods (as of v3.0d1x)
+     *          o   c_str ()  -- non-const                  (consider deprecating?) - only problematic one as of v3.0d12 - revisit after 3.0d12
+
      *          o   SetCharAt       - deprecated v3.0d12
      *          o   c_str()           (consider deprecating?)
      *          o   operator=       - deprecated v3.0d12
      *          o   clear()- deprecated v3.0d12
      *          o   Append           - deprecated v3.0d12
      *          o   operator+=       - deprecated v3.0d12
-     *          o   c_str ()  -- non-const                  (consider deprecating?)
      *          o   erase()          - deprecated v3.0d12
      *
      *          SOMEWHAT ironically, the only of these methods hard to replace is the non-const c_str () - and maybe there
@@ -1288,7 +1287,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Alias for basic_string>char>::npos - except this is constexpr.
          *
-         *  This is only used for 'STL-compatibility apis, like substr (), find, rfind (), etc.
+         *  This is only used for 'STL-compatibility APIs, like substr (), find, rfind (), etc.
          */
         static constexpr size_t npos = static_cast<size_t> (-1);
 
