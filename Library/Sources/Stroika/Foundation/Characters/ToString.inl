@@ -336,6 +336,11 @@ namespace Stroika::Foundation::Characters {
         {
             return FloatConversion::ToString (t);
         }
+        template <floating_point T>
+        inline String ToString (T t, FloatConversion::ToStringOptions o)
+        {
+            return FloatConversion::ToString (t, o);
+        }
         template <typename T>
         inline String ToString (const shared_ptr<T>& pt)
         {
@@ -425,11 +430,6 @@ namespace Stroika::Foundation::Characters {
     inline String ToString (T&& t, ARGS... args)
     {
         return ToStringDefaults::ToString (forward<T> (t), forward<ARGS> (args)...);
-    }
-    template <integral T>
-    inline String ToString (T t, ios_base::fmtflags flags)
-    {
-        return ToStringDefaults::ToString (t, flags);
     }
 
     /*

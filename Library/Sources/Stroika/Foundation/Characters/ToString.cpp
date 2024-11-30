@@ -91,7 +91,7 @@ String Characters::ToStringDefaults::ToString (bool t)
     return t ? kTrue_ : kFalse;
 }
 
-String ToString (const Time::Duration& t, FloatConversion::Precision p)
+String Characters::ToStringDefaults::ToString (const Time::Duration& t, FloatConversion::Precision p)
 {
     return t.As<String> (p);
 }

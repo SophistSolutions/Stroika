@@ -96,6 +96,13 @@ namespace Stroika::Foundation::Characters {
      *      o   KeyValuePair
      *      o   CountedValue
      *      o   String -- printed as 'the-string' (possibly length limited)
+     * 
+     *  \note Extra arguments/overloads
+     *      o   ToString (float, FloatConversion::ToStringOptions)      // any floating point argument
+     *      o   ToString (float, FloatConversion::Precision)            // ''
+     *      o   ToString (integral T, ios_base::fmtflags flags);        // flags may be std::dec, std::oct, or std::hex
+     *                                                                  // @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
+     *      o   ToString (Duration, FloatConversion::Precision)         // forwards to Duration::As<String> (Precision)
      *
      *  \note *Implementation Note*
      *      This implementation defaults to calling T{}.ToString ().
@@ -104,17 +111,6 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T, typename... ARGS>
     String ToString (T&& t, ARGS... args);
-
-    /**
-     * \brief flags may be std::dec, std::oct, or std::hex
-     * 
-     *  Defaults to decimal for all types except uint8_t (where it defaults to hex).
-     *  \note Prior to 2.1b6, all ToString<unsigned integer types> were all hex.
-     * 
-     *   @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
-     */
-    template <integral T>
-    String ToString (T t, ios_base::fmtflags flags);
 
     /**
      *  \brief Check if legal to call Characters::ToString(T)...
