@@ -1609,7 +1609,7 @@ namespace Stroika::Foundation::Characters {
     ostream&  operator<< (ostream& out, const String& s);
 
 #if qStroika_HasComponent_googletest
-    // For googletest compatability
+    // For googletest compatibility
     void PrintTo (const String& s, std::ostream* os);
 #endif
 
