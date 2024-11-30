@@ -925,16 +925,19 @@ namespace {
             // Support precision of duration reps
             using Characters::FloatConversion::Precision;
             {
-                // @todo fix precision handling - off - document 1.4 sb precision 2 (not 1)
-                // and currently sometimes preserve string arg - but that can voildate precision - not clear how to handle?
                 const Duration d1 = Duration{"PT1.4S"};
                 EXPECT_EQ (d1.As<String> (), "PT1.4S");
+                EXPECT_EQ (d1.As<String> (Precision{1}), "PT1S");
             }
             {
                 const Duration d1 = Duration{Math::kPi};
-                DbgTrace ("d1={}, d1.Format(Precision(1))={}"_f, d1, d1.As<String> (Precision{1}));
-                DbgTrace ("d1={}, d1.Format(Precision(3))={}"_f, d1, d1.As<String> (Precision{3}));
-                DbgTrace ("d1={}, d1.Format()={}"_f, d1, d1.As<String> ());
+                EXPECT_EQ (d1.As<String> (Precision{1}), "PT3S");
+                EXPECT_EQ (d1.As<String> (Precision{3}), "PT3.14S");
+                EXPECT_EQ (d1.As<String> (Precision{6}), "PT3.14159S");
+                EXPECT_EQ (d1.As<String> (Precision{7}), "PT3.141593S");
+                EXPECT_EQ (d1.As<String> (Precision{8}), "PT3.1415927S");
+                String def = d1.As<String> ();
+                DbgTrace ("d1={}, d1.As<String>()={}"_f, d1, def);
             }
         }
     }
