@@ -470,6 +470,26 @@ namespace {
     }
 }
 
+namespace {
+    GTEST_TEST (Frameworks_WebService, DurationPrecision)
+    {
+        Debug::TraceContextBumper ctx{"DurationPrecision"};
+        using DataExchange::VariantValue;
+        {
+            ObjectVariantMapper m;
+            m.AddCommonType<Duration> ();
+            VariantValue vv = m.FromObject (Duration{Math::kPi});
+            EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.14159S\"");
+        }
+        {
+            ObjectVariantMapper m;
+            m.AddCommonType<Duration> (FloatConversion::Precision{2});
+            VariantValue vv = m.FromObject (Duration{Math::kPi});
+            EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
+        }
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

@@ -34,6 +34,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 
@@ -765,7 +766,7 @@ namespace {
         {
             ObjectVariantMapper m;
             Common::GUID        g = Common::GUID::GenerateNew ();
-            EXPECT_TRUE (m.ToObject<Common::GUID> (m.FromObject (g)) == g);
+            EXPECT_EQ (m.ToObject<Common::GUID> (m.FromObject (g)), g);
         }
     }
 }
@@ -790,11 +791,11 @@ namespace {
                 {"mediaType", &T::mediaType},
             });
             T g1{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V6::kAddrAny, 64}, DataExchange::InternetMediaTypes::kJPEG};
-            EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g1)) == g1);
+            EXPECT_EQ (mapper.ToObject<T> (mapper.FromObject (g1)), g1);
             T g2{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V4::kLocalhost, 16}, DataExchange::InternetMediaTypes::kGIF};
-            EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g2)) == g2);
+            EXPECT_EQ (mapper.ToObject<T> (mapper.FromObject (g2)), g2);
             T g3{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::InternetAddress{"192.22.4.4"}, 9}, DataExchange::InternetMediaTypes::kGIF};
-            EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g3)) == g3);
+            EXPECT_EQ (mapper.ToObject<T> (mapper.FromObject (g3)), g3);
         }
     }
 }
@@ -825,7 +826,7 @@ namespace {
                 s1.Add (3);
                 VariantValue  sAsVariant         = mapper.FromObject (s1);
                 MultiSet<int> mappedBackToObject = mapper.ToObject<MultiSet<int>> (sAsVariant);
-                EXPECT_TRUE (s1 == mappedBackToObject);
+                EXPECT_EQ (s1, mappedBackToObject);
             }
             {
                 ObjectVariantMapper mapper;
@@ -837,7 +838,7 @@ namespace {
                 s1.Add (3);
                 VariantValue  sAsVariant         = mapper.FromObject (s1);
                 MultiSet<int> mappedBackToObject = mapper.ToObject<MultiSet<int>> (sAsVariant);
-                EXPECT_TRUE (s1 == mappedBackToObject);
+                EXPECT_EQ (s1, mappedBackToObject);
             }
             {
                 ObjectVariantMapper mapper;
@@ -849,8 +850,26 @@ namespace {
                 s1.Add (3);
                 VariantValue        sAsVariant         = mapper.FromObject (s1);
                 SortedMultiSet<int> mappedBackToObject = mapper.ToObject<SortedMultiSet<int>> (sAsVariant);
-                EXPECT_TRUE (s1 == mappedBackToObject);
+                EXPECT_EQ (s1, mappedBackToObject);
             }
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_DataExchangeFormat_ObjectVariantMapper, DurationPrecision)
+    {
+        Debug::TraceContextBumper ctx{"DurationPrecision"};
+        using DataExchange::VariantValue;
+        {
+            ObjectVariantMapper m;
+            m.AddCommonType<Duration> ();
+            VariantValue vv = m.FromObject (Duration{Math::kPi});
+            EXPECT_EQ (vv, "PT3.14159S"); // Precision{} default - used by ObjectVariantMapper - is 6 digits precision
+            EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.14159S\""); // ''
+            m.AddCommonType<Duration> (FloatConversion::Precision{2});                // replaces converter
+            vv = m.FromObject (Duration{Math::kPi});
+            EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
         }
     }
 }

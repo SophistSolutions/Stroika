@@ -91,13 +91,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     public:
         /**
+         *  Precision ()/0
+         *      From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
+         *      init (basic_streambuf...) initializes precision to 6
+         *      Stroika need not maintain that default here, but it seems a sensible one...
+         *  Precision(FullFlag): 
+         *      special magic value, so depending on type 'T' in call to GetEffectivePrecision () - gets full precision for that type
          */
+        constexpr Precision () = default;
         constexpr Precision (unsigned int p);
         constexpr Precision (FullFlag);
-
-    private:
-        // if missing, implies == kFull
-        optional<unsigned int> fPrecision_;
 
     public:
         bool operator== (const Precision&) const = default;
@@ -133,6 +136,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     public:
         static const Precision kFull;
+
+    private:
+        // if missing, implies == kFull
+        optional<unsigned int> fPrecision_{6};
     };
 
     /**
@@ -172,14 +179,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
      */
     struct ToStringOptions {
-    public:
-        /**
-         * From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
-         * init (basic_streambuf...) initializes precision to 6
-         * Stroika need not maintain that default here, but it seems a sensible one...
-         */
-        static const Precision kDefaultPrecision;
-
     public:
         /**
          * Default is to use use C-locale

@@ -29,6 +29,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <floating_point T>
     constexpr unsigned int Precision::GetEffectivePrecision () const
     {
+        // note missing implies eFull
         // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
         return fPrecision_.value_or (numeric_limits<T>::max_digits10);
     }
@@ -46,7 +47,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ********************* FloatConversion::ToStringOptions *************************
      ********************************************************************************
      */
-    constexpr inline const Precision ToStringOptions::kDefaultPrecision{6};
     inline ToStringOptions::ToStringOptions (const locale& l)
         : fUseLocale_{l}
     {
@@ -343,11 +343,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             s.imbue (options.GetUseLocale ());
 
-            //  must set explictly (even if defaulted)  because of the thread_local thing
+            //  must set explicitly (even if defaulted)  because of the thread_local thing
             s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
             // todo must set default precision because of the thread_local thing
-            unsigned int usePrecision = options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision).GetEffectivePrecision<FLOAT_TYPE> ();
+            unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
             s.precision (usePrecision);
 
             {
@@ -391,7 +391,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
             auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
-                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision))
+                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (Precision{}))
                               : Private_::ToString_GeneralCase_ (f, options);
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);

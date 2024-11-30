@@ -163,6 +163,9 @@ namespace Stroika::Foundation::Time {
          *  Note - if 'empty' - As<> for numeric types returns 0.
          * 
          *  \note Precision - if given - refers to the precision of the seconds part of the ISO-8601 duration string.
+         * 
+         *  \note Change since before 3.0d12 - with Duration::As<String> () - used
+         *        to default to full precision, and now defaults to default precision (FloatConversions::Precision{} == 6).
          *
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 

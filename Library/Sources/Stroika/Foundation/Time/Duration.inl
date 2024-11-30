@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Time {
                 case eString_:
                     return String{fStringRep_};
                 case eNumeric_:
-                    return UnParseTime_ (count (), Characters::FloatConversion::Precision::kFull);
+                    return UnParseTime_ (count (), Characters::FloatConversion::Precision{}); // new behavior as of v3.0d12 - default precision instead of full
             }
             AssertNotReached ();
             return String{};
