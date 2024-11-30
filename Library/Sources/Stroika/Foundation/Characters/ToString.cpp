@@ -90,3 +90,8 @@ String Characters::ToStringDefaults::ToString (bool t)
     static const String kFalse{"false"sv};
     return t ? kTrue_ : kFalse;
 }
+
+String ToString (const Time::Duration& t, FloatConversion::Precision p)
+{
+    return t.As<String> (p);
+}

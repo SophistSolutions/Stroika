@@ -18,6 +18,9 @@
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
 
+namespace Stroika::Foundation::Time {
+    class Duration;
+}
 namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
@@ -359,6 +362,7 @@ namespace Stroika::Foundation::Characters {
         {
             return Characters::ToString (t.count ()) + " seconds"sv;
         }
+        String ToString (const Time::Duration& t, FloatConversion::Precision p);
         template <typename CLOCK_T>
         inline String ToString (const chrono::time_point<CLOCK_T, chrono::duration<double>>& t)
         {

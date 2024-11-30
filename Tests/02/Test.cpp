@@ -1176,6 +1176,9 @@ namespace {
         EXPECT_EQ (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}), "3.12");
         EXPECT_EQ (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}), "31.2");
         EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
+
+        // And note Characters::ToString also supports Precision arg (though maybe differently)
+        EXPECT_EQ (Characters::ToString (3.1234, Characters::FloatConversion::Precision{2}), "3.1");
     }
 }
 
