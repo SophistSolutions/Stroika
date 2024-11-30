@@ -108,8 +108,7 @@ namespace {
         s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
         // todo must set default precision because of the thread_local thing
-        unsigned int usePrecision =
-            options.GetPrecision ().value_or (FloatConversion::Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
+        unsigned int usePrecision = options.GetPrecision ().value_or (FloatConversion::Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
         s.precision (usePrecision);
 
         {
