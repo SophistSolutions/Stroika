@@ -73,24 +73,6 @@ Duration& Duration::operator-= (const Duration& rhs)
     return *this;
 }
 
-#if 0
-template <>
-wstring Duration::As () const
-{
-    switch (fRepType_) {
-        case eEmpty_:
-            return wstring{};
-        case eString_:
-            return wstring{fStringRep_.begin (), fStringRep_.end ()};
-        case eNumeric_:
-            string tmp = UnParseTime_ (count ());
-            return wstring{tmp.begin (), tmp.end ()};
-    }
-    AssertNotReached ();
-    return wstring{};
-}
-#endif
-
 namespace {
     string::const_iterator SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
     {
@@ -227,7 +209,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result << Characters::FloatConversion::ToString (timeLeft * 1.0e3, kFinalFloatOptions_) << kSpaceBeforeUnit_
+                    result << FloatConversion::ToString (timeLeft * 1.0e3, kFinalFloatOptions_) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
                     timeLeft = 0;
                 }
@@ -243,7 +225,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result << Characters::FloatConversion::ToString (timeLeft * 1.0e6, kFinalFloatOptions_) << kSpaceBeforeUnit_
+                    result << FloatConversion::ToString (timeLeft * 1.0e6, kFinalFloatOptions_) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
                     timeLeft = 0;
                 }
@@ -259,7 +241,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result << kCommaSpace_;
                 }
                 if (kFirstSubSecondUnitDoDecimalPlaceImmediately_) {
-                    result << Characters::FloatConversion::ToString (timeLeft * 1.0e9, kFinalFloatOptions_) << kSpaceBeforeUnit_
+                    result << FloatConversion::ToString (timeLeft * 1.0e9, kFinalFloatOptions_) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
                     timeLeft = 0;
                 }
@@ -477,7 +459,7 @@ namespace {
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-string Duration::UnParseTime_ (InternalNumericFormatType_ t)
+string Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Precision p)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}"_f, t};
@@ -551,14 +533,13 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
             char buf[10 * 1024];
-            buf[0] = '\0';
-            // We used to use 1000, but that failed silently on AIX 7.1/pcc. And its a waste anyhow.
-            // I'm pretty sure we never need more than 20 or so digits here. And it wastes time.
-            // (100 works on AIX 7.1/gcc 4.9.2).
-            //
-            // Pick a slightly more aggressive number for now, to avoid the bugs/performance cost,
-            // and eventually totally rewrite how we handle this.
-            Verify (::snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
+            buf[0]         = '\0';
+            auto [ptr, ec] = p == FloatConversion::Precision::kFull
+                                 ? std::to_chars (buf, buf + Memory::NEltsOf (buf), static_cast<double> (timeLeft), std::chars_format::fixed)
+                                 : std::to_chars (buf, buf + Memory::NEltsOf (buf), static_cast<double> (timeLeft),
+                                                  std::chars_format::fixed, p.GetEffectivePrecision<double> ());
+            Assert (ec == std::errc{}); // that buffer should always be big enuf
+            *ptr = '\0';
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
             result += "S";

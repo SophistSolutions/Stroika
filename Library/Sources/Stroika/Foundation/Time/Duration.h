@@ -16,6 +16,7 @@
 #include <Winsock2.h>
 #endif
 
+#include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -95,7 +96,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  The characterset of the std::string CTOR is expected to be all ascii, or the code throws FormatException
+         *  The character set of the std::string CTOR is expected to be all ascii, or the code throws FormatException
          *
          *  Throws (FormatException) if bad format
          *
@@ -237,6 +238,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         * Assert (Duration{3}.Format () == "3 seconds")
          */
         nonvirtual Characters::String Format (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
@@ -302,7 +304,7 @@ namespace Stroika::Foundation::Time {
 
     private:
         static InternalNumericFormatType_ ParseTime_ (const string& s);
-        static string                     UnParseTime_ (InternalNumericFormatType_ t);
+        static string                     UnParseTime_ (InternalNumericFormatType_ t, Characters::FloatConversion::Precision p);
 
     private:
         /**
