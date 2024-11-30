@@ -562,7 +562,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Shortcut for Add (MakeCommonSerializer<T> ());
+         *  Shortcut for Add (MakeCommonSerializer<T> ()), so \see MakeCommonSerializer<...> for what T/Args are allowed
          *
          *  So - this is supported for any type for which (@see MakeCommonSerializer) is supported.
          *
@@ -1083,6 +1083,9 @@ namespace Stroika::Foundation::DataExchange {
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::InternetAddress*);
         static TypeMappingDetails MakeCommonSerializer_ (const IO::Network::URI*);
         static TypeMappingDetails MakeCommonSerializer_ (const Common::GUID*, VariantValue::Type representAs = VariantValue::Type::eString);
+
+        static TypeMappingDetails MakeCommonSerializer_ (const Time::Duration*, Characters ::FloatConversion::Precision p);
+
         template <typename T>
         static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
         template <typename T1, typename T2>

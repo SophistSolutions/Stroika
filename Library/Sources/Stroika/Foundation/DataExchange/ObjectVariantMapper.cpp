@@ -398,6 +398,16 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Common::GUI
     }
 }
 
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Time::Duration*, FloatConversion::Precision p)
+{
+    FromObjectMapperType<Time::Duration> fromObjectMapper = [p] (const ObjectVariantMapper&, const Time::Duration* fromObjOfTypeT) -> VariantValue {
+        return VariantValue{fromObjOfTypeT->As<String> (p)};
+    };
+    ToObjectMapperType<Time::Duration> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, Time::Duration* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = Duration{d.As<String> ()};
+    };
+    return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (Duration)};
+}
 namespace {
     ObjectVariantMapper::TypesRegistry GetDefaultTypeMappers_ ()
     {
