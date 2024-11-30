@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Time {
     /**
      * Description:
      *      The Date class is (originally) based on SmallTalk-80, The Language & Its Implementation,
-     *      page 108 (apx) - but changed to use gregorian instead of Julian calendar.
+     *      page 108 (apx) - but changed to use Gregorian instead of Julian calendar.
      *
      *  \note   This class integrates neatly with the C++20 chrono date support. You can easily
      *          go back and forth (e.g. Date{std::chrono::year_month_day...}} or d.As<year_month_day> ())
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Time {
      *      o   Date stores date's internally as Julian days, and so is valid for any date > January 1, −4713;
      *          Also note sizeof (year_month_day) == sizeof (Date) == 4
      *
-     *  \par Miscelaneous references
+     *  \par Miscellaneous references
      *      o   According to https://en.wikipedia.org/wiki/Gregorian_calendar
      *          Britain and the British Empire (including the eastern part of what is
      *          now the United States) adopted the Gregorian calendar in 1752
@@ -341,10 +341,10 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Define a few 'reference' points, which define the correspondence between year/month/day in the gregorian(ish)
+         *  Define a few 'reference' points, which define the correspondence between year/month/day in the Gregorian(ish)
          *  calendar with.
          * 
-         *  Generally, users of the Date class can ignore this detail. Its used to 'calibrate' the mapping between julian dates and
+         *  Generally, users of the Date class can ignore this detail. Its used to 'calibrate' the mapping between Julian dates and
          *  year month day dates.
          */
         struct ReferencePoint {
@@ -453,7 +453,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \brief Y-M-D format - locale independant, and ISO-8601 date format standard
+         *  \brief Y-M-D format - locale independent, and ISO-8601 date format standard
          *
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivalent to %Y-%m-%d
@@ -569,6 +569,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  \brief return the Julian Day Number (JDN) - corresponding to this date object (https://en.wikipedia.org/wiki/Julian_day) - days since Monday, January 1, 4713 BC
          */
         nonvirtual constexpr JulianDayNumber GetJulianRep () const;
 
