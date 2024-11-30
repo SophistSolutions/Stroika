@@ -287,7 +287,7 @@ namespace {
             }
         };
 
-        IgnoreExceptionsForCall (throwFailureCalls);
+        IgnoreExceptionsForCall (throwFailureCalls());
     }
 }
 
