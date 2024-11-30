@@ -300,8 +300,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
             }
             else {
-                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()+1).ptr -
-                               buf.begin ();
+                resultStrLen =
+                    to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> () + 1).ptr -
+                    buf.begin ();
             }
 #else
             auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec) -> char* {
@@ -321,7 +322,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
             resultStrLen = ::snprintf (buf.data (), buf.size (),
                                        mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                       (int)precision.GetEffectivePrecision<FLOAT_TYPE> ()+1, f);
+                                       (int)precision.GetEffectivePrecision<FLOAT_TYPE> () + 1, f);
 #endif
 
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
