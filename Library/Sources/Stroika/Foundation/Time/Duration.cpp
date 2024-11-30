@@ -459,19 +459,18 @@ namespace {
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-string Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Precision p)
+String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Precision p)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}"_f, t};
+    Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}, p={}"_f, t, p};
 #endif
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
-    string                     result;
-    result.reserve (50);
+    StringBuilder              result;
     if (isNeg) {
-        result += "-";
+        result += "-"sv;
     }
-    result += "P";
+    result += "P"sv;
     if (timeLeft >= kSecondsPerYear_) {
         InternalNumericFormatType_ nYears = trunc (timeLeft / kSecondsPerYear_);
         Assert (nYears > 0.0);
@@ -510,7 +509,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
     }
     Assert (0.0 <= timeLeft and timeLeft < kSecondsPerDay_);
     if (timeLeft > 0) {
-        result += "T";
+        result += "T"sv;
         if (timeLeft >= kSecondsPerHour_) {
             unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour_);
             if (nHours != 0) {
@@ -533,24 +532,23 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
             char buf[10 * 1024];
-            buf[0]         = '\0';
+            buf[0] = '\0';
 #if __cpp_lib_to_chars
-            auto [ptr, ec] = p == FloatConversion::Precision::kFull
-                                 ? std::to_chars (buf, buf + Memory::NEltsOf (buf), static_cast<double> (timeLeft), std::chars_format::fixed)
-                                 : std::to_chars (buf, buf + Memory::NEltsOf (buf), static_cast<double> (timeLeft),
-                                                  std::chars_format::fixed, p.GetEffectivePrecision<double> ());
-            Assert (ec == std::errc{}); // that buffer should always be big enuf
+            auto [ptr, ec] = p == FloatConversion::Precision::kFull ? to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::fixed)
+                                                                    : to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::fixed,
+                                                                                p.GetEffectivePrecision<InternalNumericFormatType_> ());
+            Assert (ec == errc{}); // that buffer should always be big enuf
             *ptr = '\0';
 #else
             Verify (::snprintf (buf, sizeof (buf), "%.*f", p.GetEffectivePrecision<double> (), static_cast<double> (timeLeft)) >= 52);
 #endif
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
-            result += "S";
+            result += "S"sv;
         }
     }
     if (result.length () == 1) {
-        result += "T0S";
+        result += "T0S"sv;
     }
     return result;
 }

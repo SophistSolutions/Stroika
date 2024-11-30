@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Time {
 
     private:
         static InternalNumericFormatType_ ParseTime_ (const string& s);
-        static string                     UnParseTime_ (InternalNumericFormatType_ t, Characters::FloatConversion::Precision p);
+        static Characters::String         UnParseTime_ (InternalNumericFormatType_ t, Characters::FloatConversion::Precision p);
 
     private:
         /**
