@@ -540,7 +540,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
             Assert (ec == errc{}); // that buffer should always be big enuf
             *ptr = '\0';
 #else
-            Verify (::snprintf (buf, sizeof (buf), "%.*f", p.GetEffectivePrecision<double> (), static_cast<double> (timeLeft)) >= 52);
+            ::snprintf (buf, sizeof (buf), "%.*f", p.GetEffectivePrecision<double> (), static_cast<double> (timeLeft));
 #endif
             TrimTrailingZerosInPlace_ (buf);
             result += buf;

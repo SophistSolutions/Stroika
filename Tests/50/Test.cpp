@@ -907,19 +907,33 @@ namespace {
             EXPECT_TRUE (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
         }
         {
-            EXPECT_TRUE (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
-            EXPECT_TRUE (Duration{"-PT9M"}.PrettyPrintAge () == "now");
-            EXPECT_TRUE (Duration{"-PT20M"}.PrettyPrintAge () == "20 minutes ago");
-            EXPECT_TRUE (Duration{"PT20M"}.PrettyPrintAge () == "20 minutes from now");
-            EXPECT_TRUE (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
-            EXPECT_TRUE (Duration{"PT4.4H"}.PrettyPrintAge () == "4 hours from now");
-            EXPECT_TRUE (Duration{"P2Y"}.PrettyPrintAge () == "2 years from now");
-            EXPECT_TRUE (Duration{"P2.4Y"}.PrettyPrintAge () == "2 years from now");
-            EXPECT_TRUE (Duration{"P2.6Y"}.PrettyPrintAge () == "3 years from now");
-            EXPECT_TRUE (Duration{"-P1M"}.PrettyPrintAge () == "1 month ago");
-            EXPECT_TRUE (Duration{"-P2M"}.PrettyPrintAge () == "2 months ago");
-            EXPECT_TRUE (Duration{"-PT1Y"}.PrettyPrintAge () == "1 year ago");
-            EXPECT_TRUE (Duration{"-PT2Y"}.PrettyPrintAge () == "2 years ago");
+            EXPECT_EQ (Duration{"PT1.4S"}.PrettyPrintAge (), "now");
+            EXPECT_EQ (Duration{"-PT9M"}.PrettyPrintAge (), "now");
+            EXPECT_EQ (Duration{"-PT20M"}.PrettyPrintAge (), "20 minutes ago");
+            EXPECT_EQ (Duration{"PT20M"}.PrettyPrintAge (), "20 minutes from now");
+            EXPECT_EQ (Duration{"PT4H"}.PrettyPrintAge (), "4 hours from now");
+            EXPECT_EQ (Duration{"PT4.4H"}.PrettyPrintAge (), "4 hours from now");
+            EXPECT_EQ (Duration{"P2Y"}.PrettyPrintAge (), "2 years from now");
+            EXPECT_EQ (Duration{"P2.4Y"}.PrettyPrintAge (), "2 years from now");
+            EXPECT_EQ (Duration{"P2.6Y"}.PrettyPrintAge (), "3 years from now");
+            EXPECT_EQ (Duration{"-P1M"}.PrettyPrintAge (), "1 month ago");
+            EXPECT_EQ (Duration{"-P2M"}.PrettyPrintAge (), "2 months ago");
+            EXPECT_EQ (Duration{"-PT1Y"}.PrettyPrintAge (), "1 year ago");
+            EXPECT_EQ (Duration{"-PT2Y"}.PrettyPrintAge (), "2 years ago");
+        }
+        {
+            // Support precision of duration reps
+            using Characters::FloatConversion::Precision;
+            {
+                const Duration d1 = Duration{"PT1.4S"};
+                EXPECT_EQ (d1.As<String> (), "PT1.4S");
+            }
+            {
+                const Duration d1 = Duration{Math::kPi};
+                DbgTrace ("d1={}, d1.Format(Precision(1))={}"_f, d1, d1.As<String> (Precision{1}));
+                DbgTrace ("d1={}, d1.Format(Precision(3))={}"_f, d1, d1.As<String> (Precision{3}));
+                DbgTrace ("d1={}, d1.Format()={}"_f, d1, d1.As<String> ());
+            }
         }
     }
 }

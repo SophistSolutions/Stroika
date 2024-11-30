@@ -30,10 +30,6 @@
  *  \note Code-Status:  <a href="Code-Status.md">Beta</a>
  *
  * TODO:
- *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
- *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
- *              Maybe Float2StringOptions is optional param to As<String> ()???
- *
  *      @todo   PT3,4S and PT3.4S both must  be interpreted as 3.4 seconds. I think we can generate
  *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
  *              handles either form of decimal separator! Add to regression tests, and make sure
@@ -174,6 +170,9 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const
             requires (Common::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or Common::IDuration<T> or
                       Common::ITimePoint<T>);
+        template <typename T>
+        nonvirtual T As (Characters::FloatConversion::Precision p) const
+            requires (Common::IAnyOf<T, Characters::String>);
 
     public:
         /**
@@ -238,7 +237,12 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         * Assert (Duration{3}.Format () == "3 seconds")
+         *  \brief like javascript 'humanize' APIs
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Assert (Duration{3}.Format () == "3 seconds")
+         *      \endcode
          */
         nonvirtual Characters::String Format (const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
@@ -265,11 +269,11 @@ namespace Stroika::Foundation::Time {
          *
          *  \par Example Usage
          *      \code
-         *          EXPECT_TRUE (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
-         *          EXPECT_TRUE (Duration{"-PT9M"}.PrettyPrintAge () == "now");
-         *          EXPECT_TRUE (Duration{"-PT20M"}.PrettyPrintAge () == "20 minutes ago");
-         *          EXPECT_TRUE (Duration{"PT20M"}.PrettyPrintAge () == "20 minutes from now");
-         *          EXPECT_TRUE (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
+         *          EXPECT_EQ (Duration{"PT1.4S"}.PrettyPrintAge (), "now");
+         *          EXPECT_EQ (Duration{"-PT9M"}.PrettyPrintAge (), "now");
+         *          EXPECT_EQ (Duration{"-PT20M"}.PrettyPrintAge (), "20 minutes ago");
+         *          EXPECT_EQ (Duration{"PT20M"}.PrettyPrintAge (), "20 minutes from now");
+         *          EXPECT_EQ (Duration{"PT4H"}.PrettyPrintAge (), "4 hours from now");
          *      \endcode
          */
         nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo,

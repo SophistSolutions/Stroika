@@ -203,6 +203,24 @@ namespace Stroika::Foundation::Time {
         }
     }
     template <typename T>
+    inline T Duration::As (Characters::FloatConversion::Precision p) const
+        requires (Common::IAnyOf<T, Characters::String>)
+    {
+        if constexpr (same_as<T, Characters::String>) {
+            using Characters::String;
+            switch (fRepType_) {
+                case eEmpty_:
+                    return String{};
+                case eString_:
+                    return String{fStringRep_}; // unclear about this case? Maybe remap?
+                case eNumeric_:
+                    return UnParseTime_ (count (), p);
+            }
+            AssertNotReached ();
+            return String{};
+        }
+    }
+    template <typename T>
     inline T Duration::AsPinned () const
         requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or Common::IDuration<T> or
                   Common::ITimePoint<T>)
