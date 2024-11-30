@@ -343,7 +343,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
 namespace Stroika::Foundation::Characters {
     using FloatConversion::ToFloat;
-    using FloatConversion::ToString;
 }
 
 /*
