@@ -354,24 +354,24 @@ namespace {
             EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
             EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01");
 #else
-            EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "12:01:41 AM");
-            EXPECT_TRUE (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "12:01 AM");
+            EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "12:01:41 AM");
+            EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "12:01 AM");
             EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "1:01:41 AM" or
                          TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41 AM");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41 AM");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01 AM");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01:41 AM");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01 AM");
 #endif
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
-            EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "00:01:41");
-            EXPECT_TRUE (TimeOfDay{60}.Format (locale{}) == "00:01:00");
-            EXPECT_TRUE (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (locale{}) == "01:01:00");
+            EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "00:01:41");
+            EXPECT_EQ (TimeOfDay{60}.Format (locale{}), "00:01:00");
+            EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "0:01");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (locale{}), "01:01:41");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01:41");
+            EXPECT_EQ (TimeOfDay{60 * 60 + 60}.Format (locale{}), "01:01:00");
         }
         {
             TimeOfDay threePM = TimeOfDay::Parse ("3pm", locale::classic ());
@@ -386,19 +386,19 @@ namespace {
     {
         TraceContextBumper ctx{"TestDate_"};
         auto               VERIFY_ROUNDTRIP_XML_ = [] (const Date& d) {
-            EXPECT_TRUE (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format) == d);
+            EXPECT_EQ (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format), d);
         };
         {
             Date d{Year{1903}, April, DayOfMonth{4}};
             TestRoundTripFormatThenParseNoChange_ (d);
-            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1903-04-04");
+            EXPECT_EQ (d.Format (Date::kISO8601Format), "1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
             d = d.Add (4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1903-04-08");
+            EXPECT_EQ (d.Format (Date::kISO8601Format), "1903-04-08");
             d = d.Add (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1903-04-04");
+            EXPECT_EQ (d.Format (Date::kISO8601Format), "1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
@@ -427,14 +427,14 @@ namespace {
             Date d = Date{300y / January / 3};
             EXPECT_TRUE (d < DateTime::Now ().GetDate ());
             EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
-            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "0300-01-03");
+            EXPECT_EQ (d.Format (Date::kISO8601Format), "0300-01-03");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date d = Date::kMin;
             EXPECT_TRUE (d < DateTime::Now ().GetDate ());
             EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
-            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "-4712-01-01"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_EQ (d.Format (Date::kISO8601Format), "-4712-01-01"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
@@ -477,7 +477,7 @@ namespace {
         }
         {
             Date d = Date{2012y / May / 1d};
-            EXPECT_EQ (d.GetJulianRep (), 2456049); //https://aa.usno.navy.mil/data/JulianDate
+            EXPECT_EQ (d.GetJulianRep (), 2456049u); //https://aa.usno.navy.mil/data/JulianDate
         }
         {
             EXPECT_TRUE (Date::ToJulianRep (Date::FromJulianRep (0)) == 0);
