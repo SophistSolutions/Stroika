@@ -458,7 +458,7 @@ namespace {
 #endif
 }
 
-DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
+//DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Precision p)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -531,14 +531,17 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         }
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
-            char buf[10 * 1024];
+            constexpr size_t kBufSize_ = 1024; //  used to use 10K, but even 1K seems quite excessive - if more needed, document beyond assertions(ec==errc{});
+            static_assert (kBufSize_ > numeric_limits<InternalNumericFormatType_>::max_digits10 +
+                                           numeric_limits<InternalNumericFormatType_>::max_exponent10 + 5); // source? "-1.##e+##\0"
+            char buf[kBufSize_];
             buf[0] = '\0';
 #if __cpp_lib_to_chars
             auto [ptr, ec] = p == FloatConversion::Precision::kFull ? to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::general)
                                                                     : to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::general,
                                                                                 p.GetEffectivePrecision<InternalNumericFormatType_> ());
             Assert (ec == errc{}); // that buffer should always be big enuf
-            *ptr = '\0';    // to_chars doesn't nul-terminate, but current TrimTrailingZerosInPlace_ expects nul-terminated
+            *ptr = '\0';           // to_chars doesn't nul-terminate, but current TrimTrailingZerosInPlace_ expects nul-terminated
 #else
             ::snprintf (buf, sizeof (buf), "%.*f", p.GetEffectivePrecision<double> () - 1, static_cast<double> (timeLeft));
 #endif
@@ -552,7 +555,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
     }
     return result;
 }
-DISABLE_COMPILER_MSC_WARNING_END (6262)
+//DISABLE_COMPILER_MSC_WARNING_END (6262)
 
 /*
  ********************************************************************************
