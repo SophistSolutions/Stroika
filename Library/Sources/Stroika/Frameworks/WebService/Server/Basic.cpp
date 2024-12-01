@@ -52,8 +52,7 @@ void WebService::Server::ExpectedMethod (const Request& request, const Iterable<
 void WebService::Server::ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription)
 {
     if (wsMethodDescription.fAllowedMethods) {
-        // @todo - dont see why cast to iterable<string> needed on windoze??? Seems a mistake
-        ExpectedMethod (request, (Iterable<String>)*wsMethodDescription.fAllowedMethods, wsMethodDescription.fOperation);
+        ExpectedMethod (request, *wsMethodDescription.fAllowedMethods, wsMethodDescription.fOperation);
     }
 }
 
@@ -85,7 +84,7 @@ void WebService::Server::WriteDocsPage (Response& response, const Sequence<WebSe
     if (docsOptions.fOpenAPISpecificationURI) {
         response.write ("<div class='OpenAPI'>Download <a href={}>OpenAPI File</a></div>\n"_f, *docsOptions.fOpenAPISpecificationURI);
     }
-    response.writeln (L"<ul>");
+    response.writeln ("<ul>"sv);
     auto substVars = [&] (const String& origStr) {
         String str = origStr;
         for (const auto& i : docsOptions.fVariables2Substitute) {

@@ -39,7 +39,7 @@ namespace Stroika::Frameworks::WebService::Server {
      *  \brief check the request method()
      * 
      * optional<Set<String>>       fAllowedMethods; // e.g. GET
-     * throw ClientErrorException if requst method not among set of argument methods
+     * throw ClientErrorException if request method not among set of argument methods
      *  \note Set<String> argument - if given - should be case-sensitive comparer
      */
     void ExpectedMethod (const Request& request, const Set<String>& methods, const optional<String>& fromInMessage = nullopt);
