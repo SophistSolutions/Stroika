@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
             else {
                 resultStrLen =
-                    to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> () + 1).ptr -
+                    to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> () - 1).ptr -
                     buf.begin ();
             }
 #else
