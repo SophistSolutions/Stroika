@@ -300,9 +300,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
             }
             else {
-                resultStrLen =
-                    to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> () - 1).ptr -
-                    buf.begin ();
+                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()).ptr -
+                               buf.begin ();
             }
 #else
             auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec) -> char* {
