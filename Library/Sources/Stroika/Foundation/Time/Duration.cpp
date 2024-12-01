@@ -17,6 +17,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
 
 using Debug::TraceContextBumper;
@@ -352,7 +353,7 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
         i = SkipWhitespace_ (i + 1, s.end ());
     }
     else {
-        Execution::Throw (FormatException::kThe);
+        Throw (FormatException::kThe);
     }
     bool timePart = false;
     while (i != s.end ()) {
@@ -364,10 +365,10 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
         string::const_iterator firstDigitI = i;
         string::const_iterator lastDigitI  = FindFirstNonDigitOrDot_ (i, s.end ());
         if (lastDigitI == s.end ()) [[unlikely]] {
-            Execution::Throw (FormatException::kThe);
+            Throw (FormatException::kThe);
         }
         if (firstDigitI == lastDigitI) [[unlikely]] {
-            Execution::Throw (FormatException::kThe);
+            Throw (FormatException::kThe);
         }
         /*
          *  According to http://en.wikipedia.org/wiki/ISO_8601
