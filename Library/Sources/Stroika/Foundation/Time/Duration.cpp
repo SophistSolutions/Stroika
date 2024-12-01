@@ -538,7 +538,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
                                                                     : to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::general,
                                                                                 p.GetEffectivePrecision<InternalNumericFormatType_> ());
             Assert (ec == errc{}); // that buffer should always be big enuf
-            *ptr = '\0';
+            *ptr = '\0';    // to_chars doesn't nul-terminate, but current TrimTrailingZerosInPlace_ expects nul-terminated
 #else
             ::snprintf (buf, sizeof (buf), "%.*f", p.GetEffectivePrecision<double> () - 1, static_cast<double> (timeLeft));
 #endif
