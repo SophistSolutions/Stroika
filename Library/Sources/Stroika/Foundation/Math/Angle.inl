@@ -19,7 +19,8 @@ namespace Stroika::Foundation::Math {
     inline constexpr Angle::Angle (RepType angle, AngleFormat angleFormat)
         : fAngleInRadians_{(angleFormat == AngleFormat::eRadians)
                                ? angle
-                               : ((angleFormat == AngleFormat::eDegrees) ? (angle * (2 * kPi) / 360.0) : (angle * (2 * kPi) / 400.0))}
+                               : ((angleFormat == AngleFormat::eDegrees) ? (angle * (2 * numbers::pi_v<RepType>) / 360.0)
+                                                                         : (angle * (2 * numbers::pi_v<RepType>) / 400.0))}
     {
         using namespace Common;
         Require (ToInt (AngleFormat::eSTART) <= ToInt (angleFormat) and ToInt (angleFormat) < ToInt (AngleFormat::eEND));
@@ -30,11 +31,11 @@ namespace Stroika::Foundation::Math {
     }
     inline constexpr Angle::RepType Angle::AsDegrees () const
     {
-        return fAngleInRadians_ * 360.0 / (2 * kPi);
+        return fAngleInRadians_ * 360.0 / (2 * numbers::pi_v<RepType>);
     }
     inline constexpr Angle::RepType Angle::AsGradians () const
     {
-        return fAngleInRadians_ * 400.0 / (2 * kPi);
+        return fAngleInRadians_ * 400.0 / (2 * numbers::pi_v<RepType>);
     }
     inline const Angle& Angle::operator+= (const Angle& rhs)
     {
