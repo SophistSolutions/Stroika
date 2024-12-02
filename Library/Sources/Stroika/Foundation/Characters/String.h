@@ -480,7 +480,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Remove the all occurrences of Character 'c'/'/subString/ from the string (walking front to back - if removal creates one, it too is removed). Not an error if none
+         *  Remove the all occurrences of Character 'c/subString' from this string (walking front to back - if removal creates one, it too is removed). Not an error if none
          *  found. Doesn't modify this (const method) - returns resulting string.
          *
          *  \em Note that this is quite inefficient: consider using StringBuffer

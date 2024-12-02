@@ -840,7 +840,7 @@ String String::RemoveFirstIf (const String& subString) const
 
 String String::RemoveAll (Character c) const
 {
-    // quick and dirty inefiecient implementation
+    // quick and dirty inefficient implementation
     String tmp = {*this};
     while (auto o = tmp.Find (c, CompareOptions::eWithCase)) {
         tmp = tmp.RemoveAt (*o);
@@ -849,7 +849,7 @@ String String::RemoveAll (Character c) const
 }
 String String::RemoveAll (const String& subString) const
 {
-    // quick and dirty inefiecient implementation
+    // quick and dirty inefficient implementation
     String tmp = {*this};
     while (auto o = tmp.Find (subString, CompareOptions::eWithCase)) {
         tmp = tmp.SubString (0, *o) + tmp.SubString (*o + subString.length ());
