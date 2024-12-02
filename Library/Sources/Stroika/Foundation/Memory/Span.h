@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief convert a (possibly already const) span to the same span, but with const on the 'T' argument
      *
-     *  I hope this function isnt needed often. And whereever it is needed, I think is a std::span<> design
+     *  I hope this function isn't needed often. And wherever it is needed, I think is a std::span<> design
      *  defect (or something I don't yet understand about how to use span better).
      * 
      *  But it appears if you declare function argument span<const T,EXT> and pass in a non-const T span, you get
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Memory {
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
      * 
-     *          @todo MAYBE RENAME TO MemMove()????
+     *  @todo Maybe implement MoveSpanData() - analogous to memcpy/memmove - just allowing overlap
      */
     template <typename T, size_t E>
     constexpr std::span<T, E> CopySpanData (span<const T, E> src, span<T, E> target);
