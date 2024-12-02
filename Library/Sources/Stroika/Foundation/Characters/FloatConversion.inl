@@ -312,7 +312,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
 #endif
         template <typename FLOAT_TYPE>
-        inline String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Precision precision)
+        String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Precision precision)
         {
             using namespace Memory;
             size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
