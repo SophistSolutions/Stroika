@@ -53,7 +53,7 @@ namespace {
      *        to character offset. So use 
      *              StringRepHelperAllFitInSize_::Rep<ASCII> for ascii text
      *              StringRepHelperAllFitInSize_::Rep<LATIN1> for ISOLatin1 text
-     *              StringRepHelperAllFitInSize_::Rep<char16_t> for isolatin/anything which is a 2-byte unicode char (not surrogates)
+     *              StringRepHelperAllFitInSize_::Rep<char16_t> for ISOLatin1/anything which is a 2-byte unicode char (not surrogates)
      *              StringRepHelperAllFitInSize_::Rep<char32_t> for anything else - this always works
      */
     struct StringRepHelperAllFitInSize_ : String {
@@ -129,6 +129,7 @@ namespace {
             }
 
             // Overrides for Iterable<Character>
+            // @todo - MAYBE override Apply/Find and a few others to not use default 'iterator object' implementation that has lots of indirect virtual calls
         public:
             virtual shared_ptr<Iterable<Character>::_IRep> Clone () const override
             {
@@ -219,7 +220,7 @@ namespace {
             virtual Traversal::Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
                                                           Execution::SequencePolicy                               seq) const override
             {
-                return inherited::Find (that, seq); // @todo rewrite to operatoe of fData_
+                return inherited::Find (that, seq); // @todo rewrite FOR PERFORMANCE to operate on fData_
             }
         };
     };
