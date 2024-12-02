@@ -291,7 +291,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             bool   leading    = true;
             bool   ignoreRest = false;
             size_t n{};
-            numStr.Apply ([&] (Character c) mutable {
+            numStr.Apply ([&] (Character c) {
                 if (ignoreRest) {
                     return;
                 }
