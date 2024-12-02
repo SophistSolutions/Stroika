@@ -351,12 +351,25 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             auto actualPrec = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             if (actualPrec > effectivePrecision) {
-                // @todo May need to adjust final digit up (round up) here occasionally...
-                resultStrLen -= static_cast<int> (actualPrec) - static_cast<int> (effectivePrecision);
+                // first look for 'e' to see if scientific notation - trickier to remove precision in that case
+                auto ePtr = std::find (buf.data (), buf.data () + resultStrLen, 'e');
+                if (ePtr == buf.data () + resultStrLen) {
+                    // normal easy fixed format
+                    // @todo May need to adjust final digit up (round up) here occasionally...
+                    resultStrLen -= static_cast<int> (actualPrec) - static_cast<int> (effectivePrecision);
+                }
+                else {
+                    // scientific notation
+                    // @todo May need to adjust final digit up (round up) here occasionally...
+                    ptrdiff_t nBytes = static_cast<ptrdiff_t> (actualPrec) - static_cast<ptrdiff_t> (effectivePrecision);
+                    Assert (buf.data () <= ePtr - nBytes);
+                    memmove (ePtr - nBytes, ePtr, (buf.data () + resultStrLen - ePtr)); // slide 'e+22' back over the lost precision bytes of number
+                    resultStrLen -= nBytes;
+                }
             }
 #endif
 
-            // [[maybe_unused]] String oo1 = String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
+            // [[maybe_unused]] auto oo1 = String{span{buf.data (), static_cast<size_t> (resultStrLen)}}.As<wstring> ();
             // [[maybe_unused]] auto ooo = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
 #if qStroika_Foundation_Debug_AssertionsChecked
