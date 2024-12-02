@@ -27,8 +27,6 @@ namespace Stroika::Foundation::IO::Network {
 
     using Characters::String;
 
-    class URL;
-
     /**
      *  \par RFC Reference
      *       \note https://tools.ietf.org/html/rfc3986 - Uniform Resource Identifier (URI): Generic Syntax - 2005
