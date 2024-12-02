@@ -350,6 +350,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             auto actualPrec = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             if (actualPrec > effectivePrecision) {
+                // @todo May need to adjust final digit up (round up) here occasionally...
                 resultStrLen -= static_cast<int> (actualPrec) - static_cast<int> (effectivePrecision);
             }
 #endif
