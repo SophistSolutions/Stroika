@@ -285,6 +285,31 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
+#if qStroika_Foundation_Debug_AssertionsChecked || (__cpp_lib_to_chars >= 201611)
+        inline size_t CalcPrecision_ (const String& numStr)
+        {
+            bool   leading    = true;
+            bool   ignoreRest = false;
+            size_t n{};
+            numStr.Apply ([&] (Character c) mutable {
+                if (ignoreRest) {
+                    return;
+                }
+                if (leading and c == '0') {
+                    return;
+                }
+                if (c == '+' or c == '-' or c == '.') {
+                    return;
+                }
+                if (c == 'e') {
+                    ignoreRest = true;
+                    return;
+                }
+                ++n;
+            });
+            return n;
+        }
+#endif
         template <typename FLOAT_TYPE>
         inline String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Precision precision)
         {
@@ -292,6 +317,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
             StackBuffer<char> buf{Memory::eUninitialized, sz};
             ptrdiff_t         resultStrLen;
+            unsigned int      effectivePrecision = precision.GetEffectivePrecision<FLOAT_TYPE> ();
 
             // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
 #if __cpp_lib_to_chars >= 201611
@@ -300,8 +326,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
             }
             else {
-                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, precision.GetEffectivePrecision<FLOAT_TYPE> ()).ptr -
-                               buf.begin ();
+                resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, effectivePrecision).ptr - buf.begin ();
             }
 #else
             auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec) -> char* {
@@ -321,11 +346,20 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
             resultStrLen = ::snprintf (buf.data (), buf.size (),
                                        mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                       (int)precision.GetEffectivePrecision<FLOAT_TYPE> () + 1, f);
+                                       (int)effectivePrecision + 1, f);
+
+            auto actualPrec = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
+            if (actualPrec > effectivePrecision) {
+                resultStrLen -= static_cast<int> (actualPrec) - static_cast<int> (effectivePrecision);
+            }
 #endif
 
+            //[[maybe_unused]] auto ooo = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
-            return String{Memory::ConstSpan (span{buf.data (), static_cast<size_t> (resultStrLen)})};
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (precision == Precision::kFull or CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
+#endif
+            return String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
         }
     }
 
