@@ -1159,12 +1159,12 @@ namespace {
     {
         {
             Variant::JSON::Writer w{};
-            EXPECT_EQ (w.WriteAsString (VariantValue{Math::kPi}), "3.14159"); // defaults to 6 digits of precision
+            EXPECT_EQ (w.WriteAsString (VariantValue{numbers::pi}), "3.14159"); // defaults to 6 digits of precision
         }
         {
             using namespace Characters;
             Variant::JSON::Writer w{Variant::JSON::Writer::Options{.fFloatOptions = FloatConversion::ToStringOptions{FloatConversion::Precision{10}}}};
-            EXPECT_EQ (w.WriteAsString (VariantValue{Math::kPi}), "3.141592654"); // so try 10 digits (not tricky case cuz number is 3.14159265 then 358 so not truncate but round))
+            EXPECT_EQ (w.WriteAsString (VariantValue{numbers::pi}), "3.141592654"); // so try 10 digits (not tricky case cuz number is 3.14159265 then 358 so not truncate but round))
         }
     }
 }

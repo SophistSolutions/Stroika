@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
      *      \code
      *          TargetFunction<double> f = [](const Sequence<double>& x) {
      *              double d = x[0];
-     *               if (d < 0 or d >= Math::kPi) {     // avoid falling off ends of ranges - periodic function
+     *               if (d < 0 or d >= numbers::pi) {     // avoid falling off ends of ranges - periodic function
      *                  return 100.0;
      *               }
      *               return -std::cos (d);

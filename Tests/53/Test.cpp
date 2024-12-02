@@ -465,7 +465,7 @@ namespace {
         //String response = r.GetDataTextInputStream ().ReadAll ();
         ////DbgTrace (L"response={}"_f, response);
         //EXPECT_EQ (response, "TEST");
-        //// @todo enhance this test so we force accept-encoding none, and force accept-endcing : deflate, and check raw
+        //// @todo enhance this test so we force accept-encoding none, and force accept-encoding : deflate, and check raw
         //// result???
     }
 }
@@ -478,13 +478,13 @@ namespace {
         {
             ObjectVariantMapper m;
             m.AddCommonType<Duration> ();
-            VariantValue vv = m.FromObject (Duration{Math::kPi});
+            VariantValue vv = m.FromObject (Duration{numbers::pi});
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.14159S\"");
         }
         {
             ObjectVariantMapper m;
             m.AddCommonType<Duration> (FloatConversion::Precision{2});
-            VariantValue vv = m.FromObject (Duration{Math::kPi});
+            VariantValue vv = m.FromObject (Duration{numbers::pi});
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
         }
     }

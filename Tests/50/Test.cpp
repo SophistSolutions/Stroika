@@ -930,7 +930,7 @@ namespace {
                 EXPECT_EQ (d1.As<String> (Precision{1}), "PT1S");
             }
             {
-                const Duration d1 = Duration{Math::kPi};
+                const Duration d1 = Duration{numbers::pi};
                 EXPECT_EQ (d1.As<String> (Precision{1}), "PT3S");
                 EXPECT_EQ (d1.As<String> (Precision{3}), "PT3.14S");
                 EXPECT_EQ (d1.As<String> (Precision{6}), "PT3.14159S");

@@ -195,7 +195,7 @@ namespace {
         {
             DownhillSimplexMinimization::TargetFunction<double> f = [] (const Sequence<double>& x) {
                 double d = x[0];
-                if (d < 0 or d >= Math::kPi) { // avoid falling off ends of ranges - periodic function
+                if (d < 0 or d >= numbers::pi) { // avoid falling off ends of ranges - periodic function
                     return 100.0;
                 }
                 return -cos (d);
@@ -248,7 +248,7 @@ namespace {
                 constexpr double kMinWaveLengthAllowed_{1.0e-20};
                 return Math::AtLeast (MDrive2WaveLength (parameters, mdrive), kMinWaveLengthAllowed_);
             };
-            Sequence<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
+            Sequence<double> initialGuess{-4.5 / 210 * 1000 * numbers::pi / 180, NominalPhiNeutralAngle};
             K_Constants_     mdKConstants = {};
             mdKConstants.tunerInfoD       = NominalGrooveSpacing;
             auto fitFun                   = [=] (const K_Constants_& parameters) {
