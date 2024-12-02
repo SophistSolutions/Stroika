@@ -33,6 +33,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
@@ -96,21 +97,21 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         Sequence<String> tokens{line.Tokenize ({' '})};
         if (tokens.size () < 3) {
             DbgTrace ("tokens={}, line='{}', fMsgHeaderInTextStream={}"_f, tokens, line, fMsgHeaderInTextStream.ToString ());
-            Execution::Throw (ClientErrorException{"Bad METHOD Request HTTP line ({})"_f(line)});
+            Throw (ClientErrorException{"Bad METHOD Request HTTP line ({})"_f(line)});
         }
         updatableRequest.httpMethod  = tokens[0];
         updatableRequest.httpVersion = tokens[2];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
-            Execution::Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
+            Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
         }
         updatableRequest.url = URI::ParseRelative (tokens[1]);
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace ("tokens={}, line='{}'"_f, tokens, line);
             static const auto kException_ = ClientErrorException{"Bad METHOD in Request HTTP line"sv};
-            Execution::Throw (kException_);
+            Throw (kException_);
         }
     }
     while (true) {
@@ -124,7 +125,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         size_t i = line.find (':');
         if (i == string::npos) {
             DbgTrace ("line={}"_f, line);
-            Execution::Throw (ClientErrorException{"Bad HTTP Request missing colon in headers"sv});
+            Throw (ClientErrorException{"Bad HTTP Request missing colon in headers"sv});
         }
         else {
             String hdr   = line.SubString (0, i).Trim ();
@@ -275,7 +276,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
             // if we get this far, we always complete processing the message
 #if qStroika_Foundation_Debug_AssertionsChecked
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
 #endif
 
         if (fDefaultGETResponseHeaders_ and fMessage_->request ().httpMethod () == HTTP::Methods::kGet) {
