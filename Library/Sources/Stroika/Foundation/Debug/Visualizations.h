@@ -19,6 +19,9 @@
  * 
  *  A mechanism akin to this might be used going forward for gdb/lldb?
  * 
+ *  \TODO:  Consider promoting some of this to top-level - or much SHORTER - namespace, so easier to use
+ *          from debugger --LGP 2024-12-02
+ * 
  */
 
 namespace Stroika::Foundation::Debug::Visualizations {
