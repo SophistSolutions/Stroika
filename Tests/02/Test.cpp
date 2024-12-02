@@ -922,7 +922,7 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy || qCompilerAndStdLib_isinf_Valgrind_Buggy) {
-                auto f = Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull));
+                auto f = FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull));
                 if (not Math::NearlyEquals (l, f)) {
                     if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy) {
                         Stroika::Frameworks::Test::WarnTestIssue ("ToFloat(ToString({})) not properly roundtripping under valgrind: {}; note isinf({})={}, and isinf(f)={}"_f(
@@ -935,8 +935,7 @@ namespace {
                     }
                 }
             }
-            EXPECT_TRUE (Math::NearlyEquals (
-                l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
+            EXPECT_TRUE (Math::NearlyEquals (l, FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
         }
     }
     GTEST_TEST (Foundation_Characters, StringNumericConversions_)
@@ -969,7 +968,7 @@ namespace {
                 sb1 << w;
                 Memory::StackBuffer<wchar_t> ignoreBuf1;
                 span<const wchar_t>          tmpData1 = sb1.GetData (&ignoreBuf1);
-                double                       ff2      = Characters::FloatConversion::ToFloat<double> (tmpData1);
+                double                       ff2      = FloatConversion::ToFloat<double> (tmpData1);
                 DbgTrace ("*in reader:  ff2-> {}"_f, ff2);
                 EXPECT_TRUE (Math::NearlyEquals (ff2, wVal, 0.001));
             };
@@ -1094,7 +1093,7 @@ namespace {
         {
             EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat ("3"), 3.0));
             EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat (L"3"), 3.0));
-            EXPECT_TRUE (Math::NearlyEquals (Characters::FloatConversion::ToFloat (L"3"), 3.0));
+            EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat (L"3"), 3.0));
             EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat ("-44.4"), -44.4));
             EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat (L"-44.4"), -44.4));
             EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"-44.4"), -44.4));
@@ -1172,25 +1171,25 @@ namespace {
         EXPECT_EQ (FloatConversion::ToString (0.0), "0");
         EXPECT_EQ (FloatConversion::ToString (3000.5), "3000.5");
         EXPECT_EQ (FloatConversion::ToString (3000.500), "3000.5");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}), "3.1");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}), "3.12");
-        EXPECT_EQ (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}), "31.2");
+        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::Precision{2}), "3.1");
+        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::Precision{3}), "3.12");
+        EXPECT_EQ (FloatConversion::ToString (31.234, FloatConversion::Precision{3}), "31.2");
         EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
 
         // And note Characters::ToString also supports Precision arg
-        EXPECT_EQ (Characters::ToString (3.1234, Characters::FloatConversion::Precision{2}), "3.1");
+        EXPECT_EQ (Characters::ToString (3.1234, FloatConversion::Precision{2}), "3.1");
 
         {
             // 3.141592653589793  (but really about rounding policy on FloatConversion::ToString)
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{2}), "3.1");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{3}), "3.14");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{4}), "3.142"); // 15... rounded up to 2
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{5}), "3.1416"); // 5 rounded to 6!
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{6}), "3.14159");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{7}), "3.141593");  // rounded != trunc
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{8}), "3.1415927"); // rounded != trunc
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{9}), "3.14159265"); // trunc fine
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{10}), "3.141592654"); // 3 rounded up to 4
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{2}), "3.1");
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{3}), "3.14");
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{4}), "3.142");  // 15... rounded up to 2
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{5}), "3.1416"); // 5 rounded to 6!
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{6}), "3.14159");
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{7}), "3.141593");     // rounded != trunc
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{8}), "3.1415927");    // rounded != trunc
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{9}), "3.14159265");   // trunc fine
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{10}), "3.141592654"); // 3 rounded up to 4
         }
     }
 }

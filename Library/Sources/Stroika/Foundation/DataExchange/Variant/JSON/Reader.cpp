@@ -239,12 +239,12 @@ namespace {
         Memory::StackBuffer<char32_t> ignoreBuf;
         span<const char32_t>          tmpData = tmp.GetData (&ignoreBuf);
         if (containsDot) {
-            return VariantValue{Characters::FloatConversion::ToFloat<long double> (tmpData)};
+            return VariantValue{FloatConversion::ToFloat<long double> (tmpData)};
         }
         else {
             // if no - use unsigned since has wider range (if no -)
-            return (initialChar == kDash_) ? VariantValue{Characters::String2Int<long long int> (tmpData)}
-                                           : VariantValue{Characters::String2Int<unsigned long long int> (tmpData)};
+            return (initialChar == kDash_) ? VariantValue{String2Int<long long int> (tmpData)}
+                                           : VariantValue{String2Int<unsigned long long int> (tmpData)};
         }
     }
 
@@ -478,7 +478,7 @@ public:
         using namespace Streams;
         return Read (TextReader::New (in, nullopt, SeekableFlag::eSeekable));
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::NativeRep_::Read"};
@@ -843,7 +843,7 @@ public:
             Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
         }
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};

@@ -93,7 +93,7 @@ Main::CommandArgs::CommandArgs (const Execution::CommandLine& cmdLine)
             Execution::Throw (Execution::InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
     }
     if (auto o = cmdLine.GetArgument (CommandOptions::kRunFor)) {
-        fRunFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
+        fRunFor = Time::Duration{FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
     }
 }
 
@@ -156,7 +156,7 @@ Main::~Main ()
     fServiceRep_->_Attach (nullptr);
 }
 
-void Main::Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Characters::Character>& out)
+void Main::Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Character>& out)
 {
     for (const String& i : args.fUnusedArguments) {
         fServiceRep_->HandleCommandLineArgument (i);

@@ -235,8 +235,7 @@ Transfer::Cache::Element::Element (const Response& response)
             static const String kMaxAgeEquals_{"max-age="sv};
             for (const String& cci : *fCacheControl) {
                 if (cci.StartsWith (kMaxAgeEquals_)) {
-                    fExpiresDueToMaxAge =
-                        DateTime::Now () + Duration{Characters::FloatConversion::ToFloat (cci.SubString (kMaxAgeEquals_.size ()))};
+                    fExpiresDueToMaxAge = DateTime::Now () + Duration{FloatConversion::ToFloat (cci.SubString (kMaxAgeEquals_.size ()))};
                 }
             }
         }
