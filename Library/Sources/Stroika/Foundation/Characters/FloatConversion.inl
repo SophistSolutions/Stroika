@@ -295,16 +295,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 if (ignoreRest) {
                     return;
                 }
-                if (c == '+' or c == '-') {
+                if (c == '+' or c == '-' or c == '.') {
                     return;
                 }
                 if (leading and c == '0') {
                     return;
                 }
                 leading = false;
-                if (c == '.') {
-                    return;
-                }
                 if (c == 'e') {
                     ignoreRest = true;
                     return;
@@ -359,7 +356,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
 #endif
 
-            //[[maybe_unused]] auto ooo = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
+            // [[maybe_unused]] String oo1 = String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
+            // [[maybe_unused]] auto ooo = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (precision == Precision::kFull or CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
