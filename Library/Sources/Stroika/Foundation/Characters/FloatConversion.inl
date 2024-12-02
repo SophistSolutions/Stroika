@@ -295,10 +295,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 if (ignoreRest) {
                     return;
                 }
+                if (c == '+' or c == '-') {
+                    return;
+                }
                 if (leading and c == '0') {
                     return;
                 }
-                if (c == '+' or c == '-' or c == '.') {
+                leading = false;
+                if (c == '.') {
                     return;
                 }
                 if (c == 'e') {
