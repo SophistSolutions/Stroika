@@ -9,7 +9,10 @@
 #include <algorithm>
 #include <cmath> // though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
 #include <limits>
+#include <numbers>
 #include <type_traits>
+
+#include "Stroika/Foundation/Common/Concepts.h"
 
 /**
  *  TODO:
@@ -26,6 +29,7 @@ namespace Stroika::Foundation {
 namespace Stroika::Foundation::Math {
 
     /**
+     *  \brief Returns the special value "quiet not-a-number", as represented by the floating-point type T (default double)
      */
     template <floating_point T = double>
     constexpr T nan ();
@@ -35,8 +39,13 @@ namespace Stroika::Foundation::Math {
     template <floating_point T = double>
     constexpr T infinity ();
 
-    constexpr double kE  = 2.71828182845904523536;
-    constexpr double kPi = 3.14159265358979323846;
+    /**
+     */
+    [[deprecated ("Since C++20, use std::numbers::e_v")]] constexpr double kE = numbers::e_v<double>;
+
+    /**
+     */
+    [[deprecated ("Since C++20, use std::numbers::pi_v")]] constexpr double kPi = numbers::pi_v<double>;
 
     /**
      * RoundUpTo() - round towards positive infinity.
@@ -47,9 +56,8 @@ namespace Stroika::Foundation::Math {
      * 
      *  \note - to RoundUp - just use ceil ()
      */
-    template <typename T>
-    constexpr T RoundUpTo (T x, T toNearest)
-        requires (is_arithmetic_v<T>);
+    template <Common::IArithmetic T>
+    constexpr T RoundUpTo (T x, T toNearest);
 
     /**
      *  RoundDownTo() - round towards negative infinity.
@@ -58,20 +66,26 @@ namespace Stroika::Foundation::Math {
      *  (after review of this API/implementation, probably should add short/char with unsigned variants
      *  to this list)
      */
-    template <typename T>
-    constexpr T RoundDownTo (T x, T toNearest)
-        requires (is_arithmetic_v<T>);
+    template <Common::IArithmetic T>
+    constexpr T RoundDownTo (T x, T toNearest);
 
     /**
-     *  Convert from a floating point value to an integer value - like std::round () - except that round () returns a floating
-     *  point value that must be manually converted to an integer. That conversion - if there is overflow - is undefined.
+     *  Round (FLOAT_TYPE x):
+     *      Convert from a floating point value to an integer value - like std::round () - except that round () returns a floating
+     *      point value that must be manually converted to an integer. That conversion - if there is overflow - is undefined.
      *
-     *  From http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf - section 4.9 Floating-integral conversion
-     *      The conversion truncates; that is, the fractional part is discarded. The behavior is undefined
-     *      if the truncated value cannot be represented in the destination type
+     *      From http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf - section 4.9 Floating-integral conversion
+     *          The conversion truncates; that is, the fractional part is discarded. The behavior is undefined
+     *          if the truncated value cannot be represented in the destination type
+     * 
+     *  Round (FLOAT_TYPE x, unsigned int nDigitsOfPrecision)
+     *      returns a float with the given number of digits of precision (rounding properly).
+     *      in C++26 this will become constexpr, but cannot for now...
      */
     template <integral INT_TYPE, floating_point FLOAT_TYPE>
     constexpr INT_TYPE Round (FLOAT_TYPE x);
+    template <floating_point FLOAT_TYPE>
+    FLOAT_TYPE Round (FLOAT_TYPE x, unsigned int nDigitsOfPrecision);
 
     /**
      *  NearlyEquals() can be used as a utility for arithmetic (mostly floating point) comparisons.
@@ -104,12 +118,10 @@ namespace Stroika::Foundation::Math {
      *  \note this function has changed slightly (simplified and constexpr) - since Stroika v2.1, and may produce
      *        different answers in corner cases (better scale invariance added in v3).
      */
-    template <typename T1, typename T2>
-    constexpr bool NearlyEquals (T1 l, T2 r)
-        requires (is_arithmetic_v<T1> and is_arithmetic_v<T2>);
-    template <typename T1, typename T2, typename EPSILON_TYPE>
-    constexpr bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
-        requires (is_arithmetic_v<T1> and is_arithmetic_v<T2>);
+    template <Common::IArithmetic T1, Common::IArithmetic T2>
+    constexpr bool NearlyEquals (T1 l, T2 r);
+    template <Common::IArithmetic T1, Common::IArithmetic T2, typename EPSILON_TYPE>
+    constexpr bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon);
 
     /**
      *  \brief  PinToSpecialPoint() returns its first argument, or something NearlyEquals() to it (but better)
@@ -125,9 +137,9 @@ namespace Stroika::Foundation::Math {
      *  But PinToSpecialPoint () always returns its first argument, or something NearlyEquals() to it.
      */
     template <floating_point T>
-    T PinToSpecialPoint (T p, T special);
+    constexpr T PinToSpecialPoint (T p, T special);
     template <floating_point T>
-    T PinToSpecialPoint (T p, T special, T epsilon);
+    constexpr T PinToSpecialPoint (T p, T special, T epsilon);
 
     /**
      *  Return a value at this at least the given value. This is the same as "max" as it turns out,
@@ -170,9 +182,8 @@ namespace Stroika::Foundation::Math {
      *  \note   when we port stroika bignum package - this should support those bignums.
      *  \note std::abs() not constexpr until C++ 23 (which is why this isn't)
      */
-    template <typename T, typename RESULT_TYPE = T>
-    constexpr RESULT_TYPE Abs (T v)
-        requires (is_arithmetic_v<T>);
+    template <Common::IArithmetic T, typename RESULT_TYPE = T>
+    constexpr RESULT_TYPE Abs (T v);
 
     /**
      *  \note - when we port stroika bignum package - this should support those bignums.

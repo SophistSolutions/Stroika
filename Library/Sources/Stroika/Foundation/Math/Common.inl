@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Math {
 
     /*
      ********************************************************************************
-     ************************************ Math::nan *********************************
+     ******************************* Math::infinity *********************************
      ********************************************************************************
      */
     template <floating_point T>
@@ -94,10 +94,10 @@ namespace Stroika::Foundation::Math {
         }
 
     }
-    template <typename T>
+    template <Common::IArithmetic T>
     constexpr T RoundUpTo (T x, T toNearest)
-        requires (is_arithmetic_v<T>)
     {
+        // @todo could simplify with if constexpr in this function, and lose the helpers above
         return Private::RoundUpTo_ (x, toNearest);
     }
 
@@ -106,10 +106,10 @@ namespace Stroika::Foundation::Math {
      **************************** Math::RoundDownTo *********************************
      ********************************************************************************
      */
-    template <typename T>
+    template <Common::IArithmetic T>
     constexpr T RoundDownTo (T x, T toNearest)
-        requires (is_arithmetic_v<T>)
     {
+        // @todo could simplify with if constexpr in this function, and lose the helpers above
         return Private::RoundDownTo_ (x, toNearest);
     }
 
@@ -137,15 +137,21 @@ namespace Stroika::Foundation::Math {
             return tmp <= numeric_limits<INT_TYPE>::min () ? numeric_limits<INT_TYPE>::min () : static_cast<INT_TYPE> (tmp);
         }
     }
+    template <floating_point FLOAT_TYPE>
+    inline FLOAT_TYPE Round (FLOAT_TYPE x, unsigned int nDigitsOfPrecision)
+    {
+        // not sure this is always safe (rounding error near edges) - not sure about +/- issues. But a good start
+        float powerOf10 = std::pow (10, nDigitsOfPrecision);
+        return std::round (x * powerOf10) / powerOf10;
+    }
 
     /*
      ********************************************************************************
      **************************** Math::NearlyEquals ********************************
      ********************************************************************************
      */
-    template <typename T1, typename T2, typename EPSILON_TYPE>
+    template <Common::IArithmetic T1, Common::IArithmetic T2, typename EPSILON_TYPE>
     constexpr bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
-        requires (is_arithmetic_v<T1> and is_arithmetic_v<T2>)
     {
         using Common::StdCompat::isinf;
         using Common::StdCompat::isnan;
@@ -162,9 +168,8 @@ namespace Stroika::Foundation::Math {
         Assert (not isnan (l) and not isnan (r) and not isinf (l) and not isinf (r));
         return Abs (diff) <= epsilon;
     }
-    template <typename T1, typename T2>
+    template <Common::IArithmetic T1, Common::IArithmetic T2>
     constexpr bool NearlyEquals (T1 l, T2 r)
-        requires (is_arithmetic_v<T1> and is_arithmetic_v<T2>)
     {
         using TC = common_type_t<T1, T2>;
         if constexpr (floating_point<TC>) {
@@ -185,7 +190,7 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <floating_point T>
-    T PinToSpecialPoint (T p, T special)
+    constexpr T PinToSpecialPoint (T p, T special)
     {
         if (Math::NearlyEquals (p, special)) {
             return special;
@@ -193,7 +198,7 @@ namespace Stroika::Foundation::Math {
         return p;
     }
     template <floating_point T>
-    T PinToSpecialPoint (T p, T special, T epsilon)
+    constexpr T PinToSpecialPoint (T p, T special, T epsilon)
     {
         if (Math::NearlyEquals (p, special, epsilon)) {
             return special;
@@ -255,9 +260,8 @@ namespace Stroika::Foundation::Math {
      ********************************** Math::Abs ***********************************
      ********************************************************************************
      */
-    template <typename T, typename RESULT_TYPE>
+    template <Common::IArithmetic T, typename RESULT_TYPE>
     constexpr RESULT_TYPE Abs (T v)
-        requires (is_arithmetic_v<T>)
     {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23
         if constexpr (Common::IAnyOf<T, int, intmax_t>) {
