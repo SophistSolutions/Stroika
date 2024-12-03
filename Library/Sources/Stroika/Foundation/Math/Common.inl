@@ -140,8 +140,9 @@ namespace Stroika::Foundation::Math {
     template <floating_point FLOAT_TYPE>
     inline FLOAT_TYPE Round (FLOAT_TYPE x, unsigned int nDigitsOfPrecision)
     {
+        Require (nDigitsOfPrecision >= 1);
         // not sure this is always safe (rounding error near edges) - not sure about +/- issues. But a good start
-        float powerOf10 = std::pow (10, nDigitsOfPrecision);
+        float powerOf10 = std::pow (10, nDigitsOfPrecision - 1);
         return std::round (x * powerOf10) / powerOf10;
     }
 
