@@ -292,6 +292,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             bool   leading    = true;
             bool   ignoreRest = false;
             size_t n{};
+            size_t nTrailingZeros{};
             numStr.Apply ([&] (Character c) {
                 if (ignoreRest) {
                     return;
@@ -303,13 +304,19 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     return;
                 }
                 leading = false;
+                if (c == '0') {
+                    ++nTrailingZeros;
+                }
+                else {
+                    nTrailingZeros = 0;
+                }
                 if (c == 'e') {
                     ignoreRest = true;
                     return;
                 }
                 ++n;
             });
-            return n;
+            return n - nTrailingZeros;
         }
 #endif
         template <typename FLOAT_TYPE>
