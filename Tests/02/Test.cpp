@@ -1174,10 +1174,20 @@ namespace {
         EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::Precision{2}), "3.1");
         EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::Precision{3}), "3.12");
         EXPECT_EQ (FloatConversion::ToString (31.234, FloatConversion::Precision{3}), "31.2");
-        EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
 
         // And note Characters::ToString also supports Precision arg
         EXPECT_EQ (Characters::ToString (3.1234, FloatConversion::Precision{2}), "3.1");
+
+        {
+            // if exceeds precision, (is that the rule, or smallest rep?) then scientific notation
+            EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
+#if __cpp_lib_to_chars >= 201611
+            EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3.72409e+06");
+#else
+            String t = FloatConversion::ToString (3724089.418996166);
+            DbgTrace ("t={}"_f, t);
+#endif
+        }
 
         {
             // 3.141592653589793  (but really about rounding policy on FloatConversion::ToString)
@@ -1190,10 +1200,6 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{8}), "3.1415927");    // rounded != trunc
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{9}), "3.14159265");   // trunc fine
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{10}), "3.141592654"); // 3 rounded up to 4
-        }
-
-        {
-           // EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3.72409e+06");
         }
     }
 }

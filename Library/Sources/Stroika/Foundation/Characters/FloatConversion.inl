@@ -304,15 +304,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     return;
                 }
                 leading = false;
+                if (c == 'e') {
+                    ignoreRest = true;
+                    return;
+                }
                 if (c == '0') {
                     ++nTrailingZeros;
                 }
                 else {
                     nTrailingZeros = 0;
-                }
-                if (c == 'e') {
-                    ignoreRest = true;
-                    return;
                 }
                 ++n;
             });
