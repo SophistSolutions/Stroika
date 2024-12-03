@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Math {
     {
         Require (nDigitsOfPrecision >= 1);
         // not sure this is always safe (rounding error near edges) - not sure about +/- issues. But a good start
-        int        l            = static_cast<int> (round (log10 (fabs (x))));
+        int        l            = x==0? 0: static_cast<int> (round (log10 (fabs (x))));
         FLOAT_TYPE pow10Shifter = pow (10, static_cast<int> (nDigitsOfPrecision) - 1 - l);
         return round (x * pow10Shifter) / pow10Shifter;
     }
