@@ -405,6 +405,7 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
     return isNeg ? -curVal : curVal;
 }
 
+#if 0
 namespace {
     // take 3.1340000 and return 3.13
     // take 300 and return 300
@@ -458,6 +459,7 @@ namespace {
     } s_Tester_;
 #endif
 }
+#endif
 
 //DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Precision p)
@@ -532,6 +534,9 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         }
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
+#if 1
+            result += FloatConversion::ToString (timeLeft, p);
+#else
             constexpr size_t kBufSize_ = 1024; //  used to use 10K, but even 1K seems quite excessive - if more needed, document beyond assertions(ec==errc{});
             static_assert (kBufSize_ > numeric_limits<InternalNumericFormatType_>::max_digits10 +
                                            numeric_limits<InternalNumericFormatType_>::max_exponent10 + 5); // source? "-1.##e+##\0"
@@ -548,6 +553,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
 #endif
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
+#endif
             result += "S"sv;
         }
     }
