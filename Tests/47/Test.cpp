@@ -31,13 +31,20 @@ namespace {
     GTEST_TEST (Foundation_Math, Test2_Round_)
     {
         // really could use more cases!!!
-        EXPECT_EQ (RoundUpTo (2, 10), 10);
-        EXPECT_EQ (RoundDownTo (2, 10), 0);
-        EXPECT_EQ (RoundUpTo (2, 2), 2);
-        EXPECT_EQ (RoundDownTo (2, 2), 2);
-        EXPECT_EQ (Round<int> (2.2), 2);
-        EXPECT_EQ (Round<int> (numeric_limits<double>::max () * 1000), numeric_limits<int>::max ());
-        EXPECT_EQ (Round<unsigned int> (numeric_limits<double>::max () * 1000), numeric_limits<unsigned int>::max ());
+        {
+            EXPECT_EQ (RoundUpTo (2, 10), 10);
+            EXPECT_EQ (RoundDownTo (2, 10), 0);
+            EXPECT_EQ (RoundUpTo (2, 2), 2);
+            EXPECT_EQ (RoundDownTo (2, 2), 2);
+            EXPECT_EQ (Round<int> (2.2), 2);
+            EXPECT_EQ (Round<int> (numeric_limits<double>::max () * 1000), numeric_limits<int>::max ());
+            EXPECT_EQ (Round<unsigned int> (numeric_limits<double>::max () * 1000), numeric_limits<unsigned int>::max ());
+        }
+        {
+            EXPECT_EQ (Round (1.2, 2), 1.2);
+            EXPECT_EQ (Round (1.23, 2), 1.2);
+            EXPECT_EQ (Round (123.0, 2), 120.0);
+        }
     }
 }
 

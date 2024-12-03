@@ -80,7 +80,12 @@ namespace Stroika::Foundation::Math {
      * 
      *  Round (FLOAT_TYPE x, unsigned int nDigitsOfPrecision)
      *      returns a float with the given number of digits of precision (rounding properly).
-     *      in C++26 this will become constexpr, but cannot for now...
+     *      Note here 'precision' means significant figures.
+     *      in C++26 this will become constexpr, but cannot for now (cuz pow constexpr in c++26).
+     *      EX:
+     *          Round (1.2, 2) => 1.2
+     *          Round (1.23, 2) => 1.2
+     *          Round (123, 2) => 120
      */
     template <integral INT_TYPE, floating_point FLOAT_TYPE>
     constexpr INT_TYPE Round (FLOAT_TYPE x);
