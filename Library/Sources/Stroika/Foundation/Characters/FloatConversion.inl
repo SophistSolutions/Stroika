@@ -347,7 +347,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             };
             char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
 
-            FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision-1);
+            FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision);
             if (precision != Precision::kFull) {
 f = useRoundedFloat;
             }

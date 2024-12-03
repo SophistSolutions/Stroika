@@ -1192,10 +1192,11 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{10}), "3.141592654"); // 3 rounded up to 4
         }
 
-              //      EXPECT_EQ (FloatConversion::ToString (numbers::pi, Characters::FloatConversion::Precision{2}), "3.1");
-
-        auto a = FloatConversion::ToString (3724089.418996166);
-        
+        {
+            auto a = FloatConversion::ToString (3724089.418996166);
+            DbgTrace ("a={}"_f, a);
+            // EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3724090");
+        }
     }
 }
 
