@@ -1193,9 +1193,7 @@ namespace {
         }
 
         {
-            auto a = FloatConversion::ToString (3724089.418996166);
-            DbgTrace ("a={}"_f, a);
-            // EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3724090");
+            EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3.72409e+06");
         }
     }
 }

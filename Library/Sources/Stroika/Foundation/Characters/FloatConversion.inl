@@ -351,14 +351,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (precision != Precision::kFull) {
                 f = useRoundedFloat;
             }
-            resultStrLen = ::snprintf (buf.data (), buf.size (),
-                                       mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                       (int)effectivePrecision + 1, f);
+            resultStrLen    = ::snprintf (buf.data (), buf.size (),
+                                          mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
+                                          (int)effectivePrecision + 1, f);
             auto actualPrec = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             if (actualPrec > effectivePrecision) {
-                ptrdiff_t nBytes              = static_cast<ptrdiff_t> (actualPrec) - static_cast<ptrdiff_t> (effectivePrecision);
-                auto      numberEnd           = buf.data () + resultStrLen;
-                auto      ePtr                = std::find (buf.data (), numberEnd, 'e');
+                ptrdiff_t nBytes    = static_cast<ptrdiff_t> (actualPrec) - static_cast<ptrdiff_t> (effectivePrecision);
+                auto      numberEnd = buf.data () + resultStrLen;
+                auto      ePtr      = std::find (buf.data (), numberEnd, 'e');
                 if (ePtr != numberEnd) {
                     Assert (buf.data () <= ePtr - nBytes);
                     memmove (ePtr - nBytes, ePtr, (buf.data () + resultStrLen - ePtr)); // slide 'e+22' back over the lost precision bytes of number

@@ -279,7 +279,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     return result;
 }
 
-Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
+String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
 {
     InternalNumericFormatType_ t     = As<InternalNumericFormatType_> ();
     bool                       isNeg = (t < 0);
@@ -288,7 +288,7 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
         return agePrettyPrintInfo.fLabels.fNow;
     }
 
-    Characters::String suffix = isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
+    String suffix = isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
 
     auto fmtDate = [suffix] (int timeInSelectedUnit, const String& singularUnit, const String& pluralUnit) -> String {
         String label = Linguistics::MessageUtilities::Manager::sThe.PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
@@ -405,63 +405,6 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
     return isNeg ? -curVal : curVal;
 }
 
-#if 0
-namespace {
-    // take 3.1340000 and return 3.13
-    // take 300 and return 300
-    // take 300.0 and return 300
-    //
-    void TrimTrailingZerosInPlace_ (char* sWithMaybeTrailingZeros)
-    {
-        RequireNotNull (sWithMaybeTrailingZeros);
-        char* pDot = sWithMaybeTrailingZeros;
-        for (; *pDot != '.' and *pDot != '\0'; ++pDot)
-            ;
-        Assert (*pDot == '\0' or *pDot == '.');
-        if (*pDot != '\0') {
-            char* pPastDot      = pDot + 1;
-            char* pPastLastZero = pPastDot + ::strlen (pPastDot);
-            Assert (*pPastLastZero == '\0');
-            for (; (pPastLastZero - 1) > pPastDot; --pPastLastZero) {
-                Assert (sWithMaybeTrailingZeros + 1 <= pPastLastZero); // so ptr ref always valid
-                if (*(pPastLastZero - 1) == '0') {
-                    *(pPastLastZero - 1) = '\0';
-                }
-                else {
-                    break;
-                }
-            }
-            if (strcmp (pDot, ".0") == 0) {
-                *pDot = '\0';
-            }
-        }
-    }
-#if qStroika_Foundation_Debug_AssertionsChecked
-    struct Tester_ {
-        Tester_ ()
-        {
-            {
-                char buf[1024] = "3.1340000";
-                TrimTrailingZerosInPlace_ (buf);
-                Assert (string{buf} == "3.134");
-            }
-            {
-                char buf[1024] = "300";
-                TrimTrailingZerosInPlace_ (buf);
-                Assert (string{buf} == "300");
-            }
-            {
-                char buf[1024] = "300.0";
-                TrimTrailingZerosInPlace_ (buf);
-                Assert (string{buf} == "300");
-            }
-        }
-    } s_Tester_;
-#endif
-}
-#endif
-
-//DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Precision p)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -534,26 +477,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         }
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
-#if 1
             result += FloatConversion::ToString (timeLeft, p);
-#else
-            constexpr size_t kBufSize_ = 1024; //  used to use 10K, but even 1K seems quite excessive - if more needed, document beyond assertions(ec==errc{});
-            static_assert (kBufSize_ > numeric_limits<InternalNumericFormatType_>::max_digits10 +
-                                           numeric_limits<InternalNumericFormatType_>::max_exponent10 + 5); // source? "-1.##e+##\0"
-            char buf[kBufSize_];
-            buf[0] = '\0';
-#if __cpp_lib_to_chars
-            auto [ptr, ec] = p == FloatConversion::Precision::kFull ? to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::general)
-                                                                    : to_chars (buf, buf + Memory::NEltsOf (buf), timeLeft, chars_format::general,
-                                                                                p.GetEffectivePrecision<InternalNumericFormatType_> ());
-            Assert (ec == errc{}); // that buffer should always be big enuf
-            *ptr = '\0';           // to_chars doesn't nul-terminate, but current TrimTrailingZerosInPlace_ expects nul-terminated
-#else
-            ::snprintf (buf, sizeof (buf), "%.*f", p.GetEffectivePrecision<double> () - 1, static_cast<double> (timeLeft));
-#endif
-            TrimTrailingZerosInPlace_ (buf);
-            result += buf;
-#endif
             result += "S"sv;
         }
     }
@@ -562,7 +486,6 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
     }
     return result;
 }
-//DISABLE_COMPILER_MSC_WARNING_END (6262)
 
 /*
  ********************************************************************************
