@@ -7,10 +7,10 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/UTFConvert.h"
 #include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/Span.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-#include "Stroika/Foundation/Math/Common.h"
 
 namespace Stroika::Foundation::Characters::FloatConversion {
 
@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
-#if qStroika_Foundation_Debug_AssertionsChecked || (__cpp_lib_to_chars >= 201611)
+#if qStroika_Foundation_Debug_AssertionsChecked || !(__cpp_lib_to_chars >= 201611)
         inline size_t CalcPrecision_ (const String& numStr)
         {
             bool   leading    = true;
@@ -349,43 +349,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision);
             if (precision != Precision::kFull) {
-f = useRoundedFloat;
+                f = useRoundedFloat;
             }
-            // confusing logic... for sprintf precision... mostly add one but not too much for kFull case...
-            int sprintfPrecision = (int)effectivePrecision + 1;
-          //  sprintfPrecision++;
             resultStrLen = ::snprintf (buf.data (), buf.size (),
                                        mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                      sprintfPrecision, f);
-
+                                       (int)effectivePrecision + 1, f);
             auto actualPrec = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             if (actualPrec > effectivePrecision) {
-                ptrdiff_t nBytes = static_cast<ptrdiff_t> (actualPrec) - static_cast<ptrdiff_t> (effectivePrecision);
-                auto numberEnd = buf.data () + resultStrLen;
-                auto ePtr = std::find (buf.data (), numberEnd, 'e');
-                auto preExponentionalEnd = numberEnd;
-                if (ePtr != numberEnd) {
-                    preExponentionalEnd -= (numberEnd-ePtr);
-                }
-                // May need to adjust final digit up (round up) here occasionally...
-                auto ptr2FirstStompedDigit = preExponentionalEnd - nBytes;
-                [[maybe_unused]]bool mustRoundUp           = false;
-                if (*ptr2FirstStompedDigit >= '6') {
-                    mustRoundUp = true;
-                }
-                else if (*ptr2FirstStompedDigit == '5') {
-                    // trickier - need to look at successive digits
-                    mustRoundUp = nBytes >= 2;
-                }
-                // first look for 'e' to see if scientific notation - trickier to remove precision in that case
-                // if (mustRoundUp) {
-                //     auto idx2LastKeptDigit = (resultStrLen - 1 - nBytes);
-                //     if (ePtr != numberEnd) {
-                //         idx2LastKeptDigit -= (numberEnd-ePtr);
-                //     }
-                //     buf[idx2LastKeptDigit]++; // roundup
-                // }
-                // adjust tricker for scientific notation
+                ptrdiff_t nBytes              = static_cast<ptrdiff_t> (actualPrec) - static_cast<ptrdiff_t> (effectivePrecision);
+                auto      numberEnd           = buf.data () + resultStrLen;
+                auto      ePtr                = std::find (buf.data (), numberEnd, 'e');
                 if (ePtr != numberEnd) {
                     Assert (buf.data () <= ePtr - nBytes);
                     memmove (ePtr - nBytes, ePtr, (buf.data () + resultStrLen - ePtr)); // slide 'e+22' back over the lost precision bytes of number
