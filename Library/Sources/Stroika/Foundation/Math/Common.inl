@@ -92,7 +92,6 @@ namespace Stroika::Foundation::Math {
         {
             return Private::RoundDownTo_UnSignedHelper_<T> (x, toNearest);
         }
-
     }
     template <Common::IArithmetic T>
     constexpr T RoundUpTo (T x, T toNearest)
@@ -160,12 +159,15 @@ namespace Stroika::Foundation::Math {
      ******************************** Math::Trunc ***********************************
      ********************************************************************************
      */
+    namespace Private_ {
+        void ThrowTruncOfNAN_ ();
+    }
     template <integral INT_TYPE, floating_point FLOAT_TYPE>
     constexpr INT_TYPE Trunc (FLOAT_TYPE n)
     {
         using Common::StdCompat::isnan;
         if (isnan (n)) [[unlikely]] {
-            //Execution::Throw ()   // todo
+            Private_::ThrowTruncOfNAN_ ();
         }
         FLOAT_TYPE tmp = ::trunc (n);
         if (tmp > 0) {

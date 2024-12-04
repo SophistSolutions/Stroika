@@ -24,6 +24,7 @@ vpath %cpp $(SrcDir)
 
 
 Objs	:=	\
+	$(ObjDir)Common${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
