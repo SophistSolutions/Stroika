@@ -44,6 +44,7 @@ namespace {
             EXPECT_EQ (Round (1.2, 2), 1.2);
             EXPECT_EQ (Round (1.23, 2), 1.2);
             EXPECT_EQ (Round (123.0, 2), 120.0);
+            EXPECT_EQ (Round (3724089.418996166, 6), 3724090.0);
         }
     }
 }

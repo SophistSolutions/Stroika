@@ -86,6 +86,7 @@ namespace Stroika::Foundation::Math {
      *          Round (1.2, 2) => 1.2
      *          Round (1.23, 2) => 1.2
      *          Round (123, 2) => 120
+     *          Round (3724089.418996166, 6) => 3724090.0
      */
     template <integral INT_TYPE, floating_point FLOAT_TYPE>
     constexpr INT_TYPE Round (FLOAT_TYPE x);
