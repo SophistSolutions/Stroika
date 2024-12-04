@@ -257,6 +257,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URI.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\MessageUtilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp" />

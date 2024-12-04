@@ -849,6 +849,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Common.cpp">
+      <Filter>Sources\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
