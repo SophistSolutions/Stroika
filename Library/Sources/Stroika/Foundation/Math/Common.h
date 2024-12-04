@@ -100,6 +100,14 @@ namespace Stroika::Foundation::Math {
     FLOAT_TYPE Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision);
 
     /**
+     *  \brief like std::trunc, except returns integer, and saturates value at ends of range
+     * 
+     *  \note if n is inf, this is fine, but if nan, throws
+     */
+    template <integral INT_TYPE, floating_point FLOAT_TYPE>
+    constexpr INT_TYPE Trunc (FLOAT_TYPE n);
+
+    /**
      *  NearlyEquals() can be used as a utility for arithmetic (mostly floating point) comparisons.
      * 
      *  Many other stroika classes (e.g. DateTime) provide overloads with the same arguments.
