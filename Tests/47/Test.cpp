@@ -41,11 +41,16 @@ namespace {
             EXPECT_EQ (Round<unsigned int> (numeric_limits<double>::max () * 1000), numeric_limits<unsigned int>::max ());
         }
         {
+            using Common::StdCompat::isinf;
+            using Common::StdCompat::isnan;
             EXPECT_EQ (Round (1.2, 2), 1.2);
             EXPECT_EQ (Round (1.23, 2), 1.2);
             EXPECT_EQ (Round (123.0, 2), 120.0);
-            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 6), 3724090.0, 10.1)); // 6 digit rounding of 7 digit # - diff sb within 10(apx)
-            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 7), 3724089.0, 1.1)); // 7 digit rounding of 7 digit # - diff sb within 1(apx)
+            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 6), 3724090.0, 10.1));   // 6 digit rounding of 7 digit # - diff sb within 10(apx)
+            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 7), 3724089.0, 1.1));    // 7 digit rounding of 7 digit # - diff sb within 1(apx)
+            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 8), 3724089.4, .11));    // 8 digit rounding of 7 digit # - diff sb within .1(apx)
+            EXPECT_TRUE (isnan (Round (nan(), 3)));
+            EXPECT_TRUE (isinf (Round (Math::infinity(), 9)));
         }
     }
 }

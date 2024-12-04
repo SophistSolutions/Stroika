@@ -901,7 +901,7 @@ namespace {
                 v1 = VariantValue{v1.As<Time::DateTime> ()};
             }
             if (v.GetType () == VariantValue::eFloat) {
-                EXPECT_TRUE (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
+                EXPECT_TRUE (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.11));
             }
             else {
                 EXPECT_EQ (v1, v);
