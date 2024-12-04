@@ -1187,9 +1187,9 @@ namespace {
 
 #else
             String t = FloatConversion::ToString (3724089.418996166);
-            EXPECT_EQ(t.length(), 11);  // 6 digits of precision, plus '.' and 'e+06'
-            EXPECT_TRUE(t.StartsWith ("3.724"));
-            EXPECT_TRUE(t.EndsWith ("e+06"));
+            EXPECT_EQ (t.length (), 11); // 6 digits of precision, plus '.' and 'e+06'
+            EXPECT_TRUE (t.StartsWith ("3.724"));
+            EXPECT_TRUE (t.EndsWith ("e+06"));
 
             t = FloatConversion::ToString (44905.3);
             DbgTrace ("t={}"_f, t);
@@ -1200,17 +1200,14 @@ namespace {
             // 3.141592653589793  (but really about rounding policy on FloatConversion::ToString)
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{2}), "3.1");
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{3}), "3.14");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{4}), "3.142");        // 15... rounded up to 2
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{5}), "3.1416");       // 5 rounded to 6!
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{4}), "3.142");  // 15... rounded up to 2
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{5}), "3.1416"); // 5 rounded to 6!
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{6}), "3.14159");
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{7}), "3.141593");     // rounded != trunc
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{8}), "3.1415927");    // rounded != trunc
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{9}), "3.14159265");   // trunc fine
             EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{10}), "3.141592654"); // 3 rounded up to 4
         }
-
-
-
     }
 }
 
