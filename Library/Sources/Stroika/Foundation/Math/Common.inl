@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Math {
         auto         absN                = fabs (n);
         unsigned int digitsBeforeDecimal = 0;
         if (absN >= 1) {
-            digitsBeforeDecimal = Round<unsigned int> (log10 (absN)) + 1;
+            digitsBeforeDecimal = Trunc<unsigned int> (log10 (absN)) + 1;
         }
         FLOAT_TYPE pow10Shifter = pow (10, static_cast<int> (nDigitsOfPrecision) - static_cast<int> (digitsBeforeDecimal));
         return round (n * pow10Shifter) / pow10Shifter;
