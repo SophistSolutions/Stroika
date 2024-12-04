@@ -287,15 +287,19 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     namespace Private_ {
 #if qStroika_Foundation_Debug_AssertionsChecked || !(__cpp_lib_to_chars >= 201611)
-        inline size_t CalcPrecision_ (const String& numStr)
+        inline size_t CalcPrecision_ (const String& numStr, bool countZerosAtEndAfterDecPoint = false)
         {
             bool   leading    = true;
             bool   ignoreRest = false;
+            bool   seenDot    = false;
             size_t n{};
             size_t nTrailingZeros{};
             numStr.Apply ([&] (Character c) {
                 if (ignoreRest) {
                     return;
+                }
+                if (c == '.') {
+                    seenDot = true;
                 }
                 if (c == '+' or c == '-' or c == '.') {
                     return;
@@ -308,15 +312,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     ignoreRest = true;
                     return;
                 }
-                if (c == '0') {
-                    ++nTrailingZeros;
-                }
-                else {
-                    nTrailingZeros = 0;
+                if (countZerosAtEndAfterDecPoint and seenDot) {
+                    if (c == '0') {
+                        ++nTrailingZeros;
+                    }
+                    else {
+                        nTrailingZeros = 0;
+                    }
                 }
                 ++n;
             });
-            return n - nTrailingZeros;
+            return countZerosAtEndAfterDecPoint ? n : n - nTrailingZeros;
         }
 #endif
         template <typename FLOAT_TYPE>
@@ -330,7 +336,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
 #if __cpp_lib_to_chars >= 201611
-            // empirically, on MSVC, to_chars() is much faster (appears 3x apx faster) -- LGP 2021-11-04
+            // empirically, on MSVC, to_chars() is much faster than snprintf (appears 3x apx faster) -- LGP 2021-11-04
             if (precision == Precision::kFull) {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
             }
@@ -338,7 +344,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general, effectivePrecision).ptr - buf.begin ();
             }
 #else
-            auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec) -> char* {
+            auto mkFmtWithPrecisionArg_ = [] (char* formatBufferStart, [[maybe_unused]] char* formatBufferEnd, char _Spec, bool forceScientific) -> char* {
                 char* fmtPtr = formatBufferStart;
                 *fmtPtr++    = '%';
                 // include precision arg
@@ -347,23 +353,26 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 if (_Spec != '\0') {
                     *fmtPtr++ = _Spec; // e.g. 'L' qualifier
                 }
-                *fmtPtr++ = 'g'; // format specifier
+                *fmtPtr++ = forceScientific ? 'e' : 'g'; // format specifier
                 *fmtPtr   = '\0';
                 Require (fmtPtr < formatBufferEnd);
                 return formatBufferStart;
             };
-            char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
 
             FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision);
             if (precision != Precision::kFull) {
                 f = useRoundedFloat;
             }
-            resultStrLen    = ::snprintf (buf.data (), buf.size (),
-                                          mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), same_as<FLOAT_TYPE, long double> ? 'L' : '\0'),
-                                          (int)effectivePrecision + 1, f);
-            auto actualPrec = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
-            if (actualPrec > effectivePrecision) {
-                ptrdiff_t nBytes    = static_cast<ptrdiff_t> (actualPrec) - static_cast<ptrdiff_t> (effectivePrecision);
+
+            bool forceScientific = fabs (f) >= std::pow (10, effectivePrecision);
+            char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
+            resultStrLen            = ::snprintf (buf.data (), buf.size (),
+                                                  mkFmtWithPrecisionArg_ (std::begin (format), std::end (format),
+                                                               same_as<FLOAT_TYPE, long double> ? 'L' : '\0', forceScientific),
+                                                  (int)effectivePrecision + 1, f);
+            auto actualPrecIncZeros = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}, true);
+            if (actualPrecIncZeros > effectivePrecision) {
+                ptrdiff_t nBytes    = static_cast<ptrdiff_t> (actualPrecIncZeros) - static_cast<ptrdiff_t> (effectivePrecision);
                 auto      numberEnd = buf.data () + resultStrLen;
                 auto      ePtr      = std::find (buf.data (), numberEnd, 'e');
                 if (ePtr != numberEnd) {
