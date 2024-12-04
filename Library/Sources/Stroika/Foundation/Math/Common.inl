@@ -119,9 +119,9 @@ namespace Stroika::Foundation::Math {
      ********************************************************************************
      */
     template <integral INT_TYPE, floating_point FLOAT_TYPE>
-    constexpr INT_TYPE Round (FLOAT_TYPE x)
+    constexpr INT_TYPE Round (FLOAT_TYPE n)
     {
-        FLOAT_TYPE tmp = ::round (x);
+        FLOAT_TYPE tmp = ::round (n);
         if (tmp > 0) {
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 13))
@@ -138,13 +138,19 @@ namespace Stroika::Foundation::Math {
         }
     }
     template <floating_point FLOAT_TYPE>
-    inline FLOAT_TYPE Round (FLOAT_TYPE x, unsigned int nDigitsOfPrecision)
+    inline FLOAT_TYPE Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision)
     {
         Require (nDigitsOfPrecision >= 1);
-        // not sure this is always safe (rounding error near edges) - not sure about +/- issues. But a good start
-        int        l            = x==0? 0: static_cast<int> (round (log10 (fabs (x))));
-        FLOAT_TYPE pow10Shifter = pow (10, static_cast<int> (nDigitsOfPrecision) - l);
-        return round (x * pow10Shifter) / pow10Shifter;
+        if (std::isnan (n) or std::isinf (n)) [[unlikely]] {
+            return n;
+        }
+        auto         absN                = fabs (n);
+        unsigned int digitsBeforeDecimal = 0;
+        if (absN >= 1) {
+            digitsBeforeDecimal = static_cast<unsigned int> (round (log10 (absN))) + 1;
+        }
+        FLOAT_TYPE pow10Shifter = pow (10, static_cast<int> (nDigitsOfPrecision) - static_cast<int> (digitsBeforeDecimal));
+        return round (n * pow10Shifter) / pow10Shifter;
     }
 
     /*

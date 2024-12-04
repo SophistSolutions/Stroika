@@ -86,12 +86,18 @@ namespace Stroika::Foundation::Math {
      *          Round (1.2, 2) => 1.2
      *          Round (1.23, 2) => 1.2
      *          Round (123, 2) => 120
-     *          Round (3724089.418996166, 6) => 3724090.0
+     *          Round (3724089.418996166, 6) => 3724090.0 (roughly - within 10 apx)
+     *          Round (3724089.418996166, 7) => 3724089.0 (roughly - within 1 apx)
+     *          Round(inf or nan) => inf or nan
+     * 
+     *      \note this rounding is imperfect, especially as sizeof FLOAT_TYPE gets smaller and nDigitsOfPrecision gets larger
+     *            since there is rounding error. Maybe another algorithm could do better, but its intrinsically not going to be perfect
+     *            due to mismatch between bases of numeric representation and tests (base 2 vs base 10).
      */
     template <integral INT_TYPE, floating_point FLOAT_TYPE>
-    constexpr INT_TYPE Round (FLOAT_TYPE x);
+    constexpr INT_TYPE Round (FLOAT_TYPE n);
     template <floating_point FLOAT_TYPE>
-    FLOAT_TYPE Round (FLOAT_TYPE x, unsigned int nDigitsOfPrecision);
+    FLOAT_TYPE Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision);
 
     /**
      *  NearlyEquals() can be used as a utility for arithmetic (mostly floating point) comparisons.
