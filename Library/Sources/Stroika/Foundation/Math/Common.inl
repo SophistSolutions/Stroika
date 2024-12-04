@@ -140,8 +140,10 @@ namespace Stroika::Foundation::Math {
     template <floating_point FLOAT_TYPE>
     inline FLOAT_TYPE Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision)
     {
+        using Common::StdCompat::isinf;
+        using Common::StdCompat::isnan;
         Require (nDigitsOfPrecision >= 1);
-        if (std::isnan (n) or std::isinf (n)) [[unlikely]] {
+        if (isnan (n) or isinf (n)) [[unlikely]] {
             return n;
         }
         auto         absN                = fabs (n);
