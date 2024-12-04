@@ -29,24 +29,19 @@ using Characters::String;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    void RegressionTest1_ ()
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMom)
     {
-        Debug::TraceContextBumper        ctx{"RegressionTest1_"};
-        Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
-        // quickie about to test..
-        ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
-        pr.Run ();
-    }
-    void RegressionTest2_ ()
-    {
-        Debug::TraceContextBumper        ctx{"RegressionTest2_"};
+        Debug::TraceContextBumper        ctx{"EchoHiMom"};
         Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
         // quickie about to test..
         ProcessRunner pr{"echo hi mom"};
         String        out = pr.Run ("");
-        EXPECT_TRUE (out.Trim () == "hi mom");
+        EXPECT_EQ (out.Trim (), "hi mom");
     }
-    void RegressionTest3_Pipe_ ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughPipe)
     {
         Debug::TraceContextBumper        ctx{"RegressionTest3_Pipe_"};
         Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
@@ -63,20 +58,20 @@ namespace {
         pr2.Run ();
 
         String out = String::FromUTF8 (pr2Out.As<string> ());
-
-        EXPECT_TRUE (out.Trim () == "hi mom");
+        EXPECT_EQ (out.Trim (), "hi mom");
     }
-    void RegressionTest4_DocSample_ ()
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, CatMemoryBLOB2BLOB)
     {
-        Debug::TraceContextBumper ctx{"RegressionTest4_DocSample_"};
-        // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
-        // so this should be OK for now... -- LGP 2017-06-31
+        Debug::TraceContextBumper ctx{"CatMemoryBLOB2BLOB"};
         Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
         Streams::MemoryStream::Ptr<byte> processStdIn  = Streams::MemoryStream::New<byte> (kData_);
         Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
         ProcessRunner                    pr{"cat", processStdIn, processStdOut};
         pr.Run ();
-        EXPECT_TRUE (processStdOut.ReadAll () == kData_);
+        EXPECT_EQ (processStdOut.ReadAll (), kData_);
     }
 }
 
@@ -97,11 +92,11 @@ namespace {
                 EXPECT_TRUE (myStdOut.ReadAll () == testBLOB);
             }
         }
-        void DoTests ()
-        {
-            Debug::TraceContextBumper ctx{"LargeDataSentThroughPipe_Test5_::DoTests"};
-            Private_::SingleProcessLargeDataSend_ ();
-        }
+    }
+    GTEST_TEST (Foundation_Execution_ProcessRunner, LargeDataSentThroughPipe)
+    {
+        Debug::TraceContextBumper ctx{"LargeDataSentThroughPipe"};
+        LargeDataSentThroughPipe_Test5_::Private_::SingleProcessLargeDataSend_ ();
     }
 }
 
@@ -127,48 +122,30 @@ namespace {
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();
                 myStdOut.CloseWrite (); // one process done, no more writes to this stream
-                EXPECT_TRUE (myStdOut.ReadAll () == testBLOB);
+                EXPECT_EQ (myStdOut.ReadAll () , testBLOB);
             }
         }
-        void DoTests ()
-        {
-            Debug::TraceContextBumper ctx{"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
-            Private_::SingleProcessLargeDataSend_ ();
-        }
     }
-}
-
-void RegressionTes7_FaledRun_ ()
-{
-    Debug::TraceContextBumper ctx{"RegressionTes7_FaledRun_"};
-    try {
-        ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
-        pr.Run ();
-        EXPECT_TRUE (false);
-    }
-    catch (...) {
-        using namespace Characters::Literals;
-        DbgTrace ("got failure msg: {}"_f, current_exception ());
+    GTEST_TEST (Foundation_Execution_ProcessRunner, LargeDataSentThroughPipeBackgroundProcess)
+    {
+        Debug::TraceContextBumper ctx{"LargeDataSentThroughPipeBackgroundProcess"};
+        LargeDataSentThroughPipeBackground_Test6_::Private_::SingleProcessLargeDataSend_ ();
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ProcessRunner, all)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, RegressionTes7_FaledRun_)
     {
-        Debug::TraceContextBumper ctx{"DoRegressionTests_"};
-#if qStroika_Foundation_Common_Platform_POSIX
-        // Many performance instruments use pipes
-        // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
-        //  --LGP 2014-02-05
-        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
-#endif
-        RegressionTest1_ ();
-        RegressionTest2_ ();
-        RegressionTest3_Pipe_ ();
-        RegressionTest4_DocSample_ ();
-        LargeDataSentThroughPipe_Test5_::DoTests ();
-        LargeDataSentThroughPipeBackground_Test6_::DoTests ();
-        RegressionTes7_FaledRun_ ();
+        Debug::TraceContextBumper ctx{"RegressionTes7_FaledRun_"};
+        try {
+            ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
+            pr.Run ();
+            EXPECT_TRUE (false);
+        }
+        catch (...) {
+            using namespace Characters::Literals;
+            DbgTrace ("got failure msg: {}"_f, current_exception ());
+        }
     }
 }
 #endif
@@ -176,6 +153,14 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
+
+#if qStroika_Foundation_Common_Platform_POSIX
+    // Many tests use pipes
+    // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
+    //  --LGP 2014-02-05
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
+
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else
