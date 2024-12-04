@@ -82,13 +82,15 @@ namespace Stroika::Foundation::Math {
      *      returns a float with the given number of digits of precision (rounding properly).
      *      Note here 'precision' means significant figures.
      *      in C++26 this will become constexpr, but cannot for now (cuz pow constexpr in c++26).
+     *      \req nDigitsOfPrecision >= 1
      *      EX:
      *          Round (1.2, 2) => 1.2
      *          Round (1.23, 2) => 1.2
      *          Round (123, 2) => 120
      *          Round (3724089.418996166, 6) => 3724090.0 (roughly - within 10 apx)
      *          Round (3724089.418996166, 7) => 3724089.0 (roughly - within 1 apx)
-     *          Round(inf or nan) => inf or nan
+     *          Round (3724089.418996166, 8) -> 3724089.4 (roughly - within .1 apx)
+     *          Round (inf or nan, anynumber) => inf or nan
      * 
      *      \note this rounding is imperfect, especially as sizeof FLOAT_TYPE gets smaller and nDigitsOfPrecision gets larger
      *            since there is rounding error. Maybe another algorithm could do better, but its intrinsically not going to be perfect
