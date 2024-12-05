@@ -620,6 +620,12 @@ namespace Stroika::Foundation::Characters {
     {
         return static_cast<bool> (Find (subString, co));
     }
+    inline bool   String::ContainsAny(Iterable<Character> cs, CompareOptions co) const
+    {
+        auto comparer = Character::EqualsComparer{co};
+        auto checkEachCharacter = [&] (Character c) -> bool { return cs.Any ([&] (const Character c2) { return comparer (c, c2); }); };
+        return Find (checkEachCharacter) != nullptr;
+    }
     inline String String::Replace (pair<size_t, size_t> fromTo, const String& replacement) const
     {
         return Replace (fromTo.first, fromTo.second, replacement);

@@ -594,6 +594,12 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         * 
+         */
+        nonvirtual bool ContainsAny (Iterable<Character> cs, CompareOptions co = CompareOptions::eWithCase) const;
+
+    public:
+        /**
          *  Returns true iff the given substring is contained in this string.
          *
          *  Similar to:
