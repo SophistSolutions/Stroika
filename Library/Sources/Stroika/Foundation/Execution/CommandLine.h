@@ -77,6 +77,9 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Unlike most other Stroika APIs, plain 'char' here for char*, is interpreted as being in the SDK code page (current locale - like SDKChar if narrow).
+         * 
+         *      TODO:
+         *          o    Document differnt cmdLine parsing strategies - support eBash and eWinCMD --LGP 2024-12-04
          */
         CommandLine ()                   = delete;
         CommandLine (const CommandLine&) = default;
@@ -224,6 +227,12 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+        */
+        template <typename T, typename... ARGS>
+        T As (ARGS... args) const;
+
+    public:
+        /**
          * 
         */
         nonvirtual String ToString () const;
@@ -238,6 +247,10 @@ namespace Stroika::Foundation::Execution {
     private:
         Sequence<String> fArgs_;
     };
+
+    template <>
+    String CommandLine::As<String> () const;
+    // next do overload with enum - bash style etc...
 
     namespace StandardCommandLineOptions {
         static inline const CommandLine::Option kHelp{.fSingleCharName = 'h', .fLongName = "help"sv, .fHelpOptionText = "Print out this help."sv};

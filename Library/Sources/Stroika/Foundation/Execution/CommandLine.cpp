@@ -391,3 +391,9 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
     }
     return nullopt;
 }
+
+template <>
+String CommandLine::As<String> () const
+{
+    return fArgs_.Join ([] (const String& i) { return i; }, " "sv); // @todo if i contains bad characters, surround in quotes
+}
