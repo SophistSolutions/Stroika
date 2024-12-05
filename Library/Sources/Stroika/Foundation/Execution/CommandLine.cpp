@@ -232,12 +232,16 @@ CommandLine ::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
             fArgs_ += "bash"sv;
             fArgs_ += "-c"sv;
             fArgs_ += cmdLine;
+            fShellStyleQuoting_ = StringShellStyle::eBash;
             break;
+#if qStroika_Foundation_Common_Platform_Windows
         case WrapInShell::eWindowsCMD:
             fArgs_ += "cmd"sv;
             fArgs_ += "/K"sv;
             fArgs_ += cmdLine;
+            fShellStyleQuoting_ = StringShellStyle::eWindowsCMD;
             break;
+#endif
         default:
             RequireNotReached ();
     }
@@ -421,5 +425,42 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
 template <>
 String CommandLine::As<String> () const
 {
-    return fArgs_.Join ([] (const String& i) { return i; }, " "sv); // @todo if i contains bad characters, surround in quotes
+    return As<String> (this->fShellStyleQuoting_);
+}
+
+template <>
+String CommandLine::As<String> (optional<CommandLine::StringShellStyle> shellStyle) const
+{
+    return fArgs_.Join (
+        [&] (const String& i) {
+            // default in Stroika is wrap in double-quotes, and \-quote double-quote characters, and rest leave alone
+            if (shellStyle == nullopt) {
+                if (i.ContainsAny ({' ', '\"'})) {
+                    return "\"{}\""_f(i.ReplaceAll ("\""sv, "\\\""sv));
+                }
+                else {
+                    return i;
+                }
+            }
+            else if (shellStyle == StringShellStyle::eWindowsCMD) {
+                // @todo - NO IDEA - I think "" replaces ", in cmd shell?
+                if (i.ContainsAny ({' ', '\"'})) {
+                    return "\"{}\""_f(i.ReplaceAll ("\""sv, "\\\""sv));
+                }
+                else {
+                    return i;
+                }
+            }
+            else if (shellStyle == StringShellStyle::eBash) {
+                // @todo more complex - think I need to quote other stuff, but unclear
+                if (i.ContainsAny ({' ', '\"'})) {
+                    return "\"{}\""_f(i.ReplaceAll ("\""sv, "\\\""sv));
+                }
+                else {
+                    return i;
+                }
+            }
+            return i;
+        },
+        " "sv);
 }

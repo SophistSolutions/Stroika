@@ -47,6 +47,14 @@ namespace Stroika::Foundation::Execution {
         Require (o.fSupportsArgument);
         return get<Sequence<String>> (Get (o));
     }
+    inline auto CommandLine::GetStringShellStyle () const -> optional<StringShellStyle>
+    {
+        return fShellStyleQuoting_;
+    }
+    inline void CommandLine::SetStringShellStyle (const optional<StringShellStyle>& s)
+    {
+        fShellStyleQuoting_ = s;
+    }
 
     ////---deprecated
     [[deprecated ("Since Stroika v3.0d6 use CommandLine class")]] inline Sequence<String> ParseCommandLine (const String& cmdLine)

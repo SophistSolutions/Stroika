@@ -37,7 +37,8 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
-     *  Take in a 'command line' specification (typically from 'main'), and define 'Option' objects and lookup if given arguments
+     *  Take in a 'command line' specification (typically from 'main', but also used as arguments to ProcessRunner), 
+     *  and define 'Option' objects and lookup if given arguments
      *  are 'present' in the commandline (and grab associated arguments).
      * 
      *  Supports repeated option elements. Supports -o and --output-file formats
@@ -45,7 +46,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  inspired partly by https://man7.org/linux/man-pages/man3/getopt.3.html
      * 
-     *  \par Example Usage
+     *  \par Example Usage (in application main)
      *      \code
      *          uint16_t portNumber = 8080;
      *
@@ -67,6 +68,11 @@ namespace Stroika::Foundation::Execution {
      *              cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
      *              return EXIT_SUCCESS;
      *          }
+     *      \endcode
+     * 
+     *  \par Example Usage (args to ProcessRunner)
+     *      \code
+     *          ProcessRunner p{CommandLine{WrapInShell::eBash, "echo $USER"}};
      *      \endcode
      * 
      *  TODO:
@@ -247,11 +253,31 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Sequence<String> GetArguments () const;
         nonvirtual Sequence<String> GetArguments (const Option& o) const;
 
+ public:
+    /**
+     */
+     nonvirtual optional<StringShellStyle> GetStringShellStyle () const;
+     nonvirtual void                       SetStringShellStyle (const optional<StringShellStyle>& s);
+
     public:
         /**
+         *  \par Example Usage (use default StringShellStyle)
+         *      \code
+         *          String cmdLineText = cmdLine.As<String> ();
+         *      \endcode
+         *
+         *  \par Example Usage (use no StringShellStyle)
+         *      \code
+         *          String cmdLineText = cmdLine.As<String> (nullopt);
+         *      \endcode
+         *
+         *  \par Example Usage (use bash style quoting)
+         *      \code
+         *          String cmdLineText = cmdLine.As<String> (StringShellStyle::eBash);
+         *      \endcode
          */
-        template <typename T, typename... ARGS>
-        T As (ARGS... args) const;
+        template <Common::IAnyOf<String> T, typename... ARGS>
+        nonvirtual T As (ARGS... args) const;
 
     public:
         /**
@@ -267,12 +293,13 @@ namespace Stroika::Foundation::Execution {
         static optional<pair<bool, optional<String>>> ParseOneArg_ (const Option& o, Traversal::Iterator<String>* argi);
 
     private:
-        Sequence<String> fArgs_;
+        optional<StringShellStyle> fShellStyleQuoting_;
+        Sequence<String>           fArgs_;
     };
-
     template <>
     String CommandLine::As<String> () const;
-    // next do overload with enum - bash style etc...
+    template <>
+    String CommandLine::As<String> (optional<CommandLine::StringShellStyle> shellStyle) const;
 
     namespace StandardCommandLineOptions {
         static inline const CommandLine::Option kHelp{.fSingleCharName = 'h', .fLongName = "help"sv, .fHelpOptionText = "Print out this help."sv};

@@ -66,7 +66,7 @@ namespace {
     // in cleanup, and could cause leaks
     inline void CLOSE_ (int& fd) noexcept
     {
-        if (fd >= 0) {
+        if (fd >= 0) [[likely]] {
             IgnoreExceptionsForCall (Handle_ErrNoResultInterruption ([fd] () -> int { return ::close (fd); }));
             fd = -1;
         }
@@ -212,7 +212,7 @@ namespace {
      *  There is some subtle but serious bug with my pipe code - and that APPEARS to just be that
      *  WaitForMultipleObjects doesn't work with PIPEs.
      *
-     *  I COULD just rewrite alot of this code to NOT use PIPES - but actual files. That might solve the problem
+     *  I COULD just rewrite a lot of this code to NOT use PIPES - but actual files. That might solve the problem
      *  because they never 'fill up'.
      *
      *  Alternatively - it might be that my switch to ASYNC mode (PIPE_NOWAIT) was a bad idea. Maybe if I got
@@ -331,10 +331,10 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
     t.ThrowIfDoneWithException ();
     if (auto o = GetProcessResult ()) {
         if (o->fExitStatus and o->fExitStatus != 0) {
-            AssertNotReached (); // I don't think this can happen since it should have resulted in a propaged exception
+            AssertNotReached (); // I don't think this can happen since it should have resulted in a propagated exception
         }
         if (o->fTerminatedByUncaughtSignalNumber) {
-            AssertNotReached (); // I don't think this can happen since it should have resulted in a propaged exception
+            AssertNotReached (); // I don't think this can happen since it should have resulted in a propagated exception
         }
     }
 }
@@ -374,7 +374,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
 #if qStroika_Foundation_Common_Platform_POSIX
         ::kill (SIGTERM, *o);
 #elif qStroika_Foundation_Common_Platform_Windows
-        // @todo - if this OpenProcess gives us any trouble, we can return the handle directry from the 'CreateRunnable' where we invoke the process
+        // @todo - if this OpenProcess gives us any trouble, we can return the handle directory from the 'CreateRunnable' where we invoke the process
         HANDLE processHandle = ::OpenProcess (PROCESS_TERMINATE, false, *o);
         if (processHandle != nullptr) {
             ::TerminateProcess (processHandle, 1);
@@ -394,27 +394,6 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-
-ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in,
-                              const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
-    : fExecutable_{executable}
-    , fArgs_{args}
-    , fStdIn_{in}
-    , fStdOut_{out}
-    , fStdErr_{error}
-{
-}
-
-ProcessRunner::ProcessRunner (const CommandLine& args, const Streams::InputStream::Ptr<byte>& in,
-                              const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
-    : fExecutable_{}
-    , fArgs_{args}
-    , fStdIn_{in}
-    , fStdOut_{out}
-    , fStdErr_{error}
-{
-}
-
 optional<filesystem::path> ProcessRunner::GetWorkingDirectory ()
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
