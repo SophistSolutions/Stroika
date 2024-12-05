@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
@@ -142,9 +143,17 @@ namespace Stroika::Foundation::Execution {
         ProcessRunner (const ProcessRunner&) = delete;
 
     public:
+        /** 
+         */
         ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
         ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
+                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
+
+        // @todo lose above CTORS or document they simply map to this... - no - not quite - commandLine need overloads 'interpret through bash and interpret through winCMD"
+        // then trnaslate to /bin/bash -c "blah", or Cmd/k "..." or osme such...
+
+        ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
 
     public:
@@ -251,13 +260,13 @@ namespace Stroika::Foundation::Execution {
         nonvirtual String GetEffectiveCmdLine_ () const;
 
     private:
-        optional<String>                                               fCommandLine_;
-        optional<filesystem::path>                                     fExecutable_;
-        Containers::Sequence<String>                                   fArgs_; // ignored if fExecutable empty
-        optional<filesystem::path>                                     fWorkingDirectory_;
-        Streams::InputStream::Ptr<byte>                                fStdIn_;
-        Streams::OutputStream::Ptr<byte>                               fStdOut_;
-        Streams::OutputStream::Ptr<byte>                               fStdErr_;
+        optional<String>                 fCommandLine_;
+        optional<filesystem::path>       fExecutable_;
+        CommandLine                      fArgs_; // ignored if fExecutable empty  (NEW - thinkout semantics here..)
+        optional<filesystem::path>       fWorkingDirectory_;
+        Streams::InputStream::Ptr<byte>  fStdIn_;
+        Streams::OutputStream::Ptr<byte> fStdOut_;
+        Streams::OutputStream::Ptr<byte> fStdErr_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
@@ -326,7 +335,7 @@ namespace Stroika::Foundation::Execution {
          *  \brief Join () does WaitForDone () and throw exception if there was any error (see PropagateIfException).
          *
          *  \note   Aliases - this used to be called WaitForDoneAndPropagateErrors; but used the name Join () to mimic the name used with Threads - NOT
-         *          because thats used in the implementation, but because its essentially logically the same thing.
+         *          because that's used in the implementation, but because its essentially logically the same thing.
          *
          *  @see JoinUntil ()
          *  @see WaitForDone ()

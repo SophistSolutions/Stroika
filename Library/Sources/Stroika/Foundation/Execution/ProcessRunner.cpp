@@ -398,6 +398,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStr
                               const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
     : fCommandLine_{commandLine}
     , fExecutable_{}
+    , fArgs_{commandLine} // todo - wrong
     , fStdIn_{in}
     , fStdOut_{out}
     , fStdErr_{error}
@@ -405,6 +406,16 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStr
 }
 
 ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in,
+                              const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
+    : fExecutable_{executable}
+    , fArgs_{args}
+    , fStdIn_{in}
+    , fStdOut_{out}
+    , fStdErr_{error}
+{
+}
+
+ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in,
                               const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
     : fExecutable_{executable}
     , fArgs_{args}
@@ -425,7 +436,7 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
         Throw (Execution::Exception{"need command-line or executable path to run a process"sv});
     }
     sb << IO::FileSystem::FromPath (*fExecutable_);
-    for (const String& i : fArgs_) {
+    for (const String& i : fArgs_.GetArguments ()) {
         sb << " "sv << i;
     }
     return sb;
@@ -555,8 +566,8 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 
 #if qStroika_Foundation_Common_Platform_POSIX
 namespace {
-    void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
-                                Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress, const String& cmdLine,
+    void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
+                                ProgressMonitor::Updater progress, [[maybe_unused]] const CommandLine& newCMDLine, const String& cmdLine,
                                 const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
                                 const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
@@ -859,7 +870,7 @@ namespace {
                                     //
                                     // OK - this is clearly wrong - @see http://stroika-bugs.sophists.com/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
                                     //
-                                    Execution::Sleep (1ms);
+                                    Sleep (1ms);
                                 }
                             }
                         }
@@ -868,7 +879,7 @@ namespace {
                         // nothing on input stream, so pull from stdout, stderr, and wait a little to avoid busy-waiting
                         readSoNotBlocking (useSTDOUT, out, false);
                         readSoNotBlocking (useSTDERR, err, true);
-                        Execution::Sleep (100ms);
+                        Sleep (100ms);
                     }
                 }
             }
@@ -915,8 +926,8 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
-                                  ProgressMonitor::Updater progress, const String& cmdLine, const SDKChar* currentDir,
-                                  const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
+                                  ProgressMonitor::Updater progress, [[maybe_unused]] const CommandLine& newCMDLine, String cmdLine,
+                                  const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
                                   const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
         TraceContextBumper ctx{
@@ -924,6 +935,10 @@ namespace {
             Stroika_Foundation_Debug_OptionalizeTraceArgs (
                 "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
                 currentDir == nullptr ? "nullptr"_k : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
+
+        DbgTrace ("cmdLine (old string version)={}"_f, cmdLine);
+        DbgTrace ("cmdLine COMPUTED FROM newCMDLINE={}"_f, newCMDLine.As<String> ());
+        Assert (cmdLine == newCMDLine.As<String> ());
 
         /*
          *  o   Build directory into which we can copy the JAR file plugin,
@@ -1195,17 +1210,18 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
     Streams::OutputStream::Ptr<byte>               out              = GetStdOut ();
     Streams::OutputStream::Ptr<byte>               err              = GetStdErr ();
     String                                         effectiveCmdLine = GetEffectiveCmdLine_ ();
+    CommandLine                                    newCMDLine       = this->fArgs_;
 
-    return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine] () {
+    return [processResult, runningPID, progress, newCMDLine, cmdLine, workingDir, in, out, err, effectiveCmdLine] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
         SDKString      currentDirBuf_;
         const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->c_str (), currentDirBuf_.c_str ()) : nullptr;
 #if qStroika_Foundation_Common_Platform_POSIX
-        Process_Runner_POSIX_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
+        Process_Runner_POSIX_ (processResult, runningPID, progress, newCMDLine, cmdLine, currentDir, in, out, err, effectiveCmdLine);
 #elif qStroika_Foundation_Common_Platform_Windows
-        Process_Runner_Windows_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err, effectiveCmdLine);
+        Process_Runner_Windows_ (processResult, runningPID, progress, newCMDLine, cmdLine, currentDir, in, out, err, effectiveCmdLine);
 #endif
     };
 }
