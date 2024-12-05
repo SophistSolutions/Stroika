@@ -54,7 +54,7 @@ using Debug::TraceContextBumper;
 using Memory::StackBuffer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #include <fstream>
@@ -556,7 +556,7 @@ namespace {
             if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
                 errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, thisEXEPath_cstr);
+                DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, String::FromNarrowSDKString(thisEXEPath_cstr));
 #endif
                 auto            activity = LazyEvalActivity ([&] () -> String {
                     return "executing {}"_f(Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
@@ -650,7 +650,7 @@ namespace {
         Assert (childPID > 0);
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("In Parent Fork: child process PID=%d", childPID);
+            DbgTrace ("In Parent Fork: child process PID={}"_f, childPID);
 #endif
             if (runningPID != nullptr) {
                 runningPID->store (childPID);
@@ -704,16 +704,16 @@ namespace {
                             continue;
                         }
                         else {
-                            DbgTrace (L"skipped %d spamming EAGAINs", skipedThisMany);
+                            DbgTrace ("skipped {} spamming EAGAINs"_f, skipedThisMany);
                             skipedThisMany = 0;
                         }
                     }
                     buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = '\0';
-                    DbgTrace ("read from process (fd=%d) nBytesRead = %d: %s", fd, nBytesRead, buf);
+                    DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, fd, nBytesRead, String::FromNarrowSDKString ( reinterpret_cast<const char*> (buf)));
 #endif
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("from (fd=%d) nBytesRead = %d, errno=%d", fd, nBytesRead, errno);
+                DbgTrace ("from (fd={}) nBytesRead = {}, errno={}"_f, fd, nBytesRead, errno);
 #endif
                 if (nBytesRead < 0) {
                     if (errno != EINTR and errno != EAGAIN) {
