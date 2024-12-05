@@ -720,7 +720,7 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *  @todo need overloads taking lambda that projects
-         *  @todo for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
+         *  @todo for now use builtin stl set to accumulate, but need flexibility on where compare and maybe also redo with hash?
          */
         template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual Iterable<T> Distinct (EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
