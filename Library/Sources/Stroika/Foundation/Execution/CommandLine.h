@@ -253,11 +253,11 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Sequence<String> GetArguments () const;
         nonvirtual Sequence<String> GetArguments (const Option& o) const;
 
- public:
-    /**
+    public:
+        /**
      */
-     nonvirtual optional<StringShellStyle> GetStringShellStyle () const;
-     nonvirtual void                       SetStringShellStyle (const optional<StringShellStyle>& s);
+        nonvirtual optional<StringShellStyle> GetStringShellStyle () const;
+        nonvirtual void                       SetStringShellStyle (const optional<StringShellStyle>& s);
 
     public:
         /**

@@ -237,7 +237,7 @@ CommandLine ::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
 #if qStroika_Foundation_Common_Platform_Windows
         case WrapInShell::eWindowsCMD:
             fArgs_ += "cmd"sv;
-            fArgs_ += "/K"sv;
+            fArgs_ += "/C"sv; // Carries out the command specified by string and then terminates
             fArgs_ += cmdLine;
             fShellStyleQuoting_ = StringShellStyle::eWindowsCMD;
             break;
@@ -362,7 +362,7 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
 
 String CommandLine::ToString () const
 {
-    return Characters::ToString (this->fArgs_);
+    return this->As<String> (); // hides some details, but most useful summary typically
 }
 
 optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)

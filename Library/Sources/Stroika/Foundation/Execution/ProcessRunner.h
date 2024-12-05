@@ -197,9 +197,15 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         */
+        nonvirtual CommandLine GetCommandLine () const;
+        nonvirtual void        SetCommandLine (const CommandLine& args);
+
+    public:
+        /**
          * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
          */
-        nonvirtual optional<filesystem::path> GetWorkingDirectory ();
+        nonvirtual optional<filesystem::path> GetWorkingDirectory () const;
         nonvirtual void                       SetWorkingDirectory (const optional<filesystem::path>& d);
 
     public:

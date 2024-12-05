@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
@@ -15,35 +16,55 @@
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 
-using Characters::String;
-
 #if qStroika_HasComponent_googletest
+
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMom)
     {
-        Debug::TraceContextBumper        ctx{"EchoHiMom"};
-        Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
-        // quickie about to test..
-        ProcessRunner pr{"echo hi mom"};
-        String        out = pr.Run ("");
-        EXPECT_EQ (out.Trim (), "hi mom");
+        Debug::TraceContextBumper ctx{"EchoHiMom"};    // quickie simple test
+        {
+            ProcessRunner pr{"echo hi mom"};
+            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
+            String out = pr.Run ("");
+            DbgTrace ("out='{}' and trimout='{}'"_f, out, out.Trim ());
+            EXPECT_EQ (out.Trim (), "hi mom");
+        }
+#if qStroika_Foundation_Common_Platform_POSIX
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo hi mom"}};
+            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
+            String out = pr.Run ("");
+            DbgTrace ("out='{}' and trimout='{}'"_f, out, out.Trim ());
+            EXPECT_EQ (out.Trim (), "hi mom");
+        }
+#elif qStroika_Foundation_Common_Platform_Windows
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo hi mom"}};
+            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
+            String out = pr.Run ("");
+            DbgTrace ("out='{}' and trimout='{}'"_f, out, out.Trim ());
+            EXPECT_EQ (out.Trim (), "hi mom");
+        }
+#endif
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughPipe)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughIntraStroikaPipe)
     {
-        Debug::TraceContextBumper        ctx{"RegressionTest3_Pipe_"};
+        Debug::TraceContextBumper        ctx{"EchoHiMomThroughIntraStroikaPipe"};
         Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
         ProcessRunner                    pr1{"echo hi mom"};
         Streams::MemoryStream::Ptr<byte> pipe = Streams::MemoryStream::New<byte> ();
@@ -134,20 +155,45 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ProcessRunner, RegressionTes7_FaledRun_)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, TestFailureHanlding)
     {
-        Debug::TraceContextBumper ctx{"RegressionTes7_FaledRun_"};
+        Debug::TraceContextBumper ctx{"TestFailureHanlding"};
         try {
             ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
             pr.Run ();
             EXPECT_TRUE (false);
         }
         catch (...) {
-            using namespace Characters::Literals;
             DbgTrace ("got failure msg: {}"_f, current_exception ());
         }
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, AutomaticWrapInBashOrCmdShellForPipesInShell)
+    {
+#if 0
+        // also try the Run("") variation with this... @todo
+        Debug::TraceContextBumper ctx{"AutomaticWrapInBashOrCmdShellForPipesInShell"};
+        const String              kCmdLine_ = "echo a | grep a"sv;
+        {
+            Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
+            ProcessRunner                    pr{kCmdLine_, nullptr, processStdOut}; // automatically translated to cmd /c or bash -c
+            DbgTrace ("pr.CommandLine = {}"_f, pr.GetCommandLine ());
+            pr.Run ();
+            DbgTrace ("a={}"_f, Streams::TextReader::New (processStdOut).ReadAll ().Trim ());
+            // EXPECT_EQ (Streams::TextReader::New (processStdOut).ReadAll ().Trim (), "a");
+        }
+        {
+            ProcessRunner pr{kCmdLine_};
+            auto          result = pr.Run (""sv); // input ignored - echo a
+            DbgTrace ("a={}"_f, result);
+            // EXPECT_EQ (result, "a");
+        }
+#endif
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])

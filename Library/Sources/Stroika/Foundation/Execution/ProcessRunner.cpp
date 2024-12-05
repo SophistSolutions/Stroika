@@ -54,7 +54,7 @@ using Debug::TraceContextBumper;
 using Memory::StackBuffer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #include <fstream>
@@ -394,54 +394,6 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-optional<filesystem::path> ProcessRunner::GetWorkingDirectory ()
-{
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return fWorkingDirectory_;
-}
-
-void ProcessRunner::SetWorkingDirectory (const optional<filesystem::path>& d)
-{
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    fWorkingDirectory_ = d;
-}
-
-Streams::InputStream::Ptr<byte> ProcessRunner::GetStdIn () const
-{
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return fStdIn_;
-}
-
-void ProcessRunner::SetStdIn (const Streams::InputStream::Ptr<byte>& in)
-{
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    fStdIn_ = in;
-}
-
-Streams::OutputStream::Ptr<byte> ProcessRunner::GetStdOut () const
-{
-    AssertExternallySynchronizedMutex::ReadContext declareWriteContext{fThisAssertExternallySynchronized_};
-    return fStdOut_;
-}
-
-void ProcessRunner::SetStdOut (const Streams::OutputStream::Ptr<byte>& out)
-{
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    fStdOut_ = out;
-}
-
-Streams::OutputStream::Ptr<byte> ProcessRunner::GetStdErr () const
-{
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return fStdErr_;
-}
-
-void ProcessRunner::SetStdErr (const Streams::OutputStream::Ptr<byte>& err)
-{
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    fStdErr_ = err;
-}
-
 void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
@@ -571,7 +523,7 @@ namespace {
         StackBuffer<char>  execDataArgsBuffer;
         StackBuffer<char*> execArgsPtrBuffer;
         {
-            Sequence<String> commandLine{CommandLine{cmdLine}.GetArguments ()};
+            Sequence<String> commandLine{cmdLine.GetArguments ()};
             Sequence<size_t> argsIdx;
             size_t           bufferIndex{};
             execArgsPtrBuffer.GrowToSize_uninitialized (commandLine.size () + 1);
@@ -937,6 +889,7 @@ namespace {
                 bool  bInheritHandles = true;
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
                 Characters::CString::Copy (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
+                DbgTrace ("cmdLineBuf={}"_f, cmdLineBuf);
                 Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (
                     nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
             }
