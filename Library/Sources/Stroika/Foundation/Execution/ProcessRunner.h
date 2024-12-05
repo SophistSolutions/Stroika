@@ -144,17 +144,30 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /** 
+        * 
+        * need ctors that fill in /bin/sh -c around commandline text or windows cmd/K "..."
          */
-        ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in = nullptr,
-                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
-        ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
-                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
-
         // @todo lose above CTORS or document they simply map to this... - no - not quite - commandLine need overloads 'interpret through bash and interpret through winCMD"
         // then trnaslate to /bin/bash -c "blah", or Cmd/k "..." or osme such...
 
         ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
+        ProcessRunner (const CommandLine& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
+                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
+
+        // @todo somewhat quirkly impl - commandLine if no spaces in string - just that exe, or no quotes, just space, arg, etc, and no punct chars.
+        // but if anything funny, run it through kDefaultShell - which is platform specific - either cmd or bash? If thats not what you want, use the
+        // other CTORs...
+        ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in = nullptr,
+                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
+
+    public:
+        [[deprecated ("Since Stroika v3.0d12 - use other overloads for ProcessRunner")]] ProcessRunner (
+            const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
+            const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
+            : ProcessRunner{executable, CommandLine{args}, in, out, error}
+        {
+        }
 
     public:
         nonvirtual ProcessRunner& operator= (const ProcessRunner&) = delete;
@@ -257,16 +270,12 @@ namespace Stroika::Foundation::Execution {
                                                       Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
 
     private:
-        nonvirtual String GetEffectiveCmdLine_ () const;
-
-    private:
-        optional<String>                 fCommandLine_;
-        optional<filesystem::path>       fExecutable_;
-        CommandLine                      fArgs_; // ignored if fExecutable empty  (NEW - thinkout semantics here..)
-        optional<filesystem::path>       fWorkingDirectory_;
-        Streams::InputStream::Ptr<byte>  fStdIn_;
-        Streams::OutputStream::Ptr<byte> fStdOut_;
-        Streams::OutputStream::Ptr<byte> fStdErr_;
+        optional<filesystem::path> fExecutable_;
+        CommandLine fArgs_; // ignored if fExecutable empty  (NEW - thinkout semantics here..) - arg0 can differ from executable
+        optional<filesystem::path>                                     fWorkingDirectory_;
+        Streams::InputStream::Ptr<byte>                                fStdIn_;
+        Streams::OutputStream::Ptr<byte>                               fStdOut_;
+        Streams::OutputStream::Ptr<byte>                               fStdErr_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
