@@ -65,7 +65,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, CatMemoryBLOB2BLOB)
     {
-        Debug::TraceContextBumper ctx{"CatMemoryBLOB2BLOB"};
+        Debug::TraceContextBumper        ctx{"CatMemoryBLOB2BLOB"};
         Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
         Streams::MemoryStream::Ptr<byte> processStdIn  = Streams::MemoryStream::New<byte> (kData_);
         Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
@@ -122,7 +122,7 @@ namespace {
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();
                 myStdOut.CloseWrite (); // one process done, no more writes to this stream
-                EXPECT_EQ (myStdOut.ReadAll () , testBLOB);
+                EXPECT_EQ (myStdOut.ReadAll (), testBLOB);
             }
         }
     }
