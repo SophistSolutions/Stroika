@@ -11,7 +11,9 @@ namespace Stroika::Foundation::Execution {
      */
     inline ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in,
                                          const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
-        : ProcessRunner{CommandLine{commandLine}, in, out, error}
+        : ProcessRunner{commandLine.ContainsAny ({'\'', '\"', '<', '>', '|', '$', '{', '}'}) ? CommandLine{kDefaultShell, commandLine}
+                                                                                             : CommandLine{commandLine},
+                        in, out, error}
     {
     }
 

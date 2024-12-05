@@ -180,40 +180,66 @@ String CommandLine::Option::ToString () const
  ********************************** CommandLine *********************************
  ********************************************************************************
  */
-CommandLine::CommandLine (const String& cmdLine)
-{
-    size_t        e = cmdLine.length ();
-    StringBuilder curToken;
-    Character     endQuoteChar = '\0';
-    for (size_t i = 0; i < e; ++i) {
-        Character c = cmdLine[i];
-        if (endQuoteChar != '\0' and c == endQuoteChar) {
-            fArgs_.Append (curToken.str ());
-            endQuoteChar = '\0';
-            curToken.clear ();
-        }
-        else if (c == '\'' or c == '\"') {
-            endQuoteChar = c;
-        }
-        else if (endQuoteChar != '\0') {
-            // in middle of quoted string
-            curToken += c;
-        }
-        else {
-            bool isTokenChar = not c.IsWhitespace ();
-            if (isTokenChar) {
+namespace {
+    Sequence<String> ParseArgs_ (const String& cmdLine)
+    {
+        Sequence<String> args;
+        size_t           e = cmdLine.length ();
+        StringBuilder    curToken;
+        Character        endQuoteChar = '\0';
+        for (size_t i = 0; i < e; ++i) {
+            Character c = cmdLine[i];
+            if (endQuoteChar != '\0' and c == endQuoteChar) {
+                args.Append (curToken.str ());
+                endQuoteChar = '\0';
+                curToken.clear ();
+            }
+            else if (c == '\'' or c == '\"') {
+                endQuoteChar = c;
+            }
+            else if (endQuoteChar != '\0') {
+                // in middle of quoted string
                 curToken += c;
             }
             else {
-                if (curToken.size () != 0) {
-                    fArgs_.Append (curToken.str ());
-                    curToken.clear ();
+                bool isTokenChar = not c.IsWhitespace ();
+                if (isTokenChar) {
+                    curToken += c;
+                }
+                else {
+                    if (curToken.size () != 0) {
+                        args.Append (curToken.str ());
+                        curToken.clear ();
+                    }
                 }
             }
         }
+        if (curToken.size () != 0) {
+            args.Append (curToken.str ());
+        }
+        return args;
     }
-    if (curToken.size () != 0) {
-        fArgs_.Append (curToken.str ());
+}
+CommandLine::CommandLine (const String& cmdLine)
+    : fArgs_{ParseArgs_ (cmdLine)}
+{
+}
+
+CommandLine ::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
+{
+    switch (wrapInShell) {
+        case WrapInShell::eBash:
+            fArgs_ += "bash"sv;
+            fArgs_ += "-c"sv;
+            fArgs_ += cmdLine;
+            break;
+        case WrapInShell::eWindowsCMD:
+            fArgs_ += "cmd"sv;
+            fArgs_ += "/K"sv;
+            fArgs_ += cmdLine;
+            break;
+        default:
+            RequireNotReached ();
     }
 }
 

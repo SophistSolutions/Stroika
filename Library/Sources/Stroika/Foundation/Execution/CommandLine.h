@@ -76,14 +76,36 @@ namespace Stroika::Foundation::Execution {
     class CommandLine {
     public:
         /**
-         *  Unlike most other Stroika APIs, plain 'char' here for char*, is interpreted as being in the SDK code page (current locale - like SDKChar if narrow).
-         * 
-         *      TODO:
-         *          o    Document differnt cmdLine parsing strategies - support eBash and eWinCMD --LGP 2024-12-04
+         *  Strategy/rules used when converting between a list of arguments to a single string.
+         */
+        enum class StringShellStyle {
+            eWindowsCMD,
+            eBash
+        };
+
+    public:
+        /**
+         *  Used as optional CTOR argument, to create a CommandLine with 
+         *      bash -c "actual string arg"
+         *  or
+         *      cmd /K "actual string arg"
+         */
+        enum class WrapInShell {
+#if qStroika_Foundation_Common_Platform_Windows
+            eWindowsCMD,
+#endif
+            eBash,
+        };
+
+    public:
+        /**
+         *  Unlike most other Stroika APIs, plain 'char' here for char*, is interpreted as being in the SDK code page 
+         *  (current locale - like SDKChar if narrow).
          */
         CommandLine ()                   = delete;
         CommandLine (const CommandLine&) = default;
         CommandLine (const String& cmdLine);
+        CommandLine (WrapInShell wrapInShell, const String& cmdLine);
         CommandLine (const Sequence<String>& cmdLine);
         CommandLine (int argc, char* argv[]);
         CommandLine (int argc, const char* argv[]);
@@ -227,7 +249,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-        */
+         */
         template <typename T, typename... ARGS>
         T As (ARGS... args) const;
 

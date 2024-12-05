@@ -139,17 +139,37 @@ namespace Stroika::Foundation::Execution {
         */
     class ProcessRunner {
     public:
-        ProcessRunner ()                     = delete;
-        ProcessRunner (const ProcessRunner&) = delete;
+        static constexpr CommandLine::WrapInShell kDefaultShell =
+#if qStroika_Foundation_Common_Platform_Windows
+            CommandLine::WrapInShell::eWindowsCMD
+#else
+            CommandLine::WrapInShell::eBash
+#endif
+            ;
 
     public:
-        /** 
-        * 
+        /**
+         * \brief Construct ProcessRunner with a CommandLine to run, and input/output streams for stdin/stdout/stderr for the process created.
+         * 
+         *  \note overload with executable allows specifying an alternate executable to run, even though args[0] will be what is reported
+         *        to that application (a somewhat common trick in unix-land).
+         * 
+         *  \note overload with String commandLine:
+         *        if no spaces in string - just that exe, or no quotes, just space, arg, etc, and no punct chars.
+         *        but if anything funny, run it through kDefaultShell - which is platform specific - either cmd or bash? 
+         *        If that's not what you want, use the other CTORs, and/or see the CommandLine CTOR for details.
+         * 
+         * 
+         * 
+         * 
+         * 
         * need ctors that fill in /bin/sh -c around commandline text or windows cmd/K "..."
          */
         // @todo lose above CTORS or document they simply map to this... - no - not quite - commandLine need overloads 'interpret through bash and interpret through winCMD"
         // then trnaslate to /bin/bash -c "blah", or Cmd/k "..." or osme such...
 
+        ProcessRunner ()                     = delete;
+        ProcessRunner (const ProcessRunner&) = delete;
         ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
         ProcessRunner (const CommandLine& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
