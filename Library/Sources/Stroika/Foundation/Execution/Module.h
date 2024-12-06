@@ -66,11 +66,13 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
-     *  If fn refers to an executable - return it;
-     *  On Windows, if ext is missing, also check kPathEXT
+     *  \brief If fn refers to an executable - return it (using kPATH, and kPathEXT as appropriate)
      * 
+     *  If fn is an absolute path, use that (possibly with suffixes appended).
      *  If fn is not absolute, try appending it to each path from kPATH, and redo
      *  same check.
+     * 
+     *  On Windows, if ext is missing, also check kPathEXT
      * 
      *  If no matches, return nullopt.
      */

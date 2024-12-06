@@ -205,6 +205,7 @@ optional<filesystem::path> Execution::FindExecutableInPath (const filesystem::pa
         }
 #endif
     }
+    using namespace Characters;
     for (filesystem::path d : kPath ()) {
         filesystem::path exe = d / fn;
         if (checkExists (exe)) {
@@ -213,7 +214,7 @@ optional<filesystem::path> Execution::FindExecutableInPath (const filesystem::pa
 #if qStroika_Foundation_Common_Platform_Windows
         if (fn.extension ().empty ()) {
             for (auto exeExt : kPathEXT ()) {
-                exe.extension () = exeExt;
+                exe.replace_extension (exeExt);
                 if (checkExists (exe)) {
                     return exe;
                 }
