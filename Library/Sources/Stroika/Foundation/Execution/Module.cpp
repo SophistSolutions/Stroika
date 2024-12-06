@@ -70,8 +70,8 @@ filesystem::path Execution::GetEXEPath ()
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again
-    Memory::StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, 1024};
-    ssize_t                                  n;
+    Memory::StackBuffer<SDKChar> buf{Memory::eUninitialized, 1024};
+    ssize_t                      n;
     while ((n = ::readlink ("/proc/self/exe", buf.data (), buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
@@ -81,7 +81,7 @@ filesystem::path Execution::GetEXEPath ()
     Assert (n <= buf.GetSize ()); // could leave no room for NUL-byte, but not needed
     return SDKString{buf.begin (), buf.begin () + n};
 #elif qStroika_Foundation_Common_Platform_Windows
-    Characters::SDKChar buf[MAX_PATH];
+    SDKChar buf[MAX_PATH];
     //memset (buf, 0, sizeof (buf));
     Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (Memory::NEltsOf (buf))));
     buf[Memory::NEltsOf (buf) - 1] = '\0'; // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
@@ -112,9 +112,9 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again
-    Memory::StackBuffer<Characters::SDKChar> buf{Memory::eUninitialized, 1024};
-    ssize_t                                  n;
-    char                                     linkNameBuf[1024];
+    Memory::StackBuffer<SDKChar> buf{Memory::eUninitialized, 1024};
+    ssize_t                      n;
+    char                         linkNameBuf[1024];
     (void)std::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
     while ((n = ::readlink (linkNameBuf, buf.data (), buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize_uninitialized (buf.GetSize () * 2);
@@ -140,24 +140,22 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
  ******************************** Execution::kPath ******************************
  ********************************************************************************
  */
-Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPath{
-    [] (const Common::ReadOnlyProperty<Sequence<filesystem::path>>*) {
-        const Sequence<filesystem::path> kPath_ = [] () -> Sequence<filesystem::path> {
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            if (const char* env_p = std::getenv ("PATH")) {
-                String pathVar = String::FromNarrowSDKString (env_p);
-                using namespace Characters;
+Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPath{[] (const Common::ReadOnlyProperty<Sequence<filesystem::path>>*) {
+    const Sequence<filesystem::path> kPath_ = [] () -> Sequence<filesystem::path> {
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        if (const char* env_p = std::getenv ("PATH")) {
+            String pathVar = String::FromNarrowSDKString (env_p);
 #if qStroika_Foundation_Common_Platform_POSIX
-                return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
+            return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
 #elif qStroika_Foundation_Common_Platform_Windows
-                return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
+            return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
 #endif
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-            return {};
-        }();
-        return kPath_;
-    }};
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        return {};
+    }();
+    return kPath_;
+}};
 
 #if qStroika_Foundation_Common_Platform_Windows
 /*
@@ -165,20 +163,18 @@ Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPath{
  ***************************** Execution::kPathEXT ******************************
  ********************************************************************************
  */
-Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPathEXT{
-    [] (const Common::ReadOnlyProperty<Sequence<filesystem::path>>*) {
-        const Sequence<filesystem::path> kPathEXT_ = [] () -> Sequence<filesystem::path> {
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
-            if (const char* env_p = std::getenv ("PATHEXT")) {
-                String pathVar = String::FromNarrowSDKString (env_p);
-                using namespace Characters;
-                return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-            return {};
-        }();
-        return kPathEXT_;
-    }};
+Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPathEXT{[] (const Common::ReadOnlyProperty<Sequence<filesystem::path>>*) {
+    const Sequence<filesystem::path> kPathEXT_ = [] () -> Sequence<filesystem::path> {
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        if (const char* env_p = std::getenv ("PATHEXT")) {
+            String pathVar = String::FromNarrowSDKString (env_p);
+            return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        return {};
+    }();
+    return kPathEXT_;
+}};
 #endif
 
 /*

@@ -14,6 +14,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 
 #if !defined(qHas_pid_t)
 #error "qHas_pid_t must  be defined in StroikaConfig.h"
@@ -44,18 +45,20 @@ namespace Stroika::Foundation::Execution {
     filesystem::path GetEXEPath ();
 
     /**
-     *  Return the full path to the given process
+     *  Return the full path to the given process (throws if not found).
+     * 
+     *  NYI for WINDOWS.
      */
     filesystem::path GetEXEPath (pid_t processID);
 
     /**
-     *  The set of system locations to look for an executable.
+     *  The set of system locations to look for an executable (note order matters, which is why this is a Sequence)
      */
     extern Common::ReadOnlyProperty<Containers::Sequence<filesystem::path>> kPath;
 
 #if qStroika_Foundation_Common_Platform_Windows
     /**
-     *  The set of system extensions to try for a given file to see if its an executable
+     *  The set of system extensions to try for a given file to see if its an executable (note order matters, which is why this is a Sequence)
      * 
      *  https://wiki.tcl-lang.org/page/PATHEXT
      */
