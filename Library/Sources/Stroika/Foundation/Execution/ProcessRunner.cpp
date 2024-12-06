@@ -481,9 +481,12 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                 ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
-                                const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
+                                const CommandLine& cmdLine, const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,
                                 const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
     {
+        SDKString      currentDirBuf_;
+        const SDKChar* currentDir =
+            options.fWorkingDirectory ? (currentDirBuf_ = options.fWorkingDirectory->c_str (), currentDirBuf_.c_str ()) : nullptr;
         TraceContextBumper ctx{
             "{}::Process_Runner_POSIX_",
             Stroika_Foundation_Debug_OptionalizeTraceArgs (
@@ -840,10 +843,15 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
-                                  ProgressMonitor::Updater progress, const optional<filesystem::path>& executable,
-                                  const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
+                                  ProgressMonitor::Updater progress, const optional<filesystem::path>& executable, const CommandLine& cmdLine,
+                                  const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,
                                   const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
     {
+
+        SDKString      currentDirBuf_;
+        const SDKChar* currentDir =
+            options.fWorkingDirectory ? (currentDirBuf_ = options.fWorkingDirectory->c_str (), currentDirBuf_.c_str ()) : nullptr;
+
         TraceContextBumper ctx{
             "{}::Process_Runner_Windows_",
             Stroika_Foundation_Debug_OptionalizeTraceArgs (
@@ -893,7 +901,14 @@ namespace {
             startInfo.hStdError  = jStderr[0];
             startInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-            DWORD createProcFlags{CREATE_NO_WINDOW | NORMAL_PRIORITY_CLASS | DETACHED_PROCESS};
+            DWORD createProcFlags{NORMAL_PRIORITY_CLASS};
+            if (options.fCreateNoWindow) {
+                createProcFlags |= CREATE_NO_WINDOW;
+            }
+            else if (options.fDetachConsole) {
+                // DETACHED_PROCESS ignored if CREATE_NO_WINDOW
+                createProcFlags |= DETACHED_PROCESS;
+            }
 
             {
                 // UNCLEAR; visual studio system() impl uses true; docs not clear
@@ -1118,17 +1133,17 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
     TraceContextBumper ctx{"ProcessRunner::CreateRunnable_"};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return [processResult, runningPID, progress, exe = this->fExecutable_, cmdLine = this->fArgs_, workingDir = GetWorkingDirectory (),
-            in = GetStdIn (), out = GetStdOut (), err = GetStdErr ()] () {
+    return [processResult, runningPID, progress, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = GetStdIn (),
+            out = GetStdOut (), err = GetStdErr ()] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
-        SDKString      currentDirBuf_;
-        const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->c_str (), currentDirBuf_.c_str ()) : nullptr;
+        //SDKString      currentDirBuf_;
+        //const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->c_str (), currentDirBuf_.c_str ()) : nullptr;
 #if qStroika_Foundation_Common_Platform_POSIX
-        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, currentDir, in, out, err);
+        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
 #elif qStroika_Foundation_Common_Platform_Windows
-        Process_Runner_Windows_ (processResult, runningPID, progress, exe, cmdLine, currentDir, in, out, err);
+        Process_Runner_Windows_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
 #endif
     };
 }

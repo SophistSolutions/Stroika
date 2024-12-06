@@ -46,23 +46,23 @@
  *      @todo   logic for THREADs and for PROGRESS support are NOT thought through, and just a rough first stab
  *
  *      @todo   Make sure it handles well without blocking
- *              (tricks I had todo in HF - forcing extra reads so writes woudlnt block).
+ *              (tricks I had todo in HF - forcing extra reads so writes wouldn't block).
  *              Currently structured to work off a single runnable, which implies works off a single thread. That implies
  *              it must use select() - probably a good idea anyhow - on each socket used for operations (windows and POSIX).
  *
- *              So data pusher/buffer loop does select on external streams to see if data availble.
+ *              So data pusher/buffer loop does select on external streams to see if data available.
  *
  *              This implies I must also be able to do the moral equivalent of selects on my BinaryInput/Output streams? Maybe,
- *              unless I do all the buffering... But at least for the stdin stream - I need to be able to check if/whjen there
+ *              unless I do all the buffering... But at least for the stdin stream - I need to be able to check if/when there
  *              is new data available!!! TRICKY
  *
  *      @todo   Decide on/document semantics if there is a change in setting STDIN/SETDOUT etc while a runner exists?
- *              If error - always defectable?
+ *              If error - always detectable?
  *
- *              And related - what if we create a runner, and then destroyu the object? How to assure runner fully
- *              destroyed? Blocking/waiting or error or detachted state?
+ *              And related - what if we create a runner, and then destroy the object? How to assure runner fully
+ *              destroyed? Blocking/waiting or error or detached state?
  *
- *      @todo   Add optional hook to be run (at least for posix) inside the FORKED process, before the exec.
+ *      @todo   Add optional hook to be run (at least for POSIX) inside the FORKED process, before the exec.
  *              Can be used to reset signals, and/or close file descriptors. Maybe have optional
  *              flag to auto-do this stuff and or have a preset value hook proc do do most standard things.
  *
@@ -79,9 +79,9 @@
  *      o   For POSIX - simple to cleanly cleanup open sockets/resources (not needed on windows)
  *
  *      o   Separate threading implementation from API, so easy to externally specify the thread
- *          stuff  runs on (e.g. so you can use threadpools to run the processes).
+ *          stuff  runs on (e.g. so you can use thread pools to run the processes).
  *
- *      o   Work with stroika streams so its easy to have user-defined producers and comsumers, and
+ *      o   Work with stroika streams so its easy to have user-defined producers and consumers, and
  *          easy to hook together TextStreams (wrappers) - for format conversion/piping.
  *
  *
@@ -149,7 +149,33 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         * \brief Construct ProcessRunner with a CommandLine to run, and input/output streams for stdin/stdout/stderr for the process created.
+         */
+        struct Options {
+            /**
+             *  \brief pwd/cwd of the created process
+             *      defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
+             */
+            optional<filesystem::path> fWorkingDirectory;
+
+#if qStroika_Foundation_Common_Platform_Windows
+            /**
+             *  From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
+             *  CONSOLE handle from this app not passed to child process. Obviates fDetachConsole.
+             */
+            bool fCreateNoWindow : 1 {true};
+
+            /**
+             *  From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
+             *  DETACHED_PROCESS - the new process does not inherit its parent's console
+             *  This flag is ignored if the application is not a console application, or if it is used with either CREATE_NEW_CONSOLE or DETACHED_PROCESS
+             */
+            bool fDetachConsole : 1 {true};
+#endif
+        };
+
+    public:
+        /**
+         * \brief Construct ProcessRunner with a CommandLine to run, and input/output streams for stdin/stdout/stderr for the process created (doesn't actually RUN til you call Run or RunInBackground).
          * 
          *  \note overload with executable allows specifying an alternate executable to run, even though args[0] will be what is reported
          *        to that application (a somewhat common trick in unix-land).
@@ -203,10 +229,15 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
          */
-        nonvirtual optional<filesystem::path> GetWorkingDirectory () const;
-        nonvirtual void                       SetWorkingDirectory (const optional<filesystem::path>& d);
+        nonvirtual Options GetOptions () const;
+        nonvirtual void    SetOptions (const Options& o);
+
+    public:
+        /**
+         */
+        [[deprecated ("Since Stroika v3.0d12 - use GetOptions().fWorkingDirectory")]] optional<filesystem::path> GetWorkingDirectory () const;
+        [[deprecated ("Since Stroika v3.0d12 - use SetOptions({.fWorkingDirectory})")]] void SetWorkingDirectory (const optional<filesystem::path>& d);
 
     public:
         /**
@@ -296,9 +327,9 @@ namespace Stroika::Foundation::Execution {
                                                       Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
 
     private:
-        optional<filesystem::path> fExecutable_;
-        CommandLine fArgs_; // ignored if fExecutable empty  (NEW - thinkout semantics here..) - arg0 can differ from executable
-        optional<filesystem::path>                                     fWorkingDirectory_;
+        Options                                                        fOptions_;
+        optional<filesystem::path>                                     fExecutable_; // if omitted, derived from fArgs[0]
+        CommandLine                                                    fArgs_;
         Streams::InputStream::Ptr<byte>                                fStdIn_;
         Streams::OutputStream::Ptr<byte>                               fStdOut_;
         Streams::OutputStream::Ptr<byte>                               fStdErr_;

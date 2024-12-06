@@ -40,12 +40,22 @@ namespace Stroika::Foundation::Execution {
     inline optional<filesystem::path> ProcessRunner::GetWorkingDirectory () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return fWorkingDirectory_;
+        return fOptions_.fWorkingDirectory;
     }
     inline void ProcessRunner::SetWorkingDirectory (const optional<filesystem::path>& d)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        fWorkingDirectory_ = d;
+        fOptions_.fWorkingDirectory = d;
+    }
+    inline auto ProcessRunner::GetOptions () const -> Options
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        return fOptions_;
+    }
+    inline void ProcessRunner::SetOptions (const Options& o)
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        fOptions_ = o;
     }
     inline Streams::InputStream::Ptr<byte> ProcessRunner::GetStdIn () const
     {
