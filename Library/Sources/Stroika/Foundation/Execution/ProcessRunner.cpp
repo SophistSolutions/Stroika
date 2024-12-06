@@ -481,7 +481,7 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                 ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
-                                [[maybe_unused]] const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
+                                const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
                                 const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
     {
         TraceContextBumper ctx{
@@ -841,7 +841,7 @@ namespace {
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                   ProgressMonitor::Updater progress, const optional<filesystem::path>& executable,
-                                  [[maybe_unused]] const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
+                                  const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
                                   const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
     {
         TraceContextBumper ctx{
@@ -896,7 +896,10 @@ namespace {
             DWORD createProcFlags{CREATE_NO_WINDOW | NORMAL_PRIORITY_CLASS | DETACHED_PROCESS};
 
             {
-                bool  bInheritHandles = true;
+                // UNCLEAR; visual studio system() impl uses true; docs not clear
+                // BUT - when I use false I get "unknown file: error: C++ exception with description "Spawned program 'echo hi mom' failed: error: 1" thrown in the test body." for some tests
+                bool bInheritHandles = true;
+
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
                 Characters::CString::Copy (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
                 DbgTrace ("cmdLineBuf={}"_f, cmdLineBuf);
