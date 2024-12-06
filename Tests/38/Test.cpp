@@ -35,10 +35,11 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"EchoHiMom"}; // quickie simple test
         {
+            // only fails under debugger - windows      -- @todo debug -- decide how to handle
             ProcessRunner pr{"echo hi mom"};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
-            DbgTrace ("out='{}' and trimout='{}'"_f, out, out.Trim ());
+            DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_EQ (out.Trim (), "hi mom");
         }
 #if qStroika_Foundation_Common_Platform_POSIX
@@ -46,7 +47,6 @@ namespace {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo hi mom"}};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
-            DbgTrace ("out='{}' and trimout='{}'"_f, out, out.Trim ());
             EXPECT_EQ (out.Trim (), "hi mom");
         }
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -54,8 +54,31 @@ namespace {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo hi mom"}};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
-            DbgTrace ("out='{}' and trimout='{}'"_f, out, out.Trim ());
             EXPECT_EQ (out.Trim (), "hi mom");
+        }
+#endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoPATH)
+    {
+        Debug::TraceContextBumper ctx{"EchoPATH"}; // quickie simple test
+#if qStroika_Foundation_Common_Platform_POSIX
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $PATH"}};
+            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
+            String out = pr.Run ("");
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            EXPECT_TRUE (not out.Trim ().empty ());
+        }
+#elif qStroika_Foundation_Common_Platform_Windows
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %PATH%"}};
+            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
+            String out = pr.Run ("");
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            EXPECT_TRUE (not out.Trim ().empty ());
         }
 #endif
     }
