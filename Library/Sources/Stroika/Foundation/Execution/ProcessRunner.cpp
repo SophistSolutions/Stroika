@@ -917,9 +917,33 @@ namespace {
 
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
                 Characters::CString::Copy (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
-                DbgTrace ("cmdLineBuf={}"_f, cmdLineBuf);
-                Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (
-                    nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
+
+                optional<filesystem::path> useEXEPath = executable;
+
+                // WARN if EXE not in path...
+#if qStroika_Foundation_Debug_AssertionsChecked
+                if (useEXEPath) {
+                    if (!FindExecutableInPath (*useEXEPath)) {
+                        DbgTrace ("Cannot find exe '{}' in PATH ({})"_f, useEXEPath, kPath ());
+                    }
+                }
+                else {
+                    // not sure we want to do this?
+                    auto cmdArgs = cmdLine.GetArguments ();
+                    if (cmdArgs.size () >= 1) {
+                        filesystem::path exe2Find = IO::FileSystem::ToPath (cmdArgs[0]);
+                        if (!FindExecutableInPath (exe2Find)) {
+                            DbgTrace ("Cannot find exe '{}' in PATH ({})"_f, exe2Find, kPath ());
+                        }
+                    }
+                }
+#endif
+                // see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa
+                // for complex rules for interpretting nullptr in appname (first) arg, and cmdLineBuf... But mostly - the idea - is
+                // it runs the search path algorithm and tries to do the right thing
+                Execution::Platform::Windows::ThrowIfZeroGetLastError (
+                    ::CreateProcess (useEXEPath == nullopt ? nullptr : useEXEPath->c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
+                                     createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
             }
 
             if (runningPID != nullptr) {
