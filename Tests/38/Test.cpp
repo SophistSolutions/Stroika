@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -29,6 +30,19 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Frameworks;
 
 #if qStroika_HasComponent_googletest
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, SETUP)
+    {
+        //system ("echo hi mom");
+        if (not FindExecutableInPath ("echo")) {
+            // If running under debugger, consider adding:
+            //      PATH=%PATH%;C:\tools\msys64\usr\bin\ (or similar)
+            // to Debugging/Environment settings for debugger
+            Stroika::Frameworks::Test::WarnTestIssue ("echo not found in path");
+        }
+    }
+}
 
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMom)
