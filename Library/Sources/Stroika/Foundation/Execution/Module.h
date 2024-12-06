@@ -12,16 +12,14 @@
 #include <unistd.h>
 #endif
 
-#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Property.h"
 
 #if !defined(qHas_pid_t)
 #error "qHas_pid_t must  be defined in StroikaConfig.h"
 #endif
 
 namespace Stroika::Foundation::Execution {
-
-    /// TODO - maybe move this to configuraiotn module???
 
 #if qHas_pid_t
     using pid_t = ::pid_t;
@@ -32,9 +30,6 @@ namespace Stroika::Foundation::Execution {
     using pid_t = int;
 #endif
 #endif
-
-    using Characters::SDKString;
-    using Characters::String;
 
     /**
      *  The directory where the executable that is running this code is located. If this code is compiled into a DLL,
@@ -52,6 +47,31 @@ namespace Stroika::Foundation::Execution {
      *  Return the full path to the given process
      */
     filesystem::path GetEXEPath (pid_t processID);
+
+    /**
+     *  The set of system locations to look for an executable.
+     */
+    extern Common::ReadOnlyProperty<Containers::Sequence<filesystem::path>> kPath;
+
+#if qStroika_Foundation_Common_Platform_Windows
+    /**
+     *  The set of system extensions to try for a given file to see if its an executable
+     * 
+     *  https://wiki.tcl-lang.org/page/PATHEXT
+     */
+    extern Common::ReadOnlyProperty<Containers::Sequence<filesystem::path>> kPathEXT;
+#endif
+
+    /**
+     *  If fn refers to an executable - return it;
+     *  On Windows, if ext is missing, also check kPathEXT
+     * 
+     *  If fn is not absolute, try appending it to each path from kPATH, and redo
+     *  same check.
+     * 
+     *  If no matches, return nullopt.
+     */
+    optional<filesystem::path> FindExecutableInPath (const filesystem::path& fn);
 
 }
 

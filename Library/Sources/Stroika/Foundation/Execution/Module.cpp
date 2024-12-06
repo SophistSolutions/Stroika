@@ -16,6 +16,7 @@
 #include <windows.h>
 #endif
 
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -25,6 +26,8 @@
 #include "Module.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -91,7 +94,7 @@ filesystem::path Execution::GetEXEPath ()
 
 /*
  ********************************************************************************
- **************************** Execution::GetEXEPathT ****************************
+ ***************************** Execution::GetEXEPath ****************************
  ********************************************************************************
  */
 filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
@@ -130,4 +133,97 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     AssertNotImplemented ();
     return filesystem::path{};
 #endif
+}
+
+/*
+ ********************************************************************************
+ ******************************** Execution::kPath ******************************
+ ********************************************************************************
+ */
+Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPath{
+    [] (const Common::ReadOnlyProperty<Sequence<filesystem::path>>*) {
+        const Sequence<filesystem::path> kPath_ = [] () -> Sequence<filesystem::path> {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
+            if (const char* env_p = std::getenv ("PATH")) {
+                String pathVar = String::FromNarrowSDKString (env_p);
+                using namespace Characters;
+#if qStroika_Foundation_Common_Platform_POSIX
+                return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
+#elif qStroika_Foundation_Common_Platform_Windows
+                return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
+#endif
+            }
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
+            return {};
+        }();
+        return kPath_;
+    }};
+
+#if qStroika_Foundation_Common_Platform_Windows
+/*
+ ********************************************************************************
+ ***************************** Execution::kPathEXT ******************************
+ ********************************************************************************
+ */
+Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPathEXT{
+    [] (const Common::ReadOnlyProperty<Sequence<filesystem::path>>*) {
+        const Sequence<filesystem::path> kPathEXT_ = [] () -> Sequence<filesystem::path> {
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
+            if (const char* env_p = std::getenv ("PATHEXT")) {
+                String pathVar = String::FromNarrowSDKString (env_p);
+                using namespace Characters;
+                return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return IO::FileSystem::ToPath (i); });
+            }
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
+            return {};
+        }();
+        return kPathEXT_;
+    }};
+#endif
+
+/*
+ ********************************************************************************
+ ******************* Execution::FindExecutableInPath ****************************
+ ********************************************************************************
+ */
+optional<filesystem::path> Execution::FindExecutableInPath (const filesystem::path& fn)
+{
+    auto checkExists = [] (const filesystem::path& exe) {
+        // better to use 'access' api?
+        return filesystem::exists (exe) and filesystem::is_regular_file (exe) and
+               static_cast<bool> (filesystem::status (exe).permissions () & filesystem::perms::owner_exec);
+    };
+    if (fn.is_absolute ()) {
+        if (checkExists (fn)) {
+            return fn;
+        }
+#if qStroika_Foundation_Common_Platform_Windows
+        if (fn.extension ().empty ()) {
+            filesystem::path exe = fn;
+            for (auto exeExt : kPathEXT ()) {
+                exe.extension () = exeExt;
+                if (checkExists (exe)) {
+                    return exe;
+                }
+            }
+        }
+#endif
+    }
+    for (filesystem::path d : kPath ()) {
+        filesystem::path exe = d / fn;
+        if (checkExists (exe)) {
+            return exe;
+        }
+#if qStroika_Foundation_Common_Platform_Windows
+        if (fn.extension ().empty ()) {
+            for (auto exeExt : kPathEXT ()) {
+                exe.extension () = exeExt;
+                if (checkExists (exe)) {
+                    return exe;
+                }
+            }
+        }
+#endif
+    }
+    return nullopt;
 }
