@@ -18,6 +18,21 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Traversal;
 
+#if qStroika_Foundation_Common_Platform_Windows
+namespace {
+    // this is the version of CMD.exe to invoke (I think)
+    // https://en.wikipedia.org/wiki/COMSPEC
+    const String kCOMPSEC_ = [] () -> String {
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        if (const char* env_p = std::getenv ("COMSPEC")) {
+            return String::FromNarrowSDKString (env_p);
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        return "C:\\WINDOWS\\system32\\cmd.exe"sv;
+    }();
+}
+#endif
+
 /*
  ********************************************************************************
  ******************* Execution::InvalidCommandLineArgument **********************
@@ -236,7 +251,10 @@ CommandLine ::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
             break;
 #if qStroika_Foundation_Common_Platform_Windows
         case WrapInShell::eWindowsCMD:
-            fArgs_ += "cmd"sv;
+            fArgs_ += kCOMPSEC_;
+            // fArgs_ += "/D";
+            //   fArgs_ += "/E:OFF";
+            //  fArgs_ += "/F:OFF";
             fArgs_ += "/C"sv; // Carries out the command specified by string and then terminates
             fArgs_ += cmdLine;
             fShellStyleQuoting_ = StringShellStyle::eWindowsCMD;
