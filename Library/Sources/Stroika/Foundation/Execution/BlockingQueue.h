@@ -17,7 +17,7 @@
  *      @todo   Perhaps have PeekHead() take timeout=0 optional param?
  *
  *      @todo   Consider linking this to ThreadPools - so that instead of having a single
- *              thread running the Q, you have an entire threadpool. Maybe thats an attachable
+ *              thread running the Q, you have an entire threadpool. Maybe that's an attachable
  *              attribute of the Q?
  *
  */
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /*
          *  Note - you may want to pass in a specific queue object, to require use of a particular concrete implementation
-         *  for the Queue (such as one that doesn't allocate memory). But when contructing a blocking Q (even with another Q)
+         *  for the Queue (such as one that doesn't allocate memory). But when constructing a blocking Q (even with another Q)
          *  the 'useQueue' must be empty.
          */
         BlockingQueue () = default;
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  Typically this will return almost instantly.
          *
-         *  Analagous to the java BlockingQueue<T>::put(e) and similar to the java
+         *  Analogous to the java BlockingQueue<T>::put(e) and similar to the java
          *  BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
          *
          *  \note this is illegal to call (assertion error) if SignalEndOfInput () has been called on this BlockingQueue.
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  If timeout == 0 (the default) this amounts to peeking (but with remove), and never waits.
          *
-         *  Analagous to the java BlockingQueue<T>::poll () method.
+         *  Analogous to the java BlockingQueue<T>::poll () method.
          */
         nonvirtual optional<T> RemoveHeadIfPossible (Time::DurationSeconds timeout = 0s);
 
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Execution {
          *  Returns the front element from the Q, if there is one, and an empty optional<T> if
          *  there is none (without blocking).
          *
-         *  Analagous to the java BlockingQueue<T>::peek() method.
+         *  Analogous to the java BlockingQueue<T>::peek() method.
          */
         nonvirtual optional<T> PeekHead () const;
 
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void clear ();
 
     private:
-        mutable ConditionVariable<> fCondtionVariable_;
+        mutable ConditionVariable<> fConditionVariable_;
         bool                        fEndOfInput_{false};
         Containers::Queue<T>        fQueue_;
     };
