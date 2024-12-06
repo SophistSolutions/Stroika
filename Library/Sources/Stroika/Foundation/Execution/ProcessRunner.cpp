@@ -27,6 +27,7 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
@@ -394,6 +395,14 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
+ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in,
+                              const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
+    : ProcessRunner{commandLine.ContainsAny ({'\'', '\"', '<', '>', '|', '$', '{', '}'}) ? CommandLine{kDefaultShell, commandLine}
+                                                                                         : CommandLine{commandLine},
+                    in, out, error}
+{
+}
+
 void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
@@ -471,9 +480,9 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 #if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
-                                ProgressMonitor::Updater progress, [[maybe_unused]] const CommandLine& cmdLine, const SDKChar* currentDir,
-                                const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
-                                const Streams::OutputStream::Ptr<byte>& err)
+                                ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
+                                [[maybe_unused]] const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
+                                const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
     {
         TraceContextBumper ctx{
             "{}::Process_Runner_POSIX_",
@@ -556,7 +565,7 @@ namespace {
             if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
                 errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, String::FromNarrowSDKString(thisEXEPath_cstr));
+                DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
 #endif
                 auto            activity = LazyEvalActivity ([&] () -> String {
                     return "executing {}"_f(Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
@@ -709,7 +718,8 @@ namespace {
                         }
                     }
                     buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = '\0';
-                    DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, fd, nBytesRead, String::FromNarrowSDKString ( reinterpret_cast<const char*> (buf)));
+                    DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, fd, nBytesRead,
+                              String::FromNarrowSDKString (reinterpret_cast<const char*> (buf)));
 #endif
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -830,9 +840,9 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
-                                  ProgressMonitor::Updater progress, [[maybe_unused]] const CommandLine& cmdLine, const SDKChar* currentDir,
-                                  const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
-                                  const Streams::OutputStream::Ptr<byte>& err)
+                                  ProgressMonitor::Updater progress, const optional<filesystem::path>& executable,
+                                  [[maybe_unused]] const CommandLine& cmdLine, const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in,
+                                  const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
     {
         TraceContextBumper ctx{
             "{}::Process_Runner_Windows_",
@@ -1105,22 +1115,17 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
     TraceContextBumper ctx{"ProcessRunner::CreateRunnable_"};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    optional<filesystem::path>                     workingDir = GetWorkingDirectory ();
-    Streams::InputStream::Ptr<byte>                in         = GetStdIn ();
-    Streams::OutputStream::Ptr<byte>               out        = GetStdOut ();
-    Streams::OutputStream::Ptr<byte>               err        = GetStdErr ();
-    CommandLine                                    cmdLine    = this->fArgs_;
-
-    return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err] () {
+    return [processResult, runningPID, progress, exe = this->fExecutable_, cmdLine = this->fArgs_, workingDir = GetWorkingDirectory (),
+            in = GetStdIn (), out = GetStdOut (), err = GetStdErr ()] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
         SDKString      currentDirBuf_;
         const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->c_str (), currentDirBuf_.c_str ()) : nullptr;
 #if qStroika_Foundation_Common_Platform_POSIX
-        Process_Runner_POSIX_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err);
+        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, currentDir, in, out, err);
 #elif qStroika_Foundation_Common_Platform_Windows
-        Process_Runner_Windows_ (processResult, runningPID, progress, cmdLine, currentDir, in, out, err);
+        Process_Runner_Windows_ (processResult, runningPID, progress, exe, cmdLine, currentDir, in, out, err);
 #endif
     };
 }

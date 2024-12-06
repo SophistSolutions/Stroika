@@ -27,13 +27,6 @@ namespace Stroika::Foundation::Execution {
         , fStdErr_{error}
     {
     }
-    inline ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in,
-                                         const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
-        : ProcessRunner{commandLine.ContainsAny ({'\'', '\"', '<', '>', '|', '$', '{', '}'}) ? CommandLine{kDefaultShell, commandLine}
-                                                                                             : CommandLine{commandLine},
-                        in, out, error}
-    {
-    }
     inline CommandLine ProcessRunner::GetCommandLine () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

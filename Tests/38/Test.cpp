@@ -33,7 +33,7 @@ using namespace Stroika::Frameworks;
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMom)
     {
-        Debug::TraceContextBumper ctx{"EchoHiMom"};    // quickie simple test
+        Debug::TraceContextBumper ctx{"EchoHiMom"}; // quickie simple test
         {
             ProcessRunner pr{"echo hi mom"};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
