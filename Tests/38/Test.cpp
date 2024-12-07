@@ -13,8 +13,8 @@
 #if qStroika_Foundation_Common_Platform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
-#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -37,9 +37,16 @@ namespace {
         //system ("echo hi mom");
         if (not FindExecutableInPath ("echo")) {
             // If running under debugger, consider adding:
-            //      PATH=%PATH%;C:\tools\msys64\usr\bin\ (or similar)
-            // to Debugging/Environment settings for debugger
+            //      Visual Studio (Windows):
+            //          PATH=%PATH%;C:\tools\msys64\usr\bin\;c:\tools\msys64\mingw64\bin\ (or similar)
+            //          to Debugging/Environment settings for debugger
             Stroika::Frameworks::Test::WarnTestIssue ("echo not found in path");
+        }
+        if (not FindExecutableInPath ("grep")) {
+            Stroika::Frameworks::Test::WarnTestIssue ("grep not found in path");
+        }
+        if (not FindExecutableInPath ("bash")) {
+            Stroika::Frameworks::Test::WarnTestIssue ("bash not found in path");
         }
     }
 }
@@ -49,7 +56,6 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"EchoHiMom"}; // quickie simple test
         {
-            // only fails under debugger - windows      -- @todo debug -- decide how to handle
             ProcessRunner pr{"echo hi mom"};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
@@ -89,6 +95,30 @@ namespace {
 #elif qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %PATH%"}};
+            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
+            String out = pr.Run ("");
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            EXPECT_TRUE (not out.Trim ().empty ());
+        }
+#endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoUSER)
+    {
+        Debug::TraceContextBumper ctx{"EchoUSER"}; // quickie simple test
+#if qStroika_Foundation_Common_Platform_POSIX
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $USER"}};
+            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
+            String out = pr.Run ("");
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            EXPECT_TRUE (not out.Trim ().empty ());
+        }
+#elif qStroika_Foundation_Common_Platform_Windows
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %USERNAME%"}};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
             DbgTrace ("out='{}'"_f, out.Trim ());
@@ -209,8 +239,6 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, AutomaticWrapInBashOrCmdShellForPipesInShell)
     {
-#if 0
-        // also try the Run("") variation with this... @todo
         Debug::TraceContextBumper ctx{"AutomaticWrapInBashOrCmdShellForPipesInShell"};
         const String              kCmdLine_ = "echo a | grep a"sv;
         {
@@ -218,16 +246,13 @@ namespace {
             ProcessRunner                    pr{kCmdLine_, nullptr, processStdOut}; // automatically translated to cmd /c or bash -c
             DbgTrace ("pr.CommandLine = {}"_f, pr.GetCommandLine ());
             pr.Run ();
-            DbgTrace ("a={}"_f, Streams::TextReader::New (processStdOut).ReadAll ().Trim ());
-            // EXPECT_EQ (Streams::TextReader::New (processStdOut).ReadAll ().Trim (), "a");
+            EXPECT_EQ (Streams::TextReader::New (processStdOut).ReadAll ().Trim (), "a");
         }
         {
             ProcessRunner pr{kCmdLine_};
-            auto          result = pr.Run (""sv); // input ignored - echo a
-            DbgTrace ("a={}"_f, result);
-            // EXPECT_EQ (result, "a");
+            auto          result = pr.Run (""sv); // input ignored by echo a
+            EXPECT_EQ (result.Trim (), "a");
         }
-#endif
     }
 }
 
