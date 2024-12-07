@@ -82,15 +82,6 @@ namespace Stroika::Foundation::Execution {
     class CommandLine {
     public:
         /**
-         *  Strategy/rules used when converting between a list of arguments to a single string.
-         */
-        enum class StringShellStyle {
-            eWindowsCMD,
-            eBash
-        };
-
-    public:
-        /**
          *  Used as optional CTOR argument, to create a CommandLine with 
          *      bash -c "actual string arg"
          *  or
@@ -107,6 +98,17 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Unlike most other Stroika APIs, plain 'char' here for char*, is interpreted as being in the SDK code page 
          *  (current locale - like SDKChar if narrow).
+         * 
+         *  CommandLine{STRING} parsing the string into individual components the way a generic shell would (space separation)
+         *  and respecting quote characters).
+         * 
+         *  CommandLine{WrapInShell, STRING} really doesn't parse the string (except to add quotes as needed), but creates
+         *  a CommandLine that will allow the argument shell to parse the command (e.g. bash -c "arguments").
+         * 
+         *  CommandLine{Sequence<String>} just captures that sequence of arguments and does not processing/parsing.
+         * 
+         *  CommandLine{argc,argv} are meant for being called from main, and also do no processing (besides treating the
+         *  char* strings as SDKChar and mapping them from the OS codepage to UNICODE).
          */
         CommandLine ()                   = delete;
         CommandLine (const CommandLine&) = default;
@@ -255,25 +257,34 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-     */
-        nonvirtual optional<StringShellStyle> GetStringShellStyle () const;
-        nonvirtual void                       SetStringShellStyle (const optional<StringShellStyle>& s);
+         *  Strategy/rules used when converting between a list of arguments to a single string.
+         */
+        enum class StringShellQuoting {
+            eWindowsCMD,
+            eBash
+        };
 
     public:
         /**
-         *  \par Example Usage (use default StringShellStyle)
+         */
+        nonvirtual optional<StringShellQuoting> GetStringShellQuoting () const;
+        nonvirtual void                         SetStringShellQuoting (const optional<StringShellQuoting>& s);
+
+    public:
+        /**
+         *  \par Example Usage (use default StringShellQuoting)
          *      \code
          *          String cmdLineText = cmdLine.As<String> ();
          *      \endcode
          *
-         *  \par Example Usage (use no StringShellStyle)
+         *  \par Example Usage (use no StringShellQuoting)
          *      \code
          *          String cmdLineText = cmdLine.As<String> (nullopt);
          *      \endcode
          *
          *  \par Example Usage (use bash style quoting)
          *      \code
-         *          String cmdLineText = cmdLine.As<String> (StringShellStyle::eBash);
+         *          String cmdLineText = cmdLine.As<String> (StringShellQuoting::eBash);
          *      \endcode
          */
         template <Common::IAnyOf<String> T, typename... ARGS>
@@ -293,13 +304,13 @@ namespace Stroika::Foundation::Execution {
         static optional<pair<bool, optional<String>>> ParseOneArg_ (const Option& o, Traversal::Iterator<String>* argi);
 
     private:
-        optional<StringShellStyle> fShellStyleQuoting_;
-        Sequence<String>           fArgs_;
+        optional<StringShellQuoting> fShellStyleQuoting_;
+        Sequence<String>             fArgs_;
     };
     template <>
     String CommandLine::As<String> () const;
     template <>
-    String CommandLine::As<String> (optional<CommandLine::StringShellStyle> shellStyle) const;
+    String CommandLine::As<String> (optional<CommandLine::StringShellQuoting> shellStyle) const;
 
     namespace StandardCommandLineOptions {
         static inline const CommandLine::Option kHelp{.fSingleCharName = 'h', .fLongName = "help"sv, .fHelpOptionText = "Print out this help."sv};

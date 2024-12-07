@@ -18,21 +18,6 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Traversal;
 
-#if qStroika_Foundation_Common_Platform_Windows
-namespace {
-    // this is the version of CMD.exe to invoke (I think)
-    // https://en.wikipedia.org/wiki/COMSPEC
-    const String kCOMPSEC_ = [] () -> String {
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        if (const char* env_p = std::getenv ("COMSPEC")) {
-            return String::FromNarrowSDKString (env_p);
-        }
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        return "C:\\WINDOWS\\system32\\cmd.exe"sv;
-    }();
-}
-#endif
-
 /*
  ********************************************************************************
  ******************* Execution::InvalidCommandLineArgument **********************
@@ -242,12 +227,24 @@ CommandLine::CommandLine (const String& cmdLine)
 
 CommandLine ::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
 {
+#if qStroika_Foundation_Common_Platform_Windows
+    // this is the version of CMD.exe to invoke (I think)
+    // https://en.wikipedia.org/wiki/COMSPEC
+    static const String kCOMPSEC_ = [] () -> String {
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        if (const char* env_p = std::getenv ("COMSPEC")) {
+            return String::FromNarrowSDKString (env_p);
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
+        return "C:\\WINDOWS\\system32\\cmd.exe"sv;
+    }();
+#endif
     switch (wrapInShell) {
         case WrapInShell::eBash:
             fArgs_ += "bash"sv;
             fArgs_ += "-c"sv;
             fArgs_ += cmdLine;
-            fShellStyleQuoting_ = StringShellStyle::eBash;
+            fShellStyleQuoting_ = StringShellQuoting::eBash;
             break;
 #if qStroika_Foundation_Common_Platform_Windows
         case WrapInShell::eWindowsCMD:
@@ -257,7 +254,7 @@ CommandLine ::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
             //  fArgs_ += "/F:OFF";
             fArgs_ += "/C"sv; // Carries out the command specified by string and then terminates
             fArgs_ += cmdLine;
-            fShellStyleQuoting_ = StringShellStyle::eWindowsCMD;
+            fShellStyleQuoting_ = StringShellQuoting::eWindowsCMD;
             break;
 #endif
         default:
@@ -447,7 +444,7 @@ String CommandLine::As<String> () const
 }
 
 template <>
-String CommandLine::As<String> (optional<CommandLine::StringShellStyle> shellStyle) const
+String CommandLine::As<String> (optional<CommandLine::StringShellQuoting> shellStyle) const
 {
     return fArgs_.Join (
         [&] (const String& i) {
@@ -460,7 +457,7 @@ String CommandLine::As<String> (optional<CommandLine::StringShellStyle> shellSty
                     return i;
                 }
             }
-            else if (shellStyle == StringShellStyle::eWindowsCMD) {
+            else if (shellStyle == StringShellQuoting::eWindowsCMD) {
                 // @todo - NO IDEA - I think "" replaces ", in cmd shell?
                 if (i.ContainsAny ({' ', '\"'})) {
                     return "\"{}\""_f(i.ReplaceAll ("\""sv, "\\\""sv));
@@ -469,7 +466,7 @@ String CommandLine::As<String> (optional<CommandLine::StringShellStyle> shellSty
                     return i;
                 }
             }
-            else if (shellStyle == StringShellStyle::eBash) {
+            else if (shellStyle == StringShellQuoting::eBash) {
                 // @todo more complex - think I need to quote other stuff, but unclear
                 if (i.ContainsAny ({' ', '\"'})) {
                     return "\"{}\""_f(i.ReplaceAll ("\""sv, "\\\""sv));
