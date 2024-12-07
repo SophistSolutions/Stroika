@@ -437,15 +437,15 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     Streams::InputStream::Ptr<byte>                 oldStdIn  = GetStdIn ();
     Streams::OutputStream::Ptr<byte>                oldStdOut = GetStdOut ();
+    Streams::MemoryStream::Ptr<byte>                useStdIn  = Streams::MemoryStream::New<byte> ();
+    Streams::MemoryStream::Ptr<byte>                useStdOut = Streams::MemoryStream::New<byte> ();
     try {
-        Streams::MemoryStream::Ptr<byte> useStdIn  = Streams::MemoryStream::New<byte> ();
-        Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-
         // Prefill stream
         // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
+        // @todo consider if should be using SDKCHAR string - OS app codepage? at least optionally?
         if (not cmdStdInValue.empty ()) {
             // for now while we write BOM, don't write empty string as just a BOM!
-            Streams::TextWriter::New (useStdIn).Write (cmdStdInValue.As<wstring> ().c_str ());
+            Streams::TextWriter::New (useStdIn).Write (cmdStdInValue);
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
@@ -464,6 +464,10 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
     catch (...) {
         SetStdIn (oldStdIn);
         SetStdOut (oldStdOut);
+        // @todo PROBABLY USEFUL TO LOG anything written into stdout here
+#if qStroika_Foundation_Debug_DefaultTracingOn
+        DbgTrace ("Captured stdout={}"_f, Streams::TextReader::New (useStdOut).ReadAll ());
+#endif
         ReThrow ();
     }
 }
@@ -939,7 +943,7 @@ namespace {
                 }
 #endif
                 // see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa
-                // for complex rules for interpretting nullptr in appname (first) arg, and cmdLineBuf... But mostly - the idea - is
+                // for complex rules for interpreting nullptr in appname (first) arg, and cmdLineBuf... But mostly - the idea - is
                 // it runs the search path algorithm and tries to do the right thing
                 Execution::Platform::Windows::ThrowIfZeroGetLastError (
                     ::CreateProcess (useEXEPath == nullopt ? nullptr : useEXEPath->c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
@@ -1090,7 +1094,7 @@ namespace {
                     readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
                     switch (waitResult) {
                         case WAIT_OBJECT_0: {
-                            DbgTrace ("process finished normally"_f);
+                            DbgTrace ("external process finished (DONE)"_f);
                             //                              timeoutAt = -1.0f;  // force out of loop
                             goto DoneWithProcess;
                         } break;
@@ -1127,6 +1131,8 @@ namespace {
 
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
+                        // NOTE - might be interesting to log captured stdout/stderr data here, but we didn't capture stderr(?) and
+                        // didn't save stdout (wrote to stream). Caller can capture/report....
                         Throw (ProcessRunner::Exception{cmdLine.As<String> (), "Spawned program"sv, {}, processExitCode});
                     }
                 }
