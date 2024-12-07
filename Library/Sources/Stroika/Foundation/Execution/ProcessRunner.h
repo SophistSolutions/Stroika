@@ -23,6 +23,8 @@
 
 /**
  *  TODO:
+ *      @todo   After we lose DEPRECATED APIS (STREAM STUFF) - Run and RunInBackground can become const methods
+ * 
  *      @todo   Cleanup ProcessRunner::CreateRunnable_ () to use more Finally {} based cleanup, instead
  *              of more redundant try/catch style.
  *
@@ -69,7 +71,7 @@
  *  Design Goals:
  *      o   Be able to run simple processes and capture output with little overhead, and very easy to do
  *
- *      o   Be able to support pipes between processes
+ *      o   Be able to support pipes between processes (either within the shell, or between Stroika threads)
  *
  *      o   Support large data and blocking issues properly - automating avoidance of pipe full bugs
  *          which block processes
@@ -95,48 +97,45 @@ namespace Stroika::Foundation::Execution {
     using Characters::String;
 
     /**
-     *  \brief Synchronously run the given command, and optionally support stdin/stdout/stderr as streams
-     *
-     *  Synchronously run the given command.
+     *  \brief Run the given command, and optionally support stdin/stdout/stderr as streams (either sync with Run, RunInBackground)
      *
      *  \note   ProcessRunner searches the PATH for the given executable: it need not be a full or even relative to
      *          cwd path.
      *
+     *  \note   Historical Note:
+     *          IDEA HERE IS FROM KDJ - Do something like python/perl stuff for managing subprocesses easily.
      *
-
-        // IDEA HERE IS FROM KDJ - Do something like python/perl stuff for managing subprocesses easily.
-
-    // Look input stream, output stream(or streams - stdout/stderr) - and some kind of external process control
-    // so can say WIAT or Termiante.
-    //
-    // Simple portable wrapper.
-    //
-    // Could use simple singly threaded approach used in TypeNValue ReportDefinition::RunExternalProcess_ (const SDKString& cmdLine, const SDKString& currentDir, const BLOBs::BLOB& stdinBLOB, const ContentType& resultFormat, float timeout)
-    // except that code has the defect that when the input pipe is full, and there is nothing in the output piples
-    // it busy waits. We COULD fix this by doing a select.
-    //
-    // OR - as KDJ suggests - create 3 threads - one that just reads on stdout, one that just reads on stderr, and one that
-    // spits into stdin.
-    //
-    // The caller of 'subprocess' then would just wait on each of the 3 subprocesses (or would implement the aforementioned
-    // looping over reads/writes/selects etc).
-    //
-        *
-        *  \par Example Usage
-        *      \code
-        *          String name = Execution::ProcessRunner{"uname"}.Run (String {}).Trim ();
-        *      \endcode
-        *
-        *      \code
-        *          Memory::BLOB                     kData_{ Memory::BLOB::FromRaw ("this is a test")  };
-        *          Streams::MemoryStream::Ptr<byte> processStdIn = Streams::MemoryStream::New<byte> (kData_ );
-        *          Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
-        *          ProcessRunner                    pr{"cat", processStdIn, processStdOut};
-        *          pr.Run ();
-        *          EXPECT_TRUE (processStdOut.ReadAll () == kData_);
-        *      \endcode
-        *
-        */
+     *          Look input stream, output stream(or streams - stdout/stderr) - and some kind of external process control
+     *          so can say WIAT or Terminate.
+     *
+     *          Simple portable wrapper.
+     *
+     *          Could use simple singly threaded approach used in TypeNValue ReportDefinition::RunExternalProcess_ (const SDKString& cmdLine, const SDKString& currentDir, const BLOBs::BLOB& stdinBLOB, const ContentType& resultFormat, float timeout)
+     *          except that code has the defect that when the input pipe is full, and there is nothing in the output pipes
+     *          it busy waits. We COULD fix this by doing a select.
+     *
+     *          OR - as KDJ suggests - create 3 threads - one that just reads on stdout, one that just reads on stderr, and one that
+     *          spits into stdin.
+     *
+     *          The caller of 'subprocess' then would just wait on each of the 3 subprocesses (or would implement the aforementioned
+     *          looping over reads/writes/selects etc).
+     *
+     *  \par Example Usage
+     *      \code
+     *          String name = Execution::ProcessRunner{"uname"}.Run (String {}).Trim ();
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          ProcessRunner                    pr{"cat"};
+     *          Memory::BLOB                     kData_{ Memory::BLOB::FromRaw ("this is a test")  };
+     *          Streams::MemoryStream::Ptr<byte> processStdIn = Streams::MemoryStream::New<byte> (kData_ );
+     *          Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
+     *          pr.Run (processStdIn, processStdOut).ThrowIfFailed ();
+     *          EXPECT_EQ (processStdOut.ReadAll (), kData_);
+     *      \endcode
+     *
+     */
     class ProcessRunner {
     public:
         static constexpr CommandLine::WrapInShell kDefaultShell =
@@ -175,45 +174,20 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         * \brief Construct ProcessRunner with a CommandLine to run, and input/output streams for stdin/stdout/stderr for the process created (doesn't actually RUN til you call Run or RunInBackground).
+         * \brief Construct ProcessRunner with a CommandLine to run (doesn't actually RUN til you call Run or RunInBackground).
          * 
          *  \note overload with executable allows specifying an alternate executable to run, even though args[0] will be what is reported
          *        to that application (a somewhat common trick in unix-land).
          * 
          *  \note overload with String commandLine:
-         *        if no spaces in string - just that exe, or no quotes, just space, arg, etc, and no punct chars.
-         *        but if anything funny, run it through kDefaultShell - which is platform specific - either cmd or bash? 
-         *        If that's not what you want, use the other CTORs, and/or see the CommandLine CTOR for details.
-         * 
-         * 
-         * 
-         * 
-         * 
-        * need ctors that fill in /bin/sh -c around commandline text or windows cmd/K "..."
+         *        Simple commands are run directly, and strings with apparent shell-isms, like pipes and quotes etc, are run through kDefaultShell.
+         *        This overload is handy, but easy to explicitly control shell used with CommandLine argument instead.
          */
-        // @todo lose above CTORS or document they simply map to this... - no - not quite - commandLine need overloads 'interpret through bash and interpret through winCMD"
-        // then trnaslate to /bin/bash -c "blah", or Cmd/k "..." or osme such...
-
         ProcessRunner ()                     = delete;
         ProcessRunner (const ProcessRunner&) = delete;
-        ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
-                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
-        ProcessRunner (const CommandLine& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
-                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
-
-        // @todo somewhat quirkly impl - commandLine if no spaces in string - just that exe, or no quotes, just space, arg, etc, and no punct chars.
-        // but if anything funny, run it through kDefaultShell - which is platform specific - either cmd or bash? If thats not what you want, use the
-        // other CTORs...
-        ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in = nullptr,
-                       const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
-
-    public:
-        [[deprecated ("Since Stroika v3.0d12 - use other overloads for ProcessRunner")]] ProcessRunner (
-            const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
-            const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
-            : ProcessRunner{executable, CommandLine{args}, in, out, error}
-        {
-        }
+        ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o = {});
+        ProcessRunner (const CommandLine& args, const Options& o = {});
+        ProcessRunner (const String& commandLine, const Options& o = {});
 
     public:
         nonvirtual ProcessRunner& operator= (const ProcessRunner&) = delete;
@@ -235,43 +209,15 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         */
-        [[deprecated ("Since Stroika v3.0d12 - use GetOptions().fWorkingDirectory")]] optional<filesystem::path> GetWorkingDirectory () const;
-        [[deprecated ("Since Stroika v3.0d12 - use SetOptions({.fWorkingDirectory})")]] void SetWorkingDirectory (const optional<filesystem::path>& d);
-
-    public:
-        /**
-         *  If empty, stdin will not be empty (redirected from /dev/null).
-         *
-         *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
-         *  the running subprocess.
-         */
-        nonvirtual Streams::InputStream::Ptr<byte> GetStdIn () const;
-        nonvirtual void                            SetStdIn (const Streams::InputStream::Ptr<byte>& in);
-
-    public:
-        /**
-         *  If empty, stdout will not be captured (redirected to /dev/null)
-         */
-        nonvirtual Streams::OutputStream::Ptr<byte> GetStdOut () const;
-        nonvirtual void                             SetStdOut (const Streams::OutputStream::Ptr<byte>& out);
-
-    public:
-        /**
-         *  If empty, stderr will not be captured (redirected to /dev/null)
-         */
-        nonvirtual Streams::OutputStream::Ptr<byte> GetStdErr () const;
-        nonvirtual void                             SetStdErr (const Streams::OutputStream::Ptr<byte>& err);
-
-    public:
-        /**
          *  Zero means success. Run() returns optional<ProcessResultType> by reference, and that
          *  value is only provided if the child process exited. If exited, we return the exit
          *  status and signal number (if any) - see waitpid - http://pubs.opengroup.org/onlinepubs/9699919799/functions/wait.html
          */
-        struct ProcessResultType {
+        struct [[nodiscard]] ProcessResultType {
             optional<int> fExitStatus;
             optional<int> fTerminatedByUncaughtSignalNumber;
+
+            void ThrowIfFailed ();
         };
 
     public:
@@ -289,16 +235,35 @@ namespace Stroika::Foundation::Execution {
          *  exited with (if it called exit - that is - didn't terminate by signal etc). However, if that
          *  parameter is missing (nullptr) - Run () will throw an exception if the called process returns
          *  non-zero.
+         * 
+         *  STDIN/STDOUT/STDERR:
+         *          *  If nullptr/not specified, will redirected to /dev/null
          *
          *  \note Exceptions:
          *        A number of issues before the process is run will generate an exception.
          *        If the argument processResult is null, failure (non SUCCESS exit or signal termination) will trigger an exception, and otherwise the
          *        parameter *processResult will be filled in.
          *
+         *  \par Example Usage (using strings in/out)
+         *      \code
+         *          String name = Execution::ProcessRunner{"uname"}.Run (String {}).Trim ();
+         *      \endcode
+         *
+         *  \par Example Usage (using binary streams)
+         *      \code
+         *          ProcessRunner                    pr{"cat"};
+         *          Memory::BLOB                     kData_{ Memory::BLOB::FromRaw ("this is a test") };
+         *          Streams::MemoryStream::Ptr<byte> processStdIn = Streams::MemoryStream::New<byte> (kData_);
+         *          Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
+         *          pr.Run (processStdIn, processStdOut).ThrowIfFailed ();
+         *          EXPECT_EQ (processStdOut.ReadAll (), kData_);
+         *      \endcode
+         *
          *  @see RunInBackground
          */
-        nonvirtual void Run (optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr,
-                             Time::DurationSeconds timeout = Time::kInfinity);
+        nonvirtual ProcessResultType Run (const Streams::InputStream::Ptr<byte>& in = nullptr, const Streams::OutputStream::Ptr<byte>& out = nullptr,
+                                          const Streams::OutputStream::Ptr<byte>& error = nullptr,
+                                          ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
         nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult = nullptr,
                                            ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
 
@@ -311,7 +276,10 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see Run
          */
-        nonvirtual BackgroundProcess RunInBackground (ProgressMonitor::Updater progress = nullptr);
+        nonvirtual BackgroundProcess RunInBackground (const Streams::InputStream::Ptr<byte>&  in       = nullptr,
+                                                      const Streams::OutputStream::Ptr<byte>& out      = nullptr,
+                                                      const Streams::OutputStream::Ptr<byte>& error    = nullptr,
+                                                      ProgressMonitor::Updater                progress = nullptr);
 
     private:
         /**
@@ -330,10 +298,79 @@ namespace Stroika::Foundation::Execution {
         Options                                                        fOptions_;
         optional<filesystem::path>                                     fExecutable_; // if omitted, derived from fArgs[0]
         CommandLine                                                    fArgs_;
-        Streams::InputStream::Ptr<byte>                                fStdIn_;
-        Streams::OutputStream::Ptr<byte>                               fStdOut_;
-        Streams::OutputStream::Ptr<byte>                               fStdErr_;
+        Streams::InputStream::Ptr<byte>                                fStdIn_;  // just while we support deprecated API
+        Streams::OutputStream::Ptr<byte>                               fStdOut_; // ""
+        Streams::OutputStream::Ptr<byte>                               fStdErr_; // ""
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d12 - pass stdin/stdout/stderr to ProcessRunner Run() method (if needed)")]] ProcessRunner (
+            const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in,
+            const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
+        [[deprecated ("Since Stroika v3.0d12 - pass stdin/stdout/stderr to ProcessRunner Run() method (if needed)")]] ProcessRunner (
+            const CommandLine& args, const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out = nullptr,
+            const Streams::OutputStream::Ptr<byte>& error = nullptr);
+        [[deprecated ("Since Stroika v3.0d12 - pass stdin/stdout/stderr to ProcessRunner Run() method (if needed)")]] ProcessRunner (
+            const String& commandLine, const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out = nullptr,
+            const Streams::OutputStream::Ptr<byte>& error = nullptr)
+            : ProcessRunner{commandLine}
+        {
+            this->fStdIn_  = in;
+            this->fStdOut_ = out;
+            this->fStdErr_ = error;
+        }
+
+        [[deprecated ("Since Stroika v3.0d12 - use other overloads for ProcessRunner")]] ProcessRunner (
+            const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
+            const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
+            : ProcessRunner{executable, CommandLine{args}}
+        {
+            this->fStdIn_  = in;
+            this->fStdOut_ = out;
+            this->fStdErr_ = error;
+        }
+
+        [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void
+        Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
+
+        [[deprecated ("Since Stroika v3.0d12 pass in/out/error(can be nullptr) in RunInbackground() method")]] BackgroundProcess
+        RunInBackground (ProgressMonitor::Updater progress);
+
+    public:
+        /**
+         */
+        [[deprecated ("Since Stroika v3.0d12 - use GetOptions().fWorkingDirectory")]] optional<filesystem::path> GetWorkingDirectory () const;
+        [[deprecated ("Since Stroika v3.0d12 - use SetOptions({.fWorkingDirectory})")]] void SetWorkingDirectory (const optional<filesystem::path>& d);
+
+    public:
+        /**
+         *  If empty, stdin will not be empty (redirected from /dev/null).
+         *
+         *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
+         *  the running subprocess.
+         */
+        [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] Streams::InputStream::Ptr<byte>
+        GetStdIn () const;
+        [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void
+        SetStdIn (const Streams::InputStream::Ptr<byte>& in);
+
+    public:
+        /**
+         *  If empty, stdout will not be captured (redirected to /dev/null)
+         */
+        [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] Streams::OutputStream::Ptr<byte>
+        GetStdOut () const;
+        [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void
+        SetStdOut (const Streams::OutputStream::Ptr<byte>& out);
+
+    public:
+        /**
+         *  If empty, stderr will not be captured (redirected to /dev/null)
+         */
+        [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] Streams::OutputStream::Ptr<byte>
+        GetStdErr () const;
+        [[deprecated ("Since Stroika v3.0d12 - pass in/out/error streams(can be nullptr) to Run method instead of CTOR")]] void
+        SetStdErr (const Streams::OutputStream::Ptr<byte>& err);
     };
 
     /**
@@ -446,11 +483,11 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
-     *  Setup stdin/out/error to refer to devnull (or closed), and then run the given process. This throws
+     *  Setup stdin/out/error to refer to /dev/null (or closed), and then run the given process. This throws
      *  exceptions on failure to run and returns the created process id, but doesn't wait to monitor
      *  process progress.
      *
-     *  For the commmandLine overload, it is TBD how the commandLine will be decoded (@todo) - maybe
+     *  For the commandLine overload, it is TBD how the commandLine will be decoded (@todo) - maybe
      *  parse it here systematically, or maybe leave it to OS to do (sh or windows CreateProcess API).
      *
      *  For the executable/args overload, the first member of args will be assumed to be the application

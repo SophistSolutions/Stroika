@@ -57,19 +57,19 @@ namespace {
         Debug::TraceContextBumper ctx{"EchoHiMom"}; // quickie simple test
         {
             ProcessRunner pr{"echo hi mom"};
-            String out = pr.Run ("");
+            String        out = pr.Run ("");
             EXPECT_EQ (out.Trim (), "hi mom");
         }
         {
             // bash should work fine on windows, as long as in path (msys or cygwin) - see earlier checks (SETUP)
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo hi mom"}};
-            String out = pr.Run ("");
+            String        out = pr.Run ("");
             EXPECT_EQ (out.Trim (), "hi mom");
         }
 #if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo hi mom"}};
-            String out = pr.Run ("");
+            String        out = pr.Run ("");
             EXPECT_EQ (out.Trim (), "hi mom");
         }
 #endif
@@ -81,19 +81,19 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"EchoPATH"}; // quickie simple test
 
-        #if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
         {
             // not sure why this fails on WINDOZE?? --LGP 2024-12-07
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $PATH"}};
-            String out = pr.Run ("");
+            String        out = pr.Run ("");
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
-        #endif
+#endif
 #if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %PATH%"}};
-            String out = pr.Run ("");
+            String        out = pr.Run ("");
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
@@ -107,15 +107,13 @@ namespace {
         Debug::TraceContextBumper ctx{"EchoUSER"}; // quickie simple test
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $USER"}};
-            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
             DbgTrace ("out='{}'"_f, out.Trim ());
-            EXPECT_TRUE (not out.Trim ().empty ());
+            //EXPECT_TRUE (not out.Trim ().empty ());   not always set, set by login, so if user logged in, but for test shells, maybe not? (bash -c vs -l)
         }
 #if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %USERNAME%"}};
-            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
@@ -130,16 +128,12 @@ namespace {
         Debug::TraceContextBumper        ctx{"EchoHiMomThroughIntraStroikaPipe"};
         Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
         ProcessRunner                    pr1{"echo hi mom"};
-        Streams::MemoryStream::Ptr<byte> pipe = Streams::MemoryStream::New<byte> ();
         ProcessRunner                    pr2{"cat"};
-        pr1.SetStdOut (pipe);
-        pr2.SetStdIn (pipe);
 
+        Streams::MemoryStream::Ptr<byte> pipe   = Streams::MemoryStream::New<byte> ();
         Streams::MemoryStream::Ptr<byte> pr2Out = Streams::MemoryStream::New<byte> ();
-        pr2.SetStdOut (pr2Out);
-
-        pr1.Run ();
-        pr2.Run ();
+        pr1.Run (nullptr, pipe).ThrowIfFailed();    // use RunInBackground to have this running WHILE p2 running
+        pr2.Run (pipe, pr2Out).ThrowIfFailed ();
 
         String out = String::FromUTF8 (pr2Out.As<string> ());
         EXPECT_EQ (out.Trim (), "hi mom");
@@ -150,11 +144,11 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, CatMemoryBLOB2BLOB)
     {
         Debug::TraceContextBumper        ctx{"CatMemoryBLOB2BLOB"};
+        ProcessRunner                    pr{"cat"};
         Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
         Streams::MemoryStream::Ptr<byte> processStdIn  = Streams::MemoryStream::New<byte> (kData_);
         Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
-        ProcessRunner                    pr{"cat", processStdIn, processStdOut};
-        pr.Run ();
+        pr.Run (processStdIn, processStdOut).ThrowIfFailed ();
         EXPECT_EQ (processStdOut.ReadAll (), kData_);
     }
 }
@@ -171,9 +165,9 @@ namespace {
                 Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
                 Streams::MemoryStream::Ptr<byte> myStdIn  = Streams::MemoryStream::New<byte> (testBLOB);
                 Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
-                ProcessRunner                    pr{"cat", myStdIn, myStdOut};
-                pr.Run ();
-                EXPECT_TRUE (myStdOut.ReadAll () == testBLOB);
+                ProcessRunner                    pr{"cat"};
+                pr.Run (myStdIn, myStdOut).ThrowIfFailed ();
+                EXPECT_EQ (myStdOut.ReadAll (), testBLOB);
             }
         }
     }
@@ -185,35 +179,31 @@ namespace {
 }
 
 namespace {
-    namespace LargeDataSentThroughPipeBackground_Test6_ {
-        namespace Private_ {
-            const Memory::BLOB k1K_   = Memory::BLOB::FromRaw ("0123456789abcdef").Repeat (1024 / 16);
-            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
-            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
-
-            void SingleProcessLargeDataSend_ ()
-            {
-                Assert (k1MB_.size () == 1024 * 1024);
-                Streams::SharedMemoryStream::Ptr<byte> myStdIn =
-                    Streams::SharedMemoryStream::New<byte> (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
-                Streams::SharedMemoryStream::Ptr<byte> myStdOut = Streams::SharedMemoryStream::New<byte> ();
-                ProcessRunner                          pr{"cat", myStdIn, myStdOut};
-                ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
-                Execution::Sleep (1);
-                EXPECT_TRUE (not myStdOut.AvailableToRead ().has_value ()); // sb no data available, but NOT EOF
-                Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
-                myStdIn.Write (testBLOB);
-                myStdIn.CloseWrite (); // so cat process can finish
-                bg.WaitForDone ();
-                myStdOut.CloseWrite (); // one process done, no more writes to this stream
-                EXPECT_EQ (myStdOut.ReadAll (), testBLOB);
-            }
-        }
-    }
     GTEST_TEST (Foundation_Execution_ProcessRunner, LargeDataSentThroughPipeBackgroundProcess)
     {
         Debug::TraceContextBumper ctx{"LargeDataSentThroughPipeBackgroundProcess"};
-        LargeDataSentThroughPipeBackground_Test6_::Private_::SingleProcessLargeDataSend_ ();
+        const Memory::BLOB        k1K_   = Memory::BLOB::FromRaw ("0123456789abcdef").Repeat (1024 / 16);
+        const Memory::BLOB        k1MB_  = k1K_.Repeat (1024);
+        const Memory::BLOB        k16MB_ = k1MB_.Repeat (16);
+
+        auto SingleProcessLargeDataSend_ = [&] () {
+            Assert (k1MB_.size () == 1024 * 1024);
+            Streams::SharedMemoryStream::Ptr<byte> myStdIn =
+                Streams::SharedMemoryStream::New<byte> (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
+            Streams::SharedMemoryStream::Ptr<byte> myStdOut = Streams::SharedMemoryStream::New<byte> ();
+            ProcessRunner                          pr{"cat"};
+            ProcessRunner::BackgroundProcess       bg = pr.RunInBackground (myStdIn, myStdOut);
+            Execution::Sleep (1);
+            EXPECT_TRUE (not myStdOut.AvailableToRead ().has_value ()); // sb no data available, but NOT EOF
+            Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
+            myStdIn.Write (testBLOB);
+            myStdIn.CloseWrite (); // so cat process can finish
+            bg.WaitForDone ();
+            myStdOut.CloseWrite (); // one process done, no more writes to this stream
+            EXPECT_EQ (myStdOut.ReadAll (), testBLOB);
+        };
+
+        SingleProcessLargeDataSend_ ();
     }
 }
 
@@ -223,7 +213,7 @@ namespace {
         Debug::TraceContextBumper ctx{"TestFailureHanlding"};
         try {
             ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
-            pr.Run ();
+            pr.Run ().ThrowIfFailed ();
             EXPECT_TRUE (false);
         }
         catch (...) {
@@ -239,9 +229,8 @@ namespace {
         const String              kCmdLine_ = "echo a | grep a"sv;
         {
             Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
-            ProcessRunner                    pr{kCmdLine_, nullptr, processStdOut}; // automatically translated to cmd /c or bash -c
-            DbgTrace ("pr.CommandLine = {}"_f, pr.GetCommandLine ());
-            pr.Run ();
+            ProcessRunner                    pr{kCmdLine_}; // automatically translated to cmd /c or bash -c
+            pr.Run (nullptr, processStdOut).ThrowIfFailed();
             EXPECT_EQ (Streams::TextReader::New (processStdOut).ReadAll ().Trim (), "a");
         }
         {

@@ -311,6 +311,21 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 
 /*
  ********************************************************************************
+ **************** Execution::ProcessRunner::ProcessResultType *******************
+ ********************************************************************************
+ */
+void ProcessRunner::ProcessResultType::ThrowIfFailed ()
+{
+    if (fExitStatus and *fExitStatus != 0) {
+        Throw (RuntimeErrorException{"Error running process: returned exit status: {}"_f(*fExitStatus)});
+    }
+    if (fTerminatedByUncaughtSignalNumber and *fTerminatedByUncaughtSignalNumber != 0) {
+        Throw (RuntimeErrorException{"Error running process: terminated by signal: {}"_f(*fTerminatedByUncaughtSignalNumber)});
+    }
+}
+
+/*
+ ********************************************************************************
  **************** Execution::ProcessRunner::BackgroundProcess *******************
  ********************************************************************************
  */
@@ -395,17 +410,33 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in,
-                              const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
-    : ProcessRunner{commandLine.ContainsAny ({'\'', '\"', '<', '>', '|', '$', '{', '}'}) ? CommandLine{kDefaultShell, commandLine}
-                                                                                         : CommandLine{commandLine},
-                    in, out, error}
+ProcessRunner::ProcessRunner (const String& commandLine, const Options& o)
+    : ProcessRunner{commandLine.ContainsAny ({'\'', '\"', '<', '>', '|', '$', '{', '}'}) ? CommandLine{kDefaultShell, commandLine} : CommandLine{commandLine}, o}
 {
 }
 
+auto ProcessRunner::Run (const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
+                         const Streams::OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress, Time::DurationSeconds timeout) -> ProcessResultType
+{
+    fStdIn_  = in;
+    fStdOut_ = out;
+    fStdErr_ = error;
+    if (timeout == Time::kInfinity) {
+        Synchronized<optional<ProcessResultType>> pr;
+        CreateRunnable_ (&pr, nullptr, progress) ();
+        return pr->value_or (ProcessResultType{});
+    }
+    else {
+        // @todo warning: http://stroika-bugs.sophists.com/browse/STK-585 - lots broken here - must shutdown threads on timeout!
+        Synchronized<optional<ProcessResultType>> pr;
+        Thread::Ptr t = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
+        t.Join (timeout);
+        return pr->value_or (ProcessResultType{});
+    }
+}
 void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
-    TraceContextBumper ctx{"ProcessRunner::Run"};
+    TraceContextBumper ctx{"ProcessRunner::Run"}; //DEPREACTED API.... LOSE
     if (timeout == Time::kInfinity) {
         if (processResult == nullptr) {
             CreateRunnable_ (nullptr, nullptr, progress) ();
@@ -435,8 +466,6 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
                                        ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    Streams::InputStream::Ptr<byte>                 oldStdIn  = GetStdIn ();
-    Streams::OutputStream::Ptr<byte>                oldStdOut = GetStdOut ();
     Streams::MemoryStream::Ptr<byte>                useStdIn  = Streams::MemoryStream::New<byte> ();
     Streams::MemoryStream::Ptr<byte>                useStdOut = Streams::MemoryStream::New<byte> ();
     try {
@@ -449,27 +478,36 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
-        SetStdIn (useStdIn);
-        SetStdOut (useStdOut);
-
-        Run (processResult, progress, timeout);
-
-        SetStdIn (oldStdIn);
-        SetStdOut (oldStdOut);
+        auto r = Run (useStdIn, useStdOut, nullptr, progress, timeout);
+        if (processResult != nullptr) {
+            *processResult = r;
+        }
 
         // get from 'useStdOut'
         Assert (useStdOut.GetReadOffset () == 0);
         return Streams::TextReader::New (useStdOut).ReadAll ();
     }
     catch (...) {
-        SetStdIn (oldStdIn);
-        SetStdOut (oldStdOut);
         // @todo PROBABLY USEFUL TO LOG anything written into stdout here
 #if qStroika_Foundation_Debug_DefaultTracingOn
         DbgTrace ("Captured stdout={}"_f, Streams::TextReader::New (useStdOut).ReadAll ());
 #endif
         ReThrow ();
     }
+}
+
+ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const Streams::InputStream::Ptr<byte>&  in,
+                                                                 const Streams::OutputStream::Ptr<byte>& out,
+                                                                 const Streams::OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress)
+{
+    TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
+    this->fStdIn_  = in;
+    this->fStdOut_ = out;
+    this->fStdErr_ = error;
+    BackgroundProcess result;
+    result.fRep_->fProcessRunner =
+        Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, "ProcessRunner background thread"sv);
+    return result;
 }
 
 ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor::Updater progress)
@@ -1163,13 +1201,11 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
     TraceContextBumper ctx{"ProcessRunner::CreateRunnable_"};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return [processResult, runningPID, progress, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = GetStdIn (),
-            out = GetStdOut (), err = GetStdErr ()] () {
+    return [processResult, runningPID, progress, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_,
+            out = fStdOut_, err = fStdErr_] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
-        //SDKString      currentDirBuf_;
-        //const SDKChar* currentDir = workingDir ? (currentDirBuf_ = workingDir->c_str (), currentDirBuf_.c_str ()) : nullptr;
 #if qStroika_Foundation_Common_Platform_POSIX
         Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
 #elif qStroika_Foundation_Common_Platform_Windows

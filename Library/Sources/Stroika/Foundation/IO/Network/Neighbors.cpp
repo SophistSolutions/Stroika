@@ -53,8 +53,7 @@ namespace {
         ProcessRunner pr{includePurgedEntries ? "arp -av"sv : "arp -a"sv}; // -a means 'BSD-style output', -v verbose(show invalid items)
 #endif
         Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-        pr.SetStdOut (useStdOut);
-        pr.Run ();
+        pr.Run (nullptr, useStdOut).ThrowIfFailed ();
         String out;
 #if qStroika_Foundation_Common_Platform_Windows
         String curInterface;

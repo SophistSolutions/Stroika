@@ -9,6 +9,17 @@ namespace Stroika::Foundation::Execution {
      *************************** Execution::ProcessRunner ***************************
      ********************************************************************************
      */
+    inline ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o)
+        : fExecutable_{executable}
+        , fArgs_{args}
+        , fOptions_{o}
+    {
+    }
+    inline ProcessRunner::ProcessRunner (const CommandLine& args, const Options& o)
+        : fArgs_{args}
+        , fOptions_{o}
+    {
+    }
     inline ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Streams::InputStream::Ptr<byte>& in,
                                          const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
         : fExecutable_{executable}
