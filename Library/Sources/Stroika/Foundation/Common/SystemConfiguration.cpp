@@ -554,7 +554,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
 #if qStroika_Foundation_Common_Platform_POSIX
         tmp.fTokenName = "Unix"sv;
         try {
-            tmp.fTokenName = Execution::ProcessRunner{"uname"}.Run (String{}).Trim ();
+            tmp.fTokenName = get<0> (Execution::ProcessRunner{"uname"}.Run (String{})).Trim ();
         }
         catch (...) {
             DbgTrace ("Failure running uname"_f);

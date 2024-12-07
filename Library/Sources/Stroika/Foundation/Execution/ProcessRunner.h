@@ -302,9 +302,9 @@ namespace Stroika::Foundation::Execution {
                                                       Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
 
     private:
-        Options                                                        fOptions_;
         optional<filesystem::path>                                     fExecutable_; // if omitted, derived from fArgs[0]
         CommandLine                                                    fArgs_;
+        Options                                                        fOptions_;
         Streams::InputStream::Ptr<byte>                                fStdIn_;  // just while we support deprecated API
         Streams::OutputStream::Ptr<byte>                               fStdOut_; // ""
         Streams::OutputStream::Ptr<byte>                               fStdErr_; // ""
