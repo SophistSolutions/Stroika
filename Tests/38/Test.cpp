@@ -42,6 +42,9 @@ namespace {
             //          to Debugging/Environment settings for debugger
             Stroika::Frameworks::Test::WarnTestIssue ("echo not found in path");
         }
+        if (not FindExecutableInPath ("awk")) {
+            Stroika::Frameworks::Test::WarnTestIssue ("awk not found in path");
+        }
         if (not FindExecutableInPath ("grep")) {
             Stroika::Frameworks::Test::WarnTestIssue ("grep not found in path");
         }
@@ -246,6 +249,21 @@ namespace {
         }
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, MakeVersionViaAwkPipe)
+    {
+        Debug::TraceContextBumper ctx{"MakeVersionViaAwkPipe"};
+        {
+            // can use full path or just plain name (if in path) for make/awk
+            ProcessRunner pr{"\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)};
+            auto [stdOutStr, stdErrStr] = pr.Run (""sv);
+            EXPECT_TRUE (not stdOutStr.empty ());
+            EXPECT_TRUE (stdErrStr.empty ());
+        }
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])
