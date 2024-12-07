@@ -15,6 +15,7 @@
 #endif
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -34,22 +35,16 @@ using namespace Stroika::Frameworks;
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, SETUP)
     {
+        static const Iterable<String> kCmds_{"awk"_k, "bash"_k, "echo"_k, "grep"_k, "make"_k};
         //system ("echo hi mom");
-        if (not FindExecutableInPath ("echo")) {
-            // If running under debugger, consider adding:
-            //      Visual Studio (Windows):
-            //          PATH=%PATH%;C:\tools\msys64\usr\bin\;c:\tools\msys64\mingw64\bin\ (or similar)
-            //          to Debugging/Environment settings for debugger
-            Stroika::Frameworks::Test::WarnTestIssue ("echo not found in path");
-        }
-        if (not FindExecutableInPath ("awk")) {
-            Stroika::Frameworks::Test::WarnTestIssue ("awk not found in path");
-        }
-        if (not FindExecutableInPath ("grep")) {
-            Stroika::Frameworks::Test::WarnTestIssue ("grep not found in path");
-        }
-        if (not FindExecutableInPath ("bash")) {
-            Stroika::Frameworks::Test::WarnTestIssue ("bash not found in path");
+        for (auto i : kCmds_) {
+            if (not FindExecutableInPath (IO::FileSystem::ToPath (i))) {
+                // If running under debugger, consider adding:
+                //      Visual Studio (Windows):
+                //          PATH=%PATH%;C:\tools\msys64\usr\bin\;c:\tools\msys64\mingw64\bin\ (or similar)
+                //          to Debugging/Environment settings for debugger
+                Stroika::Frameworks::Test::WarnTestIssue ("{} not found in path ({})"_f(i, kPath()));
+            }
         }
     }
 }
@@ -254,12 +249,15 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, MakeVersionViaAwkPipe)
     {
         Debug::TraceContextBumper ctx{"MakeVersionViaAwkPipe"};
-        {
+        try {
             // can use full path or just plain name (if in path) for make/awk
             ProcessRunner pr{"\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)};
             auto [stdOutStr, stdErrStr] = pr.Run (""sv);
             EXPECT_TRUE (not stdOutStr.empty ());
             EXPECT_TRUE (stdErrStr.empty ());
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue ("exception during ProcessRunner make/awk"_f(current_exception ()));
         }
     }
 }

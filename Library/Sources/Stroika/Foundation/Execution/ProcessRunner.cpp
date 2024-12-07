@@ -487,10 +487,19 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonito
         Assert (useStdErr.GetReadOffset () == 0);
         return make_tuple (Streams::TextReader::New (useStdOut).ReadAll (), Streams::TextReader::New (useStdErr).ReadAll ());
     }
+    catch (const Exception& e) {
+        String out = Streams::TextReader::New (useStdOut.As<Memory::BLOB> ()).ReadAll ();
+        String err = Streams::TextReader::New (useStdErr.As<Memory::BLOB> ()).ReadAll ();
+#if qStroika_Foundation_Debug_DefaultTracingOn
+        DbgTrace ("Captured stdout: {}"_f, out);
+        DbgTrace ("Captured stderr: {}"_f, err);
+#endif
+        Throw (Exception{this->fArgs_.As<String> (), "{}: output: {}, stderr: {}"_f(e.As<String>(), out, err)});
+    }
     catch (...) {
 #if qStroika_Foundation_Debug_DefaultTracingOn
-        DbgTrace ("Captured stdout: {}"_f, Streams::TextReader::New (useStdOut).ReadAll ());
-        DbgTrace ("Captured stderr: {}"_f, Streams::TextReader::New (useStdErr).ReadAll ());
+        DbgTrace ("Captured stdout: {}"_f, Streams::TextReader::New (useStdOut.As < Memory::BLOB> ()).ReadAll ());
+        DbgTrace ("Captured stderr: {}"_f, Streams::TextReader::New (useStdErr.As<Memory::BLOB> ()).ReadAll ());
 #endif
         ReThrow ();
     }
