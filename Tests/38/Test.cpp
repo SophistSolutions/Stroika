@@ -57,22 +57,18 @@ namespace {
         Debug::TraceContextBumper ctx{"EchoHiMom"}; // quickie simple test
         {
             ProcessRunner pr{"echo hi mom"};
-            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
-            DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_EQ (out.Trim (), "hi mom");
         }
-#if qStroika_Foundation_Common_Platform_POSIX
         {
+            // bash should work fine on windows, as long as in path (msys or cygwin) - see earlier checks (SETUP)
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo hi mom"}};
-            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
             EXPECT_EQ (out.Trim (), "hi mom");
         }
-#elif qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo hi mom"}};
-            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
             EXPECT_EQ (out.Trim (), "hi mom");
         }
@@ -84,18 +80,19 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoPATH)
     {
         Debug::TraceContextBumper ctx{"EchoPATH"}; // quickie simple test
-#if qStroika_Foundation_Common_Platform_POSIX
+
+        #if qStroika_Foundation_Common_Platform_POSIX
         {
+            // not sure why this fails on WINDOZE?? --LGP 2024-12-07
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $PATH"}};
-            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
-#elif qStroika_Foundation_Common_Platform_Windows
+        #endif
+#if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %PATH%"}};
-            DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
             String out = pr.Run ("");
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
@@ -108,7 +105,6 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoUSER)
     {
         Debug::TraceContextBumper ctx{"EchoUSER"}; // quickie simple test
-#if qStroika_Foundation_Common_Platform_POSIX
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $USER"}};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
@@ -116,7 +112,7 @@ namespace {
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
-#elif qStroika_Foundation_Common_Platform_Windows
+#if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %USERNAME%"}};
             DbgTrace ("pr.commandline={}"_f, pr.GetCommandLine ());
@@ -255,7 +251,6 @@ namespace {
         }
     }
 }
-
 #endif
 
 int main (int argc, const char* argv[])
