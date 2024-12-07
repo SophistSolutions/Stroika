@@ -94,7 +94,7 @@ namespace {
         {
             // not sure why this fails on WINDOZE?? --LGP 2024-12-07
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $PATH"}};
-            String        out = get<0> (pr.Run ("")>;
+            String        out = get<0> (pr.Run (""));
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
