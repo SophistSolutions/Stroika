@@ -33,8 +33,6 @@
  *      @todo   Need EXCEPTION TYPE that includes PROCESS_STATUS and throw that instead of current exception
  *              On failure.
  *
- *      @todo   Windows implementation is weak, but appears fully functional.
- *
  *      @todo   Fix POSIX version to use vfork() instead of fork () - but carefully! Must setup data just so.
  *
  *      @todo   Fix POSIX version to properly handle reading and writing streams at the same time to avoid deadlock
@@ -86,7 +84,6 @@
  *      o   Work with stroika streams so its easy to have user-defined producers and consumers, and
  *          easy to hook together TextStreams (wrappers) - for format conversion/piping.
  *
- *
  *  \em Design Overview
  *      o
  *
@@ -122,7 +119,15 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          String name = Execution::ProcessRunner{"uname"}.Run (String {}).Trim ();
+     *          String name = get<0> (ProcessRunner{"uname"}.Run (String {})).Trim ();
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          ProcessRunner pr{"echo hi mom"};
+     *          auto [stdOutStr, stdErrStr] = pr.Run ("");
+     *          EXPECT_EQ (stdOutStr.Trim (), "hi mom");
+     *          EXPECT_EQ (stdErrStr, "");
      *      \endcode
      *
      *  \par Example Usage
@@ -227,17 +232,19 @@ namespace Stroika::Foundation::Execution {
          *  Run the given external command/process (set by constructor) - with the given arguments, and block until
          *  that completes and return the results.
          *
-         *  The Run() overload taking cmdStdInValue replaces the current stdin stream associated with the
-         *  ProcessRunner, and replaces the stdout, and replaces its stdout stream with one that captures
-         *  results as a string.
-         *
-         *  Each overload that takes a 'processResult' argument receives the numeric value the process
-         *  exited with (if it called exit - that is - didn't terminate by signal etc). However, if that
-         *  parameter is missing (nullptr) - Run () will throw an exception if the called process returns
-         *  non-zero.
+         *  Run STREAMS overload:
+         *      This overload takes input/output/error binary streams, and returns a ProcessResultType (which indicates if/whether there was a failure).
+         *      This is the most basic/flexible API.
          * 
-         *  STDIN/STDOUT/STDERR:
+         *      STDIN/STDOUT/STDERR:
          *          *  If nullptr/not specified, will redirected to /dev/null
+         * 
+         *  Run STRING overload:
+         *      This is the simplest API. Just pass in a string, and get back a string (first one is stdout, second is stderr).
+         * 
+         *      The cmdStdInValue is passed as stdin (stream) to the subprocess.
+         * 
+         *      This overload doesn't return ProcessResult - just throws internally if the subprocess fails.
          *
          *  \note Exceptions:
          *        A number of issues before the process is run will generate an exception.
@@ -246,7 +253,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage (using strings in/out)
          *      \code
-         *          String name = Execution::ProcessRunner{"uname"}.Run (String {}).Trim ();
+         *          String name = get<0> (ProcessRunner{"uname"}.Run (String {})).Trim ();
          *      \endcode
          *
          *  \par Example Usage (using binary streams)
@@ -264,8 +271,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual ProcessResultType Run (const Streams::InputStream::Ptr<byte>& in = nullptr, const Streams::OutputStream::Ptr<byte>& out = nullptr,
                                           const Streams::OutputStream::Ptr<byte>& error = nullptr,
                                           ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
-        nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult = nullptr,
-                                           ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
+        nonvirtual tuple<Characters::String, Characters::String> Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress = nullptr,
+                                                                      Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         class BackgroundProcess;
@@ -375,9 +382,9 @@ namespace Stroika::Foundation::Execution {
 
     /**
      */
-    class ProcessRunner::Exception : public Execution::RuntimeErrorException<> {
+    class ProcessRunner::Exception : public RuntimeErrorException<> {
     private:
-        using inherited = Execution::RuntimeErrorException<>;
+        using inherited = RuntimeErrorException<>;
 
     public:
         /**

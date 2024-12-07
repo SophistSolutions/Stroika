@@ -57,19 +57,25 @@ namespace {
         Debug::TraceContextBumper ctx{"EchoHiMom"}; // quickie simple test
         {
             ProcessRunner pr{"echo hi mom"};
-            String        out = pr.Run ("");
+            String        out = get<0> (pr.Run (""));
             EXPECT_EQ (out.Trim (), "hi mom");
+        }
+        {
+            ProcessRunner pr{"echo hi mom"};
+            auto [stdOutStr, stdErrStr] = pr.Run (""); // structured binding example
+            EXPECT_EQ (stdOutStr.Trim (), "hi mom");
+            EXPECT_EQ (stdErrStr, "");
         }
         {
             // bash should work fine on windows, as long as in path (msys or cygwin) - see earlier checks (SETUP)
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo hi mom"}};
-            String        out = pr.Run ("");
+            String        out = get<0> (pr.Run (""));
             EXPECT_EQ (out.Trim (), "hi mom");
         }
 #if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo hi mom"}};
-            String        out = pr.Run ("");
+            String        out = get<0> (pr.Run (""));
             EXPECT_EQ (out.Trim (), "hi mom");
         }
 #endif
@@ -85,7 +91,7 @@ namespace {
         {
             // not sure why this fails on WINDOZE?? --LGP 2024-12-07
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $PATH"}};
-            String        out = pr.Run ("");
+            String        out = get<0> (pr.Run ("")>;
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
@@ -93,7 +99,7 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %PATH%"}};
-            String        out = pr.Run ("");
+            String        out = get<0> (pr.Run (""));
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
@@ -107,14 +113,14 @@ namespace {
         Debug::TraceContextBumper ctx{"EchoUSER"}; // quickie simple test
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $USER"}};
-            String out = pr.Run ("");
+            String        out = get<0> (pr.Run (""));
             DbgTrace ("out='{}'"_f, out.Trim ());
             //EXPECT_TRUE (not out.Trim ().empty ());   not always set, set by login, so if user logged in, but for test shells, maybe not? (bash -c vs -l)
         }
 #if qStroika_Foundation_Common_Platform_Windows
         {
             ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %USERNAME%"}};
-            String out = pr.Run ("");
+            String        out = get<0> (pr.Run (""));
             DbgTrace ("out='{}'"_f, out.Trim ());
             EXPECT_TRUE (not out.Trim ().empty ());
         }
@@ -132,7 +138,7 @@ namespace {
 
         Streams::MemoryStream::Ptr<byte> pipe   = Streams::MemoryStream::New<byte> ();
         Streams::MemoryStream::Ptr<byte> pr2Out = Streams::MemoryStream::New<byte> ();
-        pr1.Run (nullptr, pipe).ThrowIfFailed();    // use RunInBackground to have this running WHILE p2 running
+        pr1.Run (nullptr, pipe).ThrowIfFailed (); // use RunInBackground to have this running WHILE p2 running
         pr2.Run (pipe, pr2Out).ThrowIfFailed ();
 
         String out = String::FromUTF8 (pr2Out.As<string> ());
@@ -230,12 +236,12 @@ namespace {
         {
             Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
             ProcessRunner                    pr{kCmdLine_}; // automatically translated to cmd /c or bash -c
-            pr.Run (nullptr, processStdOut).ThrowIfFailed();
+            pr.Run (nullptr, processStdOut).ThrowIfFailed ();
             EXPECT_EQ (Streams::TextReader::New (processStdOut).ReadAll ().Trim (), "a");
         }
         {
             ProcessRunner pr{kCmdLine_};
-            auto          result = pr.Run (""sv); // input ignored by echo a
+            auto          result = get<0> (pr.Run (""sv)); // input ignored by echo a
             EXPECT_EQ (result.Trim (), "a");
         }
     }

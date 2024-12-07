@@ -462,12 +462,13 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
     }
 }
 
-Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult,
-                                       ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
+auto ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress,
+                         Time::DurationSeconds timeout) -> tuple<Characters::String, Characters::String>
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     Streams::MemoryStream::Ptr<byte>                useStdIn  = Streams::MemoryStream::New<byte> ();
     Streams::MemoryStream::Ptr<byte>                useStdOut = Streams::MemoryStream::New<byte> ();
+    Streams::MemoryStream::Ptr<byte>                useStdErr = Streams::MemoryStream::New<byte> ();
     try {
         // Prefill stream
         // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
@@ -478,19 +479,18 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
-        auto r = Run (useStdIn, useStdOut, nullptr, progress, timeout);
-        if (processResult != nullptr) {
-            *processResult = r;
-        }
+        ProcessResultType r = Run (useStdIn, useStdOut, useStdErr, progress, timeout);
+        r.ThrowIfFailed ();
 
-        // get from 'useStdOut'
+        // get and return results from 'useStdOut' etc
         Assert (useStdOut.GetReadOffset () == 0);
-        return Streams::TextReader::New (useStdOut).ReadAll ();
+        Assert (useStdErr.GetReadOffset () == 0);
+        return make_tuple (Streams::TextReader::New (useStdOut).ReadAll (), Streams::TextReader::New (useStdErr).ReadAll ());
     }
     catch (...) {
-        // @todo PROBABLY USEFUL TO LOG anything written into stdout here
 #if qStroika_Foundation_Debug_DefaultTracingOn
-        DbgTrace ("Captured stdout={}"_f, Streams::TextReader::New (useStdOut).ReadAll ());
+        DbgTrace ("Captured stdout: {}"_f, Streams::TextReader::New (useStdOut).ReadAll ());
+        DbgTrace ("Captured stderr: {}"_f, Streams::TextReader::New (useStdErr).ReadAll ());
 #endif
         ReThrow ();
     }

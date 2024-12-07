@@ -1131,7 +1131,7 @@ namespace {
             constexpr size_t                 kColCountIncludingCmd_{9};
             ProcessRunner                    pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
             Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-            pr.Run (nullptr, useStdOut);
+            pr.Run (nullptr, useStdOut).ThrowIfFailed ();
             String                   out;
             Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
             bool                     skippedHeader = false;
