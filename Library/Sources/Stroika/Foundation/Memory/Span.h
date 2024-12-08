@@ -134,6 +134,24 @@ namespace Stroika::Foundation::Memory {
     template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
     constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target);
 
+    //&&&&&
+    // new experimetnal APIS
+    // see if we can depreact CopySpanData_StaticCast using CopyBytes(SpanReInterpretCast())
+    //
+
+    // FROM_T and TO_T must be basically the same, but can copy from either non-const or const T.
+    // require target size >= from.size() (returns span copied - can be smaller than from span)
+    // src and target may not overlap (intersect) - like memcpy
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (same_as<FROM_T, remove_cvref_t<TO_T>>);
+
+    // analagous to memmove
+    // same as CopyBytes - but withoput restiction about src/target overlap (they may or may not overlap)
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (same_as<FROM_T, remove_cvref_t<TO_T>>);
+
 }
 
 /*

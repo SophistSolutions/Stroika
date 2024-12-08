@@ -96,4 +96,28 @@ namespace Stroika::Foundation::Memory {
         return CopySpanData_StaticCast (ConstSpan (src), target);
     }
 
+    // experimental new API
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (same_as<FROM_T, remove_cvref_t<TO_T>>)
+    {
+        Require (src.size () <= target.size ());
+        Require (not Intersects (src, target));
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
+        std::copy (src.begin (), src.end (), target.data ());
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
+        return target.subspan (0, src.size ());
+    }
+
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (same_as<FROM_T, remove_cvref_t<TO_T>>)
+    {
+        Require (src.size () <= target.size ());
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
+        std::copy_backward (src.begin (), src.end (), target.data ());
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
+        return target.subspan (0, src.size ());
+    }
+
 }
