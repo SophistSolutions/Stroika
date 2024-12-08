@@ -232,7 +232,7 @@ namespace {
         s3 += s2;
 
         s1 = (s1 + "\n");
-        EXPECT_EQ (s1.size (), 13);
+        EXPECT_EQ (s1.size (), 13u);
     }
 
 }
