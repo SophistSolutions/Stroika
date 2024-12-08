@@ -43,7 +43,7 @@ namespace {
                 //      Visual Studio (Windows):
                 //          PATH=%PATH%;C:\tools\msys64\usr\bin\;c:\tools\msys64\mingw64\bin\ (or similar)
                 //          to Debugging/Environment settings for debugger
-                Stroika::Frameworks::Test::WarnTestIssue ("{} not found in path ({})"_f(i, kPath()));
+                Stroika::Frameworks::Test::WarnTestIssue ("{} not found in path ({})"_f(i, kPath ()));
             }
         }
     }
