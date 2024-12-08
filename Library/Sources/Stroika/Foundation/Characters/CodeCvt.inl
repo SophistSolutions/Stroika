@@ -85,8 +85,8 @@ namespace Stroika::Foundation::Characters {
             if (r.fStatus == ConversionStatusFlag::sourceIllegal) {
                 UTFConvert::Throw (r.fStatus, r.fSourceConsumed);
             }
-            *from = from->subspan (r.fSourceConsumed); // from updated to remaining data, if any
-            return to.subspan (0, r.fTargetProduced);  // point ACTUAL copied data
+            *from = from->subspan (r.fSourceConsumed * sizeof (SERIALIZED_CHAR_T)); // from updated to remaining data, if any
+            return to.subspan (0, r.fTargetProduced);                               // point ACTUAL copied data
         }
         virtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const override
         {
@@ -758,7 +758,10 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (from);
         AssertNotNull (fRep_);
         Require (to.size () >= ComputeTargetCharacterBufferSize (*from) or to.size () >= Bytes2Characters (*from)); // ComputeTargetCharacterBufferSize cheaper to compute
-        return fRep_->Bytes2Characters (from, to);
+        auto r = fRep_->Bytes2Characters (from, to);
+        Ensure (from->size () < 10); // can only contain bytes for a partial character so must be small, typically one or two or zero
+        WeakAssert (from->size () <= 2);
+        return r;
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte> from, span<CHAR_T> to) const -> span<CHAR_T>

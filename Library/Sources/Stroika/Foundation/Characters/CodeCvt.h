@@ -287,6 +287,7 @@ namespace Stroika::Foundation::Characters {
          *        to byte, and the codecvt API calls this extern_type
          * 
          *  /2 overload \req to.size () >= min(Bytes2Characters(*from), ComputeTargetCharacterBufferSize (*from)) on input.
+         *  span<const byte>* \ens from->size () very small on return (at most partial character)
          * 
          *  \see also Bytes2String for similar function, but operating on strings
          */
