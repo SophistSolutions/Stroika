@@ -98,14 +98,24 @@ namespace Stroika::Foundation::Memory {
 
     // experimental new API
     template <Common::trivially_copyable FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopyBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+#if qCompilerAndStdLib_ASAN_memcpy_Buggy
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+        constexpr span<TO_T, TO_E>
+        CopyBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
         requires (same_as<FROM_T, remove_cvref_t<TO_T>>)
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
+#if qCompilerAndStdLib_ASAN_memcpy_Buggy
+        for (size_t i = 0; i < src.size (); ++i) {
+            target[i] = src[i];
+        }
+#else
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
         std::copy (src.begin (), src.end (), target.data ());
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
+#endif
         return target.subspan (0, src.size ());
     }
 
