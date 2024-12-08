@@ -206,6 +206,7 @@ namespace {
         //      o   return value is shorter buffer (iff EOF) - and that is known to be the end.
         nonvirtual optional<span<const byte>> PreReadUpstreamInto_ (span<byte> intoBuf, size_t goalSizeAtLeast, NoDataAvailableHandling blockFlag)
         {
+            Require (goalSizeAtLeast >= 1);
             Require (goalSizeAtLeast <= intoBuf.size ());
             span<const byte> result; // always some subset of intoBuf
             if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
