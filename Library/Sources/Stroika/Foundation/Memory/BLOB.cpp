@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -242,18 +243,15 @@ namespace {
                 Require (IsOpenRead ());
                 return fEnd - fCur;
             }
-            virtual optional<span<byte>> Read (span<byte> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
+            virtual optional<span<byte>>    Read (span<byte> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 size_t                                          bytesToRead = intoBuffer.size ();
                 size_t                                          bytesLeft   = fEnd - fCur;
                 bytesToRead                                                 = min (bytesLeft, bytesToRead);
-                if (bytesToRead != 0) {
-                    // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0 (aka for memcpy)
-                    (void)::memcpy (intoBuffer.data (), fCur, bytesToRead);
-                    fCur += bytesToRead;
-                }
+                Memory::CopyBytes (span{fCur, bytesToRead}, intoBuffer);
+                fCur += bytesToRead;
                 return intoBuffer.subspan (0, bytesToRead);
             }
             virtual SeekOffsetType GetReadOffset () const override
