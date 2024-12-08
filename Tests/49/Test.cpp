@@ -183,7 +183,7 @@ namespace {
         {
             Memory::BLOB    s  = Memory::BLOB::FromRaw (u8"Testing 1, 2, 3");
             TextReader::Ptr tr = TextReader::New (s);
-            EXPECT_TRUE (tr.ReadAll () == L"Testing 1, 2, 3");
+            EXPECT_EQ (tr.ReadAll (), "Testing 1, 2, 3");
         }
     }
 }
@@ -254,6 +254,23 @@ namespace {
     }
 }
 
+namespace {
+    GTEST_TEST (Foundation_Streams, TextReaderBug)
+    {
+        Debug::TraceContextBumper ctx{"TextReaderBug"};
+        {
+            constexpr unsigned char TESTOUT_UTF16[] = {0x50, 0x00, 0x72, 0x00, 0x61, 0x00, 0x61, 0x00, 0x74, 0x00, 0x20, 0x00, 0x36,
+                                                       0x00, 0x2e, 0x00, 0x34, 0x00, 0x2e, 0x00, 0x32, 0x00, 0x33, 0x00, 0x20, 0x00,
+                                                       0x28, 0x00, 0x4f, 0x00, 0x63, 0x00, 0x74, 0x00, 0x6f, 0x00, 0x62, 0x00, 0x65,
+                                                       0x00, 0x72, 0x00, 0x20, 0x00, 0x32, 0x00, 0x37, 0x00, 0x20, 0x00, 0x32, 0x00,
+                                                       0x30, 0x00, 0x32, 0x00, 0x34, 0x00, 0x29, 0x00, 0x0d, 0x00, 0x0a, 0x00};
+            auto tr = Streams::TextReader::New (Memory::BLOB{span{TESTOUT_UTF16}}, Characters::UnicodeExternalEncodings::eUTF16);
+            auto s  = tr.ReadAll ();
+            // Triggered TWO bugs - the CodeCvt.inl - r.fSourceConsumed * sizeof (SERIALIZED_CHAR_T) issue, and
+            // an ASAN bug qCompilerAndStdLib_ASAN_memcpy_Buggy - still investigating workarounds...
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
