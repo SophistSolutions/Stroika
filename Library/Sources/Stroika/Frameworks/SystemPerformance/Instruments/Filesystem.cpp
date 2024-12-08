@@ -432,7 +432,7 @@ namespace {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             ProcessRunner                                                 pr{"/bin/df -k -P"sv};
             Streams::MemoryStream::Ptr<byte>                              useStdOut = Streams::MemoryStream::New<byte> ();
-            std::exception_ptr runException;
+            std::exception_ptr                                            runException;
             try {
                 pr.Run (nullptr, useStdOut).ThrowIfFailed ();
             }
@@ -493,7 +493,7 @@ namespace {
             //      -- LGP 2014-08-01
             ProcessRunner                    pr{includeFSTypes ? "/bin/df -k -T"sv : "/bin/df -k"sv};
             Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-            std::exception_ptr runException;
+            std::exception_ptr               runException;
             try {
                 pr.Run (nullptr, useStdOut).ThrowIfFailed ();
             }
