@@ -494,11 +494,11 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonito
         DbgTrace ("Captured stdout: {}"_f, out);
         DbgTrace ("Captured stderr: {}"_f, err);
 #endif
-        Throw (Exception{this->fArgs_.As<String> (), "{}: output: {}, stderr: {}"_f(e.As<String>(), out, err)});
+        Throw (Exception{this->fArgs_.As<String> (), "{}: output: {}, stderr: {}"_f(e.As<String> (), out, err)});
     }
     catch (...) {
 #if qStroika_Foundation_Debug_DefaultTracingOn
-        DbgTrace ("Captured stdout: {}"_f, Streams::TextReader::New (useStdOut.As < Memory::BLOB> ()).ReadAll ());
+        DbgTrace ("Captured stdout: {}"_f, Streams::TextReader::New (useStdOut.As<Memory::BLOB> ()).ReadAll ());
         DbgTrace ("Captured stderr: {}"_f, Streams::TextReader::New (useStdErr.As<Memory::BLOB> ()).ReadAll ());
 #endif
         ReThrow ();
