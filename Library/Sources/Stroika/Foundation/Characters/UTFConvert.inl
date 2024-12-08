@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Characters {
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else if constexpr (same_as<SRC_T, TRG_T>) {
-            Memory::CopySpanData_StaticCast (source, target);
+            Memory::CopySpanData (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else if constexpr (same_as<SRC_T, Latin1>) {
