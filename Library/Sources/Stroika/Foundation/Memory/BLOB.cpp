@@ -243,7 +243,7 @@ namespace {
                 Require (IsOpenRead ());
                 return fEnd - fCur;
             }
-            virtual optional<span<byte>>    Read (span<byte> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
+            virtual optional<span<byte>> Read (span<byte> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
