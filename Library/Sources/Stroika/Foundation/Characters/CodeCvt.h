@@ -259,7 +259,7 @@ namespace Stroika::Foundation::Characters {
          *  Arguments:
          *      o   span<byte> from - initially all of which will be converted or an exception thrown (only if data corrupt/unconvertable) (updated to point to bytes which form part of a single additional character)
          *      o   span<CHAR_T> to - buffer to have data converted 'into'
-         *          NOTE - all we require is that the result fit into 'to'. BUt we offer a quick way to compute a buffer 'large enough' -  (call ComputeTargetCharacterBufferSize).
+         *          NOTE - all we require is that the result fit into 'to'. But we offer a quick way to compute a buffer 'large enough' -  (call ComputeTargetCharacterBufferSize).
          *          But (a more expensive) way is to call Bytes2Characters/1 and that will tell you exactly how many needed.
          *  Returns:
          *      subspan of 'to', with converted characters.
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Characters {
          *  with a new buffer, starting with those (but there is no requirement to do so).
          * 
          *  No state is maintained. ALL the input is converted expect possibly a few bytes at the end of the input
-         *  which consitute a partial character.
+         *  which constitute a partial character.
          * 
          *  This implies that given a 'lead byte' as argument to Bytes2Characters, this function can return
          *  an EMPTY span, and that would not be an error (so no throw).

@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Debug {
      *
      *      Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer
      *
-     *  \note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
+     *  \note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunches of code
      *        BUT - use Debug::kBuiltWithAddressSanitizer in preference to this where you can.
      */
 #if !defined(Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer)
