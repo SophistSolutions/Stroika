@@ -250,7 +250,7 @@ namespace {
                 size_t                                          bytesToRead = intoBuffer.size ();
                 size_t                                          bytesLeft   = fEnd - fCur;
                 bytesToRead                                                 = min (bytesLeft, bytesToRead);
-                Memory::CopyBytes (span{fCur, bytesToRead}, intoBuffer);
+                CopyBytes (span{fCur, bytesToRead}, intoBuffer);
                 fCur += bytesToRead;
                 return intoBuffer.subspan (0, bytesToRead);
             }
