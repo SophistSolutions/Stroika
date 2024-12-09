@@ -1393,7 +1393,7 @@ namespace {
                             ValidateFile (tmpFileName, schema);
                         }
                         catch (const BadFormatException& vf) {
-                            String   tmpFileNameStr = IO::FileSystem::FromPath (tmpFileName);
+                            String   tmpFileNameStr = String{tmpFileName};
                             size_t   idx            = tmpFileNameStr.find (".xml");
                             String   newTmpFile     = tmpFileNameStr.substr (0, idx) + "_MSG.txt";
                             ofstream msgOut{newTmpFile.AsNarrowSDKString ().c_str ()};
