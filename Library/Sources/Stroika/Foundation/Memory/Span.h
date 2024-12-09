@@ -91,26 +91,46 @@ namespace Stroika::Foundation::Memory {
      *  \note - if you can tell that TO_T == std::byte obviously, then consider using std::as_bytes or std::as_writable_bytes
      */
     template <typename TO_T, typename FROM_T, size_t FROM_EXTENT>
-    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T, FROM_EXTENT> src)
+    constexpr span<TO_T> SpanReInterpretCast (span<FROM_T, FROM_EXTENT> src)
         requires (sizeof (FROM_T) % sizeof (TO_T) == 0);
 
-    /*
-     *  \brief Span-flavored memcpy/std::copy (copies from, to)
+    /**
+     *  \brief Span-flavored memcpy/std::copy (copies from, to) - requires argument spans not overlap
      *
      *  like std::copy, except copies the data the spans point to/reference. Target span maybe larger than src,
      *  but must (require) be no smaller than src span;
      * 
-     *  \req src.size_bytes () <= target.size_bytes ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
+     *  \req src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
      *  \req not Intersects (src, target) - so non-overlapping
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
      * 
-     *  @todo Maybe implement MoveSpanData() - analogous to memcpy/memmove - just allowing overlap
+     *  @see also CopyOverlappingBytes for 'memmove' - same API but where the data can overlap
      */
-    template <typename T, size_t E>
-    constexpr std::span<T, E> CopySpanData (span<const T, E> src, span<T, E> target);
-    template <typename T, size_t E>
-    constexpr std::span<T, E> CopySpanData (span<T, E> src, span<T, E> target);
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>);
+
+    /**
+     *  \brief Span-flavored memmove/std::copy_backwards (copies from, to) - ALLOWING argument spans to overlap
+     *
+     *  like std::copy_backward, except copies the data the spans point to/reference. Target span maybe larger than src,
+     *  but must (require) be no smaller than src span;
+     * 
+     *  \req src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
+     *  
+     *  Returns the subset of the target span filled (so a subspan of target).
+     * 
+     *  @see also CopyBytes
+     */
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>);
+
+    //&&&&&
+    // new experimetnal APIS
+    // see if we can depreact CopySpanData_StaticCast using CopyBytes(SpanReInterpretCast())
+    //
 
     /*
      *  \brief Span-flavored memcpy/std::copy (copies from, to), but with cast (like CopySpanData but with cast)
@@ -133,24 +153,6 @@ namespace Stroika::Foundation::Memory {
     constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target);
     template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
     constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target);
-
-    //&&&&&
-    // new experimetnal APIS
-    // see if we can depreact CopySpanData_StaticCast using CopyBytes(SpanReInterpretCast())
-    //
-
-    // FROM_T and TO_T must be basically the same, but can copy from either non-const or const T.
-    // require target size >= from.size() (returns span copied - can be smaller than from span)
-    // src and target may not overlap (intersect) - like memcpy
-    template <Common::trivially_copyable FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopyBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
-        requires (same_as<FROM_T, remove_cvref_t<TO_T>>);
-
-    // analagous to memmove
-    // same as CopyBytes - but withoput restiction about src/target overlap (they may or may not overlap)
-    template <Common::trivially_copyable FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
-        requires (same_as<FROM_T, remove_cvref_t<TO_T>>);
 
 }
 
