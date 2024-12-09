@@ -30,7 +30,7 @@ using namespace Stroika::Frameworks;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    void Test1_DirectoryIterator_ ()
+    GTEST_TEST (Foundation_IO_FileSystem, Test1_DirectoryIterator_)
     {
         Debug::TraceContextBumper ctx{"Test1_DirectoryIterator_"};
         {
@@ -50,10 +50,10 @@ namespace {
 }
 
 namespace {
-    void Test2_DirectoryIterable_ ()
+    GTEST_TEST (Foundation_IO_FileSystem, Test2_DirectoryIterable_)
     {
         Debug::TraceContextBumper ctx{"Test2_DirectoryIterable_"};
-        for (filesystem::path filename : DirectoryIterable (WellKnownLocations::GetTemporary ())) {
+        for (filesystem::path filename : DirectoryIterable{WellKnownLocations::GetTemporary ()}) {
             DbgTrace ("filename = {}"_f, filename);
         }
         {
@@ -91,9 +91,10 @@ namespace {
 }
 
 namespace {
-    namespace Test3_Pathnames_ {
-        void Test_ExtractDirAndBaseName_ ()
-        {
+    GTEST_TEST (Foundation_IO_FileSystem, Test3_Pathnames_)
+    {
+        Debug::TraceContextBumper ctx{"Test3_Pathnames_"};
+        auto                      testExtractDirAndBaseName_ = [] () {
 // Tests from DOCS line in ExtractDirAndBaseName (except now with different values - cuz using filesystem::path::parent_path/filename
 #if qStroika_Foundation_Common_Platform_POSIX
             EXPECT_TRUE ((filesystem::path (L"/usr/lib").parent_path () == L"/usr"));
@@ -124,9 +125,8 @@ namespace {
             EXPECT_TRUE ((filesystem::path (L"c:\\h\\m.t").parent_path () == L"c:\\h"));
             EXPECT_TRUE ((filesystem::path (L"c:\\h\\m.t").filename () == L"m.t"));
 #endif
-        }
-        void Test_GetFileBaseName_ ()
-        {
+        };
+        auto testGetFileBaseName_ = [] () {
             EXPECT_TRUE (filesystem::path (L"foo").stem () == L"foo");
             EXPECT_TRUE (filesystem::path (L"foo.cpp").stem () == L"foo");
             EXPECT_TRUE (filesystem::path (L"foo.exe").stem () == L"foo");
@@ -136,37 +136,28 @@ namespace {
 #elif qStroika_Foundation_Common_Platform_Windows
             EXPECT_TRUE (filesystem::path (L"c:\\tmp\\.CPUBurner").stem () == L".CPUBurner");
 #endif
-        }
+        };
+        testExtractDirAndBaseName_ ();
+        testGetFileBaseName_ ();
+    }
+}
 
-        void DoTest ()
-        {
-            Debug::TraceContextBumper ctx{"Test3_Pathnames_"};
-            Test_ExtractDirAndBaseName_ ();
-            Test_GetFileBaseName_ ();
+namespace {
+    GTEST_TEST (Foundation_IO_FileSystem, Test4_MountedFilesystems_)
+    {
+        Debug::TraceContextBumper ctx{"Test4_MountedFilesystems_"};
+        for (MountedFilesystemType i : IO::FileSystem::GetMountedFilesystems ()) {
+            DbgTrace ("fs={}"_f, i);
         }
     }
 }
 
 namespace {
-    namespace Test4_MountedFilesystems_ {
-        void DoTest ()
-        {
-            Debug::TraceContextBumper ctx{"Test4_MountedFilesystems_"};
-            for (auto i : IO::FileSystem::GetMountedFilesystems ()) {
-                DbgTrace ("fs={}"_f, i);
-            }
-        }
-    }
-}
-
-namespace {
-    namespace Test5_DisksPresent_ {
-        void DoTest ()
-        {
-            Debug::TraceContextBumper ctx{"Test5_DisksPresent_"};
-            for (auto i : IO::FileSystem::GetAvailableDisks ()) {
-                DbgTrace ("d={}"_f, i);
-            }
+    GTEST_TEST (Foundation_IO_FileSystem, Test5_DisksPresent_)
+    {
+        Debug::TraceContextBumper ctx{"Test5_DisksPresent_"};
+        for (auto i : IO::FileSystem::GetAvailableDisks ()) {
+            DbgTrace ("d={}"_f, i);
         }
     }
 }
@@ -182,17 +173,6 @@ namespace {
         EXPECT_EQ (String{"c:\\Sandbox"}.As<filesystem::path> (), filesystem::path{"c:\\Sandbox"});
         EXPECT_EQ (String{"\\\\foo/bar"}.As<filesystem::path> (), filesystem::path{"\\\\foo/bar"});
 #endif
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_IO_FileSystem, all)
-    {
-        Test1_DirectoryIterator_ ();
-        Test2_DirectoryIterable_ ();
-        Test3_Pathnames_::DoTest ();
-        Test4_MountedFilesystems_::DoTest ();
-        Test5_DisksPresent_::DoTest ();
     }
 }
 #endif

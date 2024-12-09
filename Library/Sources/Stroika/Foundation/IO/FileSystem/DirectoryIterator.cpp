@@ -26,7 +26,7 @@
 #include "DirectoryIterator.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -63,7 +63,7 @@ public:
 #endif
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s'", dir.c_str ()};
+        Debug::TraceContextBumper ctx{"DirectoryIterator::Rep_::CTOR", "'{}'"_f, dir};
 #endif
 #if qStroika_Foundation_Common_Platform_POSIX
         if (fDirIt_ == nullptr) {
@@ -117,7 +117,7 @@ public:
         , fReportPrefix_{mkReportPrefix_ (dir.As<filesystem::path> (), iteratorReturns)}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s',name=%s", dir.c_str (), name.c_str ()};
+        Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", "'{}',name={}"_f, dir, name};
 #endif
         if (name) {
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
