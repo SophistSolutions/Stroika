@@ -89,9 +89,22 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  Convert  std::filesystem::path to String Stroika String
      *  \note UNLIKE Characters::ToString () - so will NOT surround the name with quotes - this does a straight conversion.
      */
-    String           FromPath (const filesystem::path& p);
-    optional<String> FromPath (const optional<filesystem::path>& p);
-
+    [[deprecated ("Since Stroika v3.0d12 - use String CTOR")]] inline String FromPath (const filesystem::path& p)
+    {
+#if 1
+        return String{p}; //testing
+#else
+        return p.wstring ();
+#endif
+    }
+    inline optional<String> FromPath (const optional<filesystem::path>& p)
+    {
+        // unsure can deprecate???
+        if (p) {
+            return String{*p};
+        }
+        return nullopt;
+    }
 }
 
 /*

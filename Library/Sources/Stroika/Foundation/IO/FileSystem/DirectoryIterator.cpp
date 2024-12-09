@@ -265,6 +265,6 @@ private:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const filesystem::path& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<filesystem::path>{make_unique<Rep_> (FromPath (directoryName), iteratorReturns)}
+    : Iterator<filesystem::path>{make_unique<Rep_> (String{directoryName}, iteratorReturns)}
 {
 }

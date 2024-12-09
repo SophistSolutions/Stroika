@@ -199,7 +199,7 @@ vector<String> IO::FileSystem::FindFiles (const filesystem::path& path, const St
         return result;
     }
 #if qStroika_Foundation_Common_Platform_Windows
-    String          usePath       = AssureDirectoryPathSlashTerminated (FromPath (path));
+    String          usePath       = AssureDirectoryPathSlashTerminated (String{path});
     String          matchFullPath = usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
     WIN32_FIND_DATA fd{};
     HANDLE          hFind = ::FindFirstFile (matchFullPath.AsSDKString ().c_str (), &fd);
@@ -237,7 +237,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
 
     Containers::Set<String> resultSet;
 #if qStroika_Foundation_Common_Platform_Windows
-    String          usePath = AssureDirectoryPathSlashTerminated (FromPath (path));
+    String          usePath = AssureDirectoryPathSlashTerminated (String{path});
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
     HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsSDKString ().c_str (), &fd);
@@ -268,7 +268,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
  ********************************************************************************
  */
 IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const filesystem::path& directoryName, bool watchSubTree, DWORD notifyFilter)
-    : fDirectory{FromPath (directoryName)}
+    : fDirectory{directoryName}
     , fWatchSubTree{watchSubTree}
     , fDoneEvent{::CreateEvent (nullptr, false, false, nullptr)}
     , fWatchEvent{::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter)}

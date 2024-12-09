@@ -344,7 +344,7 @@ String CommandLine::GetAppName (bool onlyBaseName) const
     }
     if (onlyBaseName) {
         filesystem::path p = IO::FileSystem::ToPath (fArgs_[0]);
-        return IO::FileSystem::FromPath (p.stem ());
+        return String{p.stem ()};
     }
     return fArgs_[0];
 }

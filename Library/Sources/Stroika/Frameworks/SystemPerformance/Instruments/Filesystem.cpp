@@ -281,9 +281,7 @@ namespace {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             for (const IO::FileSystem::MountedFilesystemType& mi : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType vi;
-                String                    deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ())
-                                                           ? String{}
-                                                           : IO::FileSystem::FromPath (mi.fDevicePaths->Nth (0));
+                String deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ()) ? String{} : String{mi.fDevicePaths->Nth (0)};
                 if (not deviceName.empty ()) {
                     vi.fDeviceOrVolumeName = deviceName;
                 }
@@ -709,8 +707,7 @@ namespace {
                         return pctInUse / (1 - pctInUse);
                     };
                     if (_fOptions.fIOStatistics) {
-                        String wmiInstanceName =
-                            IO::FileSystem::FromPath (mfinfo.fMountedOn).RTrim ([] (Characters::Character c) { return c == '\\'; });
+                        String wmiInstanceName = String{mfinfo.fMountedOn}.RTrim ([] (Characters::Character c) { return c == '\\'; });
                         contextPtr->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                         IOStatsType readStats;

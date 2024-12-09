@@ -259,6 +259,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual explicit operator u16string () const;
         nonvirtual explicit operator u32string () const;
 
+        nonvirtual explicit operator span<const BufferElementType> () const;
+
     public:
         /**
          */

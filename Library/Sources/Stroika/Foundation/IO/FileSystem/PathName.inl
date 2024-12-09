@@ -48,16 +48,22 @@ namespace Stroika::Foundation::IO::FileSystem {
      **************************** IO::FileSystem::FromPath **************************
      ********************************************************************************
      */
+#if 0
     inline String FromPath (const filesystem::path& p)
     {
+#if 1
+        return String{p}; //testing
+#else
         return p.wstring ();
+#endif
     }
-    inline optional<String> FromPath (const optional<filesystem::path>& p)
+    inline optional < String> FromPath(const optional<filesystem::path>& p)
     {
         if (p) {
             return FromPath (*p);
         }
         return nullopt;
     }
+#endif
 
 }

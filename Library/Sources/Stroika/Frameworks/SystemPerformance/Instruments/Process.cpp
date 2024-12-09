@@ -400,7 +400,7 @@ namespace {
             for (const auto& p :
                  filesystem::directory_iterator{"/proc", filesystem::directory_options{filesystem::directory_options::skip_permission_denied}}) {
                 const filesystem::path& dir               = p.path (); // full-path
-                String                  dirFileNameString = IO::FileSystem::FromPath (dir.filename ());
+                String                  dirFileNameString{dir.filename ()};
                 bool                    isAllNumeric = not dirFileNameString.Find ([] (Character c) -> bool { return not c.IsDigit (); });
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{"...SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading /proc files"};
@@ -430,9 +430,8 @@ namespace {
 
                     if (grabStaticData) {
                         processDetails.fEXEPath = OptionallyResolveShortcut_ (dir / kEXEFilename_);
-                        if (processDetails.fEXEPath and IO::FileSystem::FromPath (*processDetails.fEXEPath).EndsWith (" (deleted)"sv)) {
-                            processDetails.fEXEPath =
-                                IO::FileSystem::ToPath (IO::FileSystem::FromPath (*processDetails.fEXEPath).SubString (0, -10));
+                        if (processDetails.fEXEPath and String{*processDetails.fEXEPath}.EndsWith (" (deleted)"sv))  {
+                            processDetails.fEXEPath = IO::FileSystem::ToPath (String{*processDetails.fEXEPath}.SubString (0, -10));
                         }
 
                         if (_fOptions.fProcessNameReadPolicy == Options::eAlways or

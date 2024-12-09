@@ -7,7 +7,6 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
-#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -122,7 +121,7 @@ span<const byte> BLOB::AdoptRep_::GetBounds () const
 
 /*
  ********************************************************************************
- ******************* Memory::BLOB::AdoptAndDeleteRep_ ***************************
+ ********************* Memory::BLOB::AdoptAndDeleteRep_ *************************
  ********************************************************************************
  */
 BLOB::AdoptAndDeleteRep_::AdoptAndDeleteRep_ (const byte* start, const byte* end)
@@ -152,13 +151,13 @@ BLOB BLOB::FromHex (span<const char> s)
 {
     auto HexChar2Num_ = [] (char c) -> byte {
         if ('0' <= c and c <= '9') [[likely]] {
-            return byte (c - '0');
+            return static_cast<byte> (c - '0');
         }
         if ('A' <= c and c <= 'F') [[likely]] {
-            return byte ((c - 'A') + 10);
+            return static_cast<byte> ((c - 'A') + 10);
         }
         if ('a' <= c and c <= 'f') [[likely]] {
-            return byte ((c - 'a') + 10);
+            return static_cast<byte> ((c - 'a') + 10);
         }
         static const Execution::RuntimeErrorException kException_{"Invalid HEX character in BLOB::Hex"sv};
         Execution::Throw (kException_);

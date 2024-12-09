@@ -343,6 +343,11 @@ namespace Stroika::Foundation::Characters {
         return As<u32string> ();
     }
     template <typename OPTIONS>
+    inline StringBuilder<OPTIONS>::operator span<const typename StringBuilder<OPTIONS>::BufferElementType> () const
+    {
+        return data ();
+    }
+    template <typename OPTIONS>
     inline size_t StringBuilder<OPTIONS>::length () const noexcept
     {
         return size ();

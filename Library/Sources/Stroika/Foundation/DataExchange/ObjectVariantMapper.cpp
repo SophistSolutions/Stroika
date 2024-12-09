@@ -182,7 +182,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<filesystem::path> (
 {
     FromObjectMapperType<filesystem::path> fromObjectMapper = [] (const ObjectVariantMapper&, const filesystem::path* fromObjOfTypeT) -> VariantValue {
         RequireNotNull (fromObjOfTypeT);
-        return VariantValue{IO::FileSystem::FromPath (*fromObjOfTypeT)};
+        return VariantValue{String{*fromObjOfTypeT}};
     };
     ToObjectMapperType<filesystem::path> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, filesystem::path* intoObjOfTypeT) -> void {
         RequireNotNull (intoObjOfTypeT);

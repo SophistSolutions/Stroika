@@ -108,6 +108,21 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     concept IBasicUNICODEStdString = same_as<T, u8string> or same_as<T, u16string> or same_as<T, u32string> or same_as<T, wstring>;
 
+    /**
+     *  \brief anything with a 'special conversion' method to wstring, such as filesystem::path
+     */
+    template <typename T>
+    concept IConvertibleToUNICODEStdString = requires (T t) {
+        //{ t.wstring () } -> same_as<wstring>;
+        { static_cast<wstring> (t) } -> same_as<wstring>;
+    } or requires (T t) {
+        { static_cast<u8string> (t) } -> same_as<u8string>;
+    } or requires (T t) {
+        { static_cast<u16string> (t) } -> same_as<u16string>;
+    } or requires (T t) {
+        { static_cast<u32string> (t) } -> same_as<u32string>;
+    };
+
     class String;
 
     /**
@@ -189,6 +204,10 @@ namespace Stroika::Foundation::Characters {
          *      o   NUL-character ARE allowed in strings, except for the case of single
          *          charX* argument constructors - which find the length based on
          *          the terminating NUL-character.
+         * 
+         *      o   CTOR (TOSTRINGABLE&& s) - IConvertibleToUNICODEStdString TOSTRINGABLE
+         *          carefully excludes conflicting CTOR overloads, and purpose is to allow constructing a String
+         *          from anything with a 'special conversion' method to UNICODE string, such as filesystem::path.
          *
          *  \note about lifetime of argument data (basic_string_view<CHAR_T> constructors)
          *        All data is copied out / saved by the end of the constructor for all constructors EXCEPT
@@ -227,6 +246,25 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const Iterable<CHAR_T>& src)
             requires (not Memory::ISpan<CHAR_T>);
+        template <IConvertibleToUNICODEStdString TOSTRINGABLE>
+        explicit String (TOSTRINGABLE&& s)
+            requires (
+                not IBasicUNICODEStdString<remove_cvref_t<TOSTRINGABLE>> and
+                not requires (TOSTRINGABLE t) {
+                    {
+                        []<IUNICODECanUnambiguouslyConvertFrom T1> (const T1*) {}(t)
+                    };
+                } and
+                not requires (TOSTRINGABLE t) {
+                    {
+                        []<IUNICODECanUnambiguouslyConvertFrom T1> (const span<const T1>&) {}(t)
+                    };
+                } and
+                not requires (TOSTRINGABLE t) {
+                    {
+                        []<IStdBasicStringCompatibleCharacter T1> (const basic_string_view<T1>&) {}(t)
+                    };
+                });
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
@@ -1697,7 +1735,7 @@ namespace Stroika::Foundation::Characters {
      *  \par Example Usage
      *      \code
      *          constexpr String::EqualsComparer kStringCIComparer_ {Characters::CompareOptions::eCaseInsensitive};
-     *          if (kStringCIComparer_ (IO::FileSystem::FromPath (filename.extension ()), ".HFCC"sv)) {
+     *          if (kStringCIComparer_ (filename.extension (), ".HFCC"sv)) {
      *              compiledName = filename;
      *          }
      *      \endcode

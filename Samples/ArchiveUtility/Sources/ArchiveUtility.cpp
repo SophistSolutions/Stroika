@@ -128,12 +128,12 @@ namespace {
     {
 // @todo - must support other formats, have a registry, and autodetect
 #if qStroika_HasComponent_LZMA
-        if (IO::FileSystem::FromPath (archiveName).EndsWith (".7z"sv, Characters::eCaseInsensitive)) {
+        if (String{archiveName}.EndsWith (".7z"sv, Characters::eCaseInsensitive)) {
             return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
 #if qStroika_HasComponent_zlib
-        if (IO::FileSystem::FromPath (archiveName).EndsWith (".zip"sv, Characters::eCaseInsensitive)) {
+        if (String{archiveName}.EndsWith (".zip"sv, Characters::eCaseInsensitive)) {
             return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif

@@ -268,7 +268,7 @@ namespace {
                 size_t       len = t1.size ();
                 span<CHAR_T> buf = mkBuf_ (len); // note buf span is over capacity, not size
                 Assert (buf.size () >= len);
-                auto result = Memory::CopySpanData (t1, buf);
+                auto result = Memory::CopyBytes (t1, buf);
                 if constexpr (kAddNullTerminator_) {
                     Assert (len + 1 <= buf.size ());
                     *(buf.data () + len) = '\0';
@@ -340,7 +340,7 @@ namespace {
                 // til after base class construction. SHOULDNT really matter (since uninitialized data), but on
                 // g++-11, and other compilers, detected as vptr UB violation if we access first
                 Require (t1.size () <= CAPACITY);
-                inherited::operator= (Memory::CopySpanData (t1, span<CHAR_T>{fBuf_}));
+                inherited::operator= (Memory::CopyBytes (t1, span<CHAR_T>{fBuf_}));
                 if (IncludesNullTerminator_ ()) {
                     Assert (t1.size () + 1 <= CAPACITY);
                     fBuf_[t1.size ()] = CHAR_T{'\0'};
@@ -817,8 +817,8 @@ String String::RemoveAt (size_t from, size_t to) const
         span<char32_t>                bufSpan{buf.data (), buf.size ()};
         span                          s1 = d.subspan (0, from);
         span                          s2 = d.subspan (to);
-        Memory::CopySpanData (s1, bufSpan);
-        Memory::CopySpanData (s2, bufSpan.subspan (s1.size ()));
+        Memory::CopyBytes (s1, bufSpan);
+        Memory::CopyBytes (s2, bufSpan.subspan (s1.size ()));
         return String{mk_ (bufSpan)};
     }
 }

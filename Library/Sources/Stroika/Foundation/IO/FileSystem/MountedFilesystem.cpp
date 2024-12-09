@@ -139,8 +139,7 @@ namespace {
                 // procfs/mounts often contains symbolic links to device files
                 // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
                 if (devName.StartsWith ("/"sv)) {
-                    IgnoreExceptionsExceptThreadAbortForCall (
-                        devName = IO::FileSystem::FromPath (filesystem::canonical (IO::FileSystem::ToPath (devName))));
+                    IgnoreExceptionsExceptThreadAbortForCall (devName = String{filesystem::canonical (IO::FileSystem::ToPath (devName))});
                 }
                 filesystem::path    mountedAt = ToPath (line[1]);
                 String              fstype    = line[2];

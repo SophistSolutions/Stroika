@@ -308,7 +308,7 @@ namespace {
                  *       recvpipe  sendpipe  ssthresh  rtt,msec    rttvar  hopcount      mtu     expire
                  *             0         0         0         0         0         0      1500         0
                  */
-                ProcessRunner pr{"route get default"sv};
+                ProcessRunner                    pr{"route get default"sv};
                 Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
                 pr.Run (nullptr, useStdOut).ThrowIfFailed ();
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':'}};

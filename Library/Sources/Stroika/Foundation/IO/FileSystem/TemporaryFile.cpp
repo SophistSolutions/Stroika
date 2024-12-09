@@ -201,8 +201,8 @@ filesystem::path FileSystem::CreateTmpFile (const String& baseName, const filesy
 {
     filesystem::path baseNamePath = ToPath (baseName);
     Require (not baseNamePath.has_root_path ());
-    String basename = FromPath (baseNamePath.stem ());
-    String ext      = FromPath (baseNamePath.extension ());
+    String basename{baseNamePath.stem ()};
+    String ext{baseNamePath.extension ()};
     if (ext.empty ()) {
         ext = ".txt"sv;
     }
