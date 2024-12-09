@@ -91,9 +91,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     [[deprecated ("Since Stroika v3.0d12 - use String CTOR")]] inline String FromPath (const filesystem::path& p)
     {
-        return String{p}; //testing
+        return String{p};
     }
-    inline optional<String> FromPath (const optional<filesystem::path>& p)
+    [[deprecated ("Since Stroika v3.0d12 - use String CTOR??? revfisit if used...")]] inline optional<String> FromPath (const optional<filesystem::path>& p)
     {
         // unsure can deprecate???
         if (p) {
@@ -101,6 +101,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         }
         return nullopt;
     }
+
 }
 
 /*
