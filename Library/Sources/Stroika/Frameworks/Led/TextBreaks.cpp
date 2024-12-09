@@ -126,7 +126,7 @@ inline bool IsJapaneseBOLChar (wchar_t c)
     size_t nBytesInThisChar = 2;
     char16_t useC = static_cast<char16_t> (c); // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
     nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}
-                           .Characters2Bytes (span{&useC, 1}, Memory::SpanReInterpretCast<byte, char> (span{mbyteChars}))
+                           .Characters2Bytes (span{&useC, 1}, Memory::SpanBytesCast<span<byte>> (span{mbyteChars}))
                            .size ();
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
@@ -140,7 +140,7 @@ inline bool IsJapaneseEOLChar (wchar_t c)
     size_t nBytesInThisChar = 2;
     char16_t useC = static_cast<char16_t> (c); // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
     nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}
-                           .Characters2Bytes (span{&useC, 1}, Memory::SpanReInterpretCast<byte, char> (span{mbyteChars}))
+                           .Characters2Bytes (span{&useC, 1}, Memory::SpanBytesCast<span<byte>> (span{mbyteChars}))
                            .size ();
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
@@ -154,7 +154,7 @@ inline unsigned GetJapaneseKutenRow (wchar_t c)
     size_t nBytesInThisChar = 2;
     char16_t useC = static_cast<char16_t> (c); // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
     nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}
-                           .Characters2Bytes (span{&useC, 1}, Memory::SpanReInterpretCast<byte, char> (span{mbyteChars}))
+                           .Characters2Bytes (span{&useC, 1}, Memory::SpanBytesCast<span<byte>> (span{mbyteChars}))
                            .size ();
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {

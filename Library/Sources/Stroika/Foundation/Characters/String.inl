@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Characters {
 

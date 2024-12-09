@@ -4120,10 +4120,9 @@ void StyledTextIOWriter_RTF::WritePlainUnicodeCharCharacterHelper (wchar_t c)
     size_t mbCharCount = 2;
     // NOTE - this code was written with assumption of char16_t == wchar_t - but newer Stroika more picky, so if ever happens just drop
     // on floor for now --LGP 2023-07-27
-    mbCharCount =
-        CodeCvt<char16_t>{fCurrentOutputCharSetEncoding}
-            .Characters2Bytes (Memory::SpanReInterpretCast<char16_t> (span{&c, 1}), Memory::SpanReInterpretCast<byte, char> (span{mbCharBuf}))
-            .size ();
+    mbCharCount = CodeCvt<char16_t>{fCurrentOutputCharSetEncoding}
+                      .Characters2Bytes (Memory::SpanBytesCast<span<char16_t>> (span{&c, 1}), Memory::SpanBytesCast<span<byte>> (span{mbCharBuf}))
+                      .size ();
     Assert (mbCharCount == 1 or mbCharCount == 2);
 
     bool needToWriteUNICODE = c >= 0x80; //  write UNICODE if non-ascii

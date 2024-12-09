@@ -24,7 +24,6 @@
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Common.h"
-#include "Stroika/Foundation/Memory/Span.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "String.h"

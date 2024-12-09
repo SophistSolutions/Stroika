@@ -74,11 +74,11 @@ namespace Stroika::Foundation::Streams::OutputStream {
         Require (IsOpen ());
         if (not elts.empty ()) [[likely]] {
             if constexpr (same_as<ELEMENT_TYPE, byte>) {
-                GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
+                GetRepRWRef ().Write (Memory::SpanBytesCast<span<const ELEMENT_TYPE>> (elts));
             }
             else if constexpr (same_as<ELEMENT_TYPE, Character>) {
                 if constexpr (sizeof (ELEMENT_TYPE2) == sizeof (Character)) {
-                    GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
+                    GetRepRWRef ().Write (Memory::SpanBytesCast<span<const ELEMENT_TYPE>> (elts));
                 }
                 else {
                     Memory::StackBuffer<Character> buf{Memory::eUninitialized, Characters::UTFConvert::ComputeTargetBufferSize<Character> (elts)};

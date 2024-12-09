@@ -9,7 +9,7 @@
 
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/Copy.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"

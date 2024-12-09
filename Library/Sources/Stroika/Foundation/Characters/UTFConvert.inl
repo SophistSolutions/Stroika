@@ -8,7 +8,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Memory/Bits.h"
 //#include "Stroika/Foundation/Memory/BlockAllocated.h" // causes include embrace problems
-#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (same_as<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T> and sizeof (PRIMITIVE_SRC_T) != 1) {
             static_assert (not same_as<SRC_T, TRG_T>);
             static_assert (sizeof (SRC_T) == sizeof (TRG_T)); // I THINK - else this needs rethinking...
-            Memory::CopySpanData_StaticCast (source, target);
+            Memory::CopyBytes (Memory::SpanBytesCast<span<const TRG_T>> (source), target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else if constexpr (same_as<SRC_T, Latin1>) {
@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 // ALL TRG_T (but UTF8 and ASCII) have Latin1 as a strict subset so simply copy
-                Memory::CopySpanData_StaticCast (source, target);
+                Memory::CopySpanData (source, target);
                 return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
             }
         }

@@ -643,7 +643,7 @@ namespace {
                 { span<const char>{t} };
             }
         {
-            return String{Memory::SpanReInterpretCast<const char8_t> (span<const char>{sv})};
+            return String{Memory::SpanBytesCast<span<const char8_t>> (span<const char>{sv})};
         }
 
         VariantValue GetConstructedValue () const

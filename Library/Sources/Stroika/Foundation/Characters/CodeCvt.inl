@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Characters {
             Require (to.size () >= ComputeTargetCharacterBufferSize (*from) or to.size () >= this->_Bytes2Characters (*from));
             if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
                 return span<CHAR_T>{to.begin (),
-                                    fBytesVSIntermediateCvt_.Bytes2Characters (from, Memory::SpanReInterpretCast<INTERMEDIATE_CHAR_T> (to)).size ()};
+                                    fBytesVSIntermediateCvt_.Bytes2Characters (from, Memory::SpanBytesCast<span<INTERMEDIATE_CHAR_T>> (to)).size ()};
             }
             else {
                 /*
@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Characters {
         {
             Require (to.size () >= ComputeTargetByteBufferSize (from) or to.size () >= this->_Characters2Bytes (from));
             if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
-                return fBytesVSIntermediateCvt_.Characters2Bytes (Memory::SpanReInterpretCast<const INTERMEDIATE_CHAR_T> (from), to);
+                return fBytesVSIntermediateCvt_.Characters2Bytes (Memory::SpanBytesCast<span<const INTERMEDIATE_CHAR_T>> (from), to);
             }
             else {
                 /*

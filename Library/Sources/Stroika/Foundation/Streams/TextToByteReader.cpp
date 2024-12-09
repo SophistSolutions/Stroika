@@ -81,8 +81,8 @@ namespace {
             if (auto o = fSrc_.GetRepRWRef ().Read (span{readBuf}, blockFlag)) {
                 if (size_t nChars = o->size ()) {
                     Assert (nChars == 1); // for now cuz we have small buffer - could enlarge
-                    fSrcBufferedSpan_ = Memory::SpanReInterpretCast<byte> (Characters::UTFConvert::kThe.ConvertSpan (
-                        span{readBuf, nChars}, Memory::SpanReInterpretCast<char8_t> (span{fSrcBufferedRawBytes_})));
+                    fSrcBufferedSpan_ = Memory::SpanBytesCast<span<byte>> (Characters::UTFConvert::kThe.ConvertSpan (
+                        span{readBuf, nChars}, Memory::SpanBytesCast<span<char8_t>> (span{fSrcBufferedRawBytes_})));
                     Assert (not fSrcBufferedSpan_.empty ()); // cuz at least one character
                     goto Again;                              // cuz it has data it can pull
                 }

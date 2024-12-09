@@ -7,8 +7,6 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 
-#include "Span.h"
-
 namespace Stroika::Foundation::Memory {
 
     /*
@@ -122,14 +120,18 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     *************************** Memory::SpanReInterpretCast ************************
+     ***************************** Memory::SpanBytesCast ****************************
      ********************************************************************************
      */
-    template <typename TO_T, typename FROM_T, size_t FROM_EXTENT>
-    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T, FROM_EXTENT> src)
-        requires (sizeof (FROM_T) % sizeof (TO_T) == 0)
+    template <typename TO_SPAN, typename FROM_T, size_t FROM_EXTENT>
+    constexpr TO_SPAN SpanBytesCast (span<FROM_T, FROM_EXTENT> src)
+        requires (sizeof (FROM_T) % sizeof (typename TO_SPAN::value_type) == 0 or sizeof (typename TO_SPAN::value_type) % sizeof (FROM_T) == 0)
     {
-        return span<TO_T>{reinterpret_cast<TO_T*> (src.data ()), src.size () * (sizeof (FROM_T) / sizeof (TO_T))};
+        using TO_T = typename TO_SPAN::value_type;
+        // allow EITHER size or constness conversions - so NOT re-interpret cast
+        TO_SPAN result{(TO_T*)(src.data ()), src.size () * (sizeof (FROM_T) / sizeof (TO_T))};
+        Ensure (src.size_bytes () == result.size_bytes ());
+        return result;
     }
 
     /*
@@ -157,6 +159,30 @@ namespace Stroika::Foundation::Memory {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
 #endif
         return target.subspan (0, src.size ());
+    }
+
+    /*
+     ********************************************************************************
+     ****************************** Memory::CopySpanData ****************************
+     ********************************************************************************
+     */
+    template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopySpanData (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+    {
+        Require (not Intersects (src, target));
+        Require (src.size () <= target.size ()); // BUT size in BYTES need not match
+        if constexpr (sizeof (TO_T) == sizeof (TO_E) and Common::trivially_copyable<TO_T> and Common::trivially_copyable<FROM_T>) {
+            return CopyBytes (SpanBytesCast<span<const TO_T, TO_E>> (src), target);
+        }
+        else {
+            // Do a for loop copying each element; this can be used to copy any data, like std::copy, except using spans not
+            // iterators
+            TO_T* tb = target.data ();
+            for (const FROM_T& i : src) {
+                *tb++ = static_cast<TO_T> (i);
+            }
+            return target.subspan (0, src.size ());
+        }
     }
 
     /*
@@ -416,16 +442,17 @@ namespace Stroika::Foundation::Memory {
     {
         return CompareBytes (lhs, rhs);
     }
-
-    template <typename T, size_t E>
-    [[deprecated ("Since Stroika v3.0d12 use CopyBytes")]] constexpr std::span<T, E> CopySpanData (span<const T, E> src, span<T, E> target)
+    template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    [[deprecated ("Since Stroika v3.0d12 use CopyBytes")]] constexpr span<TO_T, TO_E> CopySpanData_StaticCast (span<const FROM_T, FROM_E> src,
+                                                                                                               span<TO_T, TO_E> target)
     {
-        return CopyBytes (src, target);
+        return CopySpanData (src, target);
     }
-    template <typename T, size_t E>
-    [[deprecated ("Since Stroika v3.0d12 use CopyBytes")]] constexpr std::span<T, E> CopySpanData (span<T, E> src, span<T, E> target)
+    template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    [[deprecated ("Since Stroika v3.0d12 use CopyBytes")]] constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<FROM_T, FROM_E> src,
+                                                                                                                    span<TO_T, TO_E> target)
     {
-        return CopyBytes (src, target);
+        return CopySpanData (ConstSpan (src), target);
     }
 
 }

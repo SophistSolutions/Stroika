@@ -7,8 +7,8 @@
 #include "Stroika/Foundation/Characters/UTFConvert.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Memory/Span.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -53,11 +53,10 @@ namespace Stroika::Foundation::Characters {
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
                 if constexpr (same_as<CHAR_T, BufferElementType>) {
-                    Memory::CopySpanData_StaticCast (s, span<CHAR_T>{fData_}.subspan (i));
+                    Memory::CopyBytes (Memory::SpanBytesCast<span<const CHAR_T>> (s), span<CHAR_T>{fData_}.subspan (i));
                 }
                 else {
-                    Memory::CopySpanData_StaticCast (Memory::SpanReInterpretCast<const BufferElementType> (s),
-                                                     span<BufferElementType>{fData_}.subspan (i));
+                    Memory::CopyBytes (Memory::SpanBytesCast<span<const BufferElementType>> (s), span<BufferElementType>{fData_}.subspan (i));
                 }
             }
             else {

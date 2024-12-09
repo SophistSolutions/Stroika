@@ -380,7 +380,7 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
 String BLOB::ToString (size_t maxBytesToShow) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    bool allBytesAscii = [this] () { return Character::IsASCII (Memory::SpanReInterpretCast<const char> (this->As<span<const byte>> ())); }();
+    bool allBytesAscii = [this] () { return Character::IsASCII (Memory::SpanBytesCast<span<const char>> (this->As<span<const byte>> ())); }();
     auto quoteAscii4Display = [] (const String& s) {
         return s.ReplaceAll ("\n"sv, "\\n"sv).ReplaceAll ("\r"sv, "\\r"sv); // todo more such
     };

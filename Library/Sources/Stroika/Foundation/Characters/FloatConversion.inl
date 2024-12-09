@@ -8,8 +8,8 @@
 #include "Stroika/Foundation/Characters/UTFConvert.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Memory/Span.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters::FloatConversion {

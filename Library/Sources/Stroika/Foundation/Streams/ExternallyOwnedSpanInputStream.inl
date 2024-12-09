@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
-#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 
 #include "InternallySynchronizedInputStream.h"

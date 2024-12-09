@@ -32,7 +32,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
-#include "Stroika/Foundation/Memory/Span.h"
+#include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
