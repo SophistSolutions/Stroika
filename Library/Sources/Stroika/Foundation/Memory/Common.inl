@@ -313,13 +313,16 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     [[deprecated ("Since Stroika v3.0d12 - use CompareBytes")]] constexpr strong_ordering MemCmp (const T* lhs, const T* rhs, size_t count)
     {
+        return CompareBytes (lhs, rhs, count);
     }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d12 - use CompareBytes")]] constexpr strong_ordering MemCmp (span<const T> lhs, span<const T> rhs)
     {
+        return CompareBytes (lhs, rhs);
     }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d12 - use CompareBytes")]] constexpr strong_ordering MemCmp (span<T> lhs, span<T> rhs)
     {
+        return CompareBytes (lhs, rhs);
     }
 }
