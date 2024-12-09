@@ -109,18 +109,19 @@ namespace Stroika::Foundation::Characters {
     concept IBasicUNICODEStdString = same_as<T, u8string> or same_as<T, u16string> or same_as<T, u32string> or same_as<T, wstring>;
 
     /**
-     *  \brief anything with a 'special conversion' method to wstring, such as filesystem::path
+     *  \brief anything with a 'special .STRINGTYPE conversion' method to UNICODE string, such as filesystem::path
+     * 
+     *  Really, this is a thinly veiled attempt to avoid #include <filesystem> for modularity reasons.
      */
     template <typename T>
-    concept IConvertibleToUNICODEStdString = requires (T t) {
-        //{ t.wstring () } -> same_as<wstring>;
-        { static_cast<wstring> (t) } -> same_as<wstring>;
+    concept IStdPathLike2UNICODEString = requires (T t) {
+        { t.wstring () } -> same_as<wstring>;
     } or requires (T t) {
-        { static_cast<u8string> (t) } -> same_as<u8string>;
+        { t.u8string () } -> same_as<u8string>;
     } or requires (T t) {
-        { static_cast<u16string> (t) } -> same_as<u16string>;
+        { t.u16string () } -> same_as<u16string>;
     } or requires (T t) {
-        { static_cast<u32string> (t) } -> same_as<u32string>;
+        { t.u32string () } -> same_as<u32string>;
     };
 
     class String;
@@ -205,7 +206,7 @@ namespace Stroika::Foundation::Characters {
          *          charX* argument constructors - which find the length based on
          *          the terminating NUL-character.
          * 
-         *      o   CTOR (TOSTRINGABLE&& s) - IConvertibleToUNICODEStdString TOSTRINGABLE
+         *      o   CTOR (TOSTRINGABLE&& s) - IStdPathLike2UNICODEString TOSTRINGABLE
          *          carefully excludes conflicting CTOR overloads, and purpose is to allow constructing a String
          *          from anything with a 'special conversion' method to UNICODE string, such as filesystem::path.
          *
@@ -246,7 +247,7 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const Iterable<CHAR_T>& src)
             requires (not Memory::ISpan<CHAR_T>);
-        template <IConvertibleToUNICODEStdString TOSTRINGABLE>
+        template <IStdPathLike2UNICODEString TOSTRINGABLE>
         explicit String (TOSTRINGABLE&& s)
             requires (
                          not IBasicUNICODEStdString<remove_cvref_t<TOSTRINGABLE>> and
@@ -274,7 +275,7 @@ namespace Stroika::Foundation::Characters {
         String (const String& from) noexcept = default;
 
     private:
-        template <IConvertibleToUNICODEStdString TOSTRINGABLE>
+        template <IStdPathLike2UNICODEString TOSTRINGABLE>
         static String mkSTR_ (TOSTRINGABLE&& s);
 
     private:

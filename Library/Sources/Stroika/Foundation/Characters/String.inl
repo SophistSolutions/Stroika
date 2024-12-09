@@ -308,7 +308,7 @@ namespace Stroika::Foundation::Characters {
     {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <IConvertibleToUNICODEStdString TOSTRINGABLE>
+    template <IStdPathLike2UNICODEString TOSTRINGABLE>
     inline String::String (TOSTRINGABLE&& s)
         requires (
             not IBasicUNICODEStdString<remove_cvref_t<TOSTRINGABLE>> and
@@ -331,28 +331,28 @@ namespace Stroika::Foundation::Characters {
     {
     }
 #endif
-    template <IConvertibleToUNICODEStdString TOSTRINGABLE>
+    template <IStdPathLike2UNICODEString TOSTRINGABLE>
     String String::mkSTR_ (TOSTRINGABLE&& s)
     {
         if constexpr (requires (TOSTRINGABLE t) {
-                          { static_cast<u8string> (t) } -> same_as<u8string>;
+                          { t.wstring () } -> same_as<wstring>;
                       }) {
-            return String{static_cast<u8string> (forward<TOSTRINGABLE> (s))};
+            return String{forward<TOSTRINGABLE> (s).wstring ()};
         }
         if constexpr (requires (TOSTRINGABLE t) {
-                          { static_cast<wstring> (t) } -> same_as<wstring>;
+                          { t.u8string () } -> same_as<u8string>;
                       }) {
-            return String{static_cast<wstring> (forward<TOSTRINGABLE> (s))};
+            return String{forward<TOSTRINGABLE> (s).u8string ()};
         }
         if constexpr (requires (TOSTRINGABLE t) {
-                          { static_cast<u16string> (t) } -> same_as<u16string>;
+                          { t.u16string () } -> same_as<u16string>;
                       }) {
-            return String{static_cast<u16string> (forward<TOSTRINGABLE> (s))};
+            return String{forward<TOSTRINGABLE> (s).u16string ()};
         }
         if constexpr (requires (TOSTRINGABLE t) {
-                          { static_cast<u32string> (t) } -> same_as<u32string>;
+                          { t.u32string () } -> same_as<u32string>;
                       }) {
-            return String{static_cast<u32string> (forward<TOSTRINGABLE> (s))};
+            return String{forward<TOSTRINGABLE> (s).u32string ()};
         }
     }
     inline String String::FromNarrowString (const char* from, const locale& l)
