@@ -53,6 +53,8 @@ namespace Stroika::Foundation::Memory {
      *  \brief - like std::memcmp() - except count is in units of T (not bytes) and this function is
      *           constexpr, and this function allows nullptr arguments (if count == 0).
      * 
+     *  \note Aliases: memcmp, MemCmp
+     * 
      *  Pointer Overload: 
      *      \req  (count == 0 or lhs != nullptr);
      *      \req  (count == 0 or rhs != nullptr);
@@ -61,14 +63,14 @@ namespace Stroika::Foundation::Memory {
      *      \req  lhs.size () == rhs.size ()
      * 
      *  \note - like std::memcmp() it returns an int < 0 for less, == 0 for equal, and > 0 for greater, but that corresponds
-     *          backward compatably to the strong_ordering C++20 type, so we use that for clarity going forward.
+     *          backward compatibly to the strong_ordering C++20 type, so we use that for clarity going forward.
      */
     template <typename T>
-    constexpr strong_ordering MemCmp (const T* lhs, const T* rhs, size_t count);
+    constexpr strong_ordering CompareBytes (const T* lhs, const T* rhs, size_t count);
     template <typename T>
-    constexpr strong_ordering MemCmp (span<const T> lhs, span<const T> rhs);
+    constexpr strong_ordering CompareBytes (span<const T> lhs, span<const T> rhs);
     template <typename T>
-    constexpr strong_ordering MemCmp (span<T> lhs, span<T> rhs);
+    constexpr strong_ordering CompareBytes (span<T> lhs, span<T> rhs);
 
     /**
      *  \brief 'cast' the given POD data type argument to a span<const byte> - a bit like std::as_bytes, but taking different arguments

@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Memory {
         if (lSize != rSize) {
             return false;
         }
-        return MemCmp (l, r) == 0;
+        return CompareBytes (l, r) == 0;
     }
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Memory {
         size_t                                                nCommonBytes = min (lSize, rSize);
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
-            if (strong_ordering tmp = MemCmp (l.subspan (0, nCommonBytes), r.subspan (0, nCommonBytes)); tmp != strong_ordering::equal) {
+            if (strong_ordering tmp = CompareBytes (l.subspan (0, nCommonBytes), r.subspan (0, nCommonBytes)); tmp != strong_ordering::equal) {
                 return tmp;
             }
         }

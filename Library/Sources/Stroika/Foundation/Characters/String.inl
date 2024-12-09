@@ -1101,7 +1101,7 @@ namespace Stroika::Foundation::Characters {
                         if (lhsAsciiSpan->size () != rhsAsciiSpan->size ()) {
                             return false;
                         }
-                        return Memory::MemCmp (lhsAsciiSpan->data (), rhsAsciiSpan->data (), lhsAsciiSpan->size ()) == 0;
+                        return Memory::CompareBytes (lhsAsciiSpan->data (), rhsAsciiSpan->data (), lhsAsciiSpan->size ()) == 0;
                     }
                     else {
                         return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, eCaseInsensitive) == 0;
@@ -1118,7 +1118,7 @@ namespace Stroika::Foundation::Characters {
                     if (lhsAsciiSpan->size () != rhsAsciiSpan.size ()) {
                         return false;
                     }
-                    return Memory::MemCmp (lhsAsciiSpan->data (), rhsAsciiSpan.data (), lhsAsciiSpan->size ()) == 0;
+                    return Memory::CompareBytes (lhsAsciiSpan->data (), rhsAsciiSpan.data (), lhsAsciiSpan->size ()) == 0;
                 }
                 else {
                     return Character::Compare (*lhsAsciiSpan, rhsAsciiSpan, eCaseInsensitive) == 0;

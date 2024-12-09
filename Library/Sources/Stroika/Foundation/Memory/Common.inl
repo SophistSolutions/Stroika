@@ -24,11 +24,11 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ********************************* Memory::MemCmp *******************************
+     *************************** Memory::CompareBytes *******************************
      ********************************************************************************
      */
     template <>
-    constexpr strong_ordering MemCmp (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
+    constexpr strong_ordering CompareBytes (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
     {
         DISABLE_COMPILER_MSC_WARNING_START (5063)
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
@@ -56,27 +56,39 @@ namespace Stroika::Foundation::Memory {
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wconstant-evaluated\"");
     }
     template <typename T>
-    constexpr strong_ordering MemCmp (const T* lhs, const T* rhs, size_t count)
+    constexpr strong_ordering CompareBytes (const T* lhs, const T* rhs, size_t count)
     {
-        return MemCmp (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), count * sizeof (T));
+        return CompareBytes (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), count * sizeof (T));
     }
     template <typename T>
-    constexpr strong_ordering MemCmp (span<const T> lhs, span<const T> rhs)
+    constexpr strong_ordering CompareBytes (span<const T> lhs, span<const T> rhs)
     {
         Require (lhs.size () == rhs.size ());
-        return MemCmp (lhs.data (), rhs.data (), lhs.size ());
+        return CompareBytes (lhs.data (), rhs.data (), lhs.size ());
     }
     template <typename T>
-    constexpr strong_ordering MemCmp (span<T> lhs, span<T> rhs)
+    constexpr strong_ordering CompareBytes (span<T> lhs, span<T> rhs)
     {
-        return MemCmp (ConstSpan (lhs), ConstSpan (rhs));
+        return CompareBytes (ConstSpan (lhs), ConstSpan (rhs));
     }
+
+    /*
+     ********************************************************************************
+     ******************************** Memory::AsBytes *******************************
+     ********************************************************************************
+     */
     template <typename T>
     inline span<const byte> AsBytes (const T& elt)
         requires (is_trivial_v<T>)
     {
         return as_bytes (span{&elt, 1}); //return span<const byte>{reinterpret_cast<const byte*> (&elt), sizeof (elt)};
     }
+
+    /*
+     ********************************************************************************
+     ******************************** Memory::OffsetOf ******************************
+     ********************************************************************************
+     */
     namespace Private_ {
         namespace OffsetOfImpl_ {
             namespace UsingRecursiveSideStruct_ {
@@ -298,5 +310,16 @@ namespace Stroika::Foundation::Memory {
     {
         return OffsetOf (member);
     }
-
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d12 - use CompareBytes")]] constexpr strong_ordering MemCmp (const T* lhs, const T* rhs, size_t count)
+    {
+    }
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d12 - use CompareBytes")]] constexpr strong_ordering MemCmp (span<const T> lhs, span<const T> rhs)
+    {
+    }
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d12 - use CompareBytes")]] constexpr strong_ordering MemCmp (span<T> lhs, span<T> rhs)
+    {
+    }
 }
