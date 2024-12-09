@@ -91,11 +91,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     [[deprecated ("Since Stroika v3.0d12 - use String CTOR")]] inline String FromPath (const filesystem::path& p)
     {
-#if 1
         return String{p}; //testing
-#else
-        return p.wstring ();
-#endif
     }
     inline optional<String> FromPath (const optional<filesystem::path>& p)
     {
