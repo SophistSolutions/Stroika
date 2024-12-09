@@ -104,6 +104,7 @@ namespace Stroika::Foundation::Memory {
     template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
     constexpr span<TO_T, TO_E> CopySpanData_StaticCast (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
     {
+        // NOT YET [[maybe_unused]]auto a = SpanReInterpretCast<TO_T> (src);
 #if 0
         return CopyBytes (SpanReInterpretCast<const TO_T, dynamic_extent> (src), target);
 #else
