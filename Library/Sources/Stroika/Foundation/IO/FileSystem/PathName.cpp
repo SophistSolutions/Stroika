@@ -27,15 +27,15 @@ String FileSystem::AssureDirectoryPathSlashTerminated (const String& dirPath)
         AssertNotReached (); // not sure if this is an error or not. Not sure how code used.
         // put assert in there to find out... Probably should THROW!
         //      -- LGP 2009-05-12
-        return String{kPathComponentSeperator};
+        return String{filesystem::path::preferred_separator};
     }
     else {
         Character lastChar = dirPath[dirPath.size () - 1];
-        if (lastChar == kPathComponentSeperator) {
+        if (lastChar == filesystem::path::preferred_separator) {
             return dirPath;
         }
         StringBuilder result = dirPath;
-        result += kPathComponentSeperator;
+        result += filesystem::path::preferred_separator;
         return result;
     }
 }

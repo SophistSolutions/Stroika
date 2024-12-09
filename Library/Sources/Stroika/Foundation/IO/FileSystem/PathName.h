@@ -30,14 +30,11 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     using Characters::String;
 
-#if qStroika_Foundation_Common_Platform_Windows
-    constexpr wchar_t kPathComponentSeperator = '\\';
-#elif qStroika_Foundation_Common_Platform_POSIX
-    constexpr wchar_t kPathComponentSeperator = '/';
-#endif
+    [[deprecated("Since Stroika v3.0d12 use path::preferred_separator ")]] constexpr wchar_t kPathComponentSeperator =  filesystem::path::preferred_separator;
+
 
     /**
-     * This function presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
+     * This function presumes its argument is a directory, and makes sure it has a filesystem::path::preferred_separator character
      * at the end. Use this when given a directory from some source that isn't so careful, so code can generally
      * operate with the assumption that directories have that trailing slash, so its easier to compose
      * pathnames.

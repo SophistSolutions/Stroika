@@ -181,16 +181,16 @@ namespace {
             AssertNotReached (); // not sure if this is an error or not. Not sure how code used.
             // put assert in there to find out... Probably should THROW!
             //      -- LGP 2009-05-12
-            SDKChar tmp = FileSystem::kPathComponentSeperator;
+            SDKChar tmp = filesystem::path::preferred_separator;
             return SDKString (&tmp, &tmp + 1);
         }
         else {
             SDKChar lastChar = dirPath[dirPath.size () - 1];
-            if (lastChar == kPathComponentSeperator) {
+            if (lastChar == filesystem::path::preferred_separator) {
                 return dirPath;
             }
             SDKString result = dirPath;
-            result += kPathComponentSeperator;
+            result += filesystem::path::preferred_separator;
             return result;
         }
     }

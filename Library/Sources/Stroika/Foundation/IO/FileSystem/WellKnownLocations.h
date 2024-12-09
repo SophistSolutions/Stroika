@@ -39,7 +39,7 @@ namespace Stroika::Foundation::IO::FileSystem {
  *  These WellKnownLocations routines always return a valid directory (if createIfNotPresent)
  *  or empty string (if not valid???).
  *
- *  If a directory is returned, it is always terminated with FileSystem::kPathComponentSeperator
+ *  If a directory is returned, it is always terminated with filesystem::path::preferred_separator
  *  so that its unambiguously a directory name.
  *
  *  Most of these names/concepts for pathnames come from:

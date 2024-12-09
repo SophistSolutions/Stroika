@@ -190,7 +190,7 @@ filesystem::path Debug::Private_::Emitter::GetTraceFileName ()
                 mfname = SDKSTR ("{unknown}");
             }
             {
-                size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
+                size_t i = mfname.rfind (filesystem::path::preferred_separator);
                 if (i != SDKString::npos) {
                     mfname = mfname.substr (i + 1);
                 }
