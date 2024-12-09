@@ -77,7 +77,7 @@ namespace {
                        }(),
                        OptionsFile::kDefaultUpgrader,
                        [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
-                           return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
+                           return IO::FileSystem::WellKnownLocations::GetTemporary () / (moduleName + fileSuffix).As<filesystem::path> ();
                        }};
         MyData_     m = of.Read<MyData_> (MyData_{}); // will return default values if file not present
         of.Write (m);                                 // test writing
@@ -103,7 +103,7 @@ namespace {
                             OptionsFile::kDefaultUpgrader,
                             [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
                                 // for regression tests write to /tmp
-                                return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
+                                return IO::FileSystem::WellKnownLocations::GetTemporary () / (moduleName + fileSuffix).As<filesystem::path> ();
                             }}
             , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
         {

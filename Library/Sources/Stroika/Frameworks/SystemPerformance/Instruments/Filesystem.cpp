@@ -389,12 +389,12 @@ namespace {
             // I don't understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
             //tmphack
             static const filesystem::path kSysBlock_{"/sys/block"sv};
-            filesystem::path              tmp{kSysBlock_ / IO::FileSystem::ToPath (deviceName)};
+            filesystem::path              tmp{kSysBlock_ / deviceName.As<filesystem::path> ()};
             if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
             //tmphack - try using one char less
-            tmp = kSysBlock_ / IO::FileSystem::ToPath (deviceName.SubString (0, -1));
+            tmp = kSysBlock_ / deviceName.SubString (0, -1).As<filesystem::path> ();
             if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
@@ -472,7 +472,7 @@ namespace {
                 if (v.fSizeInBytes and v.fUsedSizeInBytes) {
                     v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
                 }
-                result.Add (IO::FileSystem::ToPath (l[5].Trim ()), v);
+                result.Add (l[5].Trim ().As<filesystem::path> (), v);
             }
             // Sometimes (with busy box df especially) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
@@ -524,7 +524,7 @@ namespace {
                 v.fSizeInBytes          = FloatConversion::ToFloat<double> (l[includeFSTypes ? 2 : 1]) * 1024;
                 v.fUsedSizeInBytes      = FloatConversion::ToFloat<double> (l[includeFSTypes ? 3 : 2]) * 1024;
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                result.Add (IO::FileSystem::ToPath (l[includeFSTypes ? 6 : 5].Trim ()), v);
+                result.Add (l[includeFSTypes ? 6 : 5].Trim ().As<filesystem::path> (), v);
             }
             // Sometimes (with busy box df especially) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {

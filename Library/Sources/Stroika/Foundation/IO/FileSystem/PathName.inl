@@ -4,18 +4,9 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
-
-
-  
-
-    /*
-     ********************************************************************************
-     ***************************** IO::FileSystem::ToPath ***************************
-     ********************************************************************************
-     */
-   [[deprecated("Since Stroika v3.0d12 - use String::As<filesystem::path>")]] inline filesystem::path ToPath (const String& p)
+    [[deprecated ("Since Stroika v3.0d12 - use String::As<filesystem::path>")]] inline filesystem::path ToPath (const String& p)
     {
-       return p.As<filesystem::path> ();
+        return p.As<filesystem::path> ();
     }
     [[deprecated ("Since Stroika v3.0d12 - use String::As<filesystem::path>")]] inline optional<filesystem::path> ToPath (const optional<String>& p)
     {
@@ -24,13 +15,6 @@ namespace Stroika::Foundation::IO::FileSystem {
         }
         return nullopt;
     }
-
-
-
- /**
-     *  Convert  std::filesystem::path to String Stroika String
-     *  \note UNLIKE Characters::ToString () - so will NOT surround the name with quotes - this does a straight conversion.
-     */
     [[deprecated ("Since Stroika v3.0d12 - use String CTOR")]] inline String FromPath (const filesystem::path& p)
     {
         return String{p};
@@ -43,6 +27,5 @@ namespace Stroika::Foundation::IO::FileSystem {
         }
         return nullopt;
     }
-
 
 }

@@ -60,7 +60,8 @@ namespace {
             Debug::TraceContextBumper                      ctx1{"test-known-dir"};
             static const Containers::Set<filesystem::path> kFileNamesForDir_{L"foo.txt", L"bar.png", L"t3.txt", L"blag.nope"};
             static const filesystem::path                  kTestSubDir_ =
-                WellKnownLocations::GetTemporary () / ToPath (L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
+                WellKnownLocations::GetTemporary () /
+                ("Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ())).As<filesystem::path> ();
             (void)filesystem::remove_all (kTestSubDir_);
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept {
                 std::error_code ignored{};
@@ -174,12 +175,12 @@ namespace {
     GTEST_TEST (Foundation_IO_FileSystem, ToPath)
     {
 #if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
-        EXPECT_EQ (IO::FileSystem::ToPath (String{"/c/Sandbox"}), filesystem::path{"c:/Sandbox"});
-        EXPECT_EQ (IO::FileSystem::ToPath (String{"/cygdrive/c/Sandbox"}), filesystem::path{"c:/Sandbox"});
-        EXPECT_EQ (IO::FileSystem::ToPath (String{"/dapper"}), filesystem::path{"/dapper"});
-        EXPECT_EQ (IO::FileSystem::ToPath (String{"c:/Sandbox"}), filesystem::path{"c:/Sandbox"});
-        EXPECT_EQ (IO::FileSystem::ToPath (String{"c:\\Sandbox"}), filesystem::path{"c:\\Sandbox"});
-        EXPECT_EQ (IO::FileSystem::ToPath (String{"\\\\foo/bar"}), filesystem::path{"\\\\foo/bar"});
+        EXPECT_EQ (String{"/c/Sandbox"}.As<filesystem::path> (), filesystem::path{"c:/Sandbox"});
+        EXPECT_EQ (String{"/cygdrive/c/Sandbox"}.As<filesystem::path> (), filesystem::path{"c:/Sandbox"});
+        EXPECT_EQ (String{"/dapper"}.As<filesystem::path> (), filesystem::path{"/dapper"});
+        EXPECT_EQ (String{"c:/Sandbox"}.As<filesystem::path> (), filesystem::path{"c:/Sandbox"});
+        EXPECT_EQ (String{"c:\\Sandbox"}.As<filesystem::path> (), filesystem::path{"c:\\Sandbox"});
+        EXPECT_EQ (String{"\\\\foo/bar"}.As<filesystem::path> (), filesystem::path{"\\\\foo/bar"});
 #endif
     }
 }

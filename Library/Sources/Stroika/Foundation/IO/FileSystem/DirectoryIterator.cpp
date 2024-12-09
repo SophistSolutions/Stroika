@@ -94,7 +94,7 @@ public:
     Rep_ (const String& dirName, const optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_{iteratorReturns}
         , fDirName_{dirName}
-        , fReportPrefix_{mkReportPrefix_ (ToPath (dirName), iteratorReturns)}
+        , fReportPrefix_{mkReportPrefix_ (dirName.As<filesystem::path> (), iteratorReturns)}
         , fDirIt_{::opendir (dirName.AsSDKString ().c_str ())}
     {
         if (fDirIt_ == nullptr) {

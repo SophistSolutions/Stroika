@@ -664,7 +664,7 @@ void Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 filesystem::path Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
     return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () /
-           IO::FileSystem::ToPath (fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"sv);
+           (fAppRep_.load ()->GetServiceDescription ().fRegistrationName + ".pid"sv).As<filesystem::path> ();
 }
 
 void Main::BasicUNIXServiceImpl::_CleanupDeadService ()

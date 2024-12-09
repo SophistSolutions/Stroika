@@ -86,17 +86,16 @@ namespace Stroika::Foundation::Characters {
     /*
      *  \brief On Windows, affects the behavior of String::As<filesystem::path> ()
      * 
-     * On windows, its helpful when mapping String to std::filesystem::pathname to map certain common name prefixes to things that will be found
-     * on Windows.
+     *  On windows, its helpful when mapping String to std::filesystem::pathname to map certain common name
+     *  prefixes to things that will be found on Windows.
      * 
-     * MSYS creates paths like /c/folder for c:/folder
-     * CYGWIN creates paths like /cygdrive/c/folder for c:/folder
+     *  MSYS creates paths like /c/folder for c:/folder
+     *  CYGWIN creates paths like /cygdrive/c/folder for c:/folder
      * 
-     * Automatically map these (since Stroika v3.0d6) in ToPath
+     *  Automatically map these (since Stroika v3.0d6) in (was ToPath) As<filesystem::path> ();
      * 
      *   \see https://www.msys2.org/docs/filesystem-paths/
-     * 
-     *        this API is for getting strings from the commandline, or user input, or configuration files etc, where cygwin
+     *        this API is for getting strings from the commandline, or user input, or configuration files etc, where Cygwin
      *        or msys style paths maybe present. APIs that talk directly to the OS are more likely to more directly produce
      *        filesystem::path than String. Anyhow - because of this, on windows, its probably more helpful than not to map
      *        the MSYS/cygdrive crap to a path more likely to actually work right. --LGP 2024-03-06
@@ -109,7 +108,7 @@ namespace Stroika::Foundation::Characters {
 
 #if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
 namespace std::filesystem {
-    class path; // forward declare
+    class path; // forward declare for template specialization
 }
 #endif
 
@@ -195,14 +194,14 @@ namespace Stroika::Foundation::Characters {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Design note - mutability vs. immutability
-     *          http://stroika-bugs.sophists.com/browse/STK-968
-     *          String objects are MUTABLE
-     *          String reps are IMMUTABLE.
-     *          Changes to string like +=, create new string reps (and so WORK but are quite costly). Consider
-     *          Use StringBuilder for that purpose in performance sensitive code.
-     *
-     *          TODO WRITEUP AND MAYBE MAKE IMMUTABLE
+     *          http://stroika-bugs.sophists.com/browse/STK-968 (see about deleting deprecated APIs and remnants of mutability) and c_str()
      * 
+     *          String objects are IMMUTABLE (with operator= and c_str exceptions - for now).
+     * 
+     *          String reps are IMMUTABLE.
+     * 
+     *          Use StringBuilder for a 'mutable' String (can be used mostly interchageably with String).
+     *
      *          Current Mutating methods (as of v3.0d1x)
      *          o   c_str ()  -- non-const                  (consider deprecating?) - only problematic one as of v3.0d12 - revisit after 3.0d12
 
@@ -218,8 +217,6 @@ namespace Stroika::Foundation::Characters {
      *          not bad cuz I deprecated? COULD just deprecate ALL of these, and then the class is fully immutable. Probably
      *          easier to understand/reason about.
      * 
-     *          @todo CONSIDER LOSIING THESE METHODS ABOVE (or deprecating at least)
-     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<String>);
      *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
@@ -535,10 +532,9 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Remove the all occurrences of Character 'c/subString' from this string (walking front to back - if removal creates one, it too is removed). Not an error if none
-         *  found. Doesn't modify this (const method) - returns resulting string.
-         *
-         *  \em Note that this is quite inefficient: consider using StringBuffer
+         *  Remove the all occurrences of Character 'c/subString' from this string 
+         *  (walking front to back - if removal creates one, it too is removed). 
+         *  Not an error if none found. Doesn't modify this (const method) - returns resulting string.
          */
         nonvirtual String RemoveAll (Character c) const;
         nonvirtual String RemoveAll (const String& subString) const;
@@ -726,7 +722,7 @@ namespace Stroika::Foundation::Characters {
          *          optional<String>               query;
          *          optional<String>               fragment;
          *          if (rawURL.Matches (kParseURLRegExp_, nullptr, &scheme, nullptr, &authority, &path, nullptr, &query, nullptr, &fragment)) {
-         *              DbgTrace ("***good - scehme={}"_f, scheme);
+         *              DbgTrace ("***good - scheme={}"_f, scheme);
          *              DbgTrace ("***good - authority={}"_f, authority);
          *              DbgTrace ("***good - path={}"_f, path);
          *              DbgTrace ("***good - query={}"_f, query);
@@ -1065,7 +1061,7 @@ namespace Stroika::Foundation::Characters {
          *      o   u32string
          *      o   String    (return *this; handy sometimes in templated usage; harmless)
          *    as well as:
-         *      o   anything constructible from std::wstring (such as filesystem::path)
+         *      o   filesystem::path (or anything with .wstring() -> wstring method)
          *
          *  DEPRECATED AS OF v3.0d1 because As is const method - could do non-const As<> overload for these, but that would be confusing
          *      o   const wchar_t*

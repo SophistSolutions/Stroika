@@ -431,7 +431,7 @@ namespace {
                     if (grabStaticData) {
                         processDetails.fEXEPath = OptionallyResolveShortcut_ (dir / kEXEFilename_);
                         if (processDetails.fEXEPath and String{*processDetails.fEXEPath}.EndsWith (" (deleted)"sv)) {
-                            processDetails.fEXEPath = IO::FileSystem::ToPath (String{*processDetails.fEXEPath}.SubString (0, -10));
+                            processDetails.fEXEPath = String{*processDetails.fEXEPath}.SubString (0, -10).As<filesystem::path> ();
                         }
 
                         if (_fOptions.fProcessNameReadPolicy == Options::eAlways or
@@ -1179,7 +1179,7 @@ namespace {
                     // Fake but usable answer
                     Sequence<String> t = cmdLine.Tokenize ();
                     if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
-                        processDetails.fEXEPath = IO::FileSystem::ToPath (t[0]);
+                        processDetails.fEXEPath = t[0].As<filesystem::path> ();
                     }
                 }
                 if (_fOptions.fCaptureCommandLine and _fOptions.fCaptureCommandLine (pid, NullCoalesce (processDetails.fEXEPath))) {

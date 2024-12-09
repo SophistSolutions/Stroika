@@ -1605,7 +1605,7 @@ namespace {
             }
             EXPECT_EQ (conceptsElt.GetChildElements ().size (), 459u);
             EXPECT_NO_THROW (d.Validate (schema));
-            //d.Write (IO::FileSystem::FileOutputStream::New (IO::FileSystem::ToPath (Characters::Format (L"c:/temp/foo%d.xml", ++i))));
+            //d.Write (IO::FileSystem::FileOutputStream::New (Characters::Format (L"c:/temp/foo%d.xml", ++i).As<filesystem::path> ()));
         });
     }
 }

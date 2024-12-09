@@ -38,7 +38,7 @@ namespace {
         static const Iterable<String> kCmds_{"awk"_k, "bash"_k, "echo"_k, "grep"_k, "make"_k};
         //system ("echo hi mom");
         for (auto i : kCmds_) {
-            if (not FindExecutableInPath (IO::FileSystem::ToPath (i))) {
+            if (not FindExecutableInPath (i.As<filesystem::path> ())) {
                 // If running under debugger, consider adding:
                 //      Visual Studio (Windows):
                 //          PATH=%PATH%;C:\tools\msys64\usr\bin\;c:\tools\msys64\mingw64\bin\ (or similar)

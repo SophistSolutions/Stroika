@@ -845,6 +845,7 @@ String String::RemoveFirstIf (const String& subString) const
 
 String String::RemoveAll (Character c) const
 {
+    // @todo REIMPL WITH STRINGBUILDER
     // quick and dirty inefficient implementation
     String tmp = {*this};
     while (auto o = tmp.Find (c, CompareOptions::eWithCase)) {
@@ -854,6 +855,7 @@ String String::RemoveAll (Character c) const
 }
 String String::RemoveAll (const String& subString) const
 {
+    // @todo REIMPL WITH STRINGBUILDER
     // quick and dirty inefficient implementation
     String tmp = {*this};
     while (auto o = tmp.Find (subString, CompareOptions::eWithCase)) {
@@ -1688,9 +1690,9 @@ const wchar_t* String::c_str ()
     Execution::Throw (kException_);
 }
 
- #if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
+#if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
 template <>
-std::filesystem::path String::As<std::filesystem::path>() const
+std::filesystem::path String::As<std::filesystem::path> () const
 {
     // CYGWIN creates paths like /cygdrive/c/folder for c:/folder
     // MSYS creates paths like /c/folder for c:/folder

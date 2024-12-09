@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Memory {
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
      *  @see https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
      * 
-     *  \note   Tricky to get this to work with constexpr. See implemtnation for details.
+     *  \note   Tricky to get this to work with constexpr. See implementation for details.
      */
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief UninitializedConstructorFlag::eUninitialized is a flag to some memory routines to allocate without initializing
      * 
-     *  This is mainly used as a performance tweek, for objects that don't need to be initialized, and can just be copied into.
+     *  This is mainly used as a performance tweak, for objects that don't need to be initialized, and can just be copied into.
      * 
      *  \note the APIS that use this typically require  static_assert (is_trivially_copyable_v<T>);
      */
