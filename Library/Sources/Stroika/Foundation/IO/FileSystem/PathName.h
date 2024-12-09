@@ -30,8 +30,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     using Characters::String;
 
-    [[deprecated("Since Stroika v3.0d12 use path::preferred_separator ")]] constexpr wchar_t kPathComponentSeperator =  filesystem::path::preferred_separator;
-
+    [[deprecated ("Since Stroika v3.0d12 use path::preferred_separator ")]] constexpr wchar_t kPathComponentSeperator = filesystem::path::preferred_separator;
 
     /**
      * This function presumes its argument is a directory, and makes sure it has a filesystem::path::preferred_separator character
