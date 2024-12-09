@@ -307,34 +307,34 @@ namespace Stroika::Foundation::Characters {
         : inherited{mk_ (forward<basic_string<CHAR_T>> (s))}
     {
     }
-    template <IStdPathLike2UNICODEString TOSTRINGABLE>
-    inline String::String (TOSTRINGABLE&& s)
+    template <IStdPathLike2UNICODEString PATHLIKE_TOSTRINGABLE>
+    inline String::String (PATHLIKE_TOSTRINGABLE&& s)
 
-        : String{mkSTR_ (forward<TOSTRINGABLE> (s))}
+        : String{mkSTR_ (forward<PATHLIKE_TOSTRINGABLE> (s))}
     {
     }
-    template <IStdPathLike2UNICODEString TOSTRINGABLE>
-    String String::mkSTR_ (TOSTRINGABLE&& s)
+    template <IStdPathLike2UNICODEString PATHLIKE_TOSTRINGABLE>
+    String String::mkSTR_ (PATHLIKE_TOSTRINGABLE&& s)
     {
-        if constexpr (requires (TOSTRINGABLE t) {
+        if constexpr (requires (PATHLIKE_TOSTRINGABLE t) {
                           { t.wstring () } -> same_as<wstring>;
                       }) {
-            return String{forward<TOSTRINGABLE> (s).wstring ()};
+            return String{forward<PATHLIKE_TOSTRINGABLE> (s).wstring ()};
         }
-        if constexpr (requires (TOSTRINGABLE t) {
+        if constexpr (requires (PATHLIKE_TOSTRINGABLE t) {
                           { t.u8string () } -> same_as<u8string>;
                       }) {
-            return String{forward<TOSTRINGABLE> (s).u8string ()};
+            return String{forward<PATHLIKE_TOSTRINGABLE> (s).u8string ()};
         }
-        if constexpr (requires (TOSTRINGABLE t) {
+        if constexpr (requires (PATHLIKE_TOSTRINGABLE t) {
                           { t.u16string () } -> same_as<u16string>;
                       }) {
-            return String{forward<TOSTRINGABLE> (s).u16string ()};
+            return String{forward<PATHLIKE_TOSTRINGABLE> (s).u16string ()};
         }
-        if constexpr (requires (TOSTRINGABLE t) {
+        if constexpr (requires (PATHLIKE_TOSTRINGABLE t) {
                           { t.u32string () } -> same_as<u32string>;
                       }) {
-            return String{forward<TOSTRINGABLE> (s).u32string ()};
+            return String{forward<PATHLIKE_TOSTRINGABLE> (s).u32string ()};
         }
     }
     inline String String::FromNarrowString (const char* from, const locale& l)

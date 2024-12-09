@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Characters {
          *          charX* argument constructors - which find the length based on
          *          the terminating NUL-character.
          * 
-         *      o   CTOR (TOSTRINGABLE&& s) - IStdPathLike2UNICODEString TOSTRINGABLE
+         *      o   CTOR (PATHLIKE_TOSTRINGABLE&& s) - IStdPathLike2UNICODEString PATHLIKE_TOSTRINGABLE
          *          carefully excludes conflicting CTOR overloads, and purpose is to allow constructing a String
          *          from anything with a 'special conversion' method to UNICODE string, such as filesystem::path.
          *
@@ -247,14 +247,14 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const Iterable<CHAR_T>& src)
             requires (not Memory::ISpan<CHAR_T>);
-        template <IStdPathLike2UNICODEString TOSTRINGABLE>
-        explicit String (TOSTRINGABLE&& s);
+        template <IStdPathLike2UNICODEString PATHLIKE_TOSTRINGABLE>
+        explicit String (PATHLIKE_TOSTRINGABLE&& s);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
     private:
-        template <IStdPathLike2UNICODEString TOSTRINGABLE>
-        static String mkSTR_ (TOSTRINGABLE&& s);
+        template <IStdPathLike2UNICODEString PATHLIKE_TOSTRINGABLE>
+        static String mkSTR_ (PATHLIKE_TOSTRINGABLE&& s);
 
     private:
         static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char>& str); // char==ASCII
