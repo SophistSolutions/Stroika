@@ -264,9 +264,20 @@ namespace Stroika::Foundation::Characters {
                     {
                         []<IStdBasicStringCompatibleCharacter T1> (const basic_string_view<T1>&) {}(t)
                     };
-                });
+                })
+                #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+                   : String{mkSTR_ (forward<TOSTRINGABLE> (s))}
+                {
+                }
+                #else
+                ;
+                #endif
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
+
+    private:
+     template <IConvertibleToUNICODEStdString TOSTRINGABLE>
+        static String mkSTR_ (TOSTRINGABLE&& s);
 
     private:
         static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char>& str); // char==ASCII
