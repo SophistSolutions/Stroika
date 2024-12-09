@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                 SeekOffsetType cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                 if (fCacheBaseOffset_ <= fOffset_ and fOffset_ < cacheEnd) [[unlikely]] {
                     size_t copyCnt = max<size_t> (static_cast<size_t> (cacheEnd - fOffset_), intoBuffer.size ());
-                    auto r = Memory::CopySpanData (span{fCachedData_}.subspan (static_cast<size_t> (fOffset_ - fCacheBaseOffset_), copyCnt), intoBuffer);
+                    auto r = Memory::CopyBytes (span{fCachedData_}.subspan (static_cast<size_t> (fOffset_ - fCacheBaseOffset_), copyCnt), intoBuffer);
                     fOffset_ += copyCnt;
                     return r;
                 }

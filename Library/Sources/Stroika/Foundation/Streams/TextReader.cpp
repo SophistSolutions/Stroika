@@ -172,7 +172,7 @@ namespace {
             size_t bytes2Copy = intoSpan.size ();
             Require (_fReadAheadCache and _fReadAheadCache->fData.size () >= bytes2Copy);
             Require (this->_fOffset == _fReadAheadCache->fFrom);
-            Memory::CopySpanData (span{_fReadAheadCache->fData}, intoSpan);
+            Memory::CopyBytes (span{_fReadAheadCache->fData}, intoSpan);
             if (bytes2Copy == _fReadAheadCache->fData.size ()) {
                 _fReadAheadCache.reset ();
             }

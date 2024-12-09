@@ -70,7 +70,7 @@ namespace {
         Again:
             if (not fSrcBufferedSpan_.empty ()) [[unlikely]] {
                 auto copiedIntoSpan =
-                    Memory::CopySpanData (fSrcBufferedSpan_.subspan (0, min (fSrcBufferedSpan_.size (), intoBuffer.size ())), intoBuffer);
+                    Memory::CopyBytes (fSrcBufferedSpan_.subspan (0, min (fSrcBufferedSpan_.size (), intoBuffer.size ())), intoBuffer);
                 Assert (copiedIntoSpan.size () >= 1);
                 fSrcBufferedSpan_ = fSrcBufferedSpan_.subspan (copiedIntoSpan.size ()); // skip copied bytes
                 _fOffset += copiedIntoSpan.size ();
