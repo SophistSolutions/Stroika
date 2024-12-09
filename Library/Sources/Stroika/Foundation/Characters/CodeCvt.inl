@@ -464,7 +464,7 @@ namespace Stroika::Foundation::Characters {
 
                     Memory::StackBuffer<CHAR_T> badCharTmpBuf;
                     span<const CHAR_T>          badCharReplaceSpan = fInvalidCharacterReplacement_->As<CHAR_T> (&badCharTmpBuf);
-                    span<CHAR_T>                copied = Memory::CopySpanData (badCharReplaceSpan, span{&_First2[charsDone], _Last2});
+                    span<CHAR_T>                copied = Memory::CopyBytes (badCharReplaceSpan, span{&_First2[charsDone], _Last2});
                     Assert (copied.size () >= 0);
                     charsDone += copied.size ();
                     Assert (charsDone <= to.size ());
