@@ -21,6 +21,34 @@
  *  \file Miscellaneous type traits and concepts for metaprogramming
  * 
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ * 
+ * 
+ USEFUL EXAMPLE:
+         template <IStdPathLike2UNICODEString TOSTRINGABLE>
+        explicit String (TOSTRINGABLE&& s)
+            requires (
+                         not IBasicUNICODEStdString<remove_cvref_t<TOSTRINGABLE>> and
+                         not requires (TOSTRINGABLE t) {
+                             {
+                                 []<IUNICODECanUnambiguouslyConvertFrom T1> (const T1*) {}(t)
+                             };
+                         } and
+                         not requires (TOSTRINGABLE t) {
+                             {
+                                 []<IUNICODECanUnambiguouslyConvertFrom T1> (const span<const T1>&) {}(t)
+                             };
+                         } and
+                         not requires (TOSTRINGABLE t) {
+                             {
+                                 []<IStdBasicStringCompatibleCharacter T1> (const basic_string_view<T1>&) {}(t)
+                             };
+                         })
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : String{mkSTR_ (forward<TOSTRINGABLE> (s))} {}
+#else
+        ;
+#endif
+
  */
 
 namespace Stroika::Foundation::Common {

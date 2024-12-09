@@ -248,30 +248,8 @@ namespace Stroika::Foundation::Characters {
         String (const Iterable<CHAR_T>& src)
             requires (not Memory::ISpan<CHAR_T>);
         template <IStdPathLike2UNICODEString TOSTRINGABLE>
-        explicit String (TOSTRINGABLE&& s)
-            requires (
-                         not IBasicUNICODEStdString<remove_cvref_t<TOSTRINGABLE>> and
-                         not requires (TOSTRINGABLE t) {
-                             {
-                                 []<IUNICODECanUnambiguouslyConvertFrom T1> (const T1*) {}(t)
-                             };
-                         } and
-                         not requires (TOSTRINGABLE t) {
-                             {
-                                 []<IUNICODECanUnambiguouslyConvertFrom T1> (const span<const T1>&) {}(t)
-                             };
-                         } and
-                         not requires (TOSTRINGABLE t) {
-                             {
-                                 []<IStdBasicStringCompatibleCharacter T1> (const basic_string_view<T1>&) {}(t)
-                             };
-                         })
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : String{mkSTR_ (forward<TOSTRINGABLE> (s))} {}
-#else
-        ;
-#endif
-            String (String && from) noexcept = default;
+        explicit String (TOSTRINGABLE&& s);
+        String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
     private:

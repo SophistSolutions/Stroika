@@ -307,30 +307,12 @@ namespace Stroika::Foundation::Characters {
         : inherited{mk_ (forward<basic_string<CHAR_T>> (s))}
     {
     }
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <IStdPathLike2UNICODEString TOSTRINGABLE>
     inline String::String (TOSTRINGABLE&& s)
-        requires (
-            not IBasicUNICODEStdString<remove_cvref_t<TOSTRINGABLE>> and
-            not requires (TOSTRINGABLE t) {
-                {
-                    []<IUNICODECanUnambiguouslyConvertFrom T1> (const T1*) {}(t)
-                };
-            } and
-            not requires (TOSTRINGABLE t) {
-                {
-                    []<IUNICODECanUnambiguouslyConvertFrom T1> (const span<const T1>&) {}(t)
-                };
-            } and
-            not requires (TOSTRINGABLE t) {
-                {
-                    []<IStdBasicStringCompatibleCharacter T1> (const basic_string_view<T1>&) {}(t)
-                };
-            })
+
         : String{mkSTR_ (forward<TOSTRINGABLE> (s))}
     {
     }
-#endif
     template <IStdPathLike2UNICODEString TOSTRINGABLE>
     String String::mkSTR_ (TOSTRINGABLE&& s)
     {
