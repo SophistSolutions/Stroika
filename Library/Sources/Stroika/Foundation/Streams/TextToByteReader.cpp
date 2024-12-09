@@ -69,8 +69,7 @@ namespace {
             // first see if any partially translated bytes to return
         Again:
             if (not fSrcBufferedSpan_.empty ()) [[unlikely]] {
-                auto copiedIntoSpan =
-                    Memory::CopyBytes (fSrcBufferedSpan_.subspan (0, min (fSrcBufferedSpan_.size (), intoBuffer.size ())), intoBuffer);
+                auto copiedIntoSpan = Memory::CopyBytes (fSrcBufferedSpan_.subspan (0, min (fSrcBufferedSpan_.size (), intoBuffer.size ())), intoBuffer);
                 Assert (copiedIntoSpan.size () >= 1);
                 fSrcBufferedSpan_ = fSrcBufferedSpan_.subspan (copiedIntoSpan.size ()); // skip copied bytes
                 _fOffset += copiedIntoSpan.size ();
