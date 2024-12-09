@@ -982,7 +982,7 @@ namespace {
                     // not sure we want to do this?
                     auto cmdArgs = cmdLine.GetArguments ();
                     if (cmdArgs.size () >= 1) {
-                        filesystem::path exe2Find = IO::FileSystem::ToPath (cmdArgs[0]);
+                        filesystem::path exe2Find = cmdArgs[0].As<filesystem::path> ();
                         if (!FindExecutableInPath (exe2Find)) {
                             DbgTrace ("Cannot find exe '{}' in PATH ({})"_f, exe2Find, kPath ());
                         }
@@ -1240,7 +1240,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
         if (tmp.size () == 0) [[unlikely]] {
             Throw (Exception{"invalid command argument to DetachedProcessRunner"sv});
         }
-        exe  = IO::FileSystem::ToPath (tmp[0]);
+        exe  = tmp[0].As<filesystem::path> ();
         args = tmp;
     }
     return DetachedProcessRunner (exe, args);

@@ -173,7 +173,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_IO_FileSystem, ToPath)
     {
-#if qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
+#if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
         EXPECT_EQ (IO::FileSystem::ToPath (String{"/c/Sandbox"}), filesystem::path{"c:/Sandbox"});
         EXPECT_EQ (IO::FileSystem::ToPath (String{"/cygdrive/c/Sandbox"}), filesystem::path{"c:/Sandbox"});
         EXPECT_EQ (IO::FileSystem::ToPath (String{"/dapper"}), filesystem::path{"/dapper"});

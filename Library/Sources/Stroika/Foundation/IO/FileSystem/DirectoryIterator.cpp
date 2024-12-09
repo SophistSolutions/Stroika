@@ -57,7 +57,7 @@ public:
     Rep_ (const String& dir, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_{iteratorReturns}
         , fDirName_{dir}
-        , fReportPrefix_{mkReportPrefix_ (ToPath (dir), iteratorReturns)}
+        , fReportPrefix_{mkReportPrefix_ (dir.As<filesystem::path> (), iteratorReturns)}
 #if qStroika_Foundation_Common_Platform_POSIX
         , fDirIt_{::opendir (dir.AsSDKString ().c_str ())}
 #endif
@@ -114,7 +114,7 @@ public:
     Rep_ (const String& dir, const optional<String>& name, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_{iteratorReturns}
         , fDirName_{dir}
-        , fReportPrefix_{mkReportPrefix_ (ToPath (dir), iteratorReturns)}
+        , fReportPrefix_{mkReportPrefix_ (dir.As<filesystem::path> (), iteratorReturns)}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"DirectoryIterator::Rep_::CTOR", L"'%s',name=%s", dir.c_str (), name.c_str ()};

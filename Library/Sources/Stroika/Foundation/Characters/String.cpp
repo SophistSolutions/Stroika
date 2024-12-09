@@ -39,6 +39,10 @@ using Traversal::Iterator;
 // see Satisfies Concepts:
 static_assert (regular<String>);
 
+#if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
+#include <filesystem>
+#endif
+
 namespace {
 
     /**
@@ -1683,6 +1687,34 @@ const wchar_t* String::c_str ()
     static const auto kException_ = Execution::RuntimeErrorException{"Error converting non-ascii text to string"sv};
     Execution::Throw (kException_);
 }
+
+ #if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
+template <>
+std::filesystem::path String::As<std::filesystem::path>() const
+{
+    // CYGWIN creates paths like /cygdrive/c/folder for c:/folder
+    // MSYS creates paths like /c/folder for c:/folder
+    static const String kMSYSDrivePrefix_ = "/"sv;
+    static const String kCygrivePrefix_   = "/cygdrive/"sv;
+    if (StartsWith (kCygrivePrefix_)) {
+        String ss = SubString (kCygrivePrefix_.length ());
+        if (ss.length () > 1 and ss[0].IsASCII () and ss[0].IsAlphabetic () and ss[1] == '/') {
+            wstring w = ss.As<wstring> (); // now map c/folder to c:/folder
+            w.insert (w.begin () + 1, ':');
+            return filesystem::path{w};
+        }
+    }
+    if (StartsWith (kMSYSDrivePrefix_)) {
+        String ss = SubString (kMSYSDrivePrefix_.length ());
+        if (ss.length () > 1 and ss[0].IsASCII () and ss[0].IsAlphabetic () and ss[1] == '/') {
+            wstring w = ss.As<wstring> (); // now map c/folder to c:/folder
+            w.insert (w.begin () + 1, ':');
+            return filesystem::path{w};
+        }
+    }
+    return filesystem::path{As<wstring> ()};
+}
+#endif
 
 /*
  ********************************************************************************

@@ -4,43 +4,45 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
+
+
+  
+
     /*
      ********************************************************************************
      ***************************** IO::FileSystem::ToPath ***************************
      ********************************************************************************
      */
-    inline filesystem::path ToPath (const String& p)
+   [[deprecated("Since Stroika v3.0d12 - use String::As<filesystem::path>")]] inline filesystem::path ToPath (const String& p)
     {
-#if qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
-        // CYGWIN creates paths like /cygdrive/c/folder for c:/folder
-        // MSYS creates paths like /c/folder for c:/folder
-        static const String kMSYSDrivePrefix_ = "/"sv;
-        static const String kCygrivePrefix_   = "/cygdrive/"sv;
-        if (p.StartsWith (kCygrivePrefix_)) {
-            String ss = p.SubString (kCygrivePrefix_.length ());
-            if (ss.length () > 1 and ss[0].IsASCII () and ss[0].IsAlphabetic () and ss[1] == '/') {
-                wstring w = ss.As<wstring> (); // now map c/folder to c:/folder
-                w.insert (w.begin () + 1, ':');
-                return filesystem::path{w};
-            }
-        }
-        if (p.StartsWith (kMSYSDrivePrefix_)) {
-            String ss = p.SubString (kMSYSDrivePrefix_.length ());
-            if (ss.length () > 1 and ss[0].IsASCII () and ss[0].IsAlphabetic () and ss[1] == '/') {
-                wstring w = ss.As<wstring> (); // now map c/folder to c:/folder
-                w.insert (w.begin () + 1, ':');
-                return filesystem::path{w};
-            }
-        }
-#endif
-        return filesystem::path{p.As<wstring> ()};
+       return p.As<filesystem::path> ();
     }
-    inline optional<filesystem::path> ToPath (const optional<String>& p)
+    [[deprecated ("Since Stroika v3.0d12 - use String::As<filesystem::path>")]] inline optional<filesystem::path> ToPath (const optional<String>& p)
     {
         if (p) {
-            return ToPath (*p);
+            return p->As<filesystem::path> ();
         }
         return nullopt;
     }
+
+
+
+ /**
+     *  Convert  std::filesystem::path to String Stroika String
+     *  \note UNLIKE Characters::ToString () - so will NOT surround the name with quotes - this does a straight conversion.
+     */
+    [[deprecated ("Since Stroika v3.0d12 - use String CTOR")]] inline String FromPath (const filesystem::path& p)
+    {
+        return String{p};
+    }
+    [[deprecated ("Since Stroika v3.0d12 - use String CTOR??? revfisit if used...")]] inline optional<String> FromPath (const optional<filesystem::path>& p)
+    {
+        // unsure can deprecate???
+        if (p) {
+            return String{*p};
+        }
+        return nullopt;
+    }
+
 
 }

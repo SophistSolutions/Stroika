@@ -84,7 +84,8 @@ AppTmpFileManager::AppTmpFileManager (const Options& options)
         create_directories (tmpDir); // if that doesn't do it, just throw
     }
     for (int i = 0; i < INT_MAX; ++i) {
-        filesystem::path trialD = tmpDir / ToPath (Format ("{}-{}-{}"_f, exeFileName, Execution::GetCurrentProcessID (), i + rand ()));
+        filesystem::path trialD =
+            tmpDir / Format ("{}-{}-{}"_f, exeFileName, Execution::GetCurrentProcessID (), i + rand ()).As<filesystem::path> ();
 
         if (create_directory (trialD) == false) {
             continue; // try again - DIRECTORY EXISTS
@@ -132,7 +133,7 @@ filesystem::path AppTmpFileManager::GetTmpDir (const String& dirNameBase)
     for (int attempts = 0; attempts < 5; ++attempts) {
         char buf[1024];
         (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
-        filesystem::path trialName = fn / ToPath (dirNameBase + buf);
+        filesystem::path trialName = fn / (dirNameBase + buf).As<filesystem::path> ();
         if (not is_directory (trialName)) {
             if (create_directories (trialName)) {
                 DbgTrace ("AppTmpFileManager::GetTempDir (): returning '{}'"_f, trialName);
@@ -199,7 +200,7 @@ filesystem::path FileSystem::CreateTmpFile (const String& baseName)
 
 filesystem::path FileSystem::CreateTmpFile (const String& baseName, const filesystem::path& inFolder)
 {
-    filesystem::path baseNamePath = ToPath (baseName);
+    filesystem::path baseNamePath = baseName.As<filesystem::path> ();
     Require (not baseNamePath.has_root_path ());
     String basename{baseNamePath.stem ()};
     String ext{baseNamePath.extension ()};
@@ -210,7 +211,7 @@ filesystem::path FileSystem::CreateTmpFile (const String& baseName, const filesy
     for (int attempts = 0; attempts < kMaxAttempts_; ++attempts) {
         char buf[1024];
         (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
-        filesystem::path trialName = inFolder / ToPath (basename + buf + ext);
+        filesystem::path trialName = inFolder / (basename + buf + ext).As<filesystem::path> ();
         if (not exists (trialName)) {
 #if qStroika_Foundation_Common_Platform_Windows
             if (HANDLE fd = ::CreateFile (trialName.native ().c_str (), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,

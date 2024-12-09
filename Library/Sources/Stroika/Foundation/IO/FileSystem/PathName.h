@@ -30,21 +30,6 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     using Characters::String;
 
-    /*
-    * On windows, its helpful when mapping String to std::filesystem::pathname to map certain common name prefixes to things that will be found
-    * on Windows.
-    * 
-    * MSYS creates paths like /c/folder for c:/folder
-    * CYGWIN creates paths like /cygdrive/c/folder for c:/folder
-    * 
-    * Automatically map these (since Stroika v3.0d6) in ToPath
-    * 
-    *   \see https://www.msys2.org/docs/filesystem-paths/
-     */
-#ifndef qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
-#define qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin qStroika_Foundation_Common_Platform_Windows
-#endif
-
 #if qStroika_Foundation_Common_Platform_Windows
     constexpr wchar_t kPathComponentSeperator = '\\';
 #elif qStroika_Foundation_Common_Platform_POSIX
@@ -72,35 +57,6 @@ namespace Stroika::Foundation::IO::FileSystem {
      * if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
      */
     String AssureLongFileName (const String& fileName);
-
-    /**
-     *  Convert Stroika String to std::filesystem::path
-     * 
-     *  \note see qStroika_Foundation_IO_FileSystem_PathName_AutoMapMSYSAndCygwin
-     *        this API is for getting strings from the commandline, or user input, or configuration files etc, where cygwin
-     *        or msys style paths maybe present. APIs that talk directly to the OS are more likely to more directly produce
-     *        filesystem::path than String. Anyhow - because of this, on windows, its probably more helpful than not to map
-     *        the MSYS/cygdrive crap to a path more likely to actually work right. --LGP 2024-03-06
-     */
-    filesystem::path           ToPath (const String& p);
-    optional<filesystem::path> ToPath (const optional<String>& p);
-
-    /**
-     *  Convert  std::filesystem::path to String Stroika String
-     *  \note UNLIKE Characters::ToString () - so will NOT surround the name with quotes - this does a straight conversion.
-     */
-    [[deprecated ("Since Stroika v3.0d12 - use String CTOR")]] inline String FromPath (const filesystem::path& p)
-    {
-        return String{p};
-    }
-    [[deprecated ("Since Stroika v3.0d12 - use String CTOR??? revfisit if used...")]] inline optional<String> FromPath (const optional<filesystem::path>& p)
-    {
-        // unsure can deprecate???
-        if (p) {
-            return String{*p};
-        }
-        return nullopt;
-    }
 
 }
 

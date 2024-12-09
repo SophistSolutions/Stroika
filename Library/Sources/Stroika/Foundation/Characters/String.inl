@@ -697,7 +697,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::As () const
-        requires (IBasicUNICODEStdString<T> or same_as<T, String>)
+        requires (IBasicUNICODEStdString<T> or same_as<T, String> or constructible_from<T, wstring>)
     {
         if constexpr (same_as<T, u8string>) {
             return AsUTF8<T> ();
@@ -718,6 +718,9 @@ namespace Stroika::Foundation::Characters {
         }
         else if constexpr (same_as<T, String>) {
             return *this;
+        }
+        else if constexpr (constructible_from<T, wstring>) {
+            return T{As<wstring> ()};
         }
     }
     template <typename T>

@@ -118,8 +118,8 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger = [] (const LoggerMess
 OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
 {
     return [appName] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
-        return IO::FileSystem::WellKnownLocations::GetApplicationData () / IO::FileSystem::ToPath (appName) /
-               IO::FileSystem::ToPath (moduleName + fileSuffix);
+        return IO::FileSystem::WellKnownLocations::GetApplicationData () / appName.As<filesystem::path> () /
+               (moduleName + fileSuffix).As<filesystem::path> ();
     };
 }
 

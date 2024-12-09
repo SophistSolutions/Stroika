@@ -249,7 +249,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
                 static const String kDOT     = "."sv;
                 static const String kDOTDOT  = ".."sv;
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
-                    resultSet += Containers::Set<String> (FindFiles (ToPath (usePath) / ToPath (fileName), fileNameToMatch));
+                    resultSet += Containers::Set<String> (FindFiles (usePath.As<filesystem::path> () / fileName.As<filesystem::path> (), fileNameToMatch));
                 }
             }
         } while (::FindNextFile (hFind, &fd));

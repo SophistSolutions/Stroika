@@ -622,7 +622,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                 myHander_        handler;
                 // @todo validate ct.GetType () to make sure not a ../../ ATTACK
                 DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (
-                                                 mimeRoot / IO::FileSystem::ToPath (ct.GetType () + "/"_k + ct.GetSubType () + ".xml"_k)),
+                                                 mimeRoot / (ct.GetType () + "/"_k + ct.GetSubType () + ".xml"_k).As<filesystem::path> ()),
                                              &handler);
                 if (handler.fResult) {
                     fMediaType2PrettyNameCache.rwget ()->Add (ct, *handler.fResult);

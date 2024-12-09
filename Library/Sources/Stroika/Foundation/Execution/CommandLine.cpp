@@ -343,7 +343,7 @@ String CommandLine::GetAppName (bool onlyBaseName) const
         return String{};
     }
     if (onlyBaseName) {
-        filesystem::path p = IO::FileSystem::ToPath (fArgs_[0]);
+        filesystem::path p = fArgs_[0].As<filesystem::path> ();
         return String{p.stem ()};
     }
     return fArgs_[0];

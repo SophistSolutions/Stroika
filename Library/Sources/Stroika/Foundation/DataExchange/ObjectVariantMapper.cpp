@@ -186,7 +186,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<filesystem::path> (
     };
     ToObjectMapperType<filesystem::path> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, filesystem::path* intoObjOfTypeT) -> void {
         RequireNotNull (intoObjOfTypeT);
-        *intoObjOfTypeT = IO::FileSystem::ToPath (d.As<String> ());
+        *intoObjOfTypeT = d.As<String> ().As<filesystem::path> ();
     };
     return TypeMappingDetails{fromObjectMapper, toObjectMapper, typeid (filesystem::path)};
 }

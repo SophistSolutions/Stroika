@@ -139,13 +139,13 @@ namespace {
                 // procfs/mounts often contains symbolic links to device files
                 // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
                 if (devName.StartsWith ("/"sv)) {
-                    IgnoreExceptionsExceptThreadAbortForCall (devName = String{filesystem::canonical (IO::FileSystem::ToPath (devName))});
+                    IgnoreExceptionsExceptThreadAbortForCall (devName = String{filesystem::canonical (devName.As<filesystem::path> ())});
                 }
-                filesystem::path    mountedAt = ToPath (line[1]);
+                filesystem::path    mountedAt = line[1].As<filesystem::path> ();
                 String              fstype    = line[2];
                 static const String kNone_{L"none"sv};
                 results.Add (MountedFilesystemType{
-                    mountedAt, devName == kNone_ ? Set<filesystem::path>{} : Set<filesystem::path>{IO::FileSystem::ToPath (devName)}, fstype}); // special name none often used when there is no name
+                    mountedAt, devName == kNone_ ? Set<filesystem::path>{} : Set<filesystem::path>{devName.As<filesystem::path> ()}, fstype}); // special name none often used when there is no name
             }
         }
         return results;
@@ -187,7 +187,7 @@ namespace {
         // This format is NOT super well documented, and was mostly derived from reading the remarks section
         // of https://msdn.microsoft.com/en-us/library/windows/desktop/aa363216%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
         // (DeviceIoControl function)
-        return ToPath ("\\\\.\\PhysicalDrive{}"_f(i));
+        return "\\\\.\\PhysicalDrive{}"_f(i).As<filesystem::path> ();
     }
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     optional<Set<DynamicDiskIDType_>> GetDisksForVolume_ (String volumeName)

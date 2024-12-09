@@ -83,6 +83,38 @@ namespace Stroika::Foundation::Containers {
 
 namespace Stroika::Foundation::Characters {
 
+    /*
+     *  \brief On Windows, affects the behavior of String::As<filesystem::path> ()
+     * 
+     * On windows, its helpful when mapping String to std::filesystem::pathname to map certain common name prefixes to things that will be found
+     * on Windows.
+     * 
+     * MSYS creates paths like /c/folder for c:/folder
+     * CYGWIN creates paths like /cygdrive/c/folder for c:/folder
+     * 
+     * Automatically map these (since Stroika v3.0d6) in ToPath
+     * 
+     *   \see https://www.msys2.org/docs/filesystem-paths/
+     * 
+     *        this API is for getting strings from the commandline, or user input, or configuration files etc, where cygwin
+     *        or msys style paths maybe present. APIs that talk directly to the OS are more likely to more directly produce
+     *        filesystem::path than String. Anyhow - because of this, on windows, its probably more helpful than not to map
+     *        the MSYS/cygdrive crap to a path more likely to actually work right. --LGP 2024-03-06
+     */
+#ifndef qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
+#define qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin qStroika_Foundation_Common_Platform_Windows
+#endif
+
+}
+
+#if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
+namespace std::filesystem {
+    class path; // forward declare
+}
+#endif
+
+namespace Stroika::Foundation::Characters {
+
     class RegularExpression;
     class RegularExpressionMatch;
 
@@ -1032,6 +1064,8 @@ namespace Stroika::Foundation::Characters {
          *      o   u16string
          *      o   u32string
          *      o   String    (return *this; handy sometimes in templated usage; harmless)
+         *    as well as:
+         *      o   anything constructible from std::wstring (such as filesystem::path)
          *
          *  DEPRECATED AS OF v3.0d1 because As is const method - could do non-const As<> overload for these, but that would be confusing
          *      o   const wchar_t*
@@ -1049,7 +1083,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (IBasicUNICODEStdString<T> or same_as<T, String>);
+            requires (IBasicUNICODEStdString<T> or same_as<T, String> or constructible_from<T, wstring>);
 
     public:
         /**
@@ -1626,6 +1660,11 @@ namespace Stroika::Foundation::Characters {
         [[noreturn]] static void ThrowInvalidAsciiException_ (); // avoid include
     };
     static_assert (totally_ordered<String>);
+
+#if qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
+    template <>
+    std::filesystem::path String::As<std::filesystem::path> () const;
+#endif
 
     /**
      *  operator<< ostream adapters work as you would expect and allow writing Stroika strings easily to ostreams such as cout.
