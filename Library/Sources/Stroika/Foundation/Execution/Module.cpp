@@ -146,9 +146,9 @@ Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPath{[] (const 
         if (const char* env_p = std::getenv ("PATH")) {
             String pathVar = String::FromNarrowSDKString (env_p);
 #if qStroika_Foundation_Common_Platform_POSIX
-            return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.As<filesystem::path> (); });
+            return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
 #elif qStroika_Foundation_Common_Platform_Windows
-            return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.As<filesystem::path> (); });
+            return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
 #endif
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996)
@@ -168,7 +168,7 @@ Common::ReadOnlyProperty<Sequence<filesystem::path>> Execution::kPathEXT{[] (con
         DISABLE_COMPILER_MSC_WARNING_START (4996)
         if (const char* env_p = std::getenv ("PATHEXT")) {
             String pathVar = String::FromNarrowSDKString (env_p);
-            return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.As<filesystem::path> (); });
+            return pathVar.Tokenize ({';'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996)
         return {};
