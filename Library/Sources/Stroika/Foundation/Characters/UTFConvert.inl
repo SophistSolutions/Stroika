@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Characters {
         using PRIMITIVE_SRC_T = typename decltype (this->ConvertToPrimitiveSpan_ (source))::value_type;
         using PRIMITIVE_TRG_T = typename decltype (this->ConvertToPrimitiveSpan_ (target))::value_type;
         if constexpr (same_as<SRC_T, TRG_T>) {
-            Memory::CopySpanData (source, target);
+            Memory::CopyBytes (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else if constexpr (same_as<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T> and sizeof (PRIMITIVE_SRC_T) != 1) {

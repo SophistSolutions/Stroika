@@ -113,9 +113,9 @@ namespace {
             cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
             return optional<Options_>{};
         }
-        result.fArchiveFileName = IO::FileSystem::ToPath (Memory::ValueOf (cmdLine.GetArgument (kArchiveFileO_)));
+        result.fArchiveFileName = Memory::ValueOf (cmdLine.GetArgument (kArchiveFileO_)).As<filesystem::path> ();
         if (auto o = cmdLine.GetArgument (kOutputDirO_)) {
-            result.fOutputDirectory = IO::FileSystem::ToPath (*o);
+            result.fOutputDirectory = o->As<filesystem::path> ();
         }
         // @todo add more.. - files etc
         result.fNoFailOnMissingLibrary = cmdLine.Has (kNoFailOnMissingO_);
@@ -155,7 +155,7 @@ namespace {
         DataExchange::Archive::Reader archive{OpenArchive_ (archiveName)};
         for (String i : archive.GetContainedFiles ()) {
             String           srcFileName = i;
-            filesystem::path trgFileName = toDirectory / IO::FileSystem::ToPath (srcFileName);
+            filesystem::path trgFileName = toDirectory / srcFileName.As<filesystem::path> ();
             //DbgTrace ("(srcFileName={}, trgFileName={})"_f, srcFileName, trgFileName);
             BLOB b = archive.GetData (srcFileName);
             //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
