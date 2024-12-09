@@ -321,12 +321,14 @@ namespace Stroika::Foundation::Characters {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
         using PRIMITIVE_SRC_T = typename decltype (this->ConvertToPrimitiveSpan_ (source))::value_type;
         using PRIMITIVE_TRG_T = typename decltype (this->ConvertToPrimitiveSpan_ (target))::value_type;
-        if constexpr (same_as<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T> and sizeof (PRIMITIVE_SRC_T) != 1) {
-            Memory::CopySpanData_StaticCast (source, target);
+        if constexpr (same_as<SRC_T, TRG_T>) {
+            Memory::CopySpanData (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
-        else if constexpr (same_as<SRC_T, TRG_T>) {
-            Memory::CopySpanData (source, target);
+        else if constexpr (same_as<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T> and sizeof (PRIMITIVE_SRC_T) != 1) {
+            static_assert (not same_as<SRC_T, TRG_T>);
+            static_assert (sizeof (SRC_T) == sizeof (TRG_T)); // I THINK - else this needs rethinking...
+            Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else if constexpr (same_as<SRC_T, Latin1>) {
