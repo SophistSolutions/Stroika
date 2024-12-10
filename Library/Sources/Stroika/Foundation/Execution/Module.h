@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  The set of system locations to look for an executable (note order matters, which is why this is a Sequence)
      */
-    extern Common::ReadOnlyProperty<Containers::Sequence<filesystem::path>> kPath;
+    extern Common::ConstantProperty<Containers::Sequence<filesystem::path>> kPath;
 
 #if qStroika_Foundation_Common_Platform_Windows
     /**
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Execution {
      * 
      *  https://wiki.tcl-lang.org/page/PATHEXT
      */
-    extern Common::ReadOnlyProperty<Containers::Sequence<filesystem::path>> kPathEXT;
+    extern Common::ConstantProperty<Containers::Sequence<filesystem::path>> kPathEXT;
 #endif
 
     /**
