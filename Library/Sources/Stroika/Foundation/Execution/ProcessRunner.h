@@ -162,9 +162,6 @@ namespace Stroika::Foundation::Execution {
              */
             optional<filesystem::path> fWorkingDirectory;
 
-            // optional<CodeCvt<>> fInputCodeCvt;
-            // optional<CodeCvt<>> fOutputCodeCvt;
-
 #if qStroika_Foundation_Common_Platform_Windows
             /**
              *  From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
@@ -237,10 +234,14 @@ namespace Stroika::Foundation::Execution {
          */
         struct StringOptions {
             /**
+             *  Input refers to the input of the sub-process being run. So this conversion is applied before sending the data to
+             *  that process.
              */
             optional<Characters::CodeCvt<>> fInputCodeCvt;
 
             /**
+             *  Output refers to the output of the sub-process being run. So this conversion is applied to the data retrieved
+             *  from that process.
              */
             optional<Characters::CodeCvt<>> fOutputCodeCvt;
         };
