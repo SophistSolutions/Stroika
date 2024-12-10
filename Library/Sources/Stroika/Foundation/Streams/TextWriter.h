@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
      *          textOut.Write ("Hello World\n");
      *      \endcode
      */
-    Ptr New (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<>&& char2OutputConverter);
+    Ptr New (const OutputStream::Ptr<byte>& src, const Characters::CodeCvt<>& char2OutputConverter);
     Ptr New (const OutputStream::Ptr<byte>& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDEFAULT,
              ByteOrderMark bom = ByteOrderMark::eDontInclude);
     Ptr New (const OutputStream::Ptr<Character>& src);

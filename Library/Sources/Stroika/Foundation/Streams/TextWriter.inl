@@ -8,9 +8,9 @@ namespace Stroika::Foundation::Streams::TextWriter {
     namespace Private_ {
         class UnSeekable_CodeCvt_Rep_ : public OutputStream::IRep<Character> {
         public:
-            UnSeekable_CodeCvt_Rep_ (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<Character>&& converter)
+            UnSeekable_CodeCvt_Rep_ (const OutputStream::Ptr<byte>& src, const Characters::CodeCvt<Character>& converter)
                 : _fSource{src}
-                , _fConverter{move (converter)}
+                , _fConverter{converter}
             {
             }
 
@@ -147,9 +147,9 @@ namespace Stroika::Foundation::Streams::TextWriter {
     {
         return src;
     }
-    inline Ptr New (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<>&& char2OutputConverter)
+    inline Ptr New (const OutputStream::Ptr<byte>& src, const Characters::CodeCvt<>& char2OutputConverter)
     {
-        return Ptr{make_shared<Private_::UnSeekable_CodeCvt_Rep_> (src, move (char2OutputConverter))};
+        return Ptr{make_shared<Private_::UnSeekable_CodeCvt_Rep_> (src, char2OutputConverter)};
     }
     inline Ptr New (const OutputStream::Ptr<byte>& src, Characters::UnicodeExternalEncodings e, Characters::ByteOrderMark bom)
     {
