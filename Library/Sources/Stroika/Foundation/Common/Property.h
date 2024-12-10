@@ -446,7 +446,7 @@ namespace Stroika::Foundation::Common {
      *  like a constant, except that the ConstantProperty calls the construction function once, lazily;
      * 
      *  This can be useful if you have a logical constant, but one that depends on other 'logical constants'
-     *  but want to avoid the nasty C++ deadly embrace of startup intermodule initialization.
+     *  but want to avoid the nasty C++ deadly embrace of startup inter-module initialization.
      *
      *  In C++, you sometimes want to define a global constant, but run into problems because of order of initialization
      *  of global constants (across files). This class solves that problem by allowing you to manage the construction
@@ -455,6 +455,10 @@ namespace Stroika::Foundation::Common {
      *  This isn't guaranteed to always solve that problem no matter what, it allows you to declare a constant
      *  globally, and yet delay when its constructed until its first used (as opposed to some unspecified time
      *  before main).
+     * 
+     *  \note Names - the Stroika convention for names of properties is that they start with 'p' and for constants, they
+     *        start with 'k'. This is both, but its more like an application constant, so the Stroika convention for
+     *        these ConstantProperty objects is to start with 'k'.
      * 
      *  \note \alias Prior to Stroika v2.1b12, this was called VirtualConstant
      * 
