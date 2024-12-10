@@ -268,7 +268,8 @@ namespace {
             auto s  = tr.ReadAll ();
             // Triggered TWO bugs - the CodeCvt.inl - r.fSourceConsumed * sizeof (SERIALIZED_CHAR_T) issue, and
             // a Bug with BLOB stream code (BLOB :: As<binarystream> () needs to hold onto shared_ptr refcnt of BLOB
-            // cuz in above test - it goes out of scope hile STREAM still in use.
+            // cuz in above test - it goes out of scope while STREAM still in use.
+            EXPECT_EQ (s, "Praat 6.4.23 (October 27 2024)\r\n");
         }
     }
 }
