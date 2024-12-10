@@ -204,7 +204,6 @@ namespace {
         static_assert (not IEqualsComparer<less<int>, int>);
     }
 }
-
 #endif
 
 int main (int argc, const char* argv[])

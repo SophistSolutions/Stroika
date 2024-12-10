@@ -128,9 +128,10 @@ namespace Stroika::Foundation::Memory {
         requires (sizeof (FROM_T) % sizeof (typename TO_SPAN::value_type) == 0 or sizeof (typename TO_SPAN::value_type) % sizeof (FROM_T) == 0)
     {
         using TO_T = typename TO_SPAN::value_type;
+        Require ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ()); // else cannot map evenly
         // allow EITHER size or constness conversions - so NOT re-interpret cast
-        TO_SPAN result{(TO_T*)(src.data ()), src.size () * sizeof (FROM_T) / sizeof (TO_T)};
-        Ensure (src.size_bytes () == result.size_bytes ());
+        TO_SPAN result{(TO_T*)(src.data ()), src.size_bytes () / sizeof (TO_T)}; // no need to worry about overflow cuz then addressses would overflow
+        Ensure (src.size_bytes () == result.size_bytes ());                      // size in elements can be <, ==, or >
         return result;
     }
 
@@ -161,12 +162,13 @@ namespace Stroika::Foundation::Memory {
     {
         Require (not Intersects (src, target));
         Require (src.size () <= target.size ()); // BUT size in BYTES need not match
-        if constexpr (sizeof (TO_T) == sizeof (TO_E) and Common::trivially_copyable<TO_T> and Common::trivially_copyable<FROM_T>) {
+        if constexpr (Common::trivially_copyable<TO_T> and Common::trivially_copyable<FROM_T> and sizeof (FROM_T) == sizeof (TO_T)) {
+            // if elements trivially copyable, and STRIDE of elements same on both sides, can copy as bytes
             return CopyBytes (SpanBytesCast<span<const TO_T, TO_E>> (src), target);
         }
         else {
-            // Do a for loop copying each element; this can be used to copy any data, like std::copy, except using spans not
-            // iterators
+            // Do a for loop copying each element; this can be used to copy any data,
+            // like std::copy, except using spans not iterators, and no warning/error about target assignment (static_cast)
             TO_T* tb = target.data ();
             for (const FROM_T& i : src) {
                 *tb++ = static_cast<TO_T> (i);

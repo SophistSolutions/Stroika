@@ -1334,9 +1334,9 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             result.Append (span{buf});
         }
-        EXPECT_EQ (result.size (), 4 * 10);
+        EXPECT_EQ (result.size (), 4 * 10u);
         EXPECT_EQ (result, "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
-        EXPECT_EQ (L"a" + String{}, "a"); // we had bug in v2.0a100 and earlier with null string on RHS of operator+
+        EXPECT_EQ ("a" + String{}, "a"); // we had bug in v2.0a100 and earlier with null string on RHS of operator+
     }
 }
 

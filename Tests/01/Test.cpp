@@ -652,7 +652,6 @@ namespace {
         Test8_NewLRUCacheConstructors_Private_::T_WithHashTableCTORs1_ ();
     }
 }
-
 #endif
 
 int main (int argc, const char* argv[])

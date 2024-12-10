@@ -136,6 +136,8 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief 'cast' a span of one thing to another, as if as_bytes, from_bytes; require span<T1...> and span<T2...> such that one T size is a multiple of the other
      * 
+     *  \req ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ());
+     * 
      *  This requirement on the same size in bytes of elements sizeof FROM_T must evenly divide sizeof TO_T (or the reverse).
      *  This is to allow the returned span{} to cover the same number of bytes.
      * 
@@ -153,7 +155,7 @@ namespace Stroika::Foundation::Memory {
         requires (sizeof (FROM_T) % sizeof (typename TO_SPAN::value_type) == 0 or sizeof (typename TO_SPAN::value_type) % sizeof (FROM_T) == 0);
 
     /**
-     *  \brief Span-flavored memcpy/std::copy (copies from, to) - requires argument spans not overlap
+     *  \brief Span-flavored memcpy/std::copy (copies from, to) - requires argument spans not overlap, requires src.size <= to.size()
      *
      *  like std::copy, except copies the data the spans point to/reference. Target span maybe larger than src,
      *  but must (require) be no smaller than src span;
@@ -172,10 +174,10 @@ namespace Stroika::Foundation::Memory {
         requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>);
 
     /*
-     *  \brief Span-flavored std::copy (copies from, to), works with spans, not iterators
+     *  \brief Span-flavored std::copy (copies from, to), works with spans, not iterators, works with different sized from/to types
      *
      *  Similar to CopyBytes, but works with non-trivially copyable data, as well as with differently sized
-     *  data, where the individuals are preserved (fully type-safe); No requirement in size_bytes on the two
+     *  data (strides), where the individuals are preserved (fully type-safe); No requirement in size_bytes on the two
      *  spans, just on the SIZE of the two spans.
      * 
      *  \req from.size() <= to.size()
