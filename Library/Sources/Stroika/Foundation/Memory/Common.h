@@ -136,13 +136,17 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief 'cast' a span of one thing to another, as if as_bytes, from_bytes; require span<T1...> and span<T2...> such that one T size is a multiple of the other
      * 
-     *  This requirement of the same size in bytes means sizeof FROM_T must evenly divide sizeof TO_T (or the reverse).
+     *  This requirement on the same size in bytes of elements sizeof FROM_T must evenly divide sizeof TO_T (or the reverse).
+     *  This is to allow the returned span{} to cover the same number of bytes.
      * 
-     *  \note - if you can tell that TO_T == std::byte, then consider using std::as_bytes or std::as_writable_bytes
-     * 
-     *  \note until Stroika v3.0d12 this was called SpanReInterpretCast (but does more than re_interpret_cast, cuz can change constness too).
+     *  \note - TO_T == std::byte, this is the same as std::as_bytes or std::as_writable_bytes
      * 
      *  \ens resulting span same size_bytes () as src.size_bytes().
+     * 
+     *  \note Though this CAN be used with fixed-extent spans, the caller must then specify the fixed extent,
+     *        which must be correct. Probably works most simply if the EXTENT in the TO_SPAN is dynamic_extent (or omitted).
+     * 
+     *  \note until Stroika v3.0d12 this was called SpanReInterpretCast (but does more than re_interpret_cast, cuz can change constness too).
      */
     template <ISpan TO_SPAN, typename FROM_T, size_t FROM_EXTENT>
     constexpr TO_SPAN SpanBytesCast (span<FROM_T, FROM_EXTENT> src)
