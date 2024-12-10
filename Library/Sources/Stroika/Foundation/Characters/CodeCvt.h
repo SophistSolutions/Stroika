@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Characters {
          *          WellKnownCodePages::UTF8
          * 
          *   To use (wrap) existing std::codecvt<A,B,C> class:
-         *      Quirky, because classes not generally directly instantiatable, so instead specify CLASS as template param
+         *      Quirky, because classes not generally directly instantiable, so instead specify CLASS as template param
          *      and ARGS to CTOR.
          *          CodeCvt<CHAR_T,std::codecvt<CHAR_T, BINARY_T, MBSTATE_T>> {args to that class}
          *          Note works with subclasses of std::codecvt like std::codecvt_byname
