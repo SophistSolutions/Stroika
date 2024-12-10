@@ -141,8 +141,10 @@ namespace Stroika::Foundation::Memory {
      *  \note - if you can tell that TO_T == std::byte, then consider using std::as_bytes or std::as_writable_bytes
      * 
      *  \note until Stroika v3.0d12 this was called SpanReInterpretCast (but does more than re_interpret_cast, cuz can change constness too).
+     * 
+     *  \ens resulting span same size_bytes () as src.size_bytes().
      */
-    template <typename TO_SPAN, typename FROM_T, size_t FROM_EXTENT>
+    template <ISpan TO_SPAN, typename FROM_T, size_t FROM_EXTENT>
     constexpr TO_SPAN SpanBytesCast (span<FROM_T, FROM_EXTENT> src)
         requires (sizeof (FROM_T) % sizeof (typename TO_SPAN::value_type) == 0 or sizeof (typename TO_SPAN::value_type) % sizeof (FROM_T) == 0);
 
@@ -154,6 +156,8 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \req src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
      *  \req not Intersects (src, target) - so non-overlapping
+     * 
+     *  \note somewhat unlike memcpy, its fine if the spans{} are empty ()
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
      * 
