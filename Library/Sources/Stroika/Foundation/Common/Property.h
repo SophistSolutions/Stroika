@@ -93,10 +93,10 @@ namespace Stroika::Foundation::Common {
          *              co.p().constMethod (); // OK
          *              co.p().nonConstMethod ();    // should fail to compile
          * 
-         *      kIsMutatableType, plus appropriate requires's on the various accessor methods are designed to accomplish that.
+         *      kIsMutableType, plus appropriate requires on the various accessor methods are designed to accomplish that.
          */
         template <typename TT>
-        static constexpr bool kIsMutatableType = not is_const_v<remove_reference_t<TT>> and is_reference_v<TT>;
+        static constexpr bool kIsMutableType = not is_const_v<remove_reference_t<TT>> and is_reference_v<TT>;
 
         enum class PropertyChangedEventResultType {
             eSilentlyCutOffProcessing,
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Common {
     };
 
     template <typename T>
-    concept IPropertyMutatable = PropertyCommon::kIsMutatableType<T>;
+    concept IPropertyMutatable = PropertyCommon::kIsMutableType<T>;
 
     /**
      *  Implement C#-like syntax for read-only properties (syntactically like data members but backed by a getter function)
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          *  Returns the value of the given property T (by calling the underlying 'getter' for the property.
-         *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
+         *  This is a non-const method if PropertyCommon::kIsMutableType<T>, and otherwise a const method.
          */
         nonvirtual T Get () const
             requires (not IPropertyMutatable<T>);
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Common {
          *  When it doesn't work, simply throw in '()' - to use the 'operator()' call, or call Get()
          *  if you prefer that syntax.
          * 
-         *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
+         *  This is a non-const method if PropertyCommon::kIsMutableType<T>, and otherwise a const method.
          */
         nonvirtual operator const T () const
             requires (not IPropertyMutatable<T>);
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Common {
          *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsA (InternetMediaTypes::Wildcards::kImage);
          *      \endcode
          * 
-         *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
+         *  This is a non-const method if PropertyCommon::kIsMutableType<T>, and otherwise a const method.
          */
         nonvirtual const T operator() () const
             requires (not IPropertyMutatable<T>);
@@ -477,21 +477,7 @@ namespace Stroika::Foundation::Common {
      *          const String a = kX;
      *      \endcode
      *
-     * 
-&&&& OLD DOCS FROM VIRTUALCONSTNAT - SOME HELPFUL
-     *  This doesn't work perfectly (e.g. see below about operator.) - but its pretty usable.
-     * 
-     *  \note The basic idea - any time you have a constant whose initializer depends on other constants and get into trouble
-     *        with mutual constructor order issues before main, replace the dependent constant with a VirtualConstant
-     *
-     *  \par Example Usage
-     *      \code
-     *          const Execution::VirtualConstant<String> kX {[] () { return "6"; }};
-     *          ...
-     *          const String a = kX;
-     *      \endcode
-     *
-     *  \note   it would be HIGHLY DESIRABLE if C++ allowed operator. overloading, as accessing one of these
+     *  \note   it would be HIGHLY DESIRABLE if C++ allowed operator'.' overloading, as accessing one of these
      *          values without assigning to a temporary first - means that you cannot directly call its methods.
      *          That's a bit awkward.
      *
@@ -500,19 +486,24 @@ namespace Stroika::Foundation::Common {
      *              T   t;
      *              t.m ();
      *          When you replace 'T t' with
-     *              VirtualConstant<T> t;
+     *              ConstantProperty<T> t;
      *              you must call t().m();
      *          OR
      *              you must call t->m();
-     *
+     * 
      *  \note   C++ also only allows one level of automatic operator conversions, so things like comparing
-     *          optional<T> {} == VirtualConstant<T,...> {} won't work. To workaround, simply
-     *          apply () after the VirtualConstant<> instance.
+     *          optional<T> {} == ConstantProperty<T,...> {} won't work. To workaround, simply
+     *          apply () after the ConstantProperty<> instance.
      *
      *  TODO:
      *      @todo   Using optional<> and fValueInitialized_ (once_flag) is REDUNDANT, and wasteful of space.
      *              But re-using these APIs is tricky without keeping both 'flags'. Probably just store in byte array
      *              (re-implementing parts of Optional) - and do right magic destruct/etc...
+     *              ALSO - we store the FUNCTION pointer needlessly (after its been run).
+     *              So LOTS of opportunities to make this smaller (at least use UNION so keep T in ones side of union and stuff preparing to
+     *              use it in the other).
+     * 
+     *              Can be done later in v3 release process cuz doesn't impact API.
      */
     template <typename T>
     class ConstantProperty {
