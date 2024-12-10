@@ -211,10 +211,12 @@ namespace {
         struct REP : InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<REP> {
             bool                                                    fIsOpenForRead_{true};
             [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            BLOB fSavedBLOB_; // save ref to BLOB in case it goes out of scope before stream
             REP (const BLOB& b)
-                : fCur{b.begin ()}
-                , fStart{b.begin ()}
-                , fEnd{b.end ()}
+                : fSavedBLOB_{b}
+                , fCur{fSavedBLOB_.begin ()}
+                , fStart{fSavedBLOB_.begin ()}
+                , fEnd{fSavedBLOB_.end ()}
             {
             }
             virtual bool IsSeekable () const override

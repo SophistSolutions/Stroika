@@ -344,63 +344,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 
 #endif
 
-/**
-// Weird that Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS AND no-call to memcpy needed (both BWA)
-   AND weird that other calls to this routine don't break.
-
-// 
-    [49] Foundation::Streams - ../Builds/Debug/Tests/Test49.exe --gtest_brief
-=================================================================
-==67720==ERROR: AddressSanitizer: heap-use-after-free on address 0x1240920a2b28 at pc 0x7ffa32816972 bp 0x007d83b87160 sp 0x007d83b868f0
-READ of size 64 at 0x1240920a2b28 thread T0
-    #0 0x7ffa32816971 in memmove D:\a\_work\1\s\src\vctools\asan\llvm\compiler-rt\lib\sanitizer_common\sanitizer_common_interceptors_memintrinsics.inc:101
-    #1 0x7ff7438c1f17 in `anonymous namespace'::BLOBBINSTREAM_::REP::Read C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\BLOB.cpp:261
-    #2 0x7ff743565495 in Stroika::Foundation::Streams::InputStream::Ptr<enum std::byte>::Read C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Streams\InputStream.inl:181
-    #3 0x7ff7438d0e87 in `anonymous namespace'::FromBinaryStreamBaseRep_::PreReadUpstreamInto_ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Streams\TextReader.cpp:226
-    #4 0x7ff7438cfa78 in `anonymous namespace'::FromBinaryStreamBaseRep_::Read C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Streams\TextReader.cpp:135
-    #5 0x7ff7438d2488 in `anonymous namespace'::CachingSeekableBinaryStreamRep_::Read C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Streams\TextReader.cpp:342
-    #6 0x7ff743564f8a in Stroika::Foundation::Streams::InputStream::Ptr<Stroika::Foundation::Characters::Character>::Read C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Streams\InputStream.inl:181
-    #7 0x7ff74356ba30 in Stroika::Foundation::Streams::InputStream::Ptr<Stroika::Foundation::Characters::Character>::ReadAll C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Streams\InputStream.inl:415
-    #8 0x7ff7434a3b90 in `anonymous namespace'::Foundation_Streams_TextReaderBug_Test::TestBody C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp:48
-    #9 0x7ff743de1087 in testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test,void> C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:2631
-    #10 0x7ff743de0933 in testing::internal::HandleExceptionsInMethodIfSupported<testing::Test,void> C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:2674
-    #11 0x7ff743d80d42 in testing::Test::Run C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:2713
-    #12 0x7ff743d82816 in testing::TestInfo::Run C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:2859
-    #13 0x7ff743d84014 in testing::TestSuite::Run C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:3037
-    #14 0x7ff743d96370 in testing::internal::UnitTestImpl::RunAllTests C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:5967
-    #15 0x7ff743de1147 in testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl,bool> C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:2631
-    #16 0x7ff743de0f47 in testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl,bool> C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:2674
-    #17 0x7ff743d858e0 in testing::UnitTest::Run C:\Sandbox\Stroika\DevRoot\ThirdPartyComponents\GoogleTest\CURRENT\googletest\src\gtest.cc:5546
-    #18 0x7ff743564110 in RUN_ALL_TESTS C:\Sandbox\Stroika\DevRoot\Builds\Debug\ThirdPartyComponents\include\gtest\gtest.h:2334
-    #19 0x7ff7434b376a in main C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp:284
-    #20 0x7ff743ef3748 in invoke_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78
-    #21 0x7ff743ef3691 in __scrt_common_main_seh D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288
-    #22 0x7ff743ef354d in __scrt_common_main D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:330
-    #23 0x7ff743ef37bd in mainCRTStartup D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_main.cpp:16
-    #24 0x7ffb7008259c in BaseThreadInitThunk+0x1c (C:\WINDOWS\System32\KERNEL32.DLL+0x18001259c)
-    #25 0x7ffb7174af37 in RtlUserThreadStart+0x27 (C:\WINDOWS\SYSTEM32\ntdll.dll+0x18005af37)
-
-0x1240920a2b28 is located 40 bytes inside of 120-byte region [0x1240920a2b00,0x1240920a2b78)
-freed by thread T0 here:
-    #0 0x7ff743ef1c35 in operator delete D:\a\_work\1\s\src\vctools\asan\llvm\compiler-rt\lib\asan\asan_win_delete_scalar_thunk.cpp:42
-    #1 0x7ff7435a1763 in Stroika::Foundation::Memory::BlockAllocator<std::_Ref_count_obj_alloc3<Stroika::Foundation::Memory::BLOB::BasicRep_,Stroika::Foundation::Memory::BlockAllocator<Stroika::Foundation::Memory::BLOB::BasicRep_> > >::deallocate C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\BlockAllocator.inl:389
-    #2 0x7ff7435a18a6 in std::_Normal_allocator_traits<Stroika::Foundation::Memory::BlockAllocator<std::_Ref_count_obj_alloc3<Stroika::Foundation::Memory::BLOB::BasicRep_,Stroika::Foundation::Memory::BlockAllocator<Stroika::Foundation::Memory::BLOB::BasicRep_> > > >::deallocate C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\xmemory:576
-    #3 0x7ff7434ee922 in std::_Deallocate_plain<Stroika::Foundation::Memory::BlockAllocator<std::_Ref_count_obj_alloc3<Stroika::Foundation::Memory::BLOB::BasicRep_,Stroika::Foundation::Memory::BlockAllocator<Stro
-
-    
-    
- */
-#ifndef qCompilerAndStdLib_ASAN_memcpy_Buggy
-
-// only seen on (but only tested on) _MSC_VER_2k22_17Pt12_
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_ASAN_memcpy_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
-#else
-#define qCompilerAndStdLib_ASAN_memcpy_Buggy 0
-#endif
-
-#endif
-
 /*
      Compiling Library/Sources/Stroika/Frameworks/Led/BiDiLayoutEngine.cpp ... 
 In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,

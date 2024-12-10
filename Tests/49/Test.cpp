@@ -267,7 +267,8 @@ namespace {
             auto tr = Streams::TextReader::New (Memory::BLOB{span{TESTOUT_UTF16}}, Characters::UnicodeExternalEncodings::eUTF16);
             auto s  = tr.ReadAll ();
             // Triggered TWO bugs - the CodeCvt.inl - r.fSourceConsumed * sizeof (SERIALIZED_CHAR_T) issue, and
-            // an ASAN bug qCompilerAndStdLib_ASAN_memcpy_Buggy - still investigating workarounds...
+            // a Bug with BLOB stream code (BLOB :: As<binarystream> () needs to hold onto shared_ptr refcnt of BLOB
+            // cuz in above test - it goes out of scope hile STREAM still in use.
         }
     }
 }
