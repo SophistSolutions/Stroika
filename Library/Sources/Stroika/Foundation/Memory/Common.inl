@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Memory {
     {
         using TO_T = typename TO_SPAN::value_type;
         // allow EITHER size or constness conversions - so NOT re-interpret cast
-        TO_SPAN result{(TO_T*)(src.data ()), src.size () * (sizeof (FROM_T) / sizeof (TO_T))};
+        TO_SPAN result{(TO_T*)(src.data ()), src.size () * sizeof (FROM_T) / sizeof (TO_T)};
         Ensure (src.size_bytes () == result.size_bytes ());
         return result;
     }
