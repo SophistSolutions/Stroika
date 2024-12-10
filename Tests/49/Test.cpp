@@ -264,7 +264,7 @@ namespace {
                                                        0x28, 0x00, 0x4f, 0x00, 0x63, 0x00, 0x74, 0x00, 0x6f, 0x00, 0x62, 0x00, 0x65,
                                                        0x00, 0x72, 0x00, 0x20, 0x00, 0x32, 0x00, 0x37, 0x00, 0x20, 0x00, 0x32, 0x00,
                                                        0x30, 0x00, 0x32, 0x00, 0x34, 0x00, 0x29, 0x00, 0x0d, 0x00, 0x0a, 0x00};
-            auto tr = Streams::TextReader::New (Memory::BLOB{span{TESTOUT_UTF16}}, Characters::UnicodeExternalEncodings::eUTF16);
+            auto tr = Streams::TextReader::New (Memory::BLOB{span{TESTOUT_UTF16}}, Characters::UnicodeExternalEncodings::eUTF16_LE);
             auto s  = tr.ReadAll ();
             // Triggered TWO bugs - the CodeCvt.inl - r.fSourceConsumed * sizeof (SERIALIZED_CHAR_T) issue, and
             // a Bug with BLOB stream code (BLOB :: As<binarystream> () needs to hold onto shared_ptr refcnt of BLOB
