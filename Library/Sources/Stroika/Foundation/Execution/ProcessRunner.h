@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <optional>
 
+#include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
@@ -161,6 +162,9 @@ namespace Stroika::Foundation::Execution {
              */
             optional<filesystem::path> fWorkingDirectory;
 
+            // optional<CodeCvt<>> fInputCodeCvt;
+            // optional<CodeCvt<>> fOutputCodeCvt;
+
 #if qStroika_Foundation_Common_Platform_Windows
             /**
              *  From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
@@ -227,6 +231,22 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief Run () options for mapping Strings - what code page converters to use.
+         * 
+         *      \note defaults now are UTF-8, but don't count on this if you care about the encoding used (subject to change).
+         */
+        struct StringOptions {
+            /**
+             */
+            optional<Characters::CodeCvt<>> fInputCodeCvt;
+
+            /**
+             */
+            optional<Characters::CodeCvt<>> fOutputCodeCvt;
+        };
+
+    public:
+        /**
          *  \brief Run the given external command/process (set by constructor) - with the given arguments, and block until that completes and return the results
          *
          *  Run the given external command/process (set by constructor) - with the given arguments, and block until
@@ -271,7 +291,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual ProcessResultType Run (const Streams::InputStream::Ptr<byte>& in = nullptr, const Streams::OutputStream::Ptr<byte>& out = nullptr,
                                           const Streams::OutputStream::Ptr<byte>& error = nullptr,
                                           ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
-        nonvirtual tuple<Characters::String, Characters::String> Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress = nullptr,
+        nonvirtual tuple<Characters::String, Characters::String> Run (const Characters::String& cmdStdInValue,
+                                                                      const StringOptions& stringOpts = {}, ProgressMonitor::Updater progress = nullptr,
                                                                       Time::DurationSeconds timeout = Time::kInfinity);
 
     public:

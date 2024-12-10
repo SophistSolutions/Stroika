@@ -462,20 +462,24 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
     }
 }
 
-auto ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress,
+auto ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress,
                          Time::DurationSeconds timeout) -> tuple<Characters::String, Characters::String>
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     Streams::MemoryStream::Ptr<byte>                useStdIn  = Streams::MemoryStream::New<byte> ();
     Streams::MemoryStream::Ptr<byte>                useStdOut = Streams::MemoryStream::New<byte> ();
     Streams::MemoryStream::Ptr<byte>                useStdErr = Streams::MemoryStream::New<byte> ();
+
+    auto mkReadStream = [&] (const Streams::InputStream::Ptr<byte>& readFromBinStrm) {
+        return stringOpts.fInputCodeCvt ? Streams::TextReader::New (readFromBinStrm, *stringOpts.fInputCodeCvt)
+                                        : Streams::TextReader::New (readFromBinStrm);
+    };
     try {
         // Prefill stream
-        // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
-        // @todo consider if should be using SDKCHAR string - OS app codepage? at least optionally?
         if (not cmdStdInValue.empty ()) {
-            // for now while we write BOM, don't write empty string as just a BOM!
-            Streams::TextWriter::New (useStdIn).Write (cmdStdInValue);
+            auto outStream = stringOpts.fOutputCodeCvt ? Streams::TextWriter::New (useStdIn, *stringOpts.fOutputCodeCvt)
+                                                       : Streams::TextWriter::New (useStdIn);
+            outStream.Write (cmdStdInValue);
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
@@ -485,11 +489,11 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonito
         // get and return results from 'useStdOut' etc
         Assert (useStdOut.GetReadOffset () == 0);
         Assert (useStdErr.GetReadOffset () == 0);
-        return make_tuple (Streams::TextReader::New (useStdOut).ReadAll (), Streams::TextReader::New (useStdErr).ReadAll ());
+        return make_tuple (mkReadStream (useStdOut).ReadAll (), mkReadStream (useStdErr).ReadAll ());
     }
     catch (const Exception& e) {
-        String out = Streams::TextReader::New (useStdOut.As<Memory::BLOB> ()).ReadAll ();
-        String err = Streams::TextReader::New (useStdErr.As<Memory::BLOB> ()).ReadAll ();
+        String out = mkReadStream (useStdOut).ReadAll ();
+        String err = mkReadStream (useStdErr).ReadAll ();
 #if qStroika_Foundation_Debug_DefaultTracingOn
         DbgTrace ("Captured stdout: {}"_f, out);
         DbgTrace ("Captured stderr: {}"_f, err);
