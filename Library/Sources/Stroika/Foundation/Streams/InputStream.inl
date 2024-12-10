@@ -399,7 +399,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     {
         using namespace Characters;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"InputStream::Ptr<Character>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
+        Debug::TraceContextBumper ctx{"InputStream::Ptr<Character>::ReadAll", "upTo: {}"_f, upTo};
 #endif
         Require (upTo >= 1);
         StringBuilder result;
