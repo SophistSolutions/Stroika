@@ -40,8 +40,6 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
-using namespace Stroika::Frameworks::WebService;
-using namespace Stroika::Frameworks::WebService::Server;
 
 using Common::ConstantProperty;
 using Common::GUID;
