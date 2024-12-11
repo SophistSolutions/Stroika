@@ -7,6 +7,1624 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+
+
+### v3.0d12 REL DRAFT
+
+    Lots of miscelaneous RegressionTest cleanups
+
+
+#if 0
+commit 59ca5b2d610b5d2d7f0d1729ed559686520579ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 10 15:01:59 2024 -0500
+
+    a few minor code cleanups to Common/Properties
+
+commit bddebaa1bf0ed8edc2c383097c29ce87ae96e7c9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 10 13:43:08 2024 -0500
+
+    kPath and kPathEXT use ConstantProperty not ReadOnlyProperty
+
+commit 68165aedcf6c75b22933ed37348c6823ff9cbc85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 10 10:48:15 2024 -0500
+
+    fixed bug  in  CopySpanData and better requires testing and docs for SpanBytesCast
+
+commit 39a5086397fd814d9a7baf0b32cf19f120c1c875
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 21:28:40 2024 -0500
+
+    Lose qCompilerAndStdLib_ASAN_memcpy_Buggy BWA - cuz was MY bug not ASAN issue; and fixed BLOB code so BLOB :: As <binaryinputstream> - holds onto refcount
+
+commit 4268909dc1105b7de537044d05ee4f1e3810ef48
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 21:01:42 2024 -0500
+
+    ProcessRunner string variants - options to control CodeCvt used on reading/writing
+
+commit 6a62861b6116c8a8cc0f1595cb1f27d2697e41e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 20:57:54 2024 -0500
+
+    minor cleanups to SpanBytesCast and related comments
+
+commit a0e599b58d89d8a710ec438218bac3868c8af77d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 20:57:15 2024 -0500
+
+    fixed USE_NOISY_TRACE_IN_THIS_MODULE_ trace - legacy printf stuff
+
+commit 6d208ab10a8d12437181246a61033c2b1ca1d6c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 20:56:46 2024 -0500
+
+    TextWriter takes copyable not move only argument CodeCvt
+
+commit 4151649ac7cfa7df6e7993dd2fa4276a28851e18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 20:05:09 2024 -0500
+
+    maybe fixed bug in SpanBytesCast - testing
+
+commit 4d007b6abb2855ad6151ed0392c37ef235971104
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 18:13:57 2024 -0500
+
+    Replaced Memory::SpanReInterpretCast with Memory::SpanBytesCast (diff name and diff api); used improved api to deprecate CopySpanData_StaticCast (now it just calls CopyBytes(SpanBytesCast)); and
+     updgrade use of all these deprecated functions; oh - and one case where we used to call CopySpanData_StaticCast - call new CopySpanData (best name, confusing diff behavior - but never released that code) - and better documented api and diffs; and deprecated Span.inl/Span.h - no longer needed/supported (just in Memory/Common
+
+commit 7301735a5ecce8a0cd0c4ddcc834a82ee2176196
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 17:12:23 2024 -0500
+
+    cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
+
+commit 7d0d322c2e7f515273cdf3f4bd3c03ad3135211d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 15:14:41 2024 -0500
+
+    Migrate code from Memory/Span to Memory/Common; and minor tweak to UTFConvert
+
+commit d541e9338bac7f70ba70febf3580df8dc159ebee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 14:48:11 2024 -0500
+
+    renamed MemCmp to CompareBytes () - deprecating old name and updating code to call new name
+
+commit 2b4ff71b7dddca95f52f22d2d37e86ec48350785
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 14:04:13 2024 -0500
+
+    deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
+
+commit 6c52907dc14138f4d53f7d64851dcf8f0e0bb61b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 13:56:56 2024 -0500
+
+    Minor cleanups of recent ToPath deprecation; and various comments/cleanups
+
+commit d4b6e2af07d7e09cf9557e83b3202702c4076c57
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 12:01:45 2024 -0500
+
+    Depreacted IO::Filesystem::ToPath and instead String.As<filesystem::path> () works including qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin hack
+
+commit b4c0f1fd39847bb543fd81b6f673ad06072ca983
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 11:22:56 2024 -0500
+
+    lose qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA no longer needed - on explicit String (TOSTRINGABLE&& s) - now more restruict concept on it
+
+commit 13780843e55ea2b8742e2f461d5049acfd502876
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 10:57:14 2024 -0500
+
+    cleanup mistake with IConvertibleToUNICODEStdString with String CTORs and renamed (and fixed) concept to be IStdPathLike2UNICODEString
+
+commit 53498d2fc70c139d84c58fb00e5259ebc0fedbba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 9 10:03:25 2024 -0500
+
+    BWA for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy another case
+
+commit 45fb2f76f588026090d6735910c20126c3a8e523
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 22:55:17 2024 -0500
+
+    String module: new IConvertibleToUNICODEStdString, and used in String CTOR so can accept filesystem::path argument; used to deprecated FromPath method; AND many various cleanups and reactions to various deprecations
+
+commit 4ca6db2d54d9e839e8fc9ff2f39ef57a50014cf2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 22:53:45 2024 -0500
+
+    use new CopyBytes instead of deprecated CopySpanData
+
+commit 2c5d920710f1579a0764dc49209354a50a1c8417
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 22:52:44 2024 -0500
+
+    deprecated CopySpanData in favor of new CopyBytes (incomplete)
+
+commit 49e36809a791aa7888ba41eb332bf53341765e6f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 14:43:30 2024 -0500
+
+    Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
+
+commit 5190a5c1b9b8bcaed23d1db7b4c8d365c24f0095
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 14:42:13 2024 -0500
+
+    BLOB BLOBBINSTREAM_ uses new CopyBytes to workaround qCompilerAndStdLib_ASAN_memcpy_Buggy (and cleaner code anyhow)
+
+commit f7c5c3f46dcbf3339e98cc35a8a8dc4676ffe7cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 14:40:20 2024 -0500
+
+    BWA qCompilerAndStdLib_ASAN_memcpy_Buggy and BWA in new CopyBytes code (failure causer not yet commited)
+
+commit 860df44b04c01609b55c1740ca9b5fb732fd9509
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 12:00:19 2024 -0500
+
+    one use of CopySpanData_StaticCast - I hitnk not needed - replaced with CopySpanData call
+
+commit 7a7f216ba7caeadd6e97a407336f803489304926
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 11:56:46 2024 -0500
+
+    Added a few comments, requires etc on CodeCvt: and one important bugfix converting differently sized UTF to UTF conversions
+
+commit 2930f6a321b13eaca2165196b9da607d356d09b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 8 11:52:51 2024 -0500
+
+    draft new experimental APIS CopyBytes and CopyOverlappingBytes () in Memory
+
+commit 91c51f209ecd438fb8d0ff55af51e776aa6a0b8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 15:45:53 2024 -0500
+
+    Minor tweaks in ProcessRunner error reporting and regtests to udnerstand issue on windows github actions
+
+commit 524fdf3043e7e1583d4e49a6c40195c8303703a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 13:21:20 2024 -0500
+
+    another ProcessRunner regtest - getting magic quotes working iwth awk... ProcessRunner
+
+commit f1940003e4744baf756c981d9a6827136d57493b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 13:04:05 2024 -0500
+
+    disable some maybe unwanted/unhelpful quoting in CommandLine::As<String> ()
+
+commit 4d5a5adbb397b0f29ecb792e0508a6f1f26c59d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 11:31:18 2024 -0500
+
+    ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
+
+commit 14f31ccf0a051842db4cc32340410cc3869533d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 10:53:39 2024 -0500
+
+    big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
+
+commit d6dcf97ec254699c922d1d976fc2eef210411fb6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 08:41:42 2024 -0500
+
+    cleanups to ProcessRunner regtests
+
+commit 19efa976b91541822a76ffce902ed17c8920e5cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 08:04:31 2024 -0500
+
+    more improvements to ProcessRunner regressiontests
+
+commit 5d6059e4540470856d4c894fff8420065e42bbd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 08:04:12 2024 -0500
+
+    Minor ProcessRunner cleanups: run(STRING) now outputs to dbgtrace the stdout on excpetions, and minor logging etc cleanups
+
+commit 450ba23262d5a4c6a88040bcda47a85d5845bd31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 7 08:03:25 2024 -0500
+
+    Minor cleanups to recent CommandLine changes (StringShellStyle-> StringShellQuoting)
+
+commit 366de3e8cc253152c15d8dbdbb4ccc4207ff8c49
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 13:22:45 2024 -0500
+
+    Foundation_Execution_ProcessRunner SETUP - warn if echo not in path
+
+commit 29335d3c7ac82a9238279297f9d4da4abc301ccb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 13:22:19 2024 -0500
+
+    windows process runner backend - handle argument EXE and warn so clearer message whnen EXE not in path
+
+commit 593f8e07bed76facd30880c157a4c5a4886808ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 13:20:55 2024 -0500
+
+    fix docs/code for FindExecutableInPath (ext part)
+
+commit 11fb0a79ea4fb206f9f4f695440029c343e81fe7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 11:30:28 2024 -0500
+
+    small cleanups to Foundation_Execution_ProcessRunner regtest
+
+commit 40dad255b0466ceabc2d00cfee35a0b5274c3c2d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 11:03:11 2024 -0500
+
+    Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
+
+commit 8af34a506deb3ca76459f7dbbb923acbea4ff474
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 10:16:03 2024 -0500
+
+    Minor ProcessRunner cleanups
+
+commit 0f578eee7088b8ae7919311db2c5a0272f148215
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 09:54:43 2024 -0500
+
+    cosmetic; and minor ProcessRunner clenaups/factoring
+
+commit 50fc9493d65b9d5decfd2115e459e4e1617ed267
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 08:24:17 2024 -0500
+
+    Execution::Module: added kPath, kPathEXT, and FindExecutableInPath utility (and a few other cleanups)
+
+commit 8d4db8ab413a34db2e5335ad97a39c459b2a674e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 6 08:21:00 2024 -0500
+
+    cosmetic cleanup to BlockingQueue code
+
+commit 1064d9636504a09434315ace4412d5e3d0bda0ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 5 19:56:05 2024 -0500
+
+    fixed CommandLine ::CommandLine to use COMSPEC ENV var, not cmd and path search (based on looking at visual studio source code for system call)
+
+commit 070769813146dd7ff91becd9da6edcbd1da19c96
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 5 16:15:19 2024 -0500
+
+    more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
+
+commit 37bbbcfaabc3f0e1d1e4d3241e923912bdb03c49
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 5 12:12:11 2024 -0500
+
+    more ProcessRunner cleanups, but mostly StringShellStyle in As<String> method of CommandLine
+
+commit eeb5cedf28a7e4fd942def0c22cf0ddbacb0ea03
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 5 11:39:06 2024 -0500
+
+    preliminary WrapInShell support on Execution::CommandLine class, and used in ProcessRunner
+
+commit f796799150e0fb478aacb4cb16e4e49504d885a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 5 11:37:47 2024 -0500
+
+    added String::ContainsAny () utility
+
+commit 624b6e88796959164caa2d4d9c04bc33ec7a395a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 5 10:32:01 2024 -0500
+
+    recatoring of ProcessRunner to run off CommandLine class (seems to pass all old regtests and one API deprecated)
+
+commit 0e3e7079f2a74d5d2e5c487a5df838960d09bc16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 21:39:29 2024 -0500
+
+    incomplete progress on CommandLine support for ProcessRunner
+
+commit 7b5b18de0b172550ead9a99c2c625c773d54ef34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 19:08:28 2024 -0500
+
+    CommandLine::As<String> () support so you can map back
+
+commit 15ed9bc7d3cc3503a98755acce5db3a83b140a4a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 16:37:51 2024 -0500
+
+    Cleanup Foundation_Execution_ProcessRunner regressiontests
+
+commit 82608d7524089a81cad24d2b76d0d20f3e0a4464
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 15:50:58 2024 -0500
+
+    Minor fix to edge of Math::Trunc() error handling
+
+commit 88d365ef183159ea4b058f18a1ba36d85b1746bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 12:03:07 2024 -0500
+
+    More regtests for recent Math::Round, and FloatConversion::ToString changes
+
+commit e31db1eefbcf6afd5b426da0efe5e9eb7d8963f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 12:02:25 2024 -0500
+
+    hopefully fixed remaining issues with NOT __cpp_lib_to_chars support in ToString_OptimizedForCLocaleAndNoStreamFlags_
+
+commit f1f70d46d0dab5273b32a1a081b8d74198049ca4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 12:01:04 2024 -0500
+
+    use Trunc instead of Round() in Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision..
+
+commit b2199193bb1a6f464f228620295ef127750e49c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 11:30:01 2024 -0500
+
+    Minor cleanups to Math::Round/2
+
+commit ca105323e2eac2908e905390d781b916edc292b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 11:06:52 2024 -0500
+
+    Math Round docs
+
+commit ea0101c39a4d19e44b975368361b4acaa8ab01b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 11:57:58 2024 -0500
+
+    new Math::Trunc() routine for integer (saturation) truncation
+
+commit f978637dbed198d9cd7853e3d88ce30d6d991682
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 10:51:10 2024 -0500
+
+    windows docker container VS_17_12_3
+
+commit 220fa276a042b8b95374b22778482863d15632e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 10:43:10 2024 -0500
+
+    more work on new Math::Round()/2 overload
+
+commit ebde40a5321e13ad86bf479c0f59fa1e7b21d1ac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 4 10:40:12 2024 -0500
+
+    more work on new Math::Round()/2 overload
+
+commit c109aaf7ed97f7826fc6636ec77815822158aa69
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 3 21:34:53 2024 -0500
+
+    Round/2 bugfix and extra regtest and docs
+
+commit 5aeb3bc450bb05861f2ea596b294309721727ba0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 3 17:05:39 2024 -0500
+
+    fix/docs for Round/2 and regtests for said
+
+commit 70631430f377622cd88bb35d69e86d6a4f5ccf9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 3 17:01:39 2024 -0500
+
+    fix/docs for Round/2 and regtests for said
+
+commit d020f2c27fa4ab5902485d38cdf65b12f6074884
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 3 15:22:54 2024 -0500
+
+    Minor progress debugging __cpp_lib_to_chars undefined BWA
+
+commit 9df0f3e71cc83cd0e29bbbc4baec993d025accab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 3 08:14:35 2024 -0500
+
+    minor fix for CalcPrecision_
+
+commit aba032f8dde24a2f4c662b2112081a4126c474b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 19:47:29 2024 -0500
+
+    indirect in Duration cod eto shared FloatConversion::ToString()
+
+commit ec252275df0f40250c0dd4e9b393637b0a29c437
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 19:47:03 2024 -0500
+
+    cleanups to qStroika_Foundation_Debug_AssertionsChecked/__cpp_lib_to_chars BWA
+
+commit 62c8c16a60c987f7a44e1bccf390b2d12029cd45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 19:26:10 2024 -0500
+
+    more tweaks to FloatConversion::ToString BWA
+
+commit 0fa1fbc8ce0e65cefdb977ff72156bf59dd165e1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 19:25:16 2024 -0500
+
+    fixed new Round () overload
+
+commit a8437a197fa951fe5d9feb6ee78e9136d05cc2bd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 19:17:34 2024 -0500
+
+    more regtests for FloatConversion::ToString
+
+commit b9afa39dad40d536a9a4488a9ee7caa7b5ea4e30
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 19:17:04 2024 -0500
+
+    maybe adequuate __cpp_lib_to_chars BWA for ToString_OptimizedForCLocaleAndNoStreamFlags_ on macos
+
+commit 8f8009c73af1ad656d2e798ab375b619ff2019b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 18:31:31 2024 -0500
+
+    mostly cosmetic namespace cleanups
+
+commit 1efc946071016b24c312edace0dd8bf0b822c148
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 15:01:20 2024 -0500
+
+    cleanup deprecated uses of Math::kPi
+
+commit c21fcc6777716ffea5f394abc2eba6266e0276a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 14:15:31 2024 -0500
+
+    more regtests for FloatConversion::ToString rounding (I htink passing with to_chars, but failing without)
+
+commit f78a34dacea0e0468f093d6c9f1915166d1074f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 13:36:31 2024 -0500
+
+    use new numbers::pi_v<RepType> instead of deprecated kPi
+
+commit d011bed6e2cb5290582c36ca9d678083116f2cac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 13:36:02 2024 -0500
+
+    lose accdidentally left around class URL
+
+commit 722504f3a31c809448c50ec47908e6c53fcc36fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 13:35:33 2024 -0500
+
+    Cleanup Math::Common quite a bit: use new Common::IArithmetic concept to simplify, more constexpr, deprecated kE, and kPi (use numbers::pi_v<double> etc)
+
+commit 9bc1b1b5c52760ef70d036591d3f36c035e757c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 13:15:27 2024 -0500
+
+    Added IArithmetic concept
+
+commit 1ff9292e489b9ebf78dbd9dc325e54e12dc470d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 10:38:16 2024 -0500
+
+    more fixes for ToString_OptimizedForCLocaleAndNoStreamFlags_
+
+commit 7386157686ae72af89bd84b30f4fac87ae017434
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 08:40:31 2024 -0500
+
+    tweak ToString_OptimizedForCLocaleAndNoStreamFlags_
+
+commit 282ec6d7926c5e75f690f7ea09f7703165a9588c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 08:36:55 2024 -0500
+
+    Progress on updates to FloatConversion (workarounds for macos)
+
+commit 739f9ec373cfae5e1d93e73a1893735089c306eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 2 08:19:58 2024 -0500
+
+    Progress on updates to FloatConversion (workarounds for macos)
+
+commit 8fb3ec852cef4a474868f890103198283364ab18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 1 21:38:55 2024 -0500
+
+    progress on ToString_OptimizedForCLocaleAndNoStreamFlags_ no __cpp_lib_to_chars issue
+
+commit a623b3dfb558a1f3f1f0fabb665d0c726a950abf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 1 08:14:20 2024 -0500
+
+    fixed small regression in to_chars call
+
+commit d35164aca1b44226f6f731c808b3380856b6d6b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 19:24:17 2024 -0500
+
+    maybe fix issue wtih to_chars workaround
+
+commit 5d9bcb4c5227ba6d7233de5968c07cc2a740c593
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 17:30:41 2024 -0500
+
+     __cpp_lib_to_chars improved BWA for when missing
+
+commit bba2212b64a95c597e3401e6a5656e23e53a7a1e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 17:07:00 2024 -0500
+
+    start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
+
+commit b7a9f55175d32b615c94203a25553096207b9f30
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 15:14:45 2024 -0500
+
+    change DefaultCTOR for Precision to initialiuze to 6; and use that to lose ToStringOptions::kDefaultPrecision; added regtests for new precision code; Time::Duraiton::As<String> () now NEW HEBAVIROR - NOT BACKWARD COMPAT FULLY - defaults to 6 digits precision instead of full, but easy to pass in Full() to As<String> method if you want; and regtest that from ObjectVariantMapper now too
+
+commit bcf554f85e6732fa090bcdccd0ecfffe14518f69
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 13:38:48 2024 -0500
+
+    Duration/precsion regtests
+
+commit 495fdf3707a580cf2bb011c9b4490394059b91ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 13:38:31 2024 -0500
+
+    fixed Duration::UnParseTime_ precision handling
+
+commit 5f83c82b1eb3f952e944d0404a44779ea3be2d39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 13:38:09 2024 -0500
+
+    MakeCommonSerializer support Duration+Precision
+
+commit b3a943d2c57a73918de5618c6cc9b497c0788635
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 12:50:21 2024 -0500
+
+    Time::Duration As String(PRecision) now even if stored fStringRep - we convert so produces right precision answer
+
+commit 7f9fa1798b9d5d5a34948589ce6f23a6b9785813
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 12:11:17 2024 -0500
+
+    docs on ToString/Precision support and other ToString cleanups
+
+commit 9b4b15d5dbbb152a6e73bcd362876380e880ce1b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 10:49:49 2024 -0500
+
+    Support Characters::ToString(Duration,Precision)
+
+commit 09b3f4b2e252e158cfabde2cca809f32728ca95f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 09:48:08 2024 -0500
+
+    comments; regtests; and  Duration::As (Precision) overload (including prelim regtest); and maybe fixed macos to_string BWA regression
+
+commit 94a20f89440fee3f28548f768a2326aacd0531f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 09:05:53 2024 -0500
+
+    Duration::UnParseTime_ returns String; and minor cleanups to __cpp_lib_to_chars missing BWA
+
+commit ea114935258c594c9b0a5d081528b477be085769
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 08:24:58 2024 -0500
+
+    start to support no __cpp_lib_to_chars for macos old
+
+commit 24b93cf01e5013810350b69e395f958967558977
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 30 08:18:32 2024 -0500
+
+    start to support no __cpp_lib_to_chars for macos old
+
+commit de9bba314649a5cc5390c51e93a8e8eac7963c16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 29 21:59:45 2024 -0500
+
+    Duration::UnParseTime_ () beginning support for FloatConversion::Precision - no real change in API yet, and only change in behaviro is we shoudl write MORE digits of precision for durations - temporarily
+
+commit 47119490589721949925ce20e43aa48e00f16375
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 29 21:58:34 2024 -0500
+
+    undo part of ToString recent change
+
+commit 1229e303237b9b338da4664361862008709b17fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 29 20:58:34 2024 -0500
+
+    fJSONWriterOptions in ObjectRequestHandler
+
+commit d7ccf9e604203f513df128d063b835809c6b5a54
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 29 20:51:16 2024 -0500
+
+    regtests JSONWriterNumberPrecision verify/test
+
+commit 9b15e7487633570f9123d45639d596de311f0b38
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 29 20:50:19 2024 -0500
+
+    promote Foundation::Characters::FloatConversion::{ToFloat,ToString} to also be in Characters namespace
+
+commit 25d2da764339046e7676eefee0cb75e6e0f3cad2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 29 14:13:10 2024 -0500
+
+    docs and asserts GUID
+
+commit 7643470dfa4039f7007a6bdf93d62f469aa14bc9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 28 20:55:20 2024 -0500
+
+    fixed small bug with FileSystem::CreateTmpFile - if missing extension use .txt to txt
+
+commit b8950f55bc7a3b599954f5074b08759f2561e259
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 28 17:35:00 2024 -0500
+
+    override formatter for GUID (cuz default the way I wrote things was to use ranges formatter - at least on systems that supported it); now have regtest to assure outputs in compact formated GUID format
+
+commit 8cc9f8aa290724507938d4a9a639db48f0ad4201
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 28 17:33:27 2024 -0500
+
+    Satisfies Concepts: for BLOB
+
+commit d6ba8ca2998793d213dcc422faf3637c5e7393eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 28 15:10:48 2024 -0500
+
+    new concept Weak_Equality_Comparable_With; used to fix recent chagnes to ThrowIfNull; and added regtests
+
+commit a92b44734a48ab4d9b844b28f4f228f756cd9510
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 28 13:34:32 2024 -0500
+
+    Execution::ThrowIfNull overload for optional
+
+commit 60bafa545ca6f591a6370c687079fc2180cac5e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 28 08:17:20 2024 -0500
+
+    Minor cleanups to ProcessRunner
+
+commit 806d5fc420839b0de4aafc9a22ff13111063518d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 20:19:03 2024 -0500
+
+    Added regtests for BLOB and Stream code
+
+commit 03ac1ecc0e40f95ff98a77aeae0511082b0bdbb8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 17:26:59 2024 -0500
+
+    Added predefined internetmediatype kAudioWAV
+
+commit 7078b602521b73d86f9208bceded251fc76f7f23
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 10:41:37 2024 -0500
+
+    better https://github.com/actions/upload-artifact/issues/506 BWA
+
+commit 976ce0af541c9fb20b90b45e8aa1f4400906c0eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 10:36:12 2024 -0500
+
+    github action - workaround https://github.com/actions/upload-artifact/issues/506
+
+commit 731a74c3f8007613bae9478ee496765b838b099e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 10:25:53 2024 -0500
+
+    polish regtest warning
+
+commit 4d5872a5b03d17de4445594813c8993b6c962046
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 10:25:23 2024 -0500
+
+    Appears Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA not needed on Format() function call
+
+commit b7d2f8b3061d8e7fd02a96ab00c98e34c91ed9b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 10:22:10 2024 -0500
+
+    a few more minor cleanups - mostly Characters::Format simplification
+
+commit f57c7775f2a699e434122c3854b4800fcc7fe6c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 09:49:36 2024 -0500
+
+    qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy not buggy on clang
+
+commit 7eb041f37ac82d56e473d5f18fcecc7a82654d35
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 27 08:54:44 2024 -0500
+
+    qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy and Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA
+
+commit fd11e1f27953999ad20530a5ec61d0981d9d17b9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 26 22:33:08 2024 -0500
+
+    maybe start workarond issue with _f strings and g++12 (etc)
+
+commit 55a7ac399f0dfadd3597ca2e5637f8b3998f143e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 26 21:16:00 2024 -0500
+
+    mostly cosmetic - use just _f () instead of Characters::Format (..._f,
+
+commit 5b4227b5aeea9761a7521185c205a834903e0911
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 26 20:55:02 2024 -0500
+
+    ToString(StringBuilder) support
+
+commit c0bf29fcf891653a9babf4a6ebf129ab77054b46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 26 20:23:13 2024 -0500
+
+    cleanups and react to depreactions
+
+commit 0291c1f85c2a261a192e7cd470ed8a69b1279f95
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 26 20:22:49 2024 -0500
+
+    deprecated String::clear()
+
+commit aa7cd57546a40b2afad40768ff16defd5592a2b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 26 18:13:52 2024 -0500
+
+    improved nonvirtual StringBuilder& operator= and cleanup a few more warnings
+
+commit e1c2007b15b522f9ce2bd15bd2255e91f4ba73b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 26 17:37:51 2024 -0500
+
+    Deprecated several modifying methods on String - push_back, erase, operator+, Append, and added a few helper methods to StringBuilder to ease the transition (weak impls but OK to test)
+
+commit 2626600d3d3ff77be1bbe8d5e7115c51345e427d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 26 12:38:40 2024 -0500
+
+    configure: fixed SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ to check for and handle COMPILER_DRIVER eq ''
+
+commit 2364adbb9e75c0bcaf79daacfaf36949771688ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 25 17:29:21 2024 -0500
+
+    try to fix oldmacos build issue with old code lib
+
+commit b7128b47a13c04c8fb1eed7aebee4534bfa1ab68
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 25 17:28:46 2024 -0500
+
+    try to fix oldmacos build issue with old code lib
+
+commit d0a30201447380c8ea08a7d6b6bde5612224649a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 25 15:09:57 2024 -0500
+
+    Regression test - better output warnings about TSAN disabled
+
+commit 42975834dac95c0be8bee2a8e13ce3ef41d068a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 25 14:53:25 2024 -0500
+
+    fixed recent configure regression
+
+commit 01648745792634e70d0ac658c702bc35425449d1
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 25 13:37:48 2024 -0500
+
+    configure script: many changes (to test) - check COMPILER_DRIVER variable instead of COMPILER_DRIVER_CPlusPlus in many places; new ComputeARCHFlag_ procedure to better modularize/cleanup; and renamed for clarity ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_ and SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
+
+commit 8b54f787c79d4c1d0bbcc6e4abd99ae281b3212a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 25 12:48:15 2024 -0500
+
+    Minor cleanup of configure script - no apparent change (but could be)
+
+commit bfd7e22aae49dfd2b645f1026ec15d38e223d3de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 25 07:42:21 2024 -0500
+
+    draft script ScriptsLib/CreateSelfSignedCert
+
+commit 0b18fcdfd8db520c82bcabbe498dad889887bb5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 24 18:37:45 2024 -0500
+
+    configure - apparently redudnent set of Wno-stringop-overflow removed
+
+commit 7a664e46df787e9966a9bd48d9f077a178a0d243
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 24 09:15:08 2024 -0500
+
+    workaround two linker time warnings in glibc code in configure
+
+commit b40aa675985c866935b817b4062da21005f80bd9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 23 14:02:45 2024 -0500
+
+    SendStringResponse method, and Factory::SendResponse behavior and docs updated
+
+commit dbe82799831e261c434fb124cc12befb9546b03e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Nov 23 13:22:30 2024 -0500
+
+    https://stroika.atlassian.net/browse/STK-1023 needed for g++-11 too
+
+commit e954dca72d76f707c9d4834637b4d523fef9aecb
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Nov 23 10:30:54 2024 -0500
+
+    Minor celanups to SSDPServer sample
+
+commit f85a010737898e7e512718a10d329004df5c64cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 23 10:30:33 2024 -0500
+
+    Frameworks::Debug::WarnTestIssue now has String overload which simplifies some usage
+
+commit ef49df340b8fd9aadb7e3eecd4e318f1f44c9f72
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 23 09:57:56 2024 -0500
+
+    Server::WriteDocsPage use reference argument for response instead of ptr (deprecated old api)
+
+commit ee838dbf16613949cc54e74e81f4cd66e2e63de3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 23 09:36:44 2024 -0500
+
+    moved regtest to Frameworks_WebService, TestVariantValueSupport
+
+commit 2095f4aa90b267bef0c18e1cc8038f4d19c88e33
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Nov 23 09:25:08 2024 -0500
+
+    cleanup WebService samples and deprectaed code
+
+commit ecf972a8948a5cf11b3665c1bc3ac13cee691274
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 22 17:52:45 2024 -0500
+
+    use Request& in a few more places - deprecating Request* api
+
+commit fe6fb27e6cfca1d8debd3d8afd3646661ba25e07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 22 17:31:26 2024 -0500
+
+    minor cleanups reacting to recent WebServer::RequestHandler changes
+
+commit a5b6a8bcbf469f086ad92fa8c00d933c8782d1d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 22 13:26:57 2024 -0500
+
+    not backward compat but minor - use Message& in WebServer Interceptor code instead of Message* - not commonly user facing APIs so not that noteworthy
+
+commit 1ae73f700999904358d8f5a2ba21a188ddd33fce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 22 08:19:58 2024 -0500
+
+    cosmetic samples
+
+commit d665e916de1018ed5234be6abfe62d6409067dda
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 22 08:08:15 2024 -0500
+
+    more recent RequestHanlder cleanups and fixes for pickier clang
+
+commit 8f73bf69a341804a20ba04b39337729180ebde94
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 17:25:41 2024 -0500
+
+    slightly incompable (but not noticible by most users) change to WebServer::RequestHandler - internal calling rep now requires Message& instead of Message* (overriders most common, and there users get a deprecation warning)
+
+commit 02de361efacab3dbf9dd0859d7f652e4c5de91c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 15:24:45 2024 -0500
+
+    progress towards RequestHandler cleanup (incomplete)
+
+commit ad129e8130edeba8d90207f98b8771ec15dfaecd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 14:32:38 2024 -0500
+
+    Frameworks::WebServer::{Message,Requst,Response} now support move
+
+commit 32627c95aaefae1cbc21551b2f07508998ebea77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 14:19:40 2024 -0500
+
+    IO::Network::HTTP::{Request/Response} support for movable concept
+
+commit 41c516d3a0749ff4a2b623eb353aaddf0064ca34
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 11:19:19 2024 -0500
+
+    notes in ScriptsLib/BuildGLIBCLocally refer back to  https://stroika.atlassian.net/browse/STK-1022
+
+commit ff53b52110095314768eef215f0c3b452c11ba72
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 11:18:42 2024 -0500
+
+    raspberrypi configurations -  --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
+
+commit 45610be00920a2ff93126c55094913bf8e00af0f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 11:09:47 2024 -0500
+
+    notes on ScriptsLib/BuildGLIBCLocally to get working from ubuntu 24.04
+
+commit 070eb651fd5de4dd3435974baaeb1912b683253e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 09:21:12 2024 -0500
+
+    fixed configure so --append-CXXFLAGS go at the end (so they can be used to override things) - test an dthen do to other appends
+
+commit 94c188e6c7a9cbf3a03ebd7402b60b86133686e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 21 08:57:14 2024 -0500
+
+    DRAFT ScriptsLib/BuildGLIBCLocally to be able to run with newer ubuntus cross compile for raspberrypi (old debian)
+
+commit b1f215e7eb7ced7121fa982fec3d2a5cbac3b61f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 20 20:39:01 2024 -0500
+
+    set UBSAN_OPTIONS in RegressionTests script
+
+commit a01ac945a9e6f3a66eba954206d8a656da5cb094
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 20 08:56:41 2024 -0500
+
+    lose like macos brew install -q pkg-config no longer works and isnt needed
+
+commit f07ce656f1a6b52f311f1d7846e8f4882f63feda
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 20 08:55:50 2024 -0500
+
+    cleanups and use new LookupQueryArg utility
+
+commit 9380f44dce8e2fb2c3f46a6212ce488234fa4bf0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 20 08:55:19 2024 -0500
+
+    docs; and new Query::Lookup and URI::LookupQueryArg methods
+
+commit 747715d9a37b498063330fc16c39f7642f622286
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 20 07:31:22 2024 -0500
+
+    experiment with fixes for github action issue with brew install
+
+commit b6f99652161b071764db04c0f2cd519ff3e0f1c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 19 21:04:22 2024 -0500
+
+    move test for automaticTransferChunkSize modes to regtest (mostly from sample - now sample more reasonable)
+
+commit d0d0a71f79db538395f8006fa9b3d8a2b1fce624
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 19 17:53:10 2024 -0500
+
+    changed Ensure to WeakAssert Response::End () - cuz reponse might have ended before abort happens
+
+commit f2038c655c65c2a9816af04e765886329189eebf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 19 17:50:48 2024 -0500
+
+    use WeakAssert for rare case that can happen - on failure of Flush in BufferedOutputStream
+
+commit 402ebab8e93ec3312b96046fd994db1613f3551f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 19 11:40:11 2024 -0500
+
+    cosmetic cleanups to weberserver sample
+
+commit 024f7d408702f109f59633382d7e7c592ef8c15e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 19 11:39:48 2024 -0500
+
+    fixed minor recent regression to 405/404 handling in webserver router
+
+commit 72159203c8f76e76e9e393159d1bc1aa122bc46c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 19 08:48:50 2024 -0500
+
+    slightly polish webserver sample, and docs about webserver sample
+
+commit 30a8ae254e308c389c03851af377416f96533e51
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Nov 18 22:49:23 2024 -0500
+
+    revised BWA for https://stroika.atlassian.net/browse/STK-1021; TSAN - hold lock longer
+
+commit 40d93efd88c6b0b79a54b8debc9378a7212c98ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 18 23:58:20 2024 -0300
+
+    lose PeekIsSet from ThreadSanitizerSuppressions.supp and instead - added Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD before the two procedures calling PeekIsSet
+
+commit ef92e9487689d887cfe44c97b32f8c314966b95d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 18 16:20:39 2024 -0300
+
+    lose qCompilerAndStdLib_CompareOpReverse_Buggy - just  workaround issue and document in header I dont understand why extra function required, but compilers consistent enuf I must be wrong
+
+commit c40a87d7a36795684c98d2a49afd77740afa8608
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 18 13:41:28 2024 -0300
+
+    Minor cleanups to Foundation_Cryptography regtest: better docs/comments on how to detect new errors/failures in new openssl releases; and handle new issue with SHAKE128/256 (not well - just ignore)
+
+commit 288b834517609f87c3a28f431f3467b60efb0b12
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 18 13:32:42 2024 -0300
+
+    Minor docs and init cleanups to Cryptography/OpenSSL/LibraryContext
+
+commit 45d3dab1ddb6deeb477d856fa874bec9531b06c1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 18 13:31:01 2024 -0300
+
+    minor cleanup of  Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/Exception.cpp
+
+commit cbb1c5e37e70abdb450a2144ddc74b4de461d7dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 18 10:29:36 2024 -0300
+
+    minor cleanups to openssl Librarycontext.cpp
+
+commit 1fbb3f088208b24e381cfe4955e68aa891e13752
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 18 07:48:51 2024 -0500
+
+    cosmetic, and replace one use of Min/Max with clamp
+
+commit 3c6c627e71280dae706b9344a946a434104ec88a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 17 19:14:58 2024 -0300
+
+    restructure (gtest) regtest Foundation_Cryptography
+
+commit acf84ce8238df0ea16038a4c41718bfe5fb36402
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 18:38:30 2024 -0300
+
+    fixed build msys docker contianer - miussing pkg-config
+
+commit 908c6015e0b50316acd7cf2b108f19d91b44917a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 15:35:37 2024 -0300
+
+    sqlite 3.47.0
+
+commit baae482b645513a8a148f82c3b76ca8c725b04e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 15:33:06 2024 -0300
+
+    openssl 3.4.0
+
+commit 4619e0fa00dd975818237c6fe479e36d4b10ab85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 15:32:13 2024 -0300
+
+    libxml 2.13.5
+
+commit 8c93d7494db366d40832919f25fc6f2531ac1a15
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 15:30:01 2024 -0300
+
+    libcurl 8.11.0
+
+commit 181c7a382a35922385e9df1a6e51e60106238fd0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 13:57:47 2024 -0300
+
+    docs about https://stroika.atlassian.net/browse/STK-742; and switch docker config to using VS_17_12_0
+
+commit 2d9fa0c59b7f9c4f74ecd5815d959bb66c59050d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 13:44:58 2024 -0300
+
+    new clang-format (18.1.18); make format-code
+
+commit 6113a5e068c77d82bd7fac3de2da841fd440f313
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 13:43:40 2024 -0300
+
+    _MSC_VER_2k22_17Pt12_ compiler bug define support
+
+commit fc5e50ba5636b4ffb593d0bc027ca590e1a88ff4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 15 12:16:44 2024 -0300
+
+    start _MSC_VER_2k22_17Pt12_ bug define support
+
+commit b6dbda97282680bc74148ffb40434ed954262f77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 14 21:30:31 2024 -0300
+
+    Streams code: used to \req IsOpen (and IsRead/WriteOpen) on Close/CloseWrite/CloseREad - but now check internally and allow close calls when already closed (noop)
+
+commit 0c7ca29f606f24e554c8945b873be71ab78a94d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 13 15:46:11 2024 -0300
+
+    handle RequiredComponentMissingException in webservice regtests since cannot build libcurl on some macos configurations
+
+commit e4e39981f1958f513430c2b3cd0d6583a3f7eaa7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 13 13:25:45 2024 -0300
+
+    github action macos - get link error building libcurl on macos 13 - dont bother debugging cuz not importany to support old macos and no easy way to debug
+
+commit a3ac360aec7ca1f36f732d1d66444b8ce4e883b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 13 13:02:08 2024 -0300
+
+    Added more debug statements for macos build target - github workflow
+
+commit 5147f21ca500cced1a678289a80a9d7f00ecedf1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 13 10:17:30 2024 -0300
+
+    Minor twewk to ArgsOrVoid
+
+commit ab68454111b3135e2b8c5629c705d691e9f1ebf4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 13 10:15:13 2024 -0300
+
+    added /boost/ConfigureAndBuild-OUT.txt to github action log data capture (a few)
+
+commit 85ae2cba734d29642236ef05e1360254854b986d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 13 10:04:49 2024 -0300
+
+    deprecate Math::PinInRange - use std::clamp instead
+
+commit aa383201093b4ce9be22a03340b0a71e2870c0d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 12 13:01:37 2024 -0300
+
+    Cosmetic; and deprecated mkRequestHandler
+
+commit b9cbc9bf6e028032a3f29deabef9842605dcda87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 12 12:37:07 2024 -0300
+
+    qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
+
+commit 09167a50b90cf668c31816950720cbc8509aabd7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 21:33:36 2024 -0300
+
+    moved ExtractArgumentsAsVariantValue and PickOutNamedArguments from ObjectRequestHandler to Server::VariantValue and include from ObjectRequestHandler
+
+commit 7195df24283bc9ec894503d47100485a13b76fcb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 18:01:01 2024 -0300
+
+    ExpectedMethod overload and doc case senstivie; ObjectRequestHandler fAllowedMethods option, and other related cleanups
+
+commit 8bceb93d3bf4b40c9612d60524e20e2016b9b6f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 15:03:05 2024 -0300
+
+    bugfix (recent); and switch sample from using mkRequestHandler to ObjectRequestHandler::Factory
+
+commit 5650d403f8de2a2f055a18c3dc935e0a6e23e6c1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 11:45:07 2024 -0300
+
+     Request::GetBodyVariantValue () returns {} on no content-type (maybe more cases to add) ; and fixes to ObjectRequestHandler
+
+commit 53f1a662f8fdc04581a6dd98963d7f260d1373a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 09:20:45 2024 -0300
+
+    revert hack to workflows file now that builds on macos working again
+
+commit a3e6d7b8c167087a042e93f00373b37d3db980f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 09:11:55 2024 -0300
+
+    fixed issue with ObjectRequestHandler::Factory and re-enabled regtest
+
+commit fa99af3392f04e2e68e1b6477c6640c7e4f6b782
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 08:38:50 2024 -0300
+
+    cosmetic ObjectRequestHandler cleanups (docs) and renamed ObjectRequestHandler::Factory2 => ObjectRequestHandler::Factory
+
+commit 78c61fa4afff5d757e8118a50bfcd4a54e725e51
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 08:04:34 2024 -0300
+
+    cosmetic Frameworks/WebService/Server/ObjectRequestHandler cleanups mostly (and removed context arg from ApplyObjectHandler)
+
+commit f5d0d931f50ee11a6c67d8052b1d001b65ef57bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 07:36:07 2024 -0300
+
+    fixed small bugwith Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyHandler
+
+commit d0aeebaaa29decc5f2a9d0f323c8b08bf32f5e4b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 07:35:35 2024 -0300
+
+    fixed samples htmluiprojectfile
+
+commit 77f89667c0f6314224ff6ac43848831ab392a4ac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 00:44:34 2024 -0300
+
+    disable old ObjectRequestHandler::Factory
+
+commit 99a3ddc11d4679c9c1d70a943bf64ff46dfbd7fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 11 00:07:28 2024 -0300
+
+    more swtich to ObjectRequestHandler::Factory2
+
+commit 95f522f7b5a479871c8aa716697caaf0fc51067e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 10 23:40:39 2024 -0300
+
+    More progress on Frameworks/WebService/Server/ObjectRequestHandler Factory2 code
+
+commit 84eac1ccc0a55d7e6f73d100a6ac51da27382ae8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 10 21:08:17 2024 -0300
+
+    Minor cleanups of WebService/Server/ObjectRequestHandler code and tests
+
+commit b09197efeebcb58e86a8e92650a3857642906eb4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 10 20:22:43 2024 -0300
+
+    more progress on ObjectRequestHandler::Factory2 and tests
+
+commit 688696c08d1d222f6fd7e006fc5e35f57835d166
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 10 20:20:38 2024 -0300
+
+    more progress on ObjectRequestHandler::Factory2 and tests
+
+commit acd85d0fb93a1a903f58cb5f2745c7ba16ff3d8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 10 19:08:21 2024 -0300
+
+    progress on Factory2 for ObjectRequestHandler
+
+commit 0c08929c609ba222eb5797ea0ab8d11dafd144d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 10 19:07:33 2024 -0300
+
+    Minor addition to FunctionTraits (arg_t)
+
+commit bd8e434746f9301fff7a9480ec1ded720ffc9fee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 9 21:16:08 2024 -0300
+
+    minor Stroika/Frameworks/WebServer/Router.cpp
+
+commit d123d85eaf07b147a28d54d963c2316ea482b95d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 9 14:48:12 2024 -0500
+
+    progress on Factory2<RETURN_TYPE, ARG_TYPES...>:: - Options
+
+commit 216d01336a52c73448c289eaa5e7bfadd9985e20
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 9 12:36:00 2024 -0500
+
+    ObjectRequestHanlder attempt context support for Factory2
+
+commit 700dfd06ae3f498ea847f42c4409fd089b1ea9cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 9 12:10:10 2024 -0500
+
+    more progress on ObjectRequestHandler::Factory2 - maybe close to right but doesnt compile on clang and fully untested and probably issues with tempalteguides
+
+commit 54a54b5094af9ff41b2369be6e6e826572442ccb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 9 10:57:14 2024 -0500
+
+    dsiable github action build for xcode 15 temporarily
+
+commit 150d936df72702299cc29d1a9a33577d63b8046a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 9 07:31:20 2024 -0500
+
+    early draft of more powerful ObjectRequestHandler::Factory2
+
+commit 370072a03500a520522116e307e0d8b825e1aaee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 8 14:42:25 2024 -0500
+
+    Modest progress on WebService/Server/ObjectRequestHandler;
+
+commit 6edd2db59f09dad9eceeea17b142d5a171aece32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 8 11:36:54 2024 -0500
+
+    cleanups of recent ObjectRequestHandler changes
+
+commit d1b4e275c5849b3670b73ce57cf29891ff13ed6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 8 11:36:27 2024 -0500
+
+    more use concepts
+
+commit 103cc5f31f949e4cd5362fb1af57488ac76c9971
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 8 10:52:56 2024 -0500
+
+    ObjectRequestHandler now supports new ExtractArgumentsAsVariantValue and option fExtractVariantValueFromRequest param - so sb good replacement for mkRequestHandler (a bit more todo but roughly)
+
+commit 1cd19aecc76bdaa5f489f1d6d8b3ee0de79a1fc3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 7 18:38:35 2024 -0500
+
+    RequestHandler now takes additional optional argument - bool* handled; and changed Lookup on Router to return  Iterator<tuple<RequestHandler, Sequence<String>>> so sb able to have multiple filesystem routers now
+
+commit 8019ef6f1a246ef11fa73d8e716413b411e35860
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Nov 7 08:07:35 2024 -0500
+
+    https://stroika.atlassian.net/browse/STK-1021 BWA
+
+commit 29caaf7adf15d3acffad263bb956bdd337b109aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 7 07:35:05 2024 -0500
+
+    fixed missing Samples/HTMLUI/Backend/Projects/VisualStudio.Net-2022; and a few other minor mkaefile tweaks
+
+commit 65177b3ff200467366a17f9c158b550636814947
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 6 20:30:38 2024 -0500
+
+    comments, and typos fixed, and extra use of const for clarity in WaitForIOReady
+
+commit e3c3da860f0c7a6858f9cac24056c61ce811450b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 5 13:44:53 2024 -0500
+
+    Minor cleanups - use new ObjectRequestHandler and TypedBLOB
+
+commit 60fb079220c50e58405e19ecd6e2b2212dc4353e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 5 12:01:11 2024 -0500
+
+    first draft DataExchange::TypedBLOB support
+
+commit 7c213b0c6b52ef9901f3d21e418c73f533e38f31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 5 08:38:10 2024 -0500
+
+    tweaked Samples/WebService
+
+commit a166696920f0481eec0ad79ee782d400982ac176
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 5 08:04:00 2024 -0500
+
+    moved new wildcard InternetMediaTypes like InternetMediaTypes::kText to be under Wildcards - InternetMediaTypes::Wildcards::kText; added regtests and furhter improved IsA() impl - mostly checking for suffixes
+
+commit 1638267b19cc7ac35c27ac44ccd09ed851be45c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 16:21:30 2024 -0500
+
+    Added and used trivially_copyable in a few places (docs/clarifications)
+
+commit 08a4b93594c76c067696eaf9f3582dc4927fbecf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 14:48:33 2024 -0500
+
+    fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
+
+commit 25daa5baac67a52dcb30eaaf76a7c61e549d127a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 13:12:18 2024 -0500
+
+    minor cleanups to /InternetMediaTypeRegistry
+
+commit da4623fb553240d03c7661d6553059a0a75b44b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 12:57:56 2024 -0500
+
+    hopefully fixed InternetMediaTypeRegistry IsA wildcard checking
+
+commit 9506aa9e8951af5504f79225fe1eaf78e8523c87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 10:13:22 2024 -0500
+
+    fix to change allowing no subtype in InternetMediaType
+
+commit f4508c947cd94a706257ee496a5769d80591867e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 08:38:29 2024 -0500
+
+    minor progress on WebService/Server/ObjectRequestHandler
+
+commit 8ac438ec782ea9b9459df7783952dc1c98471f32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 07:17:53 2024 -0500
+
+    added kAudio
+
+commit b6dbadef85746ad3dda89267e6c802a09486d77c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 4 07:01:27 2024 -0500
+
+    Docs and minor cleanups to ObjectRequestHandler
+
+commit fa75f738c06c605ad31357724bfab089ce6ee8ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 3 14:42:56 2024 -0500
+
+    deprecated IsXMLFormat, IsTextFormat, IsImageFormat, and replaced with IsA() support doing the same thing and new top-level InternetMediaTypes that aren't exactly real but can be used as token sfor these IsA calls
+
+commit ad3124d780ebe0a713cacadb29aab3394a63ac8f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 3 08:26:48 2024 -0500
+
+    PATCH support example in WS tester reggtest (incomplete)
+
+commit d09407252687d31e2ab11cfcc7c2c58318900f0c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 3 08:26:05 2024 -0500
+
+    Request::GetBodyVariantValue () todo comments
+
+commit 20c1fd65f453887c3890921d2fbdddd6d4a39469
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 3 08:24:55 2024 -0500
+
+    support InternetMediaTypes::kJSONPatch; and start cleanup of InternetMediaTypeRegistry::IsA mechanism
+
+commit c5248b47f048453fcba956b1deaa021a208248a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 3 08:23:34 2024 -0500
+
+    fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one; and added dbgtrace on translation
+
+commit 1b41be276939766b84b594d2bd416c8794357407
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 22:13:58 2024 -0400
+
+    ObjectRequestHandler regtest tweaks
+
+commit f1650055776acf1ea143dd426554d66d13ebbcb5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 17:56:42 2024 -0400
+
+    test fix to ObjectRequestHandler::Factory deduction in one more case
+
+commit 291ad3ab1595729f2f81b8e3f85835008e43f3d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 17:54:16 2024 -0400
+
+    use new ArgOrVoid member of FunctionTraits to workaround issue in ObjectRequestHandler::Factory
+
+commit 745623e808d33dc5d80a8d54487d6361fbc23061
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 17:53:32 2024 -0400
+
+    ArgOrVoid member of FunctionTraits
+
+commit ec1c441c04ac613404444b542e7ad212cd171d7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 12:08:48 2024 -0400
+
+    progress/merge ObjectRequestHandler work
+
+commit abff41c83abc735d53445f846fb48df322ba834c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 11:36:28 2024 -0400
+
+    maybe fixed issues with WebService::Server::ObjectRequestHandler - testing
+
+commit 95a3758827089ed7a229dec0a89e241a9973b854
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 11:30:24 2024 -0400
+
+    progress getting Frameworks/WebService/Server/ObjectRequestHandler working for clang
+
+commit 2b03f8a42eb3191d42831d65010c10c2d0dfe9e2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 2 10:04:45 2024 -0400
+
+    progress on webservice regtest for new objectmapper webservice support
+
+commit ee7b14d059f147112f1c2ec53d7ff89db04fda4a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 1 11:06:00 2024 -0400
+
+    progress on Frameworks/WebService/Server/ObjectRequestHandler
+
+commit 997c3270c1f1191272041bbb17ff1eadf8ef8577
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 1 10:21:43 2024 -0400
+
+    modest progress on ObjectRequestHandler support
+
+commit 7422f1e9cbfc5db32e177dc6059c5e5b3a927721
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 1 08:10:00 2024 -0400
+
+    new prototype Frameworks/WebService/Server/ObjectRequestHandler
+
+commit ceefa9cd9d7deecd6f5a4ed0f051a4b967b951aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 31 14:06:14 2024 -0400
+
+    Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
+
+commit 03c5b4b606c6ac2c56fb0456841753da246c18aa
+Merge: 1536756ba4 ea053fb8c1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 31 09:54:49 2024 -0400
+
+    Merge remote-tracking branch 'origin/dependabot/npm_and_yarn/Samples/HTMLUI/QuasarBasedHTMLApp/http-proxy-middleware-2.0.7' into v3-Dev
+
+commit ea053fb8c108c45cd02889256e13772de05f74a0
+Author: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+Date:   Thu Oct 31 13:51:48 2024 +0000
+
+    Bump http-proxy-middleware in /Samples/HTMLUI/QuasarBasedHTMLApp
+    
+    Bumps [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) from 2.0.6 to 2.0.7.
+    - [Release notes](https://github.com/chimurai/http-proxy-middleware/releases)
+    - [Changelog](https://github.com/chimurai/http-proxy-middleware/blob/v2.0.7/CHANGELOG.md)
+    - [Commits](https://github.com/chimurai/http-proxy-middleware/compare/v2.0.6...v2.0.7)
+    
+    ---
+    updated-dependencies:
+    - dependency-name: http-proxy-middleware
+      dependency-type: indirect
+    ...
+    
+    Signed-off-by: dependabot[bot] <support@github.com>
+
+commit 1536756ba48c5f224ec611888cd44d97c66e1f2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 31 09:51:24 2024 -0400
+
+    start 3.0d12x
+#endif
+
+
+
+
+
+
+
+
+
+
 ### 3.0d11 {2024-10-31} {[diff](../../compare/v3.0d10...v3.0d11)}
 
 #### TLDR
