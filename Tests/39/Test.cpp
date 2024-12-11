@@ -1,94 +1,1482 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Execution::Signals
+//  TEST    Foundation::Execution::Threads
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <cstdlib>
 #include <iostream>
+#include <mutex>
 
-#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
-#include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Debug/Valgrind.h"
+#include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/BlockingQueue.h"
 #include "Stroika/Foundation/Execution/Finally.h"
-#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/ThreadPool.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 
-using Containers::Set;
+using Characters::String;
+using Containers::Sequence;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    void Test1_Direct_ ()
+    void RegressionTest1_ ()
     {
-        Set<SignalHandler>      saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-        [[maybe_unused]] auto&& cleanup =
-            Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+        Debug::TraceContextBumper traceCtx{"RegressionTest1_"};
+        Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+            return;
+        }
+        struct FRED {
+            static void DoIt ([[maybe_unused]] void* ignored)
+            {
+                for (int i = 1; i < 10; i++) {
+                    Execution::Sleep (1ms);
+                }
+            }
+        };
+
+        Thread::Ptr thread = Thread::New (bind (&FRED::DoIt, const_cast<char*> ("foo")));
+        thread.Start ();
+        thread.WaitForDone ();
+    }
+}
+
+namespace {
+    recursive_mutex sharedCriticalSection_;
+    void            RegressionTest2_ ()
+    {
+        Debug::TraceContextBumper traceCtx{"RegressionTest2_"};
+        Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+            return;
+        }
+
+        // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
+        auto DoIt = [] (void* ignored) {
+            int* argP = reinterpret_cast<int*> (ignored);
+            for (int i = 0; i < 10; i++) {
+                lock_guard<recursive_mutex> critSect{sharedCriticalSection_};
+                int                         tmp = *argP;
+                Execution::Sleep (1ms);
+                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                *argP = tmp + 1;
+            }
+        };
+
+        int         updaterValue = 0;
+        Thread::Ptr thread1      = Thread::New (bind (DoIt, &updaterValue));
+        Thread::Ptr thread2      = Thread::New (bind (DoIt, &updaterValue));
+        Thread::Start ({thread1, thread2});
+        Thread::WaitForDone ({thread1, thread2});
+        EXPECT_TRUE (updaterValue == 2 * 10);
+    }
+}
+
+namespace {
+    WaitableEvent sRegTest3Event_T1_{};
+    WaitableEvent sRegTest3Event_T2_{};
+    namespace WAITABLE_EVENTS_ {
+        void NOTIMEOUTS_ ()
         {
-            bool called = false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (
-                SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) noexcept -> void { called = true; }, SignalHandler::eDirect});
-            [[maybe_unused]] auto&& cleanup2 =
-                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
-            ::raise (SIGINT);
-            EXPECT_TRUE (called);
+            Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(WAITABLE_EVENTS_::NOTIMEOUTS)"};
+            // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+            struct FRED1 {
+                static void DoIt (void* ignored)
+                {
+                    int* argP = reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T1_.WaitAndReset ();
+                        int tmp = *argP;
+                        Execution::Sleep (.001);
+                        // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                        EXPECT_TRUE (tmp % 2 == 0);
+                        //DbgTrace ("FRED1: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T2_.Set ();
+                    }
+                }
+            };
+            struct FRED2 {
+                static void DoIt (void* ignored)
+                {
+                    int* argP = reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T2_.WaitAndReset ();
+                        int tmp = *argP;
+                        Execution::Sleep (.001);
+                        //DbgTrace ("FRED2: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T1_.Set ();
+                    }
+                }
+            };
+
+            sRegTest3Event_T1_.Reset ();
+            sRegTest3Event_T2_.Reset ();
+            int updaterValue = 0;
+
+            {
+                Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+                Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
+                Thread::Start ({thread1, thread2});
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+                sRegTest3Event_T1_.Set ();
+                Thread::WaitForDone ({thread1, thread2});
+                //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+                EXPECT_TRUE (updaterValue == 2 * 10);
+            }
+        }
+        void PingBackAndForthWithSimpleTimeouts_ ()
+        {
+            Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_)"};
+            // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+            struct FRED1 {
+                static void DoIt (void* ignored)
+                {
+                    int* argP = reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T1_.WaitAndReset (5.0);
+                        int tmp = *argP;
+                        Execution::Sleep (1ms);
+                        // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                        EXPECT_TRUE (tmp % 2 == 0);
+                        //DbgTrace ("FRED1: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T2_.Set ();
+                    }
+                }
+            };
+            struct FRED2 {
+                static void DoIt (void* ignored)
+                {
+                    int* argP = reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T2_.WaitAndReset (5.0);
+                        int tmp = *argP;
+                        Execution::Sleep (1ms);
+                        //DbgTrace ("FRED2: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T1_.Set ();
+                    }
+                }
+            };
+
+            sRegTest3Event_T1_.Reset ();
+            sRegTest3Event_T2_.Reset ();
+            int updaterValue = 0;
+            {
+                Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+                Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
+                Thread::Start ({thread1, thread2});
+                // Both threads start out waiting - until we get things rolling telling one to start.
+                // Then they pingpong back and forther
+                sRegTest3Event_T1_.Set ();
+                thread1.WaitForDone ();
+                thread2.WaitForDone ();
+                //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+                // If there was a race - its unlikely you'd end up with exact 20 as your result
+                EXPECT_TRUE (updaterValue == 2 * 10);
+            }
+        }
+        void TEST_TIMEOUT_EXECPETIONS_ ()
+        {
+            Debug::TraceContextBumper traceCtx{"Event wait timeouts (WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_)"};
+            bool                      passed  = false;
+            auto                      startAt = Time::GetTickCount ();
+            sRegTest3Event_T1_.Reset ();
+            try {
+                sRegTest3Event_T1_.Wait (0.5s); // should timeout
+            }
+            catch (const Execution::TimeOutException&) {
+                passed = true;
+            }
+            catch (...) {
+            }
+            EXPECT_TRUE (passed);
+            if (Time::GetTickCount () - startAt > 1.0s) {
+                Stroika::Frameworks::Test::WarnTestIssue ("TEST_TIMEOUT_EXECPETIONS_ took too long");
+            }
+        }
+        void TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_ ()
+        {
+            Debug::TraceContextBumper traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)- "
+                                               "WAITABLE_EVENTS_::TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_"};
+            // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
+            static constexpr Time::DurationSeconds kLONGTimeForThread2Wait_{60.0s}; // just has to be much more than the waits below
+            static WaitableEvent                   s_autoResetEvent_{};
+            auto                                   myWaitingThreadProc = [] () {
+                Debug::TraceContextBumper innerThreadLoopCtx{"innerThreadLoop"};
+                s_autoResetEvent_.Wait (kLONGTimeForThread2Wait_);
+            };
+
+            s_autoResetEvent_.Reset ();
+            Thread::Ptr t = Thread::New (myWaitingThreadProc, Thread::eAutoStart, "myWaitingThreadProc"sv);
+
+            // At this point the thread 't' SHOULD block and wait kLONGTimeForThread2Wait_ seconds
+            // So we wait a shorter time for it, and that should fail
+            {
+                Debug::TraceContextBumper       ctx1{"expect-failed-wait"};
+                constexpr Time::DurationSeconds kMarginOfErrorLo_ = .5s;
+                constexpr Time::DurationSeconds kMarginOfErrorHi_Warn_ =
+                    qStroika_Foundation_Debug_AssertionsChecked ? 5.0s : 3.0s; // if sys busy, thread could be put to sleep almost any amount of time
+                constexpr Time::DurationSeconds kMarginOfErrorHi_Error_ = 15.0s; // ""
+                constexpr Time::DurationSeconds kWaitOnAbortFor         = 1.0s;
+                Time::TimePointSeconds          startTestAt             = Time::GetTickCount ();
+                Time::TimePointSeconds          caughtExceptAt          = Time::TimePointSeconds{};
+
+                try {
+                    t.WaitForDone (kWaitOnAbortFor);
+                }
+                catch (const Execution::TimeOutException&) {
+                    caughtExceptAt = Time::GetTickCount ();
+                }
+                Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
+                if (not(expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_)) {
+                    DbgTrace ("expectedEndAt={}, caughtExceptAt={}"_f, expectedEndAt.time_since_epoch ().count (),
+                              caughtExceptAt.time_since_epoch ().count ());
+                }
+                EXPECT_TRUE (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
+                // FAILURE:
+                //      2.0a208x release - in regtests on raspberrypi-gcc-5, regtests  - (caughtExceptAt - expectedEndAt) was 4.1,
+                //      so may need to be much larger occasionally (on slow raspberry pi) - but rarely fails.
+                //      But failed with kMarginOfErrorHi_=2.0, so from 2.5 5.0 for future releases
+                //
+                // FAILURE:
+                //      2.0a222x release (raspberrypi-gcc-6 config (a debug build), failed with (caughtExceptAt - expectedEndAt) about 5.1
+                //      so set kMarginOfErrorHi_ to 6.0 -- LGP 2017-11-13
+                //
+                // FAILURE:
+                //      2.1d18x release (raspberrypi-g++-8-debug-sanitize_undefined config (a debug/sanitize build), failed with (caughtExceptAt - expectedEndAt) about 6.2
+                //      so set kMarginOfErrorHi_ to 7.0 -- LGP 2019-02-27
+                //
+                // Got another failure 2019-04-17 on raspberrypi - so change limit of kMarginOfErrorHi_==7, to kMarginOfErrorHi_Warn_ = 5.0, kMarginOfErrorHi_Error_ = 10.0
+                // and use VerifyTestResultWarning -- LGP 2019-04-17
+                //
+                // Got another warning 2019-08-12 on raspberrypi - but no change cuz about to upgrade to faster raspberrypi
+                //
+                EXPECT_LE (caughtExceptAt, expectedEndAt + kMarginOfErrorHi_Error_);
+                VerifyTestResultWarning (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_);
+            }
+
+            // Now ABORT and WAITFORDONE - that should kill it nearly immediately
+            {
+                Debug::TraceContextBumper ctx1{"expect-abort-to-work-and-wait-to-succceed"};
+                constexpr Time::DurationSeconds kMarginOfError_ = 10s; // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
+                constexpr Time::DurationSeconds kWaitOnAbortFor = qStroika_Foundation_Debug_AssertionsChecked ? 7.0s : 3.0s;
+                // use such a long timeout cuz we run this on 'debug' builds,
+                // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
+                // due to timeout on raspberrypi (rare even there)
+                //
+                // Upped from 2.5 to 3.0 because failed twice between July and August 2017 on
+                // raspberrypi -- LGP 2017-08-23
+                //
+                // Upped from 3 to 6 since failed running under docker / windows on laptop -- LGP 2020-03-09
+                // Upped to 7 for debug, but back to 3 otherwise -- LGP 2020-03-20
+                Time::TimePointSeconds startTestAt = Time::GetTickCount ();
+                try {
+                    t.AbortAndWaitForDone (kWaitOnAbortFor);
+                }
+                catch (const Execution::TimeOutException&) {
+                    EXPECT_TRUE (false); // shouldn't fail to wait cuz we did abort
+                    // Note - saw this fail once on raspberry pi but appears the machine was just being slow - nothing looked other than slow - wrong in
+                    // the tracelog - so don't worry unless we see again. That machine can be quite slow
+                    //  -- LGP 2017-07-05
+                    //
+                    //  NOTE - saw this a second time on raspberrypi - with:
+                    //      "This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt: tries: 1." in the log
+                    //      about 6 seconds into wait
+                    //      SIGNAL to abort other thread set at 1.6 TICKCOUNT, and it got it and started aborting at 2.1
+                    //      and 0x762ff450][0007.556]       In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x762ff450, status: Aborting}
+                    // and this failed at 0007.583, so just wait a little longer
+                    // CHANGE NEXT RELEASE A BIT MORE
+                    //
+                    /// @todo CHANGED TIME FROM 2.5 to 3 2017-08-23 - so if we see again react, and if not, clear out these warnings/docs
+                    //
+                    //  @todo SAW AGAIN - 2017-10-07
+                    //      [---MAIN---][0000.628]          <Thread::WaitForDoneUntil (*this={id: 0x762ff450, status: Running}, timeoutAt=1.627011e+00)> {
+                    //      [---MAIN---][0001.647]              Throwing exception: Timeout Expired from /tmp/Test38(Stroika::Foundation::Debug::BackTrace[abi:cxx11](unsigned int)+0x51) [0x4e9f7e]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_ws[abi:cxx11]()+0x23) [0x4f0558]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_s[abi:cxx11]()+0x1d) [0x4f0496]; /tmp/Test38(void Stroika::Foundation::Execution::Throw<Stroika::Foundation::Execution::TimeOutException>(Stroika::Foundation::Execution::TimeOutException const&)+0x3d) [0x47449e]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Ptr::WaitForDoneUntil(double) const+0x91) [0x5352c6]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Ptr::WaitForDone(double) const+0x3f) [0x46eca8]; /tmp/Test38() [0x45f152]; /tmp/Test38() [0x45f500]; /tmp/Test38() [0x463464]; /tmp/Test38(Stroika::TestHarness::PrintPassOrFail(void (*)())+0x19) [0x4a7442]; /tmp/Test38(main+0x25) [0x4634fe]; /lib/arm-linux-gnueabihf/libc.so.6(__libc_start_main+0x114) [0x76cca678];
+                    //      [---MAIN---][0001.648]          } </Thread::WaitForDoneUntil>
+                    //      [---MAIN---][0001.649]          <Thread::AbortAndWaitForDoneUntil (*this={id: 0x762ff450, status: Running}, timeoutAt=4.647912e+00)> {
+                    //      [---MAIN---][0001.649]              <Thread::Abort (*this={id: 0x762ff450, status: Running})> {
+                    //      [---MAIN---][0001.651]                  <Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGUSR2, handlers: [ {type: Direct, target: 0xfa8e50} ])/>
+                    //      [---MAIN---][0001.653]                  <Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x762ff450, signal = SIGUSR2)/>
+                    //      [---MAIN---][0001.653]              } </Thread::Abort>
+                    //      [0x762ff450][0002.155]      Throwing exception: Thread Abort from /tmp/Test38(Stroika::Foundation::Debug::BackTrace[abi:cxx11](unsigned int)+0x51) [0x4e9f7e]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_ws[abi:cxx11]()+0x23) [0x4f0558]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_s[abi:cxx11]()+0x1d) [0x4f0496]; /tmp/Test38(void Stroika::Foundation::Execution::Throw<Stroika::Foundation::Execution::Thread::AbortException>(Stroika::Foundation::Execution::Thread::AbortException const&)+0x3d) [0x53b9ee]; /tmp/Test38(Stroika::Foundation::Execution::CheckForInterruption()+0x91) [0x535eee]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(double)+0x5d) [0x57297a]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntil(double)+0x21) [0x5728ba]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::Wait(double)+0x33) [0x46f198]; /tmp/Test38() [0x45f01c]; /tmp/Test38() [0x466066]; /tmp/Test38(std::function<void ()>::operator()() c
+                    //      onst+0x2f) [0x4726e0]; /tmp/Test38(void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const+0x5b) [0x53a16c]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Rep_::Run_()+0x1b) [0x53308c]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*)+0x3cd) [0x533da6];
+                    //      [---MAIN---][0006.378]              This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt: tries: 1.
+                    //      [---MAIN---][0006.379]              <Thread::Abort (*this={id: 0x762ff450, status: Aborting})> {
+                    //      [0x762ff450][0006.379]      In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x762ff450, status: Aborting}
+                    //      [---MAIN---][0006.379]                  <Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x762ff450, signal = SIGUSR2)/>
+                    //      [---MAIN---][0006.380]              } </Thread::Abort>
+                    //      [0x762ff450][0006.380]      removing thread id 0x762ff450 from sRunningThreads_ ([ 0x762ff450 ])
+                    //
+                    //  So issue is, why the delay from [0002.155] to [0006.378]..."This should ALMOST NEVER happen..."
+                    //
+                    // @todo SAW AGAIN (but only when running with ASAN)
+                    //      [---MAIN---][0001.659]          <expect-abort-to-work-and-wait-to-succceed> {
+                    //      [---MAIN---][0001.660]              <Thread::AbortAndWaitForDoneUntil (*this={id: 0x763ff450, status: Running}, timeoutAt=4.659056e+00)> {
+                    //      [---MAIN---][0001.661]                  <Thread::Abort (*this={id: 0x763ff450, status: Running})> {
+                    //      [---MAIN---][0001.663]                      <Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGUSR2, handlers: [ {type: Direct, target: 0x57112c60} ])/>
+                    //      [---MAIN---][0001.665]                      <Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x763ff450, signal = SIGUSR2)/>
+                    //      [---MAIN---][0001.665]                  } </Thread::Abort>
+                    //      [---MAIN---][0002.666]                  This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt: tries: 1.
+                    //      [0x763ff450][0010.359]          Throwing exception: Thread Abort from /tmp/Test38(Stroika::Foundation::Debug::BackTrace[abi:cxx11](unsigned int)+0x51) [0x54fef58a]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_ws[abi:cxx11]()+0x23) [0x54ff5f80]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_s[abi:cxx11]()+0x1d) [0x54ff5eba]; /tmp/Test38(void Stroika::Foundation::Execution::Throw<Stroika::Foundation::Execution::Thread::AbortException>(Stroika::Foundation::Execution::Thread::AbortException const&)+0x3d) [0x55043ebe]; /tmp/Test38(Stroika::Foundation::Execution::CheckForInterruption()+0x8b) [0x5503ed60]; /tmp/Test38(Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::condition_variable>::wait_until(std::unique_lock<std::mutex>&, double)+0x43) [0x54f7503c]; /tmp/Test38(+0x535260) [0x5507e260]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(double)+0x41) [0x5507e012]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUnti
+                    //      l(double)+0x21) [0x5507df2a]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::Wait(double)+0x33) [0x54f6ce30]; /tmp/Test38(+0x41158e) [0x54f5a58e]; /tmp/Test38(+0x4195ae) [0x54f625ae]; /tmp/Test38(std::function<void ()>::operator()() const+0x2f) [0x54f70578]; /tmp/Test38(void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const+0x4b) [0x550425f0]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Rep_::Run_()+0x1b) [0x5503bd58]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*)+0x37d) [0x5503ca32];
+                    //      [0x763ff450][0010.359]      } </innerThreadLoop>
+                    //      [---MAIN---][0010.359]                  <Thread::Abort (*this={id: 0x763ff450, status: Aborting})> {
+                    //      [---MAIN---][0010.360]                      <Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x763ff450, signal = SIGUSR2)> {
+                    //      [0x763ff450][0010.361]      In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x763ff450, status: Aborting}
+                    //      [---MAIN---][0010.361]                      } </Stroika::Foundation::Execution::Signals::Execution::SendSignal>
+                    //      [---MAIN---][0010.361]                  } </Thread::Abort>
+                    //      [0x763ff450][0010.361]      removing thread id 0x763ff450 from sRunningThreads_ ([ 0x763ff450 ])
+                    //      [0x763ff450][0010.362]  } </Thread::Rep_::ThreadMain_>
+                    //      [---MAIN---][0010.362]                  <Thread::WaitForDoneUntil (*this={id: 0x763ff450, status: Completed}, timeoutAt=4.659056e+00)/>
+                    //      [---MAIN---][0010.363]              } </Thread::AbortAndWaitForDoneUntil>
+                    //      [---MAIN---][0010.363]              startTestAt=1.659040, doneAt=10.362815, expectedEndAt=4.659040
+                    //      [---MAIN---][0010.363]              FAILED: RegressionTestFailure; startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_; ; Test.cpp; 311
+                    //  So upped kMarginOfError_ from 3.5 to 10 seconds.
+                    //
+                    // Very rare - but saw this again on Raspberrypi - raspberrypi-g++-8-debug-sanitize_undefined- 2.1a2x -- LGP 2019-10-11
+                    //
+                    // Now once saw on (slow windows VM on hercules) system, during builds, so probably nothing -- LGP 2021-02-27
+                }
+                Time::TimePointSeconds doneAt        = Time::GetTickCount ();
+                Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
+                if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_)) {
+                    DbgTrace ("startTestAt={}, doneAt={}, expectedEndAt={}"_f, startTestAt.time_since_epoch ().count (),
+                              doneAt.time_since_epoch ().count (), expectedEndAt.time_since_epoch ().count ());
+                }
+                EXPECT_TRUE (startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_);
+            }
+
+            // Thread MUST be done/terminated by this point
+            EXPECT_TRUE (t.GetStatus () == Thread::Status::eCompleted);
+        }
+    }
+    void RegressionTest3_WaitableEvents_ ()
+    {
+        Debug::TraceContextBumper traceCtx{"RegressionTest3_WaitableEvents_"};
+        Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+            return;
+        }
+        WAITABLE_EVENTS_::NOTIMEOUTS_ ();
+        WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
+        WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
+        WAITABLE_EVENTS_::TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_ ();
+    }
+}
+
+namespace {
+    namespace RegressionTest4_Synchronized_ {
+        namespace Private_ {
+            struct data_ {};
+            void Test1_ ()
+            {
+                using namespace Execution;
+                using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
+                using syncofint  = Synchronized<int, Synchronized_Traits<recursive_mutex>>;
+
+                Debug::TraceContextBumper traceCtx{"Test1_"};
+                {
+                    syncofdata                  x;
+                    [[maybe_unused]] syncofdata y = data_ ();
+                    x                             = data_ ();
+                }
+                {
+                    syncofint                  x;
+                    [[maybe_unused]] syncofint y = 3;
+                    x                            = 4;
+                }
+                {
+                    // Make 2 concurrent threads, which update a lynchronized variable
+                    struct FRED {
+                        static void DoIt (void* ignored)
+                        {
+                            syncofint* argP = reinterpret_cast<syncofint*> (ignored);
+                            for (int i = 0; i < 10; i++) {
+                                syncofint::WritableReference r   = argP->rwget ();
+                                int                          tmp = r;
+                                Execution::Sleep (10ms);
+                                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                                r = tmp + 1;
+#if 0
+                                lock_guard<recursive_mutex> critSect (*argP);
+                                int tmp = *argP;
+                                Execution::Sleep (10ms);
+                                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                                *argP = tmp + 1;
+#endif
+                            }
+                        }
+                    };
+                    syncofint   updaterValue = 0;
+                    Thread::Ptr thread1      = Thread::New (bind (&FRED::DoIt, &updaterValue));
+                    Thread::Ptr thread2      = Thread::New (bind (&FRED::DoIt, &updaterValue));
+                    Thread::Start ({thread1, thread2});
+                    thread1.WaitForDone ();
+                    thread2.WaitForDone ();
+                    EXPECT_TRUE (updaterValue == 2 * 10);
+                }
+            }
+            void Test2_LongWritesBlock_ ()
+            {
+                Debug::TraceContextBumper              ctx{"Test2_LongWritesBlock_"};
+                static constexpr int                   kBaseRepititionCount_ = 100;
+                static constexpr Time::DurationSeconds kBaseSleepTime_       = 0.001s;
+                Synchronized<int>                      syncData{0};
+                atomic<bool>                           writerDone{false};
+                atomic<unsigned int>                   readsDoneAfterWriterDone{0};
+                Thread::Ptr                            readerThread = Thread::New ([&] () {
+                    Debug::TraceContextBumper ctx{"readerThread"};
+                    // Do 10x more reads than writer loop, but sleep 1/10th as long
+                    for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
+                        if (writerDone) {
+                            readsDoneAfterWriterDone++;
+                        }
+                        EXPECT_TRUE (syncData.cget ().load () % 2 == 0);
+                        Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0 (note - on ubuntu 1804 and fast host, inside vm, median sleep time here is really about 2ms despite division - LGP 2018-06-20)
+                    }
+                });
+                Thread::Ptr                            writerThread = Thread::New ([&] () {
+                    Debug::TraceContextBumper ctx{"writerThread"};
+                    for (int i = 0; i < kBaseRepititionCount_; ++i) {
+                        auto rwLock = syncData.rwget ();
+                        rwLock.store (rwLock.load () + 1); // set to a value that will cause reader thread to fail
+                        Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
+                        EXPECT_TRUE (rwLock.load () % 2 == 1);
+                        rwLock.store (rwLock.load () + 1); // set to a safe value
+                    }
+                    EXPECT_TRUE (syncData.cget ().load () == kBaseRepititionCount_ * 2);
+                    writerDone = true;
+                });
+                Thread::Start ({readerThread, writerThread});
+                Thread::WaitForDone ({readerThread, writerThread});
+                DbgTrace ("readsDoneAfterWriterDone = {}"_f, readsDoneAfterWriterDone.load ()); // make sure we do some reads during writes - scheduling doesn't guarnatee
+            }
+        }
+        void DoIt ()
+        {
+            Debug::TraceContextBumper ctx{"RegressionTest4_Synchronized_"};
+            Debug::TimingTrace        tt;
+            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
+                // Test passes, but takes hours and adds insufficient value to wait
+                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+                return;
+            }
+            Private_::Test1_ ();
+            Private_::Test2_LongWritesBlock_ ();
         }
     }
 }
 
 namespace {
-    void Test2_Safe_ ()
+    void RegressionTest5_Aborting_ ()
     {
-        // safe signal handlers all run through another thread, so this amounts to thread sync
-        {
-            Set<SignalHandler>      saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-            [[maybe_unused]] auto&& cleanup =
-                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
-            {
-                atomic<bool> called{false};
-                SignalHandlerRegistry::Get ().SetSignalHandlers (
-                    SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }});
-                ::raise (SIGINT);
-                Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
-                EXPECT_TRUE (called);
-            }
+        Debug::TraceContextBumper traceCtx{"RegressionTest5_Aborting_"};
+        Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+            return;
         }
         {
-            Set<SignalHandler>      saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-            [[maybe_unused]] auto&& cleanup =
-                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+            struct FRED {
+                static void DoIt ()
+                {
+                    while (true) {
+                        Thread::CheckForInterruption ();
+                    }
+                }
+            };
+            Thread::Ptr thread = Thread::New (&FRED::DoIt);
+            thread.Start ();
+            try {
+                thread.WaitForDone (0.3s); // should timeout
+                EXPECT_TRUE (false);
+            }
+            catch (const Execution::TimeOutException&) {
+                // GOOD
+            }
+            catch (...) {
+                EXPECT_TRUE (false);
+            }
+            // Now - abort it, and wait
+            thread.AbortAndWaitForDone ();
+        }
+        {
+            Thread::Ptr thread = Thread::New ([] () {
+                while (true) {
+                    // test alertable sleep
+                    Execution::Sleep (10000);
+                }
+            });
+            thread.Start ();
+            try {
+                thread.WaitForDone (0.3s); // should timeout
+                EXPECT_TRUE (false);
+            }
+            catch (const Execution::TimeOutException&) {
+                // GOOD
+            }
+            catch (...) {
+                EXPECT_TRUE (false);
+            }
+            // Now - abort it, and wait
+            thread.AbortAndWaitForDone ();
+        }
+    }
+}
+
+namespace {
+    void RegressionTest6_ThreadWaiting_ ()
+    {
+        Debug::TraceContextBumper traceCtx{"RegressionTest6_ThreadWaiting_"};
+        Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
+            // Test passes, but takes a while under valgrind.
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+            return;
+        }
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+        // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
+        [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
+            again:
+                auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
+                DbgTrace ("Total Running threads at end: {}"_f, runningThreads.size ());
+                for (Execution::Thread::IDType threadID : runningThreads) {
+                    DbgTrace ("Exiting main with thread {} running"_f, Characters::ToString (threadID));
+                }
+                if (not runningThreads.empty ()) {
+                    Execution::Sleep (1.0);
+                    DbgTrace ("trying again..."_f);
+                    goto again;
+                }
+                EXPECT_TRUE (runningThreads.size () == 0);
+        });
+#endif
+        struct FRED {
+            static void DoIt ()
             {
-                Execution::Synchronized<bool> called = false;
-                SignalHandlerRegistry::Get ().SetSignalHandlers (
-                    SIGINT, SignalHandler ([&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }));
-                ::raise (SIGINT);
-                Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
-                EXPECT_TRUE (called);
+                Execution::Sleep (0.01);
+            }
+        };
+
+        {
+            // Normal usage
+            {
+                Thread::Ptr thread = Thread::New (&FRED::DoIt);
+                thread.Start ();
+                thread.WaitForDone ();
+            }
+
+            // OK to never wait
+            for (int i = 0; i < 100; ++i) {
+                Thread::Ptr thread = Thread::New (&FRED::DoIt);
+                thread.Start ();
+            }
+
+            // OK to wait and wait
+            {
+                Thread::Ptr thread = Thread::New (&FRED::DoIt);
+                thread.Start ();
+                thread.WaitForDone ();
+                thread.WaitForDone (1.0s); // doesn't matter how long cuz its already DONE
+                thread.WaitForDone ();
+                thread.WaitForDone ();
             }
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_Signals, all)
+    void RegressionTest7_SimpleThreadPool_ ()
     {
-        Test1_Direct_ ();
-        Test2_Safe_ ();
+        Debug::TraceContextBumper traceCtx{"RegressionTest7_SimpleThreadPool_"};
+        Debug::TimingTrace        tt;
+        {
+            ThreadPool p{ThreadPool::Options{.fThreadCount = 1}};
+        }
+        {
+            ThreadPool           p{ThreadPool::Options{.fThreadCount = 1}};
+            int                  intVal = 3;
+            ThreadPool::TaskType task{[&intVal] () { intVal++; }};
+            p.AddTask (task);
+            p.WaitForTask (task);
+            EXPECT_TRUE (intVal == 4);
+        }
+    }
+}
+
+namespace {
+    void RegressionTest8_ThreadPool_ ()
+    {
+        Debug::TraceContextBumper traceCtx{"RegressionTest8_ThreadPool_"};
+        Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qStroika_Foundation_Debug_AssertionsChecked) {
+            // Test passes, but takes a while under valgrind.
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+            return;
+        }
+        recursive_mutex useCritSection;
+        // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
+        auto doIt = [&] (int* argP) {
+            for (int i = 0; i < 10; i++) {
+                [[maybe_unused]] auto&& critSect = lock_guard{useCritSection};
+                int                     tmp      = *argP;
+                Execution::Sleep (.002);
+                *argP = tmp + 1;
+            }
+        };
+        {
+            for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
+                ThreadPool           p{ThreadPool::Options{.fThreadCount = threadPoolSize}};
+                int                  updaterValue = 0;
+                ThreadPool::TaskType task1{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
+                ThreadPool::TaskType task2{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
+                p.AddTask (task1);
+                p.AddTask (task2);
+                p.WaitForTask (task1);
+                p.WaitForTask (task2);
+                EXPECT_TRUE (updaterValue == 2 * 10);
+            }
+        }
+    }
+}
+
+namespace {
+    void RegressionTest9_ThreadsAbortingEarly_ ()
+    {
+        Debug::TraceContextBumper traceCtx{"RegressionTest9_ThreadsAbortingEarly_"};
+        Debug::TimingTrace        tt;
+        // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
+        // between the create of thread and Abort
+        Containers::Collection<Thread::Ptr> innerThreads;
+        Thread::Ptr                         thread = Thread::New ([&innerThreads] () {
+            while (true) {
+                static int  sInnerThreadNum{};
+                Thread::Ptr t = Thread::New ([] () { Execution::Sleep (.01); }, "innerthread{}"_f(++sInnerThreadNum));
+                Execution::Sleep (.02);
+                t.Start ();
+                innerThreads.Add (t); // only add thread after its started. Illegal since Stroika v3.0d5 to Abort non-started threads
+            }
+        });
+        thread.Start ();
+        Execution::Sleep (.5);
+        thread.AbortAndWaitForDone ();
+        // NB: we must call AbortAndWaitForDone on innerThreads because we could have created the thread but not started it, so
+        // wait for done will never terminate
+        innerThreads.Apply ([] (Thread::Ptr t) { t.AbortAndWaitForDone (); }); // assure subthreads complete before the test exits (else valgrind may report leak)
+    }
+}
+
+namespace {
+    void RegressionTest10_BlockingQueue_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest10_BlockingQueue_"};
+        Debug::TimingTrace        tt;
+        enum {
+            START = 0,
+            END   = 100
+        };
+        int                              expectedValue = (START + END) * (END - START + 1) / 2;
+        int                              counter       = 0;
+        BlockingQueue<function<void ()>> q;
+
+        Verify (q.size () == 0);
+
+        Thread::Ptr producerThread = Thread::New (
+            [&q, &counter] () {
+                for (int incBy = START; incBy <= END; ++incBy) {
+                    q.AddTail ([&counter, incBy] () { counter += incBy; });
+                }
+                q.SignalEndOfInput ();
+            },
+            Thread::eAutoStart, "Producer");
+        Thread::Ptr consumerThread = Thread::New (
+            [&q] () {
+                // Since we call SignalEndOfInput () - the RemoveHead () will eventually timeout
+                while (true) {
+                    function<void ()> f = q.RemoveHead ();
+                    f ();
+                }
+            },
+            Thread::eAutoStart, "Consumer");
+        // producer already set to run off the end...
+        // consumer will end due to exception reading from end
+        Thread::WaitForDone ({producerThread, consumerThread});
+        Verify (counter == expectedValue);
+    }
+}
+
+namespace {
+    void RegressionTest11_AbortSubAbort_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest11_AbortSubAbort_"};
+        Debug::TimingTrace        tt;
+        auto                      testFailToProperlyAbort = [] () {
+            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); }, "innerThread");
+            Thread::Ptr testThread  = Thread::New (
+                [&innerThread] () {
+                    innerThread.Start ();
+                    Execution::Sleep (1000s);
+                    innerThread.AbortAndWaitForDone ();
+                },
+                Thread::eAutoStart, "testThread");
+            Execution::Sleep (1s); // wait til both threads running and blocked in sleeps
+            testThread.AbortAndWaitForDone ();
+            // This is the BUG SuppressInterruptionInContext was meant to solve!
+            EXPECT_TRUE (innerThread.GetStatus () == Thread::Status::eRunning);
+            innerThread.AbortAndWaitForDone ();
+        };
+        auto testInnerThreadProperlyShutDownByOuterThread = [] () {
+            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000s); }, "innerThread");
+            Thread::Ptr testThread  = Thread::New (
+                [&innerThread] () {
+                    innerThread.Start ();
+                    [[maybe_unused]] auto&& cleanup = Finally ([&innerThread] () noexcept {
+                        Thread::SuppressInterruptionInContext suppressInterruptions;
+                        innerThread.AbortAndWaitForDone ();
+                    });
+                    Execution::Sleep (1000s);
+                },
+                Thread::eAutoStart, "testThread");
+            Execution::Sleep (1s); // wait til both threads running and blocked in sleeps
+            // This is the BUG SuppressInterruptionInContext was meant to solve!
+            testThread.AbortAndWaitForDone ();
+            EXPECT_TRUE (innerThread.GetStatus () == Thread::Status::eCompleted);
+        };
+        testFailToProperlyAbort ();
+        testInnerThreadProperlyShutDownByOuterThread ();
+    }
+}
+
+namespace {
+    void RegressionTest12_WaitAny_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest12_WaitAny_"};
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+        Debug::TimingTrace tt;
+        // EXPERIMENTAL
+        WaitableEvent                          we1{};
+        WaitableEvent                          we2{};
+        static constexpr Time::DurationSeconds kMaxWaitTime_{5.0s};
+        Thread::Ptr                            t1      = Thread::New ([&we1] () {
+            Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
+            we1.Set ();
+        });
+        Thread::Ptr                            t2      = Thread::New ([&we2] () {
+            Execution::Sleep (0.1);
+            we2.Set ();
+        });
+        Time::TimePointSeconds                 startAt = Time::GetTickCount ();
+        Thread::Start ({t1, t2});
+        /*
+         *  Saw this: FAILED: RegressionTestFailure; WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2});;..\..\..\38\Test.cpp: 712
+         *      2017-10-10 - but just once and not since (and on loaded machine so that could have caused queer scheduling) - Windows ONLY
+         *      2018-03-10 - saw happen on Linux, but still very rare
+         *      2018-12-21 - saw happen on Linux (WSL), but still very rare
+         *      2019-08-28 - saw happen on Linux (WSL), but still very rare
+         *      2020-07-07 - saw happen on Windows, but still very rare
+         *      2021-05-29 - saw happen on Ubuntu 2004(docker), but still very rare
+         *      2022-04-10 - saw happen on Ununtu 2004(docker), but still very rare
+         */
+        VerifyTestResultWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) ==
+                                 set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
+        Time::DurationSeconds timeTaken = Time::GetTickCount () - startAt;
+        EXPECT_TRUE (timeTaken <= kMaxWaitTime_); // make sure we didnt wait for the full kMaxWaitTime_ on first thread
+        // They capture so must wait for them to complete
+        t1.AbortAndWaitForDone ();
+        t2.AbortAndWaitForDone ();
+#endif
+    }
+}
+
+namespace {
+    void RegressionTest13_WaitAll_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
+        Debug::TimingTrace        tt;
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+        // EXPERIMENTAL
+        WaitableEvent we1{};
+        WaitableEvent we2{};
+        bool          w1Fired = false;
+        bool          w2Fired = false;
+        Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired] () {
+            Execution::Sleep (0.5s);
+            w1Fired = true;
+            we1.Set ();
+        });
+        Thread::Ptr   t2      = Thread::New ([&we2, &w2Fired] () {
+            Execution::Sleep (0.1s);
+            w2Fired = true;
+            we2.Set ();
+        });
+        t2.Start ();
+        t1.Start ();
+        WaitableEvent::WaitForAll (Sequence<WaitableEvent*>{{&we1, &we2}});
+        EXPECT_TRUE (w1Fired and w2Fired);
+        // They capture so must wait for them to complete
+        t1.AbortAndWaitForDone ();
+        t2.AbortAndWaitForDone ();
+#endif
+    }
+}
+
+namespace {
+    void RegressionTest14_SpinLock_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest14_SpinLock_"};
+        Debug::TimingTrace        tt;
+        SpinLock                  lock;
+        int                       sum = 0;
+        Thread::Ptr               t1  = Thread::New ([&lock, &sum] () {
+            for (int i = 0; i < 100; ++i) {
+                Execution::Sleep (0.001s);
+                lock_guard<SpinLock> critSec{lock};
+                sum += i;
+            }
+        });
+        Thread::Ptr               t2  = Thread::New ([&lock, &sum] () {
+            for (int i = 0; i < 100; ++i) {
+                Execution::Sleep (0.001s);
+                lock_guard<SpinLock> critSec{lock};
+                sum -= i;
+            }
+        });
+        Thread::Start ({t1, t2});
+        t1.WaitForDone ();
+        t2.WaitForDone ();
+        EXPECT_TRUE (sum == 0);
+    }
+}
+
+namespace {
+    void RegressionTest15_ThreadPoolStarvationBug_ ()
+    {
+        //?? DO WE NEED TO ADD
+        //#if 0
+        //      //fTasksAdded_.WaitQuietly (0.1);
+        //      fTasksAdded_.Wait ();
+        //#endif
+        // Maybe no bug??? BUt tried to reproduce what looked like it MIGHT be a bug/issue based on behavior in
+        // BLKQCL...--LGP 2015-10-05
+        //
+        Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
+        Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_) {
+            // Test passes, but takes hour with valgrind/memcheck. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+            return;
+        }
+        {
+            Time::TimePointSeconds    testStartedAt       = Time::GetTickCount ();
+            static constexpr unsigned kThreadPoolSize_    = 10;
+            static constexpr unsigned kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
+            static constexpr Time::DurationSeconds kTime2WaitPerTask_{0.01s};
+            static constexpr Time::DurationSeconds kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
+            ThreadPool                             p{ThreadPool::Options{.fThreadCount = kThreadPoolSize_}};
+            auto                                   doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
+
+            for (int i = 0; i < kStepsToGetTrouble_; ++i) {
+                p.AddTask (doItHandler);
+            }
+
+            const double kBigSafetyMultiplierIncaseRunningUnderValgrind_{10000}; // valgrind not speedy ;-)
+            Time::TimePointSeconds betterFinishBy = Time::GetTickCount () + kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_;
+            while (Time::GetTickCount () <= betterFinishBy) {
+                if (p.GetTasksCount () == 0) {
+                    break;
+                }
+                Execution::Sleep (.5s); // dont spin too aggressively.
+            }
+            EXPECT_TRUE (p.GetTasksCount () == 0);
+            Time::DurationSeconds totalTestTime = Time::GetTickCount () - testStartedAt;
+            Verify (totalTestTime < kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_);
+        }
+    }
+}
+
+namespace {
+    namespace RegressionTest16_SimpleThreadConstructDestructLeak_ {
+        void RunTests ()
+        {
+            Debug::TraceContextBumper ctx{"RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests"};
+            Debug::TimingTrace        tt;
+            // This test doesn't do a lot by itself, but we run this test under valgrind to look for leaks
+            {
+                Thread::Ptr t;
+            }
+            {
+                Thread::Ptr t = Thread::New ([] () {});
+            }
+        }
+    }
+}
+
+namespace {
+    namespace RegressionTest18_RWSynchronized_ {
+        namespace Private_ {
+            template <typename SYNCRHONIZED_INT>
+            void Test1_MultipleConcurrentReaders (bool mustBeEqualToZero, unsigned int repeatCount, double sleepTime)
+            {
+                Debug::TraceContextBumper ctx{"...Test1_MultipleConcurrentReaders"};
+                /**
+                 *  Verify that both threads are maintaining the lock at the same time.
+                 */
+                // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the EXPECT_TRUE about countWhereTwoHoldingRead below will fail!
+                SYNCRHONIZED_INT sharedData{0};
+                atomic<unsigned int> countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
+                atomic<unsigned int> countWhereTwoHoldingRead{0};
+                atomic<unsigned int> sum1{};
+                auto                 lambda = [&] () {
+                    Debug::TraceContextBumper ctx{"...lambda"};
+                    for (unsigned int i = 0; i < repeatCount; i++) {
+                        auto holdReadOnlyLock = sharedData.cget ();
+                        countMaybeHoldingReadLock++;
+                        Execution::Sleep (sleepTime);
+                        sum1 += holdReadOnlyLock.load ();
+                        if (countMaybeHoldingReadLock >= 2) {
+                            countWhereTwoHoldingRead++;
+                        }
+                        countMaybeHoldingReadLock--;
+                    }
+                };
+                Thread::Ptr t1 = Thread::New (lambda);
+                Thread::Ptr t2 = Thread::New (lambda);
+                Thread::Start ({t1, t2});
+                Thread::WaitForDone ({t1, t2});
+                if (mustBeEqualToZero) {
+                    EXPECT_TRUE (countWhereTwoHoldingRead == 0);
+                }
+                else {
+                    EXPECT_TRUE (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
+                }
+                DbgTrace ("countWhereTwoHoldingRead={} (percent={})"_f, countWhereTwoHoldingRead.load (),
+                          100.0 * double (countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
+            }
+            void Test2_LongWritesBlock_ ()
+            {
+                Debug::TraceContextBumper              ctx{"Test2_LongWritesBlock_"};
+                static constexpr int                   kBaseRepititionCount_ = 500;
+                static constexpr Time::DurationSeconds kBaseSleepTime_       = 0.001s;
+                RWSynchronized<int>                    syncData{0};
+                Thread::Ptr                            readerThread = Thread::New (
+                    [&] () {
+                        Debug::TraceContextBumper ctx{"readerThread"};
+                        // Do 10x more reads than writer loop, but sleep 1/10th as long
+                        for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
+                            EXPECT_TRUE (syncData.cget ().load () % 2 == 0);
+                            // occasional sleep so the reader doesn't get ahead of writer, but rarely cuz this is very slow on linux (ubuntu 1804) - often taking > 2ms, even for sleep of 100us) -- LGP 2018-06-20
+                            if (i % 100 == 0) {
+                                Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
+                            }
+                        }
+                    },
+                    "readerThread"sv);
+                Thread::Ptr writerThread = Thread::New (
+                    [&] () {
+                        Debug::TraceContextBumper ctx{"writerThread"};
+                        for (int i = 0; i < kBaseRepititionCount_; ++i) {
+                            auto rwLock = syncData.rwget ();
+                            rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
+                            Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
+                            EXPECT_TRUE (rwLock.load () % 2 == 1);
+                            rwLock.store (rwLock.load () + 1); // set to a safe value
+                        }
+                        EXPECT_TRUE (syncData.cget ().load () == kBaseRepititionCount_ * 2);
+                    },
+                    "writerThread"sv);
+                Thread::Start ({readerThread, writerThread});
+                Thread::WaitForDone ({readerThread, writerThread});
+            }
+        }
+        void DoIt ()
+        {
+            Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
+            Debug::TimingTrace        tt;
+            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
+            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);
+            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 100u : 1000u, 0.001);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 100u : 250u, 0.001);
+            Private_::Test2_LongWritesBlock_ ();
+        }
+    }
+}
+
+namespace {
+    namespace RegressionTest19_ThreadPoolAndBlockingQueue_ {
+        namespace Private_ {
+            void TEST_ ()
+            {
+                static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+
+                static const unsigned int kThreadPoolSize_{kRunningValgrind_ ? 5u : 10u};
+                ThreadPool consumerThreadPool{ThreadPool::Options{.fThreadCount = kThreadPoolSize_, .fThreadPoolName = "consumers"}};
+                ThreadPool producerThreadPool{ThreadPool::Options{.fThreadCount = kThreadPoolSize_, .fThreadPoolName = "producers"}};
+
+                enum {
+                    START = 0,
+                    END   = 100
+                };
+                atomic<uint64_t>                 counter{};
+                BlockingQueue<function<void ()>> q;
+
+                Verify (q.size () == 0);
+
+                static const size_t kTaskCounts_ = kRunningValgrind_ ? (kThreadPoolSize_ * 5) : (kThreadPoolSize_ * 10);
+
+                for (size_t i = 0; i < kTaskCounts_; ++i) {
+                    producerThreadPool.AddTask ([&q, &counter] () {
+                        for (int incBy = START; incBy <= END; ++incBy) {
+                            q.AddTail ([&counter, incBy] () { counter += incBy; });
+                        }
+                    });
+                    consumerThreadPool.AddTask ([&q] () {
+                        while (true) {
+                            function<void ()> f = q.RemoveHead ();
+                            f ();
+                        }
+                    });
+                }
+
+                // wait for all producers to be done, and then mark the input Q with EOF
+                producerThreadPool.WaitForTasksDone ();
+                q.SignalEndOfInput ();
+
+                // Wait for consumers to finish, and validate their side-effect - count - is correct.
+                consumerThreadPool.WaitForTasksDone ();
+                int expectedValue = ((START + END) * (END - START + 1) / 2) * (int)kTaskCounts_;
+                Verify (counter == expectedValue);
+            }
+        }
+        void DoIt ()
+        {
+            Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
+            Debug::TimingTrace        tt;
+            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            if (kRunningValgrind_) {
+                // Test passes, but takes 8 HRs on ubuntu 20.04 ; and quite a while (hours) on other ubuntu releases. Not without valgrind however
+                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it."_f);
+                return;
+            }
+            Private_::TEST_ ();
+        }
+    }
+}
+
+namespace {
+    void RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_"};
+        Debug::TimingTrace        tt;
+        enum {
+            START = 0,
+            END   = 100
+        };
+        int                              expectedValue = (START + END) * (END - START + 1) / 2;
+        int                              counter       = 0;
+        BlockingQueue<function<void ()>> q;
+
+        Verify (q.size () == 0);
+
+        Thread::Ptr consumerThread = Thread::New (
+            [&q] () {
+                while (not q.QAtEOF ()) {
+                    if (optional<function<void ()>> of = q.RemoveHeadIfPossible ()) {
+                        function<void ()> f = *of;
+                        f ();
+                    }
+                    else {
+                        Execution::Sleep (.1); // give time for producer to catch up
+                    }
+                }
+            },
+            Thread::eAutoStart, "Consumer"sv);
+        Execution::Sleep (0.1); // so consume gets a chance to fail removehead at least once...
+        Thread::Ptr producerThread = Thread::New (
+            [&q, &counter] () {
+                for (int incBy = START; incBy <= END; ++incBy) {
+                    q.AddTail ([&counter, incBy] () { counter += incBy; });
+                    if (incBy == (END - START) / 2) {
+                        Execution::Sleep (100ms); // illogical in real app, but give time for consumer to catch up to help check no race
+                    }
+                }
+                q.SignalEndOfInput ();
+            },
+            Thread::eAutoStart, "Producer"sv);
+        // producer already set to run off the end...
+        // consumer will end due to exception reading from end
+        Thread::WaitForDone ({producerThread, consumerThread});
+        Verify (counter == expectedValue);
+    }
+}
+
+namespace {
+    void RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ()
+    {
+        // http://stroika-bugs.sophists.com/browse/STK-767 - ONCE saw hang in this routine under Ubuntu 21.10, TSAN, so adding TraceContextMbumper to debug
+        Debug::TraceContextBumper        ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
+        Debug::TimingTrace               tt;
+        BlockingQueue<function<void ()>> q;
+        Verify (q.size () == 0);
+        Thread::Ptr consumerThread = Thread::New (
+            [&q] () {
+                Debug::TraceContextBumper ctx1{"**inner thread"}; // for http://stroika-bugs.sophists.com/browse/STK-767
+                while (true) {
+                    Debug::TraceContextBumper ctx2{"**inner thread loop"}; // for http://stroika-bugs.sophists.com/browse/STK-767
+                    function<void ()>         f = q.RemoveHead ();
+                    f ();
+                }
+            },
+            Thread::eAutoStart, L"Consumer");
+        Execution::Sleep (0.5);
+        // make sure we can interrupt a blocking read on the BlockingQueue
+        consumerThread.AbortAndWaitForDone ();
+    }
+}
+
+namespace {
+    void RegressionTest22_SycnhonizedUpgradeLock_ ()
+    {
+        /*
+         *  The idea here is we want most of our threads to only open readonly lock, and only occasionally upgrade the lock.
+         *
+         *  BUt there can still be one special thread that always write locks
+         */
+        Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
+        Debug::TimingTrace        tt;
+
+        {
+            auto runSyncTest = [] (auto& isEven, auto readerFun) {
+                Thread::Ptr writerThread = Thread::New (
+                    [&] () {
+                        while (true) {
+                            Execution::Sleep (50ms);
+                            Execution::Thread::CheckForInterruption ();
+                            auto rwLock = isEven.rwget ();
+                            rwLock.store (not rwLock.load ()); // toggle back and forth
+                        }
+                    },
+                    Thread::eAutoStart, "writerThread"sv);
+                Thread::Ptr readerThatSometimesWritesThread1 = Thread::New (readerFun, Thread::eAutoStart, "readerFun1"sv);
+                Thread::Ptr readerThatSometimesWritesThread2 = Thread::New (readerFun, Thread::eAutoStart, "readerFun2"sv);
+                Execution::Sleep (3s);
+                Thread::AbortAndWaitForDone ({writerThread, readerThatSometimesWritesThread1, readerThatSometimesWritesThread2});
+            };
+
+            bool skipTestCuzVerySlow = Debug::IsRunningUnderValgrind (); // As of 2023-10-24, this appears to work, but take about 1 day (valgrind-debug-SSLPurify config on ununtu 20.04, 22.04, and 23.10) using valgrind memcheck
+
+            if (not skipTestCuzVerySlow) {
+                auto testUpgradeLockNonAtomically1 = [] (auto& isEven) {
+                    while (true) {
+                        Thread::CheckForInterruption ();
+                        auto rLock = isEven.cget ();
+                        if (rLock.load ()) {
+                            isEven.UpgradeLockNonAtomically (&rLock, [&] (auto&& writeLock) {
+                                // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
+                                if (writeLock.load ()) {
+                                    writeLock.store (false);
+                                }
+                            });
+                            // WE CANNOT test this - because UpgradeLockNonAtomically () releases lock before re-acuqitring readlock - but should fix that soon
+                            // so we can test this!!!
+                            //EXPECT_TRUE (not isEven.cget ());
+                        }
+                    }
+                };
+                Debug::TraceContextBumper ctx1{"run-test (1) RWSynchronized NonAtomically"};
+                RWSynchronized<bool>      isEven{true};
+                runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically1 (isEven); });
+            }
+            if (not skipTestCuzVerySlow) {
+                auto testUpgradeLockNonAtomically2 = [] (auto& isEven) {
+                    while (true) {
+                        Thread::CheckForInterruption ();
+                        auto rLock = isEven.cget ();
+                        if (rLock.load ()) {
+                            isEven.UpgradeLockNonAtomically (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
+                                if (interveningWriteLock) {
+                                    // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
+                                    if (writeLock.load ()) {
+                                        writeLock.store (false);
+                                    }
+                                }
+                                else {
+                                    // in this case we effectively did an atomic upgrade, because no intervening writers
+                                    EXPECT_TRUE (writeLock.load ());
+                                    writeLock.store (false);
+                                }
+                                return true; // instead of reloading here, could return false and let retyr code happen
+                            });
+                        }
+                    }
+                };
+                Debug::TraceContextBumper ctx1{"run-test (2) RWSynchronized NonAtomically"};
+                RWSynchronized<bool>      isEven{true};
+                runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically2 (isEven); });
+            }
+            if (not skipTestCuzVerySlow) {
+                auto testUpgradeLockNonAtomically3 = [] (auto& isEven) {
+                    while (true) {
+                        Thread::CheckForInterruption ();
+                        auto rLock = isEven.cget ();
+                        if (rLock.load ()) {
+                            isEven.UpgradeLockNonAtomicallyQuietly (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
+                                if (interveningWriteLock) {
+                                    return false; // will get retried
+                                }
+                                else {
+                                    // in this case we effectively did an atomic upgrade, because no intervening writers
+                                    EXPECT_TRUE (writeLock.load ());
+                                    writeLock.store (false);
+                                    return true; // instead of reloading here, could return false and let retyr code happen
+                                }
+                            });
+                        }
+                    }
+                };
+                Debug::TraceContextBumper ctx1{"run-test (3) RWSynchronized NonAtomically"};
+                RWSynchronized<bool>      isEven{true};
+                runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically3 (isEven); });
+            }
+        }
+    }
+}
+
+namespace {
+    void RegressionTest23_SycnhonizedWithTimeout_ ()
+    {
+        Debug::TraceContextBumper traceCtx{"RegressionTest23_SycnhonizedWithTimeout_"};
+        TimedSynchronized<int>    test;
+        Thread::Ptr               t1 = Thread::New (
+            [&] () {
+                auto lk = test.cget ();
+                Sleep (30s);
+            },
+            Thread::eAutoStart, L"t1");
+        [[maybe_unused]] Time::TimePointSeconds waitStart = Time::GetTickCount ();
+        Sleep (1s); // long enough so t1 running
+        try {
+            test.load (5ms);
+            EXPECT_TRUE (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
+        }
+        try {
+            auto c = test.cget (5ms);
+            EXPECT_TRUE (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
+        }
+        t1.AbortAndWaitForDone ();
+        try {
+            auto c = test.cget (5ms);
+        }
+        catch (...) {
+            EXPECT_TRUE (false); // NOT REACHED
+        }
+    }
+}
+
+namespace {
+    constexpr bool kDoLoggingToStdErr_ = false;
+    struct mymutex_ : recursive_timed_mutex {
+        using recursive_timed_mutex::recursive_timed_mutex;
+        void lock ()
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "] ENtering lock" << endl;
+            }
+            recursive_timed_mutex::lock ();
+        }
+        bool try_lock () noexcept
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]ENtering try_lock" << endl;
+            }
+            auto r = recursive_timed_mutex::try_lock ();
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "] and the try_lock returned " << r << endl;
+            }
+            return r;
+        }
+        template <typename _Rep, typename _Period>
+        bool try_lock_for (const chrono::duration<_Rep, _Period>& __rtime)
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]ENtering try_lock_for" << endl;
+            }
+            auto r = recursive_timed_mutex::try_lock_for (__rtime);
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]and the try_lock_for returned " << r << endl;
+            }
+            return r;
+        }
+        template <typename _Clock, typename _Duration>
+        bool try_lock_until (const chrono::time_point<_Clock, _Duration>& __atime)
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]ENtering try_lock_until" << endl;
+            }
+            auto r = recursive_timed_mutex::try_lock_until (__atime);
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "]and the try_lock_until returned " << r << endl;
+            }
+            return r;
+        }
+        void unlock ()
+        {
+            if (kDoLoggingToStdErr_) {
+                cerr << this_thread::get_id () << "] Entering unlock" << endl;
+            }
+            recursive_timed_mutex::unlock ();
+        }
+    };
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
+    struct xxSynchronized_Traits {
+        using MutexType                                    = mymutex_;
+        static constexpr bool kIsRecursiveReadMutex        = true;
+        static constexpr bool kIsRecursiveLockMutex        = true;
+        static constexpr bool kDbgTraceLockUnlockIfNameSet = qStroika_Foundation_Debug_DefaultTracingOn;
+        static constexpr bool kSupportsTimedLocks          = true;
+        static constexpr bool kSupportSharedLocks          = false;
+        using ReadLockType  = conditional_t<kSupportSharedLocks, shared_lock<MutexType>, unique_lock<MutexType>>;
+        using WriteLockType = unique_lock<MutexType>;
+    };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
+    void RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ()
+    {
+        Debug::TraceContextBumper                traceCtx{"RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_"};
+        Synchronized<int, xxSynchronized_Traits> test;
+        Thread::Ptr                              t1 = Thread::New (
+            [&] () {
+                auto lk = test.cget ();
+                Sleep (30s);
+            },
+            Thread::eAutoStart, L"t1");
+        [[maybe_unused]] Time::TimePointSeconds waitStart = Time::GetTickCount ();
+        Sleep (1s); // long enough so t1 running
+        try {
+            test.load (5ms);
+            EXPECT_TRUE (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
+        }
+        try {
+            auto c = test.cget (5ms);
+            EXPECT_TRUE (false); // NOT REACHED
+        }
+        catch (...) {
+            DbgTrace ("Expect this to timeout, cuz t1 holding the lock"_f);
+        }
+        t1.AbortAndWaitForDone ();
+        // doing this last part is what triggers TSAN failure if SanitizerDoubleLockWithConditionVariables
+        // see http://stroika-bugs.sophists.com/browse/STK-717
+        try {
+            auto c = test.cget (5ms);
+        }
+        catch (...) {
+            EXPECT_TRUE (false); // NOT REACHED
+        }
+    }
+}
+
+namespace {
+#if 1
+    // No longer legal since Stroika v3.0d5
+    namespace RegressionTest25_AbortNotYetStartedThread_ {
+        void Test ()
+        {
+            Debug::TraceContextBumper traceCtx{"RegressionTest25_AbortNotYetStartedThread_"};
+            Thread::Ptr               t1 = Thread::New ([&] () { Sleep (30s); }, "t1"sv);
+            t1.AbortAndWaitForDone ();
+        }
+    }
+#endif
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_Threads, all)
+    {
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+        [[maybe_unused]] auto&& cleanupReport = Finally ([] () noexcept {
+            auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
+            DbgTrace ("Total Running threads at end: {}"_f, runningThreads.size ());
+            for (Execution::Thread::IDType threadID : runningThreads) {
+                DbgTrace ("Exiting main with thread {} running"_f, Characters::ToString (threadID));
+            }
+            EXPECT_TRUE (runningThreads.size () == 0);
+        });
+#endif
+        RegressionTest1_ ();
+        RegressionTest2_ ();
+        RegressionTest3_WaitableEvents_ ();
+        RegressionTest4_Synchronized_::DoIt ();
+        RegressionTest5_Aborting_ ();
+        RegressionTest6_ThreadWaiting_ ();
+        RegressionTest7_SimpleThreadPool_ ();
+        RegressionTest8_ThreadPool_ ();
+        RegressionTest9_ThreadsAbortingEarly_ ();
+        RegressionTest10_BlockingQueue_ ();
+        RegressionTest11_AbortSubAbort_ ();
+        RegressionTest12_WaitAny_ ();
+        RegressionTest13_WaitAll_ ();
+        RegressionTest14_SpinLock_ ();
+        RegressionTest15_ThreadPoolStarvationBug_ ();
+        RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
+        RegressionTest18_RWSynchronized_::DoIt ();
+        RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
+        RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
+        RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
+        RegressionTest22_SycnhonizedUpgradeLock_ ();
+        RegressionTest23_SycnhonizedWithTimeout_ ();
+        RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
+        RegressionTest25_AbortNotYetStartedThread_::Test ();
     }
 }
 #endif
 
 int main (int argc, const char* argv[])
 {
-    SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();

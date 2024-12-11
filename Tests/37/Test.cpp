@@ -1,319 +1,280 @@
-﻿/*
+/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Execution::Exceptions
+//  TEST    Foundation::Execution::ProcessRunner
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-#include <sstream>
 
-#if qStroika_Foundation_Common_Platform_Windows
-#include <Windows.h>
-#include <winerror.h>
-#include <wininet.h> // for error codes
-#endif
-
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Debug/BackTrace.h"
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/Exceptions.h"
-#include "Stroika/Foundation/Execution/TimeOutException.h"
-#if qStroika_Foundation_Common_Platform_Windows
-#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#if qStroika_Foundation_Common_Platform_POSIX
+#include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Characters::Literals;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 
 #if qStroika_HasComponent_googletest
+
 namespace {
-    GTEST_TEST (Foundation_Execution_Exceptions, ThrowCatchStringException_)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, SETUP)
     {
-        Debug::TraceContextBumper ctx{L"ThrowCatchStringException_"};
-        try {
-            Throw (Exception{"HiMom"});
-            EXPECT_TRUE (false);
-        }
-        catch (const Exception<>& e) {
-            EXPECT_EQ (e.As<wstring> (), L"HiMom");
-        }
-        try {
-            Throw (Exception{"HiMom"});
-            EXPECT_TRUE (false);
-        }
-        catch (const std::exception& e) {
-            EXPECT_EQ (strcmp (e.what (), "HiMom"), 0); // IF THIS FAILS SEE qCompilerAndStdLib_Debug32_asan_Poison_Buggy
+        static const Iterable<String> kCmds_{"awk"_k, "bash"_k, "echo"_k, "grep"_k, "make"_k};
+        //system ("echo hi mom");
+        for (auto i : kCmds_) {
+            if (not FindExecutableInPath (i.As<filesystem::path> ())) {
+                // If running under debugger, consider adding:
+                //      Visual Studio (Windows):
+                //          PATH=%PATH%;C:\tools\msys64\usr\bin\;c:\tools\msys64\mingw64\bin\ (or similar)
+                //          to Debugging/Environment settings for debugger
+                Stroika::Frameworks::Test::WarnTestIssue ("{} not found in path ({})"_f(i, kPath ()));
+            }
         }
     }
 }
 
 namespace {
-    namespace Test3_SystemErrorException_ {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMom)
+    {
+        Debug::TraceContextBumper ctx{"EchoHiMom"}; // quickie simple test
+        {
+            ProcessRunner pr{"echo hi mom"};
+            String        out = get<0> (pr.Run (""));
+            EXPECT_EQ (out.Trim (), "hi mom");
+        }
+        {
+            ProcessRunner pr{"echo hi mom"};
+            auto [stdOutStr, stdErrStr] = pr.Run (""); // structured binding example
+            EXPECT_EQ (stdOutStr.Trim (), "hi mom");
+            EXPECT_EQ (stdErrStr, "");
+        }
+        {
+            // bash should work fine on windows, as long as in path (msys or cygwin) - see earlier checks (SETUP)
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo hi mom"}};
+            String        out = get<0> (pr.Run (""));
+            EXPECT_EQ (out.Trim (), "hi mom");
+        }
+#if qStroika_Foundation_Common_Platform_Windows
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo hi mom"}};
+            String        out = get<0> (pr.Run (""));
+            EXPECT_EQ (out.Trim (), "hi mom");
+        }
+#endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoPATH)
+    {
+        Debug::TraceContextBumper ctx{"EchoPATH"}; // quickie simple test
+
+#if qStroika_Foundation_Common_Platform_POSIX
+        {
+            // not sure why this fails on WINDOZE?? --LGP 2024-12-07
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $PATH"}};
+            String        out = get<0> (pr.Run (""));
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            EXPECT_TRUE (not out.Trim ().empty ());
+        }
+#endif
+#if qStroika_Foundation_Common_Platform_Windows
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %PATH%"}};
+            String        out = get<0> (pr.Run (""));
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            EXPECT_TRUE (not out.Trim ().empty ());
+        }
+#endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoUSER)
+    {
+        Debug::TraceContextBumper ctx{"EchoUSER"}; // quickie simple test
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "echo $USER"}};
+            String        out = get<0> (pr.Run (""));
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            //EXPECT_TRUE (not out.Trim ().empty ());   not always set, set by login, so if user logged in, but for test shells, maybe not? (bash -c vs -l)
+        }
+#if qStroika_Foundation_Common_Platform_Windows
+        {
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eWindowsCMD, "echo %USERNAME%"}};
+            String        out = get<0> (pr.Run (""));
+            DbgTrace ("out='{}'"_f, out.Trim ());
+            EXPECT_TRUE (not out.Trim ().empty ());
+        }
+#endif
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughIntraStroikaPipe)
+    {
+        Debug::TraceContextBumper        ctx{"EchoHiMomThroughIntraStroikaPipe"};
+        Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
+        ProcessRunner                    pr1{"echo hi mom"};
+        ProcessRunner                    pr2{"cat"};
+
+        Streams::MemoryStream::Ptr<byte> pipe   = Streams::MemoryStream::New<byte> ();
+        Streams::MemoryStream::Ptr<byte> pr2Out = Streams::MemoryStream::New<byte> ();
+        pr1.Run (nullptr, pipe).ThrowIfFailed (); // use RunInBackground to have this running WHILE p2 running
+        pr2.Run (pipe, pr2Out).ThrowIfFailed ();
+
+        String out = String::FromUTF8 (pr2Out.As<string> ());
+        EXPECT_EQ (out.Trim (), "hi mom");
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, CatMemoryBLOB2BLOB)
+    {
+        Debug::TraceContextBumper        ctx{"CatMemoryBLOB2BLOB"};
+        ProcessRunner                    pr{"cat"};
+        Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
+        Streams::MemoryStream::Ptr<byte> processStdIn  = Streams::MemoryStream::New<byte> (kData_);
+        Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
+        pr.Run (processStdIn, processStdOut).ThrowIfFailed ();
+        EXPECT_EQ (processStdOut.ReadAll (), kData_);
+    }
+}
+
+namespace {
+    namespace LargeDataSentThroughPipe_Test5_ {
         namespace Private_ {
-            void T1_system_error_ ()
-            {
-                static const int kErr2TestFor_ = make_error_code (errc::bad_address).value ();           // any value from errc would do
-                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv; // maybe not always right due to locales?
-                try {
-                    ThrowPOSIXErrNo (kErr2TestFor_);
-                }
-                catch (const std::system_error& e) {
-                    EXPECT_EQ (e.code ().value (), kErr2TestFor_);
-                    EXPECT_TRUE (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    EXPECT_TRUE (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::eCaseInsensitive));
-                }
-                catch (...) {
-                    DbgTrace ("err={}"_f, current_exception ());
-                    EXPECT_TRUE (false); //oops
-                }
-                // and test throwing fancy unicode string
+            const Memory::BLOB k1K_   = Memory::BLOB::FromRaw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
+            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
 
-                const Characters::String kMsgWithUnicode_ = L"zß水𝄋"; // this works even if using a code page / locale which doesn't support UNICODE/Chinese
-                try {
-                    Execution::Throw (SystemErrorException{kErr2TestFor_, generic_category (), kMsgWithUnicode_});
-                }
-                catch (const std::system_error& e) {
-                    EXPECT_EQ (e.code ().value (), kErr2TestFor_);
-                    EXPECT_EQ (e.code ().category (), generic_category ());
-                    EXPECT_TRUE (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::eCaseInsensitive));
-                }
-                catch (...) {
-                    DbgTrace ("err={}"_f, current_exception ());
-                    EXPECT_TRUE (false); //oops
-                }
-            }
-            void T2_TestTimeout_ ()
+            void SingleProcessLargeDataSend_ ()
             {
-                try {
-                    Execution::Throw (Execution::TimeOutException{});
-                }
-                catch (const system_error& e) {
-                    EXPECT_TRUE (e.code () == errc::timed_out);
-                    EXPECT_TRUE (e.code () != errc::already_connected);
-                }
-                catch (...) {
-                    DbgTrace ("err={}"_f, current_exception ());
-                    EXPECT_TRUE (false); //oops
-                }
-                try {
-                    Execution::Throw (Execution::TimeOutException{});
-                }
-                catch (const Execution::TimeOutException& e) {
-                    EXPECT_EQ (e.code (), errc::timed_out);
-                    EXPECT_TRUE (e.code () != errc::already_connected);
-                }
-                catch (...) {
-                    DbgTrace ("err={}"_f, current_exception ());
-                    EXPECT_TRUE (false); //oops
-                }
-                const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
-                try {
-                    Execution::Throw (Execution::TimeOutException{kMsg1_});
-                }
-                catch (const system_error& e) {
-                    EXPECT_EQ (e.code (), errc::timed_out);
-                    EXPECT_TRUE (e.code () != errc::already_connected);
-                    EXPECT_TRUE (Characters::ToString (e).Contains (kMsg1_));
-                }
-                catch (...) {
-                    DbgTrace ("err={}"_f, current_exception ());
-                    EXPECT_TRUE (false); //oops
-                }
+                Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
+                Streams::MemoryStream::Ptr<byte> myStdIn  = Streams::MemoryStream::New<byte> (testBLOB);
+                Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
+                ProcessRunner                    pr{"cat"};
+                pr.Run (myStdIn, myStdOut).ThrowIfFailed ();
+                EXPECT_EQ (myStdOut.ReadAll (), testBLOB);
             }
         }
     }
-    GTEST_TEST (Foundation_Execution_Exceptions, SystemErrorException_)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, LargeDataSentThroughPipe)
     {
-        Debug::TraceContextBumper ctx{"SystemErrorException_"};
-        Test3_SystemErrorException_::Private_::T1_system_error_ ();
-        Test3_SystemErrorException_::Private_::T2_TestTimeout_ ();
+        Debug::TraceContextBumper ctx{"LargeDataSentThroughPipe"};
+        LargeDataSentThroughPipe_Test5_::Private_::SingleProcessLargeDataSend_ ();
     }
 }
 
 namespace {
-    namespace Test4_Activities_ {
-        namespace Private {
-            void T1_Basics_ ()
-            {
-                using Characters::String;
-                String argument;
-
-                [[maybe_unused]] static constexpr Activity kBuildingThingy_{L"Building thingy"sv};
-
-                // constexpr only works if we lose the virtual in ~AsStringObj_ ()
-                static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
-
-                static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
-
-                // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
-                auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
-
-                auto lazyEvalActivity = LazyEvalActivity{[&] () -> String { return argument.Repeat (5) + L"xxx"; }};
-
-                DeclareActivity active1{&kA1_};
-                DeclareActivity active2{&kOtherActivity};
-                DeclareActivity active3{&otherActivity};
-                DeclareActivity active4{&lazyEvalActivity};
-
-                try {
-                    // something that will throw
-                    Execution::Throw (Exception<> ("testing 123"));
-                }
-                catch (...) {
-                    String msg = Characters::ToString (current_exception ());
-                    EXPECT_TRUE (msg.Contains ("testing 123"));
-                    EXPECT_TRUE (msg.Contains ("a1"));
-                    EXPECT_TRUE (msg.Contains ("kOtherActivity"));
-                    EXPECT_TRUE (msg.Contains ("otherActivity"));
-                    EXPECT_TRUE (msg.Contains ("xxx"));
-                }
-            }
-        }
-    }
-    GTEST_TEST (Foundation_Execution_Exceptions, Test4_Activities_)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, LargeDataSentThroughPipeBackgroundProcess)
     {
-        Debug::TraceContextBumper ctx{"Test4_Activities_"};
-        Test4_Activities_::Private::T1_Basics_ ();
+        Debug::TraceContextBumper ctx{"LargeDataSentThroughPipeBackgroundProcess"};
+        const Memory::BLOB        k1K_   = Memory::BLOB::FromRaw ("0123456789abcdef").Repeat (1024 / 16);
+        const Memory::BLOB        k1MB_  = k1K_.Repeat (1024);
+        const Memory::BLOB        k16MB_ = k1MB_.Repeat (16);
+
+        auto SingleProcessLargeDataSend_ = [&] () {
+            Assert (k1MB_.size () == 1024 * 1024);
+            Streams::SharedMemoryStream::Ptr<byte> myStdIn =
+                Streams::SharedMemoryStream::New<byte> (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
+            Streams::SharedMemoryStream::Ptr<byte> myStdOut = Streams::SharedMemoryStream::New<byte> ();
+            ProcessRunner                          pr{"cat"};
+            ProcessRunner::BackgroundProcess       bg = pr.RunInBackground (myStdIn, myStdOut);
+            Execution::Sleep (1);
+            EXPECT_TRUE (not myStdOut.AvailableToRead ().has_value ()); // sb no data available, but NOT EOF
+            Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
+            myStdIn.Write (testBLOB);
+            myStdIn.CloseWrite (); // so cat process can finish
+            bg.WaitForDone ();
+            myStdOut.CloseWrite (); // one process done, no more writes to this stream
+            EXPECT_EQ (myStdOut.ReadAll (), testBLOB);
+        };
+
+        SingleProcessLargeDataSend_ ();
     }
 }
 
 namespace {
-    namespace Test5_error_code_condition_compares_ {
-        namespace Private {
-            void Bug1_ ()
-            {
-                try {
-                    throw std::system_error (ENOENT, std::system_category ());
-                }
-                catch (std::system_error const& e) {
-                    EXPECT_TRUE (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory)); // workaround?
-                    EXPECT_TRUE (e.code () == std::errc::no_such_file_or_directory);                             // <- FAILS!?
-                }
-                catch (...) {
-                    EXPECT_TRUE (false);
-                }
-            }
-#if qStroika_Foundation_Common_Platform_Windows
-            void Bug2_Windows_Errors_Mapped_To_Conditions_ ()
-            {
-                EXPECT_TRUE ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
-                EXPECT_TRUE ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
-#if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
-                if ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace ("FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy"_f);
-                }
-                if ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out)) {
-                    DbgTrace ("FIXED"_f);
-                }
-#else
-                EXPECT_TRUE ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
-                EXPECT_TRUE ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out));
-#endif
-
-                try {
-                    ThrowSystemErrNo (ERROR_NOT_ENOUGH_MEMORY);
-                }
-                catch (const bad_alloc&) {
-                    // Good
-                }
-                catch (...) {
-                    EXPECT_TRUE (false);
-                }
-                try {
-                    ThrowSystemErrNo (ERROR_OUTOFMEMORY);
-                }
-                catch (const bad_alloc&) {
-                    // Good
-                }
-                catch (...) {
-                    EXPECT_TRUE (false);
-                }
-                try {
-                    ThrowSystemErrNo (WAIT_TIMEOUT);
-                }
-                catch (const TimeOutException&) {
-                    // Good
-                }
-                catch (...) {
-                    EXPECT_TRUE (false);
-                }
-                try {
-                    ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT);
-                }
-                catch (const TimeOutException&) {
-                    // Good
-                }
-                catch (...) {
-                    EXPECT_TRUE (false);
-                }
-            }
-#endif
-        }
-    }
-    GTEST_TEST (Foundation_Execution_Exceptions, Test5_error_code_condition_compares_)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, TestFailureHanlding)
     {
-        Debug::TraceContextBumper ctx{L"Test5_error_code_condition_compares_"};
-        Test5_error_code_condition_compares_::Private::Bug1_ ();
-#if qStroika_Foundation_Common_Platform_Windows
-        Test5_error_code_condition_compares_::Private::Bug2_Windows_Errors_Mapped_To_Conditions_ ();
-#endif
+        Debug::TraceContextBumper ctx{"TestFailureHanlding"};
+        try {
+            ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
+            pr.Run ().ThrowIfFailed ();
+            EXPECT_TRUE (false);
+        }
+        catch (...) {
+            DbgTrace ("got failure msg: {}"_f, current_exception ());
+        }
     }
 }
 
 namespace {
-    namespace Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_ {
-        namespace Private {
-            void ThrowCatchStringException_ ()
-            {
-                Debug::TraceContextBumper ctx{"ThrowCatchStringException_"};
-                {
-                    try {
-                        Throw (Exception (L"HiMom"));
-                        EXPECT_TRUE (false);
-                    }
-                    catch (const Exception<>& e) {
-                        EXPECT_TRUE (e.As<wstring> () == L"HiMom");
-                    }
-                }
-                {
-                    try {
-                        Throw (Exception (L"HiMom"));
-                        EXPECT_TRUE (false);
-                    }
-                    catch (const std::exception& e) {
-                        EXPECT_TRUE (strcmp (e.what (), "HiMom") == 0);
-                    }
-                }
-            }
+    GTEST_TEST (Foundation_Execution_ProcessRunner, AutomaticWrapInBashOrCmdShellForPipesInShell)
+    {
+        Debug::TraceContextBumper ctx{"AutomaticWrapInBashOrCmdShellForPipesInShell"};
+        const String              kCmdLine_ = "echo a | grep a"sv;
+        {
+            Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
+            ProcessRunner                    pr{kCmdLine_}; // automatically translated to cmd /c or bash -c
+            pr.Run (nullptr, processStdOut).ThrowIfFailed ();
+            EXPECT_EQ (Streams::TextReader::New (processStdOut).ReadAll ().Trim (), "a");
+        }
+        {
+            ProcessRunner pr{kCmdLine_};
+            auto          result = get<0> (pr.Run (""sv)); // input ignored by echo a
+            EXPECT_EQ (result.Trim (), "a");
         }
     }
-    GTEST_TEST (Foundation_Execution_Exceptions, Throw_Logging_with_and_without_srclines_in_stack_backtrace_)
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, MakeVersionViaAwkPipe)
     {
-        using namespace Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_;
-        Debug::TraceContextBumper ctx{"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
-        auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
-        DbgTrace ("sDefault_IncludeSourceLines = true"_f);
-        Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
-        Private::ThrowCatchStringException_ ();
-        DbgTrace ("sDefault_IncludeSourceLines = false"_f);
-        Debug::BackTrace::Options::sDefault_IncludeSourceLines = false;
-        Private::ThrowCatchStringException_ ();
-        DbgTrace ("sDefault_IncludeSourceLines = <<default>>"_f);
-        Debug::BackTrace::Options::sDefault_IncludeSourceLines = prevValue;
-        Private::ThrowCatchStringException_ ();
+        Debug::TraceContextBumper ctx{"MakeVersionViaAwkPipe"};
+        try {
+            // can use full path or just plain name (if in path) for make/awk
+            ProcessRunner pr{"\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)};
+            auto [stdOutStr, stdErrStr] = pr.Run (""sv);
+            EXPECT_TRUE (not stdOutStr.empty ());
+            EXPECT_TRUE (stdErrStr.empty ());
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue ("exception during ProcessRunner make/awk"_f(current_exception ()));
+        }
     }
 }
+
 #endif
 
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
+
+#if qStroika_Foundation_Common_Platform_POSIX
+    // Many tests use pipes
+    // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
+    //  --LGP 2014-02-05
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
+
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else

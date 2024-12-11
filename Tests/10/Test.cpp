@@ -1,15 +1,20 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Containers::DataStructures::SkipList
+//  TEST    Foundation::Containers::Association
+//      \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <algorithm>
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Association.h"
+#include "Stroika/Foundation/Containers/Concrete/Association_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Association_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_SkipList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -17,264 +22,284 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
+#include "../TestCommon/CommonTests_Association.h"
+
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers;
-using namespace Stroika::Foundation::Containers::DataStructures;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::AsIntsEqualsComparer;
+using Test::ArchtypeClasses::AsIntsLessComparer;
+using Test::ArchtypeClasses::AsIntsThreeWayComparer;
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-namespace {
-    // removed from stdc++ but still handy here
-    template <class RandomIt>
-    void random_shuffle_ (RandomIt first, RandomIt last)
-    {
-        typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
-        for (diff_t i = last - first - 1; i > 0; --i) {
-            using std::swap;
-            swap (first[i], first[std::rand () % (i + 1)]);
-        }
-    }
-}
+using Concrete::Association_Array;
+using Concrete::Association_LinkedList;
+using Concrete::SortedAssociation_SkipList;
+using Concrete::SortedAssociation_stdmultimap;
 
 #if qStroika_HasComponent_googletest
-GTEST_TEST (Foundation_Containers_DataStructures_SkipList, AddAddRemoveByFindIteratorFails)
+namespace {
+    template <typename CONCRETE_CONTAINER>
+    void DoTestForConcreteContainer_ ()
+    {
+        using namespace CommonTests::AssociationTests;
+        SimpleAssociationTest_All_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+        SimpleAssociationTest_WithDefaultEqComparer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+    }
+    template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
+    void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
+    {
+        using namespace CommonTests::AssociationTests;
+        auto testschema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        SimpleAssociationTest_All_ (testschema);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Association, FACTORY_DEFAULT)
+    {
+        Debug::TraceContextBumper ctx{"{}::FACTORY_DEFAULT"};
+        DoTestForConcreteContainer_<Association<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Association<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Association<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Association<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
+
+GTEST_TEST (Foundation_Containers_Association, Association_Array)
 {
-    Debug::TraceContextBumper ctx{"{}::AddAddRemoveByFindIteratorFails"};
+    Debug::TraceContextBumper ctx{"{}::Association_Array"};
+    DoTestForConcreteContainer_<Association_Array<size_t, size_t>> ();
+    DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+    DoTestForConcreteContainer_<Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+        [] () { return Association_Array<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
+        AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+}
+
+GTEST_TEST (Foundation_Containers_Association, Association_LinkedList)
+{
+    Debug::TraceContextBumper ctx{"{}::Association_LinkedList"};
+    DoTestForConcreteContainer_<Association_LinkedList<size_t, size_t>> ();
+    DoTestForConcreteContainer_<Association_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+    // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Association_LinkedList<OnlyCopyableMoveable, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_AssociationTRAITS>> ();
+    DoTestForConcreteContainer_<Association_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+        [] () { return Association_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
+        AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+}
+
+GTEST_TEST (Foundation_Containers_Association, SortedAssociation_stdmultimap)
+{
+    Debug::TraceContextBumper ctx{"{}::SortedAssociation_stdmultimap"};
+    DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
+    DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+    DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+        [] () {
+            return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
+        },
+        AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+}
+
+GTEST_TEST (Foundation_Containers_Association, SortedAssociation_SkipList)
+{
+    Debug::TraceContextBumper ctx{"{}::SortedAssociation_SkipList"};
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+    DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+        [] () {
+            return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+        },
+        AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     {
-        DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{3386707305});
-        DataStructures::SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered> a;
-        a.Add (1, 2);
-        auto i = a.Find (1);
-        a.Remove (i);
-        a.Invariant ();
+        SortedAssociation_SkipList<size_t, size_t> x;
+        x.ReBalance (); // just to assure compiles - no easy way to test decently...
     }
+}
+
+GTEST_TEST (Foundation_Containers_Association, SimpleBaseClassConversionTraitsConfusion_)
+{
+    Debug::TraceContextBumper     ctx{"{}::SimpleBaseClassConversionTraitsConfusion_"};
+    SortedAssociation<int, float> xxxyy  = Concrete::SortedAssociation_stdmultimap<int, float> ();
+    Association<int, float>       xxxyy1 = Concrete::SortedAssociation_stdmultimap<int, float> ();
+}
+
+namespace {
+    namespace Test4_AssociationCTOROverloads_::xPrivate_ {
+        struct A;
+        struct B;
+        struct A {
+            A ()         = default;
+            A (const A&) = default;
+            A (const B&)
+            {
+            }
+        };
+        struct B {
+            B () = default;
+            B (const A&)
+            {
+            }
+            B (const B&) = default;
+        };
+        using Common::KeyValuePair;
+        using KEY_TYPE                = int;
+        using VALUE_TYPE              = B;
+        using CONTAINER_OF_PAIR_KEY_T = Association<int, A>;
+        using T                       = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
+    }
+    GTEST_TEST (Foundation_Containers_Association, AssociationCTOROverloads_)
     {
-        DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{3386707305});
-        DataStructures::SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered> a;
-        a.Add (1, 2);
-        a.Add (1, 2);
-        a.Remove (1);
-        a.Invariant ();
-    }
-    if constexpr (true) {
-        DataStructures::Private_::SetRandomNumberGenerator (std::mt19937{3386707305});
-        DataStructures::SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered> a;
-        a.Add (1, 2);
-        a.Add (1, 2);
-        auto i = a.Find (1);
-        a.Remove (i); // krasher!
-        a.Invariant ();
+        Debug::TraceContextBumper ctx{"{}::AssociationCTOROverloads_"};
+        using namespace Test4_AssociationCTOROverloads_::xPrivate_;
+        Association<int, A> from;
+
+        static_assert (Traversal::IIterableOfTo<Association<int, A>, KeyValuePair<int, A>>);
+        static_assert (Traversal::IIterableOfTo<Association<int, B>, KeyValuePair<int, B>>);
+
+        Association<int, B> to1;
+        for (auto i : from) {
+            to1.Add (i);
+        }
+        Association<int, B> to2{from};
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicSmokeTest)
+    GTEST_TEST (Foundation_Containers_Association, ExampleCTORS_)
     {
-        Debug::TraceContextBumper ctx{"BasicSmokeTest"};
-        SkipList<int, int>        t;
-        EXPECT_TRUE (not t.contains (1));
-        t.Add (1, 2);
-        EXPECT_TRUE (t.contains (1));
+        Debug::TraceContextBumper ctx{"{}::ExampleCTORS_"};
+        // From Association<> CTOR docs
+        Collection<pair<int, int>> c;
+        std::multimap<int, int>    m;
+
+        Association<int, int> m1 = {{1, 1}, {2, 2}, {3, 2}};
+        Association<int, int> m2 = m1;
+        Association<int, int> m3{m1};
+        Association<int, int> m4{m1.begin (), m1.end ()};
+        Association<int, int> m5{c};
+        Association<int, int> m6{m};
+        Association<int, int> m7{m.begin (), m.end ()};
+        Association<int, int> m8{move (m1)};
+        Association<int, int> m9{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; })};
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicIteration)
+    GTEST_TEST (Foundation_Containers_Association, Where)
     {
-        Debug::TraceContextBumper ctx{"BasicIteration"};
-        SkipList<int, int>        t;
-        EXPECT_EQ (distance (t.begin (), t.end ()), 0);
-        t.Add (1, 2);
-        EXPECT_EQ (distance (t.begin (), t.end ()), 1);
-    }
-}
-
-namespace {
-    namespace Private_ {
-        template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
-        void BasicAddRemoveTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
+        Debug::TraceContextBumper ctx{"{}::Where"};
         {
-            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.key_comp ()};
-            Require (t.size () == 0);
-            Debug::TraceContextBumper ctx{"BasicAddRemoveTests_", "Add and remove (len={}, forward direction)"_f, testLength};
-            optional<KEY_TYPE>        biggestKey;
-            for (size_t i = 1; i <= testLength; ++i) {
-                KEY_TYPE key{static_cast<int> (i)};
-                EXPECT_TRUE (not t.contains (key));
-                t.Add (key, MAPPED_TYPE{static_cast<int> (i)});
-                EXPECT_EQ (t.size (), i);
-                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
-                t.Invariant ();
-                if (biggestKey == nullopt) {
-                    biggestKey = key;
-                }
-                strong_ordering comp = t.key_comp () (*biggestKey, key);
-                if (comp == strong_ordering::greater or comp == strong_ordering::less) {
-                    biggestKey = key;
-                }
-            }
-            for (size_t i = 1; i <= testLength; ++i) {
-                KEY_TYPE key{static_cast<int> (i)};
-                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
-                t.Remove (key);
-                EXPECT_TRUE (not t.contains (key));
-                EXPECT_EQ (t.size (), testLength - i);
-                t.Invariant ();
-            }
-            EXPECT_EQ (t.size (), 0u);
-            DbgTrace ("Add and remove {} items, backwards direction"_f, testLength);
-            for (size_t i = testLength; i >= 1; --i) {
-                KEY_TYPE key{static_cast<int> (i)};
-                EXPECT_TRUE (not t.contains (key));
-                t.Add (key, MAPPED_TYPE{static_cast<int> (i)});
-                EXPECT_EQ (t.size (), testLength - i + 1);
-                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
-                t.Invariant ();
-                Assert (biggestKey);
-                strong_ordering comp = t.key_comp () (*biggestKey, key);
-                if (i == testLength or comp < 0) {
-                    biggestKey = key;
-                }
-            }
-            for (size_t i = testLength; i >= 1; --i) {
-                KEY_TYPE key{static_cast<int> (i)};
-                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
-                t.Remove (key);
-                EXPECT_TRUE (not t.contains (key));
-                EXPECT_EQ (t.size (), i - 1u);
-                t.Invariant ();
-            }
-            EXPECT_EQ (t.size (), 0u);
+            Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
+                                    KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                          Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+            EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                          Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+        }
+        {
+            // same but letting system guess type of arg to association
+            Association<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
+            EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                          Association<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+            EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                          Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+        }
+        {
+            // same but using pair<>
+            Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
+            EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                          Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+            EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                          Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+        }
+        {
+            // similar but example has duplicates
+            Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 3}, pair<int, int>{2, 4},
+                                    pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
+            EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                          Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+            EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                          Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
         }
     }
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, BasicAddRemoveTest_)
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Association, WithKeys)
     {
-        Debug::TraceContextBumper ctx{"BasicAddRemoveTest_"};
-        SkipList<int, int>        t;
-        Private_::BasicAddRemoveTestsHelper_ (t, 1000);
+        Debug::TraceContextBumper ctx{"{}::WithKeys"};
+        Association<int, int>     m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
+        EXPECT_EQ (m.WithKeys ({2, 5}), (Association<int, int>{{2, 4}, {5, 7}}));
     }
 }
 
 namespace {
-    namespace Private_ {
-        template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
-        void RandomOrderAddRemoveTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
-        {
-            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.key_comp ()};
-            Require (t.size () == 0);
-            Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTestsHelper_", "Add and remove (len={}, items, in random order)"_f, testLength};
+    GTEST_TEST (Foundation_Containers_Association, ClearBug)
+    {
+        Debug::TraceContextBumper ctx{"{}::ClearBug"};
+        // http://stroika-bugs.sophists.com/browse/STK-541
+        Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
+                                KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+        Association<int, int> mm{move (m)};
+        // SEE http://stroika-bugs.sophists.com/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
+        //m.clear ();
+    }
+}
 
-            vector<int> data;
-            data.reserve (testLength);
-            for (int i = 0; i < static_cast<int> (testLength); ++i) {
-                data.push_back (i);
-            }
-            random_shuffle_ (data.begin (), data.end ());
-            optional<KEY_TYPE> biggestKey;
-            optional<KEY_TYPE> smallestKey;
-            for (int i = 0; static_cast<size_t> (i) < data.size (); ++i) {
-                KEY_TYPE key = {data[i]};
-                EXPECT_TRUE (not t.contains (key));
-                t.Add (key, i);
-                EXPECT_EQ (t.size (), static_cast<size_t> (i + 1));
-                EXPECT_EQ (t.First (key), i);
-                t.Invariant ();
-                if (i == 0) {
-                    smallestKey = key;
-                    biggestKey  = key;
-                }
-                if (t.key_comp () (*biggestKey, key) < 0) {
-                    biggestKey = key;
-                }
-                if (t.key_comp () (*smallestKey, key) > 0) {
-                    smallestKey = key;
-                }
-            }
-            random_shuffle_ (data.begin (), data.end ());
-            for (int i = 0; i <= static_cast<int> (testLength - 1); ++i) {
-                KEY_TYPE v = {data[i]};
-                EXPECT_TRUE (t.contains (v));
-                t.Remove (v);
-                EXPECT_TRUE (not t.contains (v));
-                EXPECT_EQ (t.size (), static_cast<size_t> (testLength - i - 1));
-                t.Invariant ();
-            }
-            EXPECT_TRUE (t.size () == 0);
+namespace {
+    GTEST_TEST (Foundation_Containers_Association, BasicNewAssociationRules)
+    {
+        Debug::TraceContextBumper ctx{"{}::BasicNewAssociationRules"};
+        Association<int, int>     m;
+        m.Add (1, 2);
+        m.Add (1, 2);
+        EXPECT_EQ (m.size (), 2u);
+        EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 2})));
+        EXPECT_TRUE (m.Lookup (2).empty ());
+        m.Add (1, 3);
+        EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 3, 2})));
+
+        Association<int, int> m2;
+        m2.Add (1, 3);
+        m2.Add (1, 2);
+        EXPECT_TRUE (m != m2);
+        m2.Add (1, 2);
+        EXPECT_EQ (m, m2);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Association, CTORWithComparerAndContainer)
+    {
+        Debug::TraceContextBumper ctx{"{}::CTORWithComparerAndContainer"};
+        using namespace Characters;
+        {
+            Association<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
+            // http://stroika-bugs.sophists.com/browse/STK-738 (and see other workarounds in other files)
+            Association<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
         }
     }
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, RandomOrderAddRemoveTests_)
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Association, Association_Array_ArrayAPITests_)
     {
-        Debug::TraceContextBumper ctx{"RandomOrderAddRemoveTests_"};
-        SkipList<int, int>        t;
-        Private_::RandomOrderAddRemoveTestsHelper_ (t, 25);
+        Debug::TraceContextBumper   ctx{"{}::Association_Array_ArrayAPITests_"};
+        Association_Array<int, int> a;
+        a.reserve (3);
+        EXPECT_EQ (a.capacity (), 3u);
+        a.shrink_to_fit ();
+        EXPECT_EQ (a.capacity (), 0u);
     }
 }
 
 namespace {
-    namespace Private_ {
-        template <typename KEY_TYPE, typename MAPPED_TYPE, typename TRAITS>
-        void OptimizeTestsHelper_ (SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> prototypeList, size_t testLength)
-        {
-            SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS> t{prototypeList.key_comp ()};
-            Require (t.size () == 0);
-            Debug::TraceContextBumper ctx{"Balance Tests", "Add and remove (len={})"_f, testLength};
-            vector<int>               data;
-            data.reserve (testLength);
-            for (int i = 0; i < static_cast<int> (testLength); ++i) {
-                data.push_back (i);
-            }
-            random_shuffle_ (data.begin (), data.end ());
-            for (int i = 0; i < static_cast<int> (data.size ()); ++i) {
-                KEY_TYPE key{data[i]};
-                t.Add (key, i);
-            }
-            EXPECT_EQ (t.size (), testLength);
-            t.Invariant ();
-            t.ReBalance ();
-            t.Invariant ();
-            Assert (t.size () == testLength);
-            for (size_t i = 0; i <= static_cast<int> (testLength - 1); ++i) {
-                KEY_TYPE key{data[i]};
-                EXPECT_EQ (t.First (key), MAPPED_TYPE{static_cast<int> (i)});
-            }
-        }
-    }
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, OptimizeTests_)
+    GTEST_TEST (Foundation_Containers_Association, Cleanups)
     {
-        Debug::TraceContextBumper ctx{"OptimizeTests_"};
-        SkipList<int, int>        t;
-        Private_::OptimizeTestsHelper_ (t, 25);
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, VoidMappedType)
-    {
-        Debug::TraceContextBumper ctx{"VoidMappedType"};
-        SkipList<int, void>       t;
-        t.Invariant ();
-        EXPECT_EQ (t.size (), 0u);
-        {
-            [[maybe_unused]] auto b = t.begin ();
-        }
-        t.Add (1);
-        EXPECT_EQ (t.size (), 1u);
-        t.Remove (1);
-        EXPECT_EQ (t.size (), 0u);
-        t.Apply ([] (auto) {});
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, ToString)
-    {
-        Debug::TraceContextBumper ctx{"ToString"};
-        SkipList<int, int>        t;
-        t.Add (1, 2);
-        DbgTrace ("t={}"_f, t); // test using ranges support
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif

@@ -1,654 +1,200 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Cryptography
+//  TEST    Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-
-#if qStroika_Foundation_Common_Platform_Windows
-#include <windows.h>
-#if qStroika_HasComponent_ATLMFC
-#include <atlenc.h>
-#endif
-#endif
+#include <sstream>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Common/Endian.h"
-#include "Stroika/Foundation/Common/GUID.h"
-#include "Stroika/Foundation/Containers/Common.h"
-#include "Stroika/Foundation/Containers/MultiSet.h"
-#include "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
-#include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
-#include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
-#include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
-#include "Stroika/Foundation/Cryptography/Digest/Hash.h"
-#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
-#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
-#include "Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.h"
-#include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
-#include "Stroika/Foundation/Cryptography/Format.h"
-#include "Stroika/Foundation/Cryptography/OpenSSL/LibraryContext.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
+#include "Stroika/Foundation/Common/Locale.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#if qStroika_HasComponent_zlib
+#include "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
+#include "Stroika/Foundation/DataExchange/Compression/Zip/Reader.h"
+#endif
+#include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
+#include "Stroika/Foundation/DataExchange/Compression/GZip.h"
+#if qStroika_HasComponent_LZMA
+#include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
+#endif
+#include "Stroika/Foundation/DataExchange/JSON/Patch.h"
+#include "Stroika/Foundation/DataExchange/JSON/Pointer.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Writer.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/INI/Writer.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/IO/Network/InternetAddress.h"
-#include "Stroika/Foundation/Memory/BLOB.h"
-#include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Containers;
-using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Characters::Literals;
+using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
 
-// Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+using Characters::String;
+using DataExchange::VariantValue;
+
+///// @todo ADD SEPEARET MODULE TO TEST VARIANTVALUE!!!
 
 #if qStroika_HasComponent_googletest
-namespace {
-    uint32_t ToLE_ (uint32_t n)
-    {
-        using Common::Endian;
-        using Common::EndianConverter;
-        return EndianConverter<uint32_t> (n, Common::GetEndianness (), Endian::eLittle);
-    }
-}
+/*
+ * Validating JSON parse results:
+ *      http://json.parser.online.fr/
+ */
 
 namespace {
-    namespace Base64Test {
-
-#if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
-        using Encoding::Algorithm::LineBreak;
-        vector<byte> DecodeBase64_ATL_ (const string& s)
-        {
-            int                       dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
-            Memory::StackBuffer<byte> buf1{static_cast<size_t> (dataSize1)};
-            if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), reinterpret_cast<BYTE*> (buf1.begin ()), &dataSize1)) {
-                return vector<byte>{buf1.begin (), buf1.begin () + dataSize1};
-            }
-            return vector<byte>{};
-        }
-        string EncodeBase64_ATL_ (const vector<byte>& b, LineBreak lb)
-        {
-            size_t totalSize = b.size ();
-            if (totalSize != 0) {
-                Memory::StackBuffer<char> relBuf{0};
-                int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
-                relBuf.GrowToSize (relEncodedSize);
-                EXPECT_TRUE (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize),
-                                                relBuf.data (), &relEncodedSize));
-                relBuf[relEncodedSize] = '\0';
-                if (lb == LineBreak::eCRLF_LB) {
-                    return static_cast<const char*> (relBuf);
-                }
-                else {
-                    EXPECT_TRUE (lb == LineBreak::eLF_LB);
-                    string result;
-                    result.reserve (relEncodedSize);
-                    for (int i = 0; i < relEncodedSize; ++i) {
-                        if (relBuf[i] == '\r') {
-                            //
-                            result.push_back ('\n');
-                            ++i; // skip LF
-                        }
-                        else {
-                            result.push_back (relBuf[i]);
-                        }
-                    }
-                    return result;
-                }
-            }
-            return string{};
-        }
-#endif
-
-        inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
-        {
-            using namespace Encoding::Algorithm;
-#if qStroika_Foundation_Common_Platform_Windows && qStroika_HasComponent_ATLMFC
-            EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
-                                       (Base64::Options{.fLineBreak = Base64::LineBreak::eCRLF_LB})),
-                       EncodeBase64_ATL_ (bytes, Base64::LineBreak::eCRLF_LB));
-            EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
-                                       (Base64::Options{.fLineBreak = Base64::LineBreak::eLF_LB})),
-                       EncodeBase64_ATL_ (bytes, Base64::LineBreak::eLF_LB));
-#endif
-        }
-        inline void VERIFY_ATL_DECODE_ ()
-        {
-#if qStroika_Foundation_Common_Platform_Windows
-#else
-#endif
-        }
-
-        void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
-        {
-            EXPECT_TRUE (Encoding::Algorithm::Base64::Decode (
-                             Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))) == bytes);
-        }
-
-        void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
-        {
-            EXPECT_TRUE (Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes})) == base64EncodedString);
-            EXPECT_TRUE (Encoding::Algorithm ::Base64::Decode (base64EncodedString) == originalUnEncodedBytes);
-            VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
-            VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
-        }
-    }
-}
-
-GTEST_TEST (Foundation_Cryptography, Base64Test)
-{
-    Debug::TraceContextBumper ctx{"::Base64Test"};
-    using namespace Base64Test;
-
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Test1_7zArchive_)
     {
-        const char kSrc[]        = "This is a good test\r\n"
-                                   "We eat wiggly worms.\r\n"
-                                   "\r\n"
-                                   "That is a very good thing.****^^^#$#AS\r\n";
-        const char kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGl"
-                                   "uZy4qKioqXl5eIyQjQVMNCg==";
-        DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte>{(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
-    }
-
-    {
-        const char kSrc[] =
-            "{\\rtf1 \\ansi {\\fonttbl {\\f0 \\fnil \\fcharset163 Times New Roman;}}{\\colortbl \\red0\\green0\\blue0;}\r\n"
-            "{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 "
-            "\\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab "
-            "\\tx720 }\\listid292 }}\r\n"
-            "{\\*\\listoverridetable{\\listoverride \\listid292 \\listoverridecount0 \\ls1 }}\r\n"
-            "{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever "
-            "today. Not terrible, but several times. And I think a bit yesterda\r\n"
-            "y.}";
-        const char kEncodedVal[] = "e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
-                                   "Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
-                                   "aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
-                                   "MCBcbGV2ZWxmb2xsb3cwIFxsZXZlbHN0YXJ0YXQxIFxsZXZlbGluZGVudDAge1xsZXZlbHRleHQg\r\n"
-                                   "XGxldmVsbmZjMjMgXGxldmVsdGVtcGxhdGVpZDE3NDIxIFwnMDFcdTgyMjYgID87fVxmMCBcZmkt\r\n"
-                                   "MzYwIFxsaTcyMCBcamNsaXN0dGFiIFx0eDcyMCB9XGxpc3RpZDI5MiB9fQ0Ke1wqXGxpc3RvdmVy\r\n"
-                                   "cmlkZXRhYmxle1xsaXN0b3ZlcnJpZGUgXGxpc3RpZDI5MiBcbGlzdG92ZXJyaWRlY291bnQwIFxs\r\n"
-                                   "czEgfX0NCntcKlxnZW5lcmF0b3IgU29waGlzdCBTb2x1dGlvbnMsIEluYy4gTGVkIFJURiBJTyBF\r\n"
-                                   "bmdpbmUgLSAzLjFiMng7fVxwYXJkIFxwbGFpbiBcZjAgXGZzMjQgXGNmMCBIYWQgaGF5IGZldmVy\r\n"
-                                   "IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
-                                   "dCB5ZXN0ZXJkYQ0KeS59";
-        DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
-    }
-
-    {
-        const char kSrc[]        = "()'asdf***Adasdf a";
-        const char kEncodedVal[] = "KCknYXNkZioqKkFkYXNkZiBh";
-        DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte>{(const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)});
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, MD5Test)
-    {
-        Debug::TraceContextBumper ctx{"MD5Test::DoRegressionTests_"};
-
-        // really this is a test of high level tools used in orig Cryptography::MD5 module, but these are really
-        // generic utilities...
-        using DIGESTER_ = Digest::Digester<Digest::Algorithm::MD5>;
-        {
-            const char kSrc[]        = "This is a very good test of a very good test";
-            const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-            EXPECT_TRUE (Cryptography::Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (
-                             (const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
-        }
-        {
-            int    tmp = 3;
-            string digestStr =
-                Cryptography::Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (Streams::iostream::SerializeItemToBLOB (tmp)));
-            EXPECT_EQ (digestStr, "eccbc87e4b5ce2fe28308fd9f2a7baf3");
-        }
-        {
-            int tmp = 3;
-            EXPECT_EQ ((Digest::Hash<int, DIGESTER_, string>{}(tmp)), "edcfae989540fd42e4b8556d5b723bb6");
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, HashMisc)
-    {
-        Debug::TraceContextBumper ctx{"HashMisc::DoRegressionTests_"};
-        using namespace Cryptography::Digest;
-
-        using namespace Characters;
-        {
-            EXPECT_TRUE ((Hash<String>{}("x") != Hash<String>{}("y"))); // practically this should never fail if not absolutely required
-            EXPECT_TRUE ((Hash<String>{"somesalt"}("x") != Hash<String>{}("x")));
-            EXPECT_TRUE ((Hash<String>{"somesalt"}("x") == Hash<String>{"somesalt"}(L"x")));
-
-            EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
-            struct altStringSerializer {
-                auto operator() (String s)
-                {
-                    return s.empty () ? Memory::BLOB{} : Memory::BLOB{(const byte*)s.c_str (), (const byte*)s.c_str () + 1};
-                };
-            };
-            //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-            EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}("xxx")));
-            EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") ==
-                          Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
-        }
-        {
-            auto ec1{make_error_code (std::errc::already_connected)};
-            auto ec2{make_error_code (std::errc::directory_not_empty)};
-            auto hasher = Hash<error_code, SystemHashDigester<error_code>>{};
-            VerifyTestResultWarning (hasher (ec1) != hasher (ec2));
-            EXPECT_TRUE ((hasher (ec1) == hash<error_code>{}(ec1)));
-            EXPECT_TRUE ((hasher (ec2) == hash<error_code>{}(ec2)));
-        }
-        {
-            using namespace IO::Network;
-            auto hasher = Hash<InternetAddress>{};
-            VerifyTestResultWarning ((hasher (InternetAddress{"192.168.243.3"}) != hasher (InternetAddress{"192.168.243.4"})));
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, DigestAltResults)
-    {
-        Debug::TraceContextBumper ctx{"{}...DigestAltResults"};
-        using namespace Cryptography::Digest;
-
-        // Excercise uses of ConvertResult()
-        {
-            using namespace Memory;
-            using namespace DataExchange;
-            using namespace IO::Network;
-            auto                          digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
-            auto                          digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
-            auto                          digesterWithResult_GUID_t  = Digester<Digest::Algorithm::SuperFastHash, Common::GUID>{};
-            Memory::BLOB                  value2Hash = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
-            auto                          h1         = digesterWithDefaultResult (value2Hash);
-            uint8_t                       h2         = digesterWithResult_uint8_t (value2Hash);
-            std::array<byte, 40>          h3         = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
-            [[maybe_unused]] Common::GUID h4         = digesterWithResult_GUID_t (value2Hash);
-
-            /*
-             *  NOTE - basically ALL these tests vary on a number of parameters
-             *      o   some values involve casts of integers of byte array data which depends on endianness
-             *      but otherwise I dont think these values should float/vary (thus the EXPECT_TRUE tests).
-             * Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
-             * so if these fail, either something relevant changed or bug...
-             */
-            EXPECT_TRUE (h1 == 808390013);
-            EXPECT_TRUE (h2 == 125);
-            EXPECT_TRUE (h3[0] == 0x7d_b and h3[1] == 0x0d_b and h3[39] == 0_b);
-            EXPECT_TRUE ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x808390013"));
-        }
+        Debug::TraceContextBumper ctx{"Test1_7zArchive_"};
+        // od sample_zip.7z -t x1 -w32 | sed 's/ /,0x/g'
+        // then strip first column manually, and leading ,
+        [[maybe_unused]] static constexpr uint8_t ksample_zip_7z_[] = {
+            0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x00, 0x03, 0xad, 0xd3, 0x3a, 0xb4, 0x2a, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x23,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x88, 0xd9, 0x4d, 0x4c, 0x00, 0x2d, 0x8c, 0x02, 0x26, 0x10, 0xd9, 0x9e, 0x69, 0xe9,
+            0xf2, 0xc8, 0xac, 0x29, 0x7c, 0xec, 0x89, 0x1d, 0x9e, 0x5d, 0xaf, 0x2f, 0x82, 0x5d, 0x47, 0x3b, 0x79, 0x78, 0x47, 0x44, 0xf8,
+            0x55, 0xee, 0xb7, 0xc7, 0x3d, 0x8b, 0x6a, 0x2f, 0xc5, 0x53, 0x4d, 0x57, 0x4a, 0x1a, 0xb0, 0x16, 0x86, 0x3b, 0xb5, 0x33, 0xa9,
+            0x9c, 0xcc, 0x0a, 0xf0, 0xc6, 0xb8, 0xe7, 0x69, 0xf8, 0x6a, 0xc7, 0x90, 0x20, 0xf1, 0xe0, 0x7c, 0x99, 0x2c, 0x89, 0xc6, 0x8c,
+            0x8b, 0x97, 0x02, 0x6e, 0x46, 0xc4, 0x4c, 0x53, 0x48, 0x09, 0x0e, 0x66, 0x88, 0x0e, 0xfc, 0x76, 0x15, 0xe6, 0xbe, 0x73, 0x62,
+            0x74, 0x8a, 0x82, 0x4f, 0x0e, 0xdf, 0x7c, 0xde, 0x7c, 0x4d, 0xaf, 0x15, 0x71, 0xbc, 0x98, 0x74, 0x9c, 0x85, 0x38, 0xa6, 0x69,
+            0x0d, 0xe3, 0xa8, 0x98, 0xfb, 0x70, 0xf4, 0x57, 0x96, 0x6c, 0x99, 0x25, 0x44, 0x2e, 0x58, 0x66, 0x89, 0x0c, 0x94, 0x66, 0x96,
+            0x74, 0x64, 0x12, 0x82, 0xc7, 0x32, 0xec, 0x30, 0xd2, 0xec, 0x4b, 0xfa, 0xc6, 0xbc, 0x86, 0x4e, 0xf3, 0x58, 0xa7, 0x62, 0xb6,
+            0xbe, 0xc6, 0x80, 0x61, 0x1e, 0x38, 0xc5, 0xb2, 0xd0, 0xcb, 0x3f, 0x46, 0xff, 0xf2, 0x5a, 0xd8, 0xd2, 0xb2, 0xa8, 0xf5, 0xdc,
+            0xb6, 0xea, 0xfe, 0x89, 0xfc, 0xa8, 0x98, 0x14, 0x58, 0x72, 0xf1, 0x41, 0x77, 0x8b, 0xec, 0xb8, 0x71, 0x4c, 0xf0, 0xd3, 0xed,
+            0x99, 0x70, 0x04, 0xbe, 0xcf, 0x3b, 0x46, 0x22, 0x60, 0x41, 0x65, 0xf9, 0x24, 0x60, 0x82, 0x6d, 0x2f, 0xc6, 0x6e, 0x18, 0xf1,
+            0x23, 0xd2, 0x3f, 0x02, 0x89, 0x9e, 0x91, 0x98, 0x7a, 0x11, 0x5f, 0x9d, 0xf9, 0x08, 0xd6, 0xfd, 0xee, 0xaa, 0x57, 0xb9, 0x80,
+            0x7a, 0xde, 0x48, 0x56, 0xd8, 0x6a, 0x41, 0x04, 0x39, 0xc7, 0x27, 0xb0, 0xcc, 0xe4, 0xcc, 0x0a, 0x75, 0x64, 0x09, 0xdf, 0x04,
+            0x86, 0x75, 0x36, 0x2e, 0xbe, 0x26, 0xac, 0x20, 0x20, 0x94, 0x37, 0xe1, 0xd8, 0x01, 0x7c, 0x70, 0x34, 0x6b, 0x6d, 0xdd, 0x3f,
+            0xeb, 0x29, 0x41, 0x85, 0xb3, 0x5d, 0xfa, 0x17, 0xad, 0xba, 0xf1, 0x83, 0x8a, 0x59, 0x41, 0x94, 0xb4, 0xed, 0x45, 0xdd, 0x1d,
+            0xd8, 0x54, 0xc4, 0xd0, 0x2a, 0xf3, 0x06, 0x34, 0xec, 0xa8, 0x82, 0x00, 0xf4, 0x6b, 0xa0, 0x67, 0xf6, 0x07, 0x39, 0xb7, 0x0a,
+            0xf6, 0x4a, 0xa6, 0x13, 0x71, 0x28, 0x5c, 0x50, 0x2a, 0xe9, 0x3f, 0xf3, 0x95, 0xa2, 0xdf, 0x86, 0x76, 0x5d, 0xf2, 0xdd, 0xea,
+            0x20, 0x5d, 0xed, 0x21, 0xcd, 0xb6, 0xa5, 0x7d, 0x22, 0x92, 0x76, 0x5e, 0x06, 0x50, 0x94, 0x2c, 0xf5, 0xce, 0xff, 0x09, 0x68,
+            0xa0, 0xe5, 0xaf, 0x11, 0x19, 0x1b, 0x47, 0x6d, 0x35, 0x5a, 0xc6, 0x99, 0x5d, 0xbf, 0x98, 0xe9, 0x12, 0xbe, 0x0a, 0xda, 0x6d,
+            0x5e, 0x32, 0x7d, 0xf2, 0x61, 0x83, 0x03, 0xaf, 0xa9, 0xe1, 0x71, 0x7b, 0x95, 0xa1, 0x34, 0xf8, 0xd6, 0xa7, 0x81, 0x5b, 0x7b,
+            0xe5, 0x9b, 0xda, 0x72, 0x01, 0xea, 0x93, 0x47, 0x95, 0xe6, 0xf0, 0xd7, 0xf5, 0x03, 0xa5, 0x12, 0x81, 0xec, 0xc4, 0x73, 0x53,
+            0xdf, 0xaa, 0xc0, 0x44, 0x31, 0x83, 0x22, 0x91, 0x48, 0x23, 0x67, 0x74, 0x04, 0x93, 0xb3, 0x20, 0x6d, 0x66, 0x7a, 0xd5, 0x33,
+            0xac, 0x99, 0x5e, 0xa4, 0x8c, 0xf4, 0x32, 0x38, 0x6f, 0xf2, 0x3a, 0x87, 0x4e, 0x93, 0x89, 0x31, 0xc0, 0xe0, 0xdd, 0xf4, 0x27,
+            0xec, 0x54, 0xf4, 0x4a, 0x91, 0x49, 0x28, 0x22, 0x71, 0x7b, 0x99, 0xd7, 0xd8, 0x55, 0xcc, 0xd3, 0xbb, 0x1f, 0x03, 0x61, 0xcd,
+            0xf3, 0x25, 0xdf, 0xbe, 0x65, 0x1b, 0x01, 0xe4, 0x3d, 0x6d, 0xdf, 0x43, 0xac, 0xcf, 0xfc, 0x76, 0xb0, 0x73, 0x78, 0x61, 0x7c,
+            0x4c, 0x3d, 0x91, 0xbb, 0x3e, 0x68, 0x93, 0xc5, 0x01, 0x61, 0x4b, 0xb8, 0x71, 0xd1, 0x74, 0x96, 0xf3, 0x86, 0x37, 0x5f, 0x82,
+            0x5d, 0x79, 0xd0, 0xb3, 0xd4, 0xf7, 0x12, 0x78, 0x6a, 0x65, 0x7e, 0xe6, 0x2f, 0xd5, 0xb7, 0xa3, 0x2d, 0xd7, 0xb6, 0x81, 0xcc,
+            0xb5, 0xd4, 0x5a, 0xf2, 0x4e, 0x84, 0xcd, 0xd4, 0x78, 0x8e, 0x4e, 0xed, 0x0e, 0x99, 0x1b, 0x14, 0xd3, 0x03, 0x6c, 0x1c, 0x88,
+            0xd0, 0x5c, 0xe8, 0xbc, 0x6c, 0x8c, 0x51, 0xfb, 0x5e, 0xcb, 0xa3, 0x87, 0xad, 0x30, 0x54, 0x3d, 0xed, 0x25, 0xa4, 0xa4, 0x9f,
+            0xfa, 0x4f, 0x4c, 0x83, 0x84, 0xb6, 0x73, 0xe6, 0x84, 0xa0, 0x33, 0xd0, 0x72, 0x4b, 0xaf, 0xbb, 0x25, 0xed, 0x0d, 0xa3, 0xef,
+            0xdd, 0xc0, 0x0b, 0x2b, 0x64, 0x58, 0xb3, 0x80, 0x48, 0xaa, 0x95, 0x38, 0x3e, 0x25, 0x40, 0x8b, 0xd5, 0x61, 0xd0, 0xf0, 0x36,
+            0xca, 0xde, 0x32, 0x55, 0xeb, 0x16, 0xc0, 0x3f, 0xb0, 0xb7, 0x9c, 0x34, 0x36, 0x75, 0x52, 0x47, 0x53, 0xb7, 0x63, 0x2d, 0x6b,
+            0x5b, 0x17, 0xd5, 0xe5, 0x3b, 0xa4, 0xd0, 0xf0, 0x92, 0x3c, 0xb6, 0x48, 0x9a, 0xd1, 0x24, 0x0b, 0x5f, 0x96, 0x85, 0x9c, 0x60,
+            0x1b, 0x8f, 0x1e, 0x4d, 0xa0, 0x15, 0x8f, 0x81, 0x2d, 0xcc, 0x86, 0x5e, 0xba, 0xba, 0xba, 0x8f, 0xd7, 0xf7, 0x41, 0x38, 0x38,
+            0x20, 0xe5, 0xa6, 0x4e, 0x73, 0xea, 0xc5, 0x72, 0xcf, 0x5e, 0x6d, 0xae, 0x5c, 0x29, 0x6e, 0x3a, 0x4c, 0xcb, 0x90, 0x2c, 0xc4,
+            0xa7, 0x93, 0xd4, 0x86, 0xe8, 0xc3, 0xb6, 0x0d, 0xc7, 0xaa, 0x40, 0x3f, 0x00, 0xc3, 0xa5, 0x47, 0xd5, 0xc7, 0xb1, 0x87, 0xf4,
+            0x05, 0x3b, 0x6d, 0x89, 0x8f, 0x8b, 0x30, 0x05, 0x11, 0x56, 0x50, 0xab, 0x9a, 0x0e, 0x7e, 0xa8, 0xf9, 0x85, 0x2c, 0xb6, 0x27,
+            0x26, 0xe5, 0xb4, 0xe9, 0xab, 0x96, 0x87, 0x72, 0xbd, 0x09, 0x93, 0x3d, 0x86, 0x65, 0x6c, 0x72, 0xc3, 0x87, 0xf2, 0x1b, 0xe8,
+            0x17, 0x59, 0x17, 0xe5, 0xad, 0x22, 0x9d, 0x6e, 0x02, 0x7c, 0x70, 0xe9, 0xf2, 0x00, 0xc5, 0xac, 0xd7, 0x5d, 0x92, 0x8e, 0x15,
+            0x90, 0xe0, 0x29, 0xb5, 0xfd, 0x4a, 0x92, 0x2f, 0xfc, 0xa7, 0xdc, 0x55, 0xff, 0x60, 0xab, 0xf3, 0x8a, 0x61, 0x98, 0x80, 0x68,
+            0x7b, 0xfc, 0xb0, 0x08, 0x07, 0x12, 0xbb, 0x32, 0x3f, 0xf7, 0x8d, 0x7a, 0xeb, 0x2b, 0x3b, 0x79, 0xc8, 0xe9, 0x14, 0xe8, 0xc5,
+            0x7e, 0x83, 0xf6, 0xb9, 0x95, 0xfa, 0xad, 0x3c, 0x9d, 0xf5, 0xec, 0xe8, 0xd9, 0x13, 0x8f, 0x32, 0xc2, 0xbe, 0x4c, 0x2e, 0x28,
+            0x5d, 0x4f, 0x1d, 0xe2, 0xe7, 0xa0, 0xda, 0xf8, 0x96, 0xb0, 0x2f, 0x15, 0xc1, 0xc8, 0xc0, 0x51, 0xa1, 0xe1, 0xfb, 0x42, 0x05,
+            0xee, 0xa5, 0x66, 0x9d, 0x38, 0x87, 0x61, 0x72, 0xbc, 0x69, 0x36, 0xa3, 0x89, 0xbc, 0x43, 0x1b, 0x14, 0x64, 0xe9, 0xad, 0x79,
+            0xc8, 0x62, 0xdf, 0x3f, 0xc4, 0xf8, 0x52, 0xfc, 0x5c, 0xae, 0xa1, 0x1a, 0x95, 0xd4, 0x9f, 0xe8, 0x28, 0x6d, 0xc2, 0xbe, 0x9a,
+            0xc9, 0xa1, 0x20, 0x0e, 0x67, 0x6a, 0x90, 0x53, 0x49, 0x2f, 0xfd, 0x12, 0x69, 0xf8, 0xac, 0xf5, 0x40, 0x19, 0x53, 0x1f, 0x7f,
+            0x74, 0x89, 0xf5, 0x44, 0xa3, 0x36, 0x4f, 0x19, 0x01, 0x9d, 0x10, 0xaa, 0x81, 0xc2, 0x67, 0x6e, 0x50, 0xab, 0xe2, 0xfb, 0x7a,
+            0x82, 0xe8, 0x0d, 0x4f, 0xd9, 0x65, 0x37, 0x88, 0x83, 0xa9, 0x83, 0xe3, 0x5c, 0x89, 0x38, 0xfe, 0xf5, 0xac, 0x5a, 0x6f, 0x22,
+            0x3a, 0xcf, 0x6c, 0x6d, 0x48, 0xd2, 0x1b, 0xf8, 0x18, 0x2c, 0xf0, 0xbb, 0xc3, 0xcb, 0x8b, 0x71, 0xca, 0xbb, 0xa5, 0xdc, 0x6e,
+            0x14, 0x45, 0x75, 0x1b, 0x19, 0x60, 0xdc, 0x5b, 0xc7, 0x1c, 0x96, 0xba, 0x80, 0x63, 0x6a, 0x55, 0x6d, 0x07, 0xe2, 0xf0, 0x7a,
+            0x2c, 0x6b, 0xa8, 0xc2, 0x7f, 0xcc, 0xdd, 0x26, 0xb4, 0x20, 0x79, 0x83, 0x74, 0x55, 0x90, 0xbe, 0x8f, 0x9a, 0x4f, 0xd4, 0x9f,
+            0x65, 0xd4, 0x20, 0x34, 0x1f, 0x5d, 0x2b, 0xc5, 0x18, 0x69, 0xa8, 0xbc, 0x69, 0xbe, 0xa5, 0xb0, 0xde, 0x27, 0xcf, 0x1f, 0x99,
+            0x75, 0x6c, 0x66, 0xd3, 0x84, 0x89, 0x27, 0x79, 0xe7, 0x22, 0x56, 0xe8, 0x4f, 0x04, 0x2f, 0x4c, 0xf7, 0xde, 0x43, 0x1b, 0x75,
+            0xe0, 0xbb, 0x86, 0x1f, 0xa0, 0x01, 0xc1, 0x2c, 0x9b, 0x4d, 0xf6, 0x92, 0xdb, 0x96, 0x1e, 0x9c, 0x04, 0x32, 0x62, 0xd6, 0xb2,
+            0x47, 0xdd, 0xbb, 0x19, 0xde, 0x78, 0x72, 0x00, 0x62, 0x3f, 0xa4, 0x27, 0xf8, 0x78, 0x2b, 0x58, 0x63, 0xd2, 0x93, 0x1c, 0x1d,
+            0xd1, 0x98, 0x89, 0x4a, 0x69, 0x43, 0x5a, 0x5e, 0x05, 0x93, 0x75, 0x6f, 0x2c, 0x70, 0xb7, 0x05, 0x04, 0xf5, 0xb9, 0x3b, 0xf9,
+            0xab, 0x8c, 0x3d, 0xc6, 0xbe, 0x06, 0x54, 0xe9, 0x06, 0xb1, 0x5f, 0xdd, 0x31, 0xec, 0xd8, 0x67, 0x6f, 0x38, 0xf5, 0x84, 0xf5,
+            0x75, 0xf3, 0xa1, 0x58, 0xfa, 0x22, 0x6b, 0x4c, 0xf4, 0xc3, 0xe5, 0xea, 0x25, 0xf6, 0x9f, 0x4b, 0x82, 0x62, 0x50, 0x27, 0x02,
+            0x8a, 0xf4, 0x00, 0xc4, 0xbc, 0x23, 0x5c, 0x0f, 0x03, 0xed, 0xa1, 0x37, 0x94, 0xcd, 0xcd, 0x33, 0x7a, 0xf8, 0x93, 0x81, 0x21,
+            0xac, 0x53, 0x35, 0xba, 0x27, 0x0e, 0x11, 0xb6, 0x9d, 0xba, 0x0e, 0x8b, 0x14, 0x6a, 0x71, 0xfc, 0x22, 0x20, 0x5a, 0xe4, 0x3e,
+            0xbc, 0xf3, 0xd5, 0x60, 0xa2, 0x52, 0xbc, 0x4d, 0xab, 0x06, 0x32, 0x32, 0xb4, 0xd7, 0x41, 0xfa, 0x4f, 0x7d, 0x05, 0xb5, 0x78,
+            0xa8, 0x3d, 0xaf, 0x9b, 0xef, 0x5e, 0x02, 0xb5, 0x56, 0x20, 0xe0, 0x08, 0xc0, 0x33, 0x49, 0xa8, 0x0d, 0xc0, 0x41, 0x2f, 0x1c,
+            0x7a, 0xa8, 0x21, 0xbb, 0x3b, 0x76, 0x8b, 0x85, 0x8f, 0x3d, 0x2c, 0x9c, 0x18, 0x84, 0xcd, 0x63, 0x4f, 0x7f, 0xde, 0x31, 0xb1,
+            0xe6, 0x50, 0xe0, 0xdb, 0xa9, 0xed, 0x89, 0xd4, 0xee, 0xa6, 0x3f, 0xd6, 0x08, 0x29, 0x45, 0xf7, 0x10, 0xbd, 0x4c, 0x04, 0x22,
+            0xcc, 0x1d, 0x68, 0x54, 0x98, 0xf2, 0x9d, 0x7d, 0x03, 0xdc, 0xff, 0x80, 0xd3, 0x93, 0x48, 0xbe, 0x72, 0x97, 0x4f, 0x60, 0xa8,
+            0xe4, 0x11, 0x33, 0xfb, 0xf8, 0x15, 0x21, 0x1e, 0xb0, 0x22, 0x7c, 0x20, 0xd2, 0x6e, 0x01, 0xaf, 0x90, 0xd9, 0x47, 0xa9, 0xb5,
+            0xce, 0xb1, 0xdf, 0xd8, 0xd2, 0xaf, 0x62, 0x80, 0x22, 0x58, 0x9a, 0x39, 0x6c, 0xbb, 0x21, 0x56, 0xf1, 0x1b, 0x1c, 0xba, 0x13,
+            0x8e, 0x8d, 0xea, 0xc2, 0x5b, 0x69, 0x66, 0xe7, 0x95, 0x75, 0x57, 0x1e, 0xf4, 0x31, 0x97, 0xd5, 0x29, 0x19, 0x5c, 0xf5, 0x98,
+            0x09, 0x86, 0x40, 0xbf, 0xdd, 0xb6, 0x4d, 0xde, 0x98, 0xc1, 0xa3, 0x92, 0x92, 0xc0, 0x5d, 0xd5, 0x30, 0xc9, 0xab, 0x80, 0x09,
+            0x7f, 0x14, 0x05, 0x9d, 0x33, 0x11, 0x53, 0xfc, 0xba, 0x9d, 0xbe, 0x1d, 0x33, 0xda, 0xa3, 0x98, 0x6b, 0x74, 0x95, 0x88, 0xba,
+            0x80, 0x57, 0xc0, 0x07, 0xd9, 0x08, 0x3f, 0x3a, 0x39, 0x5f, 0xb8, 0xe9, 0x61, 0x9a, 0xdd, 0x59, 0xb2, 0x8e, 0xa1, 0xeb, 0x4b,
+            0x7c, 0xd5, 0x0e, 0x07, 0xed, 0x24, 0x41, 0x34, 0x03, 0x23, 0x75, 0x8e, 0x7e, 0xb7, 0xdb, 0x95, 0xd2, 0xd7, 0x54, 0x56, 0x34,
+            0xc9, 0x5d, 0xf8, 0xdf, 0xc1, 0x94, 0xaa, 0x59, 0xcc, 0x60, 0xfa, 0xe8, 0x08, 0x2a, 0x1a, 0xdc, 0x03, 0xab, 0xf7, 0xf3, 0x1b,
+            0xfa, 0x3a, 0xf8, 0x8e, 0x02, 0x8a, 0x2e, 0x2b, 0x50, 0x4b, 0x7d, 0x92, 0x98, 0x81, 0x35, 0x75, 0xba, 0xa3, 0xd5, 0xe9, 0x70,
+            0x27, 0xce, 0xc2, 0xe9, 0xe8, 0x96, 0xff, 0x94, 0x7c, 0x53, 0xe0, 0x38, 0x0b, 0xcc, 0x8d, 0xfe, 0xce, 0x3a, 0x94, 0x82, 0xc2,
+            0xca, 0x78, 0xa7, 0x3e, 0x62, 0x32, 0x9b, 0x61, 0xb0, 0x90, 0x1e, 0x09, 0xa0, 0x75, 0x04, 0x43, 0x3a, 0x70, 0x65, 0x04, 0x0c,
+            0x9f, 0x22, 0xac, 0x0a, 0x7c, 0xe1, 0x62, 0x39, 0x13, 0xab, 0xe4, 0xfc, 0x1d, 0x1b, 0xcf, 0x8f, 0x10, 0x31, 0x00, 0x75, 0xfd,
+            0x6a, 0x60, 0x8d, 0x67, 0x9d, 0x58, 0x31, 0x1a, 0x74, 0x37, 0x98, 0x19, 0x46, 0x47, 0xb9, 0xa8, 0x8f, 0xbd, 0x39, 0x0e, 0xbd,
+            0xda, 0x86, 0xbc, 0x97, 0xc4, 0x68, 0x9c, 0xca, 0x82, 0x2c, 0x74, 0xd7, 0x78, 0xa4, 0x69, 0xd1, 0x34, 0x8f, 0x57, 0x43, 0xb9,
+            0x47, 0x02, 0xe5, 0x29, 0x58, 0xda, 0x51, 0x0c, 0x13, 0x16, 0x24, 0x24, 0x79, 0xbe, 0xb4, 0x6e, 0xf5, 0x5d, 0xc7, 0xd7, 0xe9,
+            0xab, 0x1a, 0x13, 0x19, 0x97, 0x06, 0x97, 0x8b, 0xf9, 0xd0, 0x37, 0xcb, 0x17, 0x44, 0x85, 0xa9, 0x18, 0x4d, 0x85, 0x76, 0xee,
+            0x9b, 0xd6, 0x5c, 0x8e, 0x24, 0x9f, 0x5c, 0xf3, 0xc2, 0xed, 0x6e, 0xc5, 0x18, 0xfa, 0xc1, 0x14, 0x5a, 0xf0, 0xe1, 0xc0, 0xdb,
+            0x26, 0x1f, 0xe4, 0xd9, 0x7d, 0x79, 0xcc, 0xb3, 0x02, 0x72, 0x99, 0x60, 0xa4, 0xec, 0x2f, 0x78, 0xb8, 0xa0, 0xd1, 0xf6, 0x90,
+            0x03, 0x08, 0x09, 0xde, 0xc4, 0xf9, 0xa6, 0x6f, 0x7f, 0x40, 0x62, 0xa7, 0x40, 0x10, 0xce, 0xd6, 0x90, 0x51, 0x2e, 0x8c, 0x81,
+            0x57, 0xc6, 0x62, 0x04, 0x87, 0x83, 0xb7, 0x01, 0x11, 0xff, 0xa8, 0xc1, 0xc7, 0x8a, 0xcd, 0x2a, 0xed, 0x96, 0x57, 0xd5, 0x08,
+            0xd9, 0xbf, 0xd3, 0x66, 0x37, 0xb0, 0x3f, 0x2e, 0x66, 0x1f, 0x4d, 0xc9, 0xdd, 0x95, 0x2d, 0x37, 0x8e, 0xc0, 0xf2, 0xdc, 0xba,
+            0x66, 0xea, 0x70, 0x3a, 0x71, 0x21, 0x49, 0x00, 0x9c, 0x0c, 0xcd, 0xb3, 0x34, 0x29, 0x11, 0xb6, 0x90, 0xd2, 0x37, 0x0b, 0xfe,
+            0x5f, 0x5d, 0x5e, 0x5f, 0x7a, 0x7b, 0x21, 0xb9, 0x28, 0x87, 0x0b, 0xd8, 0xc2, 0x41, 0xed, 0x93, 0x64, 0x32, 0xde, 0xbd, 0x6a,
+            0xaa, 0x1e, 0x35, 0x6a, 0x95, 0xde, 0x53, 0x4d, 0xb9, 0x05, 0xec, 0xba, 0xeb, 0xb1, 0x41, 0x4c, 0xb4, 0xa5, 0xa5, 0x87, 0x9b,
+            0x54, 0x53, 0xc1, 0x2c, 0x01, 0x86, 0x11, 0x94, 0x5f, 0xfe, 0xc1, 0x45, 0x8d, 0x9d, 0x3d, 0x9d, 0x13, 0x00, 0x00, 0x81, 0x33,
+            0x07, 0xae, 0x0f, 0xd5, 0x7b, 0xab, 0xa9, 0xd7, 0x24, 0xd3, 0xfe, 0xb3, 0x7e, 0x2f, 0x89, 0x92, 0xbe, 0xbe, 0x3e, 0x27, 0x92,
+            0xcd, 0x04, 0x52, 0x61, 0x82, 0x2a, 0x95, 0x6e, 0xe4, 0x7b, 0xdc, 0x16, 0x19, 0x3a, 0x88, 0xd2, 0xe7, 0xdf, 0xf7, 0xae, 0x3a,
+            0xd5, 0x66, 0x91, 0x94, 0x5b, 0x54, 0xa7, 0x9e, 0xf2, 0xd3, 0x51, 0x25, 0x12, 0xf1, 0xd2, 0x1d, 0x8b, 0xd9, 0xf3, 0xf3, 0x75,
+            0xc4, 0xce, 0xde, 0x09, 0xe4, 0xd5, 0x23, 0x4e, 0x1e, 0xf4, 0x99, 0x60, 0x3d, 0x5d, 0x82, 0xb0, 0x31, 0x2a, 0xbf, 0xf6, 0x10,
+            0xea, 0xb6, 0xae, 0x18, 0xb8, 0xfb, 0x50, 0xc7, 0x96, 0x28, 0x7e, 0x5f, 0x6f, 0xd5, 0xf5, 0x6d, 0x6b, 0xfe, 0x24, 0x82, 0xe2,
+            0xbd, 0xee, 0x55, 0xd0, 0x27, 0xc8, 0x28, 0x02, 0x98, 0x41, 0x8d, 0x04, 0x2b, 0x55, 0xc0, 0x57, 0x4c, 0x87, 0x6f, 0x36, 0x84,
+            0xfb, 0x71, 0x10, 0xae, 0xed, 0x71, 0x06, 0x81, 0x03, 0xcc, 0x90, 0x26, 0xa4, 0xd3, 0x3a, 0x30, 0xe8, 0x60, 0xbf, 0x3c, 0xa7,
+            0xe1, 0x0d, 0x42, 0x0a, 0xf4, 0x21, 0xbb, 0xf4, 0x82, 0xe5, 0x83, 0x5d, 0x85, 0xa6, 0xe3, 0x2f, 0x9c, 0xfe, 0x36, 0xc6, 0xcb,
+            0x67, 0x27, 0xcf, 0x86, 0x2d, 0x37, 0xe0, 0x27, 0x20, 0x16, 0x34, 0x6a, 0x5e, 0xd5, 0x56, 0x27, 0x4a, 0x18, 0x95, 0xb8, 0xd5,
+            0x0c, 0xdc, 0xf1, 0x2e, 0x53, 0xf1, 0x48, 0x6e, 0xdb, 0xe9, 0x62, 0x2e, 0x67, 0x53, 0x1f, 0xca, 0x65, 0x93, 0xab, 0x99, 0xca,
+            0x00, 0x17, 0x06, 0x87, 0x53, 0x01, 0x09, 0x80, 0xd7, 0x00, 0x07, 0x0b, 0x01, 0x00, 0x01, 0x23, 0x03, 0x01, 0x01, 0x05, 0x5d,
+            0x00, 0x10, 0x00, 0x00, 0x0c, 0x81, 0x9b, 0x0a, 0x01, 0xa0, 0xee, 0xa0, 0x06, 0x00, 0x00};
+        Assert (sizeof (ksample_zip_7z_) == 2157);
+#if qStroika_HasComponent_LZMA
+        Archive::_7z::Reader reader (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_7z_}));
+        EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
+                                                                             L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
         {
-            // copy array to smaller type
-            using namespace DataExchange;
-            using namespace IO::Network;
-            auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::MD5>{};
-            auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::MD5, uint8_t>{};
-            Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
-            auto         h1                         = digesterWithDefaultResult (value2Hash);
-            uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
-            EXPECT_TRUE (h2 == h1[0]);
-            auto digesterWithResult_string = Digester<Digest::Algorithm::MD5, string>{};
-            // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
-            // so if these fail, either something relevant changed or bug...
-            EXPECT_TRUE (digesterWithResult_string (value2Hash) == "4fa4ac89a4c435e7899a53afa9fcdc5b");
-            EXPECT_TRUE ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"4fa4ac89a4c435e7899a53afa9fcdc5b"));
-        }
-        {
-            using namespace IO::Network;
-            auto    hasherWithDefaultResult  = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>>{};
-            auto    hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
-            auto    value2Hash               = InternetAddress{"192.168.244.33"};
-            auto    h1                       = hasherWithDefaultResult (value2Hash);
-            uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
-            auto    hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
-            std::array<byte, 40> h3          = hasherWithResult_array40 (value2Hash);
-            // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
-            // so if these fail, either something relevant changed or bug...
-            EXPECT_TRUE (h1 == 808390013);
-            EXPECT_TRUE (h2 == 125);
-            EXPECT_TRUE (h3[0] == byte{0x7d} and h3[1] == byte{0x0d} and h3[39] == byte{0});
-        }
-        {
-            // verify can do digest of an Iterable<T>
-            Characters::String    s1 = L"abc";
-            [[maybe_unused]] auto r1 = Digest::ComputeDigest<Digest::Algorithm::MD5> (s1);
-            [[maybe_unused]] auto r2 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> (s1);
-            [[maybe_unused]] auto r3 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> ("abc"_k);
-        }
-    }
-}
-
-namespace {
-
-    template <typename DIGESTER>
-    void DoCommonDigesterTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
-    {
-        EXPECT_TRUE (DIGESTER{}(dataStart, dataEnd) == answer);
-        EXPECT_TRUE (DIGESTER{}(Memory::BLOB{dataStart, dataEnd}.As<Streams::InputStream::Ptr<byte>> ()) == answer);
-    }
-
-    GTEST_TEST (Foundation_Cryptography, Digest_CRC32_)
-    {
-        Debug::TraceContextBumper ctx{"{}::Digest_CRC32_"};
-        using namespace Cryptography::Digest;
-
-        // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
-        {
-            // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
-            const char kSrc[] = "This is a very good test of a very good test";
-            DoCommonDigesterTest_<Digester<Algorithm::CRC32>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
-            DoCommonDigesterTest_<Digester<Algorithm::CRC32, uint32_t>> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 3692548919);
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, Digest_Jenkins_)
-    {
-        using namespace Cryptography::Digest;
-
-        Debug::TraceContextBumper ctx{"...Digest_Jenkins_"};
-
-        using Common::Endian;
-        using Common::EndianConverter;
-        using USE_DIGESTER_ = Digester<Algorithm::Jenkins>;
-        {
-            EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
-            EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{}("1") == 2154528969));
-            EXPECT_TRUE ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2154528969));
-            EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{"mysalt"}("1") == 1355707049));
-            EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 1748544338));
-        }
-        {
-            const char kSrc[] = "This is a very good test of a very good test";
-            DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 2786528596);
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, Digester_MD5_)
-    {
-        using namespace Cryptography::Digest;
-
-        Debug::TraceContextBumper ctx{"...Digester_MD5_"};
-
-        using USE_DIGESTER_ = Digester<Algorithm::MD5>;
-        {
-            const char kSrc[]        = "This is a very good test of a very good test";
-            const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-            EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_, string>{}(kSrc)) == kEncodedVal);
-        }
-        {
-            using namespace Characters; // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
-            EXPECT_TRUE (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
-            EXPECT_TRUE (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
-            EXPECT_TRUE ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
-            EXPECT_TRUE ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, Digester_SuperFastHash_)
-    {
-        using namespace Cryptography::Digest;
-        Debug::TraceContextBumper ctx{"...Digester_SuperFastHash_"};
-
-        // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
-        using USE_DIGESTER_ = Digester<Algorithm::SuperFastHash>;
-        {
-            EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 3282063817u)); // value before 2.1b10 was 422304363
-            EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 2783293987u)); // value before 2.1b10 was 2489559407
-        }
-        {
-            // special case where these collide (USED TO BUT NO LONGER DO DUE TO CHANGE IN what amounts to SEED in 2.1b10)
-            const char kSrc1[] = "        90010";
-            DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc1, (const byte*)kSrc1 + ::strlen (kSrc1), 4253059698u); // value before 2.1b10 was 375771507
-            const char kSrc2[] = "        10028";
-            DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc2, (const byte*)kSrc2 + ::strlen (kSrc2), 1644096207u); // value before 2.1b10 was 375771507
-        }
-        {
-            const char kSrc[] = "This is a very good test of a very good test";
-            DoCommonDigesterTest_<USE_DIGESTER_> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc), 1796287867u); // value before 2.1b10 was 1181771593
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, EnumerateOpenSSLAlgorithmsInContexts_)
-    {
-#if qStroika_HasComponent_OpenSSL
-        Debug::TraceContextBumper ctx{"...EnumerateOpenSSLAlgorithmsInContexts_"};
-        Set<String>               defaultContextAvailableCipherAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
-        Set<String> defaultContextStandardCipherAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
-        Set<String> defaultContextAvailableDigestAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
-        Set<String> defaultContextStandardDigestAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
-
-        DbgTrace ("defaultContextAvailableCipherAlgorithms = #{} {}"_f, defaultContextAvailableCipherAlgorithms.size (),
-                  Characters::ToString (defaultContextAvailableCipherAlgorithms));
-        DbgTrace ("defaultContextStandardCipherAlgorithms = #{} {}"_f, defaultContextStandardCipherAlgorithms.size (),
-                  Characters::ToString (defaultContextStandardCipherAlgorithms));
-        DbgTrace ("defaultContextAvailableDigestAlgorithms = #{} {}"_f, defaultContextAvailableDigestAlgorithms.size (),
-                  Characters::ToString (defaultContextAvailableDigestAlgorithms));
-        DbgTrace ("defaultContextStandardDigestAlgorithms = #{} {}"_f, defaultContextStandardDigestAlgorithms.size (),
-                  Characters::ToString (defaultContextStandardDigestAlgorithms));
-
-        // worth noting if these fail
-        if (not defaultContextAvailableCipherAlgorithms.ContainsAny (defaultContextStandardCipherAlgorithms)) {
-            Stroika::Frameworks::Test::WarnTestIssue ("defaultContextAvailableCipherAlgorithms missing standard algorithms: {}"_f(
-                defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms));
-        }
-        if (not defaultContextAvailableDigestAlgorithms.ContainsAny (defaultContextStandardDigestAlgorithms)) {
-            Stroika::Frameworks::Test::WarnTestIssue ("defaultContextAvailableDigestAlgorithms missing standard algorithms: {}"_f(
-                defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms));
-        }
-        // for openssl v3 could also check with legacy provider loaded...
-#endif
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Cryptography, AllSSLEncryptionRoundtrip)
-    {
-        using namespace Cryptography::Encoding;
-        using namespace Cryptography::Encoding::Algorithm;
-        Debug::TraceContextBumper ctx{"...AllSSLEncryptionRoundtrip"};
-
-#if qStroika_HasComponent_OpenSSL
-        using Memory::BLOB;
-        using namespace Stroika::Foundation::Cryptography::Encoding;
-
-        auto roundTripTester_ = [] (const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
-            BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
-            BLOB decodedData =
-                OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
-            EXPECT_EQ (src, decodedData);
-        };
-
-        const char        kKey1_[]        = "Mr Key";
-        const char        kKey2_[]        = "One Very Very Very Long key 123";
-        static const BLOB kPassphrases_[] = {
-            BLOB::FromRaw (kKey1_, Memory::NEltsOf (kKey1_) - 1),
-            BLOB::FromRaw (kKey2_, Memory::NEltsOf (kKey2_) - 1),
-        };
-
-        constexpr char kSrc1_[] = "This is a very good test of a very good test";
-        constexpr char kSrc2_[] = "";
-        constexpr char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
-        constexpr char kSrc4_[] = "0123456789";
-
-        static const BLOB kTestMessages_[] = {
-            BLOB::FromRaw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1), BLOB::FromRaw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
-            BLOB::FromRaw (kSrc3_, Memory::NEltsOf (kSrc3_) - 1), BLOB::FromRaw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
-
-        static const Set<String> kLastSeenAllFailingCiphers_ = {"AES-128-OCB"sv,
-                                                                "AES-128-XTS"sv,
-                                                                "AES-192-OCB"sv,
-                                                                "AES-256-OCB"sv,
-                                                                "AES-256-XTS"sv,
-                                                                "ARIA-128-CCM"sv,
-                                                                "ARIA-128-GCM"sv,
-                                                                "ARIA-192-CCM"sv,
-                                                                "ARIA-192-GCM"sv,
-                                                                "ARIA-256-CCM"sv,
-                                                                "ARIA-256-GCM"sv,
-// It appears these failures ONLY happen on X86 and x64 systems --LGP 2021-12-10
-// no idea why these work on windows, but fail on Unix... --LGP 2021-09-14
-#if qStroika_Foundation_Common_Platform_POSIX && (defined(__x86__) || defined(__x86_64__))
-                                                                "AES-256-CBC-HMAC-SHA256"sv,
-                                                                "AES-256-CBC-HMAC-SHA1"sv,
-                                                                "AES-128-CBC-HMAC-SHA256"sv,
-                                                                "AES-128-CBC-HMAC-SHA1"sv,
-#endif
-
-                                                                "id-aes128-CCM"sv,
-                                                                "id-aes128-GCM"sv,
-                                                                "id-aes128-wrap"sv,
-                                                                "id-aes192-CCM",
-                                                                "id-aes192-GCM"sv,
-                                                                "id-aes192-wrap"sv,
-                                                                "id-aes256-CCM"sv,
-                                                                "id-aes256-GCM"sv,
-                                                                "id-aes256-wrap"sv,
-                                                                "id-smime-alg-CMS3DESwrap"sv};
-
-        Set<String> providers2Try{OpenSSL::LibraryContext::kDefaultProvider};
-        if constexpr (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
-            providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
-        }
-        for (String provider : providers2Try) {
-            Debug::TraceContextBumper ctxp{
-                Stroika_Foundation_Debug_OptionalizeTraceArgs ("trying provider", "provider={}"_f, Characters::ToString (provider))};
-            shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
+            EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
+            EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
+            EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
+            EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+            EXPECT_TRUE (
+                TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
+                    .ReadAll ()
+                    .Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+            EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
             try {
-#if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
-                DISABLE_COMPILER_MSC_WARNING_START (4127); //warning C4127: conditional expression is constant
-                if (not(Debug::kBuiltWithAddressSanitizer and provider == OpenSSL::LibraryContext::kLegacyProvider)) {
-                    providerAdder = make_shared<OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
-                }
-                DISABLE_COMPILER_MSC_WARNING_END (4127);
-#else
-                providerAdder = make_shared<OpenSSL::LibraryContext::TemporarilyAddProvider> (&OpenSSL::LibraryContext::sDefault, provider);
-#endif
+                auto i = reader.GetData ("file-not-found");
+                EXPECT_TRUE (false);
             }
             catch (...) {
-                if (provider == "legacy"sv) {
-                    DbgTrace ("Skipping provider={}, due to exception: {}"_f, provider, Characters::ToString (current_exception ()));
-                }
-                else {
-                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping provider={}, due to exception: {}"_f(provider, current_exception ()));
-                }
-                continue;
-            }
-            unsigned int                  nCipherTests{};
-            unsigned int                  nFailures{};
-            MultiSet<String>              failingCiphers;
-            [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().size ();
-            for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
-                // No idea why, but we get a hard fail (uncatchable exception from ASAN) - if we test these on raspi with ASAN (maybe rethrow of execpt caught to print it?) -- LGP 2023-11-07
-#ifdef __arm__
-                constexpr bool kArm_ = true;
-#else
-                constexpr bool kArm_ = false;
-#endif
-                if (kArm_ and Debug::kBuiltWithAddressSanitizer and
-                    (
-                        // clang-format off
-                        ci.pName () == "id-aes128-GCM" or ci.pName () == "id-aes192-GCM" or ci.pName () == "id-aes256-GCM"
-                        or ci.pName () == "AES-128-XTS" or  ci.pName () == "AES-256-XTS"
-                        or ci.pName () == "id-aes128-CCM" or ci.pName () == "id-aes192-CCM" or ci.pName () == "id-aes256-CCM" 
-                        or ci.pName () == "id-aes128-wrap" or ci.pName () == "id-aes192-wrap" or ci.pName () == "id-aes256-wrap" 
-                        or ci.pName () == "AES-128-OCB" or  ci.pName () == "AES-192-OCB" or ci.pName () == "AES-256-OCB"
-                        or ci.pName () == "ARIA-128-GCM" or ci.pName () == "ARIA-192-GCM" or ci.pName () == "ARIA-256-GCM"
-                        or ci.pName () == "ARIA-128-CCM" or ci.pName () == "ARIA-192-CCM" or ci.pName () == "ARIA-256-CCM"
-                        or ci.pName () == "id-smime-alg-CMS3DESwrap"
-                        // clang-format on
-                        )) {
-                    DbgTrace ("Skipping ci='{}' on raspi/asan"_f, ci.pName ());
-                    continue;
-                }
-                for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
-                    DbgTrace ("Testing ci={}, di={}"_f, ci, di);
-                    size_t nFailsForThisCipherDigestCombo{};
-                    for (BLOB passphrase : kPassphrases_) {
-                        for (BLOB inputMessage : kTestMessages_) {
-                            ++nFailsForThisCipherDigestCombo;
-                            ++nCipherTests;
-                            try {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                                Debug::TraceContextBumper ctx{"roundtriptesting", "ci={}, di={}"_f, ci, di};
-#endif
-                                OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
-                                roundTripTester_ (cryptoParams, inputMessage);
-                            }
-                            catch (...) {
-                                if (di.pName () == "SHAKE128" or di.pName () == "SHAKE256") {
-                                    // Since openssl 3.4.0 - these appear to fail in the digest itself - not sure we care - so ingore at least in this regression test...
-                                    // ignore --LGP 2024-11-18
-                                    continue;
-                                }
-                                nFailures++;
-                                failingCiphers.Add (Characters::ToString (ci));
-                                DbgTrace ("For Test ({}, {}): Ignoring exception: {}"_f, ci, di, current_exception ());
-                                if (not kLastSeenAllFailingCiphers_.Contains (ci.pName ())) {
-                                    DbgTrace ("***new failure"_f);
-                                }
-                            }
-                        }
-                    }
-                    if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)) {
-                        // maybe this cipher/digest combo fails only on some inputs
-                        Stroika::Frameworks::Test::WarnTestIssue ("Cipher {}, Digest {} failed {} times (not {})"_f(
-                            ci, di, nFailsForThisCipherDigestCombo, NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)));
-                    }
-                }
-            }
-            /*
-             *  If any tests fail, check:
-             *      (1) is this a new failure, or one we've examined before
-             *             report new failures as a warning (generally cuz new version of openssl and maybe algorithm deprecated).
-             *      (2) is this a standard algorithm failing (usually more serious, but sometimes even these get deprecated
-             *          in new openssl releases).
-             */
-            if (nFailures != 0) {
-                Set<String> allCiphers{
-                    OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
-                Set<String> passingCiphers = allCiphers - failingCiphers.Elements ();
-                if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
-                    // Look at why each failed - but if innocuous, then add to list of known failures. This generally comes up only
-                    // when we upgrade to new major openssl release.
-                    Stroika::Frameworks::Test::WarnTestIssue (
-                        "For provider={}, nCipherTests={}, nFailures={}, new-failures={}, remove-failures={}, "
-                        "failingCiphers={}, passing-ciphrs={}"_f(
-                            provider, nCipherTests, nFailures, Set<String>{failingCiphers.Elements ()} - kLastSeenAllFailingCiphers_,
-                            kLastSeenAllFailingCiphers_ - failingCiphers.Elements (), failingCiphers, passingCiphers));
-                }
-                static const Set<String> kStandardCipherAlgorithmNames{
-                    OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
-                if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
-                    Stroika::Frameworks::Test::WarnTestIssue ("For provider={}, some standard ciphers failed: {}"_f(
-                        provider, failingCiphers.Elements () ^ kStandardCipherAlgorithmNames));
-                }
+                // good
             }
         }
 #endif
@@ -656,156 +202,1077 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Cryptography, OpenSSLDeriveKeyTests_)
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Test2_ZipArchive_)
     {
-        using namespace Cryptography::Encoding;
-        using namespace Cryptography::Encoding::Algorithm;
-        Debug::TraceContextBumper ctx{"...OpenSSLDeriveKeyTests_"};
+        Debug::TraceContextBumper ctx{"Test2_ZipArchive_"};
+        // od sample_zip.zip -t x1 -w32 | sed 's/ /,0x/g'
+        // then strip first column manually, and leading ,
+        [[maybe_unused]] static constexpr uint8_t ksample_zip_[] = {
+            0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x50,
+            0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00, 0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0xb9, 0x17, 0x5d, 0x58, 0x3f, 0x03, 0x00, 0x00,
+            0xc8, 0x10, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x42, 0x6c,
+            0x6f, 0x63, 0x6b, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2d, 0x56, 0x61, 0x6c, 0x67, 0x72, 0x69, 0x6e,
+            0x64, 0x2e, 0x73, 0x75, 0x70, 0x70, 0xd5, 0x57, 0x4b, 0x6f, 0xdb, 0x30, 0x0c, 0xbe, 0x17, 0xe8, 0x7f, 0xe8, 0x39, 0xc5, 0x82,
+            0xd8, 0xcb, 0xc3, 0xdd, 0xcd, 0x49, 0xdc, 0xce, 0xa8, 0xf3, 0x40, 0x9c, 0xa1, 0xc0, 0x2e, 0x84, 0x6a, 0x33, 0x8d, 0x10, 0xcb,
+            0xf2, 0x24, 0x39, 0x5b, 0x36, 0xec, 0xbf, 0x8f, 0x72, 0x1e, 0x6d, 0x83, 0x6c, 0xe8, 0xb6, 0xb6, 0xcb, 0x7c, 0x88, 0x65, 0x4a,
+            0x94, 0x3e, 0x92, 0x9f, 0x48, 0xe6, 0xdb, 0xe9, 0xc9, 0xd9, 0xd9, 0xd9, 0x74, 0xce, 0x35, 0x84, 0x1a, 0xa6, 0x12, 0xe2, 0xb2,
+            0x28, 0x14, 0x6a, 0x0d, 0x97, 0x2c, 0xd3, 0x08, 0x37, 0x4c, 0xe5, 0x3c, 0xbf, 0xd3, 0xe0, 0xdf, 0xca, 0xd2, 0x40, 0x37, 0x93,
+            0xc9, 0x02, 0xfc, 0x8c, 0x5e, 0xcc, 0x70, 0x99, 0x57, 0xda, 0x03, 0x14, 0xc9, 0x1c, 0x93, 0xc5, 0xbb, 0x08, 0xd9, 0xa2, 0x92,
+            0xcc, 0xca, 0xfc, 0x9d, 0x60, 0x76, 0xd5, 0xee, 0x13, 0x3e, 0x0e, 0x3b, 0xb1, 0x51, 0x92, 0x2f, 0x98, 0xd3, 0xb8, 0x94, 0x65,
+            0x9e, 0x56, 0x1b, 0xb4, 0x49, 0x59, 0xaa, 0x95, 0x37, 0x56, 0x7c, 0xc9, 0x0c, 0x82, 0xe3, 0x5e, 0xa1, 0x21, 0x19, 0x7c, 0x30,
+            0x3c, 0x83, 0x40, 0x9c, 0x9e, 0x7c, 0x3f, 0x3d, 0xf9, 0x4b, 0x90, 0xee, 0xb3, 0xa3, 0xac, 0x55, 0x47, 0xdc, 0x9f, 0x30, 0x96,
+            0x32, 0x83, 0xda, 0x03, 0xac, 0xdd, 0x68, 0xd4, 0xbb, 0x06, 0x3f, 0xa2, 0x17, 0x8c, 0xc6, 0xd3, 0x70, 0x10, 0x7e, 0x0c, 0xfa,
+            0x70, 0x75, 0x7e, 0x0e, 0x3f, 0xc1, 0x22, 0x98, 0x49, 0xe6, 0x6f, 0x32, 0xfa, 0x7c, 0xb3, 0xe0, 0x79, 0xaa, 0xdf, 0x9d, 0x15,
+            0x52, 0x6b, 0x7e, 0x9b, 0xe1, 0xcf, 0xa0, 0x3e, 0xf4, 0xd3, 0xef, 0xe2, 0x77, 0x1b, 0x07, 0x0d, 0xa8, 0x73, 0xad, 0x58, 0xbd,
+            0xf6, 0x1c, 0x3e, 0x87, 0x51, 0x61, 0xb8, 0xe0, 0x5f, 0x51, 0xc1, 0x5f, 0x7b, 0xdf, 0x69, 0xf4, 0xe6, 0x4c, 0xb1, 0xc4, 0xa0,
+            0xd2, 0x6d, 0x9a, 0xa7, 0x63, 0xdf, 0x8a, 0x05, 0x04, 0xe3, 0xeb, 0xcf, 0x71, 0x13, 0x8e, 0x10, 0xad, 0xcc, 0x0d, 0xe3, 0x39,
+            0xa1, 0xf5, 0x68, 0x98, 0x28, 0x34, 0xe8, 0x78, 0x03, 0x56, 0x14, 0x84, 0x00, 0x22, 0x9e, 0x2f, 0x30, 0x8d, 0xb8, 0x36, 0xa1,
+            0x10, 0xc3, 0xd8, 0x81, 0xda, 0x04, 0x0b, 0x78, 0xeb, 0xa7, 0x69, 0x20, 0x9e, 0x85, 0xed, 0x2f, 0x6e, 0x8b, 0xdb, 0x8a, 0xf1,
+            0x53, 0x89, 0x79, 0x82, 0xd0, 0x97, 0xe5, 0x6d, 0xb6, 0xba, 0x37, 0xe9, 0x7f, 0xa0, 0x8e, 0xd3, 0x88, 0xcb, 0xdb, 0xf5, 0x10,
+            0x82, 0xc9, 0xf5, 0x30, 0x76, 0xc1, 0x69, 0x43, 0xcc, 0x66, 0x48, 0x81, 0xf0, 0x93, 0x84, 0x70, 0x4a, 0x15, 0x88, 0xe3, 0x0b,
+            0xc6, 0xc5, 0x54, 0xb1, 0x25, 0xd9, 0xc1, 0x32, 0xa7, 0xd5, 0x53, 0x48, 0xf7, 0xf8, 0x0a, 0x29, 0x30, 0xcc, 0x48, 0x15, 0x0e,
+            0xe3, 0x06, 0x1c, 0xb0, 0x35, 0x08, 0x02, 0x4b, 0x31, 0x2f, 0x24, 0x19, 0xa3, 0x5c, 0x12, 0x4e, 0x21, 0x20, 0x9b, 0x63, 0xe3,
+            0xd1, 0x39, 0x89, 0xdd, 0x34, 0xbc, 0xb4, 0xaa, 0xdb, 0xfc, 0x30, 0x2a, 0xac, 0x8c, 0x65, 0x61, 0xdc, 0x86, 0x61, 0x7c, 0x01,
+            0xae, 0xbb, 0x95, 0x40, 0x1f, 0x67, 0xac, 0xcc, 0x0c, 0x61, 0xe0, 0x46, 0xdb, 0xf9, 0x80, 0x9e, 0x65, 0x10, 0x1c, 0x9b, 0x97,
+            0xac, 0x0c, 0x99, 0xd0, 0x1e, 0x97, 0xba, 0x1a, 0xbd, 0x6d, 0x75, 0x79, 0xce, 0xd4, 0x2a, 0xcc, 0x8b, 0xd2, 0xac, 0x27, 0x2f,
+            0x95, 0x14, 0xe1, 0x7a, 0xe8, 0xa7, 0xac, 0x20, 0xe7, 0xf4, 0x9c, 0x60, 0x12, 0xf3, 0x63, 0xb3, 0xe5, 0x70, 0x2a, 0x69, 0xc4,
+            0x68, 0x40, 0x9b, 0x54, 0xa3, 0x09, 0xb9, 0xa5, 0xaf, 0xdb, 0xbc, 0x97, 0xec, 0xc5, 0x89, 0x57, 0xd1, 0xed, 0x49, 0x21, 0x68,
+            0x37, 0x8f, 0xde, 0x05, 0x53, 0xa8, 0x6e, 0xb8, 0x99, 0x07, 0x9f, 0x4a, 0x96, 0xd1, 0x02, 0xcb, 0x90, 0x16, 0xb8, 0xce, 0xc3,
+            0xb9, 0x1b, 0xcc, 0xb2, 0x91, 0x4a, 0x51, 0xd1, 0xb4, 0x7d, 0xc8, 0x3b, 0xcb, 0x63, 0xf6, 0x4d, 0x67, 0x53, 0xd7, 0x5c, 0x77,
+            0x6c, 0xcb, 0x28, 0x21, 0xe8, 0x33, 0xc3, 0x48, 0xa9, 0x4c, 0x4c, 0x49, 0xf0, 0xdc, 0x66, 0x25, 0xb7, 0x37, 0x60, 0xa7, 0xf4,
+            0x1e, 0xb3, 0x82, 0x0c, 0xac, 0xae, 0x7f, 0xf3, 0xf1, 0xf2, 0x7f, 0x9a, 0xc5, 0x1c, 0x17, 0xae, 0xa2, 0x51, 0xd7, 0x8f, 0x00,
+            0x86, 0xe0, 0x38, 0x5e, 0x5f, 0x4e, 0xf0, 0xce, 0x1e, 0x4b, 0x7b, 0x4e, 0x51, 0x1b, 0x0d, 0xc7, 0x17, 0x8b, 0x8b, 0xe0, 0x0b,
+            0x26, 0x65, 0x15, 0x95, 0xa6, 0x58, 0x84, 0x93, 0x32, 0xcf, 0xad, 0xaf, 0xc7, 0x46, 0xed, 0x27, 0x9b, 0xe5, 0x11, 0x66, 0x8c,
+            0x43, 0x4c, 0x72, 0x2e, 0x42, 0xb3, 0x49, 0xad, 0xa2, 0xc8, 0xd6, 0x5c, 0x81, 0xda, 0x6e, 0x1d, 0x55, 0x8a, 0x88, 0x00, 0x59,
+            0xda, 0x58, 0xdc, 0x52, 0x99, 0x47, 0xdd, 0xdf, 0x5e, 0x73, 0x05, 0x49, 0xc6, 0xf2, 0xbb, 0xf3, 0xf3, 0x67, 0x6b, 0xfd, 0x9e,
+            0x50, 0xec, 0x76, 0xe9, 0x62, 0x67, 0x51, 0xa7, 0x5b, 0xce, 0x66, 0xa8, 0x30, 0x5d, 0x97, 0x06, 0x32, 0xa1, 0x09, 0xf4, 0xd3,
+            0x21, 0xa7, 0xa3, 0x5a, 0x62, 0x20, 0x5e, 0xd7, 0x80, 0xc7, 0x3c, 0x77, 0x5b, 0x9b, 0x8a, 0xbc, 0x05, 0xe9, 0x2b, 0xc5, 0x56,
+            0x16, 0x1f, 0xe4, 0x9f, 0x5f, 0x1b, 0xda, 0x9f, 0x77, 0xd0, 0x61, 0x24, 0x6a, 0xde, 0x46, 0xf6, 0xea, 0x1e, 0xfd, 0x05, 0x6c,
+            0xb7, 0xe3, 0x97, 0x46, 0x0a, 0x12, 0x25, 0xa4, 0xb6, 0x7a, 0x08, 0x06, 0xd3, 0x27, 0x30, 0x17, 0xe4, 0xf6, 0xba, 0xd5, 0xeb,
+            0xf5, 0x97, 0xc6, 0x7c, 0xe8, 0x3e, 0xee, 0xa7, 0x68, 0xa7, 0x71, 0xdf, 0x74, 0xfe, 0x4b, 0xfc, 0x7b, 0xd9, 0xba, 0xb3, 0x61,
+            0x31, 0x75, 0x98, 0x7a, 0x3d, 0x6a, 0x0f, 0x56, 0x4f, 0x27, 0xf1, 0x4b, 0xc1, 0xfc, 0xed, 0x7e, 0xb2, 0xb6, 0xdf, 0x10, 0xd6,
+            0x06, 0xab, 0x6d, 0x0f, 0x49, 0xe6, 0x1c, 0xc3, 0x3f, 0xdd, 0x2d, 0x7d, 0x2b, 0x28, 0xa7, 0x27, 0x3f, 0x00, 0x50, 0x4b, 0x03,
+            0x04, 0x14, 0x00, 0x00, 0x00, 0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0xbc, 0xd6, 0x66, 0x07, 0x57, 0x02, 0x00, 0x00, 0x7d, 0x06,
+            0x00, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x43, 0x6f, 0x6d, 0x6d,
+            0x6f, 0x6e, 0x2d, 0x56, 0x61, 0x6c, 0x67, 0x72, 0x69, 0x6e, 0x64, 0x2e, 0x73, 0x75, 0x70, 0x70, 0xcd, 0x54, 0x4b, 0x4f, 0xdb,
+            0x40, 0x10, 0xbe, 0x23, 0xf1, 0x1f, 0x38, 0xb6, 0x97, 0xc8, 0x2e, 0x01, 0x02, 0x37, 0x1e, 0x46, 0x8a, 0x12, 0x20, 0xc5, 0xb4,
+            0x95, 0x5a, 0x55, 0xa3, 0xf5, 0xee, 0xc4, 0xb1, 0xb2, 0x0f, 0x77, 0x1f, 0x09, 0x51, 0xd5, 0xff, 0xde, 0x59, 0x27, 0x84, 0xbc,
+            0x50, 0xda, 0x53, 0xeb, 0x83, 0x2d, 0xcf, 0xf3, 0xdb, 0xef, 0x9b, 0x9d, 0x9f, 0x87, 0x07, 0x47, 0x47, 0x47, 0x97, 0x75, 0xcd,
+            0x2c, 0x6a, 0x2f, 0x67, 0x70, 0x65, 0xca, 0xe0, 0xe0, 0x0b, 0xb3, 0xba, 0xd2, 0x25, 0x5c, 0x16, 0x26, 0x78, 0xc8, 0xbd, 0x7d,
+            0x32, 0x37, 0x70, 0x6d, 0x04, 0x02, 0x67, 0x52, 0x46, 0x4f, 0xdf, 0x98, 0xb1, 0x83, 0x87, 0x5e, 0x93, 0x7f, 0x87, 0x8a, 0x8f,
+            0x90, 0x8f, 0x2f, 0xae, 0x8d, 0x16, 0x8d, 0x65, 0x18, 0xf4, 0x05, 0xd0, 0xe3, 0xbc, 0xf5, 0x46, 0x80, 0x84, 0x4a, 0x7b, 0xb4,
+            0x9a, 0xc9, 0xc3, 0x83, 0x5f, 0x87, 0x07, 0x5b, 0x5d, 0x8b, 0x50, 0x6e, 0x34, 0xa5, 0x4c, 0x11, 0xb3, 0xa3, 0x41, 0xa1, 0x92,
+            0xc8, 0xc6, 0x4d, 0x6f, 0x14, 0x30, 0xb4, 0x46, 0x81, 0x08, 0x96, 0xf9, 0xca, 0x68, 0xe0, 0x84, 0x6a, 0x1d, 0x44, 0x9f, 0x62,
+            0x97, 0x20, 0x14, 0xe5, 0x18, 0xfe, 0x8a, 0xe9, 0xab, 0x9e, 0xaa, 0x95, 0xbf, 0xfb, 0x73, 0x80, 0x52, 0x07, 0xe0, 0xcf, 0xcf,
+            0xe9, 0xb1, 0xc6, 0x29, 0x34, 0xe1, 0xcc, 0x1b, 0xdb, 0xe5, 0x59, 0x67, 0xf1, 0x83, 0x99, 0x1a, 0xf4, 0x26, 0xab, 0x59, 0xb9,
+            0x6b, 0xc3, 0x23, 0xd6, 0xe7, 0x90, 0x03, 0xb7, 0xd8, 0x44, 0xa8, 0xc7, 0x5e, 0xce, 0x28, 0x69, 0x47, 0x58, 0x07, 0xee, 0x80,
+            0x4b, 0xa3, 0x31, 0x5b, 0xc4, 0xa8, 0xf5, 0xa0, 0x33, 0x8b, 0x0e, 0xed, 0x04, 0x37, 0xed, 0xa7, 0xac, 0xae, 0x51, 0x8b, 0x6c,
+            0xd0, 0xe3, 0x6f, 0x7b, 0xd6, 0x1d, 0x75, 0x7f, 0xd3, 0x76, 0x46, 0xea, 0x99, 0x6a, 0xcc, 0xd2, 0xe4, 0xd6, 0x04, 0x2d, 0x1a,
+            0xd2, 0xda, 0x4f, 0x95, 0xc2, 0xce, 0xcd, 0x82, 0xc2, 0xf4, 0xc3, 0x27, 0x3d, 0x60, 0xd6, 0x61, 0xb4, 0x42, 0x26, 0x76, 0x48,
+            0x04, 0x57, 0xa1, 0xec, 0xea, 0xbe, 0x21, 0x05, 0x30, 0x8e, 0xc1, 0x55, 0xf0, 0x03, 0x6b, 0x0a, 0x56, 0xc8, 0xd9, 0xc7, 0x50,
+            0xd9, 0xf1, 0xc3, 0xf0, 0x33, 0x93, 0x25, 0x89, 0x25, 0xd6, 0xa5, 0xb8, 0x14, 0xc2, 0x76, 0x96, 0x68, 0xa6, 0xdc, 0x71, 0x55,
+            0xaf, 0x01, 0xf6, 0x69, 0xa2, 0x88, 0x98, 0x59, 0x1d, 0x34, 0xf7, 0xdd, 0x69, 0xbf, 0x48, 0xb3, 0xec, 0x26, 0xcd, 0x26, 0xfb,
+            0x83, 0x92, 0xcd, 0xa0, 0x53, 0xd9, 0xc0, 0x3b, 0x81, 0xae, 0xaa, 0xe5, 0xa2, 0xc6, 0xb6, 0x3b, 0x3a, 0xf6, 0xd1, 0x93, 0x1e,
+            0xd3, 0x1c, 0x0f, 0xab, 0xf2, 0x85, 0x9f, 0xf6, 0x2d, 0x1d, 0x6c, 0x7e, 0xf8, 0x7b, 0xa6, 0xa2, 0x8a, 0xf7, 0x79, 0x02, 0x69,
+            0x72, 0x3d, 0x62, 0x96, 0x71, 0x9a, 0x6b, 0x77, 0x9a, 0x37, 0x93, 0x9a, 0xe5, 0x27, 0xf0, 0x4f, 0xd9, 0x4b, 0xfe, 0x84, 0xbd,
+            0xe4, 0xbf, 0x66, 0xef, 0xef, 0x8a, 0x9f, 0xc4, 0xe2, 0xb1, 0xec, 0xbc, 0xc3, 0xde, 0xea, 0xa4, 0xcd, 0x8b, 0x3a, 0x73, 0x3e,
+            0x21, 0xde, 0x24, 0x1a, 0x7e, 0xf0, 0x06, 0x4a, 0xd4, 0x48, 0x75, 0x11, 0x86, 0x4c, 0x3a, 0x84, 0xe9, 0x7c, 0x1f, 0x39, 0x28,
+            0x39, 0x6f, 0x77, 0x20, 0x14, 0x41, 0xfb, 0xb0, 0xbd, 0xef, 0x76, 0x09, 0xd4, 0x6a, 0xb5, 0x56, 0xe6, 0x40, 0x56, 0x05, 0x0f,
+            0x56, 0x42, 0xcd, 0x9c, 0x43, 0x07, 0xce, 0xd0, 0x35, 0x2b, 0x98, 0x80, 0x09, 0x93, 0x01, 0xe7, 0x8d, 0x3d, 0x13, 0x82, 0x50,
+            0x0e, 0x0d, 0x28, 0x36, 0x2b, 0x36, 0x16, 0xda, 0x80, 0x8e, 0x32, 0x5f, 0x00, 0x8e, 0x2e, 0xbd, 0x72, 0xe5, 0x3b, 0x45, 0xaf,
+            0x6f, 0xc9, 0xf7, 0x16, 0x7d, 0x60, 0x24, 0xec, 0xfb, 0x25, 0x86, 0x18, 0x10, 0x9d, 0x2b, 0x4b, 0x38, 0x76, 0x07, 0x4b, 0x7d,
+            0x75, 0x74, 0xee, 0x74, 0xfc, 0x08, 0x68, 0x67, 0x6f, 0xa4, 0x30, 0xcb, 0x47, 0x4b, 0x17, 0x19, 0x1c, 0x08, 0xed, 0x22, 0xe2,
+            0x91, 0x71, 0xbe, 0x98, 0x69, 0xe2, 0xbe, 0x0d, 0x76, 0x19, 0x51, 0xb2, 0x6a, 0x44, 0xcb, 0x1e, 0xfd, 0xab, 0xe5, 0xf5, 0x70,
+            0x2f, 0xdc, 0x2c, 0x74, 0xf8, 0x0d, 0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00, 0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0x73,
+            0x89, 0x39, 0xc3, 0x1c, 0x02, 0x00, 0x00, 0x8e, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65,
+            0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x54, 0x65, 0x73, 0x74, 0x73, 0x2d, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f,
+            0x6e, 0x2e, 0x74, 0x78, 0x74, 0xa5, 0x94, 0x4f, 0x73, 0xda, 0x30, 0x10, 0xc5, 0xcf, 0xcd, 0x4c, 0xbe, 0x47, 0x7b, 0xc2, 0x18,
+            0x48, 0xc1, 0x37, 0x12, 0xc8, 0x94, 0x0e, 0xff, 0x8a, 0x3d, 0x4d, 0x67, 0x32, 0x3d, 0x6c, 0x84, 0xb0, 0x55, 0x8c, 0x44, 0xd7,
+            0x52, 0x8a, 0xfb, 0xe9, 0xab, 0xb5, 0x4b, 0x28, 0xea, 0x58, 0x1c, 0xb8, 0x09, 0xed, 0x6f, 0x9f, 0xd6, 0xef, 0x49, 0x3c, 0x07,
+            0xed, 0xef, 0xef, 0x1e, 0x95, 0x91, 0x6b, 0xd0, 0x42, 0xc9, 0x28, 0x7a, 0x00, 0x96, 0x09, 0x99, 0xde, 0xde, 0x3c, 0x07, 0xa1,
+            0x53, 0xc9, 0x00, 0x81, 0x69, 0x8e, 0x45, 0x14, 0xc5, 0x1a, 0x2d, 0x54, 0x10, 0xd5, 0x71, 0x28, 0x25, 0x37, 0x22, 0x35, 0x58,
+            0xfd, 0xa4, 0x7a, 0xf7, 0xbf, 0xba, 0x06, 0x21, 0x2b, 0x95, 0xf1, 0xc1, 0xaa, 0x49, 0xc8, 0xf3, 0x32, 0x2e, 0x25, 0xcb, 0x50,
+            0x49, 0xf1, 0x9b, 0xaf, 0x47, 0xa0, 0xc1, 0xea, 0x1b, 0xa6, 0x0d, 0x72, 0x4b, 0x0d, 0x11, 0xa1, 0x24, 0xa5, 0xde, 0xb5, 0x4a,
+            0x53, 0x21, 0xb7, 0x7c, 0x3d, 0x15, 0x85, 0x26, 0xb9, 0xbb, 0x6b, 0xe5, 0x46, 0xca, 0xbc, 0xe4, 0xe5, 0xb9, 0xe8, 0xc7, 0x66,
+            0xd1, 0x25, 0x8a, 0x57, 0xd0, 0xdc, 0xf6, 0x39, 0x3a, 0x71, 0x32, 0x7d, 0xe3, 0x9e, 0x10, 0xf6, 0x7b, 0x8e, 0x24, 0xd5, 0xbf,
+            0x76, 0xbe, 0x78, 0x2b, 0xf6, 0xc7, 0xb9, 0x06, 0xcd, 0x62, 0xc3, 0xa2, 0x50, 0x4c, 0x1c, 0xf3, 0x6a, 0x07, 0xcd, 0xe4, 0x3d,
+            0xa4, 0x44, 0xb4, 0x3d, 0x84, 0xf8, 0xc1, 0xd9, 0x51, 0x29, 0x6c, 0xe2, 0x68, 0x9d, 0xe7, 0x27, 0xb0, 0xd3, 0x0c, 0x8e, 0xf8,
+            0x4f, 0xc3, 0x89, 0xf1, 0x5c, 0xa3, 0x99, 0xb5, 0xac, 0xbe, 0xb2, 0xed, 0x9e, 0xd7, 0x7e, 0x85, 0x42, 0x97, 0x5f, 0x0c, 0xaf,
+            0x15, 0x3d, 0xf9, 0xbf, 0x31, 0x9e, 0x38, 0x63, 0x9a, 0x4c, 0xb2, 0x0a, 0xeb, 0xfb, 0x30, 0x4d, 0xc4, 0xc0, 0x43, 0x28, 0xd4,
+            0x7c, 0x7d, 0x9e, 0x42, 0x18, 0x5c, 0xe2, 0xcf, 0x1c, 0x0c, 0xdb, 0x97, 0xf0, 0x93, 0x47, 0x61, 0x78, 0x91, 0x35, 0xb9, 0x16,
+            0xf5, 0xdc, 0x61, 0xe7, 0x12, 0xfc, 0x97, 0xeb, 0x7a, 0x38, 0x0d, 0x6c, 0x4b, 0x8c, 0x27, 0x9c, 0x7f, 0x8f, 0x74, 0x73, 0xc1,
+            0x72, 0xaf, 0x55, 0x6a, 0xdf, 0x45, 0x56, 0x52, 0xf9, 0x2c, 0x92, 0xfa, 0x31, 0x8d, 0x0f, 0x2c, 0x03, 0x99, 0xda, 0xa7, 0xb5,
+            0xe2, 0xb0, 0xe6, 0xd8, 0x7a, 0xb2, 0x41, 0x5b, 0xdd, 0xf7, 0x93, 0xf9, 0xa4, 0xf5, 0x39, 0x5e, 0xcc, 0x5b, 0xdf, 0x66, 0xd3,
+            0x0f, 0xd4, 0xdc, 0xf7, 0x35, 0x2f, 0x5e, 0xe8, 0xf2, 0x7e, 0x05, 0x14, 0x20, 0xf5, 0xec, 0xf8, 0x0e, 0xc3, 0x81, 0xaf, 0xc7,
+            0x0a, 0xdb, 0x2f, 0x84, 0xc3, 0x12, 0xb0, 0xa8, 0xf0, 0x4e, 0xe0, 0x3d, 0x42, 0x67, 0x35, 0xe5, 0x04, 0x36, 0x3e, 0x70, 0x66,
+            0x8e, 0x4b, 0xc6, 0xf7, 0xb4, 0x2c, 0x88, 0x0b, 0x1b, 0xb9, 0x25, 0x2a, 0xc6, 0x8b, 0x62, 0x65, 0xa4, 0xac, 0x25, 0x3b, 0x8d,
+            0x68, 0x2c, 0x52, 0xfb, 0x67, 0x51, 0xe9, 0x75, 0x1b, 0xa1, 0x24, 0x43, 0x6b, 0x5e, 0x05, 0xf5, 0x2e, 0x40, 0x31, 0x6c, 0xb8,
+            0x2e, 0xef, 0x8d, 0xb0, 0xa1, 0xc9, 0xda, 0x35, 0x6a, 0xbb, 0x6b, 0x6a, 0x3b, 0x7d, 0xb6, 0x13, 0xde, 0x64, 0x11, 0x45, 0x73,
+            0xae, 0x7f, 0x29, 0xdc, 0x52, 0xb5, 0xdf, 0x58, 0x8d, 0xa2, 0x4f, 0x49, 0xb2, 0x24, 0x66, 0xe0, 0x61, 0x12, 0x04, 0x59, 0x6c,
+            0xaa, 0x93, 0xba, 0x81, 0xcb, 0x9d, 0xa6, 0xe8, 0x3a, 0xe6, 0xcf, 0x40, 0x67, 0xb4, 0x1d, 0x3a, 0xdb, 0x7c, 0xa7, 0xb0, 0xa4,
+            0x82, 0xe3, 0x6c, 0xac, 0xad, 0x09, 0xbb, 0x82, 0x2a, 0x8e, 0x9d, 0x89, 0xd8, 0x71, 0xda, 0x3e, 0x33, 0xb0, 0x9a, 0xeb, 0xd5,
+            0x5e, 0x47, 0xc8, 0xa9, 0xe6, 0xb8, 0xb4, 0x1c, 0xaf, 0x1e, 0x17, 0xab, 0xd9, 0x70, 0xfe, 0x30, 0xbe, 0xbd, 0xf9, 0x03, 0x50,
+            0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00, 0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0x94, 0x3c, 0x0b, 0xa0, 0x82, 0x00, 0x00, 0x00,
+            0xf3, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x54, 0x4f,
+            0x44, 0x4f, 0x2e, 0x74, 0x78, 0x74, 0xb5, 0xce, 0xc1, 0x0d, 0x83, 0x30, 0x14, 0x03, 0xd0, 0x33, 0x48, 0xec, 0xe0, 0x05, 0xba,
+            0x44, 0xd5, 0x7b, 0x0e, 0x65, 0x81, 0xdf, 0xf0, 0x53, 0x52, 0x20, 0x1f, 0xe5, 0x1b, 0x21, 0xb6, 0x6f, 0xd4, 0x1d, 0x7a, 0xf2,
+            0xc1, 0x96, 0x9e, 0xc7, 0xf0, 0x08, 0x43, 0xdf, 0x59, 0x17, 0x4a, 0x54, 0x48, 0xb9, 0x60, 0x09, 0x9c, 0x15, 0xe3, 0x5c, 0x55,
+            0xa6, 0xa7, 0x24, 0xe5, 0x75, 0x3f, 0xf2, 0xca, 0x5c, 0xc2, 0xeb, 0xa3, 0x91, 0xa0, 0x3a, 0x1d, 0xa7, 0xd5, 0x05, 0x37, 0x9c,
+            0x99, 0xf3, 0x6f, 0xbf, 0x5a, 0x5c, 0x72, 0x79, 0xc3, 0x79, 0xa4, 0xd4, 0x0a, 0x99, 0x26, 0x6c, 0x56, 0x15, 0xd1, 0x4a, 0xac,
+            0x4a, 0x05, 0x2f, 0xdd, 0x7d, 0xe8, 0xff, 0xa6, 0xd9, 0xae, 0x55, 0x98, 0xad, 0x38, 0x68, 0x10, 0xf7, 0xa3, 0xe9, 0x2e, 0xa9,
+            0x41, 0x6c, 0xb9, 0xb5, 0x07, 0x79, 0xd3, 0xa1, 0xff, 0x02, 0x50, 0x4b, 0x01, 0x02, 0x3f, 0x00, 0x14, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0xd1, 0xa2, 0x4b, 0x47, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x24, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x5f,
+            0x7a, 0x69, 0x70, 0x2f, 0x0a, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0xf5, 0xbf, 0xd7, 0x16, 0x84,
+            0x04, 0xd1, 0x01, 0xf5, 0xbf, 0xd7, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x7c, 0xcf, 0xd5, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x50, 0x4b,
+            0x01, 0x02, 0x3f, 0x00, 0x14, 0x00, 0x00, 0x00, 0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0xb9, 0x17, 0x5d, 0x58, 0x3f, 0x03, 0x00,
+            0x00, 0xc8, 0x10, 0x00, 0x00, 0x28, 0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x29, 0x00,
+            0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x41, 0x6c, 0x6c,
+            0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2d, 0x56, 0x61, 0x6c, 0x67, 0x72, 0x69, 0x6e, 0x64, 0x2e, 0x73, 0x75, 0x70, 0x70,
+            0x0a, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x09, 0x42, 0xd6, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x7c,
+            0xcf, 0xd5, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x7c, 0xcf, 0xd5, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x50, 0x4b, 0x01, 0x02, 0x3f, 0x00,
+            0x14, 0x00, 0x00, 0x00, 0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0xbc, 0xd6, 0x66, 0x07, 0x57, 0x02, 0x00, 0x00, 0x7d, 0x06, 0x00,
+            0x00, 0x1f, 0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0xae, 0x03, 0x00, 0x00, 0x73, 0x61,
+            0x6d, 0x70, 0x6c, 0x65, 0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2d, 0x56, 0x61, 0x6c, 0x67, 0x72,
+            0x69, 0x6e, 0x64, 0x2e, 0x73, 0x75, 0x70, 0x70, 0x0a, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x01,
+            0x01, 0xd7, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x69, 0x8e, 0xd6, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x69, 0x8e, 0xd6, 0x16, 0x84, 0x04,
+            0xd1, 0x01, 0x50, 0x4b, 0x01, 0x02, 0x3f, 0x00, 0x14, 0x00, 0x00, 0x00, 0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0x73, 0x89, 0x39,
+            0xc3, 0x1c, 0x02, 0x00, 0x00, 0x8e, 0x07, 0x00, 0x00, 0x20, 0x00, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00,
+            0x00, 0x00, 0x42, 0x06, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x54, 0x65, 0x73, 0x74,
+            0x73, 0x2d, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x74, 0x78, 0x74, 0x0a, 0x00, 0x20, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x55, 0x0c, 0xd8, 0x16, 0x84, 0x04, 0xd1, 0x01, 0xf5, 0xbf, 0xd7, 0x16, 0x84,
+            0x04, 0xd1, 0x01, 0xf5, 0xbf, 0xd7, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x50, 0x4b, 0x01, 0x02, 0x3f, 0x00, 0x14, 0x00, 0x00, 0x00,
+            0x08, 0x00, 0xd1, 0xa2, 0x4b, 0x47, 0x94, 0x3c, 0x0b, 0xa0, 0x82, 0x00, 0x00, 0x00, 0xf3, 0x00, 0x00, 0x00, 0x13, 0x00, 0x24,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x9c, 0x08, 0x00, 0x00, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65,
+            0x5f, 0x7a, 0x69, 0x70, 0x2f, 0x54, 0x4f, 0x44, 0x4f, 0x2e, 0x74, 0x78, 0x74, 0x0a, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x01, 0x00, 0x18, 0x00, 0x8e, 0x73, 0xd7, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x2d, 0x27, 0xd7, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x2d,
+            0x27, 0xd7, 0x16, 0x84, 0x04, 0xd1, 0x01, 0x50, 0x4b, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x05, 0x00, 0x1f, 0x02,
+            0x00, 0x00, 0x4f, 0x09, 0x00, 0x00, 0x00, 0x00};
+        Assert (sizeof (ksample_zip_) == 2948);
+#if qStroika_HasComponent_zlib
+        Archive::Zip::Reader reader{Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_})};
 
-#if qStroika_HasComponent_OpenSSL
-        using Characters::String;
-        using Memory::BLOB;
-        using namespace Stroika::Foundation::Cryptography::Encoding;
-
-        auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const DerivedKey& expected) {
-            unsigned int nRounds = 1; // command-line tool uses this
-            DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds};
-            DbgTrace ("dk={}; expected={}"_f, Characters::ToString (dk), Characters::ToString (expected));
-            EXPECT_TRUE (dk == expected);
-        };
-        auto checkWithSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& salt,
-                                 const DerivedKey& expected) {
-            unsigned int nRounds = 1; // command-line tool uses this
-            DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds, salt};
-            DbgTrace ("dk={}; expected={}"_f, dk, expected);
-            EXPECT_TRUE (dk == expected);
-        };
-
-        // openssl rc4 -P -k mypass -md md5 -nosalt
-        //      key=A029D0DF84EB5549C641E04A9EF389E5
-        checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
-                     DerivedKey{BLOB::FromHex ("A029D0DF84EB5549C641E04A9EF389E5"), BLOB{}});
-
-        // openssl rc4 -P -k mypass  -md md5 -S 0102030405060708
-        //  salt=0102030405060708
-        //  key=56BDFF04895C5D16F5E3F68737000092
-        checkWithSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass", BLOB::FromHex ("0102030405060708"),
-                       DerivedKey{BLOB::FromHex ("56BDFF04895C5D16F5E3F68737000092"), BLOB{}});
-
-        // openssl blowfish -P -k mypass -md sha1 -nosalt
-        //      key=E727D1464AE12436E899A726DA5B2F11
-        //      iv =D8381B26923E0415
-        checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kSHA1, L"mypass",
-                     DerivedKey{BLOB::FromHex ("E727D1464AE12436E899A726DA5B2F11"), BLOB::FromHex ("D8381B26923E0415")});
-
-        // openssl aes-256-cbc -P -k mypass -md md5 -nosalt
-        //      key=A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367
-        //      iv =541F477059FAEFD57328A0B0D22F2A20
-        checkNoSalt (OpenSSL::CipherAlgorithms::kAES_256_CBC, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
-                     DerivedKey{BLOB::FromHex ("A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367"),
-                                BLOB::FromHex ("541F477059FAEFD57328A0B0D22F2A20")});
-
-        // openssl aes-128-ofb -P -k mypass -md sha1 -S 1122334455667788
-        //      salt=1122334455667788
-        //      key=36237DC4B90DD237329731E85EE5BB5A
-        //      iv =35F1A763D974A002DB1721B8F25498E6
-        checkWithSalt (OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, L"mypass", BLOB::FromHex ("1122334455667788"),
-                       DerivedKey{BLOB::FromHex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::FromHex ("35F1A763D974A002DB1721B8F25498E6")});
+        EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
+                                                                             "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
+        {
+            EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
+            EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
+            EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
+            EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+            EXPECT_TRUE (
+                TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
+                    .ReadAll ()
+                    .Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+            EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
+            try {
+                auto i = reader.GetData ("file-not-found");
+                EXPECT_TRUE (false);
+            }
+            catch (...) {
+                // good
+            }
+        }
 #endif
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Cryptography, OpenSSLEncryptDecryptTests_)
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, INI_ONLY_)
     {
-        using namespace Cryptography::Encoding;
-        using namespace Cryptography::Encoding::Algorithm;
-        Debug::TraceContextBumper ctx{"...OpenSSLEncryptDecryptTests_"};
+        Debug::TraceContextBumper ctx{"INI_ONLY_::DoAll_"};
+        auto                      DoBasicReader1_ = [] () {
+            stringstream tmp;
+            tmp << "NAME=\"Ubuntu\"" << endl;
+            tmp << "VERSION=\"13.10, Saucy Salamander\"" << endl;
+            tmp << "ID=ubuntu" << endl;
+            tmp << "ID_LIKE=debian" << endl;
+            tmp << "PRETTY_NAME=\"Ubuntu 13.10\"" << endl;
+            tmp << "VERSION_ID=\"13.10\"" << endl;
+            tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << endl;
+            tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << endl;
+            tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
+            Variant::INI::Profile p = Variant::INI::Reader{}.ReadProfile (tmp);
+            EXPECT_TRUE (p.fNamedSections.empty ());
+            EXPECT_TRUE (p.fUnnamedSection.fProperties.LookupValue ("NAME") == "Ubuntu");
+            EXPECT_TRUE (p.fUnnamedSection.fProperties.LookupValue ("SUPPORT_URL") == "http://help.ubuntu.com/");
+        };
+        auto DoReadWriteTest2_ = [] () {
+            {
+                struct Case_ {
+                    DataExchange::Variant::INI::Profile data;
+                    string                              dataAsFile;
+                };
+                const Case_ kCase1_{[] () {
+                                        DataExchange::Variant::INI::Section section{{
+                                            {"NAME", L"Ubuntu"},
+                                            {"VERSION", L"13.10, Saucy Salamander"},
+                                            {"ID", L"ubuntu"},
+                                            {"ID_LIKE", L"debian"},
+                                            {"PRETTY_NAME", L"Ubuntu 13.10"},
+                                            {"VERSION_ID", L"13.10"},
+                                            {"HOME_URL", L"http://www.ubuntu.com/"},
+                                            {"SUPPORT_URL", L"http://help.ubuntu.com/"},
+                                            {"BUG_REPORT_URL", L"http://bugs.launchpad.net/ubuntu/"},
+                                        }};
+                                        return DataExchange::Variant::INI::Profile{section};
+                                    }(),
+                                    [] () {
+                                        stringstream tmp;
+                                        tmp << "NAME=\"Ubuntu\"" << Characters::kEOL<char>;
+                                        tmp << "VERSION=\"13.10, Saucy Salamander\"" << Characters::kEOL<char>;
+                                        tmp << "ID=ubuntu" << Characters::kEOL<char>;
+                                        tmp << "ID_LIKE=debian" << Characters::kEOL<char>;
+                                        tmp << "PRETTY_NAME=\"Ubuntu 13.10\"" << Characters::kEOL<char>;
+                                        tmp << "VERSION_ID=\"13.10\"" << Characters::kEOL<char>;
+                                        tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << Characters::kEOL<char>;
+                                        tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << Characters::kEOL<char>;
+                                        tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << Characters::kEOL<char>;
+                                        return tmp.str ();
+                                    }()};
 
-#if qStroika_HasComponent_OpenSSL
-        using Characters::String;
-        using Memory::BLOB;
-        using namespace Stroika::Foundation::Cryptography::Encoding;
+                // Cannot compare that serialized formats equal, but we can assure that when we serialize and then deserialize that
+                // is the same as the original data
+                String                serialized   = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
+                Variant::INI::Profile deserialized = Variant::INI::Reader{}.ReadProfile (serialized);
+                EXPECT_EQ (deserialized, kCase1_.data);
+                EXPECT_EQ ((Variant::INI::Reader{}.ReadProfile (Memory::BLOB{kCase1_.dataAsFile})), kCase1_.data);
+            }
+        };
+        DoBasicReader1_ ();
+        DoReadWriteTest2_ ();
+    }
+}
 
-        auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src,
-                               const BLOB& expected) {
-            if (OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Contains (cipherAlgorithm)) {
-                unsigned int nRounds = 1; // command-line tool uses this
-                OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
-                DbgTrace ("dk={}"_f, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds});
-                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
-                BLOB decodedData =
-                    OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
-                DbgTrace ("src={}; encodedData={}; expected={}; decodedData={}"_f, Characters::ToString (src), encodedData, expected, decodedData);
-                EXPECT_EQ (encodedData, expected);
-                EXPECT_EQ (src, decodedData);
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, CharacterDelimitedLines_ONLY_)
+    {
+        Debug::TraceContextBumper ctx{"CharacterDelimitedLines_ONLY_::DoAll_"};
+
+        auto DoBasicReader1_ = [] () {
+            using Traversal::Iterable;
+            stringstream tmp;
+            tmp << "3,4" << endl;
+            tmp << "4,5" << endl;
+            Iterable<Sequence<String>> s = Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp);
+            EXPECT_TRUE (s.size () == 2);
+            EXPECT_TRUE (s.Nth (1)[1] == "5");
+        };
+
+        struct Case_ {
+            Sequence<Sequence<String>> data;
+            string                     dataAsFile;
+        };
+        const Case_ kCase1_spaceSep_{[] () {
+                                         return Sequence<Sequence<String>>{
+                                             Sequence<String>{"3", "4"},
+                                             Sequence<String>{"4", "5"},
+                                         };
+                                     }(),
+                                     [] () {
+                                         stringstream tmp;
+                                         tmp << "3, 4" << Characters::kEOL<char>;
+                                         tmp << "4, 5" << Characters::kEOL<char>;
+                                         return tmp.str ();
+                                     }()};
+        const Case_ kCase2_noSpace_{[] () {
+                                        return Sequence<Sequence<String>>{
+                                            Sequence<String>{"a", "b"},
+                                            Sequence<String>{"1", "2", "3"}, // Can be different lengths
+                                            Sequence<String>{"x", "7"},
+                                        };
+                                    }(),
+                                    [] () {
+                                        stringstream tmp;
+                                        tmp << "a,b" << Characters::kEOL<char>;
+                                        tmp << "1,2,3" << Characters::kEOL<char>;
+                                        tmp << "x,7" << Characters::kEOL<char>;
+                                        return tmp.str ();
+                                    }()};
+
+        auto DoBasicWriterAndReader1_ = [&] () {
+            using WriterOptions = Variant::CharacterDelimitedLines::Writer::Options;
+            {
+                auto serialized =
+                    Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = true}}.WriteAsString (kCase1_spaceSep_.data);
+                String aaa = String{kCase1_spaceSep_.dataAsFile};
+                EXPECT_TRUE (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
+                stringstream tmp{kCase1_spaceSep_.dataAsFile};
+                EXPECT_TRUE ((kCase1_spaceSep_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
+            }
+            {
+                auto serialized =
+                    Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = false}}.WriteAsString (kCase2_noSpace_.data);
+                EXPECT_EQ (serialized.AsASCII (), kCase2_noSpace_.dataAsFile);
+                stringstream tmp{kCase2_noSpace_.dataAsFile};
+                EXPECT_EQ (kCase2_noSpace_.data, Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)});
             }
         };
 
-        //  echo apples and pears| od -t x1 --width=64
-        //      0000000 61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a
-        //
-        //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt -P
-        //      key=900150983CD24FB0D6963F7D28E17F72
-        //
-        //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt | openssl rc4 -md md5 -d -k abc -nosalt
-        //      apples and pears
-        //
-        //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt | od -t x1 --width=64
-        //      0000000 4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d
-        //
-        checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"abc",
-                     BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"),
-                     BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"));
-
-        //  echo hi mom| od -t x1 --width=64
-        //      0000000 68 69 20 6d 6f 6d 0d 0a
-        //  echo hi mom| openssl bf -e -k aaa -nosalt | openssl bf -d -k aaa -nosalt
-        //      hi mom
-        //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
-        //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
-        checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
-                     BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"sv));
-
-        //  echo hi mom| od -t x1 --width=64
-        //      0000000 68 69 20 6d 6f 6d 0d 0a
-        //   echo hi mom| openssl aes-128-cbc -md md5 -k aaa -nosalt | od -t x1 --width=64
-        //      0000000 6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53
-        checkNoSalt (OpenSSL::CipherAlgorithms::kAES_128_CBC, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
-                     BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::FromHex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
-#endif
+        DoBasicReader1_ ();
+        DoBasicWriterAndReader1_ ();
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Cryptography, AESTest_)
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_01_BasicWriterTests_)
     {
-        using namespace Cryptography::Encoding;
-        using namespace Cryptography::Encoding::Algorithm;
-        Debug::TraceContextBumper ctx{"...AESTest_"};
-
+        Debug::TraceContextBumper ctx{"JSON_ONLY_::DoAll_"};
+        auto                      CheckMatchesExpected_WRITER_ = [] (const VariantValue& v, const string& expected) {
+            Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+            using Writer                         = DataExchange::Variant::JSON::Writer;
+            Writer{Writer::Options{.fLineTermination = "\n"sv}}.Write (v, out);
+            string x = out.As<string> ();
+            // not quite true, but almost: EXPECT_TRUE (out.As<string> () == expected);
+            if (x != expected) {
+                // Might be a bug, but probably not; before Stroika v3.0d1, we used Mapping_stdmap<> so
+                // the maps were really ordered. But now they are not, so the text representation can
+                // vary. If diff, reverse the parse, and see if OK.
+                VariantValue vvv = DataExchange::Variant::JSON::Reader{}.Read (Memory::BLOB{x});
+                if (vvv != v) {
+                    Stroika::Frameworks::Test::WarnTestIssue (string{"x: " + x});
+                    Stroika::Frameworks::Test::WarnTestIssue (string{"expected: " + expected});
+                    EXPECT_TRUE (false);
+                }
+            }
+        };
         {
-            /**
-             *      echo -n "This is a very good test of a very good test" | od -t x1 --width=100
-             *          0000000 2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a
-             *
-             *      echo -n "This is a very good test of a very good test" | openssl enc -k password -e -aes-256-cbc -nosalt | od -t x1 --width=100
-             *          0000000 62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd
-             */
-            const Memory::BLOB srcText =
-                Memory::BLOB::FromHex ("2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 "
-                                       "20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
-            const Memory::BLOB encResult =
-                Memory::BLOB::FromHex ("62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 "
-                                       "ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
-#if qStroika_HasComponent_OpenSSL
-            const OpenSSL::DerivedKey kDerivedKey =
-                OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};
-            // HORRIBLE MESS OF AN API! -
-            // @todo - FIX
-            EXPECT_TRUE (EncodeAES (kDerivedKey, srcText, AESOptions::e256_CBC) == encResult);
-            EXPECT_TRUE (DecodeAES (kDerivedKey, encResult, AESOptions::e256_CBC) == srcText);
+            VariantValue v1 = L"hello world";
+            CheckMatchesExpected_WRITER_ (v1, "\"hello world\"\n");
+        }
+        {
+            VariantValue v1 = 3;
+            CheckMatchesExpected_WRITER_ (v1, "3\n");
+        }
+        {
+// Sterl's bug report email dated 2015-10-15 - a backslash must be followed by one of “\/bfnrtu
+#if 0
+                    {
+                        VariantValue    v1 = L"test\?";
+                        CheckMatchesExpected_WRITER_ (v1, "\"test?\"\n");
+                    }
 #endif
+            {
+                VariantValue v1 = L"test\\?";
+                CheckMatchesExpected_WRITER_ (v1, "\"test\\\\?\"\n");
+            }
+#if 0
+                    {
+                        Mapping<String, VariantValue> m { pair<String, VariantValue> {L"fCmdLine", L"test\\?" } };
+                        VariantValue    v1 { m };
+                        CheckMatchesExpected_WRITER_ (v1, "{\n    \"fCmdLine\" : \"test\\\\?\"\n}\n");
+                    }
+#endif
+        }
+        {
+            // Check (real issue behind Sterl's bug report email dated 2015-10-15) - proper control char handling
+            // No control characters allowed directly in string
+#if 1
+            // CRAZY - but clang-format gets confused without #if 1 surrounding this code -LGP 2024-01-02
+            {
+                VariantValue v1 = L"\t";
+                CheckMatchesExpected_WRITER_ (v1, "\"\\t\"\n");
+            }
+            {
+                VariantValue v1 = L"\x3";
+                CheckMatchesExpected_WRITER_ (v1, "\"\\u0003\"\n");
+            }
+#endif
+        }
+        {
+            VariantValue v1 = 4.7;
+            CheckMatchesExpected_WRITER_ (v1, "4.7\n");
+        }
+        {
+            VariantValue v1 = L"\"";
+            CheckMatchesExpected_WRITER_ (v1, "\"\\\"\"\n");
+        }
+        {
+            // array
+            vector<VariantValue> v;
+            v.push_back (3);
+            v.push_back (7);
+            v.push_back (L"cookie");
+            VariantValue v1 = VariantValue{v};
+            CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]\n");
+        }
+        {
+            // object
+            map<wstring, VariantValue> v;
+            v[L"Arg1"]      = 32;
+            v[L"Arg2"]      = L"Cookies";
+            v[L"Arg3"]      = Containers::Sequence<VariantValue> ({19});
+            VariantValue v1 = VariantValue{v};
+            CheckMatchesExpected_WRITER_ (v1,
+                                          "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}\n");
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_02_BasicReaderTests_)
+    {
+        auto CheckMatchesExpected_READER_ = [] (const string& v, const VariantValue& expected) {
+            stringstream tmp;
+            tmp << v;
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
+            EXPECT_TRUE (v1 == expected);
+        };
+        {
+            VariantValue v1 = L"hello world";
+            CheckMatchesExpected_READER_ ("\"hello world\"", v1);
+        }
+        {
+            VariantValue v1 = 3;
+            CheckMatchesExpected_READER_ ("3", v1);
+        }
+        {
+            VariantValue v1 = L"\uFDD0";
+            CheckMatchesExpected_READER_ ("\"\\uFDD0\"", v1);
+        }
+        {
+            VariantValue v1 = 4.7;
+            CheckMatchesExpected_READER_ ("4.7", v1);
+        }
+        {
+            // array
+            vector<VariantValue> v;
+            v.push_back (3);
+            v.push_back (7);
+            v.push_back (L"cookie");
+            VariantValue v1 = VariantValue{v};
+            CheckMatchesExpected_READER_ ("[\n    3,\n    7,\n    \"cookie\"\n]", v1);
+        }
+        {
+            // object
+            map<wstring, VariantValue> v;
+            v[L"Arg1"]      = 32;
+            v[L"Arg2"]      = L"Cookies";
+            v[L"Arg3"]      = Containers::Sequence<VariantValue> ({19});
+            VariantValue v1 = VariantValue{v};
+            CheckMatchesExpected_READER_ ("{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}", v1);
+        }
+        {
+            // Bug found in another JSON reader (sent me by Ryan - 2011-07-27)
+            const string kExample =
+                "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We "
+                "Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/"
+                "company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/"
+                "mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" "
+                "History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate "
+                "Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/"
+                "about/"
+                "supplier-diversity.html\",\"text\":\"Supplier "
+                "Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor "
+                "Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News "
+                "Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst "
+                "Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and "
+                "Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog "
+                "Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact "
+                "Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/"
+                "press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press "
+                "Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press "
+                "Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{"
+                "\"header\":{"
+                "\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le "
+                "Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/"
+                "about/community-involvement.html\",\"text\":\"Community "
+                "Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://"
+                "communityclicks.compuware.com\",\"text\":\"Community Clicks "
+                "Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant "
+                "Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
+            stringstream tmp;
+            tmp << kExample;
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
+            EXPECT_TRUE (v1.GetType () == VariantValue::eMap);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_03_CheckCanReadFromSmallBadSrc_)
+    {
+        auto VerifyThisStringFailsToParse_ = [] (const string& s) {
+            stringstream tmp;
+            tmp << s;
+            try {
+                VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
+                EXPECT_TRUE (false); // should get exception
+            }
+            catch (const DataExchange::BadFormatException&) {
+                // GOOD
+            }
+            catch (...) {
+                EXPECT_TRUE (false); // should get BadFormatException
+            }
+        };
+        VerifyThisStringFailsToParse_ ("n");
+        VerifyThisStringFailsToParse_ ("'");
+        VerifyThisStringFailsToParse_ ("\"");
+        VerifyThisStringFailsToParse_ ("[");
+        VerifyThisStringFailsToParse_ ("}");
+        VerifyThisStringFailsToParse_ ("]");
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_04_CheckStringQuoting_)
+    {
+        Debug::TraceContextBumper ctx{"Test_04_CheckStringQuoting_::DoAll_"};
+        auto                      CheckRoundtrip_encode_decode_unchanged = [] (const VariantValue& v) {
+            string encodedRep;
+            {
+                Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+                DataExchange::Variant::JSON::Writer{}.Write (v, out);
+                encodedRep = out.As<string> ();
+            }
+            {
+                stringstream tmp;
+                tmp << encodedRep;
+                VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
+                EXPECT_TRUE (vOut == v);
+            }
+        };
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\t\r\n\f\x3"}); // proper read/write control characters
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\?"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\\?"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"cookie"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"c:\\"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"'"});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\""});
+        //this test is OK, but makes no sense, and isn't testing what it appears to--- CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\\u20a9")); //  ₩
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\u20a9"}); //  ₩
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\"apple\""});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<long long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long long int>::min ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long long int>::max ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{true});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{Memory::BLOB::FromHex ("aa1234abcd01010102030405")});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_05_ParseRegressionTest_1_)
+    {
+        Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_1_::DoAll_"};
+        {
+            const char kJSONExample_[] = "{"
+                                         "    \"Automated Backups\" : {"
+                                         "        \"From\" : {"
+                                         "            \"CurrentHRWildcard\" : true,"
+                                         "            \"PrintName\" : \"{Current HR}\""
+                                         "        },"
+                                         "        \"LastRanAt\" : {"
+                                         "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
+                                         "        },"
+                                         "        \"Operation\" : 0,"
+                                         "        \"Output\" : {"
+                                         "            \"AttachmentPolicy\" : 2,"
+                                         "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
+                                         "            \"MaxFiles\" : 0,"
+                                         "            \"NamePolicy\" : 1,"
+                                         "            \"Password\" : \"\""
+                                         "        },"
+                                         "        \"PolicyName\" : \"Automated Backups\","
+                                         "        \"Schedule\" : 2,"
+                                         "        \"To\" : {"
+                                         "            \"DefaultBackupDirectory\" : true,"
+                                         "            \"PrintName\" : \"{Default Backup Directory}\""
+                                         "        }"
+                                         "    }"
+                                         "}";
+            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
+            map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
+            EXPECT_EQ (mv[L"Automated Backups"].GetType (), VariantValue::eMap);
+            map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
+            outputMap[L"MaxFiles"]               = 123456789;
+            mv[L"Output"]                        = outputMap;
+            v                                    = mv;
+
+            string jsonExampleWithUpdatedMaxFilesReference;
+            {
+                Streams::MemoryStream::Ptr<byte> tmpStrm = Streams::MemoryStream::New<byte> ();
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
+                jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
+            }
+            {
+                // Verify change of locale has no effect on results
+                locale                           prevLocale = locale::global (locale{"C"});
+                Streams::MemoryStream::Ptr<byte> tmpStrm    = Streams::MemoryStream::New<byte> ();
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
+                EXPECT_EQ (jsonExampleWithUpdatedMaxFilesReference, tmpStrm.As<string> ());
+                locale::global (prevLocale);
+            }
+            try {
+                // Verify change of locale has no effect on results
+                Common::ScopedUseLocale          tmpLocale{Common::FindNamedLocale ("en"sv, "us"sv)};
+                Streams::MemoryStream::Ptr<byte> tmpStrm = Streams::MemoryStream::New<byte> ();
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
+                EXPECT_EQ (jsonExampleWithUpdatedMaxFilesReference, tmpStrm.As<string> ());
+            }
+            catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
+                Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            }
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_06_ParseRegressionTest_2_)
+    {
+        Debug::TraceContextBumper ctx{"Test_06_ParseRegressionTest_2_::DoAll_"};
+        auto                      f = [] () {
+            map<wstring, VariantValue> mv;
+            mv[L"MaxFiles"] = VariantValue{405};
+            VariantValue v  = VariantValue{mv};
+
+            string encoded;
+            {
+                stringstream tmpStrm;
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
+                encoded = tmpStrm.str ();
+            }
+            stringstream tnmStrStrm{encoded};
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tnmStrStrm);
+            EXPECT_EQ (v1, v);
+        };
+        f ();
+        try {
+            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
+            f ();
+        }
+        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_05_ParseRegressionTest_3_)
+    {
+        Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_3_::DoAll_"};
+        {
+            const char kJSONExample_[] = "{"
+                                         "    \"T1\" : \"\","
+                                         "    \"T2\" : null,"
+                                         "    \"T3\" : {"
+                                         "        \"DefaultBackupDirectory\" : true,"
+                                         "        \"PrintName\" : \"{Default Backup Directory}\""
+                                         "    }"
+                                         "}";
+            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
+            Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
+            EXPECT_EQ (mv["T1"].GetType (), VariantValue::eString);
+            EXPECT_EQ (mv["T1"], String{});
+            EXPECT_EQ (mv["T2"].GetType (), VariantValue::eNull);
+            EXPECT_EQ (mv["T3"].GetType (), VariantValue::eMap);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_07_ParserTestReadWriteBasictypes_)
+    {
+        Debug::TraceContextBumper ctx{"Test_07_ParserTestReadWriteBasictypes_::DoAll_"};
+        using namespace Time;
+        auto f = [] (VariantValue v) {
+            string encoded;
+            {
+                stringstream tmpStrm;
+                DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
+                encoded = tmpStrm.str ();
+            }
+            stringstream tnmStrStrm (encoded);
+            VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tnmStrStrm);
+            // JSON reader comes back with strings - because date/datetime are not native types
+            if (v.GetType () == VariantValue::eDate and v1.GetType () == VariantValue::eString) {
+                v1 = VariantValue{v1.As<Time::Date> ()};
+            }
+            if (v.GetType () == VariantValue::eDateTime and v1.GetType () == VariantValue::eString) {
+                v1 = VariantValue{v1.As<Time::DateTime> ()};
+            }
+            if (v.GetType () == VariantValue::eFloat) {
+                EXPECT_TRUE (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.11));
+            }
+            else {
+                EXPECT_EQ (v1, v);
+            }
+        };
+        auto doAll = [f] () {
+            f (VariantValue{405});
+            f (VariantValue{4405});
+            f (VariantValue{44905});
+            f (VariantValue{405.1});
+            f (VariantValue{4405.2});
+            f (VariantValue{44905.3});
+            f (VariantValue{L"'"});
+            f (VariantValue{Date{Year{1933}, February, day{12}}});
+            f (VariantValue{DateTime{Date{Year{1933}, February, day{12}}, TimeOfDay{432}}});
+
+            {
+                stringstream tmpStrm;
+                DataExchange::Variant::JSON::Writer{}.Write (VariantValue{44905.3}, tmpStrm);
+                string tmp = tmpStrm.str ();
+                EXPECT_TRUE (tmp.find (",") == string::npos);
+            }
+        };
+        try {
+            doAll ();
+            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en"sv, "us"sv)};
+            doAll ();
+        }
+        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSON_ONLY_Test_08_ReadEmptyStreamShouldFail__)
+    {
+        Debug::TraceContextBumper ctx{"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
+        try {
+            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream::New<byte> ());
+            EXPECT_TRUE (false);
+        }
+        catch (const DataExchange::BadFormatException&) {
+            // Good - this should fail
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSONONLY_Test_09_ReadWriteNANShouldNotFail_)
+    {
+        Debug::TraceContextBumper ctx{"Test_09_ReadWriteNANShouldNotFail_::DoAll_"};
+        auto                      CheckRoundtrip_encode_decode_unchanged = [] (const VariantValue& v) {
+            string encodedRep;
+            {
+                Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+                DataExchange::Variant::JSON::Writer{}.Write (v, out);
+                encodedRep = out.As<string> ();
+            }
+            {
+                stringstream tmp;
+                tmp << encodedRep;
+                VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
+                if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and vOut != v) {
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        "JSONONLY_Test_09_ReadWriteNANShouldNotFail_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, encodedRep={}, vOut={}"_f(
+                            v, String::FromUTF8 (encodedRep), vOut)
+                            .ReplaceAll ("[\\r\\n]"_RegEx, ""));
+                    return;
+                }
+                EXPECT_EQ (vOut, v);
+            }
+        };
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{Math::nan<double> ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{-numeric_limits<double>::infinity ()});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<double>::infinity ()});
+    }
+}
+
+namespace {
+    /*
+     *  This section is for using the direct - XML-only APIs, and verifying the results look like good XML
+     */
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, XML_ONLY_)
+    {
+        {
+            DataExchange::Variant::XML::Writer w;
+            VariantValue                       v   = VariantValue{44905.3};
+            Streams::MemoryStream::Ptr<byte>   out = Streams::MemoryStream::New<byte> ();
+            w.Write (v, out);
+            string x = out.As<string> ();
+        }
+        {
+            DataExchange::Variant::XML::Writer w;
+            map<wstring, VariantValue>         mv;
+            mv[L"MaxFiles"]                      = VariantValue{405};
+            VariantValue                     v   = VariantValue{mv};
+            Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+            w.Write (v, out);
+            string x = out.As<string> ();
+        }
+    }
+}
+
+namespace {
+    /// @TODO MOVE ELSEWHERE
+    template <typename T>
+    void Test3_VariantValue_Helper_MinMax_ ()
+    {
+        {
+            VariantValue v   = numeric_limits<T>::lowest ();
+            VariantValue vs  = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "Test3_VariantValue_Helper_MinMax_(qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
+            }
+            else {
+                EXPECT_EQ (v, vrt);
+            }
+        }
+        {
+            VariantValue v   = numeric_limits<T>::min ();
+            VariantValue vs  = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            EXPECT_EQ (v, vrt);
+        }
+        {
+            VariantValue v   = numeric_limits<T>::max ();
+            VariantValue vs  = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy and v != vrt) {
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    "Test3_VariantValue_Helper_MinMax_ (qCompilerAndStdLib_isinf_Valgrind_Buggy): v={}, vs={}, vrt={}"_f(v, vs, vrt).ReplaceAll ("[\r\n]"_RegEx, ""));
+            }
+            else {
+                EXPECT_EQ (v, vrt);
+            }
+        }
+    }
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Test3_VariantValue)
+    {
+        using Characters::String;
+        {
+            VariantValue v;
+            EXPECT_TRUE (v.empty ());
+            v = String{L"hi"};
+            EXPECT_TRUE (v == L"hi");
+        }
+        Test3_VariantValue_Helper_MinMax_<int> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned int> ();
+        Test3_VariantValue_Helper_MinMax_<long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long> ();
+        Test3_VariantValue_Helper_MinMax_<long long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long long> ();
+        Test3_VariantValue_Helper_MinMax_<float> ();
+        Test3_VariantValue_Helper_MinMax_<double> ();
+        Test3_VariantValue_Helper_MinMax_<long double> ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, ValueReaderReadFromString)
+    {
+        using Characters::Character;
+        using Characters::String;
+
+        auto roundTripCheck = [] (const VariantValue& vv) {
+            String       inputAsJSON = Variant::JSON::Writer{}.WriteAsString (vv);
+            VariantValue v           = Variant::JSON::Reader{}.Read (inputAsJSON);
+            EXPECT_EQ (v, vv);
+        };
+        roundTripCheck (VariantValue{3});
+        roundTripCheck (VariantValue{L"x"});
+        roundTripCheck (VariantValue (Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"n", L"34"}}));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, CompressionTests_)
+    {
+        auto RoundTripCompressTest_ = [] (const Memory::BLOB& b) {
+            // Compression::Deflate
+            if constexpr (Compression::Deflate::kSupported) {
+                Memory::BLOB compressed = Compression::Deflate::Compress::New ().Transform (b);
+                EXPECT_EQ (b, Compression::Deflate::Decompress::New ().Transform (compressed));
+#if qStroika_HasComponent_zlib
+                {
+                    DISABLE_COMPILER_MSC_WARNING_START (4996);
+                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+                    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+                    EXPECT_EQ (Compression::Zip::Reader{}.Compress (b), Compression::Deflate::Compress::New ().Transform (b));
+                    EXPECT_EQ (Compression::Zip::Reader{}.Decompress (compressed), Compression::Deflate::Decompress::New ().Transform (compressed));
+                    DISABLE_COMPILER_MSC_WARNING_END (4996);
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+                }
+#endif
+            }
+            // Compression::GZip
+            if constexpr (Compression::GZip::kSupported) {
+                Memory::BLOB compressed = Compression::GZip::Compress::New ().Transform (b);
+                EXPECT_EQ (b, Compression::GZip::Decompress::New ().Transform (compressed));
+            }
+        };
+        RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"));
+        RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"sv));
+        {
+            Memory::BLOB bigBlob = Memory::BLOB::FromHex ("00112233445566778899aabbccddeeff");
+            Assert (bigBlob.size () == 16);
+            while (bigBlob.size () < 256 * 1024) {
+                bigBlob = bigBlob + bigBlob;
+            }
+            RoundTripCompressTest_ (bigBlob);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, Write2JSONSThenRead2JSONsWithSharedStream_)
+    {
+        static VariantValue kTestVariant_{Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"b", 99}}};
+        auto WriteJSON_ = [] (const Streams::OutputStream::Ptr<byte>& out) {
+            using namespace DataExchange::Variant::JSON;
+            const Writer::Options kOptions_{false};
+            Writer{kOptions_}.Write (kTestVariant_, out);
+        };
+        auto ReadJSON_ = [] (const Streams::InputStream::Ptr<byte>& in) {
+            using namespace DataExchange::Variant::JSON;
+            EXPECT_TRUE (kTestVariant_ == Reader{}.Read (in));
+        };
+        {
+            Streams::MemoryStream::Ptr<byte> memStream = Streams::MemoryStream::New<byte> ();
+            WriteJSON_ (memStream);
+            ReadJSON_ (memStream);
+            WriteJSON_ (memStream);
+            ReadJSON_ (memStream);
+            EXPECT_TRUE (memStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
+        }
+        {
+            Streams::SharedMemoryStream::Ptr<byte> sharedMemStream = Streams::SharedMemoryStream::New<byte> ();
+            WriteJSON_ (sharedMemStream);
+            ReadJSON_ (sharedMemStream);
+            WriteJSON_ (sharedMemStream);
+            ReadJSON_ (sharedMemStream);
+            EXPECT_TRUE (not sharedMemStream.AvailableToRead ().has_value ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
+            sharedMemStream.CloseWrite ();
+            EXPECT_TRUE (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSONWriterNumberPrecision)
+    {
+        {
+            Variant::JSON::Writer w{};
+            EXPECT_EQ (w.WriteAsString (VariantValue{numbers::pi}), "3.14159"); // defaults to 6 digits of precision
+        }
+        {
+            using namespace Characters;
+            Variant::JSON::Writer w{Variant::JSON::Writer::Options{.fFloatOptions = FloatConversion::ToStringOptions{FloatConversion::Precision{10}}}};
+            EXPECT_EQ (w.WriteAsString (VariantValue{numbers::pi}), "3.141592654"); // so try 10 digits (not tricky case cuz number is 3.14159265 then 358 so not truncate but round))
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, ReadAsBLOBVsReadAsString_)
+    {
+        using namespace Characters::Literals;
+        using namespace Memory::Literals;
+        // Saw assertion error cuz not seekable here, but doesn't seem to happen anymore - not sure what was happening? --LGP 2024-05-22
+        // I THINK an issue with code in DataExchange::JSON::Reader::BoostRep_::Read - but cannot see anything wrong and cannot repro issue
+        VariantValue readAsString = DataExchange::Variant::JSON::Reader{}.Read ("{"
+                                                                                "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                ",\"\" : 0"
+                                                                                ",\"a/b\" : 1"
+                                                                                ",\"c%d\" : 2"
+                                                                                ",\"e^f\" : 3"
+                                                                                ",\"g|h\" : 4"
+                                                                                ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
+                                                                                ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
+                                                                                ",\" \": 7"
+                                                                                ",\"m~n\" : 8"
+                                                                                "}"_k);
+        VariantValue readAsBLOB   = DataExchange::Variant::JSON::Reader{}.Read ("{"
+                                                                                  "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                  ",\"\" : 0"
+                                                                                  ",\"a/b\" : 1"
+                                                                                  ",\"c%d\" : 2"
+                                                                                  ",\"e^f\" : 3"
+                                                                                  ",\"g|h\" : 4"
+                                                                                  ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
+                                                                                ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
+                                                                                ",\" \": 7"
+                                                                                  ",\"m~n\" : 8"
+                                                                                  "}"_blob);
+        EXPECT_EQ (readAsString, readAsBLOB);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSONPointer_)
+    {
+        using namespace Characters::Literals;
+        using namespace Memory::Literals;
+        // test case from https://datatracker.ietf.org/doc/html/rfc6901
+        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read ("{"
+                                                                                        "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                        ",\"\" : 0"
+                                                                                        ",\"a/b\" : 1"
+                                                                                        ",\"c%d\" : 2"
+                                                                                        ",\"e^f\" : 3"
+                                                                                        ",\"g|h\" : 4"
+                                                                                        ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
+                                                                                        ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
+                                                                                        ",\" \": 7"
+                                                                                        ",\"m~n\" : 8"
+                                                                                        "}"_blob);
+        EXPECT_EQ (JSON::PointerType{""}.Apply (kTestVariant_), kTestVariant_);
+        EXPECT_EQ (JSON::PointerType{"/foo"}.Apply (kTestVariant_), (VariantValue{Sequence<VariantValue>{"bar", "baz"}}));
+        EXPECT_EQ (JSON::PointerType{"/foo/0"}.Apply (kTestVariant_), (VariantValue{"bar"}));
+        EXPECT_EQ (JSON::PointerType{"/"}.Apply (kTestVariant_), (VariantValue{0}));
+        EXPECT_EQ (JSON::PointerType{"/a~1b"}.Apply (kTestVariant_), (VariantValue{1}));
+        EXPECT_EQ (JSON::PointerType{"/c%d"}.Apply (kTestVariant_), (VariantValue{2}));
+        EXPECT_EQ (JSON::PointerType{"/e^f"}.Apply (kTestVariant_), (VariantValue{3}));
+        EXPECT_EQ (JSON::PointerType{"/g|h"}.Apply (kTestVariant_), (VariantValue{4}));
+        EXPECT_EQ (JSON::PointerType{"/i\\j"}.Apply (kTestVariant_), (VariantValue{5}));
+        EXPECT_EQ (JSON::PointerType{"/k\"l"}.Apply (kTestVariant_), (VariantValue{6}));
+        EXPECT_EQ (JSON::PointerType{"/ "}.Apply (kTestVariant_), (VariantValue{7}));
+        EXPECT_EQ (JSON::PointerType{"/m~0n"}.Apply (kTestVariant_), (VariantValue{8}));
+    }
+}
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, JSONPPatch1_)
+    {
+        using namespace Memory::Literals;
+        // test case from https://datatracker.ietf.org/doc/html/rfc6901
+        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read ("{"
+                                                                                        "\"foo\" : [ \"bar\", \"baz\" ]"
+                                                                                        ",\"\" : 0"
+                                                                                        ",\"a/b\" : 1"
+                                                                                        ",\"c%d\" : 2"
+                                                                                        ",\"e^f\" : 3"
+                                                                                        ",\"g|h\" : 4"
+                                                                                        ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
+                                                                                        ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
+                                                                                        ",\" \": 7"
+                                                                                        ",\"m~n\" : 8"
+                                                                                        "}"_blob);
+
+        using namespace DataExchange::JSON::Patch;
+        {
+            OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/-"sv}, .value = "newItem"sv};
+            VariantValue      vv = o.Apply (kTestVariant_);
+            EXPECT_EQ (JSON::PointerType{"/foo"sv}.Apply (vv), (VariantValue{Sequence<VariantValue>{"bar"sv, "baz"sv, "newItem"sv}}));
+            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7})); // only changed what we wanted to
+        }
+        {
+            OperationItemType o{.op = OperationType::eAdd, .path = JSON::PointerType{"/foo/0"sv}, .value = "newItem"sv};
+            VariantValue      vv = o.Apply (kTestVariant_);
+
+            DbgTrace ("1={}"_f, JSON::PointerType{"/foo"sv}.Apply (vv));
+            DbgTrace ("2={}"_f, (VariantValue{Sequence<VariantValue>{
+                                    "newItem"sv,
+                                    "bar"sv,
+                                    "baz"sv,
+                                }}));
+            EXPECT_EQ (JSON::PointerType{"/foo"sv}.Apply (vv), (VariantValue{Sequence<VariantValue>{"newItem"sv, "bar"sv, "baz"sv}}));
+            EXPECT_EQ (JSON::PointerType{"/ "}.Apply (vv), (VariantValue{7})); // only changed what we wanted to
         }
     }
 }

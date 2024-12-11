@@ -1,17 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Containers::SortedSet
+//  TEST    Foundation::Containers::Stack
 //      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Common/Compare.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedSet_SkipList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
-#include "Stroika/Foundation/Containers/SortedSet.h"
+#include "Stroika/Foundation/Containers/Stack.h"
+
+#include "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -19,137 +17,161 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-#include "../TestCommon/CommonTests_Set.h"
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
-using namespace Stroika::Foundation::Common;
 
 using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
-using Test::ArchtypeClasses::AsIntsLessComparer;
-using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using Concrete::SortedSet_SkipList;
-using Concrete::SortedSet_stdset;
-
-using namespace CommonTests::SetTests;
+using Concrete::Stack_LinkedList;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    template <typename CONCRETE_CONTAINER, typename INORDER_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
-    void RunTests_ (const INORDER_COMPARER& inorderComparer, CONCRETE_CONTAINER_FACTORY factory)
+    template <typename StackOfT>
+    void SimpleTest_1_ (StackOfT s)
     {
-        typedef typename CONCRETE_CONTAINER::value_type T;
-        auto                                            testFunc = [&] (const SortedSet<T>& s) {
-            // verify in sorted order
-            EXPECT_TRUE (s.IsOrderedBy (inorderComparer));
-        };
-        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, SortedSet<T>> (factory, testFunc);
-    }
-    template <typename CONCRETE_CONTAINER>
-    void RunTests_ ()
-    {
-        RunTests_<CONCRETE_CONTAINER> (less<typename CONCRETE_CONTAINER::value_type>{}, [] () { return CONCRETE_CONTAINER (); });
+        StackOfT s2;
+        StackOfT s3 = s;
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedSet, DEFAULT_FACTORY)
+    template <typename StackOfT>
+    void SimpleTest_2_ (StackOfT s)
     {
-        Debug::TraceContextBumper ctx{"DEFAULT_FACTORY"};
-        RunTests_<SortedSet<size_t>> ();
-        RunTests_<SortedSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedSet<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
-            return SortedSet<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}};
-        });
-        RunTests_<SortedSet<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
-            return SortedSet<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}};
-        });
+        s.Push (1);
+        EXPECT_EQ (s.size (), 1u);
+        s.Push (2);
+        EXPECT_EQ (s.size (), 2u);
+        s.Pop ();
+        EXPECT_EQ (s.size (), 1u);
+        s.RemoveAll ();
+        EXPECT_EQ (s.size (), 0u);
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedSet, SortedSet_stdset)
+    template <typename StackOfT>
+    void SimpleTest_3_Iteration_ (StackOfT s)
     {
-        Debug::TraceContextBumper ctx{"SortedSet_stdset"};
-        RunTests_<SortedSet_stdset<size_t>> ();
-        RunTests_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedSet_stdset<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
-            return SortedSet_stdset<OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
-        });
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_SortedSet, SortedSet_SkipList)
-    {
-        Debug::TraceContextBumper ctx{"SortedSet_SkipList"};
-        RunTests_<SortedSet_SkipList<size_t>> ();
-        RunTests_<SortedSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        RunTests_<SortedSet_SkipList<OnlyCopyableMoveable>> (AsIntsLessComparer<OnlyCopyableMoveable>{}, [] () {
-            return SortedSet_SkipList<OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
-        });
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_SortedSet, Test2_InitalizeCTORs_)
-    {
-        {
-            SortedSet<int> tmp{1, 3};
-            EXPECT_EQ (tmp.size (), 2u);
-            EXPECT_TRUE (tmp.Contains (1));
-            EXPECT_TRUE (not tmp.Contains (2));
-            EXPECT_TRUE (tmp.Contains (3));
+#if 0
+        m.Add (1, 2);
+        EXPECT_TRUE (m.size () == 1);
+        for (auto i : m) {
+            EXPECT_TRUE (i.first == 1);
+            EXPECT_TRUE (i.second == 2);
         }
-        {
-            SortedSet<int> tmp{1, 3, 4, 5, 7};
-            EXPECT_EQ (tmp.size (), 5u);
-            EXPECT_TRUE (tmp.Contains (1));
-            EXPECT_TRUE (not tmp.Contains (2));
-            EXPECT_TRUE (tmp.Contains (3));
-            EXPECT_TRUE (tmp.Contains (7));
+        m.Add (1, 2);
+        EXPECT_TRUE (m.size () == 1);
+        for (auto i : m) {
+            EXPECT_TRUE (i.first == 1);
+            EXPECT_TRUE (i.second == 2);
         }
+        m.Remove (1);
+        EXPECT_TRUE (m.size () == 0);
+        for (auto i : m) {
+            EXPECT_TRUE (false);
+        }
+        m.Add (1, 2);
+        m.Add (2, 3);
+        m.Add (3, 4);
+        unsigned int cnt = 0;
+        for (auto i : m) {
+            ++cnt;
+            if (cnt == 1) {
+                EXPECT_TRUE (i.first == 1);
+                EXPECT_TRUE (i.second == 2);
+            }
+            if (cnt == 2) {
+                EXPECT_TRUE (i.first == 2);
+                EXPECT_TRUE (i.second == 3);
+            }
+            if (cnt == 3) {
+                EXPECT_TRUE (i.first == 3);
+                EXPECT_TRUE (i.second == 4);
+            }
+        }
+        EXPECT_TRUE (cnt == 3);
+#endif
+        s.RemoveAll ();
+        EXPECT_EQ (s.size (), 0u);
+    }
+}
+
+namespace Test4_Equals {
+    template <typename USING_STACK_CONTAINER, typename EQUALS_COMPARER>
+    void DoAllTests_ ()
+    {
+        USING_STACK_CONTAINER s;
+        USING_STACK_CONTAINER s2 = s;
+        s.Push (1);
+        s.Push (2);
+        EXPECT_TRUE (s.size () == 2);
+        USING_STACK_CONTAINER s3 = s;
+        EXPECT_TRUE (typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
+        EXPECT_TRUE (not typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
+        EXPECT_TRUE (EQUALS_COMPARER{}(s.Pop (), 2));
+    }
+}
+
+namespace {
+
+    template <typename CONCRETE_STACK_TYPE, typename EQUALS_COMPARER>
+    void Tests_All_For_Type_WhichDontRequireComparer_For_Type_ ()
+    {
+        CONCRETE_STACK_TYPE s;
+        SimpleTest_1_<CONCRETE_STACK_TYPE> (s);
+        SimpleTest_2_<CONCRETE_STACK_TYPE> (s);
+        SimpleTest_3_Iteration_<CONCRETE_STACK_TYPE> (s);
+    }
+
+    template <typename CONCRETE_STACK_TYPE, typename EQUALS_COMPARER>
+    void Tests_All_For_Type_ ()
+    {
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<CONCRETE_STACK_TYPE, EQUALS_COMPARER> ();
+        Test4_Equals::DoAllTests_<CONCRETE_STACK_TYPE, EQUALS_COMPARER> ();
+    }
+}
+
+namespace {
+    namespace Test3_StackContructionByValue_ {
+
+        void Test ()
         {
-            Set<int>       t1{1, 3, 4, 5, 7};
-            SortedSet<int> tmp = SortedSet<int>{t1.begin (), t1.end ()};
-            //SortedSet<int> tmp  {t1.begin (), t1.end () };
-            EXPECT_EQ (tmp.size (), 5u);
-            EXPECT_TRUE (tmp.Contains (1));
-            EXPECT_TRUE (not tmp.Contains (2));
-            EXPECT_TRUE (tmp.Contains (3));
-            EXPECT_TRUE (tmp.Contains (7));
+            Stack<int> a;
+            a.Push (1);
+            a.Push (2);
+            vector<int> aa{a.begin (), Iterator<int>{a.end ()}};
+            Stack<int>  b{aa};
+            EXPECT_EQ (b.size (), 2u);
+            EXPECT_EQ (b.Pop (), 2);
+            EXPECT_EQ (b.Pop (), 1);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedSet, Test3_ExplicitSortFunction_)
+    GTEST_TEST (Foundation_Containers_Stack, all)
     {
-        {
-            using Characters::String;
-            SortedSet<String> tmp{"a", "b", "A"};
-            EXPECT_EQ (tmp.size (), 3u);
-            EXPECT_TRUE (tmp.Contains ("A"));
-            EXPECT_TRUE (not tmp.Contains ("B"));
-        }
-        {
-            using Characters::String;
-            SortedSet<String> tmp{String::LessComparer{Characters::eCaseInsensitive}, {"a", L"b", "A"sv}};
-            EXPECT_EQ (tmp.size (), 2u);
-            EXPECT_TRUE (tmp.Contains ("A"));
-            EXPECT_TRUE (tmp.Contains ("B"));
-        }
-    }
-}
+        using COMPARE_SIZET       = equal_to<size_t>;
+        using COMPARE_SimpleClass = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
+        using COMPARE_EQ_         = AsIntsEqualsComparer<OnlyCopyableMoveable>;
 
-namespace {
-    GTEST_TEST (Foundation_Containers_SortedSet, CLEANUP)
-    {
+        Tests_All_For_Type_<Stack<size_t>, COMPARE_SIZET> ();
+        Tests_All_For_Type_<Stack<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack<OnlyCopyableMoveable>, COMPARE_EQ_> ();
+        Tests_All_For_Type_<Stack<OnlyCopyableMoveable>, COMPARE_EQ_> ();
+
+        Tests_All_For_Type_<Stack_LinkedList<size_t>, COMPARE_SIZET> ();
+        Tests_All_For_Type_<Stack_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack_LinkedList<OnlyCopyableMoveable>, COMPARE_EQ_> ();
+        Tests_All_For_Type_<Stack_LinkedList<OnlyCopyableMoveable>, COMPARE_EQ_> ();
+
+        Test3_StackContructionByValue_::Test ();
+
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }

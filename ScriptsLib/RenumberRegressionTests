@@ -21,10 +21,10 @@ BY=$3
 
 if [[ "$BY" -gt "0" ]] ; then
   for i in $(seq $END -$BY $START); do
-    printf "git mv %02d %02d\n" $i $(($i + $BY))
+    `printf "git mv %02d %02d\n" $i $(($i + $BY))`
   done
 else
   for i in $(seq $(($START+1)) $END); do
-    printf "git mv %02d %02d\n" $i $(($i + $BY))
+    `printf "git mv %02d %02d\n" $i $(($i + $BY))`
   done
 fi

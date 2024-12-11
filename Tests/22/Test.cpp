@@ -1,26 +1,24 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Containers::Set
+//  TEST    Foundation::Containers::SortedAssociation
+//      \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Collection.h"
-#include "Stroika/Foundation/Containers/Concrete/Set_Array.h"
-#include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedSet_SkipList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
-#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_SkipList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
+#include "Stroika/Foundation/Containers/SortedAssociation.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-#include "../TestCommon/CommonTests_Set.h"
+#include "../TestCommon/CommonTests_Association.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
@@ -33,154 +31,94 @@ using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using Concrete::Set_Array;
-using Concrete::Set_LinkedList;
-using Concrete::SortedSet_SkipList;
-using Concrete::SortedSet_stdset;
-
-using namespace CommonTests::SetTests;
-
-using MyOnlyCopyableMoveable_EQUAL_TO_ = AsIntsEqualsComparer<OnlyCopyableMoveable>;
-using MyOnlyCopyableMoveable_LESS_     = AsIntsLessComparer<OnlyCopyableMoveable>;
-using MyOnlyCopyableMoveable_THREEWAY_ = AsIntsThreeWayComparer<OnlyCopyableMoveable>;
+using Concrete::SortedAssociation_SkipList;
+using Concrete::SortedAssociation_stdmultimap;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
-    void DoTestForConcreteContainer_ (CONCRETE_CONTAINER_FACTORY factory)
-    {
-        using T                  = typename CONCRETE_CONTAINER::value_type;
-        auto extraChecksFunction = [] ([[maybe_unused]] const Set<T>& s) {};
-        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<T>> (factory, extraChecksFunction);
-    }
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
     {
-        DoTestForConcreteContainer_<CONCRETE_CONTAINER> ([] () { return CONCRETE_CONTAINER{}; });
+        using namespace CommonTests::AssociationTests;
+        auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
+        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+            // verify in sorted order
+            EXPECT_TRUE (m.IsOrderedBy ([comparer = m.GetKeyInOrderComparer ()] (auto l, auto r) { return comparer (l.fKey, r.fKey); }));
+        };
+        SimpleAssociationTest_All_ (testSchema);
+        SimpleAssociationTest_WithDefaultEqComparer_ (testSchema);
     }
-}
-
-namespace {
-    namespace ExampleCTORS_Tests_ {
-        void DoTest_examples_from_docs_ ()
-        {
-            // From Set<> CTOR docs
-            Collection<int> c;
-            vector<int>     v;
-
-            Set<int> s1 = {1, 2, 3};
-            Set<int> s2 = s1;
-            Set<int> s3{s1};
-            Set<int> s4{s1.begin (), s1.end ()};
-            Set<int> s5{c};
-            Set<int> s6{v};
-            Set<int> s7{v.begin (), v.end ()};
-            Set<int> s8{move (s1)};
-            Set<int> s9{1, 2, 3};
-            EXPECT_EQ (s9.size (), 3u);
-            Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
-        }
-        void TestCTORFromOtherContainer_ ()
-        {
-            using Characters::Character;
-            using Characters::String;
-            Set<String> tmp1 = Set<String>{Sequence<String>{}};
-            Set<String> tmp2 = Set<String>{String ().Trim ().Tokenize ({';', ' '})};
-        }
-        void DoTest ()
-        {
-            DoTest_examples_from_docs_ ();
-            TestCTORFromOtherContainer_ ();
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_Set, DEFAULT_SET_FACTORY)
+    template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
+    void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
     {
-        Debug::TraceContextBumper ctx{"DEFAULT_SET_FACTORY"};
-        DoTestForConcreteContainer_<Set<size_t>> ();
-        DoTestForConcreteContainer_<Set<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        DoTestForConcreteContainer_<Set<OnlyCopyableMoveable>> (
-            [] () { return Set<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_EQUAL_TO_{}); });
+        using namespace CommonTests::AssociationTests;
+        auto testSchema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+            // verify in sorted order
+            using value_type       = typename CONCRETE_CONTAINER::value_type;
+            using key_type         = typename CONCRETE_CONTAINER::key_type;
+            using INORDER_COMPARER = decltype (m.GetKeyInOrderComparer ());
+            optional<value_type> last;
+            for (value_type i : m) {
+                if (last.has_value ()) {
+                    EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetKeyInOrderComparer ()}(last->fKey, i.fKey) <= 0));
+                }
+                last = i;
+            }
+        };
+        SimpleAssociationTest_All_ (testSchema);
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Set, Set_LinkedList)
+    GTEST_TEST (Foundation_Containers_SortedAssociation, FACTORY_DEFAULT)
     {
-        Debug::TraceContextBumper ctx{"Set_LinkedList"};
-        DoTestForConcreteContainer_<Set_LinkedList<size_t>> ();
-        DoTestForConcreteContainer_<Set_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        DoTestForConcreteContainer_<Set_LinkedList<OnlyCopyableMoveable>> (
-            [] () { return Set_LinkedList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_EQUAL_TO_{}); });
+        DoTestForConcreteContainer_<SortedAssociation<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedAssociation<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Set, Set_Array)
+    GTEST_TEST (Foundation_Containers_SortedAssociation, SortedAssociation_stdmultimap)
     {
-        Debug::TraceContextBumper ctx{"Set_Array"};
-        DoTestForConcreteContainer_<Set_Array<size_t>> ();
-        DoTestForConcreteContainer_<Set_Array<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        DoTestForConcreteContainer_<Set_Array<OnlyCopyableMoveable>> (
-            [] () { return Set_Array<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_EQUAL_TO_{}); });
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () {
+                return SortedAssociation_stdmultimap<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{});
+            },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Set, SortedSet_stdset)
+    GTEST_TEST (Foundation_Containers_SortedAssociation, SortedAssociation_SkipList)
     {
-        Debug::TraceContextBumper ctx{"SortedSet_stdset"};
-        DoTestForConcreteContainer_<SortedSet_stdset<size_t>> ();
-        DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        DoTestForConcreteContainer_<SortedSet_stdset<OnlyCopyableMoveable>> (
-            [] () { return SortedSet_stdset<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_LESS_{}); });
-    }
-}
-namespace {
-    GTEST_TEST (Foundation_Containers_Set, SortedSet_SkipList)
-    {
-        Debug::TraceContextBumper ctx{"SortedSet_SkipList"};
-        DoTestForConcreteContainer_<SortedSet_SkipList<size_t>> ();
-        DoTestForConcreteContainer_<SortedSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        DoTestForConcreteContainer_<SortedSet_SkipList<OnlyCopyableMoveable>> (
-            [] () { return SortedSet_SkipList<OnlyCopyableMoveable> (MyOnlyCopyableMoveable_THREEWAY_{}); });
+        DoTestForConcreteContainer_<SortedAssociation_SkipList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () {
+                return SortedAssociation_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+            },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Set, ExampleCTORS_Tests_)
+    GTEST_TEST (Foundation_Containers_SortedAssociation, Test3_ConvertAssociation2SortedAssociation)
     {
-        Debug::TraceContextBumper ctx{"ExampleCTORS_Tests_"};
-        ExampleCTORS_Tests_::DoTest ();
+        Association<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
+        SortedAssociation<int, int> ms{m};
+        EXPECT_EQ (ms.size (), 2u);
+        EXPECT_TRUE ((*ms.begin () == pair<int, int>{1, 2}));
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Set, Where_Tests_)
-    {
-        Debug::TraceContextBumper ctx{"Where_Tests_"};
-        Set<int>                  s{1, 2, 3, 4, 5};
-        EXPECT_EQ (s.Where ([] (int i) { return Math::IsPrime (i); }), (Set<int>{2, 3, 5}));
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_Set, EqualsTests_)
-    {
-        Debug::TraceContextBumper ctx{"EqualsTests_"};
-        using Characters::String;
-        constexpr auto kHeaderNameEqualsComparer = String::EqualsComparer{Characters::eCaseInsensitive};
-        Set<String>    m;
-        auto           m1 = Set<String>{decltype (kHeaderNameEqualsComparer) (kHeaderNameEqualsComparer), m};
-        auto m2 = Set<String>{kHeaderNameEqualsComparer, m}; // http://stroika-bugs.sophists.com/browse/STK-720 failed to compile before fix in 2.1b10x
-        EXPECT_EQ (m, m1);
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_Set, CLEANUP)
+    GTEST_TEST (Foundation_Containers_SortedAssociation, Cleanup)
     {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }

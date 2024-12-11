@@ -1,1128 +1,1131 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Time
+//  TEST    Foundation::Traveral
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <chrono>
 #include <iostream>
-#include <sstream>
 
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/Locale.h"
+#include "Stroika/Foundation/Containers/Bijection.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/Math/Common.h"
-#include "Stroika/Foundation/Time/Date.h"
+#include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
-#include "Stroika/Foundation/Time/Realtime.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include "Stroika/Foundation/Traversal/DisjointDiscreteRange.h"
+#include "Stroika/Foundation/Traversal/DisjointRange.h"
+#include "Stroika/Foundation/Traversal/FunctionalApplication.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
+#include "Stroika/Foundation/Traversal/Partition.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters::Literals;
-using namespace Stroika::Foundation::Time;
+using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
 
-using Stroika::Foundation::Debug::TraceContextBumper;
-
 #if qStroika_HasComponent_googletest
-namespace {
-    GTEST_TEST (Foundation_Time, AssumptionsAboutUnderlyingTimeLocaleLibrary_)
-    {
-        TraceContextBumper ctx{"AssumptionsAboutUnderlyingTimeLocaleLibrary_"};
-
-        auto test_locale_time_get_date_order_no_order_Buggy = [] (const String& localeName) {
-            TraceContextBumper ctx{"test_locale_time_get_date_order_no_order_Buggy"};
-            try {
-                std::locale              l{localeName.AsNarrowSDKString (Characters::eIgnoreErrors)};
-                const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
-#if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
-#else
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
-#endif
-            }
-            catch (...) {
-                // suppress macOS warn here - just not such locale installed
-#if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale {}"_f(localeName));
-#endif
-            }
-        };
-        test_locale_time_get_date_order_no_order_Buggy ("en_US.utf8");
-        test_locale_time_get_date_order_no_order_Buggy ("en_US");
-
-        auto localetimeputPCTX_CHECK_StdCPctxTraits1 = [] (const locale& l, bool expect4DigitYear) {
-            TraceContextBumper       ctx{"localetimeputPCTX_CHECK_StdCPctxTraits1"};
-            const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
-            constexpr tm             kOrigDate_{47, 18, 16, 3, 6, 101}; // tm_mon=6, so July
-            tm                       when = kOrigDate_;
-            wostringstream           oss;
-            const wchar_t            kPattern[] = L"%x";
-            tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
-            String tmpStringRep = oss.str ();
-            if (expect4DigitYear) {
-                EXPECT_TRUE (tmpStringRep == "7/3/2001" or tmpStringRep == "07/03/2001");
-            }
-            else {
-                EXPECT_TRUE (tmpStringRep == "7/3/01" or tmpStringRep == "07/03/01");
-            }
-        };
-        auto localetimeputPCTX_CHECK_StdCPctxTraits = [=] () {
-            TraceContextBumper ctx{"localetimeputPCTX_CHECK_StdCPctxTraits"};
-            localetimeputPCTX_CHECK_StdCPctxTraits1 (locale::classic (), StdCPctxTraits::kLocaleClassic_Write4DigitYear);
-            try {
-                localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
-            }
-            catch (...) {
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
-            }
-            try {
-                localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US.utf8"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
-            }
-            catch (...) {
-                // suppress macos warn here - just not such locale installed
-#if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
-#endif
-            }
-        };
-        localetimeputPCTX_CHECK_StdCPctxTraits ();
-
-        auto testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ = [] (int tm_Year, int tm_Mon, int tm_mDay, const locale& l) {
-            TraceContextBumper ctx{"testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_"};
-            //DbgTrace (L"year=%d, tm_Mon=%d, tm_mDay=%d", tm_Year, tm_Mon, tm_mDay);
-            ::tm origDateTM{};
-            origDateTM.tm_year = tm_Year;
-            origDateTM.tm_mon  = tm_Mon;
-            origDateTM.tm_mday = tm_mDay;
-
-            //const wchar_t kPattern[] = L"%x";
-            const wchar_t kPattern[] = L"%Y-%m-%d";
-
-            wstring tmpStringRep;
-            {
-                const time_put<wchar_t>& tmput = use_facet<time_put<wchar_t>> (l);
-                tm                       when  = origDateTM;
-                wostringstream           oss;
-                tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
-                tmpStringRep = oss.str ();
-            }
-            //DbgTrace (L"tmpStringRep=%s", tmpStringRep.c_str ());
-            tm resultTM{};
-            {
-                const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-                ios::iostate                 state = ios::goodbit;
-                wistringstream               iss{tmpStringRep};
-                istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-                istreambuf_iterator<wchar_t> itend;        // end-of-stream
-                tmget.get (itbegin, itend, iss, state, &resultTM, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
-            }
-            //DbgTrace (L"resultTM.tm_year=%d", resultTM.tm_year);
-            VerifyTestResultWarning (origDateTM.tm_year == resultTM.tm_year);
-            VerifyTestResultWarning (origDateTM.tm_mon == resultTM.tm_mon);
-            VerifyTestResultWarning (origDateTM.tm_mday == resultTM.tm_mday);
-        };
-        // this test doesnt make much sense - revisit!!! --LGP 2021-03-05
-        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (12, 5, 1, locale::classic ());
-        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (-148, 10, 19, locale::classic ());
-        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (121, 2, 4, locale::classic ());
-        testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (105, 5, 1, locale::classic ());
-
-        auto getPCTMRequiresLeadingZeroBug = [] () {
-            TraceContextBumper           ctx{"getPCTMRequiresLeadingZeroBug"};
-            std::locale                  l     = locale::classic ();
-            const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-            ios::iostate                 state = ios::goodbit;
-            wistringstream               iss{L"11/1/2002"};
-            istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-            istreambuf_iterator<wchar_t> itend;        // end-of-stream
-            tm                           resultTM{};
-            wstring                      fmt = String{Date::kMonthDayYearFormat}.As<wstring> ();
-            [[maybe_unused]] auto        i   = tmget.get (itbegin, itend, iss, state, &resultTM, fmt.data (), fmt.data () + fmt.length ());
-#if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-            EXPECT_TRUE ((state & ios::badbit) or (state & ios::failbit));
-#else
-            EXPECT_TRUE (not((state & ios::badbit) or (state & ios::failbit)));
-#endif
-        };
-        getPCTMRequiresLeadingZeroBug ();
-
-        auto std_get_time_pctxBuggyTest = [] () {
-            TraceContextBumper ctx{"std_get_time_pctxBuggyTest"};
-            //wstring wRep = L"3pm";   // this works
-            wstring                                   wRep = L"3:00";
-            locale                                    l    = locale::classic ();
-            wistringstream                            iss{wRep};
-            [[maybe_unused]] const time_get<wchar_t>& tmget    = use_facet<time_get<wchar_t>> (l);
-            [[maybe_unused]] ios::iostate             errState = ios::goodbit;
-            tm                                        when{};
-            wstring                                   formatPattern = L"%X"; // or %EX, or %T all fail
-            istreambuf_iterator<wchar_t>              itbegin (iss);         // beginning of iss
-            istreambuf_iterator<wchar_t>              itend;                 // end-of-stream
-
-            istreambuf_iterator<wchar_t> i;
-            i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
-        };
-        std_get_time_pctxBuggyTest ();
-
-        auto tmget_dot_get_locale_date_order_buggy_test_ = [] () {
-            TraceContextBumper ctx{"tmget_dot_get_locale_date_order_buggy_test_"};
-            try {
-                std::locale              l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
-                const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
-                ios::iostate             state = ios::goodbit;
-                wistringstream iss{L"03/07/21 16:18:47"}; // qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy ONLY triggered if YEAR 2-digits - 4-digit year fine
-                constexpr tm                 kTargetTM_MDY_{47, 18, 16, 7, 2};
-                constexpr tm                 kTargetTM_DMY_{47, 18, 16, 3, 6};
-                istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-                istreambuf_iterator<wchar_t> itend;        // end-of-stream
-                tm                           resultTM{};
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
-                static const wstring  kFmt_ = String{DateTime::kShortLocaleFormatPattern}.As<wstring> ();
-                [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, kFmt_.data (), kFmt_.data () + kFmt_.length ());
-                if ((state & ios::badbit) or (state & ios::failbit)) {
-#if !_LIBCPP_VERSION
-                    // Known that _LIBCPP_VERSION (clang libc++) treats this as an error and quite reasonable - so only warn for other cases so I can add exclusions here
-                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping tmget_dot_get_locale_date_order_buggy_test_ cuz parse failure");
-#endif
-                }
-                else {
-                    EXPECT_EQ (resultTM.tm_sec, kTargetTM_MDY_.tm_sec);   // which == kTargetTM_DMY_
-                    EXPECT_EQ (resultTM.tm_min, kTargetTM_MDY_.tm_min);   // ..
-                    EXPECT_EQ (resultTM.tm_hour, kTargetTM_MDY_.tm_hour); // ..
-                    // libstdc++ returns 21, and visual studio 121 - clang libc++ -1879 - all reasonable - DONT CHECK THIS - undefined for 2-digit year -- LGP 2021-03-08
-                    if (tmget.date_order () == time_base::mdy or
-                        (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
-#if qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
-                        EXPECT_EQ (resultTM.tm_mday, kTargetTM_DMY_.tm_mday); // sadly wrong values
-                        EXPECT_EQ (resultTM.tm_mon, kTargetTM_DMY_.tm_mon);
-#else
-                        EXPECT_EQ (resultTM.tm_mday, kTargetTM_MDY_.tm_mday);
-                        EXPECT_EQ (resultTM.tm_mon, kTargetTM_MDY_.tm_mon);
-#endif
-                    }
-                    else if (tmget.date_order () == time_base::dmy) {
-                        EXPECT_EQ (resultTM.tm_mday, kTargetTM_DMY_.tm_mday);
-                        EXPECT_EQ (resultTM.tm_mon, kTargetTM_DMY_.tm_mon);
-                    }
-                }
-            }
-            catch (...) {
-#if !qStroika_Foundation_Common_Platform_MacOS
-                Stroika::Frameworks::Test::WarnTestIssue (
-                    "tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
-#endif
-            }
-        };
-        tmget_dot_get_locale_date_order_buggy_test_ ();
-    }
-}
 
 namespace {
-    template <typename DATEORTIME>
-    void TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime, const locale& l)
+    GTEST_TEST (Foundation_Traversal, Test_1_BasicRange_)
     {
-        // disable for now cuz fails SO OFTEN
-        String     formatByLocale = startDateOrTime.Format (l);
-        DATEORTIME andBack        = DATEORTIME::Parse (formatByLocale, l);
-        EXPECT_EQ (startDateOrTime, andBack);
-    }
-    template <typename DATEORTIME>
-    void TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime)
-    {
-        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale{});
-        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
-        try {
-            TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Common::FindNamedLocale ("en", "us"));
-        }
-        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
-        }
-        // should add test like this...
-        //EXPECT_TRUE (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
-    }
-}
-
-// Skip some locale tests cuz so little works
-//////http://stroika-bugs.sophists.com/browse/STK-107 -- BROKEN
-#define qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_ 0
-#define qSupport_TestRoundTripFormatThenParseNoChange_For_Date_ 0
-#define qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_ 0
-
-#if !qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_
-namespace {
-    template <>
-    void TestRoundTripFormatThenParseNoChange_ ([[maybe_unused]] TimeOfDay startDateOrTime)
-    {
-    }
-}
-#endif
-
-#if !qSupport_TestRoundTripFormatThenParseNoChange_For_Date_
-namespace {
-    template <>
-    void TestRoundTripFormatThenParseNoChange_ ([[maybe_unused]] Date startDateOrTime)
-    {
-    }
-}
-#endif
-
-#if !qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_
-namespace {
-    template <>
-    void TestRoundTripFormatThenParseNoChange_ ([[maybe_unused]] DateTime startDateOrTime)
-    {
-    }
-}
-#endif
-
-namespace {
-    GTEST_TEST (Foundation_Time, TestTickCountGrowsMonotonically_)
-    {
-        TraceContextBumper     ctx{"TestTickCountGrowsMonotonically_"};
-        Time::TimePointSeconds start = Time::GetTickCount ();
-        Execution::Sleep (100ms);
-        EXPECT_TRUE (start <= Time::GetTickCount ());
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, TestTimeOfDay_)
-    {
-        TraceContextBumper ctx{"TestTimeOfDay_"};
+        Debug::TraceContextBumper ctx{"{}::Test_1_BasicRange_ ()"};
         {
-            optional<TimeOfDay> t;
-            EXPECT_TRUE (not t.has_value ());
-            TimeOfDay t2{2};
-            EXPECT_TRUE (t < t2);
-            EXPECT_TRUE (not t2.Format (locale{}).empty ());
-            EXPECT_EQ (t2.GetHours (), 0);
-            EXPECT_EQ (t2.GetMinutes (), 0);
-            EXPECT_EQ (t2.GetSeconds (), 2);
-            TestRoundTripFormatThenParseNoChange_ (t2);
+            Range<int> r (3, 5);
+            EXPECT_TRUE (not r.empty ());
+            EXPECT_TRUE (r.Contains (3));
         }
         {
-            TimeOfDay t2{5 * 60 * 60 + 3 * 60 + 49};
-            EXPECT_EQ (t2.GetHours (), 5);
-            EXPECT_EQ (t2.GetMinutes (), 3);
-            EXPECT_EQ (t2.GetSeconds (), 49);
-            TestRoundTripFormatThenParseNoChange_ (t2);
+            Range<double> r (3, 5);
+            EXPECT_TRUE (not r.empty ());
+            EXPECT_TRUE (r.Contains (3));
         }
         {
-            TimeOfDay t2{24 * 60 * 60 - 1};
-            EXPECT_EQ (t2.GetHours (), 23);
-            EXPECT_EQ (t2.GetMinutes (), 59);
-            EXPECT_EQ (t2.GetSeconds (), 59);
-            EXPECT_EQ (t2, TimeOfDay::kMax);
-            TestRoundTripFormatThenParseNoChange_ (t2);
+            Range<double> r{3, 5, Openness::eOpen, Openness::eOpen};
+            EXPECT_TRUE (not r.Contains (3));
         }
         {
-            EXPECT_EQ (TimeOfDay::Parse ("3pm", locale::classic ()).GetAsSecondsCount (), 15 * 60 * 60u);
-            EXPECT_EQ (TimeOfDay::Parse ("3PM", locale::classic ()).GetAsSecondsCount (), 15 * 60 * 60u);
-            EXPECT_EQ (TimeOfDay::Parse ("3am", locale::classic ()).GetAsSecondsCount (), 3 * 60 * 60u);
-            EXPECT_EQ (TimeOfDay::Parse ("3:00", locale::classic ()).GetAsSecondsCount (), 3 * 60 * 60u);
-            EXPECT_EQ (TimeOfDay::Parse ("16:00", locale::classic ()).GetAsSecondsCount (), 16 * 60 * 60u);
+            Range<int> rc (3, 7, Openness::eClosed, Openness::eClosed);
+            Range<int> ro{3, 7, Openness::eOpen, Openness::eOpen};
+            EXPECT_TRUE (rc.Contains (ro));
+            EXPECT_TRUE (not ro.Contains (rc));
+            Range<int> ri (4, 6);
+            EXPECT_TRUE (rc.Contains (ri));
+            EXPECT_TRUE (ro.Contains (ri));
+            EXPECT_TRUE (not ri.Contains (rc));
+            EXPECT_TRUE (not ri.Contains (ro));
+            Range<int> e{};
+            EXPECT_TRUE (rc.Contains (e)); // any set contains the empty set
         }
         {
-            // Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
-            //      -- LGP 2011-10-08
-            EXPECT_EQ (TimeOfDay::Parse ("3pm").GetAsSecondsCount (), 15 * 60 * 60u);
-            EXPECT_EQ (TimeOfDay::Parse ("3am").GetAsSecondsCount (), 3 * 60 * 60u);
-            EXPECT_EQ (TimeOfDay::Parse ("3:00").GetAsSecondsCount (), 3 * 60 * 60u);
-            EXPECT_EQ (TimeOfDay::Parse ("16:00").GetAsSecondsCount (), 16 * 60 * 60u);
-        }
-        try {
-            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
-#if qCompilerAndStdLib_locale_pctX_print_time_Buggy
-            // NOTE - these values are wrong, but since using locale code, not easy to fix/workaround - but to note XCode locale stuff still
-            // somewhat broken...
-            EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "00:01:41");
-            EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "0:01");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (locale{}), "01:01:41");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01:41");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01");
-#else
-            EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "12:01:41 AM");
-            EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "12:01 AM");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "1:01:41 AM" or
-                         TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41 AM");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01:41 AM");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01 AM");
-#endif
-        }
-        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
+            using namespace RangeTraits;
+            using RT         = Explicit<int, DefaultOpenness<int>, ExplicitBounds<int, -3, 100>>;
+            Range<int, RT> x = Range<int, RT>::FullRange ();
+            EXPECT_TRUE (x.GetLowerBound () == -3);
+            EXPECT_TRUE (x.GetUpperBound () == 100);
         }
         {
-            EXPECT_EQ (TimeOfDay{101}.Format (locale{}), "00:01:41");
-            EXPECT_EQ (TimeOfDay{60}.Format (locale{}), "00:01:00");
-            EXPECT_EQ (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "0:01");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (locale{}), "01:01:41");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped), "1:01:41");
-            EXPECT_EQ (TimeOfDay{60 * 60 + 60}.Format (locale{}), "01:01:00");
+            // ALLOW THIS WHEN WE HAVE NEW CHECKED OPTINAL PARANM - EXPECT_TRUE ((Range<int>{1, 1, Openness::eOpen, Openness::eOpen} == Range<int>{3, 3, Openness::eOpen, Openness::eOpen}));
+            EXPECT_TRUE ((Range<int>{1, 1, Openness::eClosed, Openness::eClosed} != Range<int>{3, 3, Openness::eClosed, Openness::eClosed}));
         }
         {
-            TimeOfDay threePM = TimeOfDay::Parse ("3pm", locale::classic ());
-            EXPECT_EQ (threePM.Format (locale::classic ()), "15:00:00"); // UGH!!!
-            TestRoundTripFormatThenParseNoChange_ (threePM);
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, TestDate_)
-    {
-        TraceContextBumper ctx{"TestDate_"};
-        auto               VERIFY_ROUNDTRIP_XML_ = [] (const Date& d) {
-            EXPECT_EQ (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format), d);
-        };
-        {
-            Date d{Year{1903}, April, DayOfMonth{4}};
-            TestRoundTripFormatThenParseNoChange_ (d);
-            EXPECT_EQ (d.Format (Date::kISO8601Format), "1903-04-04");
-            VERIFY_ROUNDTRIP_XML_ (d);
-            d = d.Add (4);
-            VERIFY_ROUNDTRIP_XML_ (d);
-            EXPECT_EQ (d.Format (Date::kISO8601Format), "1903-04-08");
-            d = d.Add (-4);
-            VERIFY_ROUNDTRIP_XML_ (d);
-            EXPECT_EQ (d.Format (Date::kISO8601Format), "1903-04-04");
-            TestRoundTripFormatThenParseNoChange_ (d);
-        }
-        try {
-            Date d = Date::Parse ("09/14/1752", Date::kMonthDayYearFormat);
-            EXPECT_EQ (d, Date::kGregorianCalendarEpoch.fYMD);
-            EXPECT_EQ (d.Format (Date::kISO8601Format), "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-            TestRoundTripFormatThenParseNoChange_ (d);
-        }
-        catch (...) {
-            EXPECT_TRUE (false);
+            auto r1  = Range<int>{3, 6};
+            auto r2l = 2 * r1;
+            auto r2r = r1 * 2;
+            EXPECT_TRUE ((r2l == Range<int>{6, 12}));
+            EXPECT_TRUE ((r2r == Range<int>{6, 12}));
         }
         {
-            optional<Date> d;
-            EXPECT_TRUE (d < DateTime::GetToday ());
-            EXPECT_TRUE (DateTime::GetToday () > d);
-            //TestRoundTripFormatThenParseNoChange_ (d);
+            auto r1  = Range<int>{3, 6};
+            auto r2l = 2 + r1;
+            auto r2r = r1 + 2;
+            EXPECT_TRUE ((r2l == Range<int>{5, 8}));
+            EXPECT_TRUE ((r2r == Range<int>{5, 8}));
         }
         {
-            Date d = Date::kGregorianCalendarEpoch.fYMD;
-            EXPECT_TRUE (d < DateTime::Now ().GetDate ());
-            EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
-            EXPECT_EQ (d.Format (Date::kISO8601Format), "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-            TestRoundTripFormatThenParseNoChange_ (d);
+            using namespace RangeTraits;
+            auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eOpen, Openness::eOpen>>>{3, 6};
+            EXPECT_TRUE (r1.Pin (3) == 4);
+            EXPECT_TRUE (r1.Pin (2) == 4);
+            EXPECT_TRUE (r1.Pin (8) == 5);
         }
         {
-            Date d = Date{300y / January / 3};
-            EXPECT_TRUE (d < DateTime::Now ().GetDate ());
-            EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
-            EXPECT_EQ (d.Format (Date::kISO8601Format), "0300-01-03");
-            TestRoundTripFormatThenParseNoChange_ (d);
+            using namespace RangeTraits;
+            auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>{3, 6};
+            EXPECT_TRUE (r1.Pin (3) == 3);
+            EXPECT_TRUE (r1.Pin (2) == 3);
+            EXPECT_TRUE (r1.Pin (4) == 4);
+            EXPECT_TRUE (r1.Pin (8) == 6);
         }
         {
-            Date d = Date::kMin;
-            EXPECT_TRUE (d < DateTime::Now ().GetDate ());
-            EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
-            EXPECT_EQ (d.Format (Date::kISO8601Format), "-4712-01-01"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-            TestRoundTripFormatThenParseNoChange_ (d);
-        }
-        try {
-            EXPECT_EQ (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat), (Date{Year{2001}, Time::November, DayOfMonth (3)}));
-            EXPECT_EQ (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat), "11/03/2001");
-        }
-        catch (...) {
-            // See qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy if this is triggered
-            DbgTrace ("qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy"_f);
-            EXPECT_TRUE (false);
-            Execution::ReThrow ();
+            using namespace RangeTraits;
+            auto r1 = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>{3, 3};
+            EXPECT_TRUE (r1.Pin (3) == 3);
+            EXPECT_TRUE (r1.Pin (2) == 3);
+            EXPECT_TRUE (r1.Pin (8) == 3);
         }
         {
-            EXPECT_TRUE (Date::kMin < Date::kMax);
-            EXPECT_TRUE (Date::kMin <= Date::kMax);
-            EXPECT_TRUE (not(Date::kMin > Date::kMax));
-            EXPECT_TRUE (not(Date::kMin >= Date::kMax));
-            TestRoundTripFormatThenParseNoChange_ (Date::kMin);
-            TestRoundTripFormatThenParseNoChange_ (Date::kMax);
-        }
-        try {
-            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
-            Date                    d = Date{Year{1903}, April, DayOfMonth{5}};
-            TestRoundTripFormatThenParseNoChange_ (d);
-            EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903");
-            EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903");
-        }
-        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
-        }
-        {
-            Date d = Date (1903y, April, 5d);
-            EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903" or d.Format (locale{}) == "04/05/03");
-            EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/03");
-        }
-        {
-            Date d = Date{Date::JulianDayNumber{2455213}};
-            EXPECT_EQ (d.Format (), "1/16/10");
-        }
-        {
-            Date d = Date{2012y / May / 1d};
-            EXPECT_EQ (d.GetJulianRep (), 2456049u); //https://aa.usno.navy.mil/data/JulianDate
-        }
-        {
-            EXPECT_EQ (Date::ToJulianRep (Date::FromJulianRep (0)), 0u);
-            for (int i = 0; i < 10 * 1000; ++i) {
-                // just a random sampling to assure reversible/consistent
-                EXPECT_EQ (Date::ToJulianRep (Date::FromJulianRep (i * 300)), i * 300u);
-            }
-        }
-        {
-            Date d = 1906y / May / 12d;
-            d      = d + 1;
-            EXPECT_EQ (d, (1906y / May / 13d));
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, TestDateTime_)
-    {
-        TraceContextBumper ctx{"TestDateTime_"};
-        {
-            DateTime d{Date{Year{1903}, April, DayOfMonth{4}}};
-            EXPECT_EQ (d.Format (DateTime::kISO8601Format), "1903-04-04");
-            TestRoundTripFormatThenParseNoChange_ (d);
-        }
-        {
-            optional<DateTime> d;
-            EXPECT_TRUE (d < DateTime::Now ());
-            EXPECT_TRUE (DateTime::Now () > d);
-            //TestRoundTripFormatThenParseNoChange_ (d);
-        }
-        {
-            DbgTrace ("DateTime::Now()={}"_f, Characters::ToString (DateTime::Now ()));
-            DbgTrace ("DateTime::Now().AsUTC ()={}"_f, Characters::ToString (DateTime::Now ().AsUTC ()));
-            DbgTrace ("DateTime::Now().AsLocalTime ()={}"_f, Characters::ToString (DateTime::Now ().AsLocalTime ()));
-            DbgTrace ("Timezone::kLocalTime.GetBiasFromUTC (fDate_, TimeOfDay{{0}})={}"_f,
-                      Timezone::kLocalTime.GetBiasFromUTC (DateTime::Now ().GetDate (), TimeOfDay{0}));
-            {
-                DateTime regTest{time_t (1598992961)};
-                EXPECT_TRUE (regTest.GetTimezone () == Timezone::kUTC);
-                EXPECT_TRUE ((regTest.GetDate () == Date{Year{2020}, September, DayOfMonth{1}}));
-                EXPECT_TRUE ((regTest.GetTimeOfDay () == TimeOfDay{20, 42, 41}));
-                if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -4 * 60 * 60) {
-                    DbgTrace ("Eastern US timezone"_f);
-                    EXPECT_TRUE ((regTest.AsLocalTime () ==
-                                  DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
-                }
-                else {
-                    DbgTrace ("other timezone: offset={}"_f, Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()));
-                }
-            }
-        }
-        {
-            DateTime d = {Date::kGregorianCalendarEpoch.fYMD, TimeOfDay{0}};
-            EXPECT_TRUE (d < DateTime::Now ());
-            EXPECT_TRUE (DateTime::Now () > d);
-            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
-            EXPECT_EQ (d.Format (DateTime::kISO8601Format), "1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-            TestRoundTripFormatThenParseNoChange_ (d);
-        }
-        {
-            DateTime d = DateTime::kMin;
-            EXPECT_TRUE (d < DateTime::Now ());
-            EXPECT_TRUE (DateTime::Now () > d);
-            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
-            EXPECT_EQ (d.Format (DateTime::kISO8601Format), "-4712-01-01T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
-            TestRoundTripFormatThenParseNoChange_ (d);
-        }
-        //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
-        try {
-            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
-            Date                    d = Date{Year{1903}, April, DayOfMonth{5}};
-            DateTime                dt{d, TimeOfDay{101}};
-
-            {
-                String tmp = dt.Format (locale{});
-#if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
-                EXPECT_TRUE (tmp == "4/5/1903 12:01:41 AM" or tmp == "04/05/1903 12:01:41 AM");
-#else
-#if qCompilerAndStdLib_locale_pctX_print_time_Buggy
-                EXPECT_EQ (tmp, "Sun Apr  5 00:01:41 1903");
-#else
-                EXPECT_EQ (tmp, "Sun 05 Apr 1903 12:01:41 AM");
-#endif
-#endif
-            }
-            DateTime dt2{d, TimeOfDay{60}};
-            //TOFIX!EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
-        }
-        catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
-            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
-        }
-        {
-            Date d = Date{Year{1903}, April, DayOfMonth{6}};
-            TestRoundTripFormatThenParseNoChange_ (d);
-            DateTime dt{d, TimeOfDay{101}};
-            TestRoundTripFormatThenParseNoChange_ (dt);
-            String tmp = dt.Format (locale{});
-            EXPECT_EQ (tmp, "Mon Apr  6 00:01:41 1903"); // see qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy if fails
-            DateTime dt2{d, TimeOfDay{60}};
-            TestRoundTripFormatThenParseNoChange_ (dt2);
-            // want a variant that does this formatting!
-            //EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
-        }
-        EXPECT_TRUE (DateTime::Parse ("2010-01-01", DateTime::kISO8601Format).GetDate ().GetYear () == Time::Year{2010});
-        {
-            DateTime now = DateTime::Now ();
-            TestRoundTripFormatThenParseNoChange_ (now);
-
-            constexpr bool kLocaleDateTimeFormatMaybeLossy_{true}; // 2 digit date - 03/04/05 parsed as 2005 on windows, and 1905 of glibc (neither wrong) - see StdCPctxTraits, but cannot consult it cuz we could be using any locale
-            if (kLocaleDateTimeFormatMaybeLossy_) {
-                String   nowShortLocaleForm = now.Format (locale{}, DateTime::kShortLocaleFormatPattern);
-                DateTime dt                 = DateTime::Parse (nowShortLocaleForm, DateTime::kShortLocaleFormatPattern);
-                // This roundtrip can be lossy, becaue the date 2016 could be represented as '16' and then when mapped the other way as
-                // 1916 (locale::classic ()). So fixup the year before comparing
-                Time::Year nYear = now.GetDate ().GetYear ();
-                Date       d     = dt.GetDate ();
-                if (d.GetYear () != nYear) {
-                    EXPECT_TRUE (((nYear - d.GetYear ()).count () % 100) == 0);
-                    d  = Date{nYear, d.GetMonth (), d.GetDayOfMonth ()};
-                    dt = DateTime{dt, d};
-                }
-                EXPECT_EQ (now, dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
-            }
-            else {
-                EXPECT_EQ (now, DateTime::Parse (now.Format (DateTime::kShortLocaleFormatPattern), DateTime::kShortLocaleFormatPattern));
-            }
-        }
-        {
-            const DateTime kProblemBaseDT_ = DateTime{Date{2023y / February / 18}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
-            const DateTime kProblemDT_     = DateTime{Date{2023y / March / 2d}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
-            Duration       diff            = kProblemDT_ - kProblemBaseDT_;
-            EXPECT_TRUE (diff == days{12}); // note not a leap year
-        }
-        {
-            Time::TimePointSeconds now = Time::GetTickCount ();
-
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-            static const auto kInitList_ =
-                initializer_list<Time::DurationSeconds>{3s, 995s, 3.4s, 3004.5s, 1055646.4s, 60 * 60 * 24 * 300s};
-#endif
-            for (Time::DurationSeconds dso :
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                 kInitList_
-#else
-                 initializer_list<Time::DurationSeconds>{3s, 995s, 3.4s, 3004.5s, 1055646.4s, 60s * 60 * 24 * 300}
-#endif
-            ) {
-                // test going back and forth between TimePointSeconds and DateTime...
-                Time::TimePointSeconds ds = dso + now;
-                DateTime               dt{ds};
-                EXPECT_NEAR (ds.time_since_epoch ().count (), dt.As<Time::TimePointSeconds> ().time_since_epoch ().count (), 1.1);
-            }
-        }
-        {
-            auto roundTripD = [] (DateTime dt) {
-                String   s   = dt.Format (DateTime::kRFC1123Format);
-                DateTime dt2 = DateTime::Parse (s, DateTime::kRFC1123Format);
-                EXPECT_TRUE (dt == dt2);
+            // test helper to assure answer for (A,B) is same as (B,A) - commutative
+            auto verifyIntersectsIsCommutative = [] (const Range<int>& p1, const Range<int>& p2) {
+                bool r = p1.Intersects (p2);
+                EXPECT_TRUE (r == p2.Intersects (p1));
+                return r;
             };
-            auto roundTripS = [] (String s) {
-                DateTime dt = DateTime::Parse (s, DateTime::kRFC1123Format);
-                EXPECT_EQ (dt.Format (DateTime::kRFC1123Format), s);
+            constexpr auto eOpen   = Openness::eOpen;
+            constexpr auto eClosed = Openness::eClosed;
+            EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{1, 3}, Range<int>{2, 2, eClosed, eClosed}));
+            EXPECT_TRUE (not verifyIntersectsIsCommutative (Range<int>{1, 3, eOpen, eOpen}, Range<int>{3, 4, eClosed, eClosed}));
+            EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{1, 3, eClosed, eClosed}, Range<int>{0, 1, eClosed, eClosed}));
+            EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{1, 3, eClosed, eClosed}, Range<int>{1, 1, eClosed, eClosed}));
+            EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{1, 10}, Range<int>{3, 4}));
+            EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{1, 10}, Range<int>{3, 3, eClosed, eClosed}));
+            EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{5, 10}, Range<int>{3, 7}));
+            EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{5, 10, eClosed, eClosed}, Range<int>{5, 5, eClosed, eClosed}));
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test_2_BasicDiscreteRangeIteration_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test_2_BasicDiscreteRangeIteration_"};
+        {
+            DiscreteRange<int> r (3, 5);
+            EXPECT_TRUE (not r.empty ());
+            EXPECT_TRUE (r.Contains (3));
+        }
+        {
+            DiscreteRange<int> r;
+            EXPECT_TRUE (r.empty ());
+        }
+        {
+            DiscreteRange<int> r (3, 3);
+            EXPECT_TRUE (not r.empty ());
+            EXPECT_TRUE (r.Elements ().size () == 1);
+        }
+        {
+            int nItemsHit   = 0;
+            int lastItemHit = 0;
+            for (auto i : DiscreteRange<int> (3, 5).Elements ()) {
+                nItemsHit++;
+                EXPECT_TRUE (lastItemHit < i);
+                lastItemHit = i;
+            }
+            EXPECT_TRUE (nItemsHit == 3);
+            EXPECT_TRUE (lastItemHit == 5); /// IN DISCUSSION - OPEN ENDED RHS?
+        }
+        {
+            int nItemsHit   = 0;
+            int lastItemHit = 0;
+            for (auto i : DiscreteRange<int> (3, 5)) {
+                nItemsHit++;
+                EXPECT_TRUE (lastItemHit < i);
+                lastItemHit = i;
+            }
+            EXPECT_TRUE (nItemsHit == 3);
+            EXPECT_TRUE (lastItemHit == 5); /// IN DISCUSSION - OPEN ENDED RHS?
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test_3_SimpleDiscreteRangeWithEnumsTest_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test_3_SimpleDiscreteRangeWithEnumsTest_"};
+        enum class Color {
+            red,
+            blue,
+            green,
+
+            Stroika_Define_Enum_Bounds (red, green)
+        };
+
+        {
+            using namespace RangeTraits;
+            Color min1 = Default<Color>::kLowerBound;
+            Color max1 = Default<Color>::kUpperBound;
+            Color min2 = Default_Enum<Color>::kLowerBound;
+            Color max2 = Default_Enum<Color>::kUpperBound;
+            Color min3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kLowerBound;
+            Color max3 = Explicit<Color, DefaultOpenness<Color>, ExplicitBounds<Color, Color::eSTART, Color::eLAST>>::kUpperBound;
+            EXPECT_TRUE (Color::red == Color::eSTART and Color::green == Color::eLAST);
+            EXPECT_TRUE (min1 == Color::eSTART and max1 == Color::eLAST);
+            EXPECT_TRUE (min2 == Color::eSTART and max2 == Color::eLAST);
+            EXPECT_TRUE (min3 == Color::eSTART and max3 == Color::eLAST);
+        }
+        {
+            using namespace RangeTraits;
+            EXPECT_TRUE (Default_Enum<Color>::GetNext (Color::eSTART) == Color::blue);
+            EXPECT_TRUE (Default_Enum<Color>::GetPrevious (Color::blue) == Color::red);
+        }
+        {
+            int             nItemsHit = 0;
+            optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
+                nItemsHit++;
+                EXPECT_TRUE (not lastItemHit.has_value () or *lastItemHit < i);
+                lastItemHit = i;
+            }
+            EXPECT_TRUE (nItemsHit == 3);
+            EXPECT_TRUE (lastItemHit == Color::green);
+        }
+        {
+            using namespace RangeTraits;
+            int             nItemsHit = 0;
+            optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color, Default<Color>>::FullRange ().Elements ()) {
+                nItemsHit++;
+                EXPECT_TRUE (not lastItemHit.has_value () or *lastItemHit < i);
+                lastItemHit = i;
+            }
+            EXPECT_TRUE (nItemsHit == 3);
+            EXPECT_TRUE (lastItemHit == Color::green);
+        }
+        {
+            int             nItemsHit = 0;
+            optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color> (optional<Color>{}, optional<Color>{}).Elements ()) {
+                nItemsHit++;
+                EXPECT_TRUE (not lastItemHit.has_value () or *lastItemHit < i);
+                lastItemHit = i;
+            }
+            EXPECT_TRUE (nItemsHit == 3);
+            EXPECT_TRUE (lastItemHit == Color::green);
+        }
+        {
+            int             nItemsHit = 0;
+            optional<Color> lastItemHit;
+            DiscreteRange<Color> (optional<Color> (), optional<Color>{}).Elements ().Apply ([&nItemsHit, &lastItemHit] (Color i) {
+                nItemsHit++;
+                EXPECT_TRUE (not lastItemHit.has_value () or *lastItemHit < i);
+                lastItemHit = i;
+            });
+            EXPECT_TRUE (nItemsHit == 3);
+            EXPECT_TRUE (lastItemHit == Color::green);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test4_FunctionalApplicationContext_MapTest_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test4_FunctionalApplicationContext_MapTest_"};
+        {
+            Containers::Sequence<int> n;
+            n.Append (1);
+            n.Append (2);
+            n.Append (3);
+            Containers::Sequence<int> n1 =
+                Containers::Sequence<int> (FunctionalApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1; }));
+            EXPECT_TRUE (n1.size () == 3);
+            EXPECT_TRUE (n1[0] == 2);
+            EXPECT_TRUE (n1[1] == 3);
+            EXPECT_TRUE (n1[2] == 4);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test5_ReduceTest_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test5_ReduceTest_"};
+        {
+            Containers::Sequence<int> n;
+            n.Append (1);
+            n.Append (2);
+            n.Append (3);
+            int sum = FunctionalApplicationContext<int> (n).Reduce<int> ([] (int l, int r) -> int { return l + r; }, 0);
+            EXPECT_TRUE (sum == 6);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test6_FunctionApplicationContext_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test6_FunctionApplicationContext_"};
+        using Containers::Sequence;
+
+        {
+            Containers::Sequence<int> s = {1, 2, 3};
+            {
+                shared_ptr<int>         countSoFar = shared_ptr<int> (new int (0));
+                [[maybe_unused]] size_t answer     = FunctionalApplicationContext<int> (s)
+                                                     .Filter<int> ([countSoFar] (int) -> bool {
+                                                         ++(*countSoFar);
+                                                         return (*countSoFar) & 1;
+                                                     })
+                                                     .Map<int> ([] (int s) { return s + 5; })
+                                                     .Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
+                EXPECT_TRUE (answer == 2);
+            }
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                size_t answer = FunctionalApplicationContext<int> (s)
+                                    .Filter<int> ([&countSoFar] (int) -> bool {
+                                        ++countSoFar;
+                                        return countSoFar & 1;
+                                    })
+                                    .Map<int> ([] (int s) { return s + 5; })
+                                    .Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
+                EXPECT_TRUE (answer == 2);
+            }
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                Containers::Sequence<int> r = Containers::Sequence<int> (FunctionalApplicationContext<int> (s)
+                                                                             .Filter<int> ([&countSoFar] (int) -> bool {
+                                                                                 ++countSoFar;
+                                                                                 return countSoFar & 1;
+                                                                             })
+                                                                             .Map<int> ([] (int s) { return s + 5; }));
+                EXPECT_TRUE (r.length () == 2);
+                EXPECT_TRUE (r[0] == 6 and r[1] == 8);
+            }
+            {
+                optional<int> answer =
+                    FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool {
+                        return i == 1;
+                    });
+                EXPECT_TRUE (*answer == 1);
+            }
+            {
+                optional<int> answer =
+                    FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool {
+                        return i == 8;
+                    });
+                EXPECT_TRUE (not answer.has_value ());
+            }
+        }
+
+        {
+            using Characters::String;
+            Sequence<String> s = {"alpha", "beta", "gamma"};
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                size_t answer = FunctionalApplicationContext<String> (s)
+                                    .Filter<String> ([&countSoFar] (String) -> bool {
+                                        ++countSoFar;
+                                        return countSoFar & 1;
+                                    })
+                                    .Map<String> ([] (String s) { return s + " hello"sv; })
+                                    .Reduce<size_t> ([] ([[maybe_unused]] String s, size_t memo) { return memo + 1; });
+                EXPECT_TRUE (answer == 2);
+            }
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
+                Containers::Sequence<String> r = Containers::Sequence<String> (FunctionalApplicationContext<String> (s)
+                                                                                   .Filter<String> ([&countSoFar] (String) -> bool {
+                                                                                       ++countSoFar;
+                                                                                       return countSoFar & 1;
+                                                                                   })
+                                                                                   .Map<String> ([] (String s) { return s + " hello"sv; }));
+                EXPECT_TRUE (r.length () == 2);
+                EXPECT_TRUE (r[0] == "alpha hello"sv and r[1] == "gamma hello"sv);
+            }
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test7_FunctionApplicationContextWithDiscreteRangeEtc_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test7_FunctionApplicationContextWithDiscreteRangeEtc_"};
+        using Containers::Sequence;
+        {
+            const uint32_t kRefCheck_[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
+            auto           isPrimeCheck = [] (uint32_t n) -> bool { return Math::IsPrime (n); };
+            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck)) {
+                EXPECT_TRUE (Math::IsPrime (i));
+            }
+            Sequence<uint32_t> s = Sequence<uint32_t> (
+                FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck));
+            EXPECT_TRUE (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
+            EXPECT_TRUE (
+                Memory::NEltsOf (kRefCheck_) ==
+                FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck).size ());
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test8_DiscreteRangeTestFromDocs_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test8_DiscreteRangeTestFromDocs_"};
+        // From Docs in DiscreteRange<> class
+        vector<int> v = DiscreteRange<int>{1, 10}.Elements ().As<vector<int>> ();
+        EXPECT_TRUE ((v == vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+        for (auto i : DiscreteRange<int>{1, 10}.Elements ()) {
+            EXPECT_TRUE (1 <= i and i <= 10); // rough verification
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test9_Generators_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test9_Generators_"};
+        {
+            constexpr int kMin      = 1;
+            constexpr int kMax      = 10;
+            auto          myContext = shared_ptr<int> (new int (kMin - 1));
+            auto          getNext   = [myContext] () -> optional<int> {
+                (*myContext)++;
+                if (*myContext > 10) {
+                    return optional<int>{};
+                }
+                return *myContext;
             };
 
-            // Parse eRFC1123
-            EXPECT_TRUE (DateTime::Parse ("Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
-            // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
-            EXPECT_TRUE (DateTime::Parse ("Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            EXPECT_TRUE (DateTime::Parse ("Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            EXPECT_TRUE (DateTime::Parse ("Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-
-            EXPECT_TRUE (DateTime::Parse ("Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
-
-            roundTripD (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
-
-            // Careful with these, because there are multiple valid string representations for a given date
-            roundTripS ("Wed, 02 Oct 2002 13:00:00 GMT");
-            roundTripS ("Wed, 02 Oct 2002 15:00:00 +0200");
-            roundTripS ("Wed, 02 Oct 2002 15:00:00 -0900");
-        }
-        // clang-format off
-        {
-            // difference
-            {
-                constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear{9}, Time::DayOfMonth{29}};
-                constexpr TimeOfDay kTOD_{10, 21, 32};
-                constexpr TimeOfDay kTOD2_{10, 21, 35};
-                EXPECT_TRUE ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSeconds::rep> () == -3);
-                EXPECT_TRUE ((DateTime {kDate_, kTOD2_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 3);
-                EXPECT_TRUE ((DateTime {kDate_.Add (1), kTOD_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 24 * 60 * 60);
-                EXPECT_TRUE ((DateTime {kDate_, kTOD_} - DateTime {kDate_.Add (1), kTOD_}).As<Time::DurationSeconds::rep> () == -24 * 60 * 60);
+            int sum = 0;
+            for (auto i : CreateGenerator<int> (getNext)) {
+                EXPECT_TRUE (1 <= i and i <= 10);
+                sum += i;
             }
-            {
-                EXPECT_TRUE ((DateTime::Now () - DateTime::kMin) > "P200Y"_duration);
-            }
-        }
-        {
-            // http://stroika-bugs.sophists.com/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
-            {
-                constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
-                constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04:00", DateTime::kISO8601Format);
-                DateTime            tdu = td.AsUTC ();
-                EXPECT_EQ (tdu, (DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
-            }
-            {
-                constexpr Date      kDate_ = Date {Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
-                constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-0400", DateTime::kISO8601Format);
-                DateTime            tdu = td.AsUTC ();
-                EXPECT_EQ (tdu, ( DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
-            }
-            {
-                constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth {29}};
-                constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04", DateTime::kISO8601Format);
-                DateTime            tdu = td.AsUTC ();
-                EXPECT_EQ (tdu, ( DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
-            }
-        }
-        {
-            // http://stroika-bugs.sophists.com/browse/STK-950
-            try {
-                [[maybe_unused]]DateTime dt = DateTime::Parse ("1906-05-12x12:00:00+00", DateTime::kISO8601Format);
-                EXPECT_TRUE (false);
-            }
-            catch (const DateTime::FormatException&) {
-                // good
-            }
-            catch (...) {
-                EXPECT_TRUE (false);
-            }
-            try {
-                DateTime dt = DateTime::Parse ("1906-05-12 12:00:00+00", DateTime::kISO8601Format);    //allowed to use space or 't'
-                EXPECT_TRUE ((dt.GetDate () == Date{1906y, May, 12d}));
-                EXPECT_TRUE ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
-                EXPECT_TRUE (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
-            }
-            catch (...) {
-                EXPECT_TRUE (false);
-            }
-            try {
-                DateTime dt = DateTime::Parse ("1906-05-12T12:00:00+00", DateTime::kISO8601Format);
-                EXPECT_TRUE ((dt.GetDate () == Date{1906y, May, 12d}));
-                EXPECT_TRUE ((1906y/May/12d == Date{1906y, May, 12d}));
-                EXPECT_TRUE ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
-                EXPECT_TRUE (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
-            }
-            catch (...) {
-                EXPECT_TRUE (false);
-            }
-         }
-    }
-}
-// clang-format on
-
-namespace {
-    GTEST_TEST (Foundation_Time, DateTimeTimeT_)
-    {
-        TraceContextBumper ctx{"DateTimeTimeT_"};
-        {
-            DateTime d{Date{Year{2000}, April, DayOfMonth{20}}};
-            EXPECT_EQ (d.As<time_t> (), 956188800); // source - http://www.onlineconversion.com/unix_time.htm
-        }
-        {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3pm", locale{})};
-            EXPECT_EQ (d.As<time_t> (), 802278000); // source - http://www.onlineconversion.com/unix_time.htm
-        }
-        {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3pm")};
-            EXPECT_EQ (d.As<time_t> (), 802278000); // source - http://www.onlineconversion.com/unix_time.htm
-        }
-        {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3am")};
-            EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
-        }
-        {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3:00")};
-            EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
-        }
-        {
-            const time_t kTEST = 802234800;
-            DateTime     d     = DateTime{kTEST};
-            EXPECT_EQ (d.As<time_t> (), kTEST); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, DateTimeStructTM_)
+    GTEST_TEST (Foundation_Traversal, Test10_MakeIterableFromIterator_)
     {
-        TraceContextBumper ctx{"DateTimeStructTM_"};
+        static_assert (ranges::range<Iterable<int>>);
+        Debug::TraceContextBumper ctx{"{}::Test10_MakeIterableFromIterator_"};
         {
-            struct tm x {};
-            x.tm_hour    = 3;
-            x.tm_min     = 30;
-            x.tm_year    = 80;
-            x.tm_mon     = 3;
-            x.tm_mday    = 15;
-            DateTime  d  = DateTime{x};
-            struct tm x2 = d.As<struct tm> ();
-            EXPECT_EQ (x.tm_hour, x2.tm_hour);
-            EXPECT_EQ (x.tm_min, x2.tm_min);
-            EXPECT_EQ (x.tm_sec, x2.tm_sec);
-            EXPECT_EQ (x.tm_year, x2.tm_year);
-            EXPECT_EQ (x.tm_mday, x2.tm_mday);
+            Containers::Sequence<int> a    = {1, 3, 5, 7, 9};
+            Iterator<int>             iter = a.MakeIterator ();
+
+            int sum = 0;
+            for (auto i : MakeIterableFromIterator (iter)) {
+                sum += i;
+            }
+            EXPECT_TRUE (sum == 25);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, Duration_)
+    GTEST_TEST (Foundation_Traversal, Test11_GetDistanceSpanned_)
     {
-        TraceContextBumper ctx{"Duration_"};
+        Debug::TraceContextBumper ctx{"{}::Test11_GetDistanceSpanned_"};
+        using IntRange = Range<unsigned int>;
+        IntRange foo{3, 9};
+        EXPECT_TRUE (foo.GetDistanceSpanned () == 6);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test12_RangeConstExpr_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test12_RangeConstExpr_"};
+        using IntRange = Range<unsigned int>;
+        constexpr IntRange     kFoo_{3, 9};
+        constexpr unsigned int l = kFoo_.GetLowerBound ();
+        constexpr unsigned int u = kFoo_.GetUpperBound ();
+        EXPECT_TRUE (l == 3);
+        EXPECT_TRUE (u == 9);
+        constexpr unsigned int m = kFoo_.GetMidpoint ();
+        EXPECT_TRUE (m == 6);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test13_DisjointRange_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test13_DisjointRange_"};
         {
-            EXPECT_EQ (Duration{0}.As<time_t> (), 0);
-            EXPECT_EQ (Duration{0}.As<String> (), "PT0S");
-            EXPECT_EQ (Duration{0}.Format (), "0 seconds");
+            DisjointRange<float> dr{};
+            EXPECT_TRUE (dr.empty ());
+            EXPECT_TRUE (dr.GetBounds ().empty ());
+            EXPECT_TRUE (dr.SubRanges ().empty ());
+            EXPECT_TRUE (not dr.Contains (3));
         }
         {
-            EXPECT_EQ (Duration{3}.As<time_t> (), 3);
-            EXPECT_EQ (Duration{3}.As<String> (), "PT3S");
-            EXPECT_EQ (Duration{3}.Format (), "3 seconds");
-        }
-        const int kSecondsPerDay = TimeOfDay::kMaxSecondsPerDay;
-        {
-            const Duration k30Days = Duration{"P30D"};
-            EXPECT_EQ (k30Days.As<time_t> (), 30 * kSecondsPerDay);
+            DisjointRange<float> dr{Range<float> (2.1f, 5.0f)};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE ((dr.GetBounds () == Range<float>{2.1f, 5.0f}));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (dr.Contains (3));
+            EXPECT_TRUE (not dr.Contains (2));
         }
         {
-            const Duration k6Months = Duration{"P6M"};
-            EXPECT_EQ (k6Months.As<time_t> (), 6 * 30 * kSecondsPerDay);
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointRange<int, RT>;
+            DRT dr{};
+            EXPECT_TRUE (dr.empty ());
+            EXPECT_TRUE (dr.GetBounds ().empty ());
+            EXPECT_TRUE (dr.SubRanges ().empty ());
+            EXPECT_TRUE (not dr.Contains (3));
         }
         {
-            const Duration kP1Y = Duration{"P1Y"};
-            EXPECT_EQ (kP1Y.As<time_t> (), 365 * kSecondsPerDay);
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointRange<int, RT>;
+            DRT dr{RT (2, 5)};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE (dr.GetBounds () == RT (2, 5));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (dr.Contains (3));
+            EXPECT_TRUE (not dr.Contains (1));
         }
         {
-            const Duration kP2Y = Duration{"P2Y"};
-            EXPECT_EQ (kP2Y.As<time_t> (), 2 * 365 * kSecondsPerDay);
-            EXPECT_EQ (Duration{2 * 365 * kSecondsPerDay}.As<String> (), "P2Y");
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{RT{1, 2}, RT{4, 5}};
+            EXPECT_TRUE ((dr.GetBounds () == RT{1, 5}));
+            EXPECT_TRUE (dr.SubRanges ().size () == 2);
+            EXPECT_TRUE (dr.Contains (2));
+            EXPECT_TRUE (not dr.Contains (3));
+            EXPECT_TRUE (dr.Contains (4));
         }
         {
-            const Duration kHalfMinute = Duration{"PT0.5M"};
-            EXPECT_EQ (kHalfMinute.As<time_t> (), 30);
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{RT{4, 5}, RT{1, 2}};
+            EXPECT_TRUE ((dr.GetBounds () == RT{1, 5}));
+            EXPECT_TRUE (dr.SubRanges ().size () == 2);
+            EXPECT_TRUE (dr.Contains (2));
+            EXPECT_TRUE (not dr.Contains (3));
+            EXPECT_TRUE (dr.Contains (4));
         }
         {
-            const Duration kD = Duration{"PT0.1S"};
-            EXPECT_EQ (kD.As<time_t> (), 0);
-            EXPECT_EQ (kD.As<double> (), 0.1);
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{};
+            EXPECT_TRUE (dr.empty ());
+            dr.Add (4);
+            EXPECT_TRUE (dr.GetBounds () == RT (4, 4));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (not dr.Contains (3));
+            EXPECT_TRUE (dr.Contains (4));
+            for (int i = 5; i <= 100; ++i) {
+                dr.Add (4);
+                dr.Add (i);
+            }
+            EXPECT_TRUE (dr.GetBounds () == RT (4, 100));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            for (int i = 501; i < 600; ++i) {
+                dr.Add (4);
+                dr.Add (i);
+            }
+            dr.Add (3);
+            EXPECT_TRUE (dr.SubRanges ().size () == 2);
+            EXPECT_TRUE (dr.GetBounds () == RT (3, 600 - 1));
+            EXPECT_TRUE (dr.Contains (3));
+            EXPECT_TRUE (not dr.Contains (300));
+            EXPECT_TRUE (dr.Contains (599));
+            EXPECT_TRUE (not dr.Contains (600));
         }
         {
-            const Duration kHalfMinute = Duration{"PT0.5M"};
-            EXPECT_EQ (kHalfMinute.PrettyPrint (), "30 seconds");
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{RT{1, 1}, RT{3, 3}, RT{5, 5}};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE (dr.GetBounds () == RT (1, 5));
+            EXPECT_TRUE (dr.SubRanges ().size () == 3);
+            EXPECT_TRUE (not dr.Contains (4));
+            EXPECT_TRUE (dr.Contains (3));
         }
         {
-            const Duration k3MS = Duration{"PT0.003S"};
-            EXPECT_EQ (k3MS.PrettyPrint (), "3 ms");
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{RT{1, 5}, RT{3, 7}, RT{5, 9}};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE (dr.GetBounds () == RT (1, 9));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (dr.Contains (3));
         }
         {
-            const Duration kD = Duration{"PT1.003S"};
-#if qCompilerAndStdLib_WeirdReleaseBuildRegtestFailure_Buggy
-            //cerr << "HI MOM: '" << kD.PrettyPrint ().AsNarrowSDKString () << "'" << endl;
-            VerifyTestResultWarning (kD.PrettyPrint () == "1.003 seconds");
-#else
-            EXPECT_EQ (kD.PrettyPrint (), "1.003 seconds");
+            using RT  = Range<float>;
+            using DRT = DisjointRange<RT::value_type, RT>;
+            DRT dr{RT{1, 5}, RT{3, 7}, RT{5, 9}};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE ((dr.GetBounds () == RT{1, 9}));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (dr.Contains (3));
+        }
+        {
+            using namespace RangeTraits;
+            using RT  = Range<float, Explicit<float, ExplicitOpenness<Openness::eClosed, Openness::eClosed>>>;
+            using DRT = DisjointRange<RT::value_type, RT>;
+            DRT dr{RT{1, 5}, RT{2, 2}};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE ((dr.GetBounds () == RT{1, 5}));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (dr.Contains (3));
+        }
+        {
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{RT{1, 4}, RT{5, 9}};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE (dr.GetBounds () == RT (1, 9));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (dr.Contains (3));
+            dr.Add (10);
+            EXPECT_TRUE (dr.GetBounds () == RT (1, 10));
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+        }
+        {
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{RT{1, 1}, RT{3, 3}, RT{5, 5}};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE (dr.GetBounds () == RT (1, 5));
+            EXPECT_TRUE (dr.SubRanges ().size () == 3);
+            EXPECT_TRUE (dr.Contains (3));
+            EXPECT_TRUE (dr.GetNext (1) == 3);
+            EXPECT_TRUE (dr.GetNext (2) == 3);
+            EXPECT_TRUE (dr.GetNext (3) == 5);
+            EXPECT_TRUE (dr.GetNext (4) == 5);
+            EXPECT_TRUE (not dr.GetNext (5).has_value ());
+            EXPECT_TRUE (not dr.GetPrevious (1).has_value ());
+            EXPECT_TRUE (dr.GetPrevious (2) == 1);
+            EXPECT_TRUE (dr.GetPrevious (3) == 1);
+            EXPECT_TRUE (dr.GetPrevious (4) == 3);
+            EXPECT_TRUE (dr.GetPrevious (5) == 3);
+            EXPECT_TRUE (dr.GetPrevious (6) == 5);
+            EXPECT_TRUE (dr.GetPrevious (7) == 5);
+        }
+        {
+            using RT  = DiscreteRange<int>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
+            DRT dr{RT{1, 2}, RT{4, 5}, RT{7, 8}};
+            EXPECT_TRUE (not dr.empty ());
+            EXPECT_TRUE (dr.GetBounds () == RT (1, 8));
+            EXPECT_TRUE (dr.SubRanges ().size () == 3);
+            EXPECT_TRUE (not dr.Contains (3));
+            EXPECT_TRUE (dr.GetNext (1) == 2);
+            EXPECT_TRUE (dr.GetNext (2) == 4);
+            EXPECT_TRUE (dr.GetNext (3) == 4);
+            EXPECT_TRUE (dr.GetNext (4) == 5);
+            EXPECT_TRUE (dr.GetNext (5) == 7);
+            EXPECT_TRUE (dr.GetNext (6) == 7);
+            EXPECT_TRUE (dr.GetNext (7) == 8);
+            EXPECT_TRUE (not dr.GetNext (8).has_value ());
+            EXPECT_TRUE (not dr.GetNext (99).has_value ());
+            EXPECT_TRUE (not dr.GetPrevious (1).has_value ());
+            EXPECT_TRUE (dr.GetPrevious (2) == 1);
+            EXPECT_TRUE (dr.GetPrevious (3) == 2);
+            EXPECT_TRUE (dr.GetPrevious (4) == 2);
+            EXPECT_TRUE (dr.GetPrevious (5) == 4);
+            EXPECT_TRUE (dr.GetPrevious (6) == 5);
+            EXPECT_TRUE (dr.GetPrevious (7) == 5);
+            EXPECT_TRUE (dr.GetPrevious (8) == 7);
+            EXPECT_TRUE (dr.GetPrevious (9) == 8);
+            {
+                // test iterate over ranges
+                int timeThru = 0;
+                for (const RT& rng : dr.SubRanges ()) {
+                    switch (timeThru++) {
+                        case 0:
+                            EXPECT_TRUE ((rng == RT{1, 2}));
+                            break;
+                        case 1:
+                            EXPECT_TRUE ((rng == RT{4, 5}));
+                            break;
+                        case 2:
+                            EXPECT_TRUE ((rng == RT{7, 8}));
+                            break;
+                        default:
+                            EXPECT_TRUE (false);
+                    }
+                }
+            }
+            {
+                // test iterate over elements
+                EXPECT_TRUE (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({1, 2, 4, 5, 7, 8}));
+            }
+            {
+                // Test intersection
+                EXPECT_TRUE (Containers::Sequence<int> (dr.Intersection (RT{2, 4}).Elements ()) == Containers::Sequence<int> ({2, 4}));
+            }
+        }
+        {
+            using DRT = DisjointDiscreteRange<int>;
+            DRT                       dr;
+            static const unsigned int kMax_ = Debug::IsRunningUnderValgrind () ? 1000u : 10000u;
+            for (int i = 0; i < (int)kMax_; ++i) {
+                dr.Add (i);
+            }
+            EXPECT_TRUE (dr.SubRanges ().size () == 1);
+            EXPECT_TRUE (dr.Elements ().size () == kMax_);
+        }
+        {
+            using DRT = DisjointDiscreteRange<int>;
+            DRT dr;
+            dr.Add (872);
+            EXPECT_TRUE (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({872}));
+            dr.Add (231);
+            EXPECT_TRUE (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 872}));
+            dr.Add (329);
+            EXPECT_TRUE (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 329, 872}));
+            dr.Add (665);
+            EXPECT_TRUE (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 329, 665, 872}));
+            dr.Add (581);
+            EXPECT_TRUE (Containers::Sequence<int> (dr.Elements ()) == Containers::Sequence<int> ({231, 329, 581, 665, 872}));
+        }
+        {
+            using Containers::Set;
+            using Containers::SortedSet;
+            using DRT      = DisjointDiscreteRange<int>;
+            auto roundTrip = [] (const Set<int>& s) {
+                DRT tmp{s};
+                EXPECT_TRUE (tmp.Elements ().size () == s.size ());
+                EXPECT_TRUE (Set<int>{tmp.Elements ()} == s);
+            };
+            roundTrip (Set<int>{3, 4});
+            roundTrip (Set<int>{1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 100});
+            roundTrip (Set<int>{4, 5, 6, 7, 8, 9, 10, 11, 100, 102, 103, 104});
+            roundTrip (Set<int>{(DiscreteRange<int>{1, 1000}).Elements ()});
+        }
+        {
+            // Check semantics of Range<>::Intersects
+            using RT               = Range<int>;
+            constexpr auto eOpen   = Openness::eOpen;
+            constexpr auto eClosed = Openness::eClosed;
+            EXPECT_TRUE ((RT{1, 2}.Intersects (RT{1, 2})));
+            EXPECT_TRUE ((not RT{1, 2, eOpen, eOpen}.Intersects (RT{2, 3, eOpen, eOpen})));
+            EXPECT_TRUE ((not RT{1, 2, eOpen, eClosed}.Intersects (RT{2, 3, eOpen, eOpen})));
+            EXPECT_TRUE ((RT{1, 2, eOpen, eClosed}.Intersects (RT{2, 3, eClosed, eOpen})));
+            EXPECT_TRUE ((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}));
+            EXPECT_TRUE (((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}) == RT{2, 2, eClosed, eClosed}));
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test14_ToString_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test14_ToString_"};
+        EXPECT_EQ ((Range<int>{3, 4}.ToString ([] (int n) { return "{}"_f(n); })), "[3 ... 4]");
+        EXPECT_EQ ((Range<int>{3, 4}.ToString ()), "[3 ... 4]");
+        {
+            using namespace Time;
+            EXPECT_TRUE (
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==
+                 L"[4/4/03 ... 4/5/03]"));
+        }
+        {
+            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
+            using namespace Time;
+            EXPECT_TRUE (
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==
+                 "[4/4/1903 ... 4/5/1903]"));
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test15_Partition_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test15_Partition_"};
+        {
+            using Containers::Sequence;
+            using RangeTraits::Explicit;
+            using RangeTraits::ExplicitOpenness;
+            using RT = Range<double>;
+            EXPECT_TRUE (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
+            EXPECT_TRUE (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
+        }
+        {
+            using Containers::Sequence;
+            using RangeTraits::Explicit;
+            using RangeTraits::ExplicitOpenness;
+            using RT = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eOpen>>>; // half open intervals best for partitions
+            EXPECT_TRUE (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
+            EXPECT_TRUE (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test16_LinqLikeFunctions_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test16_LinqLikeFunctions_"};
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_TRUE (c.Where ([] (int i) { return i % 2 == 0; }).SequentialEquals (Iterable<int>{2, 4, 6}));
+            EXPECT_TRUE (c.Where ([] (int i) { return i % 2 == 1; }).SequentialEquals (Iterable<int>{1, 3, 5}));
+            {
+                Iterable<int> w = c.Where ([] (int i) { return i % 2 == 0; });
+                EXPECT_TRUE (w.SequentialEquals ({2, 4, 6}));
+                EXPECT_TRUE (w.SequentialEquals ({2, 4, 6}));
+            }
+        }
+        {
+            Iterable<int> c{1, 2, 2, 5, 9, 4, 5, 6};
+            EXPECT_TRUE (c.Distinct ().SetEquals ({1, 2, 4, 5, 6, 9}));
+            auto resultsEqualMod5 = c.Distinct ([] (int l, int r) { return l % 5 == r % 5; });
+            DbgTrace ("x={}"_f, Characters::ToString (resultsEqualMod5));
+            EXPECT_TRUE (resultsEqualMod5.size () == 4);
+            for (auto i : resultsEqualMod5) {
+                EXPECT_TRUE (i != 3);
+            }
+        }
+        {
+            Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
+            EXPECT_TRUE (c.Map<Iterable<int>> ([] (pair<int, char> p) { return p.first; }).SequentialEquals (Iterable<int>{1, 2, 3}));
+        }
+        {
+            Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
+            EXPECT_TRUE (c.Map<Iterable<int>> ([] (pair<int, char> p) {
+                              return (p.first & 1) ? optional<int>{p.first} : nullopt;
+                          }).SequentialEquals (Iterable<int>{1, 3}));
+        }
+        {
+            using Characters::String;
+            Iterable<int> c{3, 4, 7};
+            EXPECT_TRUE (c.Map<Iterable<String>> ([] (int i) { return "{}"_f(i); }).SequentialEquals (Iterable<String>{"3", "4", "7"}));
+        }
+        {
+            using Characters::String;
+            Iterable<int> c{3, 4, 7};
+            EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f(i); })), (vector<String>{"3", "4", "7"}));
+        }
+        {
+            Iterable<int> c = {1, 2, 3, 4, 5, 6};
+            EXPECT_TRUE (c.Any ([] (int i) { return i % 2 == 0; }));
+            EXPECT_TRUE (not c.Any ([] (int i) { return i > 7; }));
+        }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_TRUE (c.Skip (3).SequentialEquals ({4, 5, 6}));
+        }
+        {
+            using Containers::Sequence;
+            using Containers::Set;
+            Sequence<int> a{1, 3, 5, 7, 9};
+            a = Sequence<int>{a.Skip (2)}; // http://stroika-bugs.sophists.com/browse/STK-532 - crash
+            EXPECT_TRUE ((a == Sequence<int>{5, 7, 9}));
+        }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_TRUE (c.Take (3).SequentialEquals (Iterable<int>{1, 2, 3}));
+        }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_TRUE (c.Slice (3, 5).SequentialEquals ({4, 5}));
+            EXPECT_TRUE (c.Slice (3, 9999).SequentialEquals ({4, 5, 6}));
+        }
+        {
+            Iterable<int> c{3, 5, 9, 38, 3, 5};
+            EXPECT_TRUE (c.OrderBy ().SequentialEquals ({3, 3, 5, 5, 9, 38}));
+            EXPECT_TRUE (c.OrderBy ().IsOrderedBy ());
+            EXPECT_TRUE (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({3, 3, 5, 5, 9, 38}));
+            EXPECT_TRUE (c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs > rhs; }).SequentialEquals ({38, 9, 5, 5, 3, 3}));
+        }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_EQ (c.Min (), 1);
+        }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_EQ (c.Max (), 6);
+        }
+        {
+            using Math::NearlyEquals;
+            Iterable<int> c{1, 2, 9, 4, 5, 3};
+            EXPECT_EQ (c.Median (), 3); // cuz truncated - real answer is 3.5
+            EXPECT_TRUE (NearlyEquals (*c.Median<double> (), 3.5));
+            EXPECT_TRUE (NearlyEquals (*c.Median<double> (), 4, 1));
+            EXPECT_TRUE (not NearlyEquals (*c.Median<double> (), 4));
+        }
+        {
+            Iterable<int> c{1, 2, 9, 4, 5, 3};
+            EXPECT_TRUE (c.MeanValue () == 4);
+        }
+        {
+            // From Iterable::First/Iterable::Last docs
+            Iterable<int> c{3, 5, 9, 38, 3, 5};
+            EXPECT_TRUE (*c.First () == 3);
+            EXPECT_TRUE (*c.First<int> ([] (int i) { return (i % 2 == 0) ? i : optional<int>{}; }) == 38);
+            EXPECT_TRUE (*c.Last () == 5);
+            EXPECT_TRUE (*c.Last<int> ([] (int i) { return i % 2 == 0 ? i : optional<int>{}; }) == 38);
+        }
+        {
+            // From Iterable::All docs
+            Iterable<int> c{3, 5, 9, 3, 5};
+            EXPECT_TRUE (c.All ([] (int i) { return i % 2 == 1; }));
+        }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_TRUE (c.NthValue (1) == 2);
+            EXPECT_TRUE ((c.NthValue (99) == int{}));
+        }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            EXPECT_TRUE (c.First () == 1);
+            EXPECT_TRUE (c.First ([] (int i) { return i == 4; }) == 4);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test17_DurationRange_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test17_DurationRange_"};
+        using Time::Duration;
+        using Traversal::Range;
+
+        {
+            Range<Duration> a{Duration{"PT.5S"sv}, Duration{"PT2M"}};
+            Range<Duration> b{Duration{"PT1S"}, Duration{"PT2M"}};
+            Verify ((a ^ b) == b);
+        }
+        {
+            Range<Duration> a{Duration{"PT.5S"}, Duration{"PT2M"}};
+            EXPECT_TRUE (a.Pin (Duration{"PT.5S"}) == Duration{"PT.5S"});
+            EXPECT_TRUE (a.Pin (Duration{"PT0S"}) == Duration{"PT.5S"});
+            EXPECT_TRUE (a.Pin (Duration{"PT5M"}) == Duration{"PT2M"});
+            EXPECT_TRUE (a.Pin (Duration{"PT10S"}) == Duration{"PT10S"});
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test18_IterableConstructors_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test18_IterableConstructors_"};
+
+        {
+            vector<int>   a = {1, 3, 5};
+            Iterable<int> aa1{vector<int>{1, 3, 5}};
+            Iterable<int> aa2{a};
+            Iterable<int> aa3{move (a)};
+            Iterable<int> aa4{aa3};
+            Iterable<int> aa5{Iterable<int>{}};
+            Iterable<int> aa6{3, 4, 6};
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test19_CreateGeneratorBug_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test19_CreateGeneratorBug_"};
+        auto                      t1 = [] () {
+            Containers::Bijection<int, int> seeIfReady;
+            seeIfReady.Add (1, 1);
+            seeIfReady.Add (2, 2);
+            EXPECT_TRUE (seeIfReady.size () == 2);
+            DbgTrace ("seeIfReady={}"_f, seeIfReady);
+            EXPECT_TRUE (seeIfReady.size () == 2);
+
+            const bool               kFails_ = true;
+            Traversal::Iterable<int> fds     = kFails_ ? seeIfReady.Image () : Traversal::Iterable<int>{1, 2};
+
+            EXPECT_TRUE (fds.size () == 2);
+            EXPECT_TRUE (seeIfReady.size () == 2);
+            DbgTrace ("fds={}"_f, fds); // note this is critical step in reproducing old bug - iterating over fds
+            EXPECT_TRUE (fds.size () == 2);
+            EXPECT_TRUE (seeIfReady.size () == 2);
+        };
+        t1 ();
+        auto t11 = [] () {
+            Containers::Bijection<int, int> seeIfReady;
+            seeIfReady.Add (1, 1);
+            seeIfReady.Add (2, 2);
+            seeIfReady.Add (3, 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+            DbgTrace ("seeIfReady={}"_f, Characters::ToString (seeIfReady));
+            EXPECT_TRUE (seeIfReady.size () == 3);
+
+            Traversal::Iterable<int> fds = seeIfReady.Image ();
+
+            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+            DbgTrace ("fds={}"_f, Characters::ToString (fds)); // note this is critical step in reproducing old bug - iterating over fds
+            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+            DbgTrace ("fds={}"_f, Characters::ToString (fds)); // note this is critical step in reproducing old bug - iterating over fds
+            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+        };
+        t11 ();
+        auto t2 = [] () {
+            Containers::Bijection<int, int> seeIfReady;
+            seeIfReady.Add (1, 1);
+            seeIfReady.Add (2, 2);
+            seeIfReady.Add (3, 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+            DbgTrace (L"seeIfReady={}"_f, seeIfReady);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+
+            const bool               kFails_ = true;
+            Traversal::Iterable<int> fds     = kFails_ ? seeIfReady.Image () : Traversal::Iterable<int>{1, 2, 3};
+
+            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+            DbgTrace ("fds={}"_f, fds); // not this is critical step in reproducing old bug - iterating over fds
+            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_TRUE (seeIfReady.size () == 3);
+
+            const bool               kFails2_ = true;
+            Traversal::Iterable<int> o1       = kFails2_ ? fds.Map ([&] (const int& t) { return t; }) : fds;
+
+            EXPECT_TRUE (seeIfReady.size () == 3);
+            EXPECT_TRUE (o1.size () == 3);
+
+            // this iteration seems to break the list o1 if kFails_
+            [[maybe_unused]] size_t a = o1.size ();
+            //DbgTrace (L"o1=%s", Characters::ToString (o1).c_str ());
+
+            EXPECT_TRUE (o1.size () == 3);
+
+            auto c1 = Containers::Collection<int>{o1};
+            (void)Characters::ToString (o1);
+            EXPECT_TRUE (o1.size () == 3);
+            (void)Characters::ToString (c1);
+            EXPECT_TRUE (c1.size () == 3);
+        };
+        t2 ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test_Join)
+    {
+        Debug::TraceContextBumper ctx{"Test_Join"};
+        {
+            using IO::Network::InternetAddress;
+            Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
+#if !qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+            EXPECT_EQ (c.Join (), "localhost, INADDR_ANY");
+            EXPECT_EQ (c.Join (L"; "), "localhost; INADDR_ANY");
 #endif
         }
         {
-            const Duration kD = Duration{"PT0.000045S"};
-            //EXPECT_TRUE (kD.PrettyPrint () == L"45 µs");   // SAD - but L"45 µs" 'works' but doesn't provide the RIGHT string portably
-            EXPECT_EQ (kD.PrettyPrint (), L"45 \u00b5s");
-        }
-        {
-            // todo use constexpr
-            const Duration kD = Duration{};
-            EXPECT_TRUE (kD.empty ());
-        }
-        {
-            // todo use constexpr
-            const Duration kD = Duration{1.6e-6};
-            EXPECT_EQ (kD.PrettyPrint (), L"1.6 \u00b5s");
-        }
-        {
-            // todo use constexpr
-            const Duration kD{33us};
-            EXPECT_EQ (kD.PrettyPrint (), L"33 \u00b5s");
-        }
-        {
-            const Duration kD = Duration{"PT0.000045S"};
-            EXPECT_TRUE (kD.PrettyPrint () == L"45 \u00b5s");
-            EXPECT_TRUE ((-kD).PrettyPrint () == L"-45 \u00b5s");
-            EXPECT_TRUE ((-kD).As<String> () == "-PT0.000045S");
-        }
-        EXPECT_TRUE (Duration{"P30S"}.As<time_t> () == 30);
-        EXPECT_TRUE (Duration{"PT30S"}.As<time_t> () == 30);
-        EXPECT_TRUE (Duration{60}.As<String> () == "PT1M");
-        EXPECT_EQ (Duration{"-PT1H1S"}.As<time_t> (), -3601);
-        EXPECT_EQ (-Duration{"-PT1H1S"}.As<time_t> (), 3601);
-
-        {
-            static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
-            for (time_t i = -45; i < 60 * 3 * 60 + 99; i += K) {
-                EXPECT_TRUE (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
-            }
-        }
-        {
-            static const size_t K = Debug::IsRunningUnderValgrind () ? 2630 : 263;
-            for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += K) {
-                EXPECT_TRUE (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
-            }
-        }
-        EXPECT_TRUE (Duration::min () < Duration::max ());
-        EXPECT_TRUE (Duration::min () != Duration::max ());
-        EXPECT_TRUE (Duration::min () < Duration{"P30S"} and Duration{"P30S"} < Duration::max ());
-        {
-            Duration d = Duration{"PT0.1S"};
-            EXPECT_EQ (d, "PT0.1S"_duration);
-            d += chrono::milliseconds{30};
-            EXPECT_TRUE (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
-        }
-        {
-            EXPECT_EQ (Duration{"PT1.4S"}.PrettyPrintAge (), "now");
-            EXPECT_EQ (Duration{"-PT9M"}.PrettyPrintAge (), "now");
-            EXPECT_EQ (Duration{"-PT20M"}.PrettyPrintAge (), "20 minutes ago");
-            EXPECT_EQ (Duration{"PT20M"}.PrettyPrintAge (), "20 minutes from now");
-            EXPECT_EQ (Duration{"PT4H"}.PrettyPrintAge (), "4 hours from now");
-            EXPECT_EQ (Duration{"PT4.4H"}.PrettyPrintAge (), "4 hours from now");
-            EXPECT_EQ (Duration{"P2Y"}.PrettyPrintAge (), "2 years from now");
-            EXPECT_EQ (Duration{"P2.4Y"}.PrettyPrintAge (), "2 years from now");
-            EXPECT_EQ (Duration{"P2.6Y"}.PrettyPrintAge (), "3 years from now");
-            EXPECT_EQ (Duration{"-P1M"}.PrettyPrintAge (), "1 month ago");
-            EXPECT_EQ (Duration{"-P2M"}.PrettyPrintAge (), "2 months ago");
-            EXPECT_EQ (Duration{"-PT1Y"}.PrettyPrintAge (), "1 year ago");
-            EXPECT_EQ (Duration{"-PT2Y"}.PrettyPrintAge (), "2 years ago");
-        }
-        {
-            // Support precision of duration reps
-            using Characters::FloatConversion::Precision;
-            {
-                const Duration d1 = Duration{"PT1.4S"};
-                EXPECT_EQ (d1.As<String> (), "PT1.4S");
-                EXPECT_EQ (d1.As<String> (Precision{1}), "PT1S");
-            }
-            {
-                const Duration d1 = Duration{numbers::pi};
-                EXPECT_EQ (d1.As<String> (Precision{1}), "PT3S");
-                EXPECT_EQ (d1.As<String> (Precision{3}), "PT3.14S");
-                EXPECT_EQ (d1.As<String> (Precision{6}), "PT3.14159S");
-                EXPECT_EQ (d1.As<String> (Precision{7}), "PT3.141593S");
-                EXPECT_EQ (d1.As<String> (Precision{8}), "PT3.1415927S");
-                String def = d1.As<String> ();
-                DbgTrace ("d1={}, d1.As<String>()={}"_f, d1, def);
-            }
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, DateTimeWithDuration_)
-    {
-        TraceContextBumper ctx{"DateTimeWithDuration_"};
-        {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3:00")};
-            EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
-            const Duration k30Days = Duration{"P30D"};
-            DateTime       d2      = d + k30Days;
-            EXPECT_EQ (d2.GetDate ().GetYear (), Year{1995});
-            EXPECT_EQ (d2.GetDate ().GetMonth (), July);
-            EXPECT_EQ (d2.GetDate ().GetDayOfMonth (), DayOfMonth{4});
-            EXPECT_EQ (d2.GetTimeOfDay (), d.GetTimeOfDay ());
-        }
-        {
-            DateTime n1 = DateTime{Date{Year{2015}, June, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
-            DateTime n2 = n1 - Duration{"P100Y"};
-            EXPECT_EQ (n2.GetDate ().GetYear (), Year{(int)n1.GetDate ().GetYear () - 100});
-#if 0
-            // @todo - Improve - increment by 100 years not as exact as one might like @todo --LGP 2015-06-09
-            EXPECT_TRUE (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());
-            EXPECT_TRUE (n2.GetDate ().GetDayOfMonth () == n1.GetDate ().GetDayOfMonth ());
+            using namespace Characters;
+            const Iterable<String> kT1_{"a", "b"};
+            const Iterable<String> kT2_{"a", "b", "c"};
+#if !qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+            EXPECT_EQ (kT1_.Join (Characters::UnoverloadedToString<String>), "a, b");
+            EXPECT_EQ (kT1_.Join (Iterable<String>::kDefaultToStringConverter<String>), kT1_.Join ());
+            EXPECT_EQ (kT1_.Join (Common::Identity{}, [] (auto l, auto r, bool) { return l + r; }), "ab");
+            EXPECT_EQ (kT1_.Join (), "a, b");
+            EXPECT_EQ (kT1_.Join (" "), "a b");
+            EXPECT_EQ (kT1_.Join (", ", " and "), "a and b");
+            EXPECT_EQ (kT2_.Join (", ", " and "), "a, b and c");
 #endif
-            EXPECT_EQ (n2.GetTimeOfDay (), n1.GetTimeOfDay ());
+            EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }), "A, B, C");
+            EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }, "; "sv, " and "sv), "A; B and C");
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, TZOffsetAndDaylightSavingsTime_)
+    GTEST_TEST (Foundation_Traversal, Test21_Repeat_)
     {
-        TraceContextBumper ctx{"TZOffsetAndDaylightSavingsTime_"};
-        /*
-         * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
-         * see any good portable way to change that (setenv (TZ) does't work on visual studio.net 2010).
-         *
-         * This test wont always work, but at least for now seems to work on the systems i test on.
-         *
-         *  @see http://stroika-bugs.sophists.com/browse/STK-634
-         */
+        Debug::TraceContextBumper ctx{"{}::Test21_Repeat_"};
         {
-            DateTime n = DateTime{Date{Year{2011}, December, DayOfMonth{30}}, TimeOfDay::Parse ("1 pm", locale::classic ()), Timezone::kLocalTime};
-            [[maybe_unused]] optional<bool> isDst = n.IsDaylightSavingsTime ();
-            DateTime                        n2    = n.AddDays (180);
-            // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
-            //EXPECT_TRUE (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
-            if (n.IsDaylightSavingsTime () != n2.IsDaylightSavingsTime ()) {
-            }
+            Iterable<int> c{1};
+            EXPECT_TRUE (c.Repeat (5).SequentialEquals (Iterable<int>{1, 1, 1, 1, 1}));
         }
         {
-            DateTime                        n     = DateTime::Now ();
-            [[maybe_unused]] optional<bool> isDst = n.IsDaylightSavingsTime ();
-            DateTime                        n2    = n.AddDays (60);
-            if (n.IsDaylightSavingsTime () == n2.IsDaylightSavingsTime ()) {
-            }
+            using IO::Network::InternetAddress;
+            Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
+            EXPECT_EQ (c.Repeat (0).size (), 0u);
+            EXPECT_TRUE (c.Repeat (1).SequentialEquals (c));
+            EXPECT_EQ (c.Repeat (10).size (), 20u);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, std_duration_)
+    GTEST_TEST (Foundation_Traversal, Test22_Top_)
     {
-        TraceContextBumper ctx{"std_duration_"};
-        const Duration     k30Seconds = Duration{30.0};
-        EXPECT_EQ (k30Seconds.As<time_t> (), 30);
-        EXPECT_EQ (k30Seconds.As<String> (), "PT30S");
-        EXPECT_EQ (k30Seconds.As<chrono::duration<double>> (), chrono::duration<double>{30.0});
-        EXPECT_EQ (Duration{chrono::duration<double> (4)}.As<time_t> (), 4);
-        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::milliseconds{50}}.As<Time::DurationSeconds::rep> (), 0.050));
-        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::microseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000050));
-        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::nanoseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000000050));
-        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::nanoseconds{1}}.As<Time::DurationSeconds::rep> (), 0.000000001));
-        EXPECT_EQ (Duration{5.0}.As<chrono::milliseconds> (), chrono::milliseconds{5000});
-        EXPECT_EQ (Duration{-5.0}.As<chrono::milliseconds> (), chrono::milliseconds{-5000});
-        EXPECT_EQ (Duration{1.0}.As<chrono::nanoseconds> (), chrono::nanoseconds{1000 * 1000 * 1000});
-        EXPECT_EQ (Duration{1}, Duration{chrono::seconds{1}});
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, DurationRange_)
-    {
-        TraceContextBumper ctx{"DurationRange_"};
-        using Traversal::Range;
-        Range<Duration> d1;
-        Range<Duration> d2 = Range<Duration>::FullRange ();
-        EXPECT_TRUE (d1.empty ());
-        EXPECT_TRUE (not d2.empty ());
-        EXPECT_EQ (d2.GetLowerBound (), Duration::min ());
-        EXPECT_EQ (d2.GetUpperBound (), Duration::max ());
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, DateRange_)
-    {
-        TraceContextBumper ctx{"DateRange_"};
-        using Traversal::DiscreteRange;
+        Debug::TraceContextBumper ctx{"{}::Test22_Top_"};
         {
-            DiscreteRange<Date> d1;
-            DiscreteRange<Date> d2 = DiscreteRange<Date>::FullRange ();
-            EXPECT_TRUE (d1.empty ());
-            EXPECT_TRUE (not d2.empty ());
-            EXPECT_EQ (d2.GetLowerBound (), Date::kMin);
-            EXPECT_EQ (d2.GetUpperBound (), Date::kMax);
-        }
-        {
-            DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
-            unsigned int        i = 0;
-            for (Date d : dr) {
-                ++i;
-                EXPECT_EQ (d.GetYear (), Year{1903});
-                EXPECT_EQ (d.GetMonth (), April);
-                if (i == 1) {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{5});
-                }
-                else {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{6});
-                }
-            }
-            EXPECT_EQ (i, 2u);
-        }
-        {
-            DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
-            unsigned int        i = 0;
-            for (Date d : dr.Elements ()) {
-                ++i;
-                EXPECT_EQ (d.GetYear (), Year{1903});
-                EXPECT_EQ (d.GetMonth (), April);
-                if (i == 1) {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{5});
-                }
-                else {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{6});
-                }
-            }
-            EXPECT_EQ (i, 2u);
-        }
-        {
-            DiscreteRange<Date> dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
-            EXPECT_TRUE (dr.Contains (dr.GetMidpoint ()));
+            Iterable<int> c{3, 5, 9, 38, 3, 5};
+            EXPECT_TRUE (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));
+            EXPECT_TRUE (c.Top (2).SequentialEquals ({38, 9}));
+            EXPECT_TRUE (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));
+            EXPECT_TRUE (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Time, DateTimeRange_)
+    GTEST_TEST (Foundation_Traversal, Test23_Iterable_Map_)
     {
-        TraceContextBumper ctx{"DateTimeRange_"};
-        using Traversal::Range;
+        Debug::TraceContextBumper ctx{"{}::Test23_Iterable_Map_"};
         {
-            Range<DateTime> d1;
-            Range<DateTime> d2 = Range<DateTime>::FullRange ();
-            EXPECT_TRUE (d1.empty ());
-            EXPECT_TRUE (not d2.empty ());
-            EXPECT_EQ (d2.GetLowerBound (), DateTime::kMin);
-            EXPECT_EQ (d2.GetUpperBound (), DateTime::kMax);
+            using Traversal::Iterable;
+            Iterable<int> t{1, 2, 3};
+            vector<int>   r1 = t.Map<vector<int>> ([] (int i) { return i; });
+            EXPECT_TRUE (t.SequentialEquals (r1));
+            auto r2 = t.Map<Iterable<int>> ([] (int i) { return i; });
+            EXPECT_TRUE (t.SequentialEquals (r2));
+            auto r4 = t.Map ([] (int i) { return i; });
+            EXPECT_TRUE (t.SequentialEquals (r4));
+            auto r5 = t.Map ([] (int i) -> optional<int> { return i == 1 ? optional<int>{} : i; });
+            EXPECT_TRUE (r5.SequentialEquals ({2, 3}));
         }
-        {
-            Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
-            EXPECT_EQ (d1.GetDistanceSpanned () / 2, Duration{"PT1D"});
-            // SEE http://stroika-bugs.sophists.com/browse/STK-514 for accuracy of compare (sb .1 or less)
-            EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), DateTime{Date{Year{2000}, April, DayOfMonth{21}}}, DurationSeconds{2}));
-        }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Time, timepoint_)
-    {
-        TraceContextBumper ctx{"timepoint_"};
-        // @see http://stroika-bugs.sophists.com/browse/STK-619 - EXPECT_TRUE (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
-        EXPECT_TRUE (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
     }
 }
 #endif
 
 int main (int argc, const char* argv[])
 {
-    Stroika::Frameworks::Test::Setup (argc, argv);
+    Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
 #else

@@ -25,6 +25,7 @@ especially those they need to be aware of when upgrading.
 - RegressionTests
   - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
   - Merged (out) Configuration tests into Common
+  -  ../ScriptsLib/RenumberRegressionTests
 
 
 #if 0
