@@ -60,6 +60,9 @@ namespace Stroika::Foundation::Common {
      *  Utility to convert endianness. Logically this can be defined on any numeric
      *  integer type, but for now is restricted to uint16_t, uint32_t;
      * 
+     *  Its common, for example in networking, when you know the endianness of a source, or target data structure,
+     *  and you can find YOUR machines endianness via GetEndianness (), this lets you automate the mapping (portably).
+     * 
      *  \par Example Usage
      *      \code
      *          EXPECT_EQ (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle), 0xBBAA);
@@ -67,6 +70,7 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      * 
      *  @see https://en.cppreference.com/w/cpp/numeric/byteswap
+     *  @see GetEndianness
      */
     template <integral T>
     constexpr T EndianConverter (T value, Endian from, Endian to);
