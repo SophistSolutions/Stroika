@@ -13,19 +13,43 @@ especially those they need to be aware of when upgrading.
 ### v3.0d12 REL DRAFT
 
 
+- Common
+  - Properties
+
 
 - Execution
   - CommandLine
 
 
-  - ProcessRunner
-
+    - Module
+    - kPath and kPathEXT use ConstantProperty not ReadOnlyProperty
+    - ProcessRunner
+  
+- Math
+  - Common
+    - Round
+	    - RegressionTests
+      - use Trunc instead of Round() in Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision..
+      - New Round (..,nDigitsPrecision) overload
+      - docs
+    - Trunc() routine for integer (saturation) truncation
+    - use new numbers::pi_v<RepType> instead of deprecated kPi (smae for kE, etc).
+    - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
 
 
 - RegressionTests
   - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
   - Merged (out) Configuration tests into Common
+  - Split regtest that had frameworks webserver and webservices into two separate regtests
   -  ../ScriptsLib/RenumberRegressionTests
+
+
+ThirdPartyComponents
+    openssl 3.4.0
+    sqlite 3.47.0
+    libxml 2.13.5
+    libcurl 8.11.0
+
 
 
 #if 0
@@ -34,12 +58,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 10 15:01:59 2024 -0500
 
     a few minor code cleanups to Common/Properties
-
-commit bddebaa1bf0ed8edc2c383097c29ce87ae96e7c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 10 13:43:08 2024 -0500
-
-    kPath and kPathEXT use ConstantProperty not ReadOnlyProperty
 
 commit 68165aedcf6c75b22933ed37348c6823ff9cbc85
 Author: Lewis Pringle <lewis@sophists.com>
@@ -370,7 +388,7 @@ commit 88d365ef183159ea4b058f18a1ba36d85b1746bc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 4 12:03:07 2024 -0500
 
-    More regtests for recent Math::Round, and FloatConversion::ToString changes
+    More regtests for  FloatConversion::ToString changes
 
 commit e31db1eefbcf6afd5b426da0efe5e9eb7d8963f9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -378,65 +396,11 @@ Date:   Wed Dec 4 12:02:25 2024 -0500
 
     hopefully fixed remaining issues with NOT __cpp_lib_to_chars support in ToString_OptimizedForCLocaleAndNoStreamFlags_
 
-commit f1f70d46d0dab5273b32a1a081b8d74198049ca4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 12:01:04 2024 -0500
-
-    use Trunc instead of Round() in Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision..
-
-commit b2199193bb1a6f464f228620295ef127750e49c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 11:30:01 2024 -0500
-
-    Minor cleanups to Math::Round/2
-
-commit ca105323e2eac2908e905390d781b916edc292b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 11:06:52 2024 -0500
-
-    Math Round docs
-
-commit ea0101c39a4d19e44b975368361b4acaa8ab01b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 11:57:58 2024 -0500
-
-    new Math::Trunc() routine for integer (saturation) truncation
-
 commit f978637dbed198d9cd7853e3d88ce30d6d991682
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 4 10:51:10 2024 -0500
 
     windows docker container VS_17_12_3
-
-commit 220fa276a042b8b95374b22778482863d15632e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 10:43:10 2024 -0500
-
-    more work on new Math::Round()/2 overload
-
-commit ebde40a5321e13ad86bf479c0f59fa1e7b21d1ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 10:40:12 2024 -0500
-
-    more work on new Math::Round()/2 overload
-
-commit c109aaf7ed97f7826fc6636ec77815822158aa69
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 3 21:34:53 2024 -0500
-
-    Round/2 bugfix and extra regtest and docs
-
-commit 5aeb3bc450bb05861f2ea596b294309721727ba0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 3 17:05:39 2024 -0500
-
-    fix/docs for Round/2 and regtests for said
-
-commit 70631430f377622cd88bb35d69e86d6a4f5ccf9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 3 17:01:39 2024 -0500
-
-    fix/docs for Round/2 and regtests for said
 
 commit d020f2c27fa4ab5902485d38cdf65b12f6074884
 Author: Lewis Pringle <lewis@sophists.com>
@@ -468,11 +432,6 @@ Date:   Mon Dec 2 19:26:10 2024 -0500
 
     more tweaks to FloatConversion::ToString BWA
 
-commit 0fa1fbc8ce0e65cefdb977ff72156bf59dd165e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 19:25:16 2024 -0500
-
-    fixed new Round () overload
 
 commit a8437a197fa951fe5d9feb6ee78e9136d05cc2bd
 Author: Lewis Pringle <lewis@sophists.com>
@@ -486,41 +445,17 @@ Date:   Mon Dec 2 19:17:04 2024 -0500
 
     maybe adequuate __cpp_lib_to_chars BWA for ToString_OptimizedForCLocaleAndNoStreamFlags_ on macos
 
-commit 8f8009c73af1ad656d2e798ab375b619ff2019b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 18:31:31 2024 -0500
-
-    mostly cosmetic namespace cleanups
-
-commit 1efc946071016b24c312edace0dd8bf0b822c148
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 15:01:20 2024 -0500
-
-    cleanup deprecated uses of Math::kPi
-
 commit c21fcc6777716ffea5f394abc2eba6266e0276a7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 2 14:15:31 2024 -0500
 
     more regtests for FloatConversion::ToString rounding (I htink passing with to_chars, but failing without)
 
-commit f78a34dacea0e0468f093d6c9f1915166d1074f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 13:36:31 2024 -0500
-
-    use new numbers::pi_v<RepType> instead of deprecated kPi
-
 commit d011bed6e2cb5290582c36ca9d678083116f2cac
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 2 13:36:02 2024 -0500
 
     lose accdidentally left around class URL
-
-commit 722504f3a31c809448c50ec47908e6c53fcc36fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 13:35:33 2024 -0500
-
-    Cleanup Math::Common quite a bit: use new Common::IArithmetic concept to simplify, more constexpr, deprecated kE, and kPi (use numbers::pi_v<double> etc)
 
 commit 9bc1b1b5c52760ef70d036591d3f36c035e757c2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1110,12 +1045,6 @@ Date:   Mon Nov 18 10:29:36 2024 -0300
 
     minor cleanups to openssl Librarycontext.cpp
 
-commit 1fbb3f088208b24e381cfe4955e68aa891e13752
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 18 07:48:51 2024 -0500
-
-    cosmetic, and replace one use of Min/Max with clamp
-
 commit 3c6c627e71280dae706b9344a946a434104ec88a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Nov 17 19:14:58 2024 -0300
@@ -1127,30 +1056,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Nov 15 18:38:30 2024 -0300
 
     fixed build msys docker contianer - miussing pkg-config
-
-commit 908c6015e0b50316acd7cf2b108f19d91b44917a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 15:35:37 2024 -0300
-
-    sqlite 3.47.0
-
-commit baae482b645513a8a148f82c3b76ca8c725b04e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 15:33:06 2024 -0300
-
-    openssl 3.4.0
-
-commit 4619e0fa00dd975818237c6fe479e36d4b10ab85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 15:32:13 2024 -0300
-
-    libxml 2.13.5
-
-commit 8c93d7494db366d40832919f25fc6f2531ac1a15
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 15:30:01 2024 -0300
-
-    libcurl 8.11.0
 
 commit 181c7a382a35922385e9df1a6e51e60106238fd0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1211,12 +1116,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 13 10:15:13 2024 -0300
 
     added /boost/ConfigureAndBuild-OUT.txt to github action log data capture (a few)
-
-commit 85ae2cba734d29642236ef05e1360254854b986d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 13 10:04:49 2024 -0300
-
-    deprecate Math::PinInRange - use std::clamp instead
 
 commit aa383201093b4ce9be22a03340b0a71e2870c0d8
 Author: Lewis Pringle <lewis@sophists.com>
