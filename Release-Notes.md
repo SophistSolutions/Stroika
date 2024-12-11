@@ -19,6 +19,21 @@ especially those they need to be aware of when upgrading.
   - Concepts
     - Added IBuiltinArithmetic concept
 
+- DataStructures
+     
+  - InternetMediaType
+    - fix to change allowing no subtype in InternetMediaType
+  - InternetMediaTypes and InternetMediaTypeRegistry
+    - add new top-level InternetMediaTypes that aren't exactly real (Wildcards ) but can be used as token sfor these IsA calls
+    - deprecated IsXMLFormat, IsTextFormat, IsImageFormat, and replaced with IsA() support doing the same thing 
+    - Added predefined internetmediatype kAudioWAV
+    - support InternetMediaTypes::kJSONPatch; and start cleanup of InternetMediaTypeRegistry::IsA mechanism
+    - added kAudio
+    - moved new wildcard InternetMediaTypes like InternetMediaTypes::kText to be under Wildcards 
+    - InternetMediaTypes::Wildcards::kText; 
+    - added regtests and furhter improved IsA() impl - mostly checking for suffixes
+    - Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
+
 - Execution
   - CommandLine
 
@@ -38,7 +53,14 @@ especially those they need to be aware of when upgrading.
     - use new numbers::pi_v<RepType> instead of deprecated kPi (smae for kE, etc).
     - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
 
-
+- Memory
+  - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
+  - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
+  - Renamed MemCmp to CompareBytes () - deprecating old name
+  - new API SpanBytesCast (replaces deprecated SpanReInterpretCast) - and improved
+  - lose CopySpanData_StaticCast - now just (better semantics CopySpanData)
+  - new CopyOverlappingBytes
+  
 - RegressionTests
   - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
   - Merged (out) Configuration tests into Common
@@ -55,17 +77,6 @@ ThirdPartyComponents
 
 
 #if 0
-commit 59ca5b2d610b5d2d7f0d1729ed559686520579ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 10 15:01:59 2024 -0500
-
-    a few minor code cleanups to Common/Properties
-
-commit 68165aedcf6c75b22933ed37348c6823ff9cbc85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 10 10:48:15 2024 -0500
-
-    fixed bug  in  CopySpanData and better requires testing and docs for SpanBytesCast
 
 commit 39a5086397fd814d9a7baf0b32cf19f120c1c875
 Author: Lewis Pringle <lewis@sophists.com>
@@ -97,36 +108,11 @@ Date:   Mon Dec 9 20:56:46 2024 -0500
 
     TextWriter takes copyable not move only argument CodeCvt
 
-commit 4151649ac7cfa7df6e7993dd2fa4276a28851e18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 20:05:09 2024 -0500
-
-    maybe fixed bug in SpanBytesCast - testing
-
-commit 4d007b6abb2855ad6151ed0392c37ef235971104
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 18:13:57 2024 -0500
-
-    Replaced Memory::SpanReInterpretCast with Memory::SpanBytesCast (diff name and diff api); used improved api to deprecate CopySpanData_StaticCast (now it just calls CopyBytes(SpanBytesCast)); and
-     updgrade use of all these deprecated functions; oh - and one case where we used to call CopySpanData_StaticCast - call new CopySpanData (best name, confusing diff behavior - but never released that code) - and better documented api and diffs; and deprecated Span.inl/Span.h - no longer needed/supported (just in Memory/Common
-
 commit 7301735a5ecce8a0cd0c4ddcc834a82ee2176196
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 9 17:12:23 2024 -0500
 
     cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
-
-commit 7d0d322c2e7f515273cdf3f4bd3c03ad3135211d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 15:14:41 2024 -0500
-
-    Migrate code from Memory/Span to Memory/Common; and minor tweak to UTFConvert
-
-commit d541e9338bac7f70ba70febf3580df8dc159ebee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 14:48:11 2024 -0500
-
-    renamed MemCmp to CompareBytes () - deprecating old name and updating code to call new name
 
 commit 2b4ff71b7dddca95f52f22d2d37e86ec48350785
 Author: Lewis Pringle <lewis@sophists.com>
@@ -170,53 +156,17 @@ Date:   Sun Dec 8 22:55:17 2024 -0500
 
     String module: new IConvertibleToUNICODEStdString, and used in String CTOR so can accept filesystem::path argument; used to deprecated FromPath method; AND many various cleanups and reactions to various deprecations
 
-commit 4ca6db2d54d9e839e8fc9ff2f39ef57a50014cf2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 22:53:45 2024 -0500
-
-    use new CopyBytes instead of deprecated CopySpanData
-
-commit 2c5d920710f1579a0764dc49209354a50a1c8417
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 22:52:44 2024 -0500
-
-    deprecated CopySpanData in favor of new CopyBytes (incomplete)
-
 commit 49e36809a791aa7888ba41eb332bf53341765e6f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 8 14:43:30 2024 -0500
 
     Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
 
-commit 5190a5c1b9b8bcaed23d1db7b4c8d365c24f0095
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 14:42:13 2024 -0500
-
-    BLOB BLOBBINSTREAM_ uses new CopyBytes to workaround qCompilerAndStdLib_ASAN_memcpy_Buggy (and cleaner code anyhow)
-
-commit f7c5c3f46dcbf3339e98cc35a8a8dc4676ffe7cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 14:40:20 2024 -0500
-
-    BWA qCompilerAndStdLib_ASAN_memcpy_Buggy and BWA in new CopyBytes code (failure causer not yet commited)
-
-commit 860df44b04c01609b55c1740ca9b5fb732fd9509
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 12:00:19 2024 -0500
-
-    one use of CopySpanData_StaticCast - I hitnk not needed - replaced with CopySpanData call
-
 commit 7a7f216ba7caeadd6e97a407336f803489304926
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 8 11:56:46 2024 -0500
 
     Added a few comments, requires etc on CodeCvt: and one important bugfix converting differently sized UTF to UTF conversions
-
-commit 2930f6a321b13eaca2165196b9da607d356d09b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 11:52:51 2024 -0500
-
-    draft new experimental APIS CopyBytes and CopyOverlappingBytes () in Memory
 
 commit 91c51f209ecd438fb8d0ff55af51e776aa6a0b8d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -661,12 +611,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 27 20:19:03 2024 -0500
 
     Added regtests for BLOB and Stream code
-
-commit 03ac1ecc0e40f95ff98a77aeae0511082b0bdbb8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 17:26:59 2024 -0500
-
-    Added predefined internetmediatype kAudioWAV
 
 commit 7078b602521b73d86f9208bceded251fc76f7f23
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1340,12 +1284,6 @@ Date:   Tue Nov 5 08:38:10 2024 -0500
 
     tweaked Samples/WebService
 
-commit a166696920f0481eec0ad79ee782d400982ac176
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 5 08:04:00 2024 -0500
-
-    moved new wildcard InternetMediaTypes like InternetMediaTypes::kText to be under Wildcards - InternetMediaTypes::Wildcards::kText; added regtests and furhter improved IsA() impl - mostly checking for suffixes
-
 commit 1638267b19cc7ac35c27ac44ccd09ed851be45c5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 4 16:21:30 2024 -0500
@@ -1358,47 +1296,11 @@ Date:   Mon Nov 4 14:48:33 2024 -0500
 
     fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
 
-commit 25daa5baac67a52dcb30eaaf76a7c61e549d127a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 13:12:18 2024 -0500
-
-    minor cleanups to /InternetMediaTypeRegistry
-
-commit da4623fb553240d03c7661d6553059a0a75b44b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 12:57:56 2024 -0500
-
-    hopefully fixed InternetMediaTypeRegistry IsA wildcard checking
-
-commit 9506aa9e8951af5504f79225fe1eaf78e8523c87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 10:13:22 2024 -0500
-
-    fix to change allowing no subtype in InternetMediaType
-
-commit f4508c947cd94a706257ee496a5769d80591867e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 08:38:29 2024 -0500
-
-    minor progress on WebService/Server/ObjectRequestHandler
-
-commit 8ac438ec782ea9b9459df7783952dc1c98471f32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 07:17:53 2024 -0500
-
-    added kAudio
-
 commit b6dbadef85746ad3dda89267e6c802a09486d77c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 4 07:01:27 2024 -0500
 
     Docs and minor cleanups to ObjectRequestHandler
-
-commit fa75f738c06c605ad31357724bfab089ce6ee8ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 3 14:42:56 2024 -0500
-
-    deprecated IsXMLFormat, IsTextFormat, IsImageFormat, and replaced with IsA() support doing the same thing and new top-level InternetMediaTypes that aren't exactly real but can be used as token sfor these IsA calls
 
 commit ad3124d780ebe0a713cacadb29aab3394a63ac8f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1411,12 +1313,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Nov 3 08:26:05 2024 -0500
 
     Request::GetBodyVariantValue () todo comments
-
-commit 20c1fd65f453887c3890921d2fbdddd6d4a39469
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 3 08:24:55 2024 -0500
-
-    support InternetMediaTypes::kJSONPatch; and start cleanup of InternetMediaTypeRegistry::IsA mechanism
 
 commit c5248b47f048453fcba956b1deaa021a208248a8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1489,12 +1385,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Nov 1 08:10:00 2024 -0400
 
     new prototype Frameworks/WebService/Server/ObjectRequestHandler
-
-commit ceefa9cd9d7deecd6f5a4ed0f051a4b967b951aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 31 14:06:14 2024 -0400
-
-    Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
 
 commit 03c5b4b606c6ac2c56fb0456841753da246c18aa
 Merge: 1536756ba4 ea053fb8c1
