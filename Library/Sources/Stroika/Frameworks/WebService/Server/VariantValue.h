@@ -84,7 +84,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType);
 
     /**
-     * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
+     * Combine params from URL (see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
      *
      *  @todo FIX to be smarter about if to check body/url, and how to combine. 
      *        THIS WILL CHANGE TO BE SMATER - bUT NOT SURE HOW YET.
@@ -93,7 +93,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \par Example Usage
      *      \code
      *         static const String                         kValueParamName_ = "value"sv;
-     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValues (m->rwRequest ());
+     *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValues (m.rwRequest ());
      *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
      *
