@@ -16,6 +16,8 @@ especially those they need to be aware of when upgrading.
 - Common
   - Properties
 
+  - Concepts
+    - Added IBuiltinArithmetic concept
 
 - Execution
   - CommandLine
@@ -461,7 +463,6 @@ commit 9bc1b1b5c52760ef70d036591d3f36c035e757c2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 2 13:15:27 2024 -0500
 
-    Added IArithmetic concept
 
 commit 1ff9292e489b9ebf78dbd9dc325e54e12dc470d0
 Author: Lewis Pringle <lewis@sophists.com>

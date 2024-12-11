@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Common {
      *  Also note - NOT marked true for arithmetic-like types, like big-num package (perhaps provide another concept for this).
      */
     template <typename T>
-    concept IArithmetic = is_arithmetic_v<T>;
+    concept IBuiltinArithmetic = is_arithmetic_v<T>;
 
     /**
      *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or simple function object.

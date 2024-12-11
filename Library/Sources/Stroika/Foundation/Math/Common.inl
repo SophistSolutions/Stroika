@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Math {
             return Private::RoundDownTo_UnSignedHelper_<T> (x, toNearest);
         }
     }
-    template <Common::IArithmetic T>
+    template <Common::IBuiltinArithmetic T>
     constexpr T RoundUpTo (T x, T toNearest)
     {
         // @todo could simplify with if constexpr in this function, and lose the helpers above
@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Math {
      **************************** Math::RoundDownTo *********************************
      ********************************************************************************
      */
-    template <Common::IArithmetic T>
+    template <Common::IBuiltinArithmetic T>
     constexpr T RoundDownTo (T x, T toNearest)
     {
         // @todo could simplify with if constexpr in this function, and lose the helpers above
@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Math {
      **************************** Math::NearlyEquals ********************************
      ********************************************************************************
      */
-    template <Common::IArithmetic T1, Common::IArithmetic T2, typename EPSILON_TYPE>
+    template <Common::IBuiltinArithmetic T1, Common::IBuiltinArithmetic T2, typename EPSILON_TYPE>
     constexpr bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
     {
         using Common::StdCompat::isinf;
@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Math {
         Assert (not isnan (l) and not isnan (r) and not isinf (l) and not isinf (r));
         return Abs (diff) <= epsilon;
     }
-    template <Common::IArithmetic T1, Common::IArithmetic T2>
+    template <Common::IBuiltinArithmetic T1, Common::IBuiltinArithmetic T2>
     constexpr bool NearlyEquals (T1 l, T2 r)
     {
         using TC = common_type_t<T1, T2>;
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Math {
      ********************************** Math::Abs ***********************************
      ********************************************************************************
      */
-    template <Common::IArithmetic T, typename RESULT_TYPE>
+    template <Common::IBuiltinArithmetic T, typename RESULT_TYPE>
     constexpr RESULT_TYPE Abs (T v)
     {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23

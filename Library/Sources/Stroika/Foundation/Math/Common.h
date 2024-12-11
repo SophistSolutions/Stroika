@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Math {
      * 
      *  \note - to RoundUp - just use ceil ()
      */
-    template <Common::IArithmetic T>
+    template <Common::IBuiltinArithmetic T>
     constexpr T RoundUpTo (T x, T toNearest);
 
     /**
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Math {
      *  (after review of this API/implementation, probably should add short/char with unsigned variants
      *  to this list)
      */
-    template <Common::IArithmetic T>
+    template <Common::IBuiltinArithmetic T>
     constexpr T RoundDownTo (T x, T toNearest);
 
     /**
@@ -140,9 +140,9 @@ namespace Stroika::Foundation::Math {
      *  \note this function has changed slightly (simplified and constexpr) - since Stroika v2.1, and may produce
      *        different answers in corner cases (better scale invariance added in v3).
      */
-    template <Common::IArithmetic T1, Common::IArithmetic T2>
+    template <Common::IBuiltinArithmetic T1, Common::IBuiltinArithmetic T2>
     constexpr bool NearlyEquals (T1 l, T2 r);
-    template <Common::IArithmetic T1, Common::IArithmetic T2, typename EPSILON_TYPE>
+    template <Common::IBuiltinArithmetic T1, Common::IBuiltinArithmetic T2, typename EPSILON_TYPE>
     constexpr bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon);
 
     /**
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Math {
      *  \note   when we port stroika bignum package - this should support those bignums.
      *  \note std::abs() not constexpr until C++ 23 (which is why this isn't)
      */
-    template <Common::IArithmetic T, typename RESULT_TYPE = T>
+    template <Common::IBuiltinArithmetic T, typename RESULT_TYPE = T>
     constexpr RESULT_TYPE Abs (T v);
 
     /**
