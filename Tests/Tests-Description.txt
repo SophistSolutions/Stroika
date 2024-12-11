@@ -50,3 +50,4 @@
 [50]	Foundation::Traversal
 [51]	Foundation::PERFORMANCE
 [52]	Frameworks::WebServer
+[53]	Frameworks::WebService
