@@ -8,15 +8,27 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Endian.h"
+#include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
+#include "Stroika/Foundation/Common/Version.h"
+#include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 
+#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
+
+#include "Stroika-Current-Version.h"
+
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Common;
@@ -24,6 +36,9 @@ using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
+
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
+using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 static_assert (same_as<DifferenceType<int>, int>);
 static_assert (same_as<DifferenceType<double>, double>);
@@ -34,9 +49,9 @@ static_assert (same_as<UnsignedOfIf<string>, string>);
 
 #if qStroika_HasComponent_googletest
 namespace {
-    GTEST_TEST (Foundation_Common, Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_)
+    GTEST_TEST (Foundation_Common, SpaceshipAutoGenForOpEqualsForCommonGUIDBug_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ()"};
+        Debug::TraceContextBumper ctx{"{}::SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ()"};
         {
             Common::GUID guidFromStr{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"};
             DbgTrace ("GUID={}"_f, guidFromStr);
@@ -177,9 +192,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Common, Test3_CommonGUID_)
+    GTEST_TEST (Foundation_Common, CommonGUID_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test3_CommonGUID_"};
+        Debug::TraceContextBumper ctx{"{}::CommonGUID_"};
         using Common::GUID;
         {
             GUID g1 = GUID::GenerateNew ();
@@ -197,11 +212,230 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Common, Test4_Compare_)
+    GTEST_TEST (Foundation_Common, Compare_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test4_Compare_"};
+        Debug::TraceContextBumper ctx{"{}::Compare_"};
         static_assert (IEqualsComparer<equal_to<int>, int>);
         static_assert (not IEqualsComparer<less<int>, int>);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Common, Version_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Version_"};
+        using namespace Characters;
+        using namespace Common;
+        {
+            constexpr Version kTestVersion_ = Version (1, 0, VersionStage::Alpha, 1, false);
+            EXPECT_TRUE (kTestVersion_.AsPrettyVersionString () == "1.0a1x");
+            EXPECT_TRUE (kTestVersion_ == Common::Version::FromPrettyVersionString ("1.0a1x"));
+        }
+        EXPECT_TRUE (Version (1, 0, VersionStage::Release, 0) == Version::FromPrettyVersionString ("1.0"));
+        EXPECT_TRUE (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString ("1.0.1"));
+        EXPECT_TRUE (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString ("2.0b3"));
+
+        auto verifier = [] (const Version& v, const String& prettyName, const String& win32VersionString) {
+            EXPECT_TRUE (Version::FromPrettyVersionString (prettyName).AsWin32Version4DotString () == win32VersionString);
+            EXPECT_TRUE (Version::FromPrettyVersionString (prettyName) == v);
+            EXPECT_TRUE (Version::FromPrettyVersionString (prettyName) == Version::FromWin32Version4DotString (win32VersionString));
+        };
+        /*
+         *  FROM EXAMPLE TEXT
+         *      So Release 1.2b4 would be (in decimal place separated octets):
+         *          1.2.96.9 (in hex 0x1.0x2.0x60.0x9)
+         *      So Release 3.0 would be (in decimal place separated octets):
+         *          3.0.160.1  (in hex 0x3.0x0.0xa0.0x1)
+         *      So Release 3.0.1 would be (in decimal place separated octets):
+         *          3.0.160.3  (in hex 0x3.0x0.0xa0.0x3)
+         */
+        verifier (Version{1, 2, VersionStage::Beta, 4, true}, "1.2b4", "1.2.96.9");
+        verifier (Version{3, 0, VersionStage::Release, 0, true}, "3.0", "3.0.160.1");
+        verifier (Version{3, 0, VersionStage::Release, 1, true}, "3.0.1", "3.0.160.3");
+        {
+            auto testRoundTrip = [] (uint32_t fullVer, uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild) {
+                Version sv{fullVer};
+                EXPECT_TRUE (sv.fMajorVer == majorVer);
+                EXPECT_TRUE (sv.fMinorVer == minorVer);
+                EXPECT_TRUE (sv.fVerStage == verStage);
+                EXPECT_TRUE (sv.fVerSubStage == verSubStage);
+                EXPECT_TRUE (sv.fFinalBuild == finalBuild);
+                EXPECT_TRUE (sv.AsFullVersionNum () == fullVer);
+            };
+            // Could try a variety of these versions, but this should be enough...
+            testRoundTrip (kStroika_Version_FullVersion, kStroika_Version_Major, kStroika_Version_Minor,
+                           static_cast<VersionStage> (kStroika_Version_Stage), kStroika_Version_SubStage, kStroika_Version_FinalBuild);
+        }
+    }
+}
+
+namespace {
+    namespace Test2_EnumNames_Private_ {
+        using namespace Common;
+        enum class fooEnum {
+            eOne,
+            eTwo,
+            Stroika_Define_Enum_Bounds (eOne, eTwo)
+        };
+    }
+}
+namespace Stroika::Foundation::Common {
+    template <>
+    constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k{{{
+        {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
+        {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
+    }}};
+}
+namespace {
+    GTEST_TEST (Foundation_Common, EnumNames_)
+    {
+        Debug::TraceContextBumper ctx{"{}::EnumNames_"};
+        using namespace Test2_EnumNames_Private_;
+        EXPECT_TRUE (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
+        EXPECT_TRUE (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
+        {
+            EXPECT_TRUE (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
+            EXPECT_TRUE (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
+        }
+        {
+            EXPECT_TRUE ((DefaultNames<fooEnum>{}.GetValue (L"eTwo", Execution::Exception<> (L"OutOfRange")) == fooEnum::eTwo));
+            try {
+                DefaultNames<fooEnum>{}.GetValue (L"missing", Execution::Exception<> (L"OutOfRange"));
+                EXPECT_TRUE (false); // above should throw
+            }
+            catch (const Execution::Exception<>&) {
+                // good
+            }
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Common, Endian_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Endian_"};
+        using namespace Common;
+        EXPECT_EQ (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle), 0xBBAA);
+        EXPECT_EQ (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle), 0xDDCCBBAA);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Common, SystemConfigruation_)
+    {
+        using namespace Characters::Literals;
+        Debug::TraceContextBumper ctx{"{}::SystemConfigruation_"};
+        using namespace Common;
+        SystemConfiguration sc = GetSystemConfiguration ();
+        DbgTrace ("systemConfig={}"_f, sc);
+        DbgTrace ("systemConfig.actualOS={}"_f, sc.fActualOperatingSystem);
+        DbgTrace ("systemConfig.apparentOS={}"_f, sc.fApparentOperatingSystem);
+    }
+}
+
+namespace {
+    namespace Test5_SFINAE_Concepts_ {
+        namespace Private_ {
+            template <typename T>
+            struct CONTAINER {
+                using value_type = T;
+                template <typename POTENTIALLY_ADDABLE_T>
+                class IsAddable_t : public is_convertible<POTENTIALLY_ADDABLE_T, value_type> {};
+            };
+            template <typename TT>
+            void TEST ()
+            {
+                static_assert (Traversal::IIterable<vector<TT>, Private_::CONTAINER<TT>::template IsAddable_t>);
+            }
+        }
+    }
+    GTEST_TEST (Foundation_Common, SFINAE_Concept)
+    {
+        Debug::TraceContextBumper ctx{"{}::SFINAE_Concept"};
+        using namespace Test5_SFINAE_Concepts_;
+
+        {
+            static_assert (totally_ordered<int>);
+            static_assert (totally_ordered<pair<int, int>>);
+            //@todo - NOT SURE WHY FAILING - LGP 2024-01-28 - static_assert (totally_ordered<OnlyCopyableMoveableAndTotallyOrdered>);
+            static_assert (totally_ordered<pair<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>>);
+            static_assert (not totally_ordered<OnlyCopyableMoveable>);
+            static_assert (not totally_ordered<OnlyCopyableMoveable>);
+            static_assert (not totally_ordered<pair<OnlyCopyableMoveable, OnlyCopyableMoveable>>);
+        }
+        {
+            static_assert (IEqualToOptimizable<int>);
+            static_assert (IEqualToOptimizable<pair<int, int>>);
+            static_assert (IEqualToOptimizable<OnlyCopyableMoveableAndTotallyOrdered>);
+            static_assert (IEqualToOptimizable<pair<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>>);
+            static_assert (not IEqualToOptimizable<OnlyCopyableMoveable>);
+            static_assert (not equality_comparable<OnlyCopyableMoveable>);
+            //@todo - NOT SURE WHY FAILING - LGP 2024-01-28 - static_assert (not equality_comparable<pair<OnlyCopyableMoveable, OnlyCopyableMoveable>>);
+
+            //tmphack static_assert (not IEqualToOptimizable<pair<OnlyCopyableMoveable, OnlyCopyableMoveable>>);
+            {
+                using namespace Stroika::Foundation::Database::SQL::ORM;
+                static_assert (not equality_comparable<TableProvisioner>);
+                static_assert (not IEqualToOptimizable<TableProvisioner>);
+            }
+        }
+        {
+            struct X {};
+            static_assert (totally_ordered<int>);
+            static_assert (not totally_ordered<X>);
+            static_assert (totally_ordered<pair<int, int>>);
+            static_assert (totally_ordered<tuple<int, string>>);
+            static_assert (not totally_ordered<pair<int, X>>);
+            static_assert (not totally_ordered<tuple<X, int>>);
+            static_assert (not totally_ordered<Common::KeyValuePair<X, int>>);
+        }
+        {
+            struct X {};
+            static_assert (equality_comparable<int>);
+            static_assert (not equality_comparable<X>);
+            static_assert (equality_comparable<pair<int, int>>); // makes sense
+            static_assert (equality_comparable<pair<X, X>>);     // makes NO sense - but appears to be defect in definition of pair<>
+            static_assert (equality_comparable<tuple<int, string>>);
+            static_assert (equality_comparable<tuple<int, X>>);                    // similarly defect with tuple it appears
+            static_assert (not equality_comparable<Common::KeyValuePair<int, X>>); // works cuz conditionally defined op=
+        }
+        {
+            using Traversal::Iterator;
+            static_assert (input_iterator<Iterator<int>>);
+            static_assert (input_iterator<Iterator<Characters::Character>>);
+            static_assert (input_iterator<Iterator<int>>); // @todo figure out why forward_iterator doesn't work here, but maybe OK
+        }
+        {
+            static_assert (Traversal::IIterableOfTo<vector<int>, int>);
+            static_assert (not Traversal::IIterableOfTo<vector<int>, char*>);
+            static_assert (not Traversal::IIterableOfTo<vector<int>, String>);
+            static_assert (not Traversal::IIterableOfTo<char, String>);
+        }
+        {
+            // Test from https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
+            auto lambda  = [] (int i) { return long (i * 10); };
+            using traits = FunctionTraits<decltype (lambda)>;
+            static_assert (traits::kArity == 1);
+            static_assert (same_as<long, traits::result_type>);
+            static_assert (same_as<int, traits::arg<0>::type>);
+        }
+        {
+            static_assert (Traversal::IIterable<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
+            static_assert (not Traversal::IIterable<vector<char*>, Private_::CONTAINER<int>::IsAddable_t>);
+            Private_::TEST<int> ();
+        }
+        {
+            // verify Configuration::ExtractValueType_t works right
+            static_assert (same_as<Common::ExtractValueType_t<vector<int>>, int>);
+            static_assert (same_as<Common::ExtractValueType_t<int>, void>);
+            static_assert (same_as<Common::ExtractValueType_t<Containers::Collection<char>>, char>);
+            static_assert (same_as<Common::ExtractValueType_t<Traversal::Iterator<string>>, string>);
+            static_assert (same_as<Common::ExtractValueType_t<vector<int>&>, int>);
+            static_assert (same_as<Common::ExtractValueType_t<const vector<int>&>, int>);
+            static_assert (same_as<Common::ExtractValueType_t<vector<int>&&>, int>);
+            static_assert (same_as<Common::ExtractValueType_t<int*>, int>);
+            static_assert (same_as<Common::ExtractValueType_t<const int*>, int>);
+        }
     }
 }
 #endif

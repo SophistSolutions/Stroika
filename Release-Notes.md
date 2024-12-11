@@ -12,7 +12,19 @@ especially those they need to be aware of when upgrading.
 
 ### v3.0d12 REL DRAFT
 
-    Lots of miscelaneous RegressionTest cleanups
+
+
+- Execution
+  - CommandLine
+
+
+  - ProcessRunner
+
+
+
+- RegressionTests
+  - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
+  - Merged (out) Configuration tests into Common
 
 
 #if 0
