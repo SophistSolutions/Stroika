@@ -8,301 +8,280 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+### 3.0d12 {2024-12-13} {[diff](../../compare/v3.0d11...v3.0d12)}     REL DRAFT
 
+#### TLDR
 
-### v3.0d12 REL DRAFT
+#### Upgrade Notes (3.0d11 to 3.0d12)
 
-- Characters
-  - CodeCvt
-    - Added a few comments, requires etc on CodeCvt
-    - one important bugfix converting differently sized UTF to UTF conversions
-  - FloatConversion
-    - minor fix for CalcPrecision_
-    - indirect in Duration cod eto shared FloatConversion::ToString()
-    - cleanups to qStroika_Foundation_Debug_AssertionsChecked/__cpp_lib_to_chars BWA
-    - More regtests for  FloatConversion::ToString changes
-    - more tweaks to FloatConversion::ToString BWA
-    - more regtests for FloatConversion::ToString
-    - maybe adequuate __cpp_lib_to_chars BWA for ToString_OptimizedForCLocaleAndNoStreamFlags_ on macos
-    - more regtests for FloatConversion::ToString rounding (I htink passing with to_chars, but failing without)
-    - more fixes for ToString_OptimizedForCLocaleAndNoStreamFlags_
-    - tweak ToString_OptimizedForCLocaleAndNoStreamFlags_
-    - Progress on updates to FloatConversion (workarounds for macos)
-    - Progress on updates to FloatConversion (workarounds for macos)
-    - progress on ToString_OptimizedForCLocaleAndNoStreamFlags_ no __cpp_lib_to_chars issue
-    - fixed small regression in to_chars call
-    - maybe fix issue wtih to_chars workaround
-     - __cpp_lib_to_chars improved BWA for when missing
-    - docs on ToString/Precision support and other ToString cleanups
-    - start to support no __cpp_lib_to_chars for macos old
-    - promote Foundation::Characters::FloatConversion::{ToFloat,ToString} to also be in Characters namespace
-  - Format
-    -  mostly cosmetic - use just _f () instead of Characters::Format (..._f,
+#### Change Details
 
+- Various docs/comments cleanups
+- Build System
+  - configure
+    - configure: fixed SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ to check for and handle COMPILER_DRIVER eq ''
+    - configure script: many changes (to test) - check COMPILER_DRIVER variable instead of COMPILER_DRIVER_CPlusPlus in many places; new ComputeARCHFlag_ procedure to better modularize/cleanup; and renamed for clarity ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_ and SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
+    - Minor cleanup of configure script - no apparent change (but could be)
+    - configure - apparently redudnent set of Wno-stringop-overflow removed
+    - workaround two linker time warnings in glibc code in configure
+    - raspberrypi configurations -  --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
+    - fixed configure so --append-CXXFLAGS go at the end (so they can be used to override things) - test an dthen do to other appends
+    - -fstanitize alignment no: https://stroika.atlassian.net/browse/STK-1023 needed for g++-11 too
+  - Docker 
+    - fixed build msys docker contianer - miussing pkg-config
+    - docs about https://stroika.atlassian.net/browse/STK-742; and switch docker config to using VS_17_12_0
+    - windows docker container VS_17_12_3
+  - github actions
+    - added /boost/ConfigureAndBuild-OUT.txt to github action log data capture (a few)
+    - Added more debug statements for macos build target - github workflow
+    - github action macos - get link error building libcurl on macos 13 - dont bother debugging cuz not importany to support old macos and no easy way to debug
+    - experiment with fixes for github action issue with brew install
+    - lose like macos brew install -q pkg-config no longer works and isnt needed
+    - github action - workaround https://github.com/actions/upload-artifact/issues/506
+  - RegressionTests
+    - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
+    - Merged (out) Configuration tests into Common
+    - Split regtest that had frameworks webserver and webservices into two separate regtests
+    - Added regtests for BLOB and Stream code
+    - renumbered a few regressiontests (RenumberRegressionTests)
+      restructure (gtest) regtest Foundation_Cryptography
+      moved regtest to Frameworks_WebService, TestVariantValueSupport
+      Regression test - better output warnings about TSAN disabled
+      set UBSAN_OPTIONS in RegressionTests script
+      revised BWA for https://stroika.atlassian.net/browse/STK-1021; TSAN - hold lock longer
+      lose PeekIsSet from ThreadSanitizerSuppressions.supp and instead - added Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD before the two procedures calling PeekIsSet
+      handle RequiredComponentMissingException in webservice regtests since cannot build libcurl on some macos configurations
+  - Scripts
+    - ScriptsLib/RenumberRegressionTests
+      draft script ScriptsLib/CreateSelfSignedCert
+    - BuildGLIBCLocally
+      - to be able to run with newer ubuntus cross compile for raspberrypi (old debian)
+      - refer back to  https://stroika.atlassian.net/browse/STK-1022
 
-  - String
-    - added String::ContainsAny () utility
-    - Depreacted IO::Filesystem::ToPath and instead String.As<filesystem::path> () works including qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin hack
-    - cleanup mistake with IConvertibleToUNICODEStdString with String CTORs and renamed (and fixed) concept to be IStdPathLike2UNICODEString
-    - String module: new IConvertibleToUNICODEStdString, and used in String CTOR so can accept filesystem::path argument; used to deprecated FromPath method; AND many various cleanups and reactions to various deprecations
-    - deprecated String::clear()
-    - Deprecated several modifying methods on String - push_back, erase, operator+, Append, and added a few helper methods to StringBuilder to ease the transition (weak impls but OK to test)
-  - StringBuilder 
-    - improved nonvirtual StringBuilder& operator= and cleanup a few more warnings
-  - ToString
-      ToString(StringBuilder) support
-
-
-- Common
-  - Compiler Bug Defines
-    - Lose qCompilerAndStdLib_ASAN_memcpy_Buggy BWA - cuz was MY bug not ASAN issue; and fixed BLOB code so BLOB :: As <binaryinputstream> - holds onto refcount
-    - lose qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA no longer needed - on explicit String (TOSTRINGABLE&& s) - now more restruict concept on it
-    - BWA for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy another case
-    - qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy not buggy on clang
-    - qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy and Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA
-    - lose qCompilerAndStdLib_CompareOpReverse_Buggy - just  workaround issue and document in header I dont understand why extra function required, but compilers consistent enuf I must be wrong
-    - _MSC_VER_2k22_17Pt12_ compiler bug define support
-    - start _MSC_VER_2k22_17Pt12_ bug define support
-    - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
-    - Appears Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA not needed on Format() function call
-    - a few more minor cleanups - mostly Characters::Format BWA simplifications
-
-  - Properties
-
-  - GUID
-    - docs and asserts GUID
-    - override formatter for GUID (cuz default the way I wrote things was to use ranges formatter - at least on systems that supported it); 
-      now have regtest to assure outputs in compact formated GUID format
-  - Concepts
-    - Added IBuiltinArithmetic concept
-    -   ArgOrVoid member of FunctionTraits
-    - Minor addition to FunctionTraits (arg_t)
-    - Added and used trivially_copyable in a few places (docs/clarifications)
-    - new concept Weak_Equality_Comparable_With
-  - Cryptographaphy
-    - OpenSSL
-      - Minor docs and init cleanups to Cryptography/OpenSSL/LibraryContext
-      - minor cleanup of  Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/Exception.cpp
-      - Minor cleanups to Foundation_Cryptography regtest: better docs/comments on how to detect new errors/failures in new openssl releases; and handle new issue with SHAKE128/256 (not well - just ignore)
-
-- DataExchange
-  - **new** DataExchange::TypedBLOB
-  - InternetMediaType
-    - fix to change allowing no subtype in InternetMediaType
-  - InternetMediaTypes and InternetMediaTypeRegistry
-    - add new top-level InternetMediaTypes that aren't exactly real (Wildcards ) but can be used as token sfor these IsA calls
-    - deprecated IsXMLFormat, IsTextFormat, IsImageFormat, and replaced with IsA() support doing the same thing 
-    - Added predefined internetmediatype kAudioWAV
-    - support InternetMediaTypes::kJSONPatch; and start cleanup of InternetMediaTypeRegistry::IsA mechanism
-    - added kAudio
-    - moved new wildcard InternetMediaTypes like InternetMediaTypes::kText to be under Wildcards 
-    - InternetMediaTypes::Wildcards::kText; 
-    - added regtests and furhter improved IsA() impl - mostly checking for suffixes
-    - Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
-  - Variant
-    - JSON Read/Writer
-      - regtests JSONWriterNumberPrecision verify/test
-      - fJSONWriterOptions in ObjectRequestHandler
-
-- Execution
-  - BlockingQueue
-    - cosmetic cleanup
-  - CommandLine
-     - disable some maybe unwanted/unhelpful quoting in CommandLine::As<String> ()
-     - Minor cleanups to recent CommandLine changes (StringShellStyle-> StringShellQuoting)
-     - fixed CommandLine ::CommandLine to use COMSPEC ENV var, not cmd and path search (based on looking at visual studio source code for system call)
-     - CommandLine::As<String> () support so you can map back
-  - Exceptions
-      - ThrowIfNull overload for optional
-      - Weak_Equality_Comparable_With used to fix recent chagnes to ThrowIfNull
-  - Module
-    - **new** kPath and kPathEXT
-    - **new** FindExecutableInPath utility
-  - ProcessRunner
-    - **big cleanup** - much cleaner handling of commandline arguments and 'shells'
-    - better error reporting when not FindExecutableInPath()
-    - ProcessRunner string variants - options to control CodeCvt used on reading/writing
-      Minor tweaks in ProcessRunner error reporting and regtests to udnerstand issue on windows github actions
-      another ProcessRunner regtest - getting magic quotes working iwth awk... ProcessRunner
-      ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
-      big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
-      cleanups to ProcessRunner regtests
-      more improvements to ProcessRunner regressiontests
-      Minor ProcessRunner cleanups: run(STRING) now outputs to dbgtrace the stdout on excpetions, and minor logging etc cleanups
-      Foundation_Execution_ProcessRunner SETUP - warn if echo not in path
-      small cleanups to Foundation_Execution_ProcessRunner regtest
-      Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
-      Minor ProcessRunner cleanups
-      cosmetic; and minor ProcessRunner clenaups/factoring
-      more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
-      more ProcessRunner cleanups, but mostly StringShellStyle in As<String> method of CommandLine
-      preliminary WrapInShell support on Execution::CommandLine class, and used in ProcessRunner
-      recatoring of ProcessRunner to run off CommandLine class (seems to pass all old regtests and one API deprecated)
-      Cleanup Foundation_Execution_ProcessRunner regressiontests
-      Minor cleanups to ProcessRunner
-      windows process runner backend - handle argument EXE and warn so clearer message whnen EXE not in path
-    - WaitForIOReady
-      - comments, and typos fixed, and extra use of const for clarity in WaitForIOReady
-
-  - IO
-    - FileSystem
-      - deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
-      - cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
-      - TempFile
-        -  fixed small bug with FileSystem::CreateTmpFile - if missing extension use .txt to txt
-
-    - Network
-      - lose accdidentally left around class URL
-      - fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one; and added dbgtrace on translation
-	    - URI
-        - docs; and new Query::Lookup and URI::LookupQueryArg methods
-      - IO::Network::HTTP::{Request/Response} support for movable concept
-
-  - Math
+- Stroika Library
+  - Across Library
+    - new clang-format (18.1.18); make format-code
+  - Foundation
+    - Characters
+      - CodeCvt
+        - Added a few comments, requires etc on CodeCvt
+        - one important bugfix converting differently sized UTF to UTF conversions
+      - FloatConversion
+        - Regression Tests additions/imrovments
+        - CalcPrecision_ to regression test, and to workaround missing  __cpp_lib_to_chars code case
+        - Code for missing __cpp_lib_to_chars very iffy/quesitonable, but hopefully good enuf for now - hopefully
+          missing compilers (clang) will correct before too long.
+        - promote Foundation::Characters::FloatConversion::{ToFloat,ToString} to also be in Characters namespace
+      - Format
+        -  mostly cosmetic - use just _f () instead of Characters::Format (..._f,
+      - String
+        - added String::ContainsAny () utility
+        - Depreacted IO::Filesystem::ToPath and instead String.As<filesystem::path> () works including qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin hack
+        - cleanup mistake with IConvertibleToUNICODEStdString with String CTORs and renamed (and fixed) concept to be IStdPathLike2UNICODEString
+        - String module: new IConvertibleToUNICODEStdString, and used in String CTOR so can accept filesystem::path argument; used to deprecated FromPath method; AND many various cleanups and reactions to various deprecations
+        - deprecated String::clear()
+        - Deprecated several modifying methods on String - push_back, erase, operator+, Append, and added a few helper methods to StringBuilder to ease the transition (weak impls but OK to test)
+      - StringBuilder 
+        - improved nonvirtual StringBuilder& operator= and cleanup a few more warnings
+      - ToString
+        - ToString(StringBuilder) support
     - Common
-      - Round
-        - RegressionTests
-        - use Trunc instead of Round() in Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision...)
-        - New Round (..,nDigitsPrecision) overload
-        - docs
-      - **new** Trunc() routine for integer (saturation) truncation
-      - use new numbers::pi_v<RepType> instead of deprecated kPi (smae for kE, etc).
-      - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
-
-  - Memory
-    - BLOB
-      - Satisfies Concepts: for BLOB
-    - Common/Span
-      - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
-      - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
-      - Renamed MemCmp to CompareBytes () - deprecating old name
-      - new API SpanBytesCast (replaces deprecated SpanReInterpretCast) - and improved
-      - lose CopySpanData_StaticCast - now just (better semantics CopySpanData)
-      - new CopyOverlappingBytes
-    - InlineBuffer
-      - fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
-  
-  - Streams
-    -  TextWriter takes copyable not move only argument CodeCvt
-    - Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
-    - Streams code: used to \req IsOpen (and IsRead/WriteOpen) on Close/CloseWrite/CloseREad - but now check internally and allow close calls when already closed (noop)
-    - use WeakAssert for rare case that can happen - on failure of Flush in BufferedOutputStream
-
-  - Time
-    - Duration
-      - Precision
-          change DefaultCTOR for Precision to initialiuze to 6; and use that to lose ToStringOptions::kDefaultPrecision; added regtests for new precision code; Time::Duraiton::As<String> () now NEW HEBAVIROR - NOT BACKWARD COMPAT FULLY - defaults to 6 digits precision instead of full, but easy to pass in Full() to As<String> method if you want; and regtest that from ObjectVariantMapper now too
-          Duration/precsion regtests
-          fixed Duration::UnParseTime_ precision handling
-          MakeCommonSerializer support Duration+Precision
-            Time::Duration As String(PRecision) now even if stored fStringRep - we convert so produces right precision answer
-          Support Characters::ToString(Duration,Precision)
-          comments; regtests; and  Duration::As (Precision) overload (including prelim regtest); and maybe fixed macos to_string BWA regression
-          Duration::UnParseTime_ returns String; and minor cleanups to __cpp_lib_to_chars missing BWA
-          Duration::UnParseTime_ () beginning support for FloatConversion::Precision - no real change in API yet, and only change in behaviro is we shoudl write MORE digits of precision for durations - temporarily
-          undo part of ToString recent change
-
-- Frameworks::WebServer
-  - RequestHandler now takes additional optional argument - bool* handled; and changed Lookup on Router to return  Iterator<tuple<RequestHandler, Sequence<String>>> so sb able to have multiple filesystem routers now
-  - Request::GetBodyVariantValue () returns {} on no content-type (maybe more cases to add) ; and fixes to ObjectRequestHandler
-  - changed Ensure to WeakAssert Response::End () - cuz reponse might have ended before abort happens
-  - Frameworks::WebServer::{Message,Requst,Response} now support move
-  - progress towards RequestHandler cleanup (incomplete)
-  - slightly incompable (but not noticible by most users) change to WebServer::RequestHandler - internal calling rep now requires Message& instead of Message* (overriders most common, and there users get a deprecation warning)
-  - more recent RequestHanlder cleanups and fixes for pickier clang
-  - not backward compat but minor - use Message& in WebServer Interceptor code instead of Message* - not commonly user facing APIs so not that noteworthy
-
-- Frameworks/WebService
-  - **new** Frameworks/WebService/Server/ObjectRequestHandler
+      - Compiler Bug Defines
+        - Lose qCompilerAndStdLib_ASAN_memcpy_Buggy BWA - cuz was MY bug not ASAN issue; and fixed BLOB code so BLOB :: As <binaryinputstream> - holds onto refcount
+        - lose qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA no longer needed - on explicit String (TOSTRINGABLE&& s) - now more restruict concept on it
+        - BWA for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy another case
+        - qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy not buggy on clang
+        - qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy and Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA
+        - lose qCompilerAndStdLib_CompareOpReverse_Buggy - just  workaround issue and document in header I dont understand why extra function required, but compilers consistent enuf I must be wrong
+        - _MSC_VER_2k22_17Pt12_ compiler bug define support
+        - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
+        - Appears Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA not needed on Format() function call
+        - a few more minor cleanups - mostly Characters::Format BWA simplifications
+      - Concepts
+        - Added IBuiltinArithmetic concept
+        - ArgOrVoid member of FunctionTraits
+        - Added and used trivially_copyable in a few places (docs/clarifications)
+        - new concept Weak_Equality_Comparable_With
+      - GUID
+        - docs and asserts GUID
+        - override formatter for GUID (cuz default the way I wrote things was to use ranges formatter - at least on systems that supported it); 
+          now have regtest to assure outputs in compact formated GUID format
+    - Cryptographaphy
+      - OpenSSL
+        - Minor docs and init cleanups to Cryptography/OpenSSL/LibraryContext
+        - minor cleanup of  Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/Exception.cpp
+        - Minor cleanups to Foundation_Cryptography regtest: better docs/comments on how to detect new errors/failures in new openssl releases; and handle new issue with SHAKE128/256 (not well - just ignore)
+    - DataExchange
+      - InternetMediaType
+        - fix to change allowing no subtype in InternetMediaType
+      - InternetMediaTypes and InternetMediaTypeRegistry
+        - add new top-level InternetMediaTypes that aren't exactly real (Wildcards ) but can be used as token sfor these IsA calls
+        - deprecated IsXMLFormat, IsTextFormat, IsImageFormat, and replaced with IsA() support doing the same thing 
+        - Added predefined internetmediatype kAudioWAV
+        - support InternetMediaTypes::kJSONPatch; and start cleanup of InternetMediaTypeRegistry::IsA mechanism
+        - added kAudio
+        - moved new wildcard InternetMediaTypes like InternetMediaTypes::kText to be under Wildcards 
+        - InternetMediaTypes::Wildcards::kText; 
+        - added regtests and furhter improved IsA() impl - mostly checking for suffixes
+        - Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
+      - **new** DataExchange::TypedBLOB
+      - Variant
+        - JSON Read/Writer
+          - regtests JSONWriterNumberPrecision verify/test
+          - fJSONWriterOptions in ObjectRequestHandler
+    - Execution
+      - BlockingQueue
+        - cleanup
+      - CommandLine
+        - disable some maybe unwanted/unhelpful quoting in CommandLine::As<String> ()
+        - Minor cleanups to recent CommandLine changes (StringShellStyle-> StringShellQuoting)
+        - fixed CommandLine ::CommandLine to use COMSPEC ENV var, not cmd and path search (based on looking at visual studio source code for system call)
+        - CommandLine::As<String> () support so you can map back
+      - Exceptions
+          - ThrowIfNull overload for optional
+          - Weak_Equality_Comparable_With used to fix recent chagnes to ThrowIfNull
+      - Module
+        - **new** kPath and kPathEXT
+        - **new** FindExecutableInPath utility
+      - ProcessRunner
+        - **big cleanup** - much cleaner handling of commandline arguments and 'shells'
+        - better error reporting when not FindExecutableInPath()
+        - Now based on CommandLine class - with contructors to wrap in shell (as appropriate).
+        - also new Options argument (and property) - so can control CodeCvt used on reading/writing subprocess etc
+        - Improved regression tests
+        - ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
+        - big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
+        - Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
+        - more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
+        - more ProcessRunner cleanups, but mostly StringShellStyle in As<String> method of CommandLine
+        - preliminary WrapInShell support on Execution::CommandLine class, and used in ProcessRunner
+        - recatoring of ProcessRunner to run off CommandLine class (seems to pass all old regtests and one API deprecated)
+      - WaitForIOReady
+        - comments, and typos fixed, and extra use of const for clarity in WaitForIOReady
+    - IO
+      - FileSystem
+        - deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
+        - cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
+        - TempFile
+          - fixed small bug with FileSystem::CreateTmpFile - if missing extension use .txt to txt
+      - Network
+        - lose accdidentally left around class URL
+        - fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one;
+          and added dbgtrace on translation
+        - URI
+          - docs; and new Query::Lookup and URI::LookupQueryArg methods
+        - IO::Network::HTTP::{Request/Response} support for movable concept
+      - Math
+        - Common
+          - Round
+            - RegressionTests
+            - use Trunc instead of Round() in Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision...)
+            - New Round (..,nDigitsPrecision) overload
+            - docs
+          - **new** Trunc() routine for integer (saturation) truncation
+          - use new numbers::pi_v<RepType> instead of deprecated kPi (smae for kE, etc).
+          - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
+      - Memory
+        - BLOB
+          - Satisfies Concepts: for BLOB
+        - Common/Span
+          - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
+          - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
+          - Renamed MemCmp to CompareBytes () - deprecating old name
+          - new API SpanBytesCast (replaces deprecated SpanReInterpretCast) - and improved
+          - lose CopySpanData_StaticCast - now just (better semantics CopySpanData)
+          - new CopyOverlappingBytes
+        - InlineBuffer
+          - fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
+      - Streams
+        - TextWriter takes copyable not move only argument CodeCvt
+        - Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
+        - Streams code: used to \req IsOpen (and IsRead/WriteOpen) on Close/CloseWrite/CloseREad - but now check internally and allow close calls when already closed (noop)
+        - use WeakAssert for rare case that can happen - on failure of Flush in BufferedOutputStream
+      - Time
+        - Duration
+          - indirect in Duration code to shared FloatConversion::ToString()
+          - change DefaultCTOR for Precision to initialiuze to 6; and use that to lose ToStringOptions::kDefaultPrecision; added regtests for new precision code; Time::Duraiton::As<String> () now NEW HEBAVIROR - NOT BACKWARD COMPAT FULLY - defaults to 6 digits precision instead of full, but easy to pass in Full() to As<String> method if you want; and regtest that from ObjectVariantMapper now too
+          - Duration/precsion regtests
+          - fixed Duration::UnParseTime_ precision handling
+          - MakeCommonSerializer support Duration+Precision
+          - Time::Duration As String(PRecision) now even if stored fStringRep - we convert so produces right precision answer
+          - Support Characters::ToString(Duration,Precision)
+          - comments; regtests; and  Duration::As (Precision) overload (including prelim regtest); and maybe fixed macos to_string BWA regression
+          - Duration::UnParseTime_ returns String; and minor cleanups to __cpp_lib_to_chars missing BWA
+          - Duration::UnParseTime_ () use FloatConversion::Precision
+  - Frameworks
+    - WebServer
+      - RequestHandler now takes additional optional argument - bool* handled; and changed Lookup on Router to return  Iterator<tuple<RequestHandler, Sequence<String>>> so sb able to have multiple filesystem routers now
+      - Request::GetBodyVariantValue () returns {} on no content-type (maybe more cases to add) ; and fixes to ObjectRequestHandler
+      - changed Ensure to WeakAssert Response::End () - cuz reponse might have ended before abort happens
+      - Frameworks::WebServer::{Message,Requst,Response} now support move
+      - progress towards RequestHandler cleanup (incomplete)
+      - slightly incompable (but not noticible by most users) change to WebServer::RequestHandler - internal calling rep now requires Message& instead of Message* (overriders most common, and there users get a deprecation warning)
+      - more recent RequestHanlder cleanups and fixes for pickier clang
+      - not backward compat but minor - use Message& in WebServer Interceptor code instead of Message* - not commonly user facing APIs so not that noteworthy
+  - WebService
+    - **new** Frameworks/WebService/Server/ObjectRequestHandler
     - use deducation guides to make work better than old mkRequestHandler
     - deprecated mkRequestHandler
-  -  PATCH support example in WS tester reggtest (incomplete)
-  - Regression tests for new webservice ObjectRequestHandler
-  - Server::WriteDocsPage use reference argument for response instead of ptr (deprecated old api)
-    SendStringResponse method, and Factory::SendResponse behavior and docs updated
+    -  PATCH support example in WS tester reggtest (incomplete)
+    - Regression tests for new webservice ObjectRequestHandler
+    - Server::WriteDocsPage use reference argument for response instead of ptr (deprecated old api)
+      SendStringResponse method, and Factory::SendResponse behavior and docs updated
+  - Test
+    - Frameworks::Test::WarnTestIssue now has String overload which simplifies some usage
+    - start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
 
-Frameworks::Test
-    Frameworks::Test::WarnTestIssue now has String overload which simplifies some usage
-        start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
-
-- Scripts
-  - ScriptsLib/RenumberRegressionTests
-    draft script ScriptsLib/CreateSelfSignedCert
-   - BuildGLIBCLocally
-     - to be able to run with newer ubuntus cross compile for raspberrypi (old debian)
-     - refer back to  https://stroika.atlassian.net/browse/STK-1022
-
-configure
-     configure: fixed SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ to check for and handle COMPILER_DRIVER eq ''
-    configure script: many changes (to test) - check COMPILER_DRIVER variable instead of COMPILER_DRIVER_CPlusPlus in many places; new ComputeARCHFlag_ procedure to better modularize/cleanup; and renamed for clarity ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_ and SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
-    Minor cleanup of configure script - no apparent change (but could be)
-
-    configure - apparently redudnent set of Wno-stringop-overflow removed
-    workaround two linker time warnings in glibc code in configure
-    raspberrypi configurations -  --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
-    fixed configure so --append-CXXFLAGS go at the end (so they can be used to override things) - test an dthen do to other appends
-    -fstanitize alignment no: https://stroika.atlassian.net/browse/STK-1023 needed for g++-11 too
-
-
-
-github actions
- -    added /boost/ConfigureAndBuild-OUT.txt to github action log data capture (a few)
-    Added more debug statements for macos build target - github workflow
-    github action macos - get link error building libcurl on macos 13 - dont bother debugging cuz not importany to support old macos and no easy way to debug
-    experiment with fixes for github action issue with brew install
-    lose like macos brew install -q pkg-config no longer works and isnt needed
-    github action - workaround https://github.com/actions/upload-artifact/issues/506
-
-- RegressionTests
-  - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
-  - Merged (out) Configuration tests into Common
-  - Split regtest that had frameworks webserver and webservices into two separate regtests
-  - Added regtests for BLOB and Stream code
-  - renumbered a few regressiontests (RenumberRegressionTests)
-    restructure (gtest) regtest Foundation_Cryptography
-    moved regtest to Frameworks_WebService, TestVariantValueSupport
-    Regression test - better output warnings about TSAN disabled
-    set UBSAN_OPTIONS in RegressionTests script
-    revised BWA for https://stroika.atlassian.net/browse/STK-1021; TSAN - hold lock longer
-    lose PeekIsSet from ThreadSanitizerSuppressions.supp and instead - added Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD before the two procedures calling PeekIsSet
-    handle RequiredComponentMissingException in webservice regtests since cannot build libcurl on some macos configurations
-
-Docker 
- -    fixed build msys docker contianer - miussing pkg-config
-    docs about https://stroika.atlassian.net/browse/STK-742; and switch docker config to using VS_17_12_0
-    windows docker container VS_17_12_3
-
-Samples
- - HTMLUI
-   - Minor cleanups
-    fixed missing Samples/HTMLUI/Backend/Projects/VisualStudio.Net-2022; and a few other minor mkaefile tweaks
-
+- Samples
+  - HTMLUI
+    - Minor cleanups
+    - fixed missing Samples/HTMLUI/Backend/Projects/VisualStudio.Net-2022; and a few other minor mkaefile tweaks
+  - SSDPServer
+    - Minor celanups to SSDPServer sample
   - WebServer
-     move test for automaticTransferChunkSize modes to regtest (mostly from sample - now sample more reasonable)
-    cosmetic cleanups to weberserver sample
-    slightly polish webserver sample, and docs about webserver sample
+    -  move test for automaticTransferChunkSize modes to regtest (mostly from sample - now sample more reasonable)
+    - cosmetic cleanups to weberserver sample
+    - slightly polish webserver sample, and docs about webserver sample
+  - WebService
+    - tweaked Samples/WebService - and use new ObjectRequestHandler
+- Sanitizers
+  - https://stroika.atlassian.net/browse/STK-1021 BWA
+- ThirdPartyComponents
+  - openssl 3.4.0
+  - sqlite 3.47.0
+  - libxml 2.13.5
+  - libcurl 8.11.0
 
- - WebService
-   - tweaked Samples/WebService - and use new ObjectRequestHandler
- - SSDPServer
-   -   Minor celanups to SSDPServer sample
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
+  - MSVC: { 17.11.5 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-ThirdPartyComponents
-    openssl 3.4.0
-    sqlite 3.47.0
-    libxml 2.13.5
-    libcurl 8.11.0
-
-Sanitizers
-    https://stroika.atlassian.net/browse/STK-1021 BWA
-
-- All Code
-  -   new clang-format (18.1.18); make format-code
-
-
-
-
-
+---
 
 ### 3.0d11 {2024-10-31} {[diff](../../compare/v3.0d10...v3.0d11)}
 
