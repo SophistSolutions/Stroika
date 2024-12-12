@@ -12,6 +12,20 @@ especially those they need to be aware of when upgrading.
 
 ### v3.0d12 REL DRAFT
 
+- Characters
+  - CodeCvt
+    - Added a few comments, requires etc on CodeCvt
+    - one important bugfix converting differently sized UTF to UTF conversions
+  - String
+    - added String::ContainsAny () utility
+    - Depreacted IO::Filesystem::ToPath and instead String.As<filesystem::path> () works including qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin hack
+    - cleanup mistake with IConvertibleToUNICODEStdString with String CTORs and renamed (and fixed) concept to be IStdPathLike2UNICODEString
+    - String module: new IConvertibleToUNICODEStdString, and used in String CTOR so can accept filesystem::path argument; used to deprecated FromPath method; AND many various cleanups and reactions to various deprecations
+    - deprecated String::clear()
+    - Deprecated several modifying methods on String - push_back, erase, operator+, Append, and added a few helper methods to StringBuilder to ease the transition (weak impls but OK to test)
+  - StringBuilder 
+    - improved nonvirtual StringBuilder& operator= and cleanup a few more warnings
+
 
 - Common
   - Properties
@@ -38,62 +52,69 @@ especially those they need to be aware of when upgrading.
     - Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
 
 - Execution
+  - BlockingQueue
+    - cosmetic cleanup
   - CommandLine
+     - disable some maybe unwanted/unhelpful quoting in CommandLine::As<String> ()
+     - Minor cleanups to recent CommandLine changes (StringShellStyle-> StringShellQuoting)
+     - fixed CommandLine ::CommandLine to use COMSPEC ENV var, not cmd and path search (based on looking at visual studio source code for system call)
+     - CommandLine::As<String> () support so you can map back
+  - Module
+    - **new** kPath and kPathEXT
+    - **new** FindExecutableInPath utility
+  - ProcessRunner
+    - **big cleanup** - much cleaner handling of commandline arguments and 'shells'
+    - better error reporting when not FindExecutableInPath()
+    - ProcessRunner string variants - options to control CodeCvt used on reading/writing
+      Minor tweaks in ProcessRunner error reporting and regtests to udnerstand issue on windows github actions
+      another ProcessRunner regtest - getting magic quotes working iwth awk... ProcessRunner
+      ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
+      big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
+      cleanups to ProcessRunner regtests
+      more improvements to ProcessRunner regressiontests
+      Minor ProcessRunner cleanups: run(STRING) now outputs to dbgtrace the stdout on excpetions, and minor logging etc cleanups
+      Foundation_Execution_ProcessRunner SETUP - warn if echo not in path
+      small cleanups to Foundation_Execution_ProcessRunner regtest
+      Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
+      Minor ProcessRunner cleanups
+      cosmetic; and minor ProcessRunner clenaups/factoring
+      more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
+      more ProcessRunner cleanups, but mostly StringShellStyle in As<String> method of CommandLine
+      preliminary WrapInShell support on Execution::CommandLine class, and used in ProcessRunner
+      recatoring of ProcessRunner to run off CommandLine class (seems to pass all old regtests and one API deprecated)
+      Cleanup Foundation_Execution_ProcessRunner regressiontests
+      Minor cleanups to ProcessRunner
+      windows process runner backend - handle argument EXE and warn so clearer message whnen EXE not in path
 
+  - IO
+    - FileSystem
+      - deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
+      - cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
+    - Network
+      - lose accdidentally left around class URL
 
-    - Module
-    - kPath and kPathEXT use ConstantProperty not ReadOnlyProperty
-    - ProcessRunner
+  - Math
+    - Common
+      - Round
+        - RegressionTests
+        - use Trunc instead of Round() in Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision...)
+        - New Round (..,nDigitsPrecision) overload
+        - docs
+      - **new** Trunc() routine for integer (saturation) truncation
+      - use new numbers::pi_v<RepType> instead of deprecated kPi (smae for kE, etc).
+      - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
+
+  - Memory
+    - Common/Span
+      - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
+      - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
+      - Renamed MemCmp to CompareBytes () - deprecating old name
+      - new API SpanBytesCast (replaces deprecated SpanReInterpretCast) - and improved
+      - lose CopySpanData_StaticCast - now just (better semantics CopySpanData)
+      - new CopyOverlappingBytes
+    - InlineBuffer
+      - fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
   
-        ProcessRunner string variants - options to control CodeCvt used on reading/writing
-        Minor tweaks in ProcessRunner error reporting and regtests to udnerstand issue on windows github actions
-        another ProcessRunner regtest - getting magic quotes working iwth awk... ProcessRunner
-        ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
-        big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
-        cleanups to ProcessRunner regtests
-        more improvements to ProcessRunner regressiontests
-        Minor ProcessRunner cleanups: run(STRING) now outputs to dbgtrace the stdout on excpetions, and minor logging etc cleanups
-        Foundation_Execution_ProcessRunner SETUP - warn if echo not in path
-        small cleanups to Foundation_Execution_ProcessRunner regtest
-        Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
-        Minor ProcessRunner cleanups
-        cosmetic; and minor ProcessRunner clenaups/factoring
-        more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
-        more ProcessRunner cleanups, but mostly StringShellStyle in As<String> method of CommandLine
-        preliminary WrapInShell support on Execution::CommandLine class, and used in ProcessRunner
-        recatoring of ProcessRunner to run off CommandLine class (seems to pass all old regtests and one API deprecated)
-        Cleanup Foundation_Execution_ProcessRunner regressiontests
-        Minor cleanups to ProcessRunner
-        windows process runner backend - handle argument EXE and warn so clearer message whnen EXE not in path
-
-
-  IO::FileSystem
-    deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
-    cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
-
-- Math
-  - Common
-    - Round
-	    - RegressionTests
-      - use Trunc instead of Round() in Round (FLOAT_TYPE n, unsigned int nDigitsOfPrecision..
-      - New Round (..,nDigitsPrecision) overload
-      - docs
-    - Trunc() routine for integer (saturation) truncation
-    - use new numbers::pi_v<RepType> instead of deprecated kPi (smae for kE, etc).
-    - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
-
-- Memory
-  - Common/Span
-    - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
-    - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
-    - Renamed MemCmp to CompareBytes () - deprecating old name
-    - new API SpanBytesCast (replaces deprecated SpanReInterpretCast) - and improved
-    - lose CopySpanData_StaticCast - now just (better semantics CopySpanData)
-    - new CopyOverlappingBytes
-  - InlineBuffer
-    - fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
-  
-
 
 - Frameworks/WebService
   - **new** Frameworks/WebService/Server/ObjectRequestHandler
@@ -132,7 +153,6 @@ ThirdPartyComponents
     libcurl 8.11.0
 
 
-
 #if 0
 
 commit 39a5086397fd814d9a7baf0b32cf19f120c1c875
@@ -165,23 +185,11 @@ Date:   Mon Dec 9 13:56:56 2024 -0500
 
     Minor cleanups of recent ToPath deprecation; and various comments/cleanups
 
-commit d4b6e2af07d7e09cf9557e83b3202702c4076c57
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 12:01:45 2024 -0500
-
-    Depreacted IO::Filesystem::ToPath and instead String.As<filesystem::path> () works including qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin hack
-
 commit b4c0f1fd39847bb543fd81b6f673ad06072ca983
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 9 11:22:56 2024 -0500
 
     lose qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA no longer needed - on explicit String (TOSTRINGABLE&& s) - now more restruict concept on it
-
-commit 13780843e55ea2b8742e2f461d5049acfd502876
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 10:57:14 2024 -0500
-
-    cleanup mistake with IConvertibleToUNICODEStdString with String CTORs and renamed (and fixed) concept to be IStdPathLike2UNICODEString
 
 commit 53498d2fc70c139d84c58fb00e5259ebc0fedbba
 Author: Lewis Pringle <lewis@sophists.com>
@@ -189,77 +197,11 @@ Date:   Mon Dec 9 10:03:25 2024 -0500
 
     BWA for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy another case
 
-commit 45fb2f76f588026090d6735910c20126c3a8e523
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 22:55:17 2024 -0500
-
-    String module: new IConvertibleToUNICODEStdString, and used in String CTOR so can accept filesystem::path argument; used to deprecated FromPath method; AND many various cleanups and reactions to various deprecations
-
 commit 49e36809a791aa7888ba41eb332bf53341765e6f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 8 14:43:30 2024 -0500
 
     Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
-
-commit 7a7f216ba7caeadd6e97a407336f803489304926
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 11:56:46 2024 -0500
-
-    Added a few comments, requires etc on CodeCvt: and one important bugfix converting differently sized UTF to UTF conversions
-
-commit f1940003e4744baf756c981d9a6827136d57493b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 13:04:05 2024 -0500
-
-    disable some maybe unwanted/unhelpful quoting in CommandLine::As<String> ()
-
-commit 450ba23262d5a4c6a88040bcda47a85d5845bd31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 08:03:25 2024 -0500
-
-    Minor cleanups to recent CommandLine changes (StringShellStyle-> StringShellQuoting)
-
-commit 593f8e07bed76facd30880c157a4c5a4886808ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 13:20:55 2024 -0500
-
-    fix docs/code for FindExecutableInPath (ext part)
-
-commit 50fc9493d65b9d5decfd2115e459e4e1617ed267
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 08:24:17 2024 -0500
-
-    Execution::Module: added kPath, kPathEXT, and FindExecutableInPath utility (and a few other cleanups)
-
-commit 8d4db8ab413a34db2e5335ad97a39c459b2a674e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 08:21:00 2024 -0500
-
-    cosmetic cleanup to BlockingQueue code
-
-commit 1064d9636504a09434315ace4412d5e3d0bda0ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 5 19:56:05 2024 -0500
-
-    fixed CommandLine ::CommandLine to use COMSPEC ENV var, not cmd and path search (based on looking at visual studio source code for system call)
-
-commit f796799150e0fb478aacb4cb16e4e49504d885a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 5 11:37:47 2024 -0500
-
-    added String::ContainsAny () utility
-
-commit 7b5b18de0b172550ead9a99c2c625c773d54ef34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 19:08:28 2024 -0500
-
-    CommandLine::As<String> () support so you can map back
-
-commit 82608d7524089a81cad24d2b76d0d20f3e0a4464
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 15:50:58 2024 -0500
-
-    Minor fix to edge of Math::Trunc() error handling
 
 commit 88d365ef183159ea4b058f18a1ba36d85b1746bc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -326,12 +268,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 2 14:15:31 2024 -0500
 
     more regtests for FloatConversion::ToString rounding (I htink passing with to_chars, but failing without)
-
-commit d011bed6e2cb5290582c36ca9d678083116f2cac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 13:36:02 2024 -0500
-
-    lose accdidentally left around class URL
 
 commit 1ff9292e489b9ebf78dbd9dc325e54e12dc470d0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -519,11 +455,6 @@ Date:   Thu Nov 28 13:34:32 2024 -0500
 
     Execution::ThrowIfNull overload for optional
 
-commit 60bafa545ca6f591a6370c687079fc2180cac5e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 28 08:17:20 2024 -0500
-
-
 commit 806d5fc420839b0de4aafc9a22ff13111063518d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 27 20:19:03 2024 -0500
@@ -541,12 +472,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 27 10:36:12 2024 -0500
 
     github action - workaround https://github.com/actions/upload-artifact/issues/506
-
-commit 731a74c3f8007613bae9478ee496765b838b099e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 10:25:53 2024 -0500
-
-    polish regtest warning
 
 commit 4d5872a5b03d17de4445594813c8993b6c962046
 Author: Lewis Pringle <lewis@sophists.com>
@@ -596,24 +521,6 @@ Date:   Tue Nov 26 20:23:13 2024 -0500
 
     cleanups and react to depreactions
 
-commit 0291c1f85c2a261a192e7cd470ed8a69b1279f95
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 26 20:22:49 2024 -0500
-
-    deprecated String::clear()
-
-commit aa7cd57546a40b2afad40768ff16defd5592a2b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 26 18:13:52 2024 -0500
-
-    improved nonvirtual StringBuilder& operator= and cleanup a few more warnings
-
-commit e1c2007b15b522f9ce2bd15bd2255e91f4ba73b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 26 17:37:51 2024 -0500
-
-    Deprecated several modifying methods on String - push_back, erase, operator+, Append, and added a few helper methods to StringBuilder to ease the transition (weak impls but OK to test)
-
 commit 2626600d3d3ff77be1bbe8d5e7115c51345e427d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 26 12:38:40 2024 -0500
@@ -637,12 +544,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 25 15:09:57 2024 -0500
 
     Regression test - better output warnings about TSAN disabled
-
-commit 42975834dac95c0be8bee2a8e13ce3ef41d068a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 25 14:53:25 2024 -0500
-
-    fixed recent configure regression
 
 commit 01648745792634e70d0ac658c702bc35425449d1
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -955,12 +856,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 11 09:20:45 2024 -0300
 
     revert hack to workflows file now that builds on macos working again
-
-commit bd8e434746f9301fff7a9480ec1ded720ffc9fee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 21:16:08 2024 -0300
-
-    minor Stroika/Frameworks/WebServer/Router.cpp
 
 commit 54a54b5094af9ff41b2369be6e6e826572442ccb
 Author: Lewis Pringle <lewis@sophists.com>
