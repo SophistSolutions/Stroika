@@ -54,13 +54,28 @@ especially those they need to be aware of when upgrading.
     - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
 
 - Memory
-  - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
-  - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
-  - Renamed MemCmp to CompareBytes () - deprecating old name
-  - new API SpanBytesCast (replaces deprecated SpanReInterpretCast) - and improved
-  - lose CopySpanData_StaticCast - now just (better semantics CopySpanData)
-  - new CopyOverlappingBytes
+  - Common/Span
+    - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
+    - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
+    - Renamed MemCmp to CompareBytes () - deprecating old name
+    - new API SpanBytesCast (replaces deprecated SpanReInterpretCast) - and improved
+    - lose CopySpanData_StaticCast - now just (better semantics CopySpanData)
+    - new CopyOverlappingBytes
+  - InlineBuffer
+    - fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
   
+
+
+- Frameworks/WebService
+  - **new** Frameworks/WebService/Server/ObjectRequestHandler
+    - use deducation guides to make work better than old mkRequestHandler
+    - deprecated mkRequestHandler
+  -  PATCH support example in WS tester reggtest (incomplete)
+  - tweaked Samples/WebService - and use new ObjectRequestHandler
+  - Regression tests for new webservice ObjectRequestHandler
+    
+    
+
 - RegressionTests
   - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
   - Merged (out) Configuration tests into Common
@@ -1062,35 +1077,12 @@ Date:   Wed Nov 13 10:15:13 2024 -0300
 
     added /boost/ConfigureAndBuild-OUT.txt to github action log data capture (a few)
 
-commit aa383201093b4ce9be22a03340b0a71e2870c0d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 12 13:01:37 2024 -0300
-
-    Cosmetic; and deprecated mkRequestHandler
-
 commit b9cbc9bf6e028032a3f29deabef9842605dcda87
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 12 12:37:07 2024 -0300
 
     qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
 
-commit 09167a50b90cf668c31816950720cbc8509aabd7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 21:33:36 2024 -0300
-
-    moved ExtractArgumentsAsVariantValue and PickOutNamedArguments from ObjectRequestHandler to Server::VariantValue and include from ObjectRequestHandler
-
-commit 7195df24283bc9ec894503d47100485a13b76fcb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 18:01:01 2024 -0300
-
-    ExpectedMethod overload and doc case senstivie; ObjectRequestHandler fAllowedMethods option, and other related cleanups
-
-commit 8bceb93d3bf4b40c9612d60524e20e2016b9b6f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 15:03:05 2024 -0300
-
-    bugfix (recent); and switch sample from using mkRequestHandler to ObjectRequestHandler::Factory
 
 commit 5650d403f8de2a2f055a18c3dc935e0a6e23e6c1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1104,29 +1096,7 @@ Date:   Mon Nov 11 09:20:45 2024 -0300
 
     revert hack to workflows file now that builds on macos working again
 
-commit a3e6d7b8c167087a042e93f00373b37d3db980f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 09:11:55 2024 -0300
 
-    fixed issue with ObjectRequestHandler::Factory and re-enabled regtest
-
-commit fa99af3392f04e2e68e1b6477c6640c7e4f6b782
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 08:38:50 2024 -0300
-
-    cosmetic ObjectRequestHandler cleanups (docs) and renamed ObjectRequestHandler::Factory2 => ObjectRequestHandler::Factory
-
-commit 78c61fa4afff5d757e8118a50bfcd4a54e725e51
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 08:04:34 2024 -0300
-
-    cosmetic Frameworks/WebService/Server/ObjectRequestHandler cleanups mostly (and removed context arg from ApplyObjectHandler)
-
-commit f5d0d931f50ee11a6c67d8052b1d001b65ef57bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 07:36:07 2024 -0300
-
-    fixed small bugwith Factory2<RETURN_TYPE, ARG_TYPES...>::ApplyHandler
 
 commit d0aeebaaa29decc5f2a9d0f323c8b08bf32f5e4b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1134,47 +1104,6 @@ Date:   Mon Nov 11 07:35:35 2024 -0300
 
     fixed samples htmluiprojectfile
 
-commit 77f89667c0f6314224ff6ac43848831ab392a4ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 00:44:34 2024 -0300
-
-    disable old ObjectRequestHandler::Factory
-
-commit 99a3ddc11d4679c9c1d70a943bf64ff46dfbd7fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 00:07:28 2024 -0300
-
-    more swtich to ObjectRequestHandler::Factory2
-
-commit 95f522f7b5a479871c8aa716697caaf0fc51067e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 10 23:40:39 2024 -0300
-
-    More progress on Frameworks/WebService/Server/ObjectRequestHandler Factory2 code
-
-commit 84eac1ccc0a55d7e6f73d100a6ac51da27382ae8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 10 21:08:17 2024 -0300
-
-    Minor cleanups of WebService/Server/ObjectRequestHandler code and tests
-
-commit b09197efeebcb58e86a8e92650a3857642906eb4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 10 20:22:43 2024 -0300
-
-    more progress on ObjectRequestHandler::Factory2 and tests
-
-commit 688696c08d1d222f6fd7e006fc5e35f57835d166
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 10 20:20:38 2024 -0300
-
-    more progress on ObjectRequestHandler::Factory2 and tests
-
-commit acd85d0fb93a1a903f58cb5f2745c7ba16ff3d8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 10 19:08:21 2024 -0300
-
-    progress on Factory2 for ObjectRequestHandler
 
 commit 0c08929c609ba222eb5797ea0ab8d11dafd144d3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1188,59 +1117,12 @@ Date:   Sat Nov 9 21:16:08 2024 -0300
 
     minor Stroika/Frameworks/WebServer/Router.cpp
 
-commit d123d85eaf07b147a28d54d963c2316ea482b95d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 14:48:12 2024 -0500
-
-    progress on Factory2<RETURN_TYPE, ARG_TYPES...>:: - Options
-
-commit 216d01336a52c73448c289eaa5e7bfadd9985e20
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 12:36:00 2024 -0500
-
-    ObjectRequestHanlder attempt context support for Factory2
-
-commit 700dfd06ae3f498ea847f42c4409fd089b1ea9cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 12:10:10 2024 -0500
-
-    more progress on ObjectRequestHandler::Factory2 - maybe close to right but doesnt compile on clang and fully untested and probably issues with tempalteguides
 
 commit 54a54b5094af9ff41b2369be6e6e826572442ccb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 9 10:57:14 2024 -0500
 
     dsiable github action build for xcode 15 temporarily
-
-commit 150d936df72702299cc29d1a9a33577d63b8046a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 07:31:20 2024 -0500
-
-    early draft of more powerful ObjectRequestHandler::Factory2
-
-commit 370072a03500a520522116e307e0d8b825e1aaee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 8 14:42:25 2024 -0500
-
-    Modest progress on WebService/Server/ObjectRequestHandler;
-
-commit 6edd2db59f09dad9eceeea17b142d5a171aece32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 8 11:36:54 2024 -0500
-
-    cleanups of recent ObjectRequestHandler changes
-
-commit d1b4e275c5849b3670b73ce57cf29891ff13ed6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 8 11:36:27 2024 -0500
-
-    more use concepts
-
-commit 103cc5f31f949e4cd5362fb1af57488ac76c9971
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 8 10:52:56 2024 -0500
-
-    ObjectRequestHandler now supports new ExtractArgumentsAsVariantValue and option fExtractVariantValueFromRequest param - so sb good replacement for mkRequestHandler (a bit more todo but roughly)
 
 commit 1cd19aecc76bdaa5f489f1d6d8b3ee0de79a1fc3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1266,23 +1148,13 @@ Date:   Wed Nov 6 20:30:38 2024 -0500
 
     comments, and typos fixed, and extra use of const for clarity in WaitForIOReady
 
-commit e3c3da860f0c7a6858f9cac24056c61ce811450b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 5 13:44:53 2024 -0500
-
-    Minor cleanups - use new ObjectRequestHandler and TypedBLOB
-
 commit 60fb079220c50e58405e19ecd6e2b2212dc4353e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 5 12:01:11 2024 -0500
 
     first draft DataExchange::TypedBLOB support
 
-commit 7c213b0c6b52ef9901f3d21e418c73f533e38f31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 5 08:38:10 2024 -0500
 
-    tweaked Samples/WebService
 
 commit 1638267b19cc7ac35c27ac44ccd09ed851be45c5
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1290,23 +1162,7 @@ Date:   Mon Nov 4 16:21:30 2024 -0500
 
     Added and used trivially_copyable in a few places (docs/clarifications)
 
-commit 08a4b93594c76c067696eaf9f3582dc4927fbecf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 14:48:33 2024 -0500
 
-    fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
-
-commit b6dbadef85746ad3dda89267e6c802a09486d77c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 07:01:27 2024 -0500
-
-    Docs and minor cleanups to ObjectRequestHandler
-
-commit ad3124d780ebe0a713cacadb29aab3394a63ac8f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 3 08:26:48 2024 -0500
-
-    PATCH support example in WS tester reggtest (incomplete)
 
 commit d09407252687d31e2ab11cfcc7c2c58318900f0c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1320,23 +1176,7 @@ Date:   Sun Nov 3 08:23:34 2024 -0500
 
     fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one; and added dbgtrace on translation
 
-commit 1b41be276939766b84b594d2bd416c8794357407
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 22:13:58 2024 -0400
 
-    ObjectRequestHandler regtest tweaks
-
-commit f1650055776acf1ea143dd426554d66d13ebbcb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 17:56:42 2024 -0400
-
-    test fix to ObjectRequestHandler::Factory deduction in one more case
-
-commit 291ad3ab1595729f2f81b8e3f85835008e43f3d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 17:54:16 2024 -0400
-
-    use new ArgOrVoid member of FunctionTraits to workaround issue in ObjectRequestHandler::Factory
 
 commit 745623e808d33dc5d80a8d54487d6361fbc23061
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1344,79 +1184,9 @@ Date:   Sat Nov 2 17:53:32 2024 -0400
 
     ArgOrVoid member of FunctionTraits
 
-commit ec1c441c04ac613404444b542e7ad212cd171d7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 12:08:48 2024 -0400
 
-    progress/merge ObjectRequestHandler work
 
-commit abff41c83abc735d53445f846fb48df322ba834c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 11:36:28 2024 -0400
 
-    maybe fixed issues with WebService::Server::ObjectRequestHandler - testing
-
-commit 95a3758827089ed7a229dec0a89e241a9973b854
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 11:30:24 2024 -0400
-
-    progress getting Frameworks/WebService/Server/ObjectRequestHandler working for clang
-
-commit 2b03f8a42eb3191d42831d65010c10c2d0dfe9e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 10:04:45 2024 -0400
-
-    progress on webservice regtest for new objectmapper webservice support
-
-commit ee7b14d059f147112f1c2ec53d7ff89db04fda4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 1 11:06:00 2024 -0400
-
-    progress on Frameworks/WebService/Server/ObjectRequestHandler
-
-commit 997c3270c1f1191272041bbb17ff1eadf8ef8577
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 1 10:21:43 2024 -0400
-
-    modest progress on ObjectRequestHandler support
-
-commit 7422f1e9cbfc5db32e177dc6059c5e5b3a927721
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 1 08:10:00 2024 -0400
-
-    new prototype Frameworks/WebService/Server/ObjectRequestHandler
-
-commit 03c5b4b606c6ac2c56fb0456841753da246c18aa
-Merge: 1536756ba4 ea053fb8c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 31 09:54:49 2024 -0400
-
-    Merge remote-tracking branch 'origin/dependabot/npm_and_yarn/Samples/HTMLUI/QuasarBasedHTMLApp/http-proxy-middleware-2.0.7' into v3-Dev
-
-commit ea053fb8c108c45cd02889256e13772de05f74a0
-Author: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-Date:   Thu Oct 31 13:51:48 2024 +0000
-
-    Bump http-proxy-middleware in /Samples/HTMLUI/QuasarBasedHTMLApp
-    
-    Bumps [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) from 2.0.6 to 2.0.7.
-    - [Release notes](https://github.com/chimurai/http-proxy-middleware/releases)
-    - [Changelog](https://github.com/chimurai/http-proxy-middleware/blob/v2.0.7/CHANGELOG.md)
-    - [Commits](https://github.com/chimurai/http-proxy-middleware/compare/v2.0.6...v2.0.7)
-    
-    ---
-    updated-dependencies:
-    - dependency-name: http-proxy-middleware
-      dependency-type: indirect
-    ...
-    
-    Signed-off-by: dependabot[bot] <support@github.com>
-
-commit 1536756ba48c5f224ec611888cd44d97c66e1f2a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 31 09:51:24 2024 -0400
-
-    start 3.0d12x
 #endif
 
 
