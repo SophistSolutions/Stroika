@@ -29,7 +29,6 @@
 
 #include "Stroika-Current-Version.h"
 
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Characters::Literals;
