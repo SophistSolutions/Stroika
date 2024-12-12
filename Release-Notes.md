@@ -47,6 +47,8 @@ especially those they need to be aware of when upgrading.
     - Deprecated several modifying methods on String - push_back, erase, operator+, Append, and added a few helper methods to StringBuilder to ease the transition (weak impls but OK to test)
   - StringBuilder 
     - improved nonvirtual StringBuilder& operator= and cleanup a few more warnings
+  - ToString
+      ToString(StringBuilder) support
 
 
 - Common
@@ -55,8 +57,13 @@ especially those they need to be aware of when upgrading.
   - Concepts
     - Added IBuiltinArithmetic concept
     -   ArgOrVoid member of FunctionTraits
-    Minor addition to FunctionTraits (arg_t)
-
+    - Minor addition to FunctionTraits (arg_t)
+    - Added and used trivially_copyable in a few places (docs/clarifications)
+  - Cryptographaphy
+    - OpenSSL
+      - Minor docs and init cleanups to Cryptography/OpenSSL/LibraryContext
+      - minor cleanup of  Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/Exception.cpp
+      - Minor cleanups to Foundation_Cryptography regtest: better docs/comments on how to detect new errors/failures in new openssl releases; and handle new issue with SHAKE128/256 (not well - just ignore)
 
 - DataExchange
   - **new** DataExchange::TypedBLOB
@@ -111,6 +118,8 @@ especially those they need to be aware of when upgrading.
       Cleanup Foundation_Execution_ProcessRunner regressiontests
       Minor cleanups to ProcessRunner
       windows process runner backend - handle argument EXE and warn so clearer message whnen EXE not in path
+    - WaitForIOReady
+      - comments, and typos fixed, and extra use of const for clarity in WaitForIOReady
 
   - IO
     - FileSystem
@@ -118,6 +127,10 @@ especially those they need to be aware of when upgrading.
       - cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
     - Network
       - lose accdidentally left around class URL
+      - fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one; and added dbgtrace on translation
+	    - URI
+        - docs; and new Query::Lookup and URI::LookupQueryArg methods
+      - IO::Network::HTTP::{Request/Response} support for movable concept
 
   - Math
     - Common
@@ -144,6 +157,8 @@ especially those they need to be aware of when upgrading.
   - Streams
     -  TextWriter takes copyable not move only argument CodeCvt
     - Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
+    - Streams code: used to \req IsOpen (and IsRead/WriteOpen) on Close/CloseWrite/CloseREad - but now check internally and allow close calls when already closed (noop)
+    - use WeakAssert for rare case that can happen - on failure of Flush in BufferedOutputStream
 
   - Time
     - Duration
@@ -159,16 +174,38 @@ especially those they need to be aware of when upgrading.
           Duration::UnParseTime_ () beginning support for FloatConversion::Precision - no real change in API yet, and only change in behaviro is we shoudl write MORE digits of precision for durations - temporarily
           undo part of ToString recent change
 
+- Frameworks::WebServer
+  - RequestHandler now takes additional optional argument - bool* handled; and changed Lookup on Router to return  Iterator<tuple<RequestHandler, Sequence<String>>> so sb able to have multiple filesystem routers now
+  - Request::GetBodyVariantValue () returns {} on no content-type (maybe more cases to add) ; and fixes to ObjectRequestHandler
+  - changed Ensure to WeakAssert Response::End () - cuz reponse might have ended before abort happens
+  - Frameworks::WebServer::{Message,Requst,Response} now support move
+  - progress towards RequestHandler cleanup (incomplete)
+  - slightly incompable (but not noticible by most users) change to WebServer::RequestHandler - internal calling rep now requires Message& instead of Message* (overriders most common, and there users get a deprecation warning)
+  - more recent RequestHanlder cleanups and fixes for pickier clang
+  - not backward compat but minor - use Message& in WebServer Interceptor code instead of Message* - not commonly user facing APIs so not that noteworthy
+
 - Frameworks/WebService
   - **new** Frameworks/WebService/Server/ObjectRequestHandler
     - use deducation guides to make work better than old mkRequestHandler
     - deprecated mkRequestHandler
   -  PATCH support example in WS tester reggtest (incomplete)
   - Regression tests for new webservice ObjectRequestHandler
-    
+  - Server::WriteDocsPage use reference argument for response instead of ptr (deprecated old api)
+Frameworks::Test
+    Frameworks::Test::WarnTestIssue now has String overload which simplifies some usage
     
 - Scripts
   - ScriptsLib/RenumberRegressionTests
+
+
+
+
+github actions
+ -    added /boost/ConfigureAndBuild-OUT.txt to github action log data capture (a few)
+    Added more debug statements for macos build target - github workflow
+    github action macos - get link error building libcurl on macos 13 - dont bother debugging cuz not importany to support old macos and no easy way to debug
+    experiment with fixes for github action issue with brew install
+    lose like macos brew install -q pkg-config no longer works and isnt needed
 
 - RegressionTests
   - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
@@ -176,6 +213,12 @@ especially those they need to be aware of when upgrading.
   - Split regtest that had frameworks webserver and webservices into two separate regtests
   - Added regtests for BLOB and Stream code
   - renumbered a few regressiontests (RenumberRegressionTests)
+    restructure (gtest) regtest Foundation_Cryptography
+    moved regtest to Frameworks_WebService, TestVariantValueSupport
+
+Docker Containers
+ -    fixed build msys docker contianer - miussing pkg-config
+
 
 Samples
  - HTMLUI
@@ -254,7 +297,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 30 17:07:00 2024 -0500
 
     start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
-
 
 commit 25d2da764339046e7676eefee0cb75e6e0f3cad2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -340,12 +382,6 @@ Date:   Tue Nov 26 21:16:00 2024 -0500
 
     mostly cosmetic - use just _f () instead of Characters::Format (..._f,
 
-commit 5b4227b5aeea9761a7521185c205a834903e0911
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 26 20:55:02 2024 -0500
-
-    ToString(StringBuilder) support
-
 commit c0bf29fcf891653a9babf4a6ebf129ab77054b46
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 26 20:23:13 2024 -0500
@@ -406,72 +442,6 @@ Date:   Sat Nov 23 13:22:30 2024 -0500
 
     https://stroika.atlassian.net/browse/STK-1023 needed for g++-11 too
 
-commit f85a010737898e7e512718a10d329004df5c64cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 23 10:30:33 2024 -0500
-
-    Frameworks::Debug::WarnTestIssue now has String overload which simplifies some usage
-
-commit ef49df340b8fd9aadb7e3eecd4e318f1f44c9f72
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 23 09:57:56 2024 -0500
-
-    Server::WriteDocsPage use reference argument for response instead of ptr (deprecated old api)
-
-commit ee838dbf16613949cc54e74e81f4cd66e2e63de3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 23 09:36:44 2024 -0500
-
-    moved regtest to Frameworks_WebService, TestVariantValueSupport
-
-commit ecf972a8948a5cf11b3665c1bc3ac13cee691274
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 22 17:52:45 2024 -0500
-
-    use Request& in a few more places - deprecating Request* api
-
-commit fe6fb27e6cfca1d8debd3d8afd3646661ba25e07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 22 17:31:26 2024 -0500
-
-    minor cleanups reacting to recent WebServer::RequestHandler changes
-
-commit a5b6a8bcbf469f086ad92fa8c00d933c8782d1d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 22 13:26:57 2024 -0500
-
-    not backward compat but minor - use Message& in WebServer Interceptor code instead of Message* - not commonly user facing APIs so not that noteworthy
-
-commit d665e916de1018ed5234be6abfe62d6409067dda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 22 08:08:15 2024 -0500
-
-    more recent RequestHanlder cleanups and fixes for pickier clang
-
-commit 8f73bf69a341804a20ba04b39337729180ebde94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 17:25:41 2024 -0500
-
-    slightly incompable (but not noticible by most users) change to WebServer::RequestHandler - internal calling rep now requires Message& instead of Message* (overriders most common, and there users get a deprecation warning)
-
-commit 02de361efacab3dbf9dd0859d7f652e4c5de91c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 15:24:45 2024 -0500
-
-    progress towards RequestHandler cleanup (incomplete)
-
-commit ad129e8130edeba8d90207f98b8771ec15dfaecd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 14:32:38 2024 -0500
-
-    Frameworks::WebServer::{Message,Requst,Response} now support move
-
-commit 32627c95aaefae1cbc21551b2f07508998ebea77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 14:19:40 2024 -0500
-
-    IO::Network::HTTP::{Request/Response} support for movable concept
-
 commit 41c516d3a0749ff4a2b623eb353aaddf0064ca34
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 21 11:19:19 2024 -0500
@@ -508,48 +478,6 @@ Date:   Wed Nov 20 20:39:01 2024 -0500
 
     set UBSAN_OPTIONS in RegressionTests script
 
-commit a01ac945a9e6f3a66eba954206d8a656da5cb094
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 20 08:56:41 2024 -0500
-
-    lose like macos brew install -q pkg-config no longer works and isnt needed
-
-commit f07ce656f1a6b52f311f1d7846e8f4882f63feda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 20 08:55:50 2024 -0500
-
-    cleanups and use new LookupQueryArg utility
-
-commit 9380f44dce8e2fb2c3f46a6212ce488234fa4bf0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 20 08:55:19 2024 -0500
-
-    docs; and new Query::Lookup and URI::LookupQueryArg methods
-
-commit 747715d9a37b498063330fc16c39f7642f622286
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 20 07:31:22 2024 -0500
-
-    experiment with fixes for github action issue with brew install
-
-commit d0d0a71f79db538395f8006fa9b3d8a2b1fce624
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 19 17:53:10 2024 -0500
-
-    changed Ensure to WeakAssert Response::End () - cuz reponse might have ended before abort happens
-
-commit f2038c655c65c2a9816af04e765886329189eebf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 19 17:50:48 2024 -0500
-
-    use WeakAssert for rare case that can happen - on failure of Flush in BufferedOutputStream
-
-commit 024f7d408702f109f59633382d7e7c592ef8c15e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 19 11:39:48 2024 -0500
-
-    fixed minor recent regression to 405/404 handling in webserver router
-
 commit 30a8ae254e308c389c03851af377416f96533e51
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Mon Nov 18 22:49:23 2024 -0500
@@ -567,42 +495,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 18 16:20:39 2024 -0300
 
     lose qCompilerAndStdLib_CompareOpReverse_Buggy - just  workaround issue and document in header I dont understand why extra function required, but compilers consistent enuf I must be wrong
-
-commit c40a87d7a36795684c98d2a49afd77740afa8608
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 18 13:41:28 2024 -0300
-
-    Minor cleanups to Foundation_Cryptography regtest: better docs/comments on how to detect new errors/failures in new openssl releases; and handle new issue with SHAKE128/256 (not well - just ignore)
-
-commit 288b834517609f87c3a28f431f3467b60efb0b12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 18 13:32:42 2024 -0300
-
-    Minor docs and init cleanups to Cryptography/OpenSSL/LibraryContext
-
-commit 45d3dab1ddb6deeb477d856fa874bec9531b06c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 18 13:31:01 2024 -0300
-
-    minor cleanup of  Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/Exception.cpp
-
-commit cbb1c5e37e70abdb450a2144ddc74b4de461d7dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 18 10:29:36 2024 -0300
-
-    minor cleanups to openssl Librarycontext.cpp
-
-commit 3c6c627e71280dae706b9344a946a434104ec88a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 17 19:14:58 2024 -0300
-
-    restructure (gtest) regtest Foundation_Cryptography
-
-commit acf84ce8238df0ea16038a4c41718bfe5fb36402
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 18:38:30 2024 -0300
-
-    fixed build msys docker contianer - miussing pkg-config
 
 commit 181c7a382a35922385e9df1a6e51e60106238fd0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -628,35 +520,11 @@ Date:   Fri Nov 15 12:16:44 2024 -0300
 
     start _MSC_VER_2k22_17Pt12_ bug define support
 
-commit b6dbda97282680bc74148ffb40434ed954262f77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 14 21:30:31 2024 -0300
-
-    Streams code: used to \req IsOpen (and IsRead/WriteOpen) on Close/CloseWrite/CloseREad - but now check internally and allow close calls when already closed (noop)
-
 commit 0c7ca29f606f24e554c8945b873be71ab78a94d5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 13 15:46:11 2024 -0300
 
     handle RequiredComponentMissingException in webservice regtests since cannot build libcurl on some macos configurations
-
-commit e4e39981f1958f513430c2b3cd0d6583a3f7eaa7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 13 13:25:45 2024 -0300
-
-    github action macos - get link error building libcurl on macos 13 - dont bother debugging cuz not importany to support old macos and no easy way to debug
-
-commit a3ac360aec7ca1f36f732d1d66444b8ce4e883b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 13 13:02:08 2024 -0300
-
-    Added more debug statements for macos build target - github workflow
-
-commit ab68454111b3135e2b8c5629c705d691e9f1ebf4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 13 10:15:13 2024 -0300
-
-    added /boost/ConfigureAndBuild-OUT.txt to github action log data capture (a few)
 
 commit b9cbc9bf6e028032a3f29deabef9842605dcda87
 Author: Lewis Pringle <lewis@sophists.com>
@@ -664,59 +532,11 @@ Date:   Tue Nov 12 12:37:07 2024 -0300
 
     qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
 
-commit 5650d403f8de2a2f055a18c3dc935e0a6e23e6c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 11:45:07 2024 -0300
-
-     Request::GetBodyVariantValue () returns {} on no content-type (maybe more cases to add) ; and fixes to ObjectRequestHandler
-
-commit 53f1a662f8fdc04581a6dd98963d7f260d1373a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 09:20:45 2024 -0300
-
-    revert hack to workflows file now that builds on macos working again
-
-commit 54a54b5094af9ff41b2369be6e6e826572442ccb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 9 10:57:14 2024 -0500
-
-    dsiable github action build for xcode 15 temporarily
-
-commit 1cd19aecc76bdaa5f489f1d6d8b3ee0de79a1fc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 7 18:38:35 2024 -0500
-
-    RequestHandler now takes additional optional argument - bool* handled; and changed Lookup on Router to return  Iterator<tuple<RequestHandler, Sequence<String>>> so sb able to have multiple filesystem routers now
-
 commit 8019ef6f1a246ef11fa73d8e716413b411e35860
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Thu Nov 7 08:07:35 2024 -0500
 
     https://stroika.atlassian.net/browse/STK-1021 BWA
-
-commit 65177b3ff200467366a17f9c158b550636814947
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 6 20:30:38 2024 -0500
-
-    comments, and typos fixed, and extra use of const for clarity in WaitForIOReady
-
-commit 1638267b19cc7ac35c27ac44ccd09ed851be45c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 4 16:21:30 2024 -0500
-
-    Added and used trivially_copyable in a few places (docs/clarifications)
-
-commit d09407252687d31e2ab11cfcc7c2c58318900f0c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 3 08:26:05 2024 -0500
-
-    Request::GetBodyVariantValue () todo comments
-
-commit c5248b47f048453fcba956b1deaa021a208248a8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 3 08:23:34 2024 -0500
-
-    fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one; and added dbgtrace on translation
 
 #endif
 
