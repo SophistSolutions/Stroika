@@ -7,12 +7,22 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
 ### 3.0d12 {2024-12-13} {[diff](../../compare/v3.0d11...v3.0d12)}     REL DRAFT
 
 #### TLDR
+- floating point precision control (across formatting, VariantValue/JSON IO, Durations, etc).
+- ProcessRunner much cleaner support for running under shells/shell commands, and better error reporting
+- InternetMediaTypeRegistry ISA
+- DataExchange::TypedBLOB
+- Memory::CopyBytes/CopySpanData/SpanBytesCast improvments
+- Frameworks::WebServer - mostly using references, isntead of pointers
+- new Frameworks::WebService::ObjectRequestHandler, replacing deprecated mkRequestHandler
 
 #### Upgrade Notes (3.0d11 to 3.0d12)
+
+- Frameworks::WebServer - mostly using references, instead of pointers for Message&, Request&, Response&, etc...
+- new Frameworks::WebService::ObjectRequestHandler, replacing deprecated mkRequestHandler
+  (see Samples/WebService/Main/WebServer.cpp - search ObjectRequestHandler::Factory)
 
 #### Change Details
 
@@ -57,7 +67,6 @@ especially those they need to be aware of when upgrading.
     - BuildGLIBCLocally
       - to be able to run with newer ubuntus cross compile for raspberrypi (old debian)
       - refer back to  https://stroika.atlassian.net/browse/STK-1022
-
 - Stroika Library
   - Across Library
     - new clang-format (18.1.18); make format-code
@@ -203,12 +212,9 @@ especially those they need to be aware of when upgrading.
           - indirect in Duration code to shared FloatConversion::ToString()
           - change DefaultCTOR for Precision to initialiuze to 6; and use that to lose ToStringOptions::kDefaultPrecision; added regtests for new precision code; Time::Duraiton::As<String> () now NEW HEBAVIROR - NOT BACKWARD COMPAT FULLY - defaults to 6 digits precision instead of full, but easy to pass in Full() to As<String> method if you want; and regtest that from ObjectVariantMapper now too
           - Duration/precsion regtests
-          - fixed Duration::UnParseTime_ precision handling
           - MakeCommonSerializer support Duration+Precision
           - Time::Duration As String(PRecision) now even if stored fStringRep - we convert so produces right precision answer
           - Support Characters::ToString(Duration,Precision)
-          - comments; regtests; and  Duration::As (Precision) overload (including prelim regtest); and maybe fixed macos to_string BWA regression
-          - Duration::UnParseTime_ returns String; and minor cleanups to __cpp_lib_to_chars missing BWA
           - Duration::UnParseTime_ () use FloatConversion::Precision
   - Frameworks
     - WebServer
@@ -231,7 +237,6 @@ especially those they need to be aware of when upgrading.
   - Test
     - Frameworks::Test::WarnTestIssue now has String overload which simplifies some usage
     - start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
-
 - Samples
   - HTMLUI
     - Minor cleanups
@@ -253,10 +258,11 @@ especially those they need to be aware of when upgrading.
   - libcurl 8.11.0
 
 #### Release-Validation
+
 - Compilers Tested/Supported
   - g++ { 11, 12, 13, 14 }
   - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
-  - MSVC: { 17.11.5 }
+  - MSVC: { 17.12.3 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 11 version 23H2
@@ -265,7 +271,7 @@ especially those they need to be aware of when upgrading.
       - MSYS (msys2-base-x86_64-20230127.sfx.exe)
     - WSL v2
   - MacOS
-    - 15.0 - arm64/m1 chip
+    - 15.0.1 - arm64/m1 chip
     - 14.3, 14.4, 15.0 on github actions
   - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
 - Hardware Tested/Supported
