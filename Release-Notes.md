@@ -18,6 +18,9 @@ especially those they need to be aware of when upgrading.
 
   - Concepts
     - Added IBuiltinArithmetic concept
+    -   ArgOrVoid member of FunctionTraits
+    Minor addition to FunctionTraits (arg_t)
+
 
 - DataStructures
      
@@ -42,6 +45,32 @@ especially those they need to be aware of when upgrading.
     - kPath and kPathEXT use ConstantProperty not ReadOnlyProperty
     - ProcessRunner
   
+        ProcessRunner string variants - options to control CodeCvt used on reading/writing
+        Minor tweaks in ProcessRunner error reporting and regtests to udnerstand issue on windows github actions
+        another ProcessRunner regtest - getting magic quotes working iwth awk... ProcessRunner
+        ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
+        big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
+        cleanups to ProcessRunner regtests
+        more improvements to ProcessRunner regressiontests
+        Minor ProcessRunner cleanups: run(STRING) now outputs to dbgtrace the stdout on excpetions, and minor logging etc cleanups
+        Foundation_Execution_ProcessRunner SETUP - warn if echo not in path
+        small cleanups to Foundation_Execution_ProcessRunner regtest
+        Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
+        Minor ProcessRunner cleanups
+        cosmetic; and minor ProcessRunner clenaups/factoring
+        more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
+        more ProcessRunner cleanups, but mostly StringShellStyle in As<String> method of CommandLine
+        preliminary WrapInShell support on Execution::CommandLine class, and used in ProcessRunner
+        recatoring of ProcessRunner to run off CommandLine class (seems to pass all old regtests and one API deprecated)
+        Cleanup Foundation_Execution_ProcessRunner regressiontests
+        Minor cleanups to ProcessRunner
+        windows process runner backend - handle argument EXE and warn so clearer message whnen EXE not in path
+
+
+  IO::FileSystem
+    deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
+    cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
+
 - Math
   - Common
     - Round
@@ -71,7 +100,6 @@ especially those they need to be aware of when upgrading.
     - use deducation guides to make work better than old mkRequestHandler
     - deprecated mkRequestHandler
   -  PATCH support example in WS tester reggtest (incomplete)
-  - tweaked Samples/WebService - and use new ObjectRequestHandler
   - Regression tests for new webservice ObjectRequestHandler
     
     
@@ -82,6 +110,20 @@ especially those they need to be aware of when upgrading.
   - Split regtest that had frameworks webserver and webservices into two separate regtests
   -  ../ScriptsLib/RenumberRegressionTests
 
+Samples
+ - HTMLUI
+   - Minor cleanups
+    fixed missing Samples/HTMLUI/Backend/Projects/VisualStudio.Net-2022; and a few other minor mkaefile tweaks
+
+  - WebServer
+     move test for automaticTransferChunkSize modes to regtest (mostly from sample - now sample more reasonable)
+    cosmetic cleanups to weberserver sample
+    slightly polish webserver sample, and docs about webserver sample
+
+ - WebService
+   - tweaked Samples/WebService - and use new ObjectRequestHandler
+ - SSDPServer
+   -   Minor celanups to SSDPServer sample
 
 ThirdPartyComponents
     openssl 3.4.0
@@ -98,12 +140,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 9 21:28:40 2024 -0500
 
     Lose qCompilerAndStdLib_ASAN_memcpy_Buggy BWA - cuz was MY bug not ASAN issue; and fixed BLOB code so BLOB :: As <binaryinputstream> - holds onto refcount
-
-commit 4268909dc1105b7de537044d05ee4f1e3810ef48
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 21:01:42 2024 -0500
-
-    ProcessRunner string variants - options to control CodeCvt used on reading/writing
 
 commit 6a62861b6116c8a8cc0f1595cb1f27d2697e41e0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -122,18 +158,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 9 20:56:46 2024 -0500
 
     TextWriter takes copyable not move only argument CodeCvt
-
-commit 7301735a5ecce8a0cd0c4ddcc834a82ee2176196
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 17:12:23 2024 -0500
-
-    cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
-
-commit 2b4ff71b7dddca95f52f22d2d37e86ec48350785
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 14:04:13 2024 -0500
-
-    deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
 
 commit 6c52907dc14138f4d53f7d64851dcf8f0e0bb61b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -183,53 +207,11 @@ Date:   Sun Dec 8 11:56:46 2024 -0500
 
     Added a few comments, requires etc on CodeCvt: and one important bugfix converting differently sized UTF to UTF conversions
 
-commit 91c51f209ecd438fb8d0ff55af51e776aa6a0b8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 15:45:53 2024 -0500
-
-    Minor tweaks in ProcessRunner error reporting and regtests to udnerstand issue on windows github actions
-
-commit 524fdf3043e7e1583d4e49a6c40195c8303703a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 13:21:20 2024 -0500
-
-    another ProcessRunner regtest - getting magic quotes working iwth awk... ProcessRunner
-
 commit f1940003e4744baf756c981d9a6827136d57493b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 7 13:04:05 2024 -0500
 
     disable some maybe unwanted/unhelpful quoting in CommandLine::As<String> ()
-
-commit 4d5a5adbb397b0f29ecb792e0508a6f1f26c59d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 11:31:18 2024 -0500
-
-    ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
-
-commit 14f31ccf0a051842db4cc32340410cc3869533d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 10:53:39 2024 -0500
-
-    big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
-
-commit d6dcf97ec254699c922d1d976fc2eef210411fb6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 08:41:42 2024 -0500
-
-    cleanups to ProcessRunner regtests
-
-commit 19efa976b91541822a76ffce902ed17c8920e5cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 08:04:31 2024 -0500
-
-    more improvements to ProcessRunner regressiontests
-
-commit 5d6059e4540470856d4c894fff8420065e42bbd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 7 08:04:12 2024 -0500
-
-    Minor ProcessRunner cleanups: run(STRING) now outputs to dbgtrace the stdout on excpetions, and minor logging etc cleanups
 
 commit 450ba23262d5a4c6a88040bcda47a85d5845bd31
 Author: Lewis Pringle <lewis@sophists.com>
@@ -237,47 +219,11 @@ Date:   Sat Dec 7 08:03:25 2024 -0500
 
     Minor cleanups to recent CommandLine changes (StringShellStyle-> StringShellQuoting)
 
-commit 366de3e8cc253152c15d8dbdbb4ccc4207ff8c49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 13:22:45 2024 -0500
-
-    Foundation_Execution_ProcessRunner SETUP - warn if echo not in path
-
-commit 29335d3c7ac82a9238279297f9d4da4abc301ccb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 13:22:19 2024 -0500
-
-    windows process runner backend - handle argument EXE and warn so clearer message whnen EXE not in path
-
 commit 593f8e07bed76facd30880c157a4c5a4886808ed
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 6 13:20:55 2024 -0500
 
     fix docs/code for FindExecutableInPath (ext part)
-
-commit 11fb0a79ea4fb206f9f4f695440029c343e81fe7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 11:30:28 2024 -0500
-
-    small cleanups to Foundation_Execution_ProcessRunner regtest
-
-commit 40dad255b0466ceabc2d00cfee35a0b5274c3c2d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 11:03:11 2024 -0500
-
-    Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
-
-commit 8af34a506deb3ca76459f7dbbb923acbea4ff474
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 10:16:03 2024 -0500
-
-    Minor ProcessRunner cleanups
-
-commit 0f578eee7088b8ae7919311db2c5a0272f148215
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 6 09:54:43 2024 -0500
-
-    cosmetic; and minor ProcessRunner clenaups/factoring
 
 commit 50fc9493d65b9d5decfd2115e459e4e1617ed267
 Author: Lewis Pringle <lewis@sophists.com>
@@ -297,53 +243,17 @@ Date:   Thu Dec 5 19:56:05 2024 -0500
 
     fixed CommandLine ::CommandLine to use COMSPEC ENV var, not cmd and path search (based on looking at visual studio source code for system call)
 
-commit 070769813146dd7ff91becd9da6edcbd1da19c96
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 5 16:15:19 2024 -0500
-
-    more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
-
-commit 37bbbcfaabc3f0e1d1e4d3241e923912bdb03c49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 5 12:12:11 2024 -0500
-
-    more ProcessRunner cleanups, but mostly StringShellStyle in As<String> method of CommandLine
-
-commit eeb5cedf28a7e4fd942def0c22cf0ddbacb0ea03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 5 11:39:06 2024 -0500
-
-    preliminary WrapInShell support on Execution::CommandLine class, and used in ProcessRunner
-
 commit f796799150e0fb478aacb4cb16e4e49504d885a7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 5 11:37:47 2024 -0500
 
     added String::ContainsAny () utility
 
-commit 624b6e88796959164caa2d4d9c04bc33ec7a395a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 5 10:32:01 2024 -0500
-
-    recatoring of ProcessRunner to run off CommandLine class (seems to pass all old regtests and one API deprecated)
-
-commit 0e3e7079f2a74d5d2e5c487a5df838960d09bc16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 21:39:29 2024 -0500
-
-    incomplete progress on CommandLine support for ProcessRunner
-
 commit 7b5b18de0b172550ead9a99c2c625c773d54ef34
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 4 19:08:28 2024 -0500
 
     CommandLine::As<String> () support so you can map back
-
-commit 15ed9bc7d3cc3503a98755acce5db3a83b140a4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 16:37:51 2024 -0500
-
-    Cleanup Foundation_Execution_ProcessRunner regressiontests
 
 commit 82608d7524089a81cad24d2b76d0d20f3e0a4464
 Author: Lewis Pringle <lewis@sophists.com>
@@ -399,7 +309,6 @@ Date:   Mon Dec 2 19:26:10 2024 -0500
 
     more tweaks to FloatConversion::ToString BWA
 
-
 commit a8437a197fa951fe5d9feb6ee78e9136d05cc2bd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 2 19:17:34 2024 -0500
@@ -423,11 +332,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 2 13:36:02 2024 -0500
 
     lose accdidentally left around class URL
-
-commit 9bc1b1b5c52760ef70d036591d3f36c035e757c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 13:15:27 2024 -0500
-
 
 commit 1ff9292e489b9ebf78dbd9dc325e54e12dc470d0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -619,7 +523,6 @@ commit 60bafa545ca6f591a6370c687079fc2180cac5e3
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 28 08:17:20 2024 -0500
 
-    Minor cleanups to ProcessRunner
 
 commit 806d5fc420839b0de4aafc9a22ff13111063518d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -783,12 +686,6 @@ Date:   Sat Nov 23 13:22:30 2024 -0500
 
     https://stroika.atlassian.net/browse/STK-1023 needed for g++-11 too
 
-commit e954dca72d76f707c9d4834637b4d523fef9aecb
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Nov 23 10:30:54 2024 -0500
-
-    Minor celanups to SSDPServer sample
-
 commit f85a010737898e7e512718a10d329004df5c64cb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 23 10:30:33 2024 -0500
@@ -807,12 +704,6 @@ Date:   Sat Nov 23 09:36:44 2024 -0500
 
     moved regtest to Frameworks_WebService, TestVariantValueSupport
 
-commit 2095f4aa90b267bef0c18e1cc8038f4d19c88e33
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Nov 23 09:25:08 2024 -0500
-
-    cleanup WebService samples and deprectaed code
-
 commit ecf972a8948a5cf11b3665c1bc3ac13cee691274
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Nov 22 17:52:45 2024 -0500
@@ -830,12 +721,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Nov 22 13:26:57 2024 -0500
 
     not backward compat but minor - use Message& in WebServer Interceptor code instead of Message* - not commonly user facing APIs so not that noteworthy
-
-commit 1ae73f700999904358d8f5a2ba21a188ddd33fce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 22 08:19:58 2024 -0500
-
-    cosmetic samples
 
 commit d665e916de1018ed5234be6abfe62d6409067dda
 Author: Lewis Pringle <lewis@sophists.com>
@@ -927,12 +812,6 @@ Date:   Wed Nov 20 07:31:22 2024 -0500
 
     experiment with fixes for github action issue with brew install
 
-commit b6f99652161b071764db04c0f2cd519ff3e0f1c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 19 21:04:22 2024 -0500
-
-    move test for automaticTransferChunkSize modes to regtest (mostly from sample - now sample more reasonable)
-
 commit d0d0a71f79db538395f8006fa9b3d8a2b1fce624
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 19 17:53:10 2024 -0500
@@ -945,23 +824,11 @@ Date:   Tue Nov 19 17:50:48 2024 -0500
 
     use WeakAssert for rare case that can happen - on failure of Flush in BufferedOutputStream
 
-commit 402ebab8e93ec3312b96046fd994db1613f3551f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 19 11:40:11 2024 -0500
-
-    cosmetic cleanups to weberserver sample
-
 commit 024f7d408702f109f59633382d7e7c592ef8c15e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 19 11:39:48 2024 -0500
 
     fixed minor recent regression to 405/404 handling in webserver router
-
-commit 72159203c8f76e76e9e393159d1bc1aa122bc46c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 19 08:48:50 2024 -0500
-
-    slightly polish webserver sample, and docs about webserver sample
 
 commit 30a8ae254e308c389c03851af377416f96533e51
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -1065,12 +932,6 @@ Date:   Wed Nov 13 13:02:08 2024 -0300
 
     Added more debug statements for macos build target - github workflow
 
-commit 5147f21ca500cced1a678289a80a9d7f00ecedf1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 13 10:17:30 2024 -0300
-
-    Minor twewk to ArgsOrVoid
-
 commit ab68454111b3135e2b8c5629c705d691e9f1ebf4
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 13 10:15:13 2024 -0300
@@ -1082,7 +943,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 12 12:37:07 2024 -0300
 
     qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
-
 
 commit 5650d403f8de2a2f055a18c3dc935e0a6e23e6c1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1096,27 +956,11 @@ Date:   Mon Nov 11 09:20:45 2024 -0300
 
     revert hack to workflows file now that builds on macos working again
 
-
-
-commit d0aeebaaa29decc5f2a9d0f323c8b08bf32f5e4b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 11 07:35:35 2024 -0300
-
-    fixed samples htmluiprojectfile
-
-
-commit 0c08929c609ba222eb5797ea0ab8d11dafd144d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 10 19:07:33 2024 -0300
-
-    Minor addition to FunctionTraits (arg_t)
-
 commit bd8e434746f9301fff7a9480ec1ded720ffc9fee
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 9 21:16:08 2024 -0300
 
     minor Stroika/Frameworks/WebServer/Router.cpp
-
 
 commit 54a54b5094af9ff41b2369be6e6e826572442ccb
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1136,12 +980,6 @@ Date:   Thu Nov 7 08:07:35 2024 -0500
 
     https://stroika.atlassian.net/browse/STK-1021 BWA
 
-commit 29caaf7adf15d3acffad263bb956bdd337b109aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 7 07:35:05 2024 -0500
-
-    fixed missing Samples/HTMLUI/Backend/Projects/VisualStudio.Net-2022; and a few other minor mkaefile tweaks
-
 commit 65177b3ff200467366a17f9c158b550636814947
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 6 20:30:38 2024 -0500
@@ -1154,15 +992,11 @@ Date:   Tue Nov 5 12:01:11 2024 -0500
 
     first draft DataExchange::TypedBLOB support
 
-
-
 commit 1638267b19cc7ac35c27ac44ccd09ed851be45c5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Nov 4 16:21:30 2024 -0500
 
     Added and used trivially_copyable in a few places (docs/clarifications)
-
-
 
 commit d09407252687d31e2ab11cfcc7c2c58318900f0c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1175,17 +1009,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Nov 3 08:23:34 2024 -0500
 
     fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one; and added dbgtrace on translation
-
-
-
-commit 745623e808d33dc5d80a8d54487d6361fbc23061
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 2 17:53:32 2024 -0400
-
-    ArgOrVoid member of FunctionTraits
-
-
-
 
 #endif
 
