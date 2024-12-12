@@ -159,7 +159,7 @@ especially those they need to be aware of when upgrading.
         - Now based on CommandLine class - with contructors to wrap in shell (as appropriate).
         - also new Options argument (and property) - so can control CodeCvt used on reading/writing subprocess etc
         - Improved regression tests
-        - ***not backward compat change on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
+        - ***not backward compat change*** on ProcessRunner::Run(STRING) - now returns tuple so must wrap String expecting results with get<0>
         - big change to ProcessRunner API - deprecated passing streams to CTOR, and instead added Run() overload taking STREAMS; so new meaning for .Run() - must replace it with .Run().ThrowIfFailed - for all overloads taking streams (including no args overload)
         - Refactored currentdirectory to Options for ProcessRunner, and added a few windows control flags there (options) to be set outside and defaulted instead of hardwired in ProcessRunner.cpp - effectively no changes to any of the defaults
         - more clenaups / progress on CommandLine/ProcessRunner code - AutomaticWrapInBashOrCmdShellForPipesInShell draft and other regtest cleanups
