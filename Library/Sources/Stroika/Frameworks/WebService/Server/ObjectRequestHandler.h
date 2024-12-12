@@ -113,6 +113,14 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
     /**
      *  \brief ObjectRequestHandler::Factory is a way to construct a WebServer::RequestHandler from an ObjectVariantMapper object and a lambda taking in/out params of objects.
      * 
+     * 
+     *  A WebServer::RequestHandler gets handed a Message& (Request& + Response&). And its expected to read from the request and
+     *  write to the response.
+     * 
+     *  ObjectRequestHandler::Factory, takes a lambda, with some in object parameters, and producing an (optional) output object
+     *  and creates a WebServer::RequestHandler that handles the middle-layer, translating the Requst to object paramters, calls
+     *  the argument lambda function, and then writes the result (translated back) to the webserver Response&.
+     * 
      *  \par Example Usage
      *      \code
      *          Route{"api/objs/?"_RegEx,
@@ -123,7 +131,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      *                      }}}
      *      \endcode
      * 
-     *  \par Example Usage
+     *  \par Example Usage (access request context with extra fields, but just declaring it as a parameter)
      *      \code
      *          Route{"api/(v1/)?recordings/(.+)"_RegEx,
      *                 ObjectRequestHandler::Factory{{kMapper}, [this] (const ObjectRequestHandler::Context& c) -> Recording {
@@ -132,6 +140,12 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
      *                 }}}
      *      \endcode
      * 
+     *  \par Example Usage (from WebService sample)
+     *      \code
+     *          Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx,
+     *                   ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
+     *                                                 [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
+     *      \endcode
      * 
      *  \todo check acceptsContentType and return result as JSON, binary json, or xml (etc) accordingly - take OPTIONS param saying default
      */
