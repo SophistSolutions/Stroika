@@ -64,11 +64,15 @@ especially those they need to be aware of when upgrading.
     - _MSC_VER_2k22_17Pt12_ compiler bug define support
     - start _MSC_VER_2k22_17Pt12_ bug define support
     - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
+    - Appears Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA not needed on Format() function call
+    - a few more minor cleanups - mostly Characters::Format BWA simplifications
 
   - Properties
 
   - GUID
     - docs and asserts GUID
+    - override formatter for GUID (cuz default the way I wrote things was to use ranges formatter - at least on systems that supported it); 
+      now have regtest to assure outputs in compact formated GUID format
   - Concepts
     - Added IBuiltinArithmetic concept
     -   ArgOrVoid member of FunctionTraits
@@ -144,6 +148,9 @@ especially those they need to be aware of when upgrading.
     - FileSystem
       - deprecated kPathComponentSeperator and replaced wtih filesystem::path::preferred_separator
       - cleanup Foundation_IO_FileSystem regtest and minor fixes to FileSystem/DirectoryIterator.cpp
+      - TempFile
+        -  fixed small bug with FileSystem::CreateTmpFile - if missing extension use .txt to txt
+
     - Network
       - lose accdidentally left around class URL
       - fixed ClientErrorException::TreatExceptionsAsClientError to not add extra layer of ClientErrorException if already is one; and added dbgtrace on translation
@@ -212,12 +219,29 @@ especially those they need to be aware of when upgrading.
   -  PATCH support example in WS tester reggtest (incomplete)
   - Regression tests for new webservice ObjectRequestHandler
   - Server::WriteDocsPage use reference argument for response instead of ptr (deprecated old api)
+    SendStringResponse method, and Factory::SendResponse behavior and docs updated
+
 Frameworks::Test
     Frameworks::Test::WarnTestIssue now has String overload which simplifies some usage
-    
+        start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
+
 - Scripts
   - ScriptsLib/RenumberRegressionTests
+    draft script ScriptsLib/CreateSelfSignedCert
+   - BuildGLIBCLocally
+     - to be able to run with newer ubuntus cross compile for raspberrypi (old debian)
+     - refer back to  https://stroika.atlassian.net/browse/STK-1022
 
+configure
+     configure: fixed SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ to check for and handle COMPILER_DRIVER eq ''
+    configure script: many changes (to test) - check COMPILER_DRIVER variable instead of COMPILER_DRIVER_CPlusPlus in many places; new ComputeARCHFlag_ procedure to better modularize/cleanup; and renamed for clarity ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_ and SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
+    Minor cleanup of configure script - no apparent change (but could be)
+
+    configure - apparently redudnent set of Wno-stringop-overflow removed
+    workaround two linker time warnings in glibc code in configure
+    raspberrypi configurations -  --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
+    fixed configure so --append-CXXFLAGS go at the end (so they can be used to override things) - test an dthen do to other appends
+    -fstanitize alignment no: https://stroika.atlassian.net/browse/STK-1023 needed for g++-11 too
 
 
 
@@ -227,6 +251,7 @@ github actions
     github action macos - get link error building libcurl on macos 13 - dont bother debugging cuz not importany to support old macos and no easy way to debug
     experiment with fixes for github action issue with brew install
     lose like macos brew install -q pkg-config no longer works and isnt needed
+    github action - workaround https://github.com/actions/upload-artifact/issues/506
 
 - RegressionTests
   - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
@@ -236,6 +261,11 @@ github actions
   - renumbered a few regressiontests (RenumberRegressionTests)
     restructure (gtest) regtest Foundation_Cryptography
     moved regtest to Frameworks_WebService, TestVariantValueSupport
+    Regression test - better output warnings about TSAN disabled
+    set UBSAN_OPTIONS in RegressionTests script
+    revised BWA for https://stroika.atlassian.net/browse/STK-1021; TSAN - hold lock longer
+    lose PeekIsSet from ThreadSanitizerSuppressions.supp and instead - added Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD before the two procedures calling PeekIsSet
+    handle RequiredComponentMissingException in webservice regtests since cannot build libcurl on some macos configurations
 
 Docker 
  -    fixed build msys docker contianer - miussing pkg-config
@@ -268,163 +298,6 @@ Sanitizers
 
 - All Code
   -   new clang-format (18.1.18); make format-code
-
-
-#if 0
-commit bba2212b64a95c597e3401e6a5656e23e53a7a1e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 17:07:00 2024 -0500
-
-    start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
-
-commit 7643470dfa4039f7007a6bdf93d62f469aa14bc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 28 20:55:20 2024 -0500
-
-    fixed small bug with FileSystem::CreateTmpFile - if missing extension use .txt to txt
-
-commit b8950f55bc7a3b599954f5074b08759f2561e259
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 28 17:35:00 2024 -0500
-
-    override formatter for GUID (cuz default the way I wrote things was to use ranges formatter - at least on systems that supported it); now have regtest to assure outputs in compact formated GUID format
-
-commit 7078b602521b73d86f9208bceded251fc76f7f23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 10:41:37 2024 -0500
-
-    better https://github.com/actions/upload-artifact/issues/506 BWA
-
-commit 976ce0af541c9fb20b90b45e8aa1f4400906c0eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 10:36:12 2024 -0500
-
-    github action - workaround https://github.com/actions/upload-artifact/issues/506
-
-commit 4d5872a5b03d17de4445594813c8993b6c962046
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 10:25:23 2024 -0500
-
-    Appears Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA not needed on Format() function call
-
-commit b7d2f8b3061d8e7fd02a96ab00c98e34c91ed9b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 10:22:10 2024 -0500
-
-    a few more minor cleanups - mostly Characters::Format simplification
-
-commit 2626600d3d3ff77be1bbe8d5e7115c51345e427d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 26 12:38:40 2024 -0500
-
-    configure: fixed SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ to check for and handle COMPILER_DRIVER eq ''
-
-commit d0a30201447380c8ea08a7d6b6bde5612224649a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 25 15:09:57 2024 -0500
-
-    Regression test - better output warnings about TSAN disabled
-
-commit 01648745792634e70d0ac658c702bc35425449d1
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Nov 25 13:37:48 2024 -0500
-
-    configure script: many changes (to test) - check COMPILER_DRIVER variable instead of COMPILER_DRIVER_CPlusPlus in many places; new ComputeARCHFlag_ procedure to better modularize/cleanup; and renamed for clarity ParseCommandLine_CompilerDriverAndDebugOrReleaseDefaultMode_ and SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
-
-commit 8b54f787c79d4c1d0bbcc6e4abd99ae281b3212a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Nov 25 12:48:15 2024 -0500
-
-    Minor cleanup of configure script - no apparent change (but could be)
-
-commit bfd7e22aae49dfd2b645f1026ec15d38e223d3de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 25 07:42:21 2024 -0500
-
-    draft script ScriptsLib/CreateSelfSignedCert
-
-commit 0b18fcdfd8db520c82bcabbe498dad889887bb5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 24 18:37:45 2024 -0500
-
-    configure - apparently redudnent set of Wno-stringop-overflow removed
-
-commit 7a664e46df787e9966a9bd48d9f077a178a0d243
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 24 09:15:08 2024 -0500
-
-    workaround two linker time warnings in glibc code in configure
-
-commit b40aa675985c866935b817b4062da21005f80bd9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 23 14:02:45 2024 -0500
-
-    SendStringResponse method, and Factory::SendResponse behavior and docs updated
-
-commit dbe82799831e261c434fb124cc12befb9546b03e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Nov 23 13:22:30 2024 -0500
-
-    https://stroika.atlassian.net/browse/STK-1023 needed for g++-11 too
-
-commit 41c516d3a0749ff4a2b623eb353aaddf0064ca34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 11:19:19 2024 -0500
-
-    notes in ScriptsLib/BuildGLIBCLocally refer back to  https://stroika.atlassian.net/browse/STK-1022
-
-commit ff53b52110095314768eef215f0c3b452c11ba72
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 11:18:42 2024 -0500
-
-    raspberrypi configurations -  --append-CXXFLAGS -fno-sanitize=alignment for https://stroika.atlassian.net/browse/STK-1023
-
-commit 45610be00920a2ff93126c55094913bf8e00af0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 11:09:47 2024 -0500
-
-    notes on ScriptsLib/BuildGLIBCLocally to get working from ubuntu 24.04
-
-commit 070eb651fd5de4dd3435974baaeb1912b683253e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 09:21:12 2024 -0500
-
-    fixed configure so --append-CXXFLAGS go at the end (so they can be used to override things) - test an dthen do to other appends
-
-commit 94c188e6c7a9cbf3a03ebd7402b60b86133686e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 21 08:57:14 2024 -0500
-
-    DRAFT ScriptsLib/BuildGLIBCLocally to be able to run with newer ubuntus cross compile for raspberrypi (old debian)
-
-commit b1f215e7eb7ced7121fa982fec3d2a5cbac3b61f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 20 20:39:01 2024 -0500
-
-    set UBSAN_OPTIONS in RegressionTests script
-
-commit 30a8ae254e308c389c03851af377416f96533e51
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Nov 18 22:49:23 2024 -0500
-
-    revised BWA for https://stroika.atlassian.net/browse/STK-1021; TSAN - hold lock longer
-
-commit 40d93efd88c6b0b79a54b8debc9378a7212c98ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 18 23:58:20 2024 -0300
-
-    lose PeekIsSet from ThreadSanitizerSuppressions.supp and instead - added Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD before the two procedures calling PeekIsSet
-
-commit 0c7ca29f606f24e554c8945b873be71ab78a94d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 13 15:46:11 2024 -0300
-
-    handle RequiredComponentMissingException in webservice regtests since cannot build libcurl on some macos configurations
-#endif
-
-
-
-
 
 
 
