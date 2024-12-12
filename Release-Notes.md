@@ -23,6 +23,7 @@ especially those they need to be aware of when upgrading.
 - Frameworks::WebServer - mostly using references, instead of pointers for Message&, Request&, Response&, etc...
 - new Frameworks::WebService::ObjectRequestHandler, replacing deprecated mkRequestHandler
   (see Samples/WebService/Main/WebServer.cpp - search ObjectRequestHandler::Factory)
+- String API - avoid mutating APIs (most remaining deprecated)
 
 #### Change Details
 
