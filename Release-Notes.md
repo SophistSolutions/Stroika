@@ -16,6 +16,28 @@ especially those they need to be aware of when upgrading.
   - CodeCvt
     - Added a few comments, requires etc on CodeCvt
     - one important bugfix converting differently sized UTF to UTF conversions
+  - FloatConversion
+    - minor fix for CalcPrecision_
+    - indirect in Duration cod eto shared FloatConversion::ToString()
+    - cleanups to qStroika_Foundation_Debug_AssertionsChecked/__cpp_lib_to_chars BWA
+    - More regtests for  FloatConversion::ToString changes
+    - more tweaks to FloatConversion::ToString BWA
+    - more regtests for FloatConversion::ToString
+    - maybe adequuate __cpp_lib_to_chars BWA for ToString_OptimizedForCLocaleAndNoStreamFlags_ on macos
+    - more regtests for FloatConversion::ToString rounding (I htink passing with to_chars, but failing without)
+    - more fixes for ToString_OptimizedForCLocaleAndNoStreamFlags_
+    - tweak ToString_OptimizedForCLocaleAndNoStreamFlags_
+    - Progress on updates to FloatConversion (workarounds for macos)
+    - Progress on updates to FloatConversion (workarounds for macos)
+    - progress on ToString_OptimizedForCLocaleAndNoStreamFlags_ no __cpp_lib_to_chars issue
+    - fixed small regression in to_chars call
+    - maybe fix issue wtih to_chars workaround
+     - __cpp_lib_to_chars improved BWA for when missing
+    - docs on ToString/Precision support and other ToString cleanups
+    - start to support no __cpp_lib_to_chars for macos old
+    - promote Foundation::Characters::FloatConversion::{ToFloat,ToString} to also be in Characters namespace
+
+
   - String
     - added String::ContainsAny () utility
     - Depreacted IO::Filesystem::ToPath and instead String.As<filesystem::path> () works including qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin hack
@@ -36,8 +58,8 @@ especially those they need to be aware of when upgrading.
     Minor addition to FunctionTraits (arg_t)
 
 
-- DataStructures
-     
+- DataExchange
+  - **new** DataExchange::TypedBLOB
   - InternetMediaType
     - fix to change allowing no subtype in InternetMediaType
   - InternetMediaTypes and InternetMediaTypeRegistry
@@ -50,6 +72,10 @@ especially those they need to be aware of when upgrading.
     - InternetMediaTypes::Wildcards::kText; 
     - added regtests and furhter improved IsA() impl - mostly checking for suffixes
     - Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
+  - Variant
+    - JSON Read/Writer
+      - regtests JSONWriterNumberPrecision verify/test
+      - fJSONWriterOptions in ObjectRequestHandler
 
 - Execution
   - BlockingQueue
@@ -115,6 +141,23 @@ especially those they need to be aware of when upgrading.
     - InlineBuffer
       - fixed bug with InlineBuffer (InlineBuffer&& src) moving large buffer
   
+  - Streams
+    -  TextWriter takes copyable not move only argument CodeCvt
+    - Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
+
+  - Time
+    - Duration
+      - Precision
+          change DefaultCTOR for Precision to initialiuze to 6; and use that to lose ToStringOptions::kDefaultPrecision; added regtests for new precision code; Time::Duraiton::As<String> () now NEW HEBAVIROR - NOT BACKWARD COMPAT FULLY - defaults to 6 digits precision instead of full, but easy to pass in Full() to As<String> method if you want; and regtest that from ObjectVariantMapper now too
+          Duration/precsion regtests
+          fixed Duration::UnParseTime_ precision handling
+          MakeCommonSerializer support Duration+Precision
+            Time::Duration As String(PRecision) now even if stored fStringRep - we convert so produces right precision answer
+          Support Characters::ToString(Duration,Precision)
+          comments; regtests; and  Duration::As (Precision) overload (including prelim regtest); and maybe fixed macos to_string BWA regression
+          Duration::UnParseTime_ returns String; and minor cleanups to __cpp_lib_to_chars missing BWA
+          Duration::UnParseTime_ () beginning support for FloatConversion::Precision - no real change in API yet, and only change in behaviro is we shoudl write MORE digits of precision for durations - temporarily
+          undo part of ToString recent change
 
 - Frameworks/WebService
   - **new** Frameworks/WebService/Server/ObjectRequestHandler
@@ -124,12 +167,15 @@ especially those they need to be aware of when upgrading.
   - Regression tests for new webservice ObjectRequestHandler
     
     
+- Scripts
+  - ScriptsLib/RenumberRegressionTests
 
 - RegressionTests
   - Lots of miscelaneous RegressionTest cleanups (switch to google test style, etc)
   - Merged (out) Configuration tests into Common
   - Split regtest that had frameworks webserver and webservices into two separate regtests
-  -  ../ScriptsLib/RenumberRegressionTests
+  - Added regtests for BLOB and Stream code
+  - renumbered a few regressiontests (RenumberRegressionTests)
 
 Samples
  - HTMLUI
@@ -161,23 +207,11 @@ Date:   Mon Dec 9 21:28:40 2024 -0500
 
     Lose qCompilerAndStdLib_ASAN_memcpy_Buggy BWA - cuz was MY bug not ASAN issue; and fixed BLOB code so BLOB :: As <binaryinputstream> - holds onto refcount
 
-commit 6a62861b6116c8a8cc0f1595cb1f27d2697e41e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 20:57:54 2024 -0500
-
-    minor cleanups to SpanBytesCast and related comments
-
 commit a0e599b58d89d8a710ec438218bac3868c8af77d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 9 20:57:15 2024 -0500
 
     fixed USE_NOISY_TRACE_IN_THIS_MODULE_ trace - legacy printf stuff
-
-commit 6d208ab10a8d12437181246a61033c2b1ca1d6c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 20:56:46 2024 -0500
-
-    TextWriter takes copyable not move only argument CodeCvt
 
 commit 6c52907dc14138f4d53f7d64851dcf8f0e0bb61b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -197,18 +231,6 @@ Date:   Mon Dec 9 10:03:25 2024 -0500
 
     BWA for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy another case
 
-commit 49e36809a791aa7888ba41eb332bf53341765e6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 8 14:43:30 2024 -0500
-
-    Added Foundation_Streams TextReaderBug to demo/reporudce (now fixed) CodeCvt issue with sizeof (SERIALIZED_CHAR_T) and qCompilerAndStdLib_ASAN_memcpy_Buggy
-
-commit 88d365ef183159ea4b058f18a1ba36d85b1746bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 12:03:07 2024 -0500
-
-    More regtests for  FloatConversion::ToString changes
-
 commit e31db1eefbcf6afd5b426da0efe5e9eb7d8963f9
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 4 12:02:25 2024 -0500
@@ -227,197 +249,12 @@ Date:   Tue Dec 3 15:22:54 2024 -0500
 
     Minor progress debugging __cpp_lib_to_chars undefined BWA
 
-commit 9df0f3e71cc83cd0e29bbbc4baec993d025accab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 3 08:14:35 2024 -0500
-
-    minor fix for CalcPrecision_
-
-commit aba032f8dde24a2f4c662b2112081a4126c474b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 19:47:29 2024 -0500
-
-    indirect in Duration cod eto shared FloatConversion::ToString()
-
-commit ec252275df0f40250c0dd4e9b393637b0a29c437
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 19:47:03 2024 -0500
-
-    cleanups to qStroika_Foundation_Debug_AssertionsChecked/__cpp_lib_to_chars BWA
-
-commit 62c8c16a60c987f7a44e1bccf390b2d12029cd45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 19:26:10 2024 -0500
-
-    more tweaks to FloatConversion::ToString BWA
-
-commit a8437a197fa951fe5d9feb6ee78e9136d05cc2bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 19:17:34 2024 -0500
-
-    more regtests for FloatConversion::ToString
-
-commit b9afa39dad40d536a9a4488a9ee7caa7b5ea4e30
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 19:17:04 2024 -0500
-
-    maybe adequuate __cpp_lib_to_chars BWA for ToString_OptimizedForCLocaleAndNoStreamFlags_ on macos
-
-commit c21fcc6777716ffea5f394abc2eba6266e0276a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 14:15:31 2024 -0500
-
-    more regtests for FloatConversion::ToString rounding (I htink passing with to_chars, but failing without)
-
-commit 1ff9292e489b9ebf78dbd9dc325e54e12dc470d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 10:38:16 2024 -0500
-
-    more fixes for ToString_OptimizedForCLocaleAndNoStreamFlags_
-
-commit 7386157686ae72af89bd84b30f4fac87ae017434
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 08:40:31 2024 -0500
-
-    tweak ToString_OptimizedForCLocaleAndNoStreamFlags_
-
-commit 282ec6d7926c5e75f690f7ea09f7703165a9588c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 08:36:55 2024 -0500
-
-    Progress on updates to FloatConversion (workarounds for macos)
-
-commit 739f9ec373cfae5e1d93e73a1893735089c306eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 2 08:19:58 2024 -0500
-
-    Progress on updates to FloatConversion (workarounds for macos)
-
-commit 8fb3ec852cef4a474868f890103198283364ab18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 1 21:38:55 2024 -0500
-
-    progress on ToString_OptimizedForCLocaleAndNoStreamFlags_ no __cpp_lib_to_chars issue
-
-commit a623b3dfb558a1f3f1f0fabb665d0c726a950abf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 1 08:14:20 2024 -0500
-
-    fixed small regression in to_chars call
-
-commit d35164aca1b44226f6f731c808b3380856b6d6b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 19:24:17 2024 -0500
-
-    maybe fix issue wtih to_chars workaround
-
-commit 5d9bcb4c5227ba6d7233de5968c07cc2a740c593
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 17:30:41 2024 -0500
-
-     __cpp_lib_to_chars improved BWA for when missing
-
 commit bba2212b64a95c597e3401e6a5656e23e53a7a1e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 30 17:07:00 2024 -0500
 
     start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
 
-commit b7a9f55175d32b615c94203a25553096207b9f30
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 15:14:45 2024 -0500
-
-    change DefaultCTOR for Precision to initialiuze to 6; and use that to lose ToStringOptions::kDefaultPrecision; added regtests for new precision code; Time::Duraiton::As<String> () now NEW HEBAVIROR - NOT BACKWARD COMPAT FULLY - defaults to 6 digits precision instead of full, but easy to pass in Full() to As<String> method if you want; and regtest that from ObjectVariantMapper now too
-
-commit bcf554f85e6732fa090bcdccd0ecfffe14518f69
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 13:38:48 2024 -0500
-
-    Duration/precsion regtests
-
-commit 495fdf3707a580cf2bb011c9b4490394059b91ea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 13:38:31 2024 -0500
-
-    fixed Duration::UnParseTime_ precision handling
-
-commit 5f83c82b1eb3f952e944d0404a44779ea3be2d39
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 13:38:09 2024 -0500
-
-    MakeCommonSerializer support Duration+Precision
-
-commit b3a943d2c57a73918de5618c6cc9b497c0788635
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 12:50:21 2024 -0500
-
-    Time::Duration As String(PRecision) now even if stored fStringRep - we convert so produces right precision answer
-
-commit 7f9fa1798b9d5d5a34948589ce6f23a6b9785813
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 12:11:17 2024 -0500
-
-    docs on ToString/Precision support and other ToString cleanups
-
-commit 9b4b15d5dbbb152a6e73bcd362876380e880ce1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 10:49:49 2024 -0500
-
-    Support Characters::ToString(Duration,Precision)
-
-commit 09b3f4b2e252e158cfabde2cca809f32728ca95f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 09:48:08 2024 -0500
-
-    comments; regtests; and  Duration::As (Precision) overload (including prelim regtest); and maybe fixed macos to_string BWA regression
-
-commit 94a20f89440fee3f28548f768a2326aacd0531f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 09:05:53 2024 -0500
-
-    Duration::UnParseTime_ returns String; and minor cleanups to __cpp_lib_to_chars missing BWA
-
-commit ea114935258c594c9b0a5d081528b477be085769
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 08:24:58 2024 -0500
-
-    start to support no __cpp_lib_to_chars for macos old
-
-commit 24b93cf01e5013810350b69e395f958967558977
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 30 08:18:32 2024 -0500
-
-    start to support no __cpp_lib_to_chars for macos old
-
-commit de9bba314649a5cc5390c51e93a8e8eac7963c16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 29 21:59:45 2024 -0500
-
-    Duration::UnParseTime_ () beginning support for FloatConversion::Precision - no real change in API yet, and only change in behaviro is we shoudl write MORE digits of precision for durations - temporarily
-
-commit 47119490589721949925ce20e43aa48e00f16375
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 29 21:58:34 2024 -0500
-
-    undo part of ToString recent change
-
-commit 1229e303237b9b338da4664361862008709b17fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 29 20:58:34 2024 -0500
-
-    fJSONWriterOptions in ObjectRequestHandler
-
-commit d7ccf9e604203f513df128d063b835809c6b5a54
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 29 20:51:16 2024 -0500
-
-    regtests JSONWriterNumberPrecision verify/test
-
-commit 9b15e7487633570f9123d45639d596de311f0b38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 29 20:50:19 2024 -0500
-
-    promote Foundation::Characters::FloatConversion::{ToFloat,ToString} to also be in Characters namespace
 
 commit 25d2da764339046e7676eefee0cb75e6e0f3cad2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -454,12 +291,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 28 13:34:32 2024 -0500
 
     Execution::ThrowIfNull overload for optional
-
-commit 806d5fc420839b0de4aafc9a22ff13111063518d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 20:19:03 2024 -0500
-
-    Added regtests for BLOB and Stream code
 
 commit 7078b602521b73d86f9208bceded251fc76f7f23
 Author: Lewis Pringle <lewis@sophists.com>
@@ -526,18 +357,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 26 12:38:40 2024 -0500
 
     configure: fixed SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_ to check for and handle COMPILER_DRIVER eq ''
-
-commit 2364adbb9e75c0bcaf79daacfaf36949771688ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 25 17:29:21 2024 -0500
-
-    try to fix oldmacos build issue with old code lib
-
-commit b7128b47a13c04c8fb1eed7aebee4534bfa1ab68
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 25 17:28:46 2024 -0500
-
-    try to fix oldmacos build issue with old code lib
 
 commit d0a30201447380c8ea08a7d6b6bde5612224649a
 Author: Lewis Pringle <lewis@sophists.com>
@@ -880,12 +699,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 6 20:30:38 2024 -0500
 
     comments, and typos fixed, and extra use of const for clarity in WaitForIOReady
-
-commit 60fb079220c50e58405e19ecd6e2b2212dc4353e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 5 12:01:11 2024 -0500
-
-    first draft DataExchange::TypedBLOB support
 
 commit 1638267b19cc7ac35c27ac44ccd09ed851be45c5
 Author: Lewis Pringle <lewis@sophists.com>
