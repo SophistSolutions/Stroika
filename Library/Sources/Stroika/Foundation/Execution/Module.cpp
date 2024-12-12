@@ -82,7 +82,6 @@ filesystem::path Execution::GetEXEPath ()
     return SDKString{buf.begin (), buf.begin () + n};
 #elif qStroika_Foundation_Common_Platform_Windows
     SDKChar buf[MAX_PATH];
-    //memset (buf, 0, sizeof (buf));
     Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (Memory::NEltsOf (buf))));
     buf[Memory::NEltsOf (buf) - 1] = '\0'; // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
     return buf;
@@ -103,7 +102,7 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
     int  ret = ::proc_pidpath (processID, pathbuf, sizeof (pathbuf));
     if (ret <= 0) {
-        Execution::Throw (Exception{"proc_pidpath failed"sv}); // @todo - horrible reporting, but not obvious what this API is? proc_pidpath?
+        Throw (Exception{"proc_pidpath failed"sv}); // @todo - horrible reporting, but not obvious what this API is? proc_pidpath?
     }
     else {
         return pathbuf;
@@ -191,7 +190,7 @@ optional<filesystem::path> Execution::FindExecutableInPath (const filesystem::pa
         if (fn.extension ().empty ()) {
             filesystem::path exe = fn;
             for (auto exeExt : kPathEXT ()) {
-                exe.extension () = exeExt;
+                exe.replace_extension (exeExt);
                 if (checkExists (exe)) {
                     return exe;
                 }
