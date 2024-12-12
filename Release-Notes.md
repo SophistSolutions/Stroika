@@ -36,6 +36,8 @@ especially those they need to be aware of when upgrading.
     - docs on ToString/Precision support and other ToString cleanups
     - start to support no __cpp_lib_to_chars for macos old
     - promote Foundation::Characters::FloatConversion::{ToFloat,ToString} to also be in Characters namespace
+  - Format
+    -  mostly cosmetic - use just _f () instead of Characters::Format (..._f,
 
 
   - String
@@ -52,13 +54,27 @@ especially those they need to be aware of when upgrading.
 
 
 - Common
+  - Compiler Bug Defines
+    - Lose qCompilerAndStdLib_ASAN_memcpy_Buggy BWA - cuz was MY bug not ASAN issue; and fixed BLOB code so BLOB :: As <binaryinputstream> - holds onto refcount
+    - lose qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA no longer needed - on explicit String (TOSTRINGABLE&& s) - now more restruict concept on it
+    - BWA for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy another case
+    - qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy not buggy on clang
+    - qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy and Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA
+    - lose qCompilerAndStdLib_CompareOpReverse_Buggy - just  workaround issue and document in header I dont understand why extra function required, but compilers consistent enuf I must be wrong
+    - _MSC_VER_2k22_17Pt12_ compiler bug define support
+    - start _MSC_VER_2k22_17Pt12_ bug define support
+    - qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
+
   - Properties
 
+  - GUID
+    - docs and asserts GUID
   - Concepts
     - Added IBuiltinArithmetic concept
     -   ArgOrVoid member of FunctionTraits
     - Minor addition to FunctionTraits (arg_t)
     - Added and used trivially_copyable in a few places (docs/clarifications)
+    - new concept Weak_Equality_Comparable_With
   - Cryptographaphy
     - OpenSSL
       - Minor docs and init cleanups to Cryptography/OpenSSL/LibraryContext
@@ -92,6 +108,9 @@ especially those they need to be aware of when upgrading.
      - Minor cleanups to recent CommandLine changes (StringShellStyle-> StringShellQuoting)
      - fixed CommandLine ::CommandLine to use COMSPEC ENV var, not cmd and path search (based on looking at visual studio source code for system call)
      - CommandLine::As<String> () support so you can map back
+  - Exceptions
+      - ThrowIfNull overload for optional
+      - Weak_Equality_Comparable_With used to fix recent chagnes to ThrowIfNull
   - Module
     - **new** kPath and kPathEXT
     - **new** FindExecutableInPath utility
@@ -144,6 +163,8 @@ especially those they need to be aware of when upgrading.
       - deprecate Math::PinInRange - use std::clamp instead (and fixed some places that called Min(Max(... to use clamp)
 
   - Memory
+    - BLOB
+      - Satisfies Concepts: for BLOB
     - Common/Span
       - Deprecated SPAN.h (moved span related stuff to Memory/Common.h
       - CopyBytes replaces most uses of CopySpanData(), but new semantics for new CopySpanData 
@@ -216,9 +237,10 @@ github actions
     restructure (gtest) regtest Foundation_Cryptography
     moved regtest to Frameworks_WebService, TestVariantValueSupport
 
-Docker Containers
+Docker 
  -    fixed build msys docker contianer - miussing pkg-config
-
+    docs about https://stroika.atlassian.net/browse/STK-742; and switch docker config to using VS_17_12_0
+    windows docker container VS_17_12_3
 
 Samples
  - HTMLUI
@@ -241,68 +263,19 @@ ThirdPartyComponents
     libxml 2.13.5
     libcurl 8.11.0
 
+Sanitizers
+    https://stroika.atlassian.net/browse/STK-1021 BWA
+
+- All Code
+  -   new clang-format (18.1.18); make format-code
+
 
 #if 0
-
-commit 39a5086397fd814d9a7baf0b32cf19f120c1c875
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 21:28:40 2024 -0500
-
-    Lose qCompilerAndStdLib_ASAN_memcpy_Buggy BWA - cuz was MY bug not ASAN issue; and fixed BLOB code so BLOB :: As <binaryinputstream> - holds onto refcount
-
-commit a0e599b58d89d8a710ec438218bac3868c8af77d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 20:57:15 2024 -0500
-
-    fixed USE_NOISY_TRACE_IN_THIS_MODULE_ trace - legacy printf stuff
-
-commit 6c52907dc14138f4d53f7d64851dcf8f0e0bb61b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 13:56:56 2024 -0500
-
-    Minor cleanups of recent ToPath deprecation; and various comments/cleanups
-
-commit b4c0f1fd39847bb543fd81b6f673ad06072ca983
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 11:22:56 2024 -0500
-
-    lose qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA no longer needed - on explicit String (TOSTRINGABLE&& s) - now more restruict concept on it
-
-commit 53498d2fc70c139d84c58fb00e5259ebc0fedbba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 9 10:03:25 2024 -0500
-
-    BWA for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy another case
-
-commit e31db1eefbcf6afd5b426da0efe5e9eb7d8963f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 12:02:25 2024 -0500
-
-    hopefully fixed remaining issues with NOT __cpp_lib_to_chars support in ToString_OptimizedForCLocaleAndNoStreamFlags_
-
-commit f978637dbed198d9cd7853e3d88ce30d6d991682
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 4 10:51:10 2024 -0500
-
-    windows docker container VS_17_12_3
-
-commit d020f2c27fa4ab5902485d38cdf65b12f6074884
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 3 15:22:54 2024 -0500
-
-    Minor progress debugging __cpp_lib_to_chars undefined BWA
-
 commit bba2212b64a95c597e3401e6a5656e23e53a7a1e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Nov 30 17:07:00 2024 -0500
 
     start adding qStroika_HasComponent_googletest PrintTo for some userdefined types, so shows up better in google test
-
-commit 25d2da764339046e7676eefee0cb75e6e0f3cad2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 29 14:13:10 2024 -0500
-
-    docs and asserts GUID
 
 commit 7643470dfa4039f7007a6bdf93d62f469aa14bc9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -315,24 +288,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 28 17:35:00 2024 -0500
 
     override formatter for GUID (cuz default the way I wrote things was to use ranges formatter - at least on systems that supported it); now have regtest to assure outputs in compact formated GUID format
-
-commit 8cc9f8aa290724507938d4a9a639db48f0ad4201
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 28 17:33:27 2024 -0500
-
-    Satisfies Concepts: for BLOB
-
-commit d6ba8ca2998793d213dcc422faf3637c5e7393eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 28 15:10:48 2024 -0500
-
-    new concept Weak_Equality_Comparable_With; used to fix recent chagnes to ThrowIfNull; and added regtests
-
-commit a92b44734a48ab4d9b844b28f4f228f756cd9510
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 28 13:34:32 2024 -0500
-
-    Execution::ThrowIfNull overload for optional
 
 commit 7078b602521b73d86f9208bceded251fc76f7f23
 Author: Lewis Pringle <lewis@sophists.com>
@@ -357,36 +312,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 27 10:22:10 2024 -0500
 
     a few more minor cleanups - mostly Characters::Format simplification
-
-commit f57c7775f2a699e434122c3854b4800fcc7fe6c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 09:49:36 2024 -0500
-
-    qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy not buggy on clang
-
-commit 7eb041f37ac82d56e473d5f18fcecc7a82654d35
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 27 08:54:44 2024 -0500
-
-    qCompilerAndStdLib_formattable_FilterOnStringLitOp_Buggy and Stroika_Foundation_Common_formattable_FilterOnStringLitOp_BWA
-
-commit fd11e1f27953999ad20530a5ec61d0981d9d17b9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Nov 26 22:33:08 2024 -0500
-
-    maybe start workarond issue with _f strings and g++12 (etc)
-
-commit 55a7ac399f0dfadd3597ca2e5637f8b3998f143e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 26 21:16:00 2024 -0500
-
-    mostly cosmetic - use just _f () instead of Characters::Format (..._f,
-
-commit c0bf29fcf891653a9babf4a6ebf129ab77054b46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 26 20:23:13 2024 -0500
-
-    cleanups and react to depreactions
 
 commit 2626600d3d3ff77be1bbe8d5e7115c51345e427d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -490,54 +415,11 @@ Date:   Mon Nov 18 23:58:20 2024 -0300
 
     lose PeekIsSet from ThreadSanitizerSuppressions.supp and instead - added Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD before the two procedures calling PeekIsSet
 
-commit ef92e9487689d887cfe44c97b32f8c314966b95d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 18 16:20:39 2024 -0300
-
-    lose qCompilerAndStdLib_CompareOpReverse_Buggy - just  workaround issue and document in header I dont understand why extra function required, but compilers consistent enuf I must be wrong
-
-commit 181c7a382a35922385e9df1a6e51e60106238fd0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 13:57:47 2024 -0300
-
-    docs about https://stroika.atlassian.net/browse/STK-742; and switch docker config to using VS_17_12_0
-
-commit 2d9fa0c59b7f9c4f74ecd5815d959bb66c59050d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 13:44:58 2024 -0300
-
-    new clang-format (18.1.18); make format-code
-
-commit 6113a5e068c77d82bd7fac3de2da841fd440f313
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 13:43:40 2024 -0300
-
-    _MSC_VER_2k22_17Pt12_ compiler bug define support
-
-commit fc5e50ba5636b4ffb593d0bc027ca590e1a88ff4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 15 12:16:44 2024 -0300
-
-    start _MSC_VER_2k22_17Pt12_ bug define support
-
 commit 0c7ca29f606f24e554c8945b873be71ab78a94d5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 13 15:46:11 2024 -0300
 
     handle RequiredComponentMissingException in webservice regtests since cannot build libcurl on some macos configurations
-
-commit b9cbc9bf6e028032a3f29deabef9842605dcda87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 12 12:37:07 2024 -0300
-
-    qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
-
-commit 8019ef6f1a246ef11fa73d8e716413b411e35860
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Nov 7 08:07:35 2024 -0500
-
-    https://stroika.atlassian.net/browse/STK-1021 BWA
-
 #endif
 
 
