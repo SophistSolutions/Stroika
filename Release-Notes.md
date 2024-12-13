@@ -10,13 +10,14 @@ especially those they need to be aware of when upgrading.
 ### 3.0d12 {2024-12-13} {[diff](../../compare/v3.0d11...v3.0d12)}     REL DRAFT
 
 #### TLDR
-- floating point precision control (across formatting, VariantValue/JSON IO, Durations, etc).
 - ProcessRunner much cleaner support for running under shells/shell commands, and better error reporting
-- InternetMediaTypeRegistry ISA
-- DataExchange::TypedBLOB
-- Memory::CopyBytes/CopySpanData/SpanBytesCast improvments
-- Frameworks::WebServer - mostly using references, isntead of pointers
 - new Frameworks::WebService::ObjectRequestHandler, replacing deprecated mkRequestHandler
+- Frameworks::WebServer - mostly using references, instead of pointers
+- Nearly completed making String class immutable
+- floating point precision control (across formatting, VariantValue/JSON IO, Durations, etc).
+- InternetMediaTypeRegistry ISA redesign
+- **new** DataExchange::TypedBLOB
+- Memory::CopyBytes/CopySpanData/SpanBytesCast improvments
 
 #### Upgrade Notes (3.0d11 to 3.0d12)
 
