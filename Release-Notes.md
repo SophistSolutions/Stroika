@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d12 {2024-12-14} {[diff](../../compare/v3.0d11...v3.0d12)}
+### 3.0d12 {2024-12-14} {[diff](../../compare/v3.0d11...3.0d12)}
 
 #### TLDR
 - ProcessRunner much cleaner support for running under shells/shell commands, and better error reporting
