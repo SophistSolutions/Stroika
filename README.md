@@ -1,8 +1,8 @@
 ﻿# Stroika v3 - modern C++ made easy
 
-Stroika is a modern, portable, C++ application framework. It makes writing high performance C++ applications easier by providing safe, flexible, modular building blocks, and wrappers on other useful libraries that help them to all work together more seemlessly.
+Stroika is a modern, portable, C++ application framework. It makes writing C++ applications easier by providing safe, flexible, modular building blocks, and wrappers on other useful libraries that help them to all work together more seemlessly.
 
-Stroika is a layer on top of the Standard C++ Library, with simpler to use (higher level) classes, more safety checking guarantees (in debug builds), and a wider domain of applicability. But those Stroika classes seamlessly integrate with standard C++ classes, and your code can easily use as much of either library as preferences dictate.
+Stroika provides a layer on top of the Standard C++ Library, with simpler to use (higher level) classes, more safety checking guarantees (in debug builds), and addressing areas not standardized (such as networking). But those Stroika classes seamlessly integrate with standard C++ classes, and your code can easily use as much of either library as preferences dictate.
 
 Stylistically, Stroika differs from the Standard C++ Library, boost, and many other C++ libraries, in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)). The abstraction of type hierarchies is better suited to how people reason, and templates and concepts - while powerful - can be fiddly and obscure programmer intent. Also, Stroika emphasizes separation of interface from implementation: carefully documenting the interface in the headers, and separating the implementation to other files.
 
