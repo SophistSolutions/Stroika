@@ -13,8 +13,6 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 
-#include "PathName.h"
-
 #include "Disk.h"
 
 using namespace Stroika::Foundation;

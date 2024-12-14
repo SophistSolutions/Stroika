@@ -28,13 +28,12 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "PathName.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/FileSystem/Exception.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
-#include "WellKnownLocations.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
 #include "FileUtils.h"
 

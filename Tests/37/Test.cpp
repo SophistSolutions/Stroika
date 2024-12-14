@@ -15,7 +15,6 @@
 #endif
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"

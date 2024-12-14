@@ -9,7 +9,6 @@
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/IO/FileSystem/Common.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 

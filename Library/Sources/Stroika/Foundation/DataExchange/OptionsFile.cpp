@@ -7,7 +7,6 @@
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Linguistics/MessageUtilities.h"

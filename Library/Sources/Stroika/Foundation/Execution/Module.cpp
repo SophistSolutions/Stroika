@@ -20,7 +20,6 @@
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Throw.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "Module.h"

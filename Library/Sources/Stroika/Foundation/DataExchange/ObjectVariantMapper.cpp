@@ -11,7 +11,6 @@
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/IO/Network/URI.h"

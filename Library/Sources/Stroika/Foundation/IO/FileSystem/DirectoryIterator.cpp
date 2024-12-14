@@ -21,8 +21,6 @@
 #include "Stroika/Foundation/IO/FileSystem/Exception.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 
-#include "PathName.h"
-
 #include "DirectoryIterator.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module

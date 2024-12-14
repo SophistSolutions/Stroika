@@ -8,7 +8,6 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 #include "CommandLine.h"
 

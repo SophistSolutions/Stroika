@@ -27,7 +27,6 @@
 
 #include "FileInputStream.h"
 #include "FileSystem.h"
-#include "PathName.h"
 
 #include "MountedFilesystem.h"
 

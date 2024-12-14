@@ -22,7 +22,6 @@
 #include "Stroika/Foundation/Execution/Process.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 
-#include "PathName.h"
 #include "WellKnownLocations.h"
 
 #include "TemporaryFile.h"

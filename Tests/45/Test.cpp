@@ -17,7 +17,6 @@
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/MountedFilesystem.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"

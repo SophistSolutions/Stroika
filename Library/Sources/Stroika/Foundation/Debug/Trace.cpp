@@ -21,7 +21,6 @@
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Process.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/DateTime.h"

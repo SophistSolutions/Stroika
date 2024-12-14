@@ -21,7 +21,6 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 #include "Exception.h"
 

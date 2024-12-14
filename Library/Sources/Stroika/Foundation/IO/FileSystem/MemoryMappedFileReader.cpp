@@ -21,7 +21,6 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
 #include "FileSystem.h"
-#include "PathName.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
 #include "MemoryMappedFileReader.h"

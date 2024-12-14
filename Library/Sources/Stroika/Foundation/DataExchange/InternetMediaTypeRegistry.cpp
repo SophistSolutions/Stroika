@@ -19,7 +19,6 @@
 #endif
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 #include "InternetMediaTypeRegistry.h"
 

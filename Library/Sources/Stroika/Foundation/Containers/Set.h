@@ -387,6 +387,11 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * simply indirect to @Set<>::EqualsComparer (always defined because Set<> knows how to compare T items.
+         *
+         *  \par Example Usage
+         *      \code
+         *          EXPECT_EQ (Set<int>{1,2,3}, Set<int>{3,2,1});   // order doesn't matter for set equality
+         *      \endcode
          */
         nonvirtual bool operator== (const Set& rhs) const;
         nonvirtual bool operator== (const Iterable<value_type>& rhs) const;

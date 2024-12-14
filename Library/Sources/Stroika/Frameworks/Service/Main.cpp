@@ -37,7 +37,6 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
 
