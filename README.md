@@ -1,8 +1,8 @@
 ﻿# Stroika v3 - modern C++ made easy
 
-Stroika is a modern, portable, C++ application framework. It makes writing C++ applications easier by providing safe, flexible, modular building blocks, and wrappers on other useful libraries that help them to all work together more seemlessly.
+Stroika is a modern, portable, C++ application framework. It makes writing C++ applications easier by providing safe, flexible, modular building blocks, and wrappers on other useful libraries that help them to all work together more seemlessly. 
 
-For example, Stroika's '[Streams](Library/Sources/Stroika/Foundation/Streams/ReadMe.md)' abstraction allows IO through varied data formats (JSON, XML, etc), cryptography, compression, UNICODE/text encoding etc, all seemlessly, because all the libraries providing these services operate through a common interface. 
+> Motivation: [code snippets / examples](#code-snippetexamples).
 
 Stroika provides a layer on top of the Standard C++ Library, with simpler to use (higher level) classes, more safety checking guarantees (in debug builds), and addressing areas not standardized (such as networking). But those Stroika classes seamlessly integrate with standard C++ classes, and your code can easily use as much of either library as preferences dictate.
 
@@ -95,6 +95,117 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Vanilla make based builds
 - Portable API (targets windows/mac/unix), and multiple processors
+
+## Code Snippet/Examples
+
+- String class makes UNICODE easier
+
+  ~~~
+  String a = u8" abc ";
+  String b = u32" abc ";
+  CallFunction (a+b);
+  // trim whitespace, and convert to u16string for some legacy API
+  std::u16string uuu = (a+b).Trim ().As<u16string>();
+  // tokenize
+  String t{ "ABC DEF G" };
+  Assert (t.Tokenize ()[1] == "DEF");
+  ~~~
+
+- _f strings, c++20 format
+  ~~~
+  // most Stroika types automatically support formattable<>
+  DbgTrace ("v = {}"_f, v);   // to a tracelog file, or debugger
+  cerr << "v = {}"_f (v) << endl;   // OR iostreams (unicode mapped automatically)
+  ~~~
+
+- Iterable
+  
+  easy to use funcational APIs on all iterables, similar to C# LINQ
+  ~~~
+  // nb: String is an Iterable<Character>, despite internally representing the characters very differently
+  bool IsAllWhitespace (String s) const
+  {
+    return not s.Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
+  }
+
+  Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
+  EXPECT_TRUE (c.Distinct ().SetEquals ({ 1, 2, 4, 5, 6, 9 }));
+
+  Iterable<int> c { 3, 4, 7 };
+  // Map iterates over 'c' and produces the template argument container
+  // automatically by appending the result of each lambda application
+  EXPECT_TRUE ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }) == vector<String>{"3", "4", "7"}));
+  ~~~
+
+- Containers
+  
+  COW (copy-on-write), define APIs by access pattern, and change representation transparently.
+  
+  Stroika provides a rich set of container archtypes, and data structure implmentations.
+  
+  See [Containers Sample](./Samples/Containers/ReadMe.md)
+  ~~~
+  extern void f(Set<int>);
+  // use the default Set<> representation - the best for type 'int'
+  Set<int> s{1, 2, 3};
+  f(s);  // data not actually copied - Stroika containers use 'copy-on-write (COW)'
+  s = Concrete::SortedSet_SkipList<int>{s}; // Use a skiplist to represent the set
+  f(s);  // call f the same way regardless of data structure used for implementation
+  // set equality not order dependent (regardless of data structure)
+  Assert (s == {2,3,1});  
+  ~~~
+
+
+
+- Streams and ObjectVariantMapper
+
+  See [Serialization Sample](./Samples/Serialization/ReadMe.txt)
+  ~~~
+  VariantValue v = mapper.FromObject (tmp);   // Map object to a VariantValue
+
+  // Serialize using any serialization writer defined in 
+  // Stroika::Foundation::DataExchange::Variant (we selected JSON)
+  Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
+  Variant::JSON::Writer{}.Write (v, tmpStream);
+
+  // You can persist these to file if you wish
+  {
+      using namespace IO::FileSystem;
+      FileOutputStream::Ptr tmpFileStream =
+          FileOutputStream::New (WellKnownLocations::GetTemporary () / "t.txt");
+      Variant::JSON::Writer{}.Write (v, tmpFileStream);
+  }
+  ~~~
+
+- Build WebServies into your application
+
+  From [WebServices sample](Samples/WebService/ReadMe.md)
+  ~~~
+  Route{"variables/(.+)"_RegEx,
+        // explicit message handler
+        [this] (Message& m, const String& varName) {
+            WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
+        }},
+    Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx,
+        // automatically map high level functions via ObjectVariantMapper
+        ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
+                                      [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
+  ~~~
+
+- Streams abstraction
+  
+  Makes compression, encrption, IO, networking, data processing, all fit together seemlessly
+  ~~~
+  // @todo INCOMPLETE - BAD EXAMPLE---
+  const OpenSSL::DerivedKey kDerivedKey =
+       OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};
+  const Memory::BLOB srcText =
+    Memory::BLOB::FromHex ("2d ...");//...
+  // EncodeAES takes a stream, and produces a stream
+  // which can be chained with the gzip Transformer, which takes a stream, and produces a
+  Compression::GZip::Compress::New ().Transform (EncodeAES (kDerivedKey, srcText.As<Streams::InputStream::Ptr<byte>> (), AESOptions::e256_CBC))
+  ~~~
+
 
 ## Summary
 
