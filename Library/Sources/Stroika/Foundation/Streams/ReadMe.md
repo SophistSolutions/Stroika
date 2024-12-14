@@ -7,10 +7,30 @@ This folder contains all the Stroika Library [Foundation](../)::Streams source c
 A Stream\<ELEMENT_TYPE> is a sequence of data elements made available over time. These elements
 are typically 'Bytes' - or 'Characters' - but can be any copyable type.
 
+
+## Example
+  ~~~
+  VariantValue v = mapper.FromObject (tmp);   // Map object to a VariantValue
+
+  DbgTrace ("v = {}"_f, v);
+  cerr << "v = {}"_f (v) << endl;   // OR STDIO
+
+ // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we selected JSON)
+ Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
+ Variant::JSON::Writer{}.Write (v, tmpStream);
+
+ // You can persist these to file if you wish
+  {
+      IO::FileSystem::FileOutputStream::Ptr tmpFileStream =
+          IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
+      Variant::JSON::Writer{}.Write (v, tmpFileStream);
+  }
+  ~~~
+
 ## Design Overview
 
 - A Stream\<ELEMENT_TYPE> is a sequence of data elements made available over time.
-  These elements are typically 'Bytes' - or 'Characters' - but can be
+  These elements are typically 'std::byte' - or 'Characters' - but can be
   any copyable type.
 
 - Streams are created, and then handled ONLY through smart pointers. Assigning Streams
@@ -20,10 +40,10 @@ are typically 'Bytes' - or 'Characters' - but can be any copyable type.
 - Streams have two parallel hierarchies, which mirror one another, of smart pointers and related
   'virtual rep' objects which provide the API which implementers override.
 
-- Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<byte>, and
-  in Characters for a Stream<Character>).
+- Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream::Ptr<byte>, and
+  in Characters for a Stream::Ptr<Character>).
 
-- Two important subclasses of Stream<> are InputStream<>::Ptr (for reading) and OutputStream<>::Ptr (for
+- Two important subclasses of Stream<> are InputStream::Ptr<> (for reading) and OutputStream::Ptr<> (for
   writing). So that each can maintain its own intrinsic current offset (separate seek offset
   for reading and writing) in mixed (input/output) streams, the actual offset APIs and
   logic are in those subclasses.
