@@ -7,13 +7,13 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d12 {2024-12-13} {[diff](../../compare/v3.0d11...v3.0d12)}     REL DRAFT
+### 3.0d12 {2024-12-14} {[diff](../../compare/v3.0d11...v3.0d12)}
 
 #### TLDR
 - ProcessRunner much cleaner support for running under shells/shell commands, and better error reporting
 - new Frameworks::WebService::ObjectRequestHandler, replacing deprecated mkRequestHandler
 - Frameworks::WebServer - mostly using references, instead of pointers
-- Nearly completed making String class immutable
+- Nearly completed making String class immutable (use StringBuilder for mutable cases)
 - floating point precision control (across formatting, VariantValue/JSON IO, Durations, etc).
 - InternetMediaTypeRegistry ISA redesign
 - **new** DataExchange::TypedBLOB
@@ -84,7 +84,7 @@ especially those they need to be aware of when upgrading.
           missing compilers (clang) will correct before too long.
         - promote Foundation::Characters::FloatConversion::{ToFloat,ToString} to also be in Characters namespace
       - Format
-        -  mostly cosmetic - use just _f () instead of Characters::Format (..._f,
+        - mostly cosmetic - use just _f () instead of Characters::Format (..._f,
       - String
         - added String::ContainsAny () utility
         - Depreacted IO::Filesystem::ToPath and instead String.As<filesystem::path> () works including qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin hack
@@ -126,15 +126,11 @@ especially those they need to be aware of when upgrading.
       - InternetMediaType
         - fix to change allowing no subtype in InternetMediaType
       - InternetMediaTypes and InternetMediaTypeRegistry
-        - add new top-level InternetMediaTypes that aren't exactly real (Wildcards ) but can be used as token sfor these IsA calls
         - deprecated IsXMLFormat, IsTextFormat, IsImageFormat, and replaced with IsA() support doing the same thing 
-        - Added predefined internetmediatype kAudioWAV
-        - support InternetMediaTypes::kJSONPatch; and start cleanup of InternetMediaTypeRegistry::IsA mechanism
-        - added kAudio
-        - moved new wildcard InternetMediaTypes like InternetMediaTypes::kText to be under Wildcards 
-        - InternetMediaTypes::Wildcards::kText; 
+        - Added predefined internetmediatype kAudioWAV, InternetMediaTypes::kJSONPatch, AudioMP3 kAudioMP4
+        - cleanup of InternetMediaTypeRegistry::IsA mechanism
+        - new wildcard InternetMediaTypes::WildCard kText,kAudio - which can be used as token sfor these IsA calls
         - added regtests and furhter improved IsA() impl - mostly checking for suffixes
-        - Added audio and kAudioMP3 kAudioMP4 InternetMediaTypes
       - **new** DataExchange::TypedBLOB
       - Variant
         - JSON Read/Writer
