@@ -43,7 +43,8 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 ## Check latest release: https://www.boost.org/users/download/
 ##
 
-VERSION:=1_86_0
+VERSION:=1_87_0
+#VERSION:=1_86_0
 #VERSION:=1_85_0
 #VERSION:=1_84_0
 #VERSION=1_83_0
