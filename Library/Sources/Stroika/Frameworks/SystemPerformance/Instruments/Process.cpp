@@ -1123,17 +1123,16 @@ namespace {
              *             10     2 S 00:00:00     0      0 root        1 [rcuob/0]
              *             11     2 S 00:00:00     0      0 root        1 [migration/0]
              */
-            constexpr size_t                 kVSZ_Idx_{5};
-            constexpr size_t                 kUser_Idx_{6};
-            constexpr size_t                 kThreadCnt_Idx_{7};
-            constexpr size_t                 kColCountIncludingCmd_{9};
-            ProcessRunner                    pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
-            Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-            pr.Run (nullptr, useStdOut)
-            String                   out;
-            Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
-            bool                     skippedHeader = false;
-            size_t                   headerLen     = 0;
+            constexpr size_t                   kVSZ_Idx_{5};
+            constexpr size_t                   kUser_Idx_{6};
+            constexpr size_t                   kThreadCnt_Idx_{7};
+            constexpr size_t                   kColCountIncludingCmd_{9};
+            ProcessRunner                      pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
+            Streams::MemoryStream::Ptr<byte>   useStdOut = Streams::MemoryStream::New<byte> ();
+            pr.Run (nullptr, useStdOut) String out;
+            Streams::TextReader::Ptr           stdOut        = Streams::TextReader::New (useStdOut);
+            bool                               skippedHeader = false;
+            size_t                             headerLen     = 0;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;

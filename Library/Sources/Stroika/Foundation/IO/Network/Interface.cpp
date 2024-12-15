@@ -84,10 +84,10 @@ namespace {
     auto PrintMacAddr_ (const uint8_t* macaddrBytes, [[maybe_unused]] const uint8_t* macaddrBytesEnd) -> String
     {
         Require (macaddrBytesEnd - macaddrBytes == 6);
-        char buf[100];  // intentionally uninitalized
+        char buf[100]; // intentionally uninitalized
         (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x", macaddrBytes[0], macaddrBytes[1], macaddrBytes[2],
                         macaddrBytes[3], macaddrBytes[4], macaddrBytes[5]);
-        Assert (::strlen(buf) < NEltsOf(buf));  // else we must patch in '\0' but I think snprintf always works here
+        Assert (::strlen (buf) < NEltsOf (buf)); // else we must patch in '\0' but I think snprintf always works here
         return String{buf};
     };
 }
@@ -441,7 +441,8 @@ namespace {
 #if qMacUBSanitizerifreqAlignmentIssue_Buggy
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
-    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
+        Traversal::Iterable<Interface>
+        GetInterfaces_POSIX_ ()
     {
         KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
 
