@@ -526,8 +526,8 @@ namespace Stroika::Foundation::Execution {
         public:
             /**
              *  Wait until thread is done (use Abort to request termination) - throws if timeout
-             *  Note that its legal to call WaitForDone on a thread in any state.
-             *  Some may just have no effect
+             *  Note that its legal to call WaitForDone on a thread in any state (Some may just
+             *  have no effect - return quickly).
              *
              *  @see WaitForDoneUntil (), @see Join
              *
