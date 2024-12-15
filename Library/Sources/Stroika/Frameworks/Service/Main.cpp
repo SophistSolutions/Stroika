@@ -572,7 +572,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSeconds timeout)
 
     Time::TimePointSeconds timeoutAt = Time::GetTickCount () + timeout;
 
-    // REALLY should use GETSTATE - and return state based on if PID file exsits...
+    // REALLY should use GETSTATE - and return state based on if PID file exists...
     if (_GetServicePID () > 0) {
         Execution::Throw (Execution::Exception{"Cannot Start service because its already running"sv});
     }
