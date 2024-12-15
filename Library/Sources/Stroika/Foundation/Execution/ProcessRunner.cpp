@@ -49,6 +49,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Streams;
 
 using Debug::TraceContextBumper;
 using Memory::StackBuffer;
@@ -414,23 +415,26 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Options& o)
 {
 }
 
-auto ProcessRunner::Run (const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
-                         const Streams::OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress, Time::DurationSeconds timeout) -> ProcessResultType
+void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out,
+                         const OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
-    fStdIn_  = in;
-    fStdOut_ = out;
-    fStdErr_ = error;
+    TraceContextBumper ctx{"ProcessRunner::Run"};
     if (timeout == Time::kInfinity) {
+        fStdIn_  = in;
+        fStdOut_ = out;
+        fStdErr_ = error;
         Synchronized<optional<ProcessResultType>> pr;
         CreateRunnable_ (&pr, nullptr, progress) ();
-        return pr->value_or (ProcessResultType{});
+        pr->value_or (ProcessResultType{}).ThrowIfFailed ();
     }
     else {
-        // @todo warning: http://stroika-bugs.sophists.com/browse/STK-585 - lots broken here - must shutdown threads on timeout!
-        Synchronized<optional<ProcessResultType>> pr;
-        Thread::Ptr t = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
-        t.Join (timeout);
-        return pr->value_or (ProcessResultType{});
+        // Use 'BackgroundProcess' to get a thread we can interrupt when time is up, for timeout
+        BackgroundProcess       bp      = RunInBackground (in, out, error, progress);
+        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { bp.Terminate (); });
+        bp.Join (timeout);
+        bp.PropagateIfException ();
+        // If we didn't timeout, then the process must have completed, so we must have a process result
+        bp.GetProcessResult ().value_or (ProcessResultType{}).ThrowIfFailed ();
     }
 }
 void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
@@ -447,7 +451,6 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
         }
     }
     else {
-        // @todo warning: http://stroika-bugs.sophists.com/browse/STK-585 - lots broken here - must shutdown threads on timeout!
         if (processResult == nullptr) {
             Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
@@ -465,25 +468,24 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOp
                          Time::DurationSeconds timeout) -> tuple<Characters::String, Characters::String>
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    Streams::MemoryStream::Ptr<byte>                useStdIn  = Streams::MemoryStream::New<byte> ();
-    Streams::MemoryStream::Ptr<byte>                useStdOut = Streams::MemoryStream::New<byte> ();
-    Streams::MemoryStream::Ptr<byte>                useStdErr = Streams::MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                useStdIn  = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                useStdOut = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                useStdErr = MemoryStream::New<byte> ();
 
-    auto mkReadStream = [&] (const Streams::InputStream::Ptr<byte>& readFromBinStrm) {
-        return stringOpts.fInputCodeCvt ? Streams::TextReader::New (readFromBinStrm, *stringOpts.fInputCodeCvt)
-                                        : Streams::TextReader::New (readFromBinStrm);
+    auto mkReadStream = [&] (const InputStream::Ptr<byte>& readFromBinStrm) {
+        return stringOpts.fInputCodeCvt ? TextReader::New (readFromBinStrm, *stringOpts.fInputCodeCvt)
+                                        : TextReader::New (readFromBinStrm);
     };
     try {
         // Prefill stream
         if (not cmdStdInValue.empty ()) {
-            auto outStream = stringOpts.fOutputCodeCvt ? Streams::TextWriter::New (useStdIn, *stringOpts.fOutputCodeCvt)
-                                                       : Streams::TextWriter::New (useStdIn);
+            auto outStream = stringOpts.fOutputCodeCvt ? TextWriter::New (useStdIn, *stringOpts.fOutputCodeCvt)
+                                                       : TextWriter::New (useStdIn);
             outStream.Write (cmdStdInValue);
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
-        ProcessResultType r = Run (useStdIn, useStdOut, useStdErr, progress, timeout);
-        r.ThrowIfFailed ();
+        Run (useStdIn, useStdOut, useStdErr, progress, timeout);
 
         // get and return results from 'useStdOut' etc
         Assert (useStdOut.GetReadOffset () == 0);
@@ -501,16 +503,16 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOp
     }
     catch (...) {
 #if qStroika_Foundation_Debug_DefaultTracingOn
-        DbgTrace ("Captured stdout: {}"_f, Streams::TextReader::New (useStdOut.As<Memory::BLOB> ()).ReadAll ());
-        DbgTrace ("Captured stderr: {}"_f, Streams::TextReader::New (useStdErr.As<Memory::BLOB> ()).ReadAll ());
+        DbgTrace ("Captured stdout: {}"_f, TextReader::New (useStdOut.As<Memory::BLOB> ()).ReadAll ());
+        DbgTrace ("Captured stderr: {}"_f, TextReader::New (useStdErr.As<Memory::BLOB> ()).ReadAll ());
 #endif
         ReThrow ();
     }
 }
 
-ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const Streams::InputStream::Ptr<byte>&  in,
-                                                                 const Streams::OutputStream::Ptr<byte>& out,
-                                                                 const Streams::OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress)
+ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStream::Ptr<byte>&  in,
+                                                                 const OutputStream::Ptr<byte>& out,
+                                                                 const OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress)
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
     this->fStdIn_  = in;
@@ -535,8 +537,8 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                 ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
-                                const CommandLine& cmdLine, const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,
-                                const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
+                                const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
+                                const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
         SDKString      currentDirBuf_;
         const SDKChar* currentDir =
@@ -740,7 +742,7 @@ namespace {
             ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache,
+            auto readALittleFromProcess = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache,
                                                bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 uint8_t buf[10 * 1024];
                 int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
@@ -794,13 +796,13 @@ namespace {
                     *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
                 }
             };
-            auto readSoNotBlocking = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
+            auto readSoNotBlocking = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
                 bool maybeMoreData = true;
                 while (maybeMoreData) {
                     readALittleFromProcess (fd, stream, write2StdErrCache, nullptr, &maybeMoreData);
                 }
             };
-            auto readTilEOF = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
+            auto readTilEOF = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
                 WaitForIOReady waiter{fd};
                 bool           eof = false;
                 while (not eof) {
@@ -898,8 +900,8 @@ namespace {
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                   ProgressMonitor::Updater progress, const optional<filesystem::path>& executable, const CommandLine& cmdLine,
-                                  const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,
-                                  const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err)
+                                  const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
+                                  const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
 
         SDKString      currentDirBuf_;
@@ -1020,7 +1022,7 @@ namespace {
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const Streams::OutputStream::Ptr<byte>& o) {
+            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const OutputStream::Ptr<byte>& o) {
                 RequireNotNull (p);
                 byte buf[kReadBufSize_];
 #if qUsePeekNamedPipe_

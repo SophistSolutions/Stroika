@@ -69,6 +69,7 @@
  *
  *  Design Goals:
  *      o   Be able to run simple processes and capture output with little overhead, and very easy to do
+ *          (like perl backticks).
  *
  *      o   Be able to support pipes between processes (either within the shell, or between Stroika threads)
  *
@@ -254,8 +255,7 @@ namespace Stroika::Foundation::Execution {
          *  that completes and return the results.
          *
          *  Run STREAMS overload:
-         *      This overload takes input/output/error binary streams, and returns a ProcessResultType (which indicates if/whether there was a failure).
-         *      This is the most basic/flexible API.
+         *      This overload takes input/output/error binary streams
          * 
          *      STDIN/STDOUT/STDERR:
          *          *  If nullptr/not specified, will redirected to /dev/null
@@ -265,12 +265,16 @@ namespace Stroika::Foundation::Execution {
          * 
          *      The cmdStdInValue is passed as stdin (stream) to the subprocess.
          * 
-         *      This overload doesn't return ProcessResult - just throws internally if the subprocess fails.
-         *
+         *  BOTH overloads will throw if there is any sort of error, including error exit from the process called.
+         *  Use RunInBackground () to examine the results of the sub-process.
+         * 
          *  \note Exceptions:
          *        A number of issues before the process is run will generate an exception.
          *        If the argument processResult is null, failure (non SUCCESS exit or signal termination) will trigger an exception, and otherwise the
          *        parameter *processResult will be filled in.
+         * 
+         *  \note if this is called with a timeout, and it times out, the child is killed immediately upon timeout.
+         *        To avoid this behavior, use RunInBackground
          *
          *  \par Example Usage (using strings in/out)
          *      \code
@@ -283,15 +287,15 @@ namespace Stroika::Foundation::Execution {
          *          Memory::BLOB                     kData_{ Memory::BLOB::FromRaw ("this is a test") };
          *          Streams::MemoryStream::Ptr<byte> processStdIn = Streams::MemoryStream::New<byte> (kData_);
          *          Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
-         *          pr.Run (processStdIn, processStdOut).ThrowIfFailed ();
+         *          pr.Run (processStdIn, processStdOut);
          *          EXPECT_EQ (processStdOut.ReadAll (), kData_);
          *      \endcode
          *
          *  @see RunInBackground
          */
-        nonvirtual ProcessResultType Run (const Streams::InputStream::Ptr<byte>& in = nullptr, const Streams::OutputStream::Ptr<byte>& out = nullptr,
-                                          const Streams::OutputStream::Ptr<byte>& error = nullptr,
-                                          ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
+        nonvirtual void Run (const Streams::InputStream::Ptr<byte>& in = nullptr, const Streams::OutputStream::Ptr<byte>& out = nullptr,
+                             const Streams::OutputStream::Ptr<byte>& error = nullptr, ProgressMonitor::Updater progress = nullptr,
+                             Time::DurationSeconds timeout = Time::kInfinity);
         nonvirtual tuple<Characters::String, Characters::String> Run (const Characters::String& cmdStdInValue,
                                                                       const StringOptions& stringOpts = {}, ProgressMonitor::Updater progress = nullptr,
                                                                       Time::DurationSeconds timeout = Time::kInfinity);
@@ -301,7 +305,10 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief Run the given external command/process (set by constructor) - with the given arguments in the background, and return a handle to the results.
+         *  \brief Run the given external command/process (set by constructor) - with the given arguments in the background,
+         *         and return a handle to the results.
+         * 
+         *  This function is generally quick, and non-blocking - just creates a thread todo the work.
          *
          *  @see Run
          */
@@ -317,8 +324,6 @@ namespace Stroika::Foundation::Execution {
          *
          *  Each of these CAN be null, and will if so, that will be interpreted as an empty stream
          *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
-         *
-         *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
          */
         nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult,
                                                       Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
@@ -439,7 +444,7 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
-     *      @todo warning: http://stroika-bugs.sophists.com/browse/STK-585 - lots broken here
+     *  Support more controlled running of sub-process, where wait timeouts don't necessarily kill the child process.
      */
     class ProcessRunner::BackgroundProcess {
     private:

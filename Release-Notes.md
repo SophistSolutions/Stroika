@@ -7,6 +7,15 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+## 3.0d13 PRENOTES
+
+ - upgrade
+  - PRocessRunner::Run() - overload doing ThrowIfFailed() not needed anymore
+
+--------
+
+
 ### 3.0d12 {2024-12-14} {[diff](../../compare/v3.0d11...3.0d12)}
 
 #### TLDR

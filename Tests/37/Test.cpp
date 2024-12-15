@@ -135,8 +135,8 @@ namespace {
 
         Streams::MemoryStream::Ptr<byte> pipe   = Streams::MemoryStream::New<byte> ();
         Streams::MemoryStream::Ptr<byte> pr2Out = Streams::MemoryStream::New<byte> ();
-        pr1.Run (nullptr, pipe).ThrowIfFailed (); // use RunInBackground to have this running WHILE p2 running
-        pr2.Run (pipe, pr2Out).ThrowIfFailed ();
+        pr1.Run (nullptr, pipe); // use RunInBackground to have this running WHILE p2 running
+        pr2.Run (pipe, pr2Out);
 
         String out = String::FromUTF8 (pr2Out.As<string> ());
         EXPECT_EQ (out.Trim (), "hi mom");
@@ -151,7 +151,7 @@ namespace {
         Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
         Streams::MemoryStream::Ptr<byte> processStdIn  = Streams::MemoryStream::New<byte> (kData_);
         Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
-        pr.Run (processStdIn, processStdOut).ThrowIfFailed ();
+        pr.Run (processStdIn, processStdOut);
         EXPECT_EQ (processStdOut.ReadAll (), kData_);
     }
 }
@@ -169,7 +169,7 @@ namespace {
                 Streams::MemoryStream::Ptr<byte> myStdIn  = Streams::MemoryStream::New<byte> (testBLOB);
                 Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
                 ProcessRunner                    pr{"cat"};
-                pr.Run (myStdIn, myStdOut).ThrowIfFailed ();
+                pr.Run (myStdIn, myStdOut);
                 EXPECT_EQ (myStdOut.ReadAll (), testBLOB);
             }
         }
@@ -200,6 +200,14 @@ namespace {
             EXPECT_TRUE (not myStdOut.AvailableToRead ().has_value ()); // sb no data available, but NOT EOF
             Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qStroika_Foundation_Debug_AssertionsChecked) ? k1K_ : k16MB_;
             myStdIn.Write (testBLOB);
+            try {
+                // Test waits can fail under some circumstances
+                bg.WaitForDone (1ms); // this must fail because we haven't closed stdin
+                EXPECT_TRUE (false);
+            }
+            catch (...) {
+                // good - ignore
+            }
             myStdIn.CloseWrite (); // so cat process can finish
             bg.WaitForDone ();
             myStdOut.CloseWrite (); // one process done, no more writes to this stream
@@ -216,7 +224,7 @@ namespace {
         Debug::TraceContextBumper ctx{"TestFailureHanlding"};
         try {
             ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
-            pr.Run ().ThrowIfFailed ();
+            pr.Run ();
             EXPECT_TRUE (false);
         }
         catch (...) {
@@ -233,7 +241,7 @@ namespace {
         {
             Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
             ProcessRunner                    pr{kCmdLine_}; // automatically translated to cmd /c or bash -c
-            pr.Run (nullptr, processStdOut).ThrowIfFailed ();
+            pr.Run (nullptr, processStdOut);
             EXPECT_EQ (Streams::TextReader::New (processStdOut).ReadAll ().Trim (), "a");
         }
         {
