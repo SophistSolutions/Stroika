@@ -977,10 +977,10 @@ namespace {
                     constexpr char kReadLbl_[]  = "read_bytes:";
                     constexpr char kWriteLbl_[] = "write_bytes:";
                     if (::strncmp (buf, kReadLbl_, ::strlen (kReadLbl_)) == 0) {
-                        result.read_bytes = Characters::CString::String2Int<decltype (result.read_bytes)> (buf + ::strlen (kReadLbl_));
+                        result.read_bytes = CString::String2Int<decltype (result.read_bytes)> (buf + ::strlen (kReadLbl_));
                     }
                     else if (::strncmp (buf, kWriteLbl_, ::strlen (kWriteLbl_)) == 0) {
-                        result.write_bytes = Characters::CString::String2Int<decltype (result.write_bytes)> (buf + ::strlen (kWriteLbl_));
+                        result.write_bytes = CString::String2Int<decltype (result.write_bytes)> (buf + ::strlen (kWriteLbl_));
                     }
                 }
             }
@@ -1055,10 +1055,10 @@ namespace {
                     constexpr char kPrivate2Lbl_[] = "Private_Dirty:";
                     // @todo - SHOULD pay attention to the labelm after the number. It may not always be kB? BUt not sure what it can be
                     if (::strncmp (buf, kPrivate1Lbl_, ::strlen (kPrivate1Lbl_)) == 0) {
-                        result += Characters::CString::String2Int<MemorySizeType> (buf + strlen (kPrivate1Lbl_)) * 1024;
+                        result += CString::String2Int<MemorySizeType> (buf + strlen (kPrivate1Lbl_)) * 1024;
                     }
                     else if (::strncmp (buf, kPrivate2Lbl_, ::strlen (kPrivate2Lbl_)) == 0) {
-                        result += Characters::CString::String2Int<MemorySizeType> (buf + ::strlen (kPrivate2Lbl_)) * 1024;
+                        result += CString::String2Int<MemorySizeType> (buf + ::strlen (kPrivate2Lbl_)) * 1024;
                     }
                 }
             }
@@ -1129,7 +1129,7 @@ namespace {
             constexpr size_t                 kColCountIncludingCmd_{9};
             ProcessRunner                    pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
             Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-            pr.Run (nullptr, useStdOut).ThrowIfFailed ();
+            pr.Run (nullptr, useStdOut)
             String                   out;
             Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
             bool                     skippedHeader = false;
@@ -1146,8 +1146,8 @@ namespace {
                     continue;
                 }
                 ProcessType processDetails;
-                pid_t       pid                 = Characters::String2Int<int> (l[0].Trim ());
-                processDetails.fParentProcessID = Characters::String2Int<int> (l[1].Trim ());
+                pid_t       pid                 = String2Int<int> (l[0].Trim ());
+                processDetails.fParentProcessID = String2Int<int> (l[1].Trim ());
                 {
                     String s = l[2].Trim ();
                     if (s.length () == 1) {
@@ -1162,10 +1162,10 @@ namespace {
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = DurationSeconds{hours * 60 * 60 + minutes * 60 + seconds};
                 }
-                processDetails.fResidentMemorySize = Characters::String2Int<int> (l[4].Trim ()) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
-                processDetails.fPrivateVirtualMemorySize = Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
+                processDetails.fResidentMemorySize = String2Int<int> (l[4].Trim ()) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
+                processDetails.fPrivateVirtualMemorySize = String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
                 processDetails.fUserName                 = l[kUser_Idx_].Trim ();
-                processDetails.fThreadCount              = Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
+                processDetails.fThreadCount              = String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
                 String cmdLine;
                 {
                     // wrong - must grab EVERYHTING from i past a certain point

@@ -84,9 +84,10 @@ namespace {
     auto PrintMacAddr_ (const uint8_t* macaddrBytes, [[maybe_unused]] const uint8_t* macaddrBytesEnd) -> String
     {
         Require (macaddrBytesEnd - macaddrBytes == 6);
-        char buf[100]{};
+        char buf[100];  // intentionally uninitalized
         (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x", macaddrBytes[0], macaddrBytes[1], macaddrBytes[2],
                         macaddrBytes[3], macaddrBytes[4], macaddrBytes[5]);
+        Assert (::strlen(buf) < NEltsOf(buf));  // else we must patch in '\0' but I think snprintf always works here
         return String{buf};
     };
 }
@@ -98,7 +99,7 @@ namespace {
  */
 String Interface::WirelessInfo::ToString () const
 {
-    Characters::StringBuilder sb;
+    StringBuilder sb;
     sb << "{"sv;
     sb << "SSID: "sv << fSSID << ", "sv;
     sb << "State: "sv << fState << ", "sv;
@@ -123,7 +124,7 @@ String Interface::WirelessInfo::ToString () const
  */
 String Interface::Bindings::ToString () const
 {
-    Characters::StringBuilder sb;
+    StringBuilder sb;
     sb << "{"sv;
     sb << "BoundAddressRanges: "sv << fAddressRanges << ", "sv;
     sb << "BoundAddresses: "sv << fAddresses;
@@ -137,7 +138,7 @@ String Interface::Bindings::ToString () const
  */
 String Interface::ToString () const
 {
-    Characters::StringBuilder sb;
+    StringBuilder sb;
     sb << "{"sv;
     sb << "Internal-Interface-ID: "sv << fInternalInterfaceID << ", "sv;
 #if qStroika_Foundation_Common_Platform_POSIX
@@ -198,7 +199,7 @@ namespace {
         newInterface.fFriendlyName = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
         auto getFlags              = [] (int sd, const char* name) {
             ifreq ifreq{};
-            Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
             Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
             return r == 0 ? ifreq.ifr_flags : 0;
@@ -208,7 +209,7 @@ namespace {
         auto getWirelessFlag = [] (int sd, const char* name) -> bool {
 #if defined(SIOCGIWNAME)
             iwreq pwrq{};
-            Characters::CString::Copy (pwrq.ifr_name, NEltsOf (pwrq.ifr_name), name);
+            CString::Copy (pwrq.ifr_name, NEltsOf (pwrq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIWNAME, (char*)&pwrq);
             return r == 0;
 #else
@@ -242,7 +243,7 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Linux || qStroika_Foundation_Common_Platform_MacOS
         auto getNetMaskAsPrefix = [] (int sd, const char* name) -> optional<unsigned int> {
             ifreq ifreq{};
-            Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
             // On MacOS this often fails, but I've never seen it fail on Linux
             if (r == 0) {
@@ -310,7 +311,7 @@ namespace {
                  */
                 ProcessRunner                    pr{"route get default"sv};
                 Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
-                pr.Run (nullptr, useStdOut).ThrowIfFailed ();
+                pr.Run (nullptr, useStdOut);
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':'}};
                 optional<String>                                       forInterface;
                 optional<String>                                       gateway;
@@ -358,14 +359,14 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Linux
         auto getSpeed = [] (int sd, const char* name) -> optional<uint64_t> {
             ifreq ifreq{};
-            Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             ethtool_cmd edata{};
             ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
             edata.cmd      = ETHTOOL_GSET;
             int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
             if (r != 0) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("No speed for interface %s, errno=%d", name, errno); // typicall errno=22{EINVAL} on linux
+                DbgTrace ("No speed for interface {}, errno={}"_f, name, errno); // typicall errno=22{EINVAL} on linux
 #endif
                 return nullopt;
             }
@@ -440,8 +441,7 @@ namespace {
 #if qMacUBSanitizerifreqAlignmentIssue_Buggy
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
-        Traversal::Iterable<Interface>
-        GetInterfaces_POSIX_ ()
+    Traversal::Iterable<Interface> GetInterfaces_POSIX_ ()
     {
         KeyedCollection<Interface, String> results{[] (const Interface& i) { return i.fInternalInterfaceID; }};
 

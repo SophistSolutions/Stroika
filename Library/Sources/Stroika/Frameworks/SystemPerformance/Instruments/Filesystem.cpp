@@ -431,7 +431,7 @@ namespace {
             Streams::MemoryStream::Ptr<byte>                              useStdOut = Streams::MemoryStream::New<byte> ();
             std::exception_ptr                                            runException;
             try {
-                pr.Run (nullptr, useStdOut).ThrowIfFailed ();
+                pr.Run (nullptr, useStdOut)
             }
             catch (...) {
                 runException = current_exception ();
@@ -492,7 +492,7 @@ namespace {
             Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
             std::exception_ptr               runException;
             try {
-                pr.Run (nullptr, useStdOut).ThrowIfFailed ();
+                pr.Run (nullptr, useStdOut)
             }
             catch (...) {
                 runException = current_exception ();
