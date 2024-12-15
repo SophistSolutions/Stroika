@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <class T, size_t EXTENT>
-    constexpr std::span<const T, EXTENT> ConstSpan (std::span<T, EXTENT> s)
+    constexpr span<const T, EXTENT> ConstSpan (span<T, EXTENT> s)
     {
         return s;
     }
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T1, typename T2, size_t E1, size_t E2>
-    constexpr bool Intersects (std::span<T1, E1> lhs, std::span<T2, E2> rhs)
+    constexpr bool Intersects (span<T1, E1> lhs, span<T2, E2> rhs)
     {
         // See Range<T, TRAITS>::Intersects for explanation - avoid direct call here to avoid include file reference
         auto lhsStart = as_bytes (lhs).data ();
@@ -158,7 +158,8 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopySpanData (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+    constexpr span<TO_T, TO_E> CopySpanData (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (not is_const_v<TO_T>)
     {
         Require (not Intersects (src, target));
         Require (src.size () <= target.size ()); // BUT size in BYTES need not match

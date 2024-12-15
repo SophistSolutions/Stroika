@@ -74,8 +74,8 @@ namespace Stroika::Foundation::Memory {
      * 
      *  See https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
      * 
-     * 
-     *  @todo consider if still needed/useful!
+     *  \note this is sometimes useful to reduce deduction ambiguities, and cases where templates convert between
+     *        multiple levels of deduction/inference
      */
     template <class T, size_t EXTENT>
     constexpr span<const T, EXTENT> ConstSpan (span<T, EXTENT> s);
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief 'cast' a span of one thing to another, as if as_bytes, from_bytes; require span<T1...> and span<T2...> such that one T size is a multiple of the other
      * 
-     *  \req ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ());
+     *  \req ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ());    - so this doesn't change size in bytes of span
      * 
      *  This requirement on the same size in bytes of elements sizeof FROM_T must evenly divide sizeof TO_T (or the reverse).
      *  This is to allow the returned span{} to cover the same number of bytes.
@@ -191,7 +191,8 @@ namespace Stroika::Foundation::Memory {
      *  \note WAS CALLED CopySpanData_StaticCast - briefly - until 3.0d12
      */
     template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopySpanData (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target);
+    constexpr span<TO_T, TO_E> CopySpanData (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+        requires (not is_const_v<TO_T>);
 
     /**
      *  \brief Span-flavored memmove/std::copy_backwards (copies from, to) - ALLOWING argument spans to overlap
