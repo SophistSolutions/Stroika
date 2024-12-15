@@ -99,4 +99,37 @@ namespace Stroika::Foundation::Execution {
         fStdErr_ = err;
     }
 
+    /*
+     ********************************************************************************
+     ******************* Execution::ProcessRunner::BackgroundProcess ****************
+     ********************************************************************************
+     */
+    inline optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        return fRep_->fResult;
+    }
+    inline optional<pid_t> ProcessRunner::BackgroundProcess::GetChildProcessID () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        return fRep_->fPID;
+    }
+
+    [[deprecated ("Since Stroika v3.0d13 - use ProcessRunner{Options{.fDetached=true}")]] inline pid_t
+    DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args)
+    {
+        ProcessRunner                    pr{executable, CommandLine{args}, ProcessRunner::Options{.fDetached = true}};
+        ProcessRunner::BackgroundProcess bp = pr.RunInBackground ();
+        bp.WaitForStarted ();
+        return Memory::ValueOf (bp.GetChildProcessID ());
+    }
+    [[deprecated ("Since Stroika v3.0d13 - use ProcessRunner{Options{.fDetached=true}")]] inline pid_t DetachedProcessRunner (const String& commandLine)
+
+    {
+        ProcessRunner                    pr{CommandLine{commandLine}, ProcessRunner::Options{.fDetached = true}};
+        ProcessRunner::BackgroundProcess bp = pr.RunInBackground ();
+        bp.WaitForStarted ();
+        return Memory::ValueOf (bp.GetChildProcessID ());
+    }
+
 }

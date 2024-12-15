@@ -163,6 +163,31 @@ namespace Stroika::Foundation::Execution {
              */
             optional<filesystem::path> fWorkingDirectory;
 
+            /**
+             *  If true, then any nullptr input / output pipes are replaced with /dev/null (or equivalent)
+             *  And any 'terminal' associated with the calling process is eliminated from the child
+             *  process.
+             * 
+             *  Case POSIX:
+             *      This also detaches from the terminal driver, to avoid spurious SIGHUP
+             *      and SIGTTIN and SIGTTOU (setsid);
+             * 
+             *  Case Windoze:
+             *      From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
+             *      DETACHED_PROCESS - the new process does not inherit its parent's console
+             *      This flag is ignored if the application is not a console application, or if it is used with either CREATE_NEW_CONSOLE or DETACHED_PROCESS
+             * 
+             *  \note replaces the Stroika v2.1 DetachedProcessRunner API
+             */
+            optional<bool> fDetached;
+
+#if qStroika_Foundation_Common_Platform_POSIX
+            /**
+            *  // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
+             */
+            optional<mode_t> fChildUMask{027};
+#endif
+
 #if qStroika_Foundation_Common_Platform_Windows
             /**
              *  From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
@@ -170,12 +195,6 @@ namespace Stroika::Foundation::Execution {
              */
             bool fCreateNoWindow : 1 {true};
 
-            /**
-             *  From: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
-             *  DETACHED_PROCESS - the new process does not inherit its parent's console
-             *  This flag is ignored if the application is not a console application, or if it is used with either CREATE_NEW_CONSOLE or DETACHED_PROCESS
-             */
-            bool fDetachConsole : 1 {true};
 #endif
         };
 
@@ -309,6 +328,9 @@ namespace Stroika::Foundation::Execution {
          *         and return a handle to the results.
          * 
          *  This function is generally quick, and non-blocking - just creates a thread todo the work.
+         *
+         *  \note it is perfectly legal to launch a subprocess, and not track it in any way, just ignoring (not saving)
+         *        the BackgroundProcess object.
          *
          *  @see Run
          */
@@ -445,6 +467,9 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  Support more controlled running of sub-process, where wait timeouts don't necessarily kill the child process.
+     * 
+     *  \note it is perfectly legal to launch a subprocess, and not track it in any way, just ignoring (not saving)
+     *        the BackgroundProcess object.
      */
     class ProcessRunner::BackgroundProcess {
     private:
@@ -458,6 +483,20 @@ namespace Stroika::Foundation::Execution {
          * Return missing if process still running, and if completed, return the results.
          */
         nonvirtual optional<ProcessResultType> GetProcessResult () const;
+
+    public:
+        /**
+         *  \brief maybe missing if process not yet (or ever successfully) launched. Child process may have
+         *         already exited by the time this is returned.
+         */
+        optional<pid_t> GetChildProcessID () const;
+
+    public:
+        /**
+         *  \brief wait until GetChildProcessID () returns a valid answer, or until the process failed to start
+         *         (in which case calls PropagateIfException).
+         */
+        nonvirtual void WaitForStarted (Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
         /**
@@ -515,27 +554,6 @@ namespace Stroika::Foundation::Execution {
     private:
         friend class ProcessRunner;
     };
-
-    /**
-     *  Setup stdin/out/error to refer to /dev/null (or closed), and then run the given process. This throws
-     *  exceptions on failure to run and returns the created process id, but doesn't wait to monitor
-     *  process progress.
-     *
-     *  For the commandLine overload, it is TBD how the commandLine will be decoded (@todo) - maybe
-     *  parse it here systematically, or maybe leave it to OS to do (sh or windows CreateProcess API).
-     *
-     *  For the executable/args overload, the first member of args will be assumed to be the application
-     *  name (argv[0] - which CAN differ from the path to the executable). If this is omitted or the empty
-     *  string, it will be generated automatically.
-     *
-     *  \note   On linux, this also detaches from the terminal driver, to avoid spurious SIGHUP
-     *          and SIGTTIN and SIGTTOU
-     *
-     *  \note   DetachedProcessRunner searches the PATH for the given executable: it need not be a full or even relative to
-     *          cwd path.
-     */
-    pid_t DetachedProcessRunner (const String& commandLine);
-    pid_t DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args);
 
 }
 

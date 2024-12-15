@@ -334,12 +334,6 @@ ProcessRunner::BackgroundProcess::BackgroundProcess ()
 {
 }
 
-optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
-{
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return fRep_->fResult;
-}
-
 void ProcessRunner::BackgroundProcess::PropagateIfException () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -355,6 +349,19 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
     }
 }
 
+void ProcessRunner::BackgroundProcess::WaitForStarted (Time::DurationSeconds timeout) const
+{
+    // tmphack impl
+    using Time::DurationSeconds;
+    DurationSeconds remaining = timeout;
+    while (remaining > DurationSeconds{0}) {
+        if (auto pr = GetChildProcessID ()) {
+            return;
+        }
+        Sleep (1);
+        remaining -= DurationSeconds{1};
+    }
+}
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -415,8 +422,8 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Options& o)
 {
 }
 
-void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out,
-                         const OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
+void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& error,
+                         ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
     if (timeout == Time::kInfinity) {
@@ -468,19 +475,17 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOp
                          Time::DurationSeconds timeout) -> tuple<Characters::String, Characters::String>
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    MemoryStream::Ptr<byte>                useStdIn  = MemoryStream::New<byte> ();
-    MemoryStream::Ptr<byte>                useStdOut = MemoryStream::New<byte> ();
-    MemoryStream::Ptr<byte>                useStdErr = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                         useStdIn  = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                         useStdOut = MemoryStream::New<byte> ();
+    MemoryStream::Ptr<byte>                         useStdErr = MemoryStream::New<byte> ();
 
     auto mkReadStream = [&] (const InputStream::Ptr<byte>& readFromBinStrm) {
-        return stringOpts.fInputCodeCvt ? TextReader::New (readFromBinStrm, *stringOpts.fInputCodeCvt)
-                                        : TextReader::New (readFromBinStrm);
+        return stringOpts.fInputCodeCvt ? TextReader::New (readFromBinStrm, *stringOpts.fInputCodeCvt) : TextReader::New (readFromBinStrm);
     };
     try {
         // Prefill stream
         if (not cmdStdInValue.empty ()) {
-            auto outStream = stringOpts.fOutputCodeCvt ? TextWriter::New (useStdIn, *stringOpts.fOutputCodeCvt)
-                                                       : TextWriter::New (useStdIn);
+            auto outStream = stringOpts.fOutputCodeCvt ? TextWriter::New (useStdIn, *stringOpts.fOutputCodeCvt) : TextWriter::New (useStdIn);
             outStream.Write (cmdStdInValue);
         }
         Assert (useStdIn.GetReadOffset () == 0);
@@ -510,8 +515,7 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOp
     }
 }
 
-ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStream::Ptr<byte>&  in,
-                                                                 const OutputStream::Ptr<byte>& out,
+ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out,
                                                                  const OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress)
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
@@ -526,7 +530,7 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStre
 
 ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor::Updater progress)
 {
-    TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
+    TraceContextBumper ctx{"ProcessRunner::RunInBackground"}; // DEPRECATED OVERLOAD
     BackgroundProcess  result;
     result.fRep_->fProcessRunner =
         Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, "ProcessRunner background thread"sv);
@@ -538,7 +542,7 @@ namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                 ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
                                 const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
-                                const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
+                                const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err, optional<mode_t> umask)
     {
         SDKString      currentDirBuf_;
         const SDKChar* currentDir =
@@ -561,9 +565,13 @@ namespace {
          *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
          *          the write end of the pipe"
          */
-        int                     jStdin[2]{-1, -1};
-        int                     jStdout[2]{-1, -1};
-        int                     jStderr[2]{-1, -1};
+        int jStdin[2]{-1, -1};
+        int jStdout[2]{-1, -1};
+        int jStderr[2]{-1, -1};
+        int devNull = -1;
+        if (!in or !out or !err) {
+            devNull = ::open ("/dev/null", O_RDWR);
+        }
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
             ::CLOSE_ (jStdin[0]);
             ::CLOSE_ (jStdin[1]);
@@ -572,9 +580,24 @@ namespace {
             ::CLOSE_ (jStderr[0]);
             ::CLOSE_ (jStderr[1]);
         });
-        Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
-        Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
-        Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
+        if (in) {
+            Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
+        }
+        else {
+            jStdin[0] = devNull;
+        }
+        if (out) {
+            Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
+        }
+        else {
+            jStdout[1] = devNull;
+        }
+        if (err) {
+            Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
+        }
+        else {
+            jStderr[1] = devNull;
+        }
         // assert cuz code below needs to be more careful if these can overlap 0..2
         Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
         Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
@@ -661,6 +684,9 @@ namespace {
             childPID = UseFork_ ();
             ThrowPOSIXErrNoIfNegative (childPID);
             if (childPID == 0) {
+                if (umask) {
+                    (void)::umask (*umask);
+                }
                 try {
                     /*
                      *  In child process. Don't DBGTRACE here, or do anything that could raise an exception. In the child process
@@ -670,6 +696,24 @@ namespace {
                         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
                         (void)::chdir (currentDir);
                         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-result\"")
+                    }
+                    if (options.fDetached.value_or (false)) {
+                        /*
+                         *  See http://pubs.opengroup.org/onlinepubs/007904875/functions/setsid.html
+                         *  This is similar to setpgrp () but makes doing setpgrp unnecessary.
+                         *  This is also similar to setpgid (0, 0) - but makes doing that unneeded.
+                         *
+                         *  Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
+                         *
+                         *  @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
+                         *
+                         *  Tried using 
+                         *      #if defined _DEFAULT_SOURCE
+                         *              daemon (0, 0);
+                         *      #endif
+                         *      to workaround systemd defaulting to KillMode=control-group
+                         */
+                        (void)::setsid ();
                     }
                     {
                         /*
@@ -737,13 +781,22 @@ namespace {
 
             // To incrementally read from stderr and stderr as we write to stdin, we must assure
             // our pipes are non-blocking
-            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDIN, F_SETFL, fcntl (useSTDIN, F_GETFL, 0) | O_NONBLOCK));
-            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
-            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
+            if (useSTDIN != -1) {
+                ThrowPOSIXErrNoIfNegative (::fcntl (useSTDIN, F_SETFL, fcntl (useSTDIN, F_GETFL, 0) | O_NONBLOCK));
+            }
+            if (useSTDOUT != -1) {
+                ThrowPOSIXErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
+            }
+            if (useSTDERR != -1) {
+                ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
+            }
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache,
-                                               bool* eof = nullptr, bool* maybeMoreData = nullptr) {
+            auto readALittleFromProcess = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache, bool* eof = nullptr,
+                                               bool* maybeMoreData = nullptr) -> void {
+                if (fd == -1) {
+                    return;
+                }
                 uint8_t buf[10 * 1024];
                 int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -898,10 +951,10 @@ namespace {
 
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {
-    void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
-                                  ProgressMonitor::Updater progress, const optional<filesystem::path>& executable, const CommandLine& cmdLine,
-                                  const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
-                                  const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
+    void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
+                                  Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress,
+                                  const optional<filesystem::path>& executable, const CommandLine& cmdLine, const ProcessRunner::Options& options,
+                                  const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
 
         SDKString      currentDirBuf_;
@@ -938,16 +991,28 @@ namespace {
                 Verify (::InitializeSecurityDescriptor (&sd, SECURITY_DESCRIPTOR_REVISION));
                 Verify (::SetSecurityDescriptorDacl (&sd, true, 0, false));
                 SECURITY_ATTRIBUTES sa = {sizeof (SECURITY_ATTRIBUTES), &sd, true};
-                Verify (::CreatePipe (&jStdin[1], &jStdin[0], &sa, kPipeBufSize_));
-                Verify (::CreatePipe (&jStdout[1], &jStdout[0], &sa, kPipeBufSize_));
-                Verify (::CreatePipe (&jStderr[1], &jStderr[0], &sa, kPipeBufSize_));
+                if (in) {
+                    Verify (::CreatePipe (&jStdin[1], &jStdin[0], &sa, kPipeBufSize_));
+                }
+                if (out) {
+                    Verify (::CreatePipe (&jStdout[1], &jStdout[0], &sa, kPipeBufSize_));
+                }
+                if (err) {
+                    Verify (::CreatePipe (&jStderr[1], &jStderr[0], &sa, kPipeBufSize_));
+                }
                 /*
                  *  Make sure the ends of the pipe WE hang onto are not inheritable, because otherwise the READ
                  *  wont return EOF (until the last one is closed).
                  */
-                jStdin[0].ReplaceHandleAsNonInheritable ();
-                jStdout[1].ReplaceHandleAsNonInheritable ();
-                jStderr[1].ReplaceHandleAsNonInheritable ();
+                if (in) {
+                    jStdin[0].ReplaceHandleAsNonInheritable ();
+                }
+                if (out) {
+                    jStdout[1].ReplaceHandleAsNonInheritable ();
+                }
+                if (err) {
+                    jStderr[1].ReplaceHandleAsNonInheritable ();
+                }
             }
 
             STARTUPINFO startInfo{};
@@ -961,7 +1026,7 @@ namespace {
             if (options.fCreateNoWindow) {
                 createProcFlags |= CREATE_NO_WINDOW;
             }
-            else if (options.fDetachConsole) {
+            else if (options.fDetached.value_or (false)) {
                 // DETACHED_PROCESS ignored if CREATE_NO_WINDOW
                 createProcFlags |= DETACHED_PROCESS;
             }
@@ -1023,7 +1088,9 @@ namespace {
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
             auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const OutputStream::Ptr<byte>& o) {
-                RequireNotNull (p);
+                if (p == INVALID_HANDLE_VALUE) {
+                    return;
+                }
                 byte buf[kReadBufSize_];
 #if qUsePeekNamedPipe_
                 DWORD nBytesAvail{};
@@ -1053,10 +1120,12 @@ namespace {
                          * Set the pipe endpoints to non-blocking mode.
                          */
                         auto mkPipeNoWait_ = [] (HANDLE ioHandle) -> void {
-                            DWORD stdinMode = 0;
-                            Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
-                            stdinMode |= PIPE_NOWAIT;
-                            Verify (::SetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr));
+                            if (ioHandle != INVALID_HANDLE_VALUE) {
+                                DWORD stdinMode = 0;
+                                Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
+                                stdinMode |= PIPE_NOWAIT;
+                                Verify (::SetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr));
+                            }
                         };
                         mkPipeNoWait_ (useSTDIN);
                         mkPipeNoWait_ (useSTDOUT);
@@ -1118,9 +1187,9 @@ namespace {
                 }
 
                 /*
-                    *  Must keep reading while waiting - in case the child emits so much information that it
-                    *  fills the OS PIPE buffer.
-                    */
+                 *  Must keep reading while waiting - in case the child emits so much information that it
+                 *  fills the OS PIPE buffer.
+                 */
                 int timesWaited = 0;
                 while (true) {
                     /*
@@ -1132,7 +1201,7 @@ namespace {
                      */
                     HANDLE events[1] = {processInfo.hProcess};
 
-                    // We don't want to busy wait too much, but if its fast (with java, thats rare ;-)) don't want to wait
+                    // We don't want to busy wait too much, but if its fast (with java, that's rare ;-)) don't want to wait
                     // too long needlessly...
                     //
                     // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
@@ -1163,7 +1232,7 @@ namespace {
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
 
-                {
+                if (useSTDOUT != INVALID_HANDLE_VALUE) {
                     DWORD stdoutMode = 0;
                     Verify (::GetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr, nullptr, nullptr, 0));
                     stdoutMode &= ~PIPE_NOWAIT;
@@ -1221,13 +1290,14 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
 #if qStroika_Foundation_Common_Platform_POSIX
-        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
+        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err, options.fChildUMask);
 #elif qStroika_Foundation_Common_Platform_Windows
         Process_Runner_Windows_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
 #endif
     };
 }
 
+#if 0
 /*
  ********************************************************************************
  ****************** Execution::DetachedProcessRunner ****************************
@@ -1390,3 +1460,4 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
     return processInfo.dwProcessId;
 #endif
 }
+#endif
