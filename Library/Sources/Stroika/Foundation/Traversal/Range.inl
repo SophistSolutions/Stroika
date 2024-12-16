@@ -302,12 +302,12 @@ namespace Stroika::Foundation::Traversal {
         }
         if (rhs.fEnd_ == fBegin_) {
             Assert (oldCode (rhs) == (rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed));
-            // if they interect at a point, both side must be closed (contain that point) - (see case G)
+            // if they intersect at a point, both side must be closed (contain that point) - (see case G)
             return rhs.GetUpperBoundOpenness () == Openness::eClosed and GetLowerBoundOpenness () == Openness::eClosed;
         }
         if (rhs.fBegin_ == fEnd_) {
             Assert (oldCode (rhs) == (rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed));
-            // if they interect at a point, both side must be closed (contain that point) - (see case H)
+            // if they intersect at a point, both side must be closed (contain that point) - (see case H)
             return rhs.GetLowerBoundOpenness () == Openness::eClosed and GetUpperBoundOpenness () == Openness::eClosed;
         }
         Assert (oldCode (rhs) == true);

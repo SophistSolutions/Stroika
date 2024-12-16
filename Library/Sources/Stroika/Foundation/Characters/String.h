@@ -477,6 +477,8 @@ namespace Stroika::Foundation::Characters {
          *  \brief return (read-only) Character object
          *
          *  Alias for GetCharAt (size_t i) const;
+         * 
+         *  \note returns const due to https://stroika.atlassian.net/browse/STK-376 - so cannot accidentally have illusion of assignment being legal
          */
         nonvirtual const Character operator[] (size_t i) const noexcept;
 

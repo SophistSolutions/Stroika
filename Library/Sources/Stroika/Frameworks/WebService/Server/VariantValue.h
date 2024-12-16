@@ -132,7 +132,9 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
     /**
      * values returned typically Mapping<String,VariantValue> - but can be other - often also null-value
      * 
-     * \note - each of these - if they throw - they throw a subtype of ClientErrorException
+     *  \note - each of these - if they throw - they throw a subtype of ClientErrorException
+     * 
+     *  \note This should be integrated with JSON-schema validation - https://stroika.atlassian.net/browse/STK-1008
      */
     struct ExtractArgumentsAsVariantValue {
         /**

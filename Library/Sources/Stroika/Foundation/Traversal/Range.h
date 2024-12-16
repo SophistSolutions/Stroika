@@ -24,11 +24,13 @@
  *  \em Design Note
  *      This module was inspired by Ruby Range class, but in the end, it was mostly based on HealthFrame's
  *      DateRangeType/DateTimeRangeType code.
+ * 
+ *      This notion of 'range' has VERY LITTLE todo with the std::range feature (which is more like Stroika 'Iterable')
  *
  *  TODO:
  *          @todo   Better integrate with http://stroika-bugs.sophists.com/browse/STK-779 - C++20 ranges library
  * 
- *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
+ *          @todo   Carefully review intersection/union bounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
  *                  chosen definition.
  */
@@ -213,7 +215,7 @@ namespace Stroika::Foundation::Traversal {
          *       fully closed by default, and other arithmetic types (floats) are half open [)
          *
          * \note Would be nice to use using syntax and not introduce a new type, but apparently
-         *       using declarations cannot be specailized in C++17 (@todo add reference)
+         *       using declarations cannot be specialized in C++17 (@todo add reference)
          */
         template <typename T>
         struct Default
@@ -240,8 +242,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *  This Range<> template is similar to Ruby range, and fairly DIFFERENT from the std::range<> template.
      *
-     *  This notion of range is **NOT THE SAME as std::range**, though is similar (obviously from the name) and
-     *  @todo should consider better integration!
+     *  This notion of range is **NOT THE SAME as std::range**, though is similar (obviously from the name).
      *
      *  Somewhat inspired by, and at least influenced by, the definition in
      *      http://ruby-doc.org/core-2.0/Range.html
@@ -431,7 +432,7 @@ namespace Stroika::Foundation::Traversal {
          *  There is no clear way to provide an ordering of two ranges (of the same type). The ordering of their
          *  left sides, may not agree with the ordering of their right sides, or their midpoints.
          * 
-         *  But - OFTEN - they CAN be ordered! And thats often a useful concept. So capture that case at least.
+         *  But - OFTEN - they CAN be ordered! And that's often a useful concept. So capture that case at least.
          *  Just return nullopt if not comparable. Then the caller can decide how to break the 'tie' - with midpoint compare, or
          *  left or right edge compares...
          */
