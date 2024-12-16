@@ -151,7 +151,7 @@ namespace {
                 if (fToken_ != INVALID_HANDLE_VALUE) {
                     ::CloseHandle (fToken_); // no nee dto clear fToken_ cuz never fully constructed
                 }
-                Execution::ReThrow ();
+                ReThrow ();
             }
         }
         SetPrivilegeInContext_ (LPCTSTR privilege, IgnoreError)
@@ -195,7 +195,7 @@ namespace {
                         ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
                 }
                 else {
-                    Execution::ThrowSystemErrNo ();
+                    ThrowSystemErrNo ();
                 }
             }
         }
@@ -261,7 +261,7 @@ namespace {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
                 return;
             }
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
+            [[maybe_unused]] auto&& cleanup = Finally ([hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
 
             // Fill in the size of the structure before using it.
             THREADENTRY32 te32{};
@@ -1106,7 +1106,6 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_"};
             ProcessMapType            result;
-            using Execution::ProcessRunner;
             /*
              *  Thought about STIME but too hard to parse???
              *
@@ -1129,7 +1128,8 @@ namespace {
             constexpr size_t                   kColCountIncludingCmd_{9};
             ProcessRunner                      pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
             Streams::MemoryStream::Ptr<byte>   useStdOut = Streams::MemoryStream::New<byte> ();
-            pr.Run (nullptr, useStdOut) String out;
+            pr.Run (nullptr, useStdOut);
+            String out;
             Streams::TextReader::Ptr           stdOut        = Streams::TextReader::New (useStdOut);
             bool                               skippedHeader = false;
             size_t                             headerLen     = 0;
@@ -1309,7 +1309,7 @@ namespace {
                         goto Again;
                     }
                     if (status != 0) {
-                        Throw (Execution::Exception{"Bad result from NtQuerySystemInformation"sv});
+                        Throw (Exception{"Bad result from NtQuerySystemInformation"sv});
                     }
                     fActualNumElts_ = returnLength / sizeof (SYSTEM_PROCESS_INFORMATION);
                 }
@@ -1387,7 +1387,7 @@ namespace {
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
-                        [[maybe_unused]] auto&& cleanup = Execution::Finally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); });
+                        [[maybe_unused]] auto&& cleanup = Finally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); });
                         if (grabStaticData) {
                             optional<String>           processName;
                             optional<filesystem::path> processEXEPath;
@@ -1644,7 +1644,7 @@ namespace {
                 HANDLE processToken = 0;
                 if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0) {
                     [[maybe_unused]] auto&& cleanup =
-                        Execution::Finally ([processToken] () noexcept { Verify (::CloseHandle (processToken)); });
+                        Finally ([processToken] () noexcept { Verify (::CloseHandle (processToken)); });
                     DWORD nlen{};
                     // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx

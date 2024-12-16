@@ -64,7 +64,7 @@ namespace {
  *********************** Service::Main::CommandArgs *****************************
  ********************************************************************************
  */
-Main::CommandArgs::CommandArgs (const Execution::CommandLine& cmdLine)
+Main::CommandArgs::CommandArgs (const CommandLine& cmdLine)
 {
     static const Mapping<CommandLine::Option, MajorOperation> kMap2Major_{
         {CommandOptions::kInstall, MajorOperation::eInstall},
@@ -89,7 +89,7 @@ Main::CommandArgs::CommandArgs (const Execution::CommandLine& cmdLine)
             fMajorOperation = kMap2Major_[Memory::ValueOf (allMajorsSet.First ())];
             break;
         default:
-            Execution::Throw (Execution::InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
+            Throw (InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
     }
     if (auto o = cmdLine.GetArgument (CommandOptions::kRunFor)) {
         fRunFor = Time::Duration{FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
@@ -161,7 +161,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Charac
         fServiceRep_->HandleCommandLineArgument (i);
     }
     if (not args.fMajorOperation.has_value ()) {
-        Execution::Throw (Execution::InvalidCommandLineArgument{"No recognized operation"sv});
+        Throw (InvalidCommandLineArgument{"No recognized operation"sv});
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
@@ -295,7 +295,7 @@ void Main::ReReadConfiguration ()
 #elif qStroika_Foundation_Common_Platform_POSIX
     [[maybe_unused]] pid_t pid = GetServicePID ();
     Assert (pid != 0); // maybe throw if non-zero???
-    Execution::ThrowPOSIXErrNoIfNegative (::kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
+    ThrowPOSIXErrNoIfNegative (::kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
 #else
     AssertNotImplemented ();
 #endif
@@ -373,7 +373,7 @@ void Main::LoggerServiceWrapper::_Install ()
     }
     catch (...) {
         Logger::sThe.Log (Logger::eError, "Failed to install - {} - aborting..."_f, current_exception ());
-        Execution::ReThrow ();
+        ReThrow ();
     }
 }
 
@@ -385,7 +385,7 @@ void Main::LoggerServiceWrapper::_UnInstall ()
     }
     catch (...) {
         Logger::sThe.Log (Logger::eError, "Failed to uninstall - {} - aborting..."_f, current_exception ());
-        Execution::ReThrow ();
+        ReThrow ();
     }
 }
 
@@ -397,7 +397,7 @@ void Main::LoggerServiceWrapper::_RunAsService ()
     }
     catch (...) {
         Logger::sThe.Log (Logger::eError, L"Exception running service - {} - aborting..."_f, current_exception ());
-        Execution::ReThrow ();
+        ReThrow ();
     }
     Logger::sThe.Log (Logger::eNotice, "Service stopped normally"_f);
 }
@@ -410,7 +410,7 @@ void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& r
     }
     catch (...) {
         Logger::sThe.Log (Logger::eError, "Exception running service in direct mode - {} - aborting..."_f, current_exception ());
-        Execution::ReThrow ();
+        ReThrow ();
     }
     Logger::sThe.Log (Logger::eNotice, "Service stopped normally"_f);
 }
@@ -462,7 +462,7 @@ void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& app
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Attach"};
 #endif
-    Execution::Thread::SuppressInterruptionInContext suppressInterruption; // this must run to completion - it only blocks waiting for subsidiary thread to finish
+    Thread::SuppressInterruptionInContext suppressInterruption; // this must run to completion - it only blocks waiting for subsidiary thread to finish
     Require ((appRep == nullptr and fAppRep_.load () != nullptr) or (fAppRep_.load () == nullptr and fAppRep_.load () != appRep));
     Thread::Ptr p = fRunThread_.load ();
     if (p != nullptr) {
@@ -504,19 +504,19 @@ Main::State Main::BasicUNIXServiceImpl::_GetState () const
 
 void Main::BasicUNIXServiceImpl::_Install ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException{"Install"sv});
+    Throw (OperationNotSupportedException{"Install"sv});
 }
 
 void Main::BasicUNIXServiceImpl::_UnInstall ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException{"UnInstall"sv});
+    Throw (OperationNotSupportedException{"UnInstall"sv});
 }
 
 void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService"};
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::Exception{"Service Already Running"sv});
+        Throw (Exception{"Service Already Running"sv});
     }
 
     shared_ptr<IApplicationRep> appRep = fAppRep_;
@@ -529,21 +529,21 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     SetupSignalHanlders_ (true);
 
     RequireNotNull (appRep); // must call Attach_ first
-    fRunThread_.store (Execution::Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Execution::Thread::eAutoStart, kServiceRunThreadName_));
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
+    fRunThread_.store (Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Thread::eAutoStart, kServiceRunThreadName_));
+    [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
         Thread::SuppressInterruptionInContext suppressThreadInterupts;
         (void)::unlink (_GetPIDFileName ().c_str ());
     });
     {
         ofstream out;
         Streams::iostream::OpenOutputFileStream (&out, _GetPIDFileName ());
-        out << Execution::GetCurrentProcessID () << endl;
+        out << GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
-        Execution::Throw (Execution::Exception{"Unable to create process ID tracking file {}"_f(_GetPIDFileName ())});
+        Throw (Exception{"Unable to create process ID tracking file {}"_f(_GetPIDFileName ())});
     }
-    if (_GetServicePID () != Execution::GetCurrentProcessID ()) {
-        Execution::Throw (Execution::Exception{"Unable to create process ID tracking file {} (race?)"_f(_GetPIDFileName ())});
+    if (_GetServicePID () != GetCurrentProcessID ()) {
+        Throw (Exception{"Unable to create process ID tracking file {} (race?)"_f(_GetPIDFileName ())});
     }
     fRunThread_.load ().Join ();
 }
@@ -552,16 +552,16 @@ void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& r
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     RequireNotNull (appRep); // must call Attach_ first
-    fRunThread_.store (Execution::Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Execution::Thread::eAutoStart, kServiceRunThreadName_));
+    fRunThread_.store (Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Thread::eAutoStart, kServiceRunThreadName_));
     Thread::Ptr        t = fRunThread_.load ();
     Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
     if (runFor) {
-        stopper = Execution::Thread::New (
+        stopper = Thread::New (
             [t, &runFor] () {
-                Execution::Sleep (*runFor);
+                Sleep (*runFor);
                 t.Abort ();
             },
-            Execution::Thread::eAutoStart);
+            Thread::eAutoStart);
     }
     t.Join ();
 }
@@ -574,14 +574,19 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSeconds timeout)
 
     // REALLY should use GETSTATE - and return state based on if PID file exists...
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::Exception{"Cannot Start service because its already running"sv});
+        Throw (Exception{"Cannot Start service because its already running"sv});
     }
 
+#if 1
+    filesystem::path exePath = GetEXEPath ();
+    ProcessRunner{exePath, Sequence<String>{{String{exePath}, "--"sv + String{CommandNames::kRunAsService}}}, ProcessRunner::Options{.fDetached=true}}.RunInBackground ();
+#else
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String>{{String{}, ("--"sv + String{CommandNames::kRunAsService})}});
+#endif
 
     while (_GetServicePID () <= 0) {
-        Execution::Sleep (500ms);
-        Execution::ThrowTimeoutExceptionAfter (timeoutAt);
+        Sleep (500ms);
+        ThrowTimeoutExceptionAfter (timeoutAt);
     }
 }
 
@@ -601,18 +606,18 @@ void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSeconds timeout)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("Service running - so sending SIGTERM signal");
 #endif
-            Execution::ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGTERM));
+            ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGTERM));
 
             Time::DurationSeconds waitFor = 0.001s; // wait just a little at first but then progressively longer (avoid busy wait)
             while (_GetServicePID () > 0) {
-                Execution::Sleep (waitFor);
+                Sleep (waitFor);
                 if (waitFor < timeout and waitFor < 5s) {
                     waitFor *= 2;
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("still waiting for timeout/completion");
 #endif
-                Execution::ThrowTimeoutExceptionAfter (timeoutAt);
+                ThrowTimeoutExceptionAfter (timeoutAt);
             }
         }
         // in case not cleanly stopped before
@@ -627,7 +632,7 @@ void Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSeconds timeout)
     // Send signal to server to stop
     pid_t svcPID = _GetServicePID ();
     if (svcPID > 0) {
-        Execution::ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
+        ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
     }
     // REALY should WAIT for server to stop and only do this it fails -
     (void)::unlink (_GetPIDFileName ().c_str ());
@@ -639,7 +644,7 @@ pid_t Main::BasicUNIXServiceImpl::_GetServicePID () const
     if (in) {
         pid_t n = 0;
         in >> n;
-        if (Execution::IsProcessRunning (n)) {
+        if (IsProcessRunning (n)) {
             return n;
         }
     }
@@ -649,14 +654,14 @@ pid_t Main::BasicUNIXServiceImpl::_GetServicePID () const
 void Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 {
     if (install) {
-        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, fOurSignalHandler_);
-        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, fOurSignalHandler_);
-        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
+        SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, fOurSignalHandler_);
+        SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, fOurSignalHandler_);
+        SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
     }
     else {
-        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGINT, fOurSignalHandler_);
-        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGTERM, fOurSignalHandler_);
-        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGINT, fOurSignalHandler_);
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGTERM, fOurSignalHandler_);
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
     }
 }
 
@@ -677,7 +682,7 @@ void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 {
     // NOTE - this is only safe due to the use of SignalHandlerRegistry::SafeSignalsManager
     Debug::TraceContextBumper traceCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        "Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", "signal = {}"_f, Execution::SignalToName (signum))};
+        "Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", "signal = {}"_f, SignalToName (signum))};
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case SIGINT:
@@ -734,13 +739,13 @@ Main::State Main::WindowsService::_GetState () const
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_STATUS;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
+    [[maybe_unused]] auto&& cleanup1 = Finally ([hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
     });
     SC_HANDLE               hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([hService] () noexcept {
+    [[maybe_unused]] auto&& cleanup2 = Finally ([hService] () noexcept {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
     });
@@ -776,7 +781,7 @@ void Main::WindowsService::_Install ()
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_Install"};
 
     const DWORD kServiceMgrAccessPrivs = SC_MANAGER_CREATE_SERVICE;
-    String      cmdLineForRunSvc       = "\""sv + String{Execution::GetEXEPath ()} + "\" --"sv + CommandNames::kRunAsService;
+    String      cmdLineForRunSvc       = "\""sv + String{GetEXEPath ()} + "\" --"sv + CommandNames::kRunAsService;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([hSCM] () noexcept {
