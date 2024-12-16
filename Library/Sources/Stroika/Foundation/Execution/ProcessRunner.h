@@ -159,7 +159,8 @@ namespace Stroika::Foundation::Execution {
         struct Options {
             /**
              *  \brief pwd/cwd of the created process
-             *      defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
+             *      defaults to 'missing'. If missing, then WellKnownDirectories::GetTemporary () is 
+             *      used (since this is a generally safe place to run an executable); use GetCurrentDirectory () if that is the intention.
              */
             optional<filesystem::path> fWorkingDirectory;
 

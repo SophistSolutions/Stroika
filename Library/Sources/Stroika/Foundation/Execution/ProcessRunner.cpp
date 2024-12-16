@@ -31,6 +31,7 @@
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
+#include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
@@ -542,16 +543,14 @@ namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                 ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
                                 const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
-                                const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err, optional<mode_t> umask)
+                                const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
-        SDKString      currentDirBuf_;
-        const SDKChar* currentDir =
-            options.fWorkingDirectory ? (currentDirBuf_ = options.fWorkingDirectory->c_str (), currentDirBuf_.c_str ()) : nullptr;
+        optional<mode_t> umask  = options.fChildUMask;
+        filesystem::path useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
         TraceContextBumper ctx{
             "{}::Process_Runner_POSIX_",
             Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
-                currentDir == nullptr ? "nullptr"_k : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
+                "...,cmdLine='{}',currentDir={},..."_f, cmdLine, String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         // track the last few bytes of stderr to include in possible exception messages
         char   trailingStderrBuf[256];
@@ -692,11 +691,9 @@ namespace {
                      *  In child process. Don't DBGTRACE here, or do anything that could raise an exception. In the child process
                      *  this would be bad...
                      */
-                    if (currentDir != nullptr) {
-                        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
-                        (void)::chdir (currentDir);
-                        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-result\"")
-                    }
+                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
+                    (void)::chdir (useCWD.c_str ());
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-result\"")
                     if (options.fDetached.value_or (false)) {
                         /*
                          *  See http://pubs.opengroup.org/onlinepubs/007904875/functions/setsid.html
@@ -956,16 +953,12 @@ namespace {
                                   const optional<filesystem::path>& executable, const CommandLine& cmdLine, const ProcessRunner::Options& options,
                                   const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
-
-        SDKString      currentDirBuf_;
-        const SDKChar* currentDir =
-            options.fWorkingDirectory ? (currentDirBuf_ = options.fWorkingDirectory->c_str (), currentDirBuf_.c_str ()) : nullptr;
-
+        filesystem::path useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
         TraceContextBumper ctx{
             "{}::Process_Runner_Windows_",
             Stroika_Foundation_Debug_OptionalizeTraceArgs (
                 "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
-                currentDir == nullptr ? "nullptr"_k : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
+                                                                  String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         /*
          *  o   Build directory into which we can copy the JAR file plugin,
@@ -1064,7 +1057,7 @@ namespace {
                 // it runs the search path algorithm and tries to do the right thing
                 Execution::Platform::Windows::ThrowIfZeroGetLastError (
                     ::CreateProcess (useEXEPath == nullopt ? nullptr : useEXEPath->c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
-                                     createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
+                                     createProcFlags, nullptr, useCWD.c_str (), &startInfo, &processInfo));
             }
 
             if (runningPID != nullptr) {
@@ -1290,7 +1283,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
 #if qStroika_Foundation_Common_Platform_POSIX
-        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err, options.fChildUMask);
+        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
 #elif qStroika_Foundation_Common_Platform_Windows
         Process_Runner_Windows_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
 #endif
