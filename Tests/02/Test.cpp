@@ -862,11 +862,13 @@ namespace {
     GTEST_TEST (Foundation_Characters, ConstCharStar_)
     {
         Debug::TraceContextBumper ctx{"ConstCharStar_"};
-        EXPECT_TRUE (wcscmp (String{"fred"}.c_str (), L"fred") == 0);
-        EXPECT_TRUE (wcscmp (String{"0123456789abcde"}.c_str (), L"0123456789abcde") == 0);                                   // 15 chars
-        EXPECT_TRUE (wcscmp (String{"0123456789abcdef"}.c_str (), L"0123456789abcdef") == 0);                                 // 16 chars
-        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcde"}.c_str (), L"0123456789abcdef0123456789abcde") == 0);   // 31 chars
-        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcdef"}.c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
+        EXPECT_TRUE (wcscmp (String{"fred"}.As<wstring> ().c_str (), L"fred") == 0);
+        Memory::StackBuffer<wchar_t> buf;
+        EXPECT_TRUE (wcscmp (get<0> (String{"fred"}.c_str (&buf)), L"fred") == 0);
+        EXPECT_TRUE (wcscmp (String{"0123456789abcde"}.As<wstring> ().c_str (), L"0123456789abcde") == 0);   // 15 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef"}.As<wstring> ().c_str (), L"0123456789abcdef") == 0); // 16 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcde"}.As<wstring> ().c_str (), L"0123456789abcdef0123456789abcde") == 0); // 31 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcdef"}.As<wstring> ().c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
         {
             StringBuilder tmp{"333"};
             EXPECT_EQ (tmp, "333");

@@ -1268,7 +1268,7 @@ namespace {
             DurationSeconds timeCollecting{processWMICollectorLock.rwref ().GetTimeOfLastCollection () - timeOfPrevCollection};
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            for (const String& i : processWMICollectorLock.rwref ().GetAvailableInstaces ()) {
+            for (const String& i : processWMICollectorLock.rwref ().GetAvailableInstances ()) {
                 DbgTrace (L"WMI instance name %s", i.c_str ());
             }
 #endif

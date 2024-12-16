@@ -372,7 +372,7 @@ namespace {
             "Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
         WMICollector fTCPv4WMICollector_{"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
         WMICollector fTCPv6WMICollector_{"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
-        Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstaces ()};
+        Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstances ()};
 #endif
     };
 

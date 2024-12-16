@@ -196,15 +196,14 @@ namespace Stroika::Foundation::Characters {
      *  \note   Design note - mutability vs. immutability
      *          http://stroika-bugs.sophists.com/browse/STK-968 (see about deleting deprecated APIs and remnants of mutability) and c_str()
      * 
-     *          String objects are IMMUTABLE (with operator= and c_str exceptions - for now).
+     *          String objects are IMMUTABLE (except for the OBVIOUS meaning case of operator= being allowed).
      * 
      *          String reps are IMMUTABLE.
      * 
-     *          Use StringBuilder for a 'mutable' String (can be used mostly interchageably with String).
+     *          Use StringBuilder for a 'mutable' String (can be used mostly interchangeably with String).
      *
      *          Current Mutating methods (as of v3.0d1x)
-     *          o   c_str ()  -- non-const                  (consider deprecating?) - only problematic one as of v3.0d12 - revisit after 3.0d12
-
+     *          o   c_str ()  -- non-const                  deprecated in v3.0d13
      *          o   SetCharAt       - deprecated v3.0d12
      *          o   c_str()           (consider deprecating?)
      *          o   operator=       - deprecated v3.0d12
@@ -399,7 +398,7 @@ namespace Stroika::Foundation::Characters {
          *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
          *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
          * 
-         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and iterpret as Latin1)
+         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and interpret as Latin1)
          *        For the case of char, we also do not check/require the nul-termination bit.
          * 
          *  \note for overloads with wchar_t, if sizeof (wchar_t) == 2
@@ -1381,7 +1380,9 @@ namespace Stroika::Foundation::Characters {
          *        that is costly. Sure you can just use the original string length. BUT THAT WOULD BE A BUG once I support
          *        surrogates properly (at least on windows where wchar_t isn't char32_t).
          */
-        nonvirtual const wchar_t* c_str ();
+        [[deprecated ("Since Stroika v3.0d13 - if you must use c_str() - use the overload taking StackBuffer arg), or use As<wstring> "
+                      "().c_str ()")]] const wchar_t*
+                   c_str ();
         nonvirtual tuple<const wchar_t*, wstring_view> c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const;
 
     public:

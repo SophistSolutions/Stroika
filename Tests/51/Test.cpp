@@ -546,45 +546,6 @@ namespace {
 }
 
 namespace {
-    template <typename WIDESTRING_IMPL>
-    void Test_String_cstr_call_ ()
-    {
-        static WIDESTRING_IMPL s1 = L"abcd 23234j aksdf alksdjf lkasf jklsdf asdf baewr";
-        static WIDESTRING_IMPL s2 = L"o3424";
-        static WIDESTRING_IMPL s3 = L"o3424";
-        static WIDESTRING_IMPL s4 = L"o3424";
-        static WIDESTRING_IMPL s5 = L"abcd 23234j aksdf alksdjf lkasf "
-                                    L"jklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdfjklsdf asdf baewr";
-        size_t s1len = s1.length ();
-        size_t s2len = s2.length ();
-        size_t s3len = s3.length ();
-        size_t s4len = s4.length ();
-        size_t s5len = s5.length ();
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-volatile\""); // warning: increment of object of volatile-qualified type 'volatile unsigned int' is deprecated [-Wdeprecated-volatile]
-#endif
-#if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wvolatile\""); // warning: '++' expression of 'volatile'-qualified type is deprecated
-#endif
-        for (volatile int i = 0; i < 200; ++i) {
-            EXPECT_TRUE (s1len == ::wcslen (s1.c_str ()));
-            EXPECT_TRUE (s2len == ::wcslen (s2.c_str ()));
-            EXPECT_TRUE (s3len == ::wcslen (s3.c_str ()));
-            EXPECT_TRUE (s4len == ::wcslen (s4.c_str ()));
-            EXPECT_TRUE (s5len == ::wcslen (s5.c_str ()));
-        }
-#if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wvolatile\"");
-#endif
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-volatile\"");
-#endif
-    }
-}
-
-namespace {
     namespace Private_ {
         template <typename CONTAINER>
         void Test_SequenceVectorAdditionsAndCopies_RecCall_ (CONTAINER c, int recCalls)
@@ -1406,46 +1367,44 @@ namespace {
             }
         };
         Tester (
-            L"wstringstream versus BasicTextOutputStream",
+            "wstringstream versus BasicTextOutputStream",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); });
             },
             L"MemoryStream<Characters::Character>", 210000, 1.2, &failedTests);
         Tester (
-            L"wstringstream versus StringBuilder",
+            "wstringstream versus StringBuilder",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<StringBuilder<>> ([] (const StringBuilder<>& w) { return w.As<String> (); });
             },
-            L"StringBuilder", 220000, 0.48, &failedTests);
-        Tester (L"Simple c_str() test", Test_String_cstr_call_<wstring>, L"wstring", Test_String_cstr_call_<String>, L"Charactes::String",
-                51000, 1.3, &failedTests);
-        Tester (L"Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>", 125000, 0.75, &failedTests);
-        Tester (L"Sequence<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>", 9900, 0.33, &failedTests);
-        Tester (L"Sequence_DoublyLinkedList<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+            "StringBuilder", 220000, 0.48, &failedTests);
+        Tester ("Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, "Sequence<int>", 125000, 0.75, &failedTests);
+        Tester ("Sequence<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, "Sequence<string>", 9900, 0.33, &failedTests);
+        Tester ("Sequence_DoublyLinkedList<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>,
-                L"Sequence_DoublyLinkedList<int>", 120000, 5.1, &failedTests);
-        Tester (L"Sequence_Array<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+                "Sequence_DoublyLinkedList<int>", 120000, 5.1, &failedTests);
+        Tester ("Sequence_Array<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>", 120000, 0.7, &failedTests);
-        Tester (L"Sequence_stdvector<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
+        Tester ("Sequence_stdvector<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>", 120000,
                 1.1, &failedTests);
-        Tester (L"Sequence_DoublyLinkedList<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
+        Tester ("Sequence_DoublyLinkedList<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>,
-                L"Sequence_DoublyLinkedList<string>", 9900, 0.55, &failedTests);
+                "Sequence_DoublyLinkedList<string>", 9900, 0.55, &failedTests);
         Tester (
-            L"Collection<int> basics",
+            "Collection<int> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([] (vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([] (Collection<int>* c) { c->Add (2); }); },
             L"Collection<int>", 113000, 4.9, &failedTests);
         Tester (
-            L"Collection<string> basics",
+            "Collection<string> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string{}); }); },
-            L"Collection<string>", 9600, 0.85, &failedTests);
+            "Collection<string>", 9600, 0.85, &failedTests);
         {
             // In Stroika 2.1b15, we changed the default Collection factory to use SortedCollection_stdmultiset. This is probably a good choice,
             // but is a small pessimization so include original Collection_stdforward_list for comparison (maybe orig was something else but this works).
@@ -1453,29 +1412,29 @@ namespace {
             using Containers::Concrete::Collection_stdforward_list;
             using Containers::Concrete::SortedCollection_stdmultiset;
             Tester (
-                L"Collection_LinkedList<string> basics",
+                "Collection_LinkedList<string> basics",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
                 [] () {
                     Test_CollectionVectorAdditionsAndCopies_<Collection_LinkedList<string>> (
                         [] (Collection_LinkedList<string>* c) { c->Add (string{}); });
                 },
-                L"Collection_LinkedList<string>", 9600, 0.6, &failedTests);
+                "Collection_LinkedList<string>", 9600, 0.6, &failedTests);
             Tester (
-                L"Collection_stdforward_list<string> basics",
+                "Collection_stdforward_list<string> basics",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
                 [] () {
                     Test_CollectionVectorAdditionsAndCopies_<Collection_stdforward_list<string>> (
                         [] (Collection_stdforward_list<string>* c) { c->Add (string{}); });
                 },
-                L"Collection_stdforward_list<string>", 9600, 0.6, &failedTests);
+                "Collection_stdforward_list<string>", 9600, 0.6, &failedTests);
             Tester (
-                L"SortedCollection_stdmultiset<string> basics",
+                "SortedCollection_stdmultiset<string> basics",
                 [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
                 [] () {
                     Test_CollectionVectorAdditionsAndCopies_<SortedCollection_stdmultiset<string>> (
                         [] (SortedCollection_stdmultiset<string>* c) { c->Add (string{}); });
                 },
-                L"SortedCollection_stdmultiset<string>", 9600, 1.0, &failedTests);
+                "SortedCollection_stdmultiset<string>", 9600, 1.0, &failedTests);
         }
         {
             using Containers::Concrete::SortedCollection_stdmultiset;
@@ -1493,7 +1452,7 @@ namespace {
             }();
             // this would do much better if we cared about mem usage, or did lookups, remove, etc...
             Tester (
-                L"SortedCollection_stdmultiset<string> basics with rnd strings",
+                "SortedCollection_stdmultiset<string> basics with rnd strings",
                 [] () {
                     Test_CollectionVectorAdditionsAndCopies_<vector<string>> (
                         [] (vector<string>* c) { c->push_back (kRandomStrings_[rand () % kRandomStrings_.size ()]); });
@@ -1503,18 +1462,18 @@ namespace {
                     Test_CollectionVectorAdditionsAndCopies_<SortedCollection_stdmultiset<string>> (
                         [] (SortedCollection_stdmultiset<string>* c) { c->Add (kRandomStrings_[rand () % kRandomStrings_.size ()]); });
                 },
-                L"SortedCollection_stdmultiset<string>", 9600, 1.3, &failedTests);
+                "SortedCollection_stdmultiset<string>", 9600, 1.3, &failedTests);
         }
-        Tester (L"std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, L"set<int>", Test_SetvsSet_<Set<int>>, L"Set<int>", 13000, 0.21, &failedTests);
-        Tester (L"String Characters::Format ()", Test_String_Format_<wstring>, L"sprintf", Test_String_Format_<String>,
-                L"String Characters::Format", 2100000, 1.8, &failedTests);
-        Tester (L"BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, L"vector<byte>",
-                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB", 13000, 1.0, &failedTests);
-        Tester (L"BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, L"vector<byte>",
-                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, L"BLOB", 5000, 0.85, &failedTests);
-        Tester (L"Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
+        Tester ("std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, "set<int>", Test_SetvsSet_<Set<int>>, "Set<int>", 13000, 0.21, &failedTests);
+        Tester ("String Characters::Format ()", Test_String_Format_<wstring>, "sprintf", Test_String_Format_<String>,
+                "String Characters::Format", 2100000, 1.8, &failedTests);
+        Tester ("BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, L"vector<byte>",
+                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, "BLOB", 13000, 1.0, &failedTests);
+        Tester ("BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, L"vector<byte>",
+                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, "BLOB", 5000, 0.85, &failedTests);
+        Tester ("Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, "Test_JSONReadWriteFile",
                 Debug::IsRunningUnderValgrind () ? 2 : 640, 0.5, &failedTests);
-        Tester (L"Test_Optional_", Test_Optional_::DoRunPerfTest, L"Test_Optional_", 4875, 0.5, &failedTests);
+        Tester ("Test_Optional_", Test_Optional_::DoRunPerfTest, "Test_Optional_", 4875, 0.5, &failedTests);
         JSONTests_::Run ();
 
         GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint () << "]]]" << endl << endl;

@@ -283,6 +283,7 @@ namespace {
             // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
+                // @todo NOTE DEPRECATED SINCE STROIKA v3.0d13, and same for kAddNullTerminator_
                 if constexpr (kAddNullTerminator_) {
                     Assert (*(this->_fData.data () + this->_fData.size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
                     return reinterpret_cast<const wchar_t*> (this->_fData.data ());
@@ -1666,10 +1667,17 @@ void String::erase (size_t from, size_t count)
 const wchar_t* String::c_str () const noexcept
 {
     // UNSAFE - DEPRECATED  - lose before v3 actually released -- LGP 2023-06-28
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     return const_cast<String*> (this)->c_str ();
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 }
 const wchar_t* String::c_str ()
 {
+    // DEPRECATED SINCE STROIKA v3.0d13
     // Rarely used mechanism, of replacing the underlying rep, for the iterable, as needed
     _SafeReadRepAccessor accessor{this};
     const wchar_t*       result = accessor._ConstGetRep ().c_str_peek ();

@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
+         *  Used for reporting from the IntervalTimer::Manager (e.g. for debugging, to dump the status).
          */
         struct RegisteredTask {
             TimerCallback            fCallback;
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Can remove a repeating task, but cannot remove a oneShot, since it might not be there by the time you go to remove it.
          * 
-         *  \req argument internvalTimer is registered.
+         *  \req argument intervalTimer is registered.
          */
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
 
@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Execution {
      *  \brief Adder adds the given function object to the (for now default; later optionally explicit) IntervalTimer manager, and
      *         when its destroyed, the timer is removed.
      * 
-     *  While the timer is registered, it will be called peridocially from some arbitrary thread.
+     *  While the timer is registered, it will be called periodically from some arbitrary thread.
      * 
      *  Easiest way to add/remove idle manager. Construct one and its lifetime matches time when callback is potentially aftive.
      *  Destruction of Adder object removes from the Q. Be sure lifetime of these guys inside lifetime of main.

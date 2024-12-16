@@ -718,7 +718,7 @@ namespace {
                         int useSTDIN  = jStdin[0];
                         int useSTDOUT = jStdout[1];
                         int useSTDERR = jStderr[1];
-                        Assert (useSTDIN >= 0 and useSTDOUT >= 0 and useSTDERR >= 0);   // parent can have -1 FDs, but child always has legit FDs
+                        Assert (useSTDIN >= 0 and useSTDOUT >= 0 and useSTDERR >= 0); // parent can have -1 FDs, but child always has legit FDs
                         ::close (0);
                         ::close (1);
                         ::close (2);

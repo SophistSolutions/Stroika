@@ -39,7 +39,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
                 else {
                     response.statusAndOverrideReason = make_tuple (ee.GetStatus (), ee.GetReason ());
                     response.contentType             = DataExchange::InternetMediaTypes::kText_PLAIN;
-                    response.writeln (Characters::ToString (ee).c_str ());
+                    response.writeln (Characters::ToString (ee));
                 }
             }
             catch (...) {
@@ -50,7 +50,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
                 else {
                     response.status      = IO::Network::HTTP::StatusCodes::kInternalError;
                     response.contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                    response.writeln (Characters::ToString (e).c_str ());
+                    response.writeln (Characters::ToString (e));
                 }
             }
         }

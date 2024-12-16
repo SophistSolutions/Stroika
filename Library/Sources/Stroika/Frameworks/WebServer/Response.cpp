@@ -338,8 +338,8 @@ void Response::StateTransition_ (State to)
                 String statusMsg =
                     Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
                 wstring  version = L"1.1";
-                wstring  tmp     = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
-                u8string utf8    = String{tmp}.AsUTF8 ();
+                String   tmp     = "HTTP/{} {} {}\r\n"_f(version, curStatus, statusMsg);
+                u8string utf8    = tmp.AsUTF8 ();
                 fUseOutStream_.Write (as_bytes (span{utf8.data (), utf8.length ()}));
             }
             {

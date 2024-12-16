@@ -192,8 +192,10 @@ namespace {
     optional<Set<DynamicDiskIDType_>> GetDisksForVolume_ (String volumeName)
     {
         wchar_t volPathsBuf[10 * 1024]; // intentionally uninitialized since we don't use it if GetVolumePathNamesForVolumeNameW () returns error, and its an OUT only parameter
-        DWORD retLen = 0;
-        DWORD x = ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
+        DWORD                        retLen = 0;
+        Memory::StackBuffer<wchar_t> buf{};
+        DWORD                        x = ::GetVolumePathNamesForVolumeNameW (get<0> (volumeName.c_str (&buf)), volPathsBuf,
+                                                                             static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
         if (x == 0) {
             return {}; // missing - no known - not empty - answer
         }
@@ -208,10 +210,10 @@ namespace {
         {
             /*
              *  For reasons I don't understand (maybe a hit at http://superuser.com/questions/733687/give-regular-user-permission-to-access-physical-drive-on-windows)
-             *  this only works with admin privilges
+             *  this only works with admin privileges
              */
-            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
-                                            FILE_ATTRIBUTE_NORMAL, nullptr);
+            HANDLE hHandle = ::CreateFileW (volumeName.As<wstring> ().c_str (), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hHandle == INVALID_HANDLE_VALUE) {
                 return {};
             }

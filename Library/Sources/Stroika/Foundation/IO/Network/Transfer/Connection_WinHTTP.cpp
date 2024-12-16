@@ -209,8 +209,8 @@ namespace {
 
             bool useSecureHTTP = fURL_.GetScheme () and fURL_.GetScheme ()->IsSecure ();
 
-            AutoWinHINTERNET_ hRequest{::WinHttpOpenRequest (*fConnectionHandle_, useRequest.fMethod.c_str (),
-                                                             fURL_.GetAuthorityRelativeResource ().c_str (), nullptr, WINHTTP_NO_REFERER,
+            AutoWinHINTERNET_ hRequest{::WinHttpOpenRequest (*fConnectionHandle_, useRequest.fMethod.As<wstring> ().c_str (),
+                                                             fURL_.GetAuthorityRelativeResource ().As<wstring> ().c_str (), nullptr, WINHTTP_NO_REFERER,
                                                              WINHTTP_DEFAULT_ACCEPT_TYPES, useSecureHTTP ? WINHTTP_FLAG_SECURE : 0)};
 
             // See http://stroika-bugs.sophists.com/browse/STK-442 - we pre-set to avoid double try on failure, but
@@ -255,7 +255,7 @@ namespace {
                     Throw (Execution::Exception{"Too large a message to send using WinHTTP"sv});
                 }
                 ThrowIfZeroGetLastError (
-                    ::WinHttpSendRequest (hRequest, useHeaderStrBuf.As<String> ().c_str (), static_cast<DWORD> (-1),
+                    ::WinHttpSendRequest (hRequest, useHeaderStrBuf.As<wstring> ().c_str (), static_cast<DWORD> (-1),
                                           useRequest.fData.empty () ? nullptr : const_cast<byte*> (useRequest.fData.begin ()),
                                           static_cast<DWORD> (useRequest.fData.size ()), static_cast<DWORD> (useRequest.fData.size ()), NULL));
 
@@ -507,7 +507,7 @@ namespace {
                 }
                 // NOT SURE - for IPv6 address - if we want to pass encoded value here?
                 fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (
-                    *fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->As<String> (URI::StringPCTEncodedFlag::ePCTEncoded).c_str (),
+                    *fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->As<String> (URI::StringPCTEncodedFlag::ePCTEncoded).As<wstring> ().c_str (),
                     fURL_.GetPortValue (), 0));
             }
         }

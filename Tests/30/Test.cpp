@@ -235,7 +235,8 @@ namespace {
             struct altStringSerializer {
                 auto operator() (String s)
                 {
-                    return s.empty () ? Memory::BLOB{} : Memory::BLOB{(const byte*)s.c_str (), (const byte*)s.c_str () + 1};
+                    wstring ws = s.As<wstring> ();
+                    return s.empty () ? Memory::BLOB{} : Memory::BLOB{(const byte*)ws.c_str (), (const byte*)ws.c_str () + 1};
                 };
             };
             //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };

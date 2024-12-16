@@ -307,8 +307,9 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             Assert (d);
             optional<TimeOfDay> t;
             {
-                String         timePart        = rep.SubString (numCharsConsumed);
-                const wchar_t* startOfTimePart = timePart.c_str ();
+                String                       timePart = rep.SubString (numCharsConsumed);
+                Memory::StackBuffer<wchar_t> timePartBuf{};
+                const wchar_t*               startOfTimePart = get<0> (timePart.c_str (&timePartBuf));
                 // nb: OK to not check strlen cuz string NUL terminated
                 // https://www.rfc-editor.org/rfc/rfc822#section-5 says can be upper or lower case T, or even ' ', but 'T' preferred/most common/recommended
                 if (*startOfTimePart == 'T' or *startOfTimePart == 't' or *startOfTimePart == ' ') [[likely]] {
@@ -328,7 +329,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                     else {
                         return nullopt;
                     }
-                    numCharsConsumed += ncc; // @todo fix - this is count of wchar_t not necessilarly full 'char32_t' characters
+                    numCharsConsumed += ncc; // @todo fix - this is count of wchar_t not necessary full 'char32_t' characters
                     t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second),
                                   DataExchange::ValidationStrategy::eThrow};
                 }
@@ -337,7 +338,8 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             optional<Timezone> tz;
             if (t) { // only can be present - so only check - if there is a time
                 String         tzArea      = rep.SubString (numCharsConsumed);
-                const wchar_t* startTZArea = tzArea.c_str ();
+                wstring        tzAreaW     = tzArea.As<wstring> ();
+                const wchar_t* startTZArea = tzAreaW.c_str ();
                 if (*startTZArea == 'Z' or *startTZArea == 'z') { // nb: OK to not check strlen cuz string NUL terminated
                     tz = Timezone::kUTC;
                     numCharsConsumed += 1;

@@ -116,7 +116,9 @@ namespace {
             String newRep = rep;
             if (newRep.length () == 4 and newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
                 newRep = newRep.substr (0, 2) + ":"sv + newRep.substr (2, 2);
-                ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR{newRep.c_str ()}, lcid, VAR_TIMEVALUEONLY, &d));
+                Memory::StackBuffer<wchar_t> buf{};
+                ThrowIfErrorHRESULT (
+                    ::VarDateFromStr (Characters::Platform::Windows::SmartBSTR{get<0> (newRep.c_str (&buf))}, lcid, VAR_TIMEVALUEONLY, &d));
             }
             else {
                 Execution::Throw (TimeOfDay::FormatException::kThe);

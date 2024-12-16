@@ -664,7 +664,7 @@ namespace {
                     return L"#" + "{:2x}{:2x}{:2x}"_f(obj->red, obj->green, obj->blue);
                 },
                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
-                    String tmpInBuf = d.As<String> ();
+                    wstring tmpInBuf = d.As<String> ().As<wstring> ();
                     if (tmpInBuf.length () != 7) {
                         Execution::Throw (DataExchange::BadFormatException{L"RGBColor sb length 7"});
                     }

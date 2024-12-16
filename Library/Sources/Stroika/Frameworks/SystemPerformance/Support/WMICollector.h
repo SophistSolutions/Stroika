@@ -136,7 +136,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         /**
          *  Get the list of available instances for this object
          */
-        nonvirtual Set<String> GetAvailableInstaces ();
+        nonvirtual Set<String> GetAvailableInstances ();
 
     public:
         /**
