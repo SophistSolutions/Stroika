@@ -217,8 +217,8 @@ namespace Stroika::Foundation::Execution {
         ProcessRunner (const CommandLine& args);
         ProcessRunner (const String& commandLine);
         ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o);
-        ProcessRunner (const CommandLine& args, const Options& o );
-        ProcessRunner (const String& commandLine, const Options& o );
+        ProcessRunner (const CommandLine& args, const Options& o);
+        ProcessRunner (const String& commandLine, const Options& o);
 #else
         ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o = {});
         ProcessRunner (const CommandLine& args, const Options& o = {});

@@ -579,7 +579,8 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSeconds timeout)
 
 #if 1
     filesystem::path exePath = GetEXEPath ();
-    ProcessRunner{exePath, Sequence<String>{{String{exePath}, "--"sv + String{CommandNames::kRunAsService}}}, ProcessRunner::Options{.fDetached=true}}.RunInBackground ();
+    ProcessRunner{exePath, Sequence<String>{{String{exePath}, "--"sv + String{CommandNames::kRunAsService}}}, ProcessRunner::Options{.fDetached = true}}
+        .RunInBackground ();
 #else
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String>{{String{}, ("--"sv + String{CommandNames::kRunAsService})}});
 #endif

@@ -10,18 +10,18 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
 #if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
-        inline ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args)
-        : ProcessRunner {executable, args, Options{}}
-        {
-        }
-        inline ProcessRunner::ProcessRunner (const CommandLine& args)
-            : ProcessRunner { args, Options{}}
-        {
-        }
-       inline ProcessRunner:: ProcessRunner (const String& commandLine)
-           : ProcessRunner {commandLine, Options{}}
-        {
-        }
+    inline ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args)
+        : ProcessRunner{executable, args, Options{}}
+    {
+    }
+    inline ProcessRunner::ProcessRunner (const CommandLine& args)
+        : ProcessRunner{args, Options{}}
+    {
+    }
+    inline ProcessRunner::ProcessRunner (const String& commandLine)
+        : ProcessRunner{commandLine, Options{}}
+    {
+    }
 #endif
     inline ProcessRunner::ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o)
         : fExecutable_{executable}
