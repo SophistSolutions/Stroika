@@ -211,9 +211,19 @@ namespace Stroika::Foundation::Execution {
          */
         ProcessRunner ()                     = delete;
         ProcessRunner (const ProcessRunner&) = delete;
+
+#if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+        ProcessRunner (const filesystem::path& executable, const CommandLine& args);
+        ProcessRunner (const CommandLine& args);
+        ProcessRunner (const String& commandLine);
+        ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o);
+        ProcessRunner (const CommandLine& args, const Options& o );
+        ProcessRunner (const String& commandLine, const Options& o );
+#else
         ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o = {});
         ProcessRunner (const CommandLine& args, const Options& o = {});
         ProcessRunner (const String& commandLine, const Options& o = {});
+#endif
 
     public:
         nonvirtual ProcessRunner& operator= (const ProcessRunner&) = delete;
