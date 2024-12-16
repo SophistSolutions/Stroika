@@ -567,10 +567,10 @@ namespace {
         int jStdin[2]{-1, -1};
         int jStdout[2]{-1, -1};
         int jStderr[2]{-1, -1};
-        int devNull = -1;
-        if (!in or !out or !err) {
-            devNull = ::open ("/dev/null", O_RDWR);
-        }
+        // int devNull = -1;
+        // if (!in or !out or !err) {
+        //     devNull = ::open ("/dev/null", O_RDWR);
+        // }
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
             ::CLOSE_ (jStdin[0]);
             ::CLOSE_ (jStdin[1]);
@@ -583,19 +583,19 @@ namespace {
             Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
         }
         else {
-            jStdin[0] = devNull;
+            jStdin[0] = ::open ("/dev/null", O_RDONLY);
         }
         if (out) {
             Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
         }
         else {
-            jStdout[1] = devNull;
+            jStdout[1] = ::open ("/dev/null", O_WRONLY);
         }
         if (err) {
             Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
         }
         else {
-            jStderr[1] = devNull;
+            jStderr[1] = ::open ("/dev/null", O_WRONLY);
         }
         // assert cuz code below needs to be more careful if these can overlap 0..2
         Assert (in == nullptr or (jStdin[0] >= 3 and jStdin[1] >= 3));
@@ -719,6 +719,7 @@ namespace {
                         int useSTDIN  = jStdin[0];
                         int useSTDOUT = jStdout[1];
                         int useSTDERR = jStderr[1];
+                        Assert (useSTDIN >= 0 and useSTDOUT >= 0 and useSTDERR >= 0);   // parent can have -1 FDs, but child always has legit FDs
                         ::close (0);
                         ::close (1);
                         ::close (2);
@@ -792,6 +793,12 @@ namespace {
             auto readALittleFromProcess = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache, bool* eof = nullptr,
                                                bool* maybeMoreData = nullptr) -> void {
                 if (fd == -1) {
+                    if (maybeMoreData != nullptr) {
+                        *maybeMoreData = false;
+                    }
+                    if (eof != nullptr) {
+                        *eof = true;
+                    }
                     return;
                 }
                 uint8_t buf[10 * 1024];
@@ -853,6 +860,9 @@ namespace {
                 }
             };
             auto readTilEOF = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
+                if (fd == -1) {
+                    return;
+                }
                 WaitForIOReady waiter{fd};
                 bool           eof = false;
                 while (not eof) {
