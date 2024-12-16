@@ -113,16 +113,6 @@ void IO::FileSystem::Ptr::CheckAccess (const filesystem::path& fileFullPath, boo
     }
 }
 
-optional<filesystem::path> IO::FileSystem::Ptr::FindExecutableInPath (const filesystem::path& /*filename*/) const
-{
-    // @TODO A
-    //   const char* pPath = ::getenv ("PATH");
-    // @todo windows https://msdn.microsoft.com/en-us/library/windows/desktop/aa365527(v=vs.85).aspx
-    // on unix - get env path and just prepend and run access (EEXEC PERM)
-    AssertNotImplemented ();
-    return nullopt;
-}
-
 DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const filesystem::path& fileName)
 {
 #if qStroika_Foundation_Common_Platform_POSIX

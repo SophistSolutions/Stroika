@@ -199,7 +199,6 @@ optional<filesystem::path> Execution::FindExecutableInPath (const filesystem::pa
     }
     else {
         // if not absolute, try relative to each element of the path (and CWD? not for now??)
-        using namespace Characters;
         for (filesystem::path d : kPath ()) {
             filesystem::path exe = d / fn;
             if (checkExists (exe)) {

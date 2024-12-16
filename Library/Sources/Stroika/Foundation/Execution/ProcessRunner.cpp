@@ -599,9 +599,9 @@ namespace {
             jStderr[1] = devNull;
         }
         // assert cuz code below needs to be more careful if these can overlap 0..2
-        Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
-        Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
-        Assert (jStderr[0] >= 3 and jStderr[1] >= 3);
+        Assert (in == nullptr or (jStdin[0] >= 3 and jStdin[1] >= 3));
+        Assert (out == nullptr or (jStdout[0] >= 3 and jStdout[1] >= 3));
+        Assert (err == nullptr or (jStderr[0] >= 3 and jStderr[1] >= 3));
         DbgTrace ("jStdout[0-CHILD] = {} and jStdout[1-PARENT] = {}"_f, jStdout[0], jStdout[1]);
 
         /*

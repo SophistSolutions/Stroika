@@ -183,7 +183,9 @@ namespace Stroika::Foundation::Execution {
 
 #if qStroika_Foundation_Common_Platform_POSIX
             /**
-            *  // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
+             *  \brief set umask of child process
+             * 
+             *  mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
              */
             optional<mode_t> fChildUMask{027};
 #endif

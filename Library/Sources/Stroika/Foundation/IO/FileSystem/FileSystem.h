@@ -120,12 +120,6 @@ namespace Stroika::Foundation::IO::FileSystem {
         nonvirtual void CheckAccess (const filesystem::path& fileFullPath, bool checkCanRead, bool checkCanWrite);
 
     public:
-        /**
-         *  Walk the (environment variable) PATH and return the full path to the named executable, if any.
-         */
-        nonvirtual optional<filesystem::path> FindExecutableInPath (const filesystem::path& filename) const;
-
-    public:
         // @todo see last_write_time
         nonvirtual DateTime GetFileLastModificationDate (const filesystem::path& fileName);
 
