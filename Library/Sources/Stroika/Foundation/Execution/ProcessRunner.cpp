@@ -545,12 +545,11 @@ namespace {
                                 const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
                                 const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
-        optional<mode_t> umask  = options.fChildUMask;
-        filesystem::path useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
-        TraceContextBumper ctx{
-            "{}::Process_Runner_POSIX_",
-            Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                "...,cmdLine='{}',currentDir={},..."_f, cmdLine, String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
+        optional<mode_t>   umask  = options.fChildUMask;
+        filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
+        TraceContextBumper ctx{"{}::Process_Runner_POSIX_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                                                                "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
+                                                                String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         // track the last few bytes of stderr to include in possible exception messages
         char   trailingStderrBuf[256];
@@ -963,11 +962,9 @@ namespace {
                                   const optional<filesystem::path>& executable, const CommandLine& cmdLine, const ProcessRunner::Options& options,
                                   const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
-        filesystem::path useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
-        TraceContextBumper ctx{
-            "{}::Process_Runner_Windows_",
-            Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
+        filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
+        TraceContextBumper ctx{"{}::Process_Runner_Windows_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                                                                  "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
                                                                   String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         /*
