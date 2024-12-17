@@ -24,6 +24,7 @@
 #if qStroika_Foundation_Common_Platform_Windows
 #include "Platform/Windows/Exception.h"
 #endif
+#include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
@@ -563,9 +564,9 @@ namespace {
          *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
          *          the write end of the pipe"
          */
-        int jStdin[2]{-1, -1};
-        int jStdout[2]{-1, -1};
-        int jStderr[2]{-1, -1};
+        int                     jStdin[2]{-1, -1};
+        int                     jStdout[2]{-1, -1};
+        int                     jStderr[2]{-1, -1};
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
             ::CLOSE_ (jStdin[0]);
             ::CLOSE_ (jStdin[1]);
@@ -635,16 +636,14 @@ namespace {
              *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp,
              *  and then there wont be a good way to propagate the error back to the caller.
              *
-             *  @todo for now - this code only checks access for absulute/full path, and we should also check using
+             *  @todo for now - this code only checks access for absolute/full path, and we should also check using
              *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
              */
             if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
                 errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
+                DbgTrace ("failed to access exe path so throwing: exe path='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
 #endif
-                auto            activity = LazyEvalActivity ([&] () -> String {  return "executing {}"_f(commandLine);  });
-                DeclareActivity currentActivity{&activity};
                 ThrowPOSIXErrNo (e);
             }
         }
@@ -1043,7 +1042,7 @@ namespace {
                     }
                 }
                 else {
-                    // not sure we want to do this?
+                    // not sure we want to do this? - since first thing could be magic interpretted by shell, like set
                     auto cmdArgs = cmdLine.GetArguments ();
                     if (cmdArgs.size () >= 1) {
                         filesystem::path exe2Find = cmdArgs[0].As<filesystem::path> ();
@@ -1283,6 +1282,8 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
+        auto            activity = LazyEvalActivity{[&] () { return "executing '{}'"_f(cmdLine); }};
+        DeclareActivity currentActivity{&activity};
 #if qStroika_Foundation_Common_Platform_POSIX
         Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -1290,168 +1291,3 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
 #endif
     };
 }
-
-#if 0
-/*
- ********************************************************************************
- ****************** Execution::DetachedProcessRunner ****************************
- ********************************************************************************
- */
-pid_t Execution::DetachedProcessRunner (const String& commandLine)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"Execution::DetachedProcessRunner", L"commandline={}"_f, commandLine};
-#endif
-    filesystem::path exe;
-    Sequence<String> args;
-    {
-        Sequence<String> tmp{CommandLine{commandLine}.GetArguments ()};
-        if (tmp.size () == 0) [[unlikely]] {
-            Throw (Exception{"invalid command argument to DetachedProcessRunner"sv});
-        }
-        exe  = tmp[0].As<filesystem::path> ();
-        args = tmp;
-    }
-    return DetachedProcessRunner (exe, args);
-}
-
-pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args)
-{
-    TraceContextBumper ctx{"Execution::DetachedProcessRunner", "executable={}, args={}"_f, executable, args};
-
-    // @todo Consider rewriting below launch code so more in common with ::Run / CreateRunnable code in ProcessRunner
-
-    //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but don't bother for
-    // now...
-    //IO::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.
-
-    Sequence<String> useArgs;
-    if (args.empty ()) {
-        useArgs.Append (String{executable.filename ()});
-    }
-    else {
-        bool firstTimeThru = true;
-        for (auto i = args.begin (); i != args.end (); ++i) {
-            if (firstTimeThru and i->empty ()) {
-                useArgs.Append (String{executable.filename ()});
-            }
-            else {
-                useArgs.Append (*i);
-            }
-            firstTimeThru = false;
-        }
-    }
-
-#if qStroika_Foundation_Common_Platform_POSIX
-    Characters::SDKString thisEXEPath = executable.native ();
-
-    // Note - we do this OUTSIDE the fork since its unsafe to do mallocs etc inside forked space.
-
-    // must map args to SDKString, and then right lifetime c-string pointers
-    vector<SDKString> tmpTStrArgs;
-    tmpTStrArgs.reserve (args.size ());
-    for (String i : useArgs) {
-        tmpTStrArgs.push_back (i.AsSDKString ());
-    }
-    vector<char*> useArgsV;
-    for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
-        // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
-        // their overwriting these strings!
-        // -- LGP 2013-06-08
-        useArgsV.push_back (const_cast<char*> (i->c_str ()));
-    }
-    useArgsV.push_back (nullptr);
-
-    pid_t pid = ThrowPOSIXErrNoIfNegative (UseFork_ ());
-    if (pid == 0) {
-        /*
-         *  @see http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html for some considerations in daemonizing a child process.
-         * 
-         *
-         * Very primitive code to detach the console. No error checking cuz at this stage, not too much to be done.
-         */
-
-        /*
-         */
-        for (int i = 0; i < kMaxFD_; ++i) {
-            ::close (i);
-        }
-        int id = ::open ("/dev/null", O_RDWR);
-        (void)::dup2 (id, 0);
-        (void)::dup2 (id, 1);
-        (void)::dup2 (id, 2);
-
-        /*
-         *  See http://pubs.opengroup.org/onlinepubs/007904875/functions/setsid.html
-         *  This is similar to setpgrp () but makes doing setpgrp unnecessary.
-         *  This is also similar to setpgid (0, 0) - but makes doing that unneeded.
-         *
-         *  Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
-         *
-         *  @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
-         *
-         *  Tried using 
-         *      #if defined _DEFAULT_SOURCE
-         *              daemon (0, 0);
-         *      #endif
-         *      to workaround systemd defaulting to KillMode=control-group
-         */
-        (void)::setsid ();
-
-        [[maybe_unused]] int ignored{};
-        ignored = chdir ("/"); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
-
-        ignored = umask (027); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
-
-        // @todo - CONSIDER ALSO DOING -                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
-        // check and extra closer
-
-        // @todo - safer EXECVP like we did in ProcessRunner()!!!!
-        [[maybe_unused]] int r = ::execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
-        // no practical way to return this failure...
-        // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
-        ::_exit (-1);
-    }
-    else {
-        return pid;
-    }
-#elif qStroika_Foundation_Common_Platform_Windows
-    PROCESS_INFORMATION processInfo{};
-    processInfo.hProcess            = INVALID_HANDLE_VALUE;
-    processInfo.hThread             = INVALID_HANDLE_VALUE;
-    [[maybe_unused]] auto&& cleanup = Finally ([&processInfo] () noexcept {
-        SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-        SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-    });
-
-    STARTUPINFO startInfo{};
-    startInfo.cb         = sizeof (startInfo);
-    startInfo.hStdInput  = INVALID_HANDLE_VALUE;
-    startInfo.hStdOutput = INVALID_HANDLE_VALUE;
-    startInfo.hStdError  = INVALID_HANDLE_VALUE;
-    startInfo.dwFlags |= STARTF_USESTDHANDLES;
-
-    DWORD createProcFlags = 0;
-    createProcFlags |= CREATE_NO_WINDOW;
-    createProcFlags |= NORMAL_PRIORITY_CLASS;
-    createProcFlags |= DETACHED_PROCESS;
-    {
-        bool  bInheritHandles = true;
-        TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
-        cmdLineBuf[0] = '\0';
-        for (const String& i : useArgs) {
-            //quickie/weak impl...
-            if (cmdLineBuf[0] != '\0') {
-                Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), SDKSTR (" "));
-            }
-            Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
-        }
-        Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
-                                                                     createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
-        Verify (::CloseHandle (processInfo.hProcess)); // We can recover the process handle from the process id if needed
-        Verify (::CloseHandle (processInfo.hThread));
-    }
-    return processInfo.dwProcessId;
-#endif
-}
-#endif
