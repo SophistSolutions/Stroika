@@ -796,7 +796,7 @@ namespace {
             Sequence<int> b;
             b += 1;
             DbgTrace ("b[0]={}"_f, b[0]);
-            DbgTrace ("b[0]={}"_f, b (0));
+            //DbgTrace ("b[0]={}"_f, b (0));    https://stroika.atlassian.net/browse/STK-1024 doesnt work on clang/macos
         }
     }
 }
