@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-//  TEST    Foundation::Traveral
+//  TEST    Foundation::Traversal
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
@@ -856,7 +856,7 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            EXPECT_TRUE (c.Take (3).SequentialEquals (Iterable<int>{1, 2, 3}));
+            EXPECT_TRUE (c.Take (3).SequentialEquals ({1, 2, 3}));
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
@@ -888,7 +888,7 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 9, 4, 5, 3};
-            EXPECT_TRUE (c.MeanValue () == 4);
+            EXPECT_EQ (c.MeanValue (), 4);
         }
         {
             // From Iterable::First/Iterable::Last docs
@@ -963,18 +963,18 @@ namespace {
             Containers::Bijection<int, int> seeIfReady;
             seeIfReady.Add (1, 1);
             seeIfReady.Add (2, 2);
-            EXPECT_TRUE (seeIfReady.size () == 2);
+            EXPECT_EQ (seeIfReady.size (), 2u);
             DbgTrace ("seeIfReady={}"_f, seeIfReady);
-            EXPECT_TRUE (seeIfReady.size () == 2);
+            EXPECT_EQ (seeIfReady.size (), 2u);
 
             const bool               kFails_ = true;
             Traversal::Iterable<int> fds     = kFails_ ? seeIfReady.Image () : Traversal::Iterable<int>{1, 2};
 
-            EXPECT_TRUE (fds.size () == 2);
-            EXPECT_TRUE (seeIfReady.size () == 2);
+            EXPECT_EQ (fds.size (), 2u);
+            EXPECT_EQ (seeIfReady.size (), 2u);
             DbgTrace ("fds={}"_f, fds); // note this is critical step in reproducing old bug - iterating over fds
-            EXPECT_TRUE (fds.size () == 2);
-            EXPECT_TRUE (seeIfReady.size () == 2);
+            EXPECT_EQ (fds.size (), 2u);
+            EXPECT_EQ (seeIfReady.size (), 2u);
         };
         t1 ();
         auto t11 = [] () {
@@ -982,16 +982,16 @@ namespace {
             seeIfReady.Add (1, 1);
             seeIfReady.Add (2, 2);
             seeIfReady.Add (3, 3);
-            EXPECT_TRUE (seeIfReady.size () == 3);
+            EXPECT_EQ (seeIfReady.size (), 3u);
             DbgTrace ("seeIfReady={}"_f, Characters::ToString (seeIfReady));
-            EXPECT_TRUE (seeIfReady.size () == 3);
+            EXPECT_EQ (seeIfReady.size (), 3u);
 
             Traversal::Iterable<int> fds = seeIfReady.Image ();
 
-            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_EQ (fds.size (), 3u);
             EXPECT_TRUE (seeIfReady.size () == 3);
             DbgTrace ("fds={}"_f, Characters::ToString (fds)); // note this is critical step in reproducing old bug - iterating over fds
-            EXPECT_TRUE (fds.size () == 3);
+            EXPECT_EQ (fds.size (), 3u);
             EXPECT_TRUE (seeIfReady.size () == 3);
             EXPECT_TRUE (fds.size () == 3);
             EXPECT_TRUE (seeIfReady.size () == 3);
@@ -1028,13 +1028,13 @@ namespace {
             [[maybe_unused]] size_t a = o1.size ();
             //DbgTrace (L"o1=%s", Characters::ToString (o1).c_str ());
 
-            EXPECT_TRUE (o1.size () == 3);
+            EXPECT_EQ (o1.size (), 3u);
 
             auto c1 = Containers::Collection<int>{o1};
             (void)Characters::ToString (o1);
-            EXPECT_TRUE (o1.size () == 3);
+            EXPECT_EQ (o1.size (), 3u);
             (void)Characters::ToString (c1);
-            EXPECT_TRUE (c1.size () == 3);
+            EXPECT_EQ (c1.size (), 3u);
         };
         t2 ();
     }
@@ -1077,7 +1077,7 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::Test21_Repeat_"};
         {
             Iterable<int> c{1};
-            EXPECT_TRUE (c.Repeat (5).SequentialEquals (Iterable<int>{1, 1, 1, 1, 1}));
+            EXPECT_TRUE (c.Repeat (5).SequentialEquals ({1, 1, 1, 1, 1}));
         }
         {
             using IO::Network::InternetAddress;
