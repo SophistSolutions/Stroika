@@ -139,7 +139,9 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Containers
   
-  COW (copy-on-write), define APIs by access pattern, and change representation transparently.
+  - COW (copy-on-write often signifcantly improves performance for most common cases)
+  - define APIs by access pattern
+  - representational transparency
   
   Stroika provides a rich set of container archtypes, and data structure implmentations.
   
