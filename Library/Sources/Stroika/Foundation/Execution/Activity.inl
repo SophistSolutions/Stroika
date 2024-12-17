@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename CTOR_ARG>
-    LazyEvalActivity<CTOR_ARG>::LazyEvalActivity (const CTOR_ARG& arg)
+    constexpr LazyEvalActivity<CTOR_ARG>::LazyEvalActivity (const CTOR_ARG& arg)
         requires (is_invocable_r_v<Characters::String, CTOR_ARG>)
         : fArg_{arg}
     {

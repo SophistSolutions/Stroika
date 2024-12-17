@@ -98,14 +98,14 @@ namespace Stroika::Foundation::Execution {
     template <typename CTOR_ARG>
     class LazyEvalActivity final : public Private_::Activities_::AsStringObj_ {
     public:
-        LazyEvalActivity (const CTOR_ARG& arg)
+        constexpr LazyEvalActivity (const CTOR_ARG& arg)
             requires (is_invocable_r_v<Characters::String, CTOR_ARG>);
 
     public:
         virtual Characters::String AsString () const override;
 
     private:
-        CTOR_ARG fArg_;
+        [[no_unique_address]] CTOR_ARG fArg_;
     };
 
     /**
