@@ -262,8 +262,9 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename OPTIONS>
     template <Common::IAnyOf<char, Character, String, span<const Character>, span<Character>> T>
-    nonvirtual void StringBuilder<OPTIONS>::InsertAt (T c, size_t at)
+    void StringBuilder<OPTIONS>::InsertAt (T c, size_t at)
     {
+        // @todo easy todo efficient implementation (at least for more common cases, like T fits inside of buffer-char-type - like T = ascii or bufferchartype=char32_t
         // inefficient, but functional for now - implementation
         String asStr = this->As<String> ();
         *this        = asStr.InsertAt (c, at);

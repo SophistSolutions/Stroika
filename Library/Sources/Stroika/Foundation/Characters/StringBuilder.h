@@ -16,9 +16,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Add InsertAt() methods - like from String class (before I deprecate them).
- *              http://stroika-bugs.sophists.com/browse/STK-34
- *
  *      @todo   Think about how to add support for STL manipulator/inserters like endl;
  * 
  *      @todo   Consider adding (back) reserve/capacity methods, but be sure to document these are in units of 
