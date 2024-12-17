@@ -79,31 +79,6 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  Having Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket work would be nice. For POD
-     *  types, this isn't hard to do well. But for things like Sequence<String> x;, where we want x[1].c_str () to work,
-     *  the only way I've found is to use a temp proxy subclassing from T. And that has costs over constant usage.
-     *
-     *  So unless I can find a better way, leave this off -- LGP 2017-02-22
-     *
-     *  Made some progress on this, but now the problem is that when you assign, like as:
-     *
-     *  Sequence<String> s;
-     *
-     *  String a = s[0];    // error at runtime
-     *
-     *  cuz String&& CTOR gets called with arg TemporaryReference<String>, and so but the time TemporaryReference DTOR called, value has
-     *  gone away. No obvious way to tell underlying value 'stolen' so maybe the subclassing trick wont work after all.
-     *
-     *  @see http://stroika-bugs.sophists.com/browse/STK-582
-     */
-#ifndef Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
-#define Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket 0
-#endif
-#ifndef Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
-#define Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens 1
-#endif
-
-    /**
      *  \brief A generalization of a vector: a container whose elements are keyed by the natural numbers.
      *
      *      SmallTalk book page 153
@@ -400,32 +375,58 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void SetAt (size_t i, ArgByValueType<value_type> item);
 
     private:
-        template <typename X, typename ENABLE = void>
         struct TemporaryElementReference_;
 
     public:
         /**
+         *  \brief alias for GetAt (i) - but returning const T
+         * 
          *  \req i < size ().
          *
-         *  \note - when using the non-const operator[] overload with a type T which is a struct/class, this may be significantly less efficient than
-         *          just directly calling 'GetAt'.
+         *  \note this returns const value_type, so you cannot accidentally assign to the result
+         *          a[3] = 4; // wont compile because return type const
+         * 
+         *  \note - we investigated having operator[] (int) return TemporaryElementReference_, but the trouble
+         *        is that, though this almost works, the COST of TemporaryElementReference_ is much higher than
+         *        returning the cost value_type, and its not super obvious at call point that you are getting the
+         *        expensive or inexpensive version (depends on constness of this pointer).
+         * 
+         *        Also considered having this return T&, the way you would with std c++ vector (etc). This would avoid a lot
+         *        of issues. BUT - it would BREAK the COW (copy-on-write) semantics. Consider if we had a single
+         *        reference to a sequence. And we grab the value_type& (to update it; this doesn't increase refCnt for container). Then in another thread,
+         *        we access the sequence (incrementing its reps ref count). We could be updating through that saved
+         *        reference to T while the other thread is looking at the sequence - a dangerous race.
+         * 
+         *        So because all of this, use the syntax a(3) instead of a[3] if you want a modifiable reference
+         *        (to call non-const methods on or to assign to).
          */
-        nonvirtual value_type operator[] (size_t i) const;
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
-        nonvirtual TemporaryElementReference_<T> operator[] (size_t i);
-#endif
+        nonvirtual const value_type operator[] (size_t i) const;
 
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
     public:
         /**
+         *  \brief operator() is similar to operator[] - but returning TemporaryElementReference_, and so is updatable/writable
+         * 
+         * See the notes on operator[]. The semantics of this method are similar to operator[],
+         * except that it returns a proxy object which allows (immediately) updating the element of the sequence.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Sequence<T> s = ...;
+         *          s(2) = 4;       // s[2] = 4;    WONT COMPILE
+         *      \endcode
+         *      
+         *      is equivalent to
+         *      \code
+         *          auto t = s.GetAt (2);
+         *          t = 4;
+         *          s.SetAt (2, i);     // note when using operator() - this SetAt() dont even if t not updated so wasteful unless updating
+         *      \endcode
+         * 
          *  \req i < size ()
-         *
-         *  \note - variant returning TemporaryElementReference_ is EXPERIMENTAL as of 2017-02-21 - if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
          *
          *  \note mutates container
          */
-        nonvirtual TemporaryElementReference_<value_type> operator() (size_t i);
-#endif
+        nonvirtual TemporaryElementReference_ operator() (size_t i);
 
     public:
         /**

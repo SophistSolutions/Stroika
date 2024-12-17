@@ -749,79 +749,55 @@ namespace {
     GTEST_TEST (Foundation_Containers_Sequence, SequenceIndexing_)
     {
         Debug::TraceContextBumper ctx{"{}::SequenceIndexing_"};
+        using namespace Characters;
         {
             Sequence<int> a;
             a += 1;
             [[maybe_unused]] int a0 = a[0];
-            // Should fail to compile
+            [[maybe_unused]] int a1 = a (0); // can use either
+            EXPECT_EQ (a0, 1);
+            EXPECT_EQ (a1, 1);
+            // Will fail to compile
             //a[0]   = 3; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
+            a (0) = 3; // updates only work using ()
+            EXPECT_EQ (a (0), 3);
+            EXPECT_EQ (a[0], 3);
         }
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
         {
-            Sequence<int> a;
-            a += 1;
-            int a0 = a[0];
-            EXPECT_TRUE (a0 == 1);
-            a (0) = 3;
-            EXPECT_TRUE (a (0) == 3);
-        }
-#endif
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
-        {
-            Sequence<int> a;
-            a += 1;
-            int a0 = a[0];
-            EXPECT_TRUE (a0 == 1);
-            a[0] = 3;
-            EXPECT_TRUE (a[0] == 3);
-        }
-#endif
-        {
-            using Characters::String;
+            // Same test but with strings
             Sequence<String> a;
             a += "1";
-            String a0 = a[0];
+            String                  a0 = a[0];
+            [[maybe_unused]] String a1 = a (0); // can use either
             // Should fail to compile
-            //a[0]   = 3; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
+            //a[0]   = "3"; --- @todo - @see and maybe use http://stroika-bugs.sophists.com/browse/STK-583 AssertDoesntCompile
+            a (0) = "3"; // updates only work using ()
+            EXPECT_EQ (a (0), "3");
+            EXPECT_EQ (a[0], "3");
         }
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
         {
-            using Characters::String;
             Sequence<String> a;
             a += "1";
-            EXPECT_TRUE (a (0) == "1");
             String a0 = a[0];
             a (0)     = "3";
-            EXPECT_TRUE (a (0) == "3");
+            EXPECT_TRUE (a[0].Contains ("3"));  // can call '.' methods on result of a[0]
+            EXPECT_TRUE (a (0).Contains ("3")); // can call '.' methods on result of a(n)
         }
         {
-            using Characters::String;
-            Sequence<String> a;
-            a += L"1";
-            String a0 = a[0];
-            a (0)     = L"3";
-            EXPECT_TRUE (a (0).Contains (L"3")); // can call '.' methods on result of a(n)
-        }
-#endif
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
-        {
-            using Characters::String;
-            Sequence<String> a;
-            a += L"1";
-            EXPECT_TRUE (a[0] == "1");
-            String a0 = a[0];
-            a[0]      = L"3";
-            EXPECT_TRUE (a[0] == "3");
-        }
-        {
-            using Characters::String;
+            // https://stroika.atlassian.net/browse/STK-1024
+            // Not sure why - but cannot get 'Format' stuff working here - minor - but an issue
             Sequence<String> a;
             a += "1";
-            String a0 = a[0];
-            a[0]      = "3";
-            EXPECT_TRUE (a[0].Contains ("3")); // can call '.' methods on result of a(n)
+            DbgTrace ("a[0]={}"_f, a[0]);
+            DbgTrace ("a[0]={}"_f, (String)a (0));
+            auto ooo1 = a (0);
+            auto oo   = Characters::ToString (move (ooo1));
+            //DbgTrace ("a[0]={}"_f, a (0));    // one case didnt work!!! - https://stroika.atlassian.net/browse/STK-1024
+            Sequence<int> b;
+            b += 1;
+            DbgTrace ("b[0]={}"_f, b[0]);
+            DbgTrace ("b[0]={}"_f, b (0));
         }
-#endif
     }
 }
 

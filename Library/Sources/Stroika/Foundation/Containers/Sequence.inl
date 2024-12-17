@@ -2,10 +2,17 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
 #include "Stroika/Foundation/Containers/Factory/Sequence_Factory.h"
 #include "Stroika/Foundation/Containers/Private/IterableUtils.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+
+namespace Stroika::Foundation::Characters {
+    class String;
+    template <typename T>
+    String UnoverloadedToString (const T& t);
+}
 
 namespace Stroika::Foundation::Containers {
 
@@ -27,53 +34,80 @@ namespace Stroika::Foundation::Containers {
      *                                      // e.g: error: �struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_� has no member named �Trim�
      */
     template <typename T>
-    template <typename X, typename ENABLE>
-    struct Sequence<T>::TemporaryElementReference_ { // for 'X' non-class (e.g == int which we cannot subclass from)
-        static_assert (same_as<T, X>, "constructed so this is so - just use second template so we can do enable_if_t");
-        Sequence<X>* fV;
-        size_t       fIndex;
+    struct Sequence<T>::TemporaryElementReference_ : conditional_t<is_class_v<T> or is_union_v<T>, T, Common::Empty> {
+    private:
+        static constexpr bool                                             kSubClass_ = is_class_v<T> or is_union_v<T>;
+        Sequence<T>*                                                      fV;
+        size_t                                                            fIndex_;
+        [[no_unique_address]] conditional_t<kSubClass_, Common::Empty, T> fValue_;
+
+    public:
         TemporaryElementReference_ (const TemporaryElementReference_&) = default;
-        TemporaryElementReference_ (TemporaryElementReference_&& from) = default;
-        TemporaryElementReference_ (Sequence<X>* s, size_t i)
+        TemporaryElementReference_ (TemporaryElementReference_&& src)
+            : fV{move (src.fV)}
+            , fIndex_{src.fIndex_}
+            , fValue_{move (src.fValue_)}
+        {
+            src.fV = nullptr; // it no longer writes on its DTOR
+        }
+        TemporaryElementReference_ (Sequence<T>* s, size_t i)
             : fV{(RequireExpression (s != nullptr), s)}
-            , fIndex{i}
+            , fIndex_{i}
         {
+            if constexpr (kSubClass_) {
+                *static_cast<T*> (this) = s->GetAt (i);
+            }
+            else {
+                fValue_ = s->GetAt (i);
+            }
         }
         TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
-        TemporaryElementReference_& operator= (ArgByValueType<X> v)
+        TemporaryElementReference_& operator= (TemporaryElementReference_&&)      = delete;
+        TemporaryElementReference_& operator= (ArgByValueType<T> v)
         {
             RequireNotNull (fV);
-            fV->SetAt (fIndex, v);
+            if constexpr (kSubClass_) {
+                *static_cast<T*> (this) = v;
+            }
+            else {
+                fValue_ = v;
+            }
             return *this;
         }
-        operator X () const
+        operator T () const
+            requires (not(kSubClass_))
         {
             RequireNotNull (fV);
-            return fV->GetAt (fIndex);
+            if constexpr (kSubClass_) {
+                return *static_cast<T*> (this);
+            }
+            else {
+                return fValue_;
+            }
         }
-    };
-    template <typename T>
-    template <typename X>
-    struct Sequence<T>::TemporaryElementReference_<X, enable_if_t<is_class_v<X> or is_union_v<X>>> : X {
-        static_assert (same_as<T, X>, "constructed so this is so - just use second template so we can do enable_if_t");
-        Sequence* fV;
-        size_t    fIndex;
-        TemporaryElementReference_ (const TemporaryElementReference_&) = default;
-        TemporaryElementReference_ (TemporaryElementReference_&&)      = default;
-        TemporaryElementReference_ (Sequence<X>* s, size_t i)
-            : X{(RequireExpression (s != nullptr), s->GetAt (i))}
-            , fV{s}
-            , fIndex{i}
-        {
-        }
-        TemporaryElementReference_& operator= (const TemporaryElementReference_&) = delete;
-        TemporaryElementReference_& operator= (ArgByValueType<X> v)
+        operator T& ()
+            requires (not(kSubClass_))
         {
             RequireNotNull (fV);
-            *((X*)this) = v;
-            return *this;
+            if constexpr (kSubClass_) {
+                return *static_cast<T*> (this);
+            }
+            else {
+                return fValue_;
+            }
         }
-        operator X&& () = delete; // didn't help -- http://stroika-bugs.sophists.com/browse/STK-582
+        // Tried this for https://stroika.atlassian.net/browse/STK-1024 - but didn't help
+        // and dont much like anyhow
+        //auto ToString () const
+        //{
+        //    RequireNotNull (fV);
+        //    if constexpr (kSubClass_) {
+        //        return Characters::UnoverloadedToString (*static_cast<T*> (this));
+        //    }
+        //    else {
+        //        return Characters::UnoverloadedToString (fValue_);
+        //    }
+        //}
         ~TemporaryElementReference_ ()
         {
             // now remaining problem with this strategy is that if we have
@@ -82,7 +116,12 @@ namespace Stroika::Foundation::Containers {
 
             // needed cuz modifications CAN come from from something like Sequence<String> x; x[1].clear ();
             if (fV != nullptr) {
-                IgnoreExceptionsForCall (fV->SetAt (fIndex, *((X*)this)));
+                if constexpr (kSubClass_) {
+                    IgnoreExceptionsForCall (fV->SetAt (fIndex_, *((T*)this)));
+                }
+                else {
+                    IgnoreExceptionsForCall (fV->SetAt (fIndex_, fValue_));
+                }
             }
         }
     };
@@ -215,26 +254,17 @@ namespace Stroika::Foundation::Containers {
         accessor._GetWriteableRep ().SetAt (i, item);
     }
     template <typename T>
-    inline auto Sequence<T>::operator[] (size_t i) const -> value_type
+    inline auto Sequence<T>::operator[] (size_t i) const -> const value_type
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
         Require (i < accessor._ConstGetRep ().size ());
         return accessor._ConstGetRep ().GetAt (i);
     }
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
     template <typename T>
-    inline auto Sequence<T>::operator[] (size_t i) -> TemporaryElementReference_<T>
+    inline auto Sequence<T>::operator() (size_t i) -> TemporaryElementReference_
     {
-        return TemporaryElementReference_<value_type>{this, i};
+        return TemporaryElementReference_{this, i};
     }
-#endif
-#if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens
-    template <typename T>
-    inline auto Sequence<T>::operator() (size_t i) -> TemporaryElementReference_<value_type>
-    {
-        return TemporaryElementReference_<value_type>{this, i};
-    }
-#endif
     template <typename T>
     template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline optional<size_t> Sequence<T>::IndexOf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer) const

@@ -235,7 +235,7 @@ struct Statement::MyRep_ : IRep {
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
-        fParameters_[parameterIndex].fValue = v;
+        fParameters_ (parameterIndex).fValue = v;
         AssertNotImplemented ();
     }
     virtual void Bind (const String& parameterName, const VariantValue& v) override
