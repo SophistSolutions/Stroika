@@ -176,7 +176,9 @@ namespace Stroika::Foundation::Characters {
      *      The Stroika String class supports having embedded NUL-characters. It also supports
      *      easy construction from NUL-terminated character strings.
      * 
-     *      There is an API - c_str () - to return a NUL-terminated wchar_t C-String (**SOMETIMES - AS OF v3 - TBD**).
+     *      Since Stroika v3, there is no longer c_str () support, since Stroika doesn't internally
+     *      require NUL-terminated strings, and actively encourages different compact representations of
+     *      strings (c_str() requires a choice of a particular encoding to make sense).
      *
      *      About spans, and the \0 NUL-termination - generally do NOT include
      *      the NUL-character in your span! Stroika strings will allow this, and treat
