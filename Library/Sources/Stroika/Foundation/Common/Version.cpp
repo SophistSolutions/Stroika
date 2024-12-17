@@ -44,7 +44,6 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     bool verFinal = verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         DbgTrace ("win32Version4DotString={}"_f, win32Version4DotStr);
-        static const Exception kException_{"Invalid Version String"sv};
         Throw (kException_);
     }
     return Version{static_cast<uint8_t> (major), static_cast<uint8_t> (minor), static_cast<VersionStage> (verStage), verSubStage, verFinal};
