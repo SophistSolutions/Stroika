@@ -1170,10 +1170,12 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    T Iterable<T>::Nth (size_t n) const
+    inline T Iterable<T>::Nth (ptrdiff_t n) const
     {
-        Require (n < size ());
-        size_t idx = n;
+        Require (n < static_cast<ptrdiff_t> (size ()));
+        Require (n > -static_cast<ptrdiff_t> (size ()));
+        size_t useIndex = n >= 0 ? static_cast<size_t> (n) : static_cast<size_t> (n + static_cast<ptrdiff_t> (size ()));
+        size_t idx      = useIndex; // countdown
         for (const T& i : *this) {
             if (idx == 0) {
                 return i;
@@ -1184,9 +1186,10 @@ namespace Stroika::Foundation::Traversal {
         return *begin ();
     }
     template <typename T>
-    T Iterable<T>::NthValue (size_t n, ArgByValueType<T> defaultValue) const
+    inline T Iterable<T>::NthValue (ptrdiff_t n, ArgByValueType<T> defaultValue) const
     {
-        size_t idx = n;
+        size_t useIndex = n >= 0 ? static_cast<size_t> (n) : static_cast<size_t> (n + static_cast<ptrdiff_t> (size ()));
+        size_t idx      = useIndex; // countdown
         for (const T& i : *this) {
             if (idx == 0) {
                 return i;

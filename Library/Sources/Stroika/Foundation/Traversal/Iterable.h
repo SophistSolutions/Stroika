@@ -642,17 +642,21 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-        *  \brief Find the Nth element of the Iterable<>
-        *
-        *  \par Example Usage
-        *       \code
-        *           Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-        *           EXPECT_TRUE (c.Nth (1) == 2);
-        *       \endcode
-        *
-        *  \req n < size ()
-        */
-        nonvirtual T Nth (size_t n) const;
+         *  \brief Find the Nth element of the Iterable<>
+         * 
+         *   if n < 0, treated as from the end, so actual index = size () + n
+         *
+         *  \par Example Usage
+         *       \code
+         *           Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+         *           EXPECT_EQ (c.Nth (1), 2);
+         *           EXPECT_EQ (c.Nth (-1), 6);
+         *       \endcode
+         *
+         *  \req n < size ()                     // for size_t overload
+         *  \req n < size () and n > -size()     // for ptrdiff_t overload
+         */
+        nonvirtual T Nth (ptrdiff_t n) const;
 
     public:
         /**
@@ -661,12 +665,12 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          EXPECT_TRUE (c.NthValue (1) == 2);
-         *          EXPECT_TRUE (c.NthValue (99) == int{});
+         *          EXPECT_EQ (c.NthValue (1), 2);
+         *          EXPECT_EQ (c.NthValue (99), int{});
          *      \endcode
          *
          */
-        nonvirtual T NthValue (size_t n, ArgByValueType<T> defaultValue = {}) const;
+        nonvirtual T NthValue (ptrdiff_t n, ArgByValueType<T> defaultValue = {}) const;
 
     public:
         /**

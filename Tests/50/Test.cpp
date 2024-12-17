@@ -852,7 +852,7 @@ namespace {
             using Containers::Set;
             Sequence<int> a{1, 3, 5, 7, 9};
             a = Sequence<int>{a.Skip (2)}; // http://stroika-bugs.sophists.com/browse/STK-532 - crash
-            EXPECT_TRUE ((a == Sequence<int>{5, 7, 9}));
+            EXPECT_EQ (a, (Sequence<int>{5, 7, 9}));
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
@@ -893,10 +893,10 @@ namespace {
         {
             // From Iterable::First/Iterable::Last docs
             Iterable<int> c{3, 5, 9, 38, 3, 5};
-            EXPECT_TRUE (*c.First () == 3);
-            EXPECT_TRUE (*c.First<int> ([] (int i) { return (i % 2 == 0) ? i : optional<int>{}; }) == 38);
-            EXPECT_TRUE (*c.Last () == 5);
-            EXPECT_TRUE (*c.Last<int> ([] (int i) { return i % 2 == 0 ? i : optional<int>{}; }) == 38);
+            EXPECT_EQ (*c.First (), 3);
+            EXPECT_EQ (*c.First<int> ([] (int i) { return (i % 2 == 0) ? i : optional<int>{}; }), 38);
+            EXPECT_EQ (*c.Last (), 5);
+            EXPECT_EQ (*c.Last<int> ([] (int i) { return i % 2 == 0 ? i : optional<int>{}; }), 38);
         }
         {
             // From Iterable::All docs
@@ -905,13 +905,14 @@ namespace {
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            EXPECT_TRUE (c.NthValue (1) == 2);
-            EXPECT_TRUE ((c.NthValue (99) == int{}));
+            EXPECT_EQ (c.NthValue (1), 2);
+            EXPECT_EQ (c.NthValue (99), (int{}));
+            EXPECT_EQ (c.Nth (-1), 6);
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
-            EXPECT_TRUE (c.First () == 1);
-            EXPECT_TRUE (c.First ([] (int i) { return i == 4; }) == 4);
+            EXPECT_EQ (c.First (), 1);
+            EXPECT_EQ (c.First ([] (int i) { return i == 4; }), 4);
         }
     }
 }
@@ -926,23 +927,22 @@ namespace {
         {
             Range<Duration> a{Duration{"PT.5S"sv}, Duration{"PT2M"}};
             Range<Duration> b{Duration{"PT1S"}, Duration{"PT2M"}};
-            Verify ((a ^ b) == b);
+            EXPECT_EQ ((a ^ b), b);
         }
         {
             Range<Duration> a{Duration{"PT.5S"}, Duration{"PT2M"}};
-            EXPECT_TRUE (a.Pin (Duration{"PT.5S"}) == Duration{"PT.5S"});
-            EXPECT_TRUE (a.Pin (Duration{"PT0S"}) == Duration{"PT.5S"});
-            EXPECT_TRUE (a.Pin (Duration{"PT5M"}) == Duration{"PT2M"});
-            EXPECT_TRUE (a.Pin (Duration{"PT10S"}) == Duration{"PT10S"});
+            EXPECT_EQ (a.Pin (Duration{"PT.5S"}), Duration{"PT.5S"});
+            EXPECT_EQ (a.Pin (Duration{"PT0S"}), Duration{"PT.5S"});
+            EXPECT_EQ (a.Pin (Duration{"PT5M"}), Duration{"PT2M"});
+            EXPECT_EQ (a.Pin (Duration{"PT10S"}), Duration{"PT10S"});
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Traversal, Test18_IterableConstructors_)
+    GTEST_TEST (Foundation_Traversal, IterableConstructors_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test18_IterableConstructors_"};
-
+        Debug::TraceContextBumper ctx{"{}::IterableConstructors_"};
         {
             vector<int>   a = {1, 3, 5};
             Iterable<int> aa1{vector<int>{1, 3, 5}};
@@ -1012,11 +1012,11 @@ namespace {
             const bool               kFails_ = true;
             Traversal::Iterable<int> fds     = kFails_ ? seeIfReady.Image () : Traversal::Iterable<int>{1, 2, 3};
 
-            EXPECT_TRUE (fds.size () == 3);
-            EXPECT_TRUE (seeIfReady.size () == 3);
+            EXPECT_EQ (fds.size (), 3u);
+            EXPECT_EQ (seeIfReady.size (), 3u);
             DbgTrace ("fds={}"_f, fds); // not this is critical step in reproducing old bug - iterating over fds
-            EXPECT_TRUE (fds.size () == 3);
-            EXPECT_TRUE (seeIfReady.size () == 3);
+            EXPECT_EQ (fds.size (), 3u);
+            EXPECT_EQ (seeIfReady.size (), 3u);
 
             const bool               kFails2_ = true;
             Traversal::Iterable<int> o1       = kFails2_ ? fds.Map ([&] (const int& t) { return t; }) : fds;
