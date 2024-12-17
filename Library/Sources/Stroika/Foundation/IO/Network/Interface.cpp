@@ -289,7 +289,7 @@ namespace {
                     if (line.size () >= 3 and line[0] == String::FromNarrowSDKString (name) and line[1] == "00000000"sv) {
                         //
                         int tmp[4]{};
-                        swscanf (line[2].c_str (), L"%02x%02x%02x%02x", &tmp[3], &tmp[2], &tmp[1], &tmp[0]);
+                        swscanf (line[2].As<wstring> ().c_str (), L"%02x%02x%02x%02x", &tmp[3], &tmp[2], &tmp[1], &tmp[0]);
                         return InternetAddress{static_cast<byte> (tmp[0]), static_cast<byte> (tmp[1]), static_cast<byte> (tmp[2]),
                                                static_cast<byte> (tmp[3])};
                     }
