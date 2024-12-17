@@ -548,7 +548,7 @@ namespace {
         optional<mode_t>   umask  = options.fChildUMask;
         filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
         TraceContextBumper ctx{"{}::Process_Runner_POSIX_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                                                                "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
+                                                                "...,cmdLine='{}',currentDir='{}',..."_f, cmdLine,
                                                                 String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
         // track the last few bytes of stderr to include in possible exception messages
@@ -566,10 +566,6 @@ namespace {
         int jStdin[2]{-1, -1};
         int jStdout[2]{-1, -1};
         int jStderr[2]{-1, -1};
-        // int devNull = -1;
-        // if (!in or !out or !err) {
-        //     devNull = ::open ("/dev/null", O_RDWR);
-        // }
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
             ::CLOSE_ (jStdin[0]);
             ::CLOSE_ (jStdin[1]);
@@ -647,9 +643,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("failed to access execpath so throwing: exepath='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
 #endif
-                auto            activity = LazyEvalActivity ([&] () -> String {
-                    return "executing {}"_f(Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
-                });
+                auto            activity = LazyEvalActivity ([&] () -> String {  return "executing {}"_f(commandLine);  });
                 DeclareActivity currentActivity{&activity};
                 ThrowPOSIXErrNo (e);
             }
