@@ -8,12 +8,6 @@
 #include "Stroika/Foundation/Containers/Private/IterableUtils.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 
-namespace Stroika::Foundation::Characters {
-    class String;
-    template <typename T>
-    String UnoverloadedToString (const T& t);
-}
-
 namespace Stroika::Foundation::Containers {
 
     /*
