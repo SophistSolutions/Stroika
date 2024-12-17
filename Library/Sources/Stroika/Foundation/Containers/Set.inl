@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline bool Set<T>::Intersects (const Set& lhs, const Set& rhs)
     {
-        // intersection operation is commutitive; and O(N) in side we iterate over, and < O(N) in side we do lookups
+        // intersection operation is commutative; and O(N) in side we iterate over, and < O(N) in side we do lookups
         // on, so do iteration on shorter side
         if (lhs.size () < rhs.size ()) {
             return rhs.Intersects (static_cast<const Iterable<T>&> (lhs));
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline Set<T> Set<T>::Intersection (const Set& lhs, const Set& rhs)
     {
-        // Require (lhs.GetElementEqualsComparer () == rhs.GetElementEqualsComparer ());  Not LITERALLY required, but results undefined if these comparers produce diffrent answers
+        // Require (lhs.GetElementEqualsComparer () == rhs.GetElementEqualsComparer ());  Not LITERALLY required, but results undefined if these comparers produce different answers
         // union operation is commutative; and O(N) in side we iterate over, and < O(N) in side we do lookups
         // on, so do iteration on shorter side
         if (lhs.size () < rhs.size ()) {
