@@ -49,7 +49,7 @@ namespace Stroika::Foundation::DataExchange {
         if (not(useE <= RANGE_TYPE::TraitsType::kUpperBound)) {
             Execution::Throw (BadFormatException{"Range end must be less than or equal to Range traits end"sv});
         }
-        return RANGE_TYPE (useS, useE);
+        return RANGE_TYPE{useS, useE};
     }
 
     /*

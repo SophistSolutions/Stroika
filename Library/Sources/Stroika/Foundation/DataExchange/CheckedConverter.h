@@ -28,7 +28,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  CheckedConverter_Range also checks that the endpoints are valid with respect to the type, and that s <= e.
      *
-     *  CheckedConverter_Range () if any values are invald.
+     *  CheckedConverter_Range () if any values are invalid.
      *
      *  @see CheckedConverter_ValueInRange
      */
