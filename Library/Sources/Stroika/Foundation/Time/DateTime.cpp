@@ -450,7 +450,8 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             {
                 int ncc{};
                 DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-                nItems = ::swscanf (tmp.As<wstring> ().c_str (), L"%d %3ls %d %d:%d:%d %100ls%n", &day, &monthStr, &year, &hour, &minute, &second, &tzStr, &ncc);
+                nItems = ::swscanf (tmp.As<wstring> ().c_str (), L"%d %3ls %d %d:%d:%d %100ls%n", &day, &monthStr, &year, &hour, &minute,
+                                    &second, &tzStr, &ncc);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
 
                 // tzStr captures the first token after the time, but there are often extra (ignored) tokens

@@ -16,6 +16,165 @@ especially those they need to be aware of when upgrading.
 --------
 
 
+#### 3.0d13 PRERELASE DOCS
+
+- docs
+    README.md
+
+    boost 1.87.0
+
+  - header include cleanups
+
+#if 0
+
+commit 18025b2d8c97152bd04d28c31eea0f577505b07f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 14 11:54:11 2024 -0500
+
+    latest npm updates for html sample
+
+commit b0f57dfcdc70502ef30e71badfeb11b8b4fdcaf2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 15 09:38:11 2024 -0500
+
+    Revert "latest npm updates for html sample"
+    
+    This reverts commit 18025b2d8c97152bd04d28c31eea0f577505b07f.
+
+commit cc286d7b887f3b9c7f1a4e5cc6cd8250c2829a3f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 15 11:28:48 2024 -0500
+
+    **not fully backward compat** change to ProcessRunner::Run - but simplified overlad taking streams - just ThrowIfFailed() automatically and dont return ProcessResult and documented using RunInBackground() to get that behavior - and added regtests to verify https://stroika.atlassian.net/browse/STK-585 addressed
+
+commit adc53eeff348b8f025f5d7a762538fa2e69b8ee9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 15 18:14:36 2024 -0500
+
+    new BackgroundProcess::WaitForStarted; GetChildProcessID; and new options fDetached and fChildUMask - used to deprecate DetachedProcessRunner
+
+commit 0630e8d97d081c277bd1e5c27a27c465b7faf3d9
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Dec 15 19:43:14 2024 -0500
+
+    qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy BWA
+
+commit d13bae13866fc4dcbdd839661f70135097b66d7b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 15 21:33:15 2024 -0500
+
+    ProcessRunner - changed default working directory to /tmp
+
+commit 92136c26f73f2f037c8a843b25698c737ee13fc6
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Dec 15 23:00:54 2024 -0500
+
+    maybe fixed regression in POSIX ProcessRunner code for keeping -1s in parent and flags for not pipes, and using devnull instead
+
+commit d8dcf8630af70930bffb1497b31ff7685c67b2af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 16 13:19:08 2024 -0500
+
+    Completed https://stroika.atlassian.net/browse/STK-968 - immutable String
+
+commit f2a222517e3c10e2ae761d67e06c821cc0b9a122
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 10:43:34 2024 -0500
+
+    lose config vars Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens and Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket; fixed https://stroika.atlassian.net/browse/STK-77 and https://stroika.atlassian.net/browse/STK-582 (really same); Sequnce<T>:: opeartor[] now always produces const (not updatable) and operator() always produces tmp reference (so updatable but more costly); documented well and added regtests
+
+commit 2a3f855857f466404a19823fc3a52a779be4fb08
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 11:30:20 2024 -0500
+
+    Minor cleanups to LazyEvalActivity (constexpr)
+
+commit da4fa2ee8460c0d91bb9ded48f796236ce3cc126
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 11:31:40 2024 -0500
+
+    Minor ProcessRunner cleanups and better use of DeclareActivity when running subprocess
+
+commit 82e902e1f5c56f94d6fbb94aa47f459225367fe0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 13:07:00 2024 -0500
+
+    cleanup StringBuilder note http://stroika-bugs.sophists.com/browse/STK-34 fixed
+
+commit 8ee096215068dce274c6feb94abc7aa689c2fe26
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 13:26:52 2024 -0500
+
+    https://stroika.atlassian.net/browse/STK-858 - Iterable::Nth and Nthvalue take signed int and support -1 from end^
+
+commit 87e1002b14362a553aeb3ab479a1266647af36be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 13:41:04 2024 -0500
+
+    https://stroika.atlassian.net/browse/STK-1024 another BWA
+
+commit 294242a5e21eed3ca409730b5211ea51a7c960aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 17:13:49 2024 -0500
+
+    Avoid depreacted string usage
+
+commit 681153ef01da3c043c20105e310df9a05adda3d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 20:11:30 2024 -0500
+
+    possible partial fix for what I misunderstood to be qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
+
+commit 0a4dbcaad9ce840220413f2e7788c785407790a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 20:22:11 2024 -0500
+
+    turn off qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy and see if other fixes address real underlying problem (missing #include)
+
+commit bda4dbc395a56e8ab3b518c7a942a0ab8ce96581
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 20:37:18 2024 -0500
+
+    sqlite 3.47.2; libcurl 8.11.1;
+
+commit a9205f9ef926e18d08b232f259af98ed37c6e8c0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 20:39:47 2024 -0500
+
+    MSYS_20241208; DOCKER; ltsc2025; windows
+
+commit 2520e195547f0937341e82cc50b3270e7198d639
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 17 20:59:08 2024 -0500
+
+    docekr windows - go back to ltsc2022 cuz ltsc2025 not working (at least first test failed with obscure early error)
+
+commit 19fe54bf88d0df0d009a40bc7354613e11a8c197
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Dec 17 21:21:53 2024 -0500
+
+    minor StringBuilder (use) tweak; silence warning for recent depreaction
+
+commit 6035f9064babcdfd21692a483d9e0ad9b3b92574
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Dec 17 21:23:28 2024 -0500
+
+    lose qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy BWA - fixed underlying issue (missing #include for def of UnoverloadedToString)
+
+commit dc410a4769f7f9b71e524e40ea95c5d797e91ff4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 18 07:23:40 2024 -0500
+
+    start 3.0d13
+
+#endif
+
+
+---------------------------11
+
+
+
+
 ### 3.0d12 {2024-12-14} {[diff](../../compare/v3.0d11...3.0d12)}
 
 #### TLDR
