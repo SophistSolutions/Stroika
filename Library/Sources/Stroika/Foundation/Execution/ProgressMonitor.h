@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Execution {
      *                  }
      *                  if (lastProg != curProgPct) {
      *                      cout << "\r";
-     *                      cout << Characters::CString::Format ("\t\t%d%% complete            ", curProgPct); /// spaces to wipe-out rest of line
+     *                      cout << Format ("\t\t{}% complete            "_f, curProgPct); /// spaces to wipe-out rest of line
      *                      lastProg = curProgPct;
      *                  }
      *              }}; 

@@ -25,16 +25,16 @@ namespace Stroika::Foundation::Traversal {
         optional<value_type> upperBoundSeenSoFar;
         Openness             upperBoundSeenSoFarOpenness{};
         for (const KeyValuePair<value_type, RANGETYPE>& i : tmp) {
-            //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
+            //DbgTrace ("i.fKey = {}, i.fValue = ({},{}, ol={}, or={})")f, i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
             if (upperBoundSeenSoFar) {
                 if (not comparer (*upperBoundSeenSoFar, i.fValue.GetLowerBound ())) {
-                    //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
-                    //DbgTrace ("return false cuz boudns no match");
+                    //DbgTrace ("i.fKey = {}, i.fValue = ({},{}, ol={}, or={})"_f, i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
+                    //DbgTrace ("return false cuz bounds no match");
                     return false;
                 }
                 if (upperBoundSeenSoFarOpenness == i.fValue.GetLowerBoundOpenness ()) {
                     //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
-                    //DbgTrace ("return false cuz boudns openness no match: upperBoundSeenSoFarOpenness =%d, and i.fValue.GetLowerBoundOpenness ()=%d)", upperBoundSeenSoFarOpenness, i.fValue.GetLowerBoundOpenness ());
+                    //DbgTrace ("return false cuz bounds openness no match: upperBoundSeenSoFarOpenness ={}, and i.fValue.GetLowerBoundOpenness ()={})"_f, upperBoundSeenSoFarOpenness, i.fValue.GetLowerBoundOpenness ());
                     return false;
                 }
             }

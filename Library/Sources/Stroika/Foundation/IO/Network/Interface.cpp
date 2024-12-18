@@ -459,7 +459,7 @@ namespace {
         for (const ifreq* i = std::begin (ifreqs);
              reinterpret_cast<const char*> (i) - reinterpret_cast<const char*> (std::begin (ifreqs)) < ifconf.ifc_len;) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("interface: ifr_name=%s; ifr_addr.sa_family = %d", i->ifr_name, i->ifr_addr.sa_family);
+            DbgTrace ("interface: ifr_name={}; ifr_addr.sa_family = {}"_f, i->ifr_name, i->ifr_addr.sa_family);
 #endif
             String interfaceName{String::FromSDKString (i->ifr_name)};
 

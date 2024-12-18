@@ -123,8 +123,7 @@ namespace {
         DataExchange::Variant::CharacterDelimitedLines::Reader   reader{{' ', '\t'}};
         for (Sequence<String> line : reader.ReadMatrix (readStream)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"in IO::FileSystem::{}::ReadMountInfo_MTabLikeFile_ linesize=%d, line[0]=%s", line.size (),
-                      line.empty () ? L"" : line[0].c_str ());
+            DbgTrace ("in IO::FileSystem::{}::ReadMountInfo_MTabLikeFile_ linesize={}, line[0]={}"_f, line.size (), line.empty () ? ""_k : line[0]);
 #endif
             //
             // https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-proc-mounts.html

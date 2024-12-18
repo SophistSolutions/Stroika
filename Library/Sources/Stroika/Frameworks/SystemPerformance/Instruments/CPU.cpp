@@ -192,7 +192,7 @@ namespace {
             for (const Sequence<String>& line :
                  reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"in Instruments::CPU::capture_GetSysTimes_ linesize={}, line[0]={}", line.size (), line.empty () ? ""_k : line[0]);
 #endif
                 size_t sz = line.size ();
                 if (sz >= 5 and line[0] == "cpu"sv) {

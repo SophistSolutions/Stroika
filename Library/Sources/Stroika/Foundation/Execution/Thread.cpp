@@ -426,8 +426,8 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
             priorityMin = ::sched_get_priority_min (schedulingPolicy);
             priorityMax = ::sched_get_priority_max (schedulingPolicy);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("schedulingPolicy=%d, default-priority=%d, sPriorityMin_=%d, priorityMax=%d", schedulingPolicy, param.sched_priority,
-                      priorityMin, priorityMax);
+            DbgTrace ("schedulingPolicy={}, default-priority={}, sPriorityMin_={}, priorityMax={}"_f, schedulingPolicy,
+                      param.sched_priority, priorityMin, priorityMax);
 #endif
         }
         int newPThreadPriority{priorityMin};
@@ -452,7 +452,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
                 newPThreadPriority = (priorityMax - priorityMin) * .5 + priorityMin;
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Setting os thread priority for thread %lld to %d", (long long int)(nh), newPThreadPriority);
+        DbgTrace (L"Setting os thread priority for thread %{} to %{}"_f, (long long int)(nh), newPThreadPriority);
 #endif
         /*
          *  \note Slightly simpler to use POSIX pthread_setschedprio - http://pubs.opengroup.org/onlinepubs/9699919799/functions/pthread_setschedprio.html

@@ -190,7 +190,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
                     nHops = 65 - replyIPHeader->ttl;
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"reply->ttl = %d, nHops = %d", replyIPHeader->ttl, nHops);
+                DbgTrace (L"reply->ttl = {}, nHops = {}"_f, replyIPHeader->ttl, nHops);
 #endif
                 return ResultType{Duration{Time::GetTickCount ().time_since_epoch ().count () - replyICMPHeader->timestamp / 1000.0}, nHops};
             }

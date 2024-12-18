@@ -1579,11 +1579,6 @@ void TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dra
 #if qDynamiclyChooseAutoScrollIncrement
     sLastTimeThrough = now;
 #endif
-#if 0
-    DbgTrace ("TextInteractor::WhileSimpleMouseTracking (tickCount=%f, newMousePos=(%d,%d), dragAnchor=%d, newSelStart=%d, newSelEnd=%d)\n",
-              Time::GetTickCount (), newMousePos.v, newMousePos.h, dragAnchor, newSelStart, newSelEnd
-             );
-#endif
 }
 
 /*

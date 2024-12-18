@@ -245,8 +245,7 @@ namespace {
                     for (const Sequence<String>& line : reader.ReadMatrix (
                              IO::FileSystem::FileInputStream::New (kProcVMStatFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (),
-                                  line.empty () ? L"" : line[0].c_str ());
+                        DbgTrace ("in Instruments::Memory::Info capture_ linesize={}, line[0]={}", line.size (), line.empty () ? ""_k : line[0]);
 #endif
                         static const String kpgfaultLabel_{"pgfault"sv};
                         static const String kpgpgoutLabel_{"pgpgout"sv};

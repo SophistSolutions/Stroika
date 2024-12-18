@@ -448,13 +448,6 @@ void TextImager::SetSelection (size_t start, size_t end)
 {
     Assert (start >= 0);
     Assert (end <= GetEnd ()); // char 1 between positions 1..2
-
-#if 0
-    DbgTrace ("TextImager::SetSelection (this= 0x%x, this_class = %s, oldSelStart=%d, oldSelEnd=%d, newSelStart=%d, newSelEnd=%d)\n",
-              this, typeid (*this).name (), GetSelectionStart (), GetSelectionEnd (), start, end
-             );
-#endif
-
     if (start != GetSelectionStart () or end != GetSelectionEnd ()) {
         SetSelection_ (start, end);
     }

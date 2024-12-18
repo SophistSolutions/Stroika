@@ -7845,9 +7845,6 @@ void WordProcessorTable::EmbeddedTableWordProcessor::ReleaseTablet (Tablet* tabl
 
 void WordProcessorTable::EmbeddedTableWordProcessor::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
 {
-#if 0
-    DbgTrace ("EmbeddedTableWordProcessor::RefreshWindowRect_ (suppressRefreshCalls = %d, updadeMode=%d)\n", fSuppressRefreshCalls, updateMode);
-#endif
     if (not fSuppressRefreshCalls) {
         // See SPR#1455- really never a need to do IMMEDIATE update and for these embedded WP's can get into a
         // deadly embrace. This may not be the BEST solution to that deadly embrace, but it appears to be a

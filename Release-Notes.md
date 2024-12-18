@@ -25,6 +25,8 @@ especially those they need to be aware of when upgrading.
 
   - header include cleanups
 
+  - Docker Containers for Ubuntu all use NODEJS=20 from deb.nodesource.... because failures with quasar / vite dependencies...
+
 #if 0
 
 commit 18025b2d8c97152bd04d28c31eea0f577505b07f

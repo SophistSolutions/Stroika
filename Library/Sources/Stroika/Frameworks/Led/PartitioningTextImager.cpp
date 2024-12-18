@@ -656,7 +656,7 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (CoordinateType hOffset, 
     Require (rowStart == GetStartOfRowContainingPosition (rowStart));
 
     /*
-     *  Note that this algoritm assumes that TextImager::CalcSegmentSize () measures the VIRTUAL characters,
+     *  Note that this algorithm assumes that TextImager::CalcSegmentSize () measures the VIRTUAL characters,
      *  including any mapped characters (mirroring) that correspond to the argument REAL character range.
      */
     size_t                  rowEnd  = GetEndOfRowContainingPosition (rowStart);
@@ -673,7 +673,7 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (CoordinateType hOffset, 
     Assert (not runs.empty () or (rowLen == 0));
     if (runs.size () > 1) {
         // sort by virtual start
-        sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart ());
+        sort (runs.begin (), runs.end (), TextLayoutBlock::LessThanVirtualStart{});
     }
     DistanceType  spannedSoFar = 0;
     TextDirection lastRunDir   = eLeftToRight;
@@ -702,19 +702,16 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (CoordinateType hOffset, 
                 DistanceType hSize = CalcSegmentSize (absoluteSegStart, curEnd);
                 if (se.fDirection == eLeftToRight) {
                     if (static_cast<CoordinateType> (hSize + spannedSoFar) > hOffset) {
-                        //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (LTR)", hOffset, prevEnd);
-                        return (prevEnd);
+                        return prevEnd;
                     }
                 }
                 else {
                     if (static_cast<CoordinateType> (segVisEnd) - static_cast<CoordinateType> (hSize) < hOffset) {
-                        //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (RTL)", hOffset, prevEnd);
-                        return (prevEnd);
+                        return prevEnd;
                     }
                 }
             }
-            //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOS)", hOffset, prevEnd);
-            return (prevEnd);
+            return prevEnd;
         }
 
         spannedSoFar += thisSpanWidth;
@@ -722,11 +719,9 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (CoordinateType hOffset, 
 
     Assert (hOffset > 0 or runs.size () == 0);
     if (lastRunDir == eLeftToRight) {
-        //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOR-LTR)", hOffset, rowEnd);
         return rowEnd;
     }
     else {
-        //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (EOR-RTL)", hOffset, rowStart);
         return rowStart;
     }
 }

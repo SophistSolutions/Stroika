@@ -29,13 +29,13 @@ namespace {
     String mkMessage_OffsetInfo_ (const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
     {
         StringBuilder result;
-        if (lineNumber.has_value ()) {
+        if (lineNumber) {
             result += Format ("Line {}"_f, *lineNumber);
-            if (columnNumber.has_value ()) {
-                result += Format ("; Column %d"_f, *columnNumber);
+            if (columnNumber) {
+                result += Format ("; Column {}"_f, *columnNumber);
             }
         }
-        if (fileOffset.has_value ()) {
+        if (fileOffset) {
             if (not result.empty ()) {
                 result += "; "sv;
             }

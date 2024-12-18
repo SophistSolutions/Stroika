@@ -527,7 +527,7 @@ namespace Stroika::Foundation::Traversal {
          *          s.Apply ([&cnt] (int i) {
          *              cnt += i;
          *          });
-         *          DbgTrace ("cnt=%d", cnt);
+         *          DbgTrace ("cnt={}"_f, cnt);
          *      \endcode
          *
          *  \note on 'seq' parameter, if you pass anything but (the default) eSeq value, be sure to check
@@ -770,14 +770,14 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          EXPECT_TRUE (c.Map<Iterable<String>> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { "3", "4", "7" }));
+         *          EXPECT_TRUE (c.Map<Iterable<String>> ([] (int i) { return Characters::Format ("{}"_f, i); }).SequentialEquals (Iterable<String> { "3", "4", "7" }));
          *      \endcode
          *
          *  \par Example Usage
          *      or transform into another container type
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          EXPECT_TRUE ((c.Map<vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
+         *          EXPECT_TRUE ((c.Map<vector<String>> ([] (int i) { return Characters::Format ("{}"_f, i); }) == vector<String>{"3", "4", "7"}));
          *      \endcode
          *
          *  \par Example Usage

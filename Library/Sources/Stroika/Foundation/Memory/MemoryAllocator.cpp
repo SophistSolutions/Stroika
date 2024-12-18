@@ -280,7 +280,7 @@ namespace {
                         ++cnt;
                     }
                 }
-                DbgTrace ("items of size %d, count %d", *si, cnt);
+                DbgTrace ("items of size {}, count {}"_f, *si, cnt);
             }
         }
 #endif

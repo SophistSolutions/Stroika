@@ -225,7 +225,7 @@ namespace {
             for (const Sequence<String>& line :
                  reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kProcFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"in Instruments::Network::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace ("in Instruments::Network::Info capture_ linesize={}, line[0]={}"_f, line.size (), line.empty () ? ""_k : line[0]);
 #endif
 #if qStroika_Foundation_Debug_DefaultTracingOn
                 ++nLine;
@@ -289,8 +289,8 @@ namespace {
             for (const Sequence<String>& line :
                  reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kProcFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"in Instruments::Network::Info Read_proc_net_netstat_ linesize=%d, line[0]=%s", line.size (),
-                          line.empty () ? L"" : line[0].c_str ());
+                DbgTrace ("in Instruments::Network::Info Read_proc_net_netstat_ linesize={}, line[0]={}"_f, line.size (),
+                          line.empty () ? ""_k : line[0]);
 #endif
                 if (line.size () >= 2 and line[0].Trim () == "TcpExt:"sv) {
                     if (firstTime) {
@@ -324,8 +324,7 @@ namespace {
             for (const Sequence<String>& line :
                  reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kProcFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"in Instruments::Network::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size (),
-                          line.empty () ? L"" : line[0].c_str ());
+                DbgTrace ("in Instruments::Network::Info Read_proc_net_snmp_ linesize={}, line[0]={}"_f, line.size (), line.empty () ? ""_k : line[0]);
 #endif
                 if (line.size () >= 2 and line[0].Trim () == "Tcp:"sv) {
                     if (firstTime) {
@@ -386,7 +385,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"ALL WMI Network Avialable instances"};
                 for (const String& i : fAvailableInstances_) {
-                    DbgTrace (L"wmiInstanceName='%s'", i.c_str ());
+                    DbgTrace (L"wmiInstanceName='{}'", i);
                 }
             }
 #endif
@@ -451,12 +450,12 @@ namespace {
             String wmiInstanceName = NullCoalesce (iFace.fDescription).ReplaceAll ("("sv, "["sv).ReplaceAll (")"sv, "]"sv).ReplaceAll ("#"sv, "_"sv);
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"iFace.fDescription='%s'", iFace.fDescription.Value ().c_str ());
-            DbgTrace (L"wmiInstanceName='%s'", wmiInstanceName.c_str ());
+            DbgTrace ("iFace.fDescription='{}'"_f, iFace.fDescription.Value ());
+            DbgTrace ("wmiInstanceName='{}'"_f, wmiInstanceName);
 #endif
 
             /*
-             *  @todo   this fAvailableInstances_.Contains code all over the place is a horible kludge prevent WMI crashes. Not sure
+             *  @todo   this fAvailableInstances_.Contains code all over the place is a horrible kludge prevent WMI crashes. Not sure
              *          what the best solution is. COULD just pre-add all interfaces. BUt that might monitor/collect too much?
              *
              *          And it might miss if new interfaces are added dynamically.
