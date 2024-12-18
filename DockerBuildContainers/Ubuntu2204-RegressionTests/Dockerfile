@@ -26,22 +26,16 @@ RUN apt-get install -y software-properties-common; \
 RUN apt-get update  # unclear why update needed but container build fails without
 RUN apt-get -qq install -y clang++-15 && apt-get install -y libc++-15-dev libc++abi-15-dev
 
-# # Used for Samples/HTMLUI (not needed - autodetected)
-#
 # Because Ubuntu2004 node version not working with vite (requires 14.x or later, but that has version of npm that didn't seem to work with builds)
-# Instructions from https://github.com/nodesource/distributions#readme
-RUN \
-    apt-get install -y ca-certificates curl gnupg; \
-    mkdir -p /etc/apt/keyrings; \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-
 ARG NODE_MAJOR=20
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
+
+# Used for Samples/HTMLUI (not needed - autodetected)
 RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
 
 #Only needed to run with valgrind regtests
-RUN apt-get -qq install -y valgrind
+RUN apt-get update; apt-get -qq install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
 RUN apt-get -qq install -y g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf iputils-ping

@@ -22,8 +22,13 @@ RUN apt-get -qq install -y clang++-17
 RUN apt-get -qq install -y clang++-18
 RUN apt-get -qq install -y clang++-19 && apt-get install -y libc++-19-dev libc++abi-19-dev
 
+## Because whatever comes with 24.10 stopped working with quasar 2024-12-18
+ARG NODE_MAJOR=20
+RUN apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
+
 # Used for Samples/HTMLUI (not needed - autodetected)
-RUN apt-get install -y nodejs  ;apt-get install -y  npm ; npm i -g npm @quasar/cli
+RUN apt-get update; apt-get install -y nodejs; npm i -g npm @quasar/cli
 
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind
