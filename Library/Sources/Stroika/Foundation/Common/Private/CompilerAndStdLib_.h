@@ -507,6 +507,8 @@ make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
 
         NOTE - maybe same issue as qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
 */
+// I THINK NOT REAL COMPILER BUG - MAYBE I FIXED IN MY CODE (missing #include)
+#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy 0
 #ifndef qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
 
 #if defined(__clang__)

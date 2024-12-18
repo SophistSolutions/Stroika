@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 
 #include "CharacterEncodingException.h"
 
@@ -13,7 +14,7 @@ using namespace Stroika::Foundation::Characters;
 
 /*
  ********************************************************************************
- ********************** Characters::CharacterEncodingException ******************
+ ******************** Characters::CharacterEncodingException ********************
  ********************************************************************************
  */
 CharacterEncodingException::CharacterEncodingException (EncodingOrDecoding encodingOrDecoding, optional<size_t> atSourceOffset,
