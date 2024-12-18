@@ -15,7 +15,8 @@
 # ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
 
 ## Seems to work now on github actions using runner=Windows-2022 --LGP 2022-02-25
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025
 
 FROM ${BASE_IMAGE}
 
@@ -60,11 +61,13 @@ ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/downloa
 ARG MSYS_20220904=https://github.com/msys2/msys2-installer/releases/download/2022-09-04/msys2-base-x86_64-20220904.sfx.exe
 ARG MSYS_20230127=https://github.com/msys2/msys2-installer/releases/download/2023-01-27/msys2-base-x86_64-20230127.sfx.exe
 ARG MSYS_20240507=https://github.com/msys2/msys2-installer/releases/download/2024-05-07/msys2-base-x86_64-20240507.sfx.exe
+ARG MSYS_20241208=https://github.com/msys2/msys2-installer/releases/download/2024-12-08/msys2-base-x86_64-20241208.sfx.exe
+
 SHELL ["powershell"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
   $ErrorActionPreference = 'Stop'; \
   [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12,Tls13'; \
-  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20240507" -OutFile msys2.exe; \
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20241208" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
   function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
