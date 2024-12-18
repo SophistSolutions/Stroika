@@ -26,14 +26,6 @@ RUN apt-get install -y software-properties-common; \
 RUN apt-get update  # unclear why update needed but container build fails without
 RUN apt-get -qq install -y clang++-15 && apt-get install -y libc++-15-dev libc++abi-15-dev
 
-# Because Ubuntu2004 node version not working with vite (requires 14.x or later, but that has version of npm that didn't seem to work with builds)
-ARG NODE_MAJOR=20
-RUN apt-get install -y curl
-RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
-
-# Used for Samples/HTMLUI (not needed - autodetected)
-RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
-
 #Only needed to run with valgrind regtests
 RUN apt-get update; apt-get -qq install -y valgrind
 
@@ -47,3 +39,11 @@ RUN apt-get -qq install -y g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf
 # RUN CLEANUP=1 GCC_VERSION=13.3.0 ./BuildGCC; \
 #     (cd /usr/local/bin ; ln -s g++ g++-13; ln -s gcc gcc-13; ln -s `which gcc-ranlib-12` gcc-ranlib-13; ln -s `which gcc-ar-12` gcc-ar-13; ); \
 #     rm BuildGCC
+
+# Because Ubuntu2004 node version not working with vite (requires 14.x or later, but that has version of npm that didn't seem to work with builds)
+ARG NODE_MAJOR=20
+RUN apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
+
+# Used for Samples/HTMLUI (not needed - autodetected)
+RUN apt-get update; apt-get install -y nodejs ; npm i -g npm @quasar/cli
