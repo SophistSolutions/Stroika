@@ -493,41 +493,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 #endif
 
 /*
-   Linking Test Builds/Release/Tests/Test02 (Foundation::Characters) ... 
-/usr/bin/ld: /tmp/ccp5kDeT.ltrans5.ltrans.o: in function `Stroika::Foundation::Characters::CharacterEncodingException::CharacterEncodingException(Stroika::Foundation::Characters::CharacterEncodingException::EncodingOrDecoding, std::optional<unsigned long>, std::optional<Stroika::Foundation::Characters::String> const&)':
-/__w/Stroika/Stroika/Tests/03/../../Library/Sources/Stroika/Foundation/Characters/StringBuilder.h:170:(.text+0x1f66): undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Characters::UnoverloadedToString<unsigned long>(unsigned long const&)'
-collect2: error: ld returned 1 exit status
-make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49: /__w/Stroika/Stroika/Builds/Release/Tests/Test03] Error 1
-make[3]: *** [Makefile:179: 03] Error 2
-make[3]: *** Waiting for unfinished jobs....
-/usr/bin/ld: /tmp/cca4u1A2.ltrans20.ltrans.o: in function `Stroika::Foundation::Characters::CharacterEncodingException::CharacterEncodingException(Stroika::Foundation::Characters::CharacterEncodingException::EncodingOrDecoding, std::optional<unsigned long>, std::optional<Stroika::Foundation::Characters::String> const&)':
-/__w/Stroika/Stroika/Tests/02/../../Library/Sources/Stroika/Foundation/Characters/StringBuilder.h:170:(.text+0x5086): undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Characters::UnoverloadedToString<unsigned long>(unsigned long const&)'
-collect2: error: ld returned 1 exit status
-make[4]: *** [/__w/Stroika/Stroika//Tests/Makefile-Test-Template.mk:49
-
-        NOTE - maybe same issue as qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
-*/
-// I THINK NOT REAL COMPILER BUG - MAYBE I FIXED IN MY CODE (missing #include)
-#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy 0
-#ifndef qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy
-
-#if defined(__clang__)
-// seen on apply clang++ 15, clang++-16
-// seen on clang++17 ubuntu 24.04
-// seen on clang++18 ubuntu 24.04
-// appears fixed for clang++19
-#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
-#elif defined(__GNUC__)
-// FIRST SEEN BROKEN IN GCC 13 and 12 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
-// also broken in g++-14???
-#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
-#else
-#define qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy 0
-#endif
-
-#endif
-
-/*
 
    https://bugs.llvm.org/show_bug.cgi?id=42111
 
