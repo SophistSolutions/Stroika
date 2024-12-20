@@ -8,62 +8,89 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-## 3.0d13 PRENOTES
+### 3.0d13 {2024-12-20} {[diff](../../compare/3.0d12...3.0d13)}
 
- - upgrade
-  - PRocessRunner::Run() - overload doing ThrowIfFailed() not needed anymore
+#### TLDR
+  - Fixed real bug masked with qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy BWA
+  - NODEJS=20 from deb.nodesource ubuntu container issues
+  - Cleaned up various issues in https://stroika.atlassian.net/
 
---------
+#### Upgrade Notes (3.0d12 to 3.0d13)
 
+ - ProcessRunner::Run() - overload doing ThrowIfFailed() not needed anymore (only applies to 3.0d12 code)
 
-#### 3.0d13 PRERELASE DOCS
+#### Change Details
 
-- docs
-    README.md
+- Documention
+  - Various docs/comments cleanups
+  - top level README.md
+- Build System
+  - Docker
+    - Windows: use MSYS_20241208;  tried but failed using ltsc2025
+    - Ubuntu: use NODEJS=20 from deb.nodesource.... because failures with quasar / vite dependencies...
+- Stroika Library
+  - Across Library
+    - header include cleanups
+  - Foundation
+    - Characters
+      - StringBuilder
+        - cleanup - note http://stroika-bugs.sophists.com/browse/STK-34 fixed
+      - String
+        - Completed https://stroika.atlassian.net/browse/STK-968 - immutable String
+    - Common
+      - Compiler Bug Defines
+        - add another qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy BWA
+        - lose qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy BWA - fixed underlying issue (missing #include for def of UnoverloadedToString)
+    - Containers
+      - Sequence
+        - lose config vars Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens and Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket;
+        - fixed https://stroika.atlassian.net/browse/STK-77 and https://stroika.atlassian.net/browse/STK-582 (really same); Sequnce<T>:: opeartor[] now always produces const (not updatable) and operator() always produces tmp reference (so updatable but more costly); documented well and added regtests
+        - documented new (replacement narrower bug# not really new issue)  https://stroika.atlassian.net/browse/STK-1024 another BWA
+    - Execution
+      - ProcessRunner
+        - **not fully backward compat** change to ProcessRunner::Run - but simplified overlad taking streams - just ThrowIfFailed() automatically and dont return ProcessResult and documented using RunInBackground() to get that behavior - and added regtests to verify https://stroika.atlassian.net/browse/STK-585 addressed
+      - changed default working directory to /tmp
+      - Minor cleanups and better use of DeclareActivity when running subprocess
+      - new BackgroundProcess::WaitForStarted; GetChildProcessID; and new options fDetached and fChildUMask - used to deprecate DetachedProcessRunner
+    - Traversal
+      - Iterable:
+        - https://stroika.atlassian.net/browse/STK-858 - Iterable::Nth and Nthvalue take signed int and support -1 from end
+- ThirdPartyComponents
+  - boost 1.87.0
+  - sqlite 3.47.2
+  - libcurl 8.11.1
 
-    boost 1.87.0
+#### Release-Validation
 
-  - header include cleanups
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
+  - MSVC: { 17.12.3 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-  - Docker Containers for Ubuntu all use NODEJS=20 from deb.nodesource.... because failures with quasar / vite dependencies...
-
-  - ProcessRunner
-    - **not fully backward compat** change to ProcessRunner::Run - but simplified overlad taking streams - just ThrowIfFailed() automatically and dont return ProcessResult and documented using RunInBackground() to get that behavior - and added regtests to verify https://stroika.atlassian.net/browse/STK-585 addressed
-    - ProcessRunner - changed default working directory to /tmp
-    - Minor ProcessRunner cleanups and better use of DeclareActivity when running subprocess
-
-    new BackgroundProcess::WaitForStarted; GetChildProcessID; and new options fDetached and fChildUMask - used to deprecate DetachedProcessRunner
-
-   - Compiler Bug Defines
-  
-    - add another qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy BWA
-    - lose qCompilerAndStdLib_LTOForgetsAnInlineSometimes_Buggy BWA - fixed underlying issue (missing #include for def of UnoverloadedToString)
-
-    Completed https://stroika.atlassian.net/browse/STK-968 - immutable String
-
- - Sequence
-    - lose config vars Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorOpenCloseParens and Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket; fixed https://stroika.atlassian.net/browse/STK-77 and https://stroika.atlassian.net/browse/STK-582 (really same); Sequnce<T>:: opeartor[] now always produces const (not updatable) and operator() always produces tmp reference (so updatable but more costly); documented well and added regtests
-    - documented new (replacement narrower bug# not really new issue)  https://stroika.atlassian.net/browse/STK-1024 another BWA
-
-
-StringBuilder:
-    cleanup StringBuilder note http://stroika-bugs.sophists.com/browse/STK-34 fixed
-
-Iterable:
-    https://stroika.atlassian.net/browse/STK-858 - Iterable::Nth and Nthvalue take signed int and support -1 from end^
-
-    sqlite 3.47.2; libcurl 8.11.1;
-
-- DOCKER (Windows)
-    MSYS_20241208; 
-    - tried but failed using ltsc2025
-
-
-
----------------------------
-
-
-
+---
 
 ### 3.0d12 {2024-12-14} {[diff](../../compare/v3.0d11...3.0d12)}
 
