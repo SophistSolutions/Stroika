@@ -56,16 +56,16 @@ EXPECT_TRUE (c.Distinct ().SetEquals ({ 1, 2, 4, 5, 6, 9 }));
 Iterable<int> c { 3, 4, 7 };
 // Map iterates over 'c' and produces the template argument container
 // automatically by appending the result of each lambda application
-EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), 
-           vector<String>{"3", "4", "7"}));
+EXPECT_EQ (c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), 
+           (vector<String>{"3", "4", "7"}));
 ~~~
  </details>
 
 
 <details>
-  <summary>Containers</summary>
+  <summary>Containers (are Iterable&lt;something>)</summary>
 
-- COW (copy-on-write often signifcantly improves performance for most common cases)
+- COW (copy-on-write) often signifcantly improves performance for most common cases
 - APIs defined by access pattern, like Stack=Push/Pop, Sequence= array-like access, Map={a->b, b->c,} etc
 - Representational transparency (e.g. Sequence might be implemented as array, or linked list)
   
@@ -140,7 +140,7 @@ EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }),
 <details>
   <summary>Streams abstraction</summary>
 
-  Makes compression, encryption, IO, networking, data processing, all fit together seemlessly:
+  &nbsp;&nbsp;Makes compression, encryption, IO, networking, data processing, all fit together seemlessly:
 
   ~~~c++
   // @todo INCOMPLETE - BAD EXAMPLE---
