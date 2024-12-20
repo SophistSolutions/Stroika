@@ -35,7 +35,8 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
  <summary>Iterable - easy to use funcational APIs on all iterables, similar to C# LINQ</summary>
   
 ~~~c++
-// nb: String is an Iterable<Character>, despite internally representing the characters very differently
+// nb: String is an Iterable<Character>, 
+// despite internally representing the characters very differently
 bool IsAllWhitespace (String s) const
 {
   return not s.Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
@@ -47,7 +48,7 @@ EXPECT_TRUE (c.Distinct ().SetEquals ({ 1, 2, 4, 5, 6, 9 }));
 Iterable<int> c { 3, 4, 7 };
 // Map iterates over 'c' and produces the template argument container
 // automatically by appending the result of each lambda application
-EXPECT_TRUE ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }) == vector<String>{"3", "4", "7"}));
+EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), vector<String>{"3", "4", "7"}));
 ~~~
  </details>
 
