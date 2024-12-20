@@ -1,0 +1,20 @@
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 6 tests from Frameworks_WebServer
+[ RUN      ] Frameworks_WebServer.SimpleStartStopServerTest
+[       OK ] Frameworks_WebServer.SimpleStartStopServerTest (6027 ms)
+[ RUN      ] Frameworks_WebServer.SimpleCurlTestTalk2Server
+[       OK ] Frameworks_WebServer.SimpleCurlTestTalk2Server (6026 ms)
+[ RUN      ] Frameworks_WebServer.SimpleCurlTestWithChunkedEncodingResponse
+[       OK ] Frameworks_WebServer.SimpleCurlTestWithChunkedEncodingResponse (6022 ms)
+[ RUN      ] Frameworks_WebServer.TestPOST
+[       OK ] Frameworks_WebServer.TestPOST (6020 ms)
+[ RUN      ] Frameworks_WebServer.TestEncContent
+[       OK ] Frameworks_WebServer.TestEncContent (6028 ms)
+[ RUN      ] Frameworks_WebServer.TestChunkedTransfer_
+[       OK ] Frameworks_WebServer.TestChunkedTransfer_ (6010 ms)
+[----------] 6 tests from Frameworks_WebServer (36137 ms total)
+
+[----------] Global test environment tear-down
+[==========] 6 tests from 1 test suite ran. (36138 ms total)
+[  PASSED  ] 6 tests.
