@@ -2,34 +2,42 @@
 
 Stroika is a modern, portable, C++ application framework. It makes writing C++ applications easier by providing safe, flexible, building blocks, as well as wrappers on other useful libraries that help them to all work together more seemlessly. 
 
-<details>
+<details style="margin-bottom:1em">
  <summary>Code snippets / examples</summary>
 
- <details>
- <summary>String class makes UNICODE easier</summary>
+  <details>
+    <summary>String class makes UNICODE easier</summary>
 
   ~~~c++
-  String a = u8" abc ";
+  extern void CallFunction (String);
+
+  String a = u8"£50";
+
+  // note regardless of which way constructed, 
+  // stored internally compactly (in this case 5 bytes for data)
   String b = u32" abc ";
+
   CallFunction (a+b);
+
   // trim whitespace, and convert to u16string for some legacy API
   std::u16string uuu = (a+b).Trim ().As<u16string>();
+
   // tokenize
   String t{ "ABC DEF G" };
   Assert (t.Tokenize ()[1] == "DEF");
   ~~~
- </details>
+  </details>
 
 
- <details>
- <summary>_f strings, c++20 format, works with stroika types, and easier to use</summary>
+  <details>
+    <summary>_f strings, c++20 format, works with stroika types, and easier to use</summary>
 
   ~~~c++
   // most Stroika types automatically support formattable<>
   DbgTrace ("v = {}"_f, v);   // to a tracelog file, or debugger
   cerr << "v = {}"_f (v) << endl;   // OR iostreams (unicode mapped automatically)
   ~~~
- </details>
+  </details>
 
  <details>
  <summary>Iterable - easy to use funcational APIs on all iterables, similar to C# LINQ</summary>
@@ -48,7 +56,8 @@ EXPECT_TRUE (c.Distinct ().SetEquals ({ 1, 2, 4, 5, 6, 9 }));
 Iterable<int> c { 3, 4, 7 };
 // Map iterates over 'c' and produces the template argument container
 // automatically by appending the result of each lambda application
-EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), vector<String>{"3", "4", "7"}));
+EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), 
+           vector<String>{"3", "4", "7"}));
 ~~~
  </details>
 
@@ -57,23 +66,30 @@ EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), vector<St
   <summary>Containers</summary>
 
 - COW (copy-on-write often signifcantly improves performance for most common cases)
-- APIs defined by access pattern, like Stack=Push/Pop, Sequence= array-like access, Map={from: to}, etc
-- Representational transparency
-  
-  Stroika provides a rich set of container archtypes, and data structure implmentations.
+- APIs defined by access pattern, like Stack=Push/Pop, Sequence= array-like access, Map={a->b, b->c,} etc
+- Representational transparency (e.g. Sequence might be implemented as array, or linked list)
   
   ~~~c++
-  extern void f(Set<int>);
+  extern void f(Set<int>);  // define API in terms of ArchType 'Set<int>'
+
   // use the default Set<> representation - the best for type 'int'
   Set<int> s{1, 2, 3};
-  f(s);  // data not actually copied - Stroika containers use 'copy-on-write (COW)'
+
+  // as if copy-by-value, but data not actually copied - Stroika containers use 'copy-on-write (COW)'
+  f(s);
+
   s = Concrete::SortedSet_SkipList<int>{s}; // Use a skiplist to represent the set
+
   f(s);  // call f the same way regardless of data structure used for implementation
+  
   // set equality not order dependent (regardless of data structure)
   Assert (s == {2,3,1});  
   ~~~
 
-  See [Containers Sample](./Samples/Containers/ReadMe.md) for more details
+  See [Containers Sample](./Samples/Containers/ReadMe.md) for more details;
+  Stroika provides a rich set of container [archtypes, and data structure implmentations](./Library/Sources/Stroika/Foundation/Containers/ReadMe.md).
+  
+
 
 </details>
 
@@ -107,23 +123,24 @@ EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), vector<St
 
   ~~~c++
   Route{"variables/(.+)"_RegEx,
-        // explicit message handler
-        [this] (Message& m, const String& varName) {
-            WriteResponse (m.rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
-        }},
-    Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx,
-        // automatically map high level functions via ObjectVariantMapper
-        ObjectRequestHandler::Factory{kBinaryOpObjRequestOptions_,
-                                      [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
+    // explicit message handler
+    [this] (Message& m, const String& varName) {
+        WriteResponse (m.rwResponse (), kVariables_, 
+                       kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
+  }},
+  Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx,
+    // automatically map high level functions via ObjectVariantMapper
+    ObjectRequestHandler::Factory{
+      kBinaryOpObjRequestOptions_,
+      [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
   ~~~
-
   See [WebServices sample](Samples/WebService/ReadMe.md) for more details.
 </details>
 
 <details>
   <summary>Streams abstraction</summary>
 
-   Makes compression, encryption, IO, networking, data processing, all fit together seemlessly
+  Makes compression, encryption, IO, networking, data processing, all fit together seemlessly:
 
   ~~~c++
   // @todo INCOMPLETE - BAD EXAMPLE---
@@ -133,13 +150,13 @@ EXPECT_EQ ((c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), vector<St
     Memory::BLOB::FromHex ("2d ...");//...
   // EncodeAES takes a stream, and produces a stream
   // which can be chained with the gzip Transformer, which takes a stream, and produces a
-  Compression::GZip::Compress::New ().Transform (EncodeAES (kDerivedKey, srcText.As<Streams::InputStream::Ptr<byte>> (), AESOptions::e256_CBC))
+  Compression::GZip::Compress::New ().Transform (
+    EncodeAES (kDerivedKey, srcText.As<Streams::InputStream::Ptr<byte>> (), AESOptions::e256_CBC));
   ~~~
 </details>
 
 </details>
 
-<br/>
 Stroika provides a layer on top of the Standard C++ Library, with simpler to use (higher level) classes, more safety checking guarantees (in debug builds), and addressing areas not standardized (such as networking). But those Stroika classes seamlessly integrate with standard C++ classes, and your code can easily use as much of either library as preferences dictate.
 
 Stylistically, Stroika differs from the Standard C++ Library, boost, and many other C++ libraries, in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)). The abstraction of type hierarchies is better suited to how people reason, and templates and concepts - while powerful - can be fiddly and obscure programmer intent. Also, Stroika emphasizes separation of interface from implementation: carefully documenting the interface in the headers, and separating the implementation to other files.
