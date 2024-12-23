@@ -58,6 +58,13 @@ namespace Stroika::Foundation::Characters {
          *  \note RegularExpression {} creates a special regular expression that matches nothing.
          *  \note RegularExpression (String re) throws std::regex_error () if provided an invalid regular expression.
          *  \note The default syntax is ECMAScript.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          // see https://www.gnu.org/software/emacs/manual/html_node/elisp/Char-Classes.html#Char-Classes
+         *          const auto kSingleWhitespaceChar = RegularExpression{"[:blank:]"sv};
+         *          const auto kSeriesOfWhitespaceCharacters = RegularExpression{"[:blank:]+"sv};
+         *      \endcode
          */
         explicit RegularExpression ();
         explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = eWithCase);
