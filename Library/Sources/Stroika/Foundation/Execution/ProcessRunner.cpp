@@ -895,10 +895,9 @@ namespace {
                         stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
                     }
                     stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
-                    Throw (ProcessRunner::Exception{cmdLine.As<String> (), "Spawned program"sv, stderrMsg.str (),
+                    Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (),
                                                     WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
-                                                    WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},
-                                                    WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{}});
+                                                    WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{});
                 }
             }
         }

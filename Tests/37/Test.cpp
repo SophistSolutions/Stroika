@@ -219,9 +219,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ProcessRunner, TestFailureHanlding)
+    GTEST_TEST (Foundation_Execution_ProcessRunner, TestFailureHandling)
     {
-        Debug::TraceContextBumper ctx{"TestFailureHanlding"};
+        Debug::TraceContextBumper ctx{"TestFailureHandling"};
         try {
             ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
             pr.Run ();
