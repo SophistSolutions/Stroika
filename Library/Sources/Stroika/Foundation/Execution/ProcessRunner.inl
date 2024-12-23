@@ -129,6 +129,8 @@ namespace Stroika::Foundation::Execution {
         return fRep_->fPID;
     }
 
+    /// DEPRECATED
+
     [[deprecated ("Since Stroika v3.0d13 - use ProcessRunner{Options{.fDetached=true}")]] inline pid_t
     DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args)
     {
