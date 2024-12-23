@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Execution {
      *        created/thrown. @see CaptureCurrentActivities
      * 
      *  \note   for now, constexpr Activity<wstring_view> kActivity;    // FAILS
-     *          This is because AsStringObj_ has a virtual destructor (necessary for other types). Thats crazy
+     *          This is because AsStringObj_ has a virtual destructor (necessary for other types). That's crazy
      *          because constexpr objects are never destroyed, so its crazy to care that they have a virtual DTOR.
      *          Still, g++ and msvc both agree on this; I think this MAYBE fixed in C++20 (not yet tested) - because
      *          there they at least allow virtual constexpr methods. That might impact (indirectly) whether an object
