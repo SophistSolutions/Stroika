@@ -6,6 +6,21 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
+     ******************* Execution::ProcessRunner::Exception ************************
+     ********************************************************************************
+     */
+    inline ProcessRunner::Exception::Exception (const String& failureMessage, const optional<String>& stderrFragment,
+                                                const optional<ExitStatusType>& wExitStatus, const optional<SignalID>& wTermSig)
+        : inherited{mkMsg_ (failureMessage, stderrFragment, wExitStatus, wTermSig)}
+        , fFailureMessage{failureMessage}
+        , fStderrFragment{stderrFragment}
+        , fExitStatus{wExitStatus}
+        , fTermSignal{wTermSig}
+    {
+    }
+
+    /*
+     ********************************************************************************
      *************************** Execution::ProcessRunner ***************************
      ********************************************************************************
      */

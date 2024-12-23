@@ -17,6 +17,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
@@ -235,35 +236,13 @@ namespace {
  ***************** Execution::ProcessRunner::Exception **************************
  ********************************************************************************
  */
-#if qStroika_Foundation_Common_Platform_POSIX
-ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
-                                     const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
-    : inherited{mkMsg_ (cmdLine, errorMessage, stderrSubset, wExitStatus, wTermSig, wStopSig)}
-    , fCmdLine_{cmdLine}
-    , fErrorMessage_{errorMessage}
-    , fWExitStatus_{wExitStatus}
-    , fWTermSig_{wTermSig}
-    , fWStopSig_{wStopSig}
+String ProcessRunner::Exception::mkMsg_ (const String& errorMessage, const optional<String>& stderrSubset,
+                                         const optional<ExitStatusType>& wExitStatus, const optional<SignalID>& wTermSig)
 {
-}
-#elif qStroika_Foundation_Common_Platform_Windows
-ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err)
-    : inherited{mkMsg_ (cmdLine, errorMessage, stderrSubset, err)}
-    , fCmdLine_{cmdLine}
-    , fErrorMessage_{errorMessage}
-    , fErr_{err}
-{
-}
-#endif
-#if qStroika_Foundation_Common_Platform_POSIX
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
-                                         const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
-{
-    Characters::StringBuilder sb;
+    StringBuilder sb;
     sb << errorMessage;
-    sb << " '"sv << cmdLine << "' failed"sv;
     {
-        Characters::StringBuilder extraMsg;
+        StringBuilder extraMsg;
         if (wExitStatus) {
             extraMsg << "exit status {}"_f(int (*wExitStatus));
         }
@@ -273,43 +252,15 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
             }
             extraMsg << "terminated by signal {}"_f(int (*wTermSig));
         }
-        if (wStopSig) {
-            if (not extraMsg.empty ()) {
-                extraMsg << ", "sv;
-            }
-            extraMsg << "stopped by signal {}"_f(int (*wStopSig));
-        }
         if (not extraMsg.empty ()) {
-            sb << ": "sv + extraMsg.str ();
+            sb << ": "sv << extraMsg;
         }
     }
     if (stderrSubset) {
-        sb << "; "sv + stderrSubset->LimitLength (100);
+        sb << " (captured stderr: "sv + stderrSubset->ReplaceAll (RegularExpression{"[:blank:]+"sv}, " "sv).LimitLength (100) << ")"sv;
     }
     return sb;
 }
-#elif qStroika_Foundation_Common_Platform_Windows
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
-                                         const optional<DWORD>& err)
-{
-    Characters::StringBuilder sb;
-    sb << errorMessage;
-    sb << " '"sv << cmdLine << "' failed"sv;
-    {
-        Characters::StringBuilder extraMsg;
-        if (err) {
-            extraMsg << "error: {}"_f(*err);
-        }
-        if (not extraMsg.empty ()) {
-            sb << ": "sv << extraMsg.str ();
-        }
-    }
-    if (stderrSubset) {
-        sb << "; "sv << stderrSubset->LimitLength (100);
-    }
-    return sb;
-}
-#endif
 
 /*
  ********************************************************************************
@@ -319,10 +270,11 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 void ProcessRunner::ProcessResultType::ThrowIfFailed ()
 {
     if (fExitStatus and *fExitStatus != 0) {
-        Throw (RuntimeErrorException{"Error running process: returned exit status: {}"_f(*fExitStatus)});
+        Throw (Exception{"Child process failed", nullopt, *fExitStatus});
     }
     if (fTerminatedByUncaughtSignalNumber and *fTerminatedByUncaughtSignalNumber != 0) {
-        Throw (RuntimeErrorException{"Error running process: terminated by signal: {}"_f(*fTerminatedByUncaughtSignalNumber)});
+        Throw (Exception{"Child process failed", nullopt, nullopt, *fTerminatedByUncaughtSignalNumber});
+        //        Throw (RuntimeErrorException{"Child process failed: terminated by signal: {}"_f(*fTerminatedByUncaughtSignalNumber)});
     }
 }
 
@@ -342,7 +294,7 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
     Thread::Ptr                                    t{fRep_->fProcessRunner};
     t.ThrowIfDoneWithException ();
     if (auto o = GetProcessResult ()) {
-        if (o->fExitStatus and o->fExitStatus != 0) {
+        if (o->fExitStatus and o->fExitStatus != ExitStatusType{}) {
             AssertNotReached (); // I don't think this can happen since it should have resulted in a propagated exception
         }
         if (o->fTerminatedByUncaughtSignalNumber) {
@@ -428,6 +380,8 @@ void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::P
                          ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
+    auto               activity = LazyEvalActivity ([this] () -> String { return "running '{}'"_f(this->GetCommandLine ()); });
+    DeclareActivity    currentActivity{&activity};
     if (timeout == Time::kInfinity) {
         fStdIn_  = in;
         fStdOut_ = out;
@@ -473,8 +427,8 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
     }
 }
 
-auto ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress,
-                         Time::DurationSeconds timeout) -> tuple<Characters::String, Characters::String>
+auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress,
+                         Time::DurationSeconds timeout) -> tuple<String, String>
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     MemoryStream::Ptr<byte>                         useStdIn  = MemoryStream::New<byte> ();
@@ -506,14 +460,18 @@ auto ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOp
         DbgTrace ("Captured stdout: {}"_f, out);
         DbgTrace ("Captured stderr: {}"_f, err);
 #endif
+        Throw (Exception{e.fFailureMessage, err, e.fExitStatus, e.fTermSignal});
         Throw (Exception{this->fArgs_.As<String> (), "{}: output: {}, stderr: {}"_f(e.As<String> (), out, err)});
     }
     catch (...) {
+        String out = mkReadStream (useStdOut).ReadAll ();
+        String err = mkReadStream (useStdErr).ReadAll ();
 #if qStroika_Foundation_Debug_DefaultTracingOn
-        DbgTrace ("Captured stdout: {}"_f, TextReader::New (useStdOut.As<Memory::BLOB> ()).ReadAll ());
-        DbgTrace ("Captured stderr: {}"_f, TextReader::New (useStdErr.As<Memory::BLOB> ()).ReadAll ());
+        DbgTrace ("Captured stdout: {}"_f, out);
+        DbgTrace ("Captured stderr: {}"_f, err);
 #endif
-        ReThrow ();
+        exception_ptr e = current_exception ();
+        Throw (NestedException{"{} (stderr: {})"_f(e, err), e});
     }
 }
 
@@ -1042,7 +1000,7 @@ namespace {
                     }
                 }
                 else {
-                    // not sure we want to do this? - since first thing could be magic interpretted by shell, like set
+                    // not sure we want to do this? - since first thing could be magic interpreted by shell, like set
                     auto cmdArgs = cmdLine.GetArguments ();
                     if (cmdArgs.size () >= 1) {
                         filesystem::path exe2Find = cmdArgs[0].As<filesystem::path> ();
@@ -1245,9 +1203,7 @@ namespace {
 
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
-                        // NOTE - might be interesting to log captured stdout/stderr data here, but we didn't capture stderr(?) and
-                        // didn't save stdout (wrote to stream). Caller can capture/report....
-                        Throw (ProcessRunner::Exception{cmdLine.As<String> (), "Spawned program"sv, {}, processExitCode});
+                        Throw (ProcessRunner::Exception{"Child process failed"sv, nullopt, processExitCode});
                     }
                 }
                 else {
