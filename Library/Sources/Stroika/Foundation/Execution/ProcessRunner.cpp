@@ -274,7 +274,6 @@ void ProcessRunner::ProcessResultType::ThrowIfFailed ()
     }
     if (fTerminatedByUncaughtSignalNumber and *fTerminatedByUncaughtSignalNumber != 0) {
         Throw (Exception{"Child process failed", nullopt, nullopt, *fTerminatedByUncaughtSignalNumber});
-        //        Throw (RuntimeErrorException{"Child process failed: terminated by signal: {}"_f(*fTerminatedByUncaughtSignalNumber)});
     }
 }
 
