@@ -15,14 +15,14 @@
 /**
  *  \file
  *
- *      Finally utility - to appoximate C++ try/finally support.
+ *      Finally utility - to approximate C++ try/finally support.
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   Consider checking noexcept (f), and avoiding the IgnoreExceptionsForCall
  *
- *      @todo   Consider adding optional parameter to auto include context to suppress thread exceptions (since thats a common need)
+ *      @todo   Consider adding optional parameter to auto include context to suppress thread exceptions (since that's a common need)
  */
 
 namespace Stroika::Foundation::Execution {
