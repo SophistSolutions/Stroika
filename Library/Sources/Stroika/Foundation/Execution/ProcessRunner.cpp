@@ -897,7 +897,7 @@ namespace {
                     stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
                     Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (),
                                                     WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
-                                                    WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{});
+                                                    WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
                 }
             }
         }
