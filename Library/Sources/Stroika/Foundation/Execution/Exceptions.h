@@ -27,10 +27,10 @@
  *      This means that any code which wishes to report an exception can catch these two types, and use
  *      the 'what()' method to report the text of the exception message.
  *
- *      Sadly, there is no documentation (I'm aware of) or specification of the characterset/code page reported
+ *      Sadly, there is no documentation (I'm aware of) or specification of the character set/code page reported
  *      back by the what () on an exception. It tends to be ascii. Stroika guarantees that all exceptions it throws
  *      will use the current SDK characters (@see SDKString). But - its best to use Characters::ToString () on the
- *      caught exception, since this uses ExceptionStringHelper to properly handle characters the SDK characterset might not
+ *      caught exception, since this uses ExceptionStringHelper to properly handle characters the SDK character set might not
  *      allow representing some unicode characters.
  *
  *  TODO:
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Execution {
      *  \brief Exception<> is a replacement (subclass) for any std c++ exception class (e.g. the default 'std::exception'), 
      *         which adds UNICODE String support.
      *
-     *  Stroika's Exception<> class is fully interoperable with the normal C++ exeption classes, but its use offers two
+     *  Stroika's Exception<> class is fully interoperable with the normal C++ exception classes, but its use offers two
      *  benefits:
      *      o   It guarantees that UNICODE messages (including things like filenames) are properly preserved in the exception
      *          message, even if the system default code page (locale) does not allow representing those characters.
@@ -203,12 +203,28 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
+     *  \brief NestedException contains a new higher level error message (typically based on argument basedOnException)
+     *         and preserves the original exception (which you can use to get its message, with Characters::ToString (fBasedOnException)
+     */
+    class NestedException : public RuntimeErrorException<> {
+    public:
+        /**
+         */
+        NestedException ()                       = delete;
+        NestedException (const NestedException&) = default;
+        NestedException (const Characters::String& msg, const exception_ptr& basedOnException);
+
+    public:
+        const exception_ptr fBasedOnException;
+    };
+
+    /**
      *  Simple wrapper on std::system_error, but adding support for Stroika String, and other utility methods.
      *
      *  \note see https://en.cppreference.com/w/cpp/error/errc for a mapping of errc conditions and ERRNO values.
      *
      *  \note   It's best to not catch (const SystemErrorException&) - and instead catch (const system_error&), since you can
-     *          still exactract the UNICODE message with Characters::ToString () - and caching  const SystemErrorException& risks
+     *          still extract the UNICODE message with Characters::ToString () - and caching  const SystemErrorException& risks
      *          missing exceptions from non-Stroika sources (which will just throw system_error) or subclasses of system_error such as
      *          filesystem_error.
      *
@@ -350,8 +366,8 @@ namespace Stroika::Foundation::Execution {
      *  If the result was < 0, but errno != EINTR, then ThrowErrNoIfNegative ();
      *  Then return the result.
      *
-     *  \note The only HITCH with respect to automatically handling interuptability is that that its handled by 'restarting' the argument 'call'
-     *        That means if it was partially completed, the provider of 'call' must accomodate that fact (use mutable lambda).
+     *  \note The only HITCH with respect to automatically handling interruptability is that that its handled by 'restarting' the argument 'call'
+     *        That means if it was partially completed, the provider of 'call' must accommodate that fact (use mutable lambda).
      *
      *  This behavior is meant to work with the frequent POSIX API semantics of a return value of < 0
      *  implying an error, and < 0 but errno == EINTR means retry the call. This API also provides a
