@@ -196,6 +196,22 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
     {
     }
     template <typename ELEMENT_TYPE>
+    inline size_t Ptr<ELEMENT_TYPE>::GetBufferSize () const
+    {
+        auto                          rep = this->GetSharedRep_ ();
+        Private_::Rep_<ELEMENT_TYPE>* r   = Debug::UncheckedDynamicCast<Private_::Rep_<ELEMENT_TYPE>*> (rep.get ());
+        AssertNotNull (r);
+        return r->GetBufferSize ();
+    }
+    template <typename ELEMENT_TYPE>
+    inline void Ptr<ELEMENT_TYPE>::SetBufferSize (size_t bufSize)
+    {
+        auto                          rep = this->GetSharedRep_ ();
+        Private_::Rep_<ELEMENT_TYPE>* r   = Debug::UncheckedDynamicCast<Private_::Rep_<ELEMENT_TYPE>*> (rep.get ());
+        AssertNotNull (r);
+        r->SetBufferSize (bufSize);
+    }
+    template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::Abort ()
     {
         auto                          rep = this->GetSharedRep_ ();
