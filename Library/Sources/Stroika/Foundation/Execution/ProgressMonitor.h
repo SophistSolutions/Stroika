@@ -21,8 +21,8 @@
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *      @todo   BETTER INTEGRATE STROIKA THREAD/CANCELATION WITH THIS FORM OF CANCELATION (OK now - but could be better
- *              espeicaily if we could Abort on the main thread / any thread; then could lose the fcancedl flag in our
- *              rep and just use the thread local rep for anclation - same notaiton as thread cancel) ; and always have
+ *              especially if we could Abort on the main thread / any thread; then could lose the cancel flag in our
+ *              rep and just use the thread local rep for cancelation - same notaiton as thread cancel) ; and always have
  *              a worker thread object.
  *                  --LGP 2023-12-06
  * 
@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  ProgressMonitor is the basic interface used for progress tracking. Progress tracking both
-     *  measures progress, and supports the notion of canceling. The reason progres and cancelability
+     *  measures progress, and supports the notion of canceling. The reason progress and cancelability
      *  are tied together is that its only for 'long lived' tasks one might want to measure the progress of,
      *  that one might want to allow canceling.
      *
@@ -51,27 +51,27 @@ namespace Stroika::Foundation::Execution {
      *  by the creator of the ProgressMonitor.
      *
      *  A ProgressMonitor also has associated with it an arbitrary number of Updater objects. These are the things
-     *  that one hands to processes (not OS processes, but long lived procedures or threads) whcih they then
-     *  callback to to notify of thier progress.
+     *  that one hands to processes (not OS processes, but long lived procedures or threads) which they then
+     *  callback to to notify of their progress.
      *
      *  An updater is retrieved from the root ProgressMonitor, and it has 'scope' of 0..1. You can construct
      *  sub-updaters by passing a base Updater to the Updater constructor along with a subrange (inside 0..1).
-     *  That way - if you have sub-procedures, they can report on thier progress (0..1) and that is mapped to a subrange
+     *  That way - if you have sub-procedures, they can report on their progress (0..1) and that is mapped to a subrange
      *  of the overall progress.
      *
      *  Note - in order to help debug the progress values, ProgressMonitor strictly enforces some rules. Progress
      *  starts at zero, and successive values are non-degreasing. This means the progress bar grows monotonically (though
-     *  not necessarily smoothly). In order to avoid common floating point bugs with roudning errors, ProgressMonitor
+     *  not necessarily smoothly). In order to avoid common floating point bugs with rounding errors, ProgressMonitor
      *  employs Math::PinToSpecialPoint ().
      *
      *  Users of ProgressMonitor can call "Cancel" on the ProgressMonitor at any point. This records a cancelation
      *  in the Updater object, so that when it calls Updater::SetProgress () - and
      *  perhaps in other situations (see thread support below) - the progress will terminate immediately.
      *
-     *  ProgressMontitor supports having the underlying long-lived-task happen EITHER in the current thread, or in
+     *  ProgressMonitor supports having the underlying long-lived-task happen EITHER in the current thread, or in
      *  another thread (the ProgressMonitor and related code is fully threadsafe).
      *
-     *  If ProgressMontitor is constructed with an argument Thread (optional) - then attempts to Cancel the ProgressMonitor
+     *  If ProgressMonitor is constructed with an argument Thread (optional) - then attempts to Cancel the ProgressMonitor
      *  will also send an Abort() command to the associated thread. This can accelerate - depending less on co-operative
      *  checking - to cancel the long-lived progress-monitored process.
      * 
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Progress isn't updated directly through the ProgressMonitor object. Instead, get an Updater, and call methdods
+         *  Progress isn't updated directly through the ProgressMonitor object. Instead, get an Updater, and call methods
          *  on it to update the progress.
          * 
          *  \par Example Usage
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      *  Often in displaying progress, its useful to have a notion of what the system is doing,
-     *  and thats usually displayed far away from where the notion of progress stage resides.
+     *  and that's usually displayed far away from where the notion of progress stage resides.
      *  This API is usually called by the bit of code performing actions (to set the current task)
      *  and by the calling GUI to Get the current task description.
      *
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Execution {
          *  Helper used to continue reporting progress, but breaking the progress into subtasks,
          *  and doing the arithmetic of integrating the total into an overall progress total.
          * 
-         *  \note - initial updater generated via ProgressMontior::operator Updater (); null-updater
+         *  \note - initial updater generated via ProgressMonitor::operator Updater (); null-updater
          *        maybe used if there are no progress updates to display;
          * 
          *  \note - all 'Updater' methods (besides the constructor and destructor) - are expected to be called from the context
