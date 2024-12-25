@@ -14,6 +14,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
      */
     constexpr inline size_t GetScaledUpCapacity (size_t targetSize, [[maybe_unused]] size_t eltSizeInBytes, size_t minChunk)
     {
+        Require (minChunk > 0u);
         /*
          *      Rounding up works well at small scales - total memory
          *  waste is small (bounded). It is simple, and it helps speed up
