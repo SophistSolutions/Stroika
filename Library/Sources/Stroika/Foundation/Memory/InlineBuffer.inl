@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Memory {
             // This 'moving' is done via make_move_iterator () - rather that magically makes the uninitialized_copy really move instead of copying
             Assert (capacity () == rhs.capacity ());
             size_t sz = rhs.size ();
-            uninitialized_copy (std::make_move_iterator (rhs.begin ()), std::make_move_iterator (rhs.begin () + sz), this->begin ());
+            uninitialized_copy (make_move_iterator (rhs.begin ()), make_move_iterator (rhs.begin () + sz), this->begin ());
             fSize_ = sz;
         }
         else {
@@ -473,7 +473,7 @@ namespace Stroika::Foundation::Memory {
             ranges::uninitialized_copy (copyFrom, span{b + s, n2Add});
             std::rotate (atPtr, b + s, b + newS);
         }
-        this->fSize_ = newS;    // above leaks if exception in copies, but practically impossible...@todo...
+        this->fSize_ = newS; // above leaks if exception in copies, but practically impossible...@todo...
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::insert (iterator i, const_pointer from, const_pointer to)
@@ -492,7 +492,7 @@ namespace Stroika::Foundation::Memory {
             fLiveData_[s] = e;
         }
         else {
-            uninitialized_copy (&e, &e + 1, this->begin () + s);
+            uninitialized_copy (&e, &e + 1, this->begin () + s); // copy into uninitialized memory so careful
         }
         ++this->fSize_;
         Invariant ();
@@ -508,10 +508,10 @@ namespace Stroika::Foundation::Memory {
         }
         Assert (this->HasEnoughCapacity_ (newS));
         if constexpr (is_trivially_copyable_v<T>) {
-            copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
+            CopySpanData (copyFrom, span{this->begin () + s, copyFrom.size ()});
         }
         else {
-            uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin () + s); // copy into uninitialized memory so careful
         }
         this->fSize_ = newS;
     }
@@ -527,12 +527,10 @@ namespace Stroika::Foundation::Memory {
         Assert (this->HasEnoughCapacity_ (newS));
         auto outPtr = this->begin () + s;
         if constexpr (is_trivially_copyable_v<T>) {
-            for (auto c : copyFrom) {
-                *outPtr++ = static_cast<value_type> (c);
-            }
+            CopySpanData (copyFrom, span{outPtr, copyFrom.size ()});
         }
         else {
-            uninitialized_copy (copyFrom.begin (), copyFrom.end (), outPtr);
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), outPtr); // copy into uninitialized memory so careful
         }
         this->fSize_ = newS;
     }
