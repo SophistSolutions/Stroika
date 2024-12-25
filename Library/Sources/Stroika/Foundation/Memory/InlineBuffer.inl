@@ -43,7 +43,6 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (UninitializedConstructorFlag flag, size_t nElements)
-
         : InlineBuffer{}
     {
         if constexpr (is_trivially_copyable_v<T>) {
