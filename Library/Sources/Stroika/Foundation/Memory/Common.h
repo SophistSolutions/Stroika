@@ -265,15 +265,23 @@ namespace Stroika::Foundation::Memory {
      *  \note the APIS that use this typically require  static_assert (is_trivially_copyable_v<T>);
      */
     enum class UninitializedConstructorFlag {
-        eUninitialized
+        eUninitialized,
+        eUninitializedIfTrivial
     };
 
     /**
-     *  \brief eUninitialized is a flag to some memory routines to allocate without initializing
+     *  \brief eUninitialized is a flag to some memory routines to allocate without initializing (static_assert T is trivial)
      * 
      *  \see UninitializedConstructorFlag
      */
     using UninitializedConstructorFlag::eUninitialized;
+
+    /**
+     *  \brief eUninitialized is a flag to some memory routines to allocate without initializing (if T is not trivial)
+     * 
+     *  \see UninitializedConstructorFlag
+     */
+    using UninitializedConstructorFlag::eUninitializedIfTrivial;
 
     inline namespace Literals {
         /**

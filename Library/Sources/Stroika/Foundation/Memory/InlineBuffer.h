@@ -122,8 +122,7 @@ namespace Stroika::Foundation::Memory {
          */
         InlineBuffer () noexcept;
         InlineBuffer (size_t nElements);
-        InlineBuffer (UninitializedConstructorFlag, size_t nElements)
-            requires (is_trivially_copyable_v<T>);
+        InlineBuffer (UninitializedConstructorFlag flag, size_t nElements);
         template <size_t FROM_BUF_SIZE>
         InlineBuffer (const InlineBuffer<T, FROM_BUF_SIZE>& src);
         InlineBuffer (const InlineBuffer& src);

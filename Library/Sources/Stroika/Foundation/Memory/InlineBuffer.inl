@@ -42,11 +42,17 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (UninitializedConstructorFlag, size_t nElements)
-        requires (is_trivially_copyable_v<T>)
+    inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (UninitializedConstructorFlag flag, size_t nElements)
+
         : InlineBuffer{}
     {
-        resize_uninitialized (nElements);
+        if constexpr (is_trivially_copyable_v<T>) {
+            resize_uninitialized (nElements);
+        }
+        else {
+            Require (flag == UninitializedConstructorFlag::eUninitializedIfTrivial);
+            resize (nElements);
+        }
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
