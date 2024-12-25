@@ -36,13 +36,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     void CopyAll_Buffered (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize)
     {
-        Memory::StackBuffer<ELEMENT_TYPE> buf;
-        if constexpr (is_trivially_copyable_v<ELEMENT_TYPE>) {
-            buf.resize_uninitialized (bufferSize);
-        }
-        else {
-            buf.resize (bufferSize);
-        }
+        Memory::StackBuffer<ELEMENT_TYPE> buf{Memory::eUninitializedIfTrivial, bufferSize};
         while (size_t n = from.Read (span{buf}).size ()) {
             Assert (n <= buf.size ());
             to.Write (span{buf.begin (), n});

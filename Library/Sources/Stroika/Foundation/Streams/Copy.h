@@ -16,7 +16,8 @@
  *
  *  TODO:
  *      @todo   Provide a variant of CopyAll which is safely always cancelable (at least of underlying src and target streams cancelable). Maybe this
- *              is already done? Or maybe this involves using ReadSome() and blocking on availabiliuty of more? CONSIDER
+ *              is already done? Or maybe this involves using ReadSome() and blocking on availability of more? CONSIDER
+ *              So far have not encountered a need.
  *
  *      @todo   Redo API (at least overloads) with progress tracker(?)
  */
@@ -26,7 +27,7 @@ namespace Stroika::Foundation::Streams {
     /**
      * @brief Copy the contents of stream 'from' to stream 'to'
      * 
-     *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel)
+     *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel - depends on argument streams Read/Write routines)
      */
     template <typename ELEMENT_TYPE>
     void CopyAll (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize = 10 * 1024);
@@ -34,7 +35,7 @@ namespace Stroika::Foundation::Streams {
     /**
      * @brief Copy the contents of stream 'from' to stream 'to', by reading ALL of from into memory at once, and then writing it to 'to' (fails if not enough memory to hold entire from stream in RAM)
      * 
-     *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel)
+     *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel - depends on argument streams Read/Write routines)
      */
     template <typename ELEMENT_TYPE>
     void CopyAll_OneRead (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to);
@@ -42,7 +43,7 @@ namespace Stroika::Foundation::Streams {
     /**
      * @brief Copy the contents of stream 'from' to stream 'to', by reading a chunk at a time - tends to do multiple reads and writes - but works with arbitrarily large stream
      * 
-     *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel)
+     *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel - depends on argument streams Read/Write routines)
      */
     template <typename ELEMENT_TYPE>
     void CopyAll_Buffered (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize = 10 * 1024);
