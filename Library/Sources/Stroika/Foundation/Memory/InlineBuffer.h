@@ -291,6 +291,18 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         */
+        template <ISpanOfT<T> SPAN_T>
+        nonvirtual void Insert (size_t at, const SPAN_T& copyFrom);
+
+    public:
+        /**
+         *  mimic the std::vector::insert () API - but better to call Insert ()
+         */
+        nonvirtual void insert (iterator i, const_pointer from, const_pointer to);
+
+    public:
+        /**
          *  With a single T argument, this is somewhat STLISH, but also takes overload of a span, so you can append multiple.
          * 
          *  \note ALIAS: Append

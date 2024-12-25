@@ -444,6 +444,43 @@ namespace Stroika::Foundation::Memory {
         return at (i);
     }
     template <typename T, size_t BUF_SIZE>
+    template <ISpanOfT<T> SPAN_T>
+    inline void InlineBuffer<T, BUF_SIZE>::Insert (size_t at, const SPAN_T& copyFrom)
+    {
+        size_t s     = size ();
+        size_t n2Add = copyFrom.size ();
+        size_t newS  = s + n2Add;
+        if (not this->HasEnoughCapacity_ (newS)) [[unlikely]] {
+            reserve (newS);
+        }
+        Assert (this->HasEnoughCapacity_ (newS));
+        auto b = this->begin ();
+        // [.....orig data... AT ...more data...]
+        // becomes
+        // [.....orig data... AT {copyFrom} ...more data...]  ; slide by newS; but last newS elts uninitialized_copy copy, and regular copy rest
+        auto atPtr = b + at;
+        if constexpr (is_trivially_copyable_v<T>) {
+            // we don't need to pay attention to what is initialized and what is not so quicker and easier
+            // So slosh bytes after at down, and copy in the new ones
+            CopyBytes (span{atPtr, s - at}, span{atPtr + n2Add, s - at});
+            ranges::uninitialized_copy (copyFrom, span{atPtr, n2Add});
+        }
+        else {
+            // Simple but not super algorithm, append the data (using uninitialized_copy)
+            // and then std::rotate () - idea lifted from MSVC std::vector::insert()
+            // reason for trixyness, is cuz we need uninitialized_copy for new stuff (into uninitialized memory)
+            // and copy with destruction of old stuff for rest (handled by rotate)
+            ranges::uninitialized_copy (copyFrom, span{b + s, n2Add});
+            std::rotate (atPtr, b + s, b + newS);
+        }
+        this->fSize_ = newS;    // above leaks if exception in copies, but practically impossible...@todo...
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline void InlineBuffer<T, BUF_SIZE>::insert (iterator i, const_pointer from, const_pointer to)
+    {
+        Insert (i - begin (), span{from, to});
+    }
+    template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::push_back (Common::ArgByValueType<T> e)
     {
         size_t s    = size ();
