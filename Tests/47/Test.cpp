@@ -46,14 +46,14 @@ namespace {
             EXPECT_TRUE (not x.has_value ());
             x = 1;
             EXPECT_TRUE (x.has_value ());
-            EXPECT_TRUE (*x == 1);
+            EXPECT_EQ (*x, 1);
         }
         {
             // Careful about self-assignment
             optional<int> x;
             x = 3;
             x = max (*x, 1);
-            EXPECT_TRUE (x == 3);
+            EXPECT_EQ (x, 3);
         }
         auto testOptionalOfThingNotCopyable = [] () {
             {
@@ -129,7 +129,7 @@ namespace {
         // par Example Usage from doc header
         SharedByValue<vector<byte>> b{BLOB::FromHex ("abcd1245").Repeat (100).As<vector<byte>> ()};
         SharedByValue<vector<byte>> c = b; // copied by reference until 'c' or 'b' changed values
-        EXPECT_TRUE (c.cget () == b.cget ());
+        EXPECT_EQ (c.cget (), b.cget ());
     }
 }
 
@@ -254,21 +254,21 @@ namespace {
         }
         {
             using Memory::BLOB;
-            EXPECT_TRUE ((BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") ==
-                          BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
-            EXPECT_TRUE ((BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") ==
-                          BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
-            EXPECT_TRUE ((BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a") == BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
-            EXPECT_TRUE ((BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") ==
-                          BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            EXPECT_TRUE ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6") ==
-                          BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            EXPECT_TRUE ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
+            EXPECT_EQ (BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"),
+                       (BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
+            EXPECT_EQ (BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"),
+                       (BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
+            EXPECT_EQ (BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"), (BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
+            EXPECT_EQ (BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"),
+                       (BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+            EXPECT_EQ (BLOB::FromHex ("29144adb4ece20450956e813652fe8d6"),
+                       (BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+            EXPECT_EQ (BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex (), "29144adb4ece20450956e813652fe8d6");
         }
         {
             using Memory::BLOB;
-            EXPECT_TRUE ((BLOB::FromBase64 ("aGVsbG8=") == BLOB{'h', 'e', 'l', 'l', 'o'}));
-            EXPECT_TRUE ((BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 () == "aGVsbG8="));
+            EXPECT_EQ (BLOB::FromBase64 ("aGVsbG8="), (BLOB{'h', 'e', 'l', 'l', 'o'}));
+            EXPECT_EQ ((BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 ()), "aGVsbG8=");
         }
         {
             using Memory::BLOB;
@@ -324,8 +324,8 @@ namespace {
             InlineBuffer<int> x0{4};
             InlineBuffer<int> assign2;
             assign2 = x0;
-            EXPECT_TRUE (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
-            EXPECT_TRUE (x0.size () == 4);
+            EXPECT_EQ (x0.size (), assign2.size ()); // test regression fixed 2019-03-20
+            EXPECT_EQ (x0.size (), 4u);
         }
     }
 }
@@ -417,7 +417,7 @@ namespace {
     GTEST_TEST (Foundation_Memory_, Test11_ObjectFieldUtilities_)
     {
         {
-            EXPECT_TRUE (OffsetOf (&Private_::X1::a) == 0);
+            EXPECT_EQ (OffsetOf (&Private_::X1::a), 0u);
             EXPECT_TRUE (OffsetOf (&Private_::X1::b) >= sizeof (int));
         }
         {
@@ -425,8 +425,8 @@ namespace {
             static_assert (is_standard_layout_v<Private_::X1>);
             void* aAddr = &t.a;
             void* bAddr = &t.b;
-            EXPECT_TRUE (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
-            EXPECT_TRUE (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
+            EXPECT_EQ (GetObjectOwningField (aAddr, &Private_::X1::a), &t);
+            EXPECT_EQ (GetObjectOwningField (bAddr, &Private_::X1::b), &t);
         }
         {
             // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
@@ -457,11 +457,11 @@ namespace {
     {
         {
             [[maybe_unused]] size_t kOffset_ = OffsetOf (&Person::lastName);
-            EXPECT_TRUE (OffsetOf (&Person::firstName) == 0);
+            EXPECT_EQ (OffsetOf (&Person::firstName), 0u);
         }
         {
             [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
-            EXPECT_TRUE (OffsetOf (&NotDefaultConstructible::firstName) == 0);
+            EXPECT_EQ (OffsetOf (&NotDefaultConstructible::firstName), 0u);
         }
 #if 0
             // disabled til we can figure out a way to get this constexpr version of OffsetOf() working...
@@ -548,10 +548,10 @@ namespace {
     {
         using namespace Private_;
         // no constructor, default aligning
-        EXPECT_TRUE (OffsetOf (&s::a) == 0);
-        EXPECT_TRUE (OffsetOf (&s::b) == sizeof (float));
-        EXPECT_TRUE (OffsetOf (&s::bb) == sizeof (float) + sizeof (char));
-        EXPECT_TRUE (OffsetOf (&s::c) == alignof (s) * 2); // aligned b with bb
+        EXPECT_EQ (OffsetOf (&s::a), 0u);
+        EXPECT_EQ (OffsetOf (&s::b), sizeof (float));
+        EXPECT_EQ (OffsetOf (&s::bb), sizeof (float) + sizeof (char));
+        EXPECT_EQ (OffsetOf (&s::c), alignof (s) * 2); // aligned b with bb
 
         // no alignment
         EXPECT_TRUE (OffsetOf (&s2::a) == 0);
@@ -569,30 +569,31 @@ namespace {
         EXPECT_TRUE (OffsetOf (&s2::e) == offsetof (s2, e));
 
         // simply
-        EXPECT_TRUE (OffsetOf (&a::i) == 0);
-        EXPECT_TRUE (OffsetOf (&a::j) == sizeof (int));
-        EXPECT_TRUE (OffsetOf (&b::i) == 0);
-        EXPECT_TRUE (OffsetOf (&b::k) == sizeof (int));
+        EXPECT_EQ (OffsetOf (&a::i), 0u);
+        EXPECT_EQ (OffsetOf (&a::j), sizeof (int));
+        EXPECT_EQ (OffsetOf (&b::i), 0u);
+        EXPECT_EQ (OffsetOf (&b::k), sizeof (int));
 
         // other based
         //Assert (OffsetOf(&ab::j) == sizeof (int));
         //Assert (OffsetOf<ab> (&ab::k) == sizeof (int) * 3);
 
         // special alignments
-        EXPECT_TRUE (OffsetOf (&al::a) == 0);
-        EXPECT_TRUE (OffsetOf (&al::b) == 8);
-        EXPECT_TRUE (OffsetOf (&al::bb) == 9);
+        EXPECT_EQ (OffsetOf (&al::a), 0u);
+        EXPECT_EQ (OffsetOf (&al::b), 8u);
+        EXPECT_EQ (OffsetOf (&al::bb), 9u);
         // Assert (OffsetOf (&al::arr) == 16);
 
-        EXPECT_TRUE (OffsetOf (&al2::a) == 0);
-        EXPECT_TRUE (OffsetOf (&al2::b) == 2);
-        EXPECT_TRUE (OffsetOf (&al2::c) == 6);
+        EXPECT_EQ (OffsetOf (&al2::a), 0u);
+        EXPECT_EQ (OffsetOf (&al2::b), 2u);
+        EXPECT_EQ (OffsetOf (&al2::c), 6u);
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test15_Span_)
+    GTEST_TEST (Foundation_Memory_, Span_)
     {
+        Debug::TraceContextBumper ctx{"Span_"};
         {
             char buf1[1024];
             char buf2[1024];
@@ -600,6 +601,16 @@ namespace {
             EXPECT_TRUE (Intersects (span{buf1}, span{buf1}));
             EXPECT_TRUE (Intersects (span{buf1}.subspan (3, 10), span{buf1}.subspan (4, 10)));
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Memory_, InlineBufferZeroPreDefined_)
+    {
+        Debug::TraceContextBumper ctx{"InlineBufferZeroPreDefined_"};
+        InlineBuffer<int, 0>      x{};
+        x.push_back (3);
+        EXPECT_EQ (x.size (), 1);
     }
 }
 #endif

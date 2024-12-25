@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Memory {
             // This 'moving' is done via make_move_iterator () - rather that magically makes the uninitialized_copy really move instead of copying
             Assert (capacity () == src.capacity ());
             size_t sz = src.size ();
-            uninitialized_copy (std::make_move_iterator (src.begin ()), std::make_move_iterator (src.begin () + sz), this->begin ());
+            uninitialized_copy (make_move_iterator (src.begin ()), make_move_iterator (src.begin () + sz), this->begin ());
             fSize_ = sz;
         }
         else {
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Memory {
     InlineBuffer<T, BUF_SIZE>& InlineBuffer<T, BUF_SIZE>::operator= (const InlineBuffer& rhs)
     {
         Invariant ();
-        if (this != &rhs) {
+        if (this != &rhs) [[likely]] {
             // @todo this simple implementation could be more efficient
             DestroyElts_ (this->begin (), this->end ());
             fSize_ = 0;
@@ -328,18 +328,19 @@ namespace Stroika::Foundation::Memory {
             if (useNewCapacity <= oldCapacity) [[likely]] {
                 return; // no work todo here....
             }
-            // if fits in inline buffer, round up to that size. If exceeding that, use ScalledUpCapcity exponential growth algorithm
+            // if fits in inline buffer, round up to that size. If exceeding that, use ScaledUpCapacity exponential growth algorithm
             if (useNewCapacity < BUF_SIZE) [[likely]] {
                 useNewCapacity = BUF_SIZE;
             }
             else {
-                useNewCapacity = Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (useNewCapacity, sizeof (T), BUF_SIZE);
+                useNewCapacity = Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (useNewCapacity, sizeof (T),
+                                                                                                      Math::AtLeast<size_t> (BUF_SIZE, 1));
             }
         }
         Invariant ();
         // NOTE - could be upsizing or downsizing, and could be moving to for from allocated or inline buffers
         Assert (useNewCapacity >= newCapacity);
-        if (useNewCapacity != oldCapacity) {
+        if (useNewCapacity != oldCapacity) [[unlikely]] {
             bool oldInPlaceBuffer = oldCapacity <= BUF_SIZE;
             bool newInPlaceBuffer = useNewCapacity <= BUF_SIZE;
             if constexpr (is_trivially_copyable_v<T>) {
@@ -471,7 +472,7 @@ namespace Stroika::Foundation::Memory {
             // reason for trixyness, is cuz we need uninitialized_copy for new stuff (into uninitialized memory)
             // and copy with destruction of old stuff for rest (handled by rotate)
             ranges::uninitialized_copy (copyFrom, span{b + s, n2Add});
-            std::rotate (atPtr, b + s, b + newS);
+            rotate (atPtr, b + s, b + newS);
         }
         this->fSize_ = newS; // above leaks if exception in copies, but practically impossible...@todo...
     }

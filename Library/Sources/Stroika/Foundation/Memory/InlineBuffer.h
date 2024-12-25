@@ -41,6 +41,8 @@ namespace Stroika::Foundation::Memory {
      *  Think of it as a hybrid between std::vector<> and std::array - with functionality like
      *  std::vector, but performance more like std::array.
      *
+     *  \note if BUF_SIZE is zero, this class behaves much like 'vector<T>'
+     * 
      *  Internally, InlineBuffer maintains a fixed buffer (of size given by its BUFFER_SIZE template parameter)
      *  and it uses that while things fit, and switches to using a free-store-allocated data as needed. Pick the BUF_SIZE
      *  wisely, and you always end up with fixed sized objects. Pick poorly, and it will still work, but allocating the
@@ -339,6 +341,9 @@ namespace Stroika::Foundation::Memory {
         // note must be inline declared here since used in type definition below
         static constexpr size_t SizeInBytes_ (size_t nElts) noexcept
         {
+            if (nElts == 0) {
+                return 1;
+            }
             return sizeof (T[1]) * nElts; // not sure why return sizeof (T[nElts]); fails on vs2k21?
         }
 
