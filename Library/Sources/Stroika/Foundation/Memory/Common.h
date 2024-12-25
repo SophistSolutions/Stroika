@@ -207,7 +207,7 @@ namespace Stroika::Foundation::Memory {
      *  @see also CopyBytes
      */
     template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
+    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
         requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>);
 
     /**
