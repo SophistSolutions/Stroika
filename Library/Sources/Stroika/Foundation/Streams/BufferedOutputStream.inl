@@ -8,39 +8,36 @@
 namespace Stroika::Foundation::Streams::BufferedOutputStream {
 
     namespace Private_ {
-        template <typename ELEMENT_TYPE>
-        class Rep_ : public OutputStream::IRep<ELEMENT_TYPE> {
-            static constexpr size_t kMinBufSize_{1 * 1024};
-            static constexpr size_t kDefaultBufSize_{16 * 1024};
-
+        // note note using block-allocation cuz aggregates kDefaultBufSize_ sized buffer
+        template <typename ELEMENT_TYPE, size_t INLINE_BUF_SIZE>
+        class Rep_ : public IRep_<ELEMENT_TYPE> {
         public:
             Rep_ (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut)
                 : fRealOut_{realOut}
             {
-                fBuffer_.reserve (kDefaultBufSize_);
             }
             ~Rep_ ()
             {
                 if (IsOpenWrite ()) {
                     IgnoreExceptionsForCall (Flush ());
                 }
-                WeakAssert (fBuffer_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
+                WeakAssert (fUnwrittenAppends_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
             }
 
         public:
-            nonvirtual size_t GetBufferSize () const
+            virtual size_t GetBufferSize () const override
             {
                 Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-                return fBuffer_.capacity ();
+                return fUnwrittenAppends_.capacity ();
             }
-            nonvirtual void SetBufferSize (size_t bufSize)
+            virtual void SetBufferSize (size_t bufSize) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                bufSize = max (bufSize, kMinBufSize_);
-                if (bufSize < fBuffer_.size ()) {
-                    Flush_ ();
+                bufSize = Math::AtLeast (bufSize, INLINE_BUF_SIZE);
+                if (bufSize < fUnwrittenAppends_.size ()) {
+                    Flush_ (); // this logic only write because stream not seekable, and buffer is for unwritten appends
                 }
-                fBuffer_.reserve (bufSize);
+                fUnwrittenAppends_.reserve (bufSize);
             }
 
         public:
@@ -49,7 +46,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 fAborted_ = true; // for debug sake track this
-                fBuffer_.clear ();
+                fUnwrittenAppends_.clear ();
             }
             virtual bool IsSeekable () const override
             {
@@ -99,15 +96,15 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                  *
                  * See if there is room in the buffer, and use it up. Only when no more room do we flush.
                  */
-                size_t bufSpaceRemaining   = fBuffer_.capacity () - fBuffer_.size ();
+                size_t bufSpaceRemaining   = fUnwrittenAppends_.capacity () - fUnwrittenAppends_.size ();
                 size_t size2WriteRemaining = elts.size ();
                 size_t copy2Buffer         = min (bufSpaceRemaining, size2WriteRemaining);
 #if qStroika_Foundation_Debug_AssertionsChecked
-                size_t oldCap = fBuffer_.capacity ();
+                size_t oldCap = fUnwrittenAppends_.capacity ();
 #endif
-                fBuffer_.insert (fBuffer_.end (), elts.data (), elts.data () + copy2Buffer);
+                fUnwrittenAppends_.insert (fUnwrittenAppends_.end (), elts.data (), elts.data () + copy2Buffer);
 #if qStroika_Foundation_Debug_AssertionsChecked
-                Assert (oldCap == fBuffer_.capacity ());
+                Assert (oldCap == fUnwrittenAppends_.capacity ());
 #endif
 
                 Assert (size2WriteRemaining >= copy2Buffer);
@@ -116,12 +113,12 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                 /*
                  * At this point - either the buffer is full, OR we are done writing. EITHER way - if the buffer is full - we may as well write it now.
                  */
-                if (fBuffer_.capacity () == fBuffer_.size ()) {
+                if (fUnwrittenAppends_.capacity () == fUnwrittenAppends_.size ()) {
                     Flush_ ();
-                    Assert (fBuffer_.empty ());
+                    Assert (fUnwrittenAppends_.empty ());
                 }
 #if qStroika_Foundation_Debug_AssertionsChecked
-                Assert (oldCap == fBuffer_.capacity ());
+                Assert (oldCap == fUnwrittenAppends_.capacity ());
 #endif
 
                 // If the remaining will fit in the buffer, then buffer. But if it won't - no point in using the buffer - just write directly to avoid the copy.
@@ -129,8 +126,8 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                 if (size2WriteRemaining == 0) {
                     // DONE
                 }
-                else if (size2WriteRemaining < fBuffer_.capacity ()) {
-                    fBuffer_.insert (fBuffer_.end (), elts.data () + copy2Buffer, elts.data () + elts.size ());
+                else if (size2WriteRemaining < fUnwrittenAppends_.capacity ()) {
+                    fUnwrittenAppends_.insert (fUnwrittenAppends_.end (), elts.data () + copy2Buffer, elts.data () + elts.size ());
                 }
                 else {
                     fRealOut_.Write (elts.subspan (copy2Buffer));
@@ -141,20 +138,20 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             nonvirtual void Flush_ ()
             {
                 if (fAborted_) {
-                    fBuffer_.clear ();
+                    fUnwrittenAppends_.clear ();
                 }
                 else {
-                    if (not fBuffer_.empty ()) {
-                        fRealOut_.Write (span{fBuffer_});
-                        fBuffer_.clear ();
+                    if (not fUnwrittenAppends_.empty ()) {
+                        fRealOut_.Write (span{fUnwrittenAppends_});
+                        fUnwrittenAppends_.clear ();
                     }
                     fRealOut_.Flush ();
                 }
-                Ensure (fBuffer_.empty ());
+                Ensure (fUnwrittenAppends_.empty ());
             }
 
         private:
-            vector<ELEMENT_TYPE>                                           fBuffer_{};
+            Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE>            fUnwrittenAppends_{};
             typename OutputStream::Ptr<ELEMENT_TYPE>                       fRealOut_{};
             bool                                                           fAborted_{false};
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
@@ -163,22 +160,48 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
 
     /*
      ********************************************************************************
-     ************************* Streams::BufferedOutputStream ************************
+     ********************* Streams::BufferedOutputStream::New ***********************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut) -> Ptr<ELEMENT_TYPE>
+    inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut, const optional<size_t>& bufferSize) -> Ptr<ELEMENT_TYPE>
     {
-        return make_shared<Private_::Rep_<ELEMENT_TYPE>> (realOut);
+        if (bufferSize and *bufferSize == 0) {
+            return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE, 0>> (realOut)};
+        }
+        else if (bufferSize and *bufferSize <= 4 * 1024) {
+            return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE, 4 * 1024>> (realOut)};
+        }
+        else {
+            Ptr<ELEMENT_TYPE> p{make_shared<Private_::Rep_<ELEMENT_TYPE>> (realOut)};
+            if (bufferSize) {
+                p.SetBufferSize (*bufferSize);
+            }
+            return p;
+        }
     }
     template <typename ELEMENT_TYPE>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut) -> Ptr<ELEMENT_TYPE>
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut,
+                     const optional<size_t>& bufferSize) -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
-            case Execution::eInternallySynchronized:
-                return InternallySynchronizedOutputStream::New<Private_::Rep_<ELEMENT_TYPE>> ({}, realOut);
+            case Execution::eInternallySynchronized: {
+                if (bufferSize and *bufferSize == 0) {
+                    return Ptr<ELEMENT_TYPE>{InternallySynchronizedOutputStream::New<Private_::Rep_<ELEMENT_TYPE, 0>> ({}, realOut)};
+                }
+                else if (bufferSize and *bufferSize <= 4 * 1024) {
+                    return Ptr<ELEMENT_TYPE>{InternallySynchronizedOutputStream::New<Private_::Rep_<ELEMENT_TYPE, 4 * 1024>> ({}, realOut)};
+                }
+                else {
+                    Ptr<ELEMENT_TYPE> p{InternallySynchronizedOutputStream::New<Private_::Rep_<ELEMENT_TYPE>> ({}, realOut)};
+                    if (bufferSize) {
+                        p.SetBufferSize (*bufferSize);
+                    }
+                    return p;
+                }
+            }
             case Execution::eNotKnownInternallySynchronized:
-                return New<ELEMENT_TYPE> (realOut);
+                return New<ELEMENT_TYPE> (realOut, bufferSize);
             default:
                 RequireNotReached ();
                 return nullptr;
@@ -191,7 +214,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<Private_::Rep_<ELEMENT_TYPE>>& from)
+    inline Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<Private_::IRep_<ELEMENT_TYPE>>& from)
         : inherited{from}
     {
     }
@@ -220,9 +243,9 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
         r->Abort ();
     }
     template <typename ELEMENT_TYPE>
-    inline shared_ptr<Private_::Rep_<ELEMENT_TYPE>> Ptr<ELEMENT_TYPE>::GetSharedRep_ () const
+    inline shared_ptr<Private_::IRep_<ELEMENT_TYPE>> Ptr<ELEMENT_TYPE>::GetSharedRep_ () const
     {
-        return Debug::UncheckedDynamicPointerCast<Private_::Rep_<ELEMENT_TYPE>> (inherited::GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<Private_::IRep_<ELEMENT_TYPE>> (inherited::GetSharedRep ());
     }
 
 }

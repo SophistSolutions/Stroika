@@ -45,12 +45,19 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      *      \endcode
      */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut);
+    Ptr<ELEMENT_TYPE> New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut, const optional<size_t>& bufferSize = nullopt);
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut);
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized               internallySynchronized,
+                           const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut, const optional<size_t>& bufferSize = nullopt);
 
     namespace Private_ {
         template <typename ELEMENT_TYPE>
+        class IRep_ : public OutputStream::IRep<ELEMENT_TYPE> {
+        public:
+            virtual size_t GetBufferSize () const         = 0;
+            virtual void   SetBufferSize (size_t bufSize) = 0;
+        };
+        template <typename ELEMENT_TYPE, size_t INLINE_BUF_SIZE = 16 * 1024>
         class Rep_;
     }
 
@@ -72,7 +79,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
         Ptr ()                = default;
         Ptr (const Ptr& from) = default;
         Ptr (Ptr&& from)      = default;
-        Ptr (const shared_ptr<Private_::Rep_<ELEMENT_TYPE>>& from);
+        Ptr (const shared_ptr<Private_::IRep_<ELEMENT_TYPE>>& from);
 
     public:
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
@@ -100,7 +107,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<Private_::Rep_<ELEMENT_TYPE>> GetSharedRep_ () const;
+        nonvirtual shared_ptr<Private_::IRep_<ELEMENT_TYPE>> GetSharedRep_ () const;
     };
 
 }
