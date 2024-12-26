@@ -452,7 +452,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *        @see ReadNonBlocking () or Read (eDontBlock) to get non-blocking read behavior.
          * 
          *  \note ReadAll is ONLY available in a blocking form, because to handle to handle the non-blocking case
-         *        we might need to either seek back, or have internal buffering to manage a partial read (could posssibly
+         *        we might need to either seek back, or have internal buffering to manage a partial read (could possibly
          *        extend API like this in the future but no need).
          *
          *  @see ReadRaw()
