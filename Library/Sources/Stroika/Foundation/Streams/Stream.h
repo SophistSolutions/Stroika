@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          *  reset () doesn't clear the data in the stream, or close the stream, but unreferences the Stream
-         *  smart pointer. Only if this Stream smartpointer is the last reference to the underlying stream
+         *  smart pointer. Only if this Stream smart pointer is the last reference to the underlying stream
          *  data does this reset () close the underlying stream.
          */
         nonvirtual void reset () noexcept;
