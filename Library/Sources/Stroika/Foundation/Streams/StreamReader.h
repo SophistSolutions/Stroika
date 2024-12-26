@@ -91,6 +91,26 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
+         *  \brief returns nullopt if nothing known available, zero if known EOF, and any other number of elements (typically 1) if that number know to be available to read
+         *
+         *  \see also (different) RemainingLength ()
+         */
+        nonvirtual optional<size_t> AvailableToRead () const;
+
+    public:
+        /**
+         *  \brief returns nullopt if not known (typical, and the default) - but sometimes it is known, and quite helpful)
+         * 
+         *  \note - Similar to AvailableToRead, but different. For example, on a socket-stream, you can tell how many bytes
+         *        are available to read (buffered by kernel). But no guess about the remaining length of the stream (how many bytes
+         *        will appear before end).
+         * 
+         *        But for a disk file, you MIGHT (not always - like unix special files) know the length of the file. This is for that case.
+         */
+        nonvirtual optional<SeekOffsetType> RemainingLength () const;
+
+    public:
+        /**
          *  If you must use the underlying stream along-side StreamReader, you can use
          *  SynchronizeToUnderlyingStream and SynchronizeFromUnderlyingStream to allow each class to update
          *  each other.
@@ -135,7 +155,7 @@ namespace Stroika::Foundation::Streams {
             size_t                GetSize () const;
             SeekOffsetType        GetStart () const;
             SeekOffsetType        GetEnd () const;
-            optional<ElementType> Peek1FromCache (SeekOffsetType actualOffset);
+            optional<ElementType> Peek1FromCache (SeekOffsetType actualOffset) const;
             optional<ElementType> Read1FromCache (SeekOffsetType* actualOffset);
             optional<size_t>      ReadFromCache (SeekOffsetType* actualOffset, ElementType* intoStart, ElementType* intoEnd);
             void FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
@@ -154,12 +174,13 @@ namespace Stroika::Foundation::Streams {
         size_t                                 fCacheBlockLastFilled_{0};
 
     private:
-        nonvirtual optional<ElementType> Peek1FromCache_ ();
+        nonvirtual optional<ElementType> Peek1FromCache_ () const;
         nonvirtual optional<ElementType> Read1FromCache_ ();
         nonvirtual optional<size_t> ReadFromCache_ (ElementType* intoStart, ElementType* intoEnd);
         nonvirtual void FillCacheWith_ (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
-        nonvirtual void FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd);
-        size_t          Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd, NoDataAvailableHandling blockFlag);
+        nonvirtual void FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd)
+            requires (not same_as<InlineBufferElementType_, ElementType>);
+        size_t Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd, NoDataAvailableHandling blockFlag);
     };
 
 }

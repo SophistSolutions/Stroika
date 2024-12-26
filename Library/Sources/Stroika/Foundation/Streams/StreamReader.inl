@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Streams {
         return fCacheWindowBufStart_ + fCacheWindowBuf_.GetSize ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto StreamReader<ELEMENT_TYPE>::CacheBlock_::Peek1FromCache (SeekOffsetType actualOffset) -> optional<ElementType>
+    inline auto StreamReader<ELEMENT_TYPE>::CacheBlock_::Peek1FromCache (SeekOffsetType actualOffset) const -> optional<ElementType>
     {
         size_t cacheWindowSize = fCacheWindowBuf_.size ();
         if (fCacheWindowBufStart_ <= actualOffset and actualOffset < fCacheWindowBufStart_ + cacheWindowSize) [[likely]] {
@@ -203,6 +203,23 @@ namespace Stroika::Foundation::Streams {
         return elementsRead;
     }
     template <typename ELEMENT_TYPE>
+    inline optional<size_t> StreamReader<ELEMENT_TYPE>::AvailableToRead () const
+    {
+        if (fFarthestReadInUnderlyingStream_ > fOffset_) {
+            return fFarthestReadInUnderlyingStream_ - fOffset_;
+        }
+        return fStrm_.AvailableToRead ();
+    }
+    template <typename ELEMENT_TYPE>
+    inline optional<SeekOffsetType> StreamReader<ELEMENT_TYPE>::RemainingLength () const
+    {
+        if (auto underlyingRemaining = fStrm_.RemainingLength ()) {
+            Assert (fOffset_ <= fFarthestReadInUnderlyingStream_);
+            return *underlyingRemaining + (fFarthestReadInUnderlyingStream_ - fOffset_);
+        }
+        return nullopt;
+    }
+    template <typename ELEMENT_TYPE>
     inline void StreamReader<ELEMENT_TYPE>::SynchronizeToUnderlyingStream ()
     {
         fStrm_.Seek (GetOffset ());
@@ -221,7 +238,7 @@ namespace Stroika::Foundation::Streams {
         return not Peek ().has_value ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto StreamReader<ELEMENT_TYPE>::Peek1FromCache_ () -> optional<ElementType>
+    inline auto StreamReader<ELEMENT_TYPE>::Peek1FromCache_ () const -> optional<ElementType>
     {
         // first try last filled - generally will be the right one
         for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
@@ -286,6 +303,7 @@ namespace Stroika::Foundation::Streams {
     }
     template <typename ELEMENT_TYPE>
     inline void StreamReader<ELEMENT_TYPE>::FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd)
+        requires (not same_as<InlineBufferElementType_, ElementType>)
     {
         FillCacheWith_ (s, reinterpret_cast<const InlineBufferElementType_*> (intoStart), reinterpret_cast<const InlineBufferElementType_*> (intoEnd));
     }
