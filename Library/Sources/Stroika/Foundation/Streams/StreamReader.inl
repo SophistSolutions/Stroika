@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Streams {
         return result;
     }
     template <typename ELEMENT_TYPE>
-    optional<size_t> StreamReader<ELEMENT_TYPE>::CacheBlock_::ReadFromCache (SeekOffsetType* actualOffset, ElementType* intoStart, ElementType* intoEnd)
+    optional<size_t> StreamReader<ELEMENT_TYPE>::CacheBlock_::ReadFromCache (SeekOffsetType* actualOffset, span<ElementType> into)
     {
         using namespace Traversal;
         size_t cacheWindowSize = fCacheWindowBuf_.size ();
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Streams {
             };
             if (cacheWindow.Contains (*actualOffset)) [[likely]] {
                 // then we can return at least some data from the cache - do that now
-                size_t nToRead = intoEnd - intoStart;
+                size_t nToRead = into.size ();
                 if (nToRead != 1) {
                     size_t nInBufAvail = static_cast<size_t> (cacheWindow.GetUpperBound () - *actualOffset);
                     nToRead            = min (nToRead, nInBufAvail);
@@ -66,7 +66,8 @@ namespace Stroika::Foundation::Streams {
                 Assert (nToRead > 0); // because contained _fOffset
                 size_t curSeekPosOffsetIntoCache = static_cast<size_t> (*actualOffset - cacheWindow.GetLowerBound ());
                 Assert (0 <= curSeekPosOffsetIntoCache and curSeekPosOffsetIntoCache < fCacheWindowBuf_.size ());
-                std::copy (fCacheWindowBuf_.data () + curSeekPosOffsetIntoCache, fCacheWindowBuf_.data () + curSeekPosOffsetIntoCache + nToRead, intoStart);
+                std::copy (fCacheWindowBuf_.data () + curSeekPosOffsetIntoCache,
+                           fCacheWindowBuf_.data () + curSeekPosOffsetIntoCache + nToRead, into.data ());
                 *actualOffset += nToRead;
                 return nToRead;
             }
@@ -74,30 +75,29 @@ namespace Stroika::Foundation::Streams {
         return nullopt;
     }
     template <typename ELEMENT_TYPE>
-    void StreamReader<ELEMENT_TYPE>::CacheBlock_::FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart,
-                                                                 const InlineBufferElementType_* intoEnd)
+    void StreamReader<ELEMENT_TYPE>::CacheBlock_::FillCacheWith (SeekOffsetType s, span<InlineBufferElementType_> into)
     {
         // adjust so smarter to not make cache too big...
         size_t         oldCacheSize = fCacheWindowBuf_.GetSize ();
         SeekOffsetType currentEnd   = fCacheWindowBufStart_ + oldCacheSize;
-        size_t         nToWrite     = intoEnd - intoStart;
+        size_t         nToWrite     = into.size ();
         Require (nToWrite > 0);
         if (currentEnd == s) {
             // extend the cache
 
-            // resize_uninitialized showed up alot in windows profile running 'large-xxx' so figured
+            // resize_uninitialized showed up a lot in windows profile running 'large-xxx' so figured
             // if we are going to actually allocate memory anyhow, then do it once, by grabbing largest chunk we
             // (are ever likely to) ask for.
             if (oldCacheSize + nToWrite > fCacheWindowBuf_.kMinCapacity) {
                 fCacheWindowBuf_.reserve (kMaxBufferedChunkSize_);
             }
             fCacheWindowBuf_.resize_uninitialized (oldCacheSize + nToWrite);
-            std::copy (intoStart, intoEnd, fCacheWindowBuf_.begin () + oldCacheSize);
+            std::copy (into.begin (), into.end (), fCacheWindowBuf_.begin () + oldCacheSize);
         }
         else {
             fCacheWindowBuf_.resize_uninitialized (nToWrite); // CAN shrink
             fCacheWindowBufStart_ = s;
-            std::copy (intoStart, intoEnd, fCacheWindowBuf_.begin ());
+            std::copy (into.begin (), into.end (), fCacheWindowBuf_.begin ());
         }
     }
 
@@ -126,17 +126,17 @@ namespace Stroika::Foundation::Streams {
             return p;
         }
         ElementType b; // intentionally not initialized, since will be filled in by Read_Slow_Case_ or unused
-        return (Read_Slow_Case_ (&b, &b + 1, blockFlag) == 0) ? optional<ElementType>{} : b;
+        return (Read_Slow_Case_ (span{&b, 1}, blockFlag) == 0) ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
     inline span<ELEMENT_TYPE> StreamReader<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag)
     {
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
         // and not say 'eof'
-        if (optional<size_t> o = ReadFromCache_ (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ())) {
+        if (optional<size_t> o = ReadFromCache_ (intoBuffer)) {
             return intoBuffer.subspan (0, *o);
         }
-        return intoBuffer.subspan (0, Read_Slow_Case_ (intoBuffer.data (), intoBuffer.data () + intoBuffer.size (), blockFlag));
+        return intoBuffer.subspan (0, Read_Slow_Case_ (intoBuffer, blockFlag));
     }
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Peek () -> optional<ElementType>
@@ -270,28 +270,28 @@ namespace Stroika::Foundation::Streams {
         return nullopt;
     }
     template <typename ELEMENT_TYPE>
-    optional<size_t> StreamReader<ELEMENT_TYPE>::ReadFromCache_ (ElementType* intoStart, ElementType* intoEnd)
+    optional<size_t> StreamReader<ELEMENT_TYPE>::ReadFromCache_ (span<ElementType> into)
     {
         // first try last filled - generally will be the right one
         for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
-            if (auto r = fCacheBlocks_[i].ReadFromCache (&this->fOffset_, intoStart, intoEnd)) {
+            if (auto r = fCacheBlocks_[i].ReadFromCache (&this->fOffset_, into)) {
                 return r;
             }
         }
         for (size_t i = 0; i < fCacheBlockLastFilled_; ++i) {
-            if (auto r = fCacheBlocks_[i].ReadFromCache (&this->fOffset_, intoStart, intoEnd)) {
+            if (auto r = fCacheBlocks_[i].ReadFromCache (&this->fOffset_, into)) {
                 return r;
             }
         }
         return nullopt;
     }
     template <typename ELEMENT_TYPE>
-    void StreamReader<ELEMENT_TYPE>::FillCacheWith_ (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd)
+    void StreamReader<ELEMENT_TYPE>::FillCacheWith_ (SeekOffsetType s, span<InlineBufferElementType_> into)
     {
         // pingpong buffers
         // try not to overfill any one cache block, but if the amount being read will fit, append to the current cache block
         // dont start a new one
-        size_t thisFillSize = intoEnd - intoStart;
+        size_t thisFillSize = into.size ();
         if (fCacheBlocks_[fCacheBlockLastFilled_].GetEnd () != this->fOffset_ or
             fCacheBlocks_[fCacheBlockLastFilled_].GetSize () + thisFillSize > kMaxBufferedChunkSize_) {
             ++fCacheBlockLastFilled_;
@@ -299,27 +299,21 @@ namespace Stroika::Foundation::Streams {
                 fCacheBlockLastFilled_ = 0;
             }
         }
-        fCacheBlocks_[fCacheBlockLastFilled_].FillCacheWith (s, intoStart, intoEnd);
+        fCacheBlocks_[fCacheBlockLastFilled_].FillCacheWith (s, into);
     }
     template <typename ELEMENT_TYPE>
-    inline void StreamReader<ELEMENT_TYPE>::FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd)
-        requires (not same_as<InlineBufferElementType_, ElementType>)
-    {
-        FillCacheWith_ (s, reinterpret_cast<const InlineBufferElementType_*> (intoStart), reinterpret_cast<const InlineBufferElementType_*> (intoEnd));
-    }
-    template <typename ELEMENT_TYPE>
-    size_t StreamReader<ELEMENT_TYPE>::Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd, NoDataAvailableHandling blockFlag)
+    size_t StreamReader<ELEMENT_TYPE>::Read_Slow_Case_ (span<ElementType> into, NoDataAvailableHandling blockFlag)
     {
         ElementType buf[kDefaultReadBufferSize_];
-        fStrm_.Seek (fOffset_); // check if getoffset not same in case not seekable) - or handle not seekable case
+        fStrm_.Seek (fOffset_); // check if get_offset not same in case not seekable) - or handle not seekable case
         size_t nRecordsRead = fStrm_.Read (span{buf}, blockFlag).size ();
         if (nRecordsRead == 0) {
             // not much point in caching - at eof
             return 0;
         }
         fFarthestReadInUnderlyingStream_ = max (fFarthestReadInUnderlyingStream_, fStrm_.GetOffset ());
-        FillCacheWith_ (fOffset_, begin (buf), begin (buf) + nRecordsRead);
-        return Memory::ValueOf (ReadFromCache_ (intoStart, intoEnd)); // we just cached bytes a the right offset so this must succeed
+        FillCacheWith_ (fOffset_, Memory::SpanBytesCast<span<InlineBufferElementType_>> (span{buf, nRecordsRead}));
+        return Memory::ValueOf (ReadFromCache_ (into)); // we just cached bytes a the right offset so this must succeed
     }
 
 }

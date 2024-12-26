@@ -157,8 +157,8 @@ namespace Stroika::Foundation::Streams {
             SeekOffsetType        GetEnd () const;
             optional<ElementType> Peek1FromCache (SeekOffsetType actualOffset) const;
             optional<ElementType> Read1FromCache (SeekOffsetType* actualOffset);
-            optional<size_t>      ReadFromCache (SeekOffsetType* actualOffset, ElementType* intoStart, ElementType* intoEnd);
-            void FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
+            optional<size_t>      ReadFromCache (SeekOffsetType* actualOffset, span<ElementType> into);
+            void                  FillCacheWith (SeekOffsetType s, span<InlineBufferElementType_> into);
 
         private:
             // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
@@ -176,11 +176,9 @@ namespace Stroika::Foundation::Streams {
     private:
         nonvirtual optional<ElementType> Peek1FromCache_ () const;
         nonvirtual optional<ElementType> Read1FromCache_ ();
-        nonvirtual optional<size_t> ReadFromCache_ (ElementType* intoStart, ElementType* intoEnd);
-        nonvirtual void FillCacheWith_ (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
-        nonvirtual void FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd)
-            requires (not same_as<InlineBufferElementType_, ElementType>);
-        size_t Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd, NoDataAvailableHandling blockFlag);
+        nonvirtual optional<size_t> ReadFromCache_ (span<ElementType> into);
+        nonvirtual void             FillCacheWith_ (SeekOffsetType s, span<InlineBufferElementType_> into);
+        nonvirtual size_t           Read_Slow_Case_ (span<ElementType> into, NoDataAvailableHandling blockFlag);
     };
 
 }
