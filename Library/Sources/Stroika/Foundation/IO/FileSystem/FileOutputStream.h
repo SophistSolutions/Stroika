@@ -99,7 +99,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *
      *  \par Example Usage
      *      \code
-     *          String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + "t.txt";
+     *          filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt";
      *          JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
      *      \endcode
      *

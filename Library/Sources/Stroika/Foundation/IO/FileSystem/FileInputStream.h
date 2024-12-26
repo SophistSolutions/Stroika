@@ -60,8 +60,10 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
     /**
+     *  \note FileInputStream::kBufferFlag_DEFAULT defaults to eUnbuffered, because StreamReader
+     *        generally provides a better buffering strategy.
      */
-    constexpr BufferFlag kBufferFlag_DEFAULT = BufferFlag::eBuffered;
+    constexpr BufferFlag kBufferFlag_DEFAULT = eUnbuffered;
 
     /**
      *  \note - prior to v2.1d27, this defaulted to unseekable, but for files, it makes way more sense to default to seekable, since
