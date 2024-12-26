@@ -4,6 +4,7 @@
 #include "InternallySynchronizedOutputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 
 namespace Stroika::Foundation::Streams::BufferedOutputStream {
 

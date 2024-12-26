@@ -73,7 +73,6 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
          *  \par Example Usage
          *      \code
          *          BufferedOutputStream::Ptr<byte> out = BufferedOutputStream::New<byte> (FileOutputStream (fileName, flushFlag));
-         *          out.SetBufferSize (1000);
          *      \endcode
          */
         Ptr ()                = default;
