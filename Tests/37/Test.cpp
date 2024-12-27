@@ -256,15 +256,27 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, MakeVersionViaAwkPipe)
     {
         Debug::TraceContextBumper ctx{"MakeVersionViaAwkPipe"};
-        try {
-            // can use full path or just plain name (if in path) for make/awk
-            ProcessRunner pr{"\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)};
+        {
+            // using bash appears to work on all supported platforms
+            ProcessRunner pr{CommandLine{CommandLine::WrapInShell::eBash, "\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)}};
             auto [stdOutStr, stdErrStr] = pr.Run (""sv);
             EXPECT_TRUE (not stdOutStr.empty ());
             EXPECT_TRUE (stdErrStr.empty ());
         }
-        catch (...) {
-            Stroika::Frameworks::Test::WarnTestIssue ("exception during ProcessRunner make/awk"_f(current_exception ()));
+        {
+            // can use full path or just plain name (if in path) for make/awk
+            ProcessRunner pr{"\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)};
+            try {
+                auto [stdOutStr, stdErrStr] = pr.Run (""sv);
+                EXPECT_TRUE (not stdOutStr.empty ());
+                EXPECT_TRUE (stdErrStr.empty ());
+            }
+            catch (...) {
+                // note: awk fails on cygwin, because its run under CMD (above) and awk is a symbolic link (which cmd
+                // appears to not handle properly)
+                // --LGP 2024-12-27
+                Stroika::Frameworks::Test::WarnTestIssue ("exception during ProcessRunner {}: {}"_f(pr.GetCommandLine (), current_exception ()));
+            }
         }
     }
 }
