@@ -75,9 +75,9 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \par Example Usage
          *      \code
-         *          // see https://www.gnu.org/software/emacs/manual/html_node/elisp/Char-Classes.html#Char-Classes
-         *          const auto kSingleWhitespaceChar = RegularExpression{RegularExpression::eBasic, "[:blank:]"sv};
-         *          const auto kSeriesOfWhitespaceCharacters = RegularExpression{RegularExpression::eBasic, "[:blank:]+"sv};
+         *          // see http://en.cppreference.com/w/cpp/regex/ecmascript
+         *          const auto kSingleWhitespaceChar = RegularExpression{"[[:space:]]"sv};
+         *          const auto kSeriesOfWhitespaceCharacters = RegularExpression{"\\s+"sv};
          *      \endcode
          */
         explicit RegularExpression ();
