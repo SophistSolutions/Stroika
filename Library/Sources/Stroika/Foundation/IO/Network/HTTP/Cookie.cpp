@@ -122,7 +122,7 @@ Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
 {
     Require (src.IsSeekable ());
     auto skipWS = [&] () {
-        while (optional<Character> c = src.Read ()) {
+        while (optional<Character> c = src.ReadBlocking ()) {
             if (not c->IsWhitespace ()) {
                 src.Seek (Streams::Whence::eFromCurrent, -1);
                 return;
@@ -132,7 +132,7 @@ Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
     // scan up to target char; leave stream after that character, but return string just before it
     auto skipUpTo = [&] (Character targetChar, String* s) {
         StringBuilder sb;
-        while (optional<Character> c = src.Read ()) {
+        while (optional<Character> c = src.ReadBlocking ()) {
             if (*c == targetChar) {
                 break;
             }
@@ -145,7 +145,7 @@ Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
     // same as skipUpTo, but with 2 possible characters
     auto skipUpTo2 = [&] (Character targetChar, Character targetChar2, String* s) {
         StringBuilder sb;
-        while (optional<Character> c = src.Read ()) {
+        while (optional<Character> c = src.ReadBlocking ()) {
             if (*c == targetChar or *c == targetChar2) {
                 break;
             }
@@ -157,7 +157,7 @@ Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
     };
     auto prevChar = [&] () {
         src.Seek (Streams::Whence::eFromCurrent, -1);
-        auto c = src.Read ();
+        auto c = src.ReadBlocking ();
         Assert (c.has_value ());
         return *c;
     };

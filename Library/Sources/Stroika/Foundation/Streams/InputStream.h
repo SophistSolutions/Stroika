@@ -294,58 +294,73 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         *  Read/0
-         *      return nullopt on EOF, and otherwise return a single element. Read/0 will block if no data available.
+         * \brief Read into data referenced by span argument - and using argument blocking strategy (default blocking)
+         * 
+         *  returns nullopt ONLY if blockFlag = eNonBlocking AND there is NO data available without blocking.
+         * 
+         *  a return of NOT missing, but an empty span implies EOF.
+         * 
+         * BLOCKING until data is available, but can return with fewer elements than argument span-size
+         * without prejudice about how much more is available.
          *
-         *  Read/1
-         *      Pointer must refer to valid non-empty span.
-         *      Returns empty iff EOF, and otherwise subspan of original span (starting at 0) actually read.
-         *      BLOCKING until data is available, but can return with fewer elements than argument span-size
-         *      without prejudice about how much more is available.
+         *  \note It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
          *
-         *      So if you call first with ReadNonBlocking() to assure there is some data available (at least one element) you can
-         *      call Read (BUFSTART,BUFFEND) with as big a buffer as you want, and it won't block.
-         *
-         *  All overloads:
-         *      It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
+         *  \req not intoBuffer.empty ()
          *
          *  @see ReadAll () to read all the data from the stream at once.
          *
+         *  @see ReadBlocking ()    - often simplest to use API
+         *  @see ReadOrThrow ()
          *  @see ReadNonBlocking ()
          */
-        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
-        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
+        nonvirtual optional<span<ElementType>> Read (span<ElementType>       intoBuffer,
+                                                     NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
 
     public:
         /**
-         * almost identical to Read (intoBuffer, NoDataAvailableHandling::eThrow except doesn't throw in that case but returns nullopt
+         *  \brief ReadBlocking () reads either a single element, or fills in argument intoBuffer - but never blocks (nor throws EWouldBlock)
+         * 
+         *  ReadBlocking ():
+         *      Reads a single element (blocking as long as needed) - or nullopt when at EOF.
+         * 
+         *  ReadBlocking(span<ElementType> intoBuffer) 
+         *      fills in subspan with at least one element (or zero if at EOF)
+         */
+        nonvirtual optional<ElementType> ReadBlocking () const;
+        nonvirtual span<ElementType> ReadBlocking (span<ElementType> intoBuffer) const;
+
+    public:
+        /**
+         * \brief read into intoBuffer - returning nullopt if would block, and else returning subspan of input with read data present
+         * 
+         *  same as Read (intoBuffer, NoDataAvailableHandling::eDontBlock)
          */
         nonvirtual optional<span<ElementType>> ReadNonBlocking (span<ElementType> intoBuffer) const;
 
     public:
         /**
-         *  \brief  Same as Read, but \req IsSeekable, and seeks back to original position
+         * \brief Read (either one or into argument span) and taking NoDataAvailableHandling blockFlag option arg), and throw if would block
          *
-         *  Peek/0
-         *      return nullopt on EOF, and otherwise return a single element.
-         *
-         *  Peek/1
-         *      Pointer must refer to valid non-empty span.
-         *      Returns empty iff EOF, and otherwise subspan of original span (starting at 0) actually read.
-         *      BLOCK until some data is available, but can return with fewer bytes than bufSize
-         *      without prejudice about how much more is available.
-         *
-         *  \note    Peek will block if no data available, by default, unless eDontBlock argument is specified, in which case it will throw EWouldBlock rather than block
+         * same as Read() APIs, but instead of returning optional, for cases where nullopt would be returned, throw EWouldBlock
          * 
-         *  \note Peek () will always throw EWouldBlock for all cases where eDontBlock specified and the call might block).
+         * \note if blockFlag == eBlockIfNoDataAvailable, this amounts to *Read(...args), since it will never generate an
+         *       eWouldBlock exception;
          * 
-         *  \note for this API, nullopt means KNOWN NO DATA, not EWouldBlock
+         *  when to use this variant? If implementing API where you are handed a blockFlag, but want to KISS, and
+         *  just throw if EWouldBlock ..
+         */
+        nonvirtual span<ElementType> ReadOrThrow (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
+
+    public:
+        /**
+         *  \brief block until one item available, read it and return it (seeking back before returning) - and returns nullopt for EOF.
          *
-         *      \req not intoBuffer.empty ()
+         * Same as ReadBlocking () - reading one element, but \req IsSeekable, and seeks back to original position - nullopt implies
+         *  \note    PeekBlocking will block if no data available
+         * 
          *      \req IsSeekable ()
          */
-        nonvirtual optional<ElementType> Peek (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
-        nonvirtual span<ElementType> Peek (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
+        nonvirtual optional<ElementType> PeekBlocking () const;
 
     public:
         /**
@@ -490,6 +505,38 @@ namespace Stroika::Foundation::Streams::InputStream {
          * \req *this != nullptr
          */
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d14 Instead call ReadBlocking()to get nullopt result for EOF - or ReadOrThrow() if ever called "
+                      "with eNonBlocking")]] optional<ElementType>
+        Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+        {
+            ELEMENT_TYPE b; // intentionally uninitialized in case POD-type, filled in by Read or not used
+            return this->ReadOrThrow (span{&b, 1}, blockFlag).size () == 0 ? optional<ElementType>{} : b;
+        }
+        [[deprecated ("Since Stroika v3.0d14 Consider PeekBlocking")]] optional<ElementType>
+        Peek (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+            Require (this->IsSeekable ());
+            Require (IsOpen ());
+            SeekOffsetType saved  = GetOffset ();
+            auto           result = this->Read (blockFlag);
+            this->Seek (saved);
+            return result;
+        }
+
+        [[deprecated ("Since Stroika v3.0d14 maybe")]] span<ElementType> Peek (span<ElementType> intoBuffer,
+                                                                               NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+            Require (this->IsSeekable ());
+            Require (IsOpen ());
+            SeekOffsetType saved  = GetOffset ();
+            auto           result = this->Read (intoBuffer, blockFlag);
+            this->Seek (saved);
+            return result;
+        }
 
     public:
         [[deprecated ("Since Stroika v3.0d5 use IsDataAvailableToRead ()")]] optional<size_t> ReadNonBlocking () const;

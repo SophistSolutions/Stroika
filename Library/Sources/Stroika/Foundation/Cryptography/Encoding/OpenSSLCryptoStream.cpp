@@ -185,7 +185,7 @@ namespace {
                 size_t n2Decrypt = 0;
                 switch (blockFlag) {
                     case NoDataAvailableHandling::eBlockIfNoDataAvailable: {
-                        n2Decrypt = fRealIn_.Read (span{toDecryptBuf}, blockFlag).size ();
+                        n2Decrypt = fRealIn_.ReadBlocking (span{toDecryptBuf}).size ();
                     } break;
                     case NoDataAvailableHandling::eDontBlock: {
                         if (auto oRes = fRealIn_.ReadNonBlocking (span{toDecryptBuf})) {

@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                 // and will just return smaller span, which we can resize down to...
                 constexpr size_t                   kRoundUpTo_ = max<size_t> (1, 4 * 1024 / sizeof (ELEMENT_TYPE));
                 Memory::InlineBuffer<ELEMENT_TYPE> buf{Memory::eUninitialized, Math::RoundUpTo (*o, kRoundUpTo_)};
-                span<ELEMENT_TYPE> r = this->Read (span<ELEMENT_TYPE>{buf}, NoDataAvailableHandling::eBlockIfNoDataAvailable); // since available to read- this CANNOT BLOCK (but may return fewer elts)
+                span<ELEMENT_TYPE> r = this->ReadBlocking (span<ELEMENT_TYPE>{buf}); // since available to read- this CANNOT BLOCK (but may return fewer elts)
                 Assert (r.data () == buf.data ());
                 Assert (r.size () <= buf.size ());
                 buf.ShrinkTo (r.size ());
@@ -166,23 +166,32 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepRWRef ().RemainingLength ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (NoDataAvailableHandling blockFlag) const -> optional<ElementType>
-    {
-        ELEMENT_TYPE b; // intentionally uninitialized in case POD-type, filled in by Read or not used
-        return this->Read (span{&b, 1}, blockFlag).size () == 0 ? optional<ElementType>{} : b;
-    }
-    template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const -> span<ElementType>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const -> optional<span<ElementType>>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         Require (not intoBuffer.empty ());
-        if (auto o = GetRepRWRef ().Read (intoBuffer, blockFlag)) [[likely]] {
+        return GetRepRWRef ().Read (intoBuffer, blockFlag);
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::ReadOrThrow (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const -> span<ElementType>
+    {
+        if (auto o = Read (intoBuffer, blockFlag)) [[likely]] {
             return *o;
         }
-        else {
-            Execution::Throw (EWouldBlock::kThe);
-        }
+        Execution::Throw (EWouldBlock::kThe);
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::ReadBlocking () const -> optional<ElementType>
+    {
+        ElementType       e{};
+        span<ElementType> r = ReadBlocking (span{&e, 1});
+        return r.empty () ? optional<ElementType>{} : e;
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::ReadBlocking (span<ElementType> intoBuffer) const -> span<ElementType>
+    {
+        return Memory::ValueOf (Read (intoBuffer, NoDataAvailableHandling::eBlockIfNoDataAvailable));
     }
     template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking (span<ElementType> intoBuffer) const -> optional<span<ElementType>>
@@ -193,31 +202,20 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepRWRef ().Read (intoBuffer, NoDataAvailableHandling::eDontBlock);
     }
     template <typename ELEMENT_TYPE>
-    auto InputStream::Ptr<ELEMENT_TYPE>::Peek (NoDataAvailableHandling blockFlag) const -> optional<ElementType>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::PeekBlocking () const -> optional<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (this->IsSeekable ());
         Require (IsOpen ());
         SeekOffsetType saved  = GetOffset ();
-        auto           result = this->Read (blockFlag);
+        auto           result = this->ReadBlocking ();
         this->Seek (saved);
         return result;
     }
     template <typename ELEMENT_TYPE>
-    auto InputStream::Ptr<ELEMENT_TYPE>::Peek (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const -> span<ElementType>
+    inline bool InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (this->IsSeekable ());
-        Require (IsOpen ());
-        SeekOffsetType saved  = GetOffset ();
-        auto           result = this->Read (intoBuffer, blockFlag);
-        this->Seek (saved);
-        return result;
-    }
-    template <typename ELEMENT_TYPE>
-    bool InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () const
-    {
-        return not Peek (NoDataAvailableHandling::eBlockIfNoDataAvailable).has_value ();
+        return not PeekBlocking ().has_value ();
     }
     template <typename ELEMENT_TYPE>
     optional<bool> InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF (NoDataAvailableHandling blockFlag) const
@@ -257,7 +255,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         Characters::Character c;
-        if (Read (span{&c, 1}, blockFlag).size () == 1) [[likely]] {
+        if (ReadOrThrow (span{&c, 1}, blockFlag).size () == 1) [[likely]] {
             return c;
         }
         return '\0';
@@ -411,7 +409,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             if (nEltsLeft < Memory::NEltsOf (buf)) {
                 e = s + nEltsLeft;
             }
-            size_t n = Read (span{s, e}).size ();
+            size_t n = ReadBlocking (span{s, e}).size ();
             Assert (0 <= n and n <= nEltsLeft);
             Assert (0 <= n and n <= Memory::NEltsOf (buf));
             if (n == 0) {
@@ -444,12 +442,12 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  So keep reading will we know we got everything.
          * 
-         *  Note - its because of this, and to avoid potentiallly needing to unread, that this API doesn't support non-blocking ReadAll (could do with seek).
+         *  Note - its because of this, and to avoid potentially needing to unread, that this API doesn't support non-blocking ReadAll (could do with seek).
          */
         size_t       elementsRead{};
         ElementType* intoEnd = intoBuffer.data () + intoBuffer.size ();
         for (ElementType* readCursor = intoBuffer.data (); readCursor < intoEnd;) {
-            size_t eltsReadThisTime = Read (span{readCursor, intoEnd}).size ();
+            size_t eltsReadThisTime = ReadBlocking (span{readCursor, intoEnd}).size ();
             if (eltsReadThisTime == 0) {
                 // irrevocable EOF
                 break;

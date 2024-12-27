@@ -8,6 +8,19 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+### 3.0d14 PRENOTES
+
+UPGRADE
+
+INCOMPAT CHANGE - INPUT_STREAM::
+  REad _NOW RETURNS OPTIONAL INSTED OF THROWING - CALL ReadOrThrow to get older behavior ")]] span<ElementType>
+        Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+
+
+
+
+
+
 ### 3.0d13 {2024-12-20} {[diff](../../compare/3.0d12...3.0d13)}
 
 #### TLDR

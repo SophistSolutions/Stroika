@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
-                return fRealIn_.Read (intoBuffer, blockFlag);
+                return fRealIn_.ReadOrThrow (intoBuffer, blockFlag);
             }
 
         private:

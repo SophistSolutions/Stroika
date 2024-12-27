@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Execution {
             // Intentionally ignore Seek, because that could be used to estimate total file size and anything contributing to progress must be an actual READ
             virtual optional<span<T>> Read (span<T> intoBuffer, Streams::NoDataAvailableHandling blockFlag) override
             {
-                auto                    r      = inherited::fRealIn.Read (intoBuffer, blockFlag);
+                auto                    r      = inherited::fRealIn.ReadOrThrow (intoBuffer, blockFlag);
                 Streams::SeekOffsetType curOff = inherited::fRealIn.GetOffset ();
                 fHighWaterMark_                = max (curOff, fHighWaterMark_);
                 if (not fKnownEnd_ and curOff > 0.75 * fEstimatedEnd_) {

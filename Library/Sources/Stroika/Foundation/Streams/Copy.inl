@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Streams {
     void CopyAll_Buffered (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize)
     {
         Memory::StackBuffer<ELEMENT_TYPE> buf{Memory::eUninitializedIfTrivial, bufferSize};
-        while (size_t n = from.Read (span{buf}).size ()) {
+        while (size_t n = from.ReadBlocking (span{buf}).size ()) {
             Assert (n <= buf.size ());
             to.Write (span{buf.begin (), n});
             Execution::Thread::CheckForInterruption ();

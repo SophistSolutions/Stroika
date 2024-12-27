@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                         else {
                             ELEMENT_TYPE* newIntoEnd{intoBuffer.data () + *fForcedEndInReal_ - curReal};
                             Assert (newIntoEnd < intoBuffer.data () + intoBuffer.size ());
-                            return fRealIn_.Read (span{intoBuffer.data (), newIntoEnd}, blockFlag);
+                            return fRealIn_.ReadOrThrow (span{intoBuffer.data (), newIntoEnd}, blockFlag);
                         }
                     }
                 }

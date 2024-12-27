@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         while (true) {
             byte   buf[32 * 1024];
-            size_t n = from.Read (span{buf}).size ();
+            size_t n = from.ReadBlocking (span{buf}).size ();
             Assert (n <= sizeof (buf));
             if (n == 0) {
                 break;

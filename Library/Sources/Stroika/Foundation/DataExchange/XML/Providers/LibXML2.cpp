@@ -142,7 +142,7 @@ namespace {
         {
             AssertNotNull (sCurrent_);
             auto       inStream = reinterpret_cast<InputStream::Ptr<byte>*> (context);
-            span<byte> r        = inStream->Read (as_writable_bytes (span{buffer, static_cast<size_t> (len)}));
+            span<byte> r        = inStream->ReadBlocking (as_writable_bytes (span{buffer, static_cast<size_t> (len)}));
             return static_cast<int> (r.size ());
         }
     };
@@ -727,7 +727,7 @@ namespace {
                 [[maybe_unused]] auto&&        cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
                 MyLibXML2StructuredErrGrabber_ errCatcher{ctxt};
                 byte                           buf[1024]; // intentionally uninitialized
-                while (auto n = in.Read (span{buf}).size ()) {
+                while (auto n = in.ReadBlocking (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                         AssertNotNull (errCatcher.fCapturedException); // double check I understood API properly - and error handler getting called
                     }
@@ -999,7 +999,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         if (seek2) {
             useInput.Seek (*seek2);
         }
-        while (auto n = useInput.Read (span{buf}).size ()) {
+        while (auto n = useInput.ReadBlocking (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                 AssertNotNull (errCatcher.fCapturedException); // double check I understood API properly - and error handler getting called
             }

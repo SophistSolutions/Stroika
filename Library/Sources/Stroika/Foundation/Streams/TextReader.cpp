@@ -222,7 +222,7 @@ namespace {
             while (result.size () < goalSizeAtLeast) {
                 switch (blockFlag) {
                     case eBlockIfNoDataAvailable: {
-                        auto r = _fSource.Read (intoBuf.subspan (result.size ()));
+                        auto r = _fSource.ReadBlocking (intoBuf.subspan (result.size ()));
                         if (r.size () == 0) {
                             // we are done - got EOF, and so just return as much as we have
                             return result;

@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Streams {
         eBlockIfNoDataAvailable,
 
         /**
-         *  By far safest, simplest approach, but sometimes unacceptable for various reasons, typically involving mutliprocessing, and I/O.
+         *  By far safest, simplest approach, but sometimes unacceptable for various reasons, typically involving multiprocessing, and I/O.
          */
         eDEFAULT = eBlockIfNoDataAvailable
     };
@@ -126,12 +126,12 @@ namespace Stroika::Foundation::Streams {
      *             o   Stroika streams are unrelated to formatting of text.
      *
      *             o   Stroika Streams are much easier to use and understand, with better internal error checking,
-     *                 and simpler, more consistent naming for offets/seeking, and seekability.
+     *                 and simpler, more consistent naming for offsets/seeking, and seekability.
      *
      *             o   Stroika supports non-seekable streams (needed for things like sockets, and certain special files, like
      *                 Linux procfs files).
      *
-     *             o   Due to more orthoganal API, easier to provide intuitive simple adapters mapping one kind of stream
+     *             o   Due to more orthogonal API, easier to provide intuitive simple adapters mapping one kind of stream
      *                 to another (such as binary streams to streams of text, like the .net TextReader).
      *
      *             o   Stroika Streams are divided into 'Smart Pointer' objects (all you interact with) and the underlying Stream data (Rep).

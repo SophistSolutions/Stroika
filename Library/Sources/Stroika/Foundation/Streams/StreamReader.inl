@@ -306,7 +306,7 @@ namespace Stroika::Foundation::Streams {
     {
         ElementType buf[kDefaultReadBufferSize_];
         fStrm_.Seek (fOffset_); // check if get_offset not same in case not seekable) - or handle not seekable case
-        size_t nRecordsRead = fStrm_.Read (span{buf}, blockFlag).size ();
+        size_t nRecordsRead = fStrm_.ReadOrThrow (span{buf}, blockFlag).size ();
         if (nRecordsRead == 0) {
             // not much point in caching - at eof
             return 0;

@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                  *  If it cannot, accumulate any read data into the cache so it can be re-read.
                  */
                 Assert (fOffset_ == inherited::fRealIn.GetOffset ()); // could be bug with this code or somebody else playing fast and loose, but use assert
-                auto r = this->fRealIn.Read (intoBuffer, blockFlag);
+                auto r = this->fRealIn.ReadOrThrow (intoBuffer, blockFlag);
                 // cache it, and update our data structures; note easy, cuz fRealIn must be at matching seek offset
                 fCachedData_.push_back (r);
                 fOffset_ += r.size ();
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                             // we must read and buffer/accumulate in the cache; note - because of how this code works, the
                             // fRealIn is always seeked to the end cached data.
                             byte someBuf[1024];
-                            auto r = this->fRealIn.Read (span{someBuf});
+                            auto r = this->fRealIn.ReadBlocking (span{someBuf});
                             fCachedData_.push_back (r); // nb: an exception in this copy would cause fRealIn offset to be out of sync, but not sure what todo about it
                             cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                         }
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                             // implies seeking (fRealIn) to the end, and so reading everything, and then performing the desired seek
                             while (true) {
                                 byte someBuf[8 * 1024];
-                                auto r = this->fRealIn.Read (span{someBuf});
+                                auto r = this->fRealIn.ReadBlocking (span{someBuf});
                                 fCachedData_.push_back (r); // nb: an exception in this copy would cause fRealIn offset to be out of sync, but not sure what todo about it
                                 if (r.empty ()) {
                                     break;

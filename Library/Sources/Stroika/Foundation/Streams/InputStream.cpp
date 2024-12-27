@@ -47,7 +47,7 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
             e = s + nEltsLeft;
         }
         Assert (s < e);
-        size_t n = Read (span{s, e}).size ();
+        size_t n = ReadBlocking (span{s, e}).size ();
         Assert (0 <= n and n <= nEltsLeft);
         Assert (0 <= n and n <= Memory::NEltsOf (buf));
         if (n == 0) {
@@ -63,7 +63,7 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
         }
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("returning %llu bytes", static_cast<unsigned long long> (r.size ()));
+    DbgTrace ("returning {} bytes"_f, r.size ());
 #endif
     return BLOB{r};
 }

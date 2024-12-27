@@ -43,7 +43,7 @@ namespace {
             EXPECT_NE (s, nullptr);
             EXPECT_TRUE (s.IsSeekable ());
             byte result[100] = {byte{0}};
-            EXPECT_EQ (s.Read (span{result}).size (), 2u);
+            EXPECT_EQ (s.ReadBlocking (span{result}).size (), 2u);
             EXPECT_EQ (to_integer<char> (result[0]), '1');
             EXPECT_EQ (to_integer<char> (result[1]), '\0');
         }
@@ -90,23 +90,23 @@ namespace {
             const uint8_t kData_[] = {3, 53, 43, 23, 3};
             s.Write (span{kData_});
             Memory::BLOB b = s.As<Memory::BLOB> ();
-            EXPECT_TRUE (b.size () == sizeof (kData_));
-            EXPECT_TRUE (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+            EXPECT_EQ (b.size (), sizeof (kData_));
+            EXPECT_EQ (b, Memory::BLOB (std::begin (kData_), std::end (kData_)));
         }
         {
             MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
-            EXPECT_TRUE (s.GetReadOffset () == 0);
-            EXPECT_TRUE (s.GetWriteOffset () == 0);
+            EXPECT_EQ (s.GetReadOffset (), 0);
+            EXPECT_EQ (s.GetWriteOffset (), 0);
             const uint8_t kData_[] = {3, 53, 43, 23, 3};
             s.Write (span{kData_});
-            EXPECT_TRUE (s.GetReadOffset () == 0);
-            EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
+            EXPECT_EQ (s.GetReadOffset (), 0u);
+            EXPECT_EQ (s.GetWriteOffset (), sizeof (kData_));
             byte bArr[1024];
-            Verify (s.Read (span{bArr}).size () == sizeof (kData_));
-            EXPECT_TRUE (s.GetReadOffset () == sizeof (kData_));
-            EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
-            EXPECT_TRUE ((Memory::BLOB{std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()} ==
-                          Memory::BLOB{std::begin (kData_), std::end (kData_)}));
+            Verify (s.ReadBlocking (span{bArr}).size () == sizeof (kData_));
+            EXPECT_EQ (s.GetReadOffset (), sizeof (kData_));
+            EXPECT_EQ (s.GetWriteOffset (), sizeof (kData_));
+            EXPECT_EQ ((Memory::BLOB{std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()}),
+                       (Memory::BLOB{std::begin (kData_), std::end (kData_)}));
         }
     }
 }
@@ -198,7 +198,7 @@ namespace {
         static constexpr unsigned int         kUpToInclusive_{1000};
         Thread::Ptr                           consumer = Thread::New (
             [&] () {
-                while (auto o = pipe.Read ()) {
+                while (auto o = pipe.ReadBlocking ()) {
                     sum += *o;
                 }
             },

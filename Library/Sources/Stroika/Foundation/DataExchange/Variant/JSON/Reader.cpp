@@ -789,7 +789,7 @@ public:
                 const size_t                         targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
                 size_t                               actualChunkSize;
                 boost::system::error_code            ec;
-                while ((actualChunkSize = in.Read (span{buf, targetChunkSize}).size ()) != 0) {
+                while ((actualChunkSize = in.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
                     ec.clear ();
                     size_t nParsed = p.write_some (true, reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
@@ -817,7 +817,7 @@ public:
                 byte                buf[8 * 1024];
                 const size_t        targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
                 size_t              actualChunkSize;
-                while ((actualChunkSize = in.Read (span{buf, targetChunkSize}).size ()) != 0) {
+                while ((actualChunkSize = in.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
                     boost::system::error_code ec;
                     size_t                    nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
