@@ -47,7 +47,8 @@ namespace Stroika::Foundation::Streams::InputStream {
      *      o   @See Streams::Ptr<T>
      *
      *      o   Nearly all read's on an InputStream::Ptr<T> are BLOCKING. If there is a desire to have a
-     *          non-blocking read, then call ReadNonBlocking (). All operations block except ReadNonBlocking ().
+     *          non-blocking read, then call ReadNonBlocking (). All operations block except ReadNonBlocking (),
+     *          and Read () methods with NoDataAvailableHandling parameter.
      *
      *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
      *          calls to Read () will return EOF (unless some other mechanism is used to tweak
@@ -377,17 +378,6 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         *  @todo Consider if we should lose this. Optional approach maybe better.
-         *
-         *  Read of a single character. Returns a NUL-character on EOF ('\0');
-         * 
-         *  Blocking (by default), but if you pass eDontBlock, will throw EWouldBlock if would have blocked
-         */
-        nonvirtual Characters::Character ReadCharacter (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
-
-    public:
-        /**
          *  \brief Read a single (or span of) POD_TYPE objects, like with Read () - except always blocking, and treating stream of bytes as composing a single POD_TYPE object
          * 
          *  \note ReadRaw(span > 1 element) requires IsSeekable()
@@ -416,7 +406,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *      \req IsSeekable () to implement read-ahead required for CRLF mapping support 
          *
-         *  This API is always blocking (perhaps someday overloads will allow non-blocking but very low priority)
+         *  This API is always blocking.
          */
         nonvirtual Characters::String ReadLine () const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
@@ -432,7 +422,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          * 
          *  However, UNLIKE ReadLine(), this function does NOT require the input stream be seekable!
          *
-         *  This API is always blocking (perhaps someday overloads will allow non-blocking but very low priority)
+         *  This API is always blocking.
          */
         nonvirtual Traversal::Iterable<Characters::String> ReadLines () const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
@@ -507,6 +497,16 @@ namespace Stroika::Foundation::Streams::InputStream {
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d14 use ReadBlocking().value_or(0) typically")]] Characters::Character
+        ReadCharacter (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+            requires (same_as<ELEMENT_TYPE, Characters::Character>)
+        {
+            Characters::Character c;
+            if (ReadOrThrow (span{&c, 1}, blockFlag).size () == 1) [[likely]] {
+                return c;
+            }
+            return '\0';
+        }
         [[deprecated ("Since Stroika v3.0d14 Instead call ReadBlocking()to get nullopt result for EOF - or ReadOrThrow() if ever called "
                       "with eNonBlocking")]] optional<ElementType>
         Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const

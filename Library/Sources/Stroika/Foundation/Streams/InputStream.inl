@@ -251,16 +251,6 @@ namespace Stroika::Foundation::Streams::InputStream {
         }
     }
     template <typename ELEMENT_TYPE>
-    inline Characters::Character InputStream::Ptr<ELEMENT_TYPE>::ReadCharacter (NoDataAvailableHandling blockFlag) const
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
-    {
-        Characters::Character c;
-        if (ReadOrThrow (span{&c, 1}, blockFlag).size () == 1) [[likely]] {
-            return c;
-        }
-        return '\0';
-    }
-    template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     inline POD_TYPE InputStream::Ptr<ELEMENT_TYPE>::ReadRaw () const
         requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
@@ -310,7 +300,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         Require (this->IsSeekable ());
         StringBuilder result;
         while (true) {
-            Character c = ReadCharacter ();
+            Character c = ReadBlocking ().value_or (Character{});
             if (c.GetCharacterCode () == '\0') {
                 // EOF
                 return result.str ();
@@ -320,7 +310,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                 return result.str ();
             }
             else if (c == '\r') {
-                c = this->ReadCharacter ();
+                c = this->ReadBlocking ().value_or (Character{});
                 // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
                 if (c == '\n') {
                     result.push_back (c);
@@ -355,8 +345,13 @@ namespace Stroika::Foundation::Streams::InputStream {
             auto readLine = [] (InputStream::Ptr<Character> s, optional<Character> firstChar) -> tuple<String, optional<Character>> {
                 StringBuilder result;
                 while (true) {
-                    Character c = firstChar.value_or (s.ReadCharacter ());
-                    firstChar   = nullopt;
+                    Character c = [&] () -> Character {
+                        if (firstChar) {
+                            return *firstChar;
+                        }
+                        return s.ReadBlocking ().value_or (Character{});
+                    }();
+                    firstChar = nullopt;
                     if (c.GetCharacterCode () == '\0') {
                         return make_tuple (result.str (), nullopt); // EOF
                     }
@@ -365,7 +360,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                         return make_tuple (result.str (), nullopt);
                     }
                     else if (c == '\r') {
-                        c = s.ReadCharacter ();
+                        c = s.ReadBlocking ().value_or (Character{});
                         // if CR is followed by LF, append that to result too before returning. Otherwise, put the character back
                         if (c == '\n') {
                             result.push_back (c);
