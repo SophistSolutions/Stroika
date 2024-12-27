@@ -66,14 +66,12 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         };
 
         // read the source into one big buffer. Keep it all around, so seekable
-        // @todo NYI
         template <typename ELEMENT_TYPE, size_t INLINE_BUF_SIZE>
         class Rep_Seekable_FromUnSeekable_ : public IRep_<ELEMENT_TYPE> {
         public:
             Rep_Seekable_FromUnSeekable_ (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn)
                 : fRealIn_{realIn}
             {
-                WeakAssert (false); // not yet really buffering
             }
             virtual bool IsSeekable () const override
             {
@@ -94,25 +92,55 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Require (IsOpenRead ());
-                return fRealIn_.GetOffset ();
+                return fSeekOffset_;
             }
             virtual optional<size_t> AvailableToRead () override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
-                return fRealIn_.AvailableToRead (); // since no actual buffering here yet
+                if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) {
+                    return fBufferOfAllReadDataSoFar_.size () - fSeekOffset_; // don't include what we might get upstream cuz more costly to compute
+                }
+                return fRealIn_.AvailableToRead ();
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
-                return fRealIn_.RemainingLength ();
+                if (auto rl = fRealIn_.RemainingLength ()) {
+                    return MapOffsetFromReal2Mine_ (*rl);
+                }
+                return nullopt;
             }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
-                return fRealIn_.Read (intoBuffer, blockFlag);
+                Assert (fSeekOffset_ <= fBufferOfAllReadDataSoFar_.size ());
+                if (fSeekOffset_ == fBufferOfAllReadDataSoFar_.size ()) {
+                    ELEMENT_TYPE buf[1024];
+                    if (auto r = fRealIn_.Read (span{buf}, blockFlag)) {
+                        fBufferOfAllReadDataSoFar_.push_back (*r); // continue, and fall through
+                    }
+                    else {
+                        return nullopt; // no data pre-read, and nothing available upstream
+                    }
+                }
+                if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) {
+                    size_t n2Read = min (intoBuffer.size (), fBufferOfAllReadDataSoFar_.size () - fSeekOffset_);
+                    auto   result = Memory::CopySpanData (span{fBufferOfAllReadDataSoFar_}.subspan (fSeekOffset_, n2Read), intoBuffer);
+                    Assert (result.size () == n2Read);
+                    fSeekOffset_ += n2Read;
+                    return result;
+                }
+                return nullopt;
+            }
+
+        private:
+            nonvirtual SeekOffsetType MapOffsetFromReal2Mine_ (SeekOffsetType so) const
+            {
+                return static_cast<SeekOffsetType> (static_cast<SignedSeekOffsetType> (so) + static_cast<SignedSeekOffsetType> (fRealIn_.GetOffset ()) -
+                                                    static_cast<SignedSeekOffsetType> (fSeekOffset_));
             }
 
         private:
@@ -227,7 +255,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         using PTR                        = Ptr<ELEMENT_TYPE>;
         bool             srcSeekable     = realIn.IsSeekable ();
         bool             useSeekable     = seekable.value_or (srcSeekable);
-        constexpr size_t INLINE_BUF_SIZE = 1024;
+        constexpr size_t INLINE_BUF_SIZE = 4 * 1024;
         if (useSeekable) {
             return srcSeekable ? PTR{make_shared<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> (realIn)}
                                : PTR{make_shared<Private_::Rep_Seekable_FromUnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
@@ -243,9 +271,8 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         constexpr size_t INLINE_BUF_SIZE = 4 * 1024;
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized: {
-                bool             srcSeekable     = realIn.IsSeekable ();
-                bool             useSeekable     = seekable.value_or (srcSeekable);
-                constexpr size_t INLINE_BUF_SIZE = 1024;
+                bool srcSeekable = realIn.IsSeekable ();
+                bool useSeekable = seekable.value_or (srcSeekable);
                 if (useSeekable) {
                     return srcSeekable
                                ? InternallySynchronizedInputStream::New<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> ({}, realIn)
