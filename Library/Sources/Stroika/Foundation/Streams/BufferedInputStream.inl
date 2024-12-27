@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                     }
                 }
                 if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) {
-                    size_t n2Read = min (intoBuffer.size (), fBufferOfAllReadDataSoFar_.size () - fSeekOffset_);
+                    size_t n2Read = min<size_t> (intoBuffer.size (), fBufferOfAllReadDataSoFar_.size () - fSeekOffset_);
                     auto   result = Memory::CopySpanData (span{fBufferOfAllReadDataSoFar_}.subspan (fSeekOffset_, n2Read), intoBuffer);
                     Assert (result.size () == n2Read);
                     fSeekOffset_ += n2Read;
