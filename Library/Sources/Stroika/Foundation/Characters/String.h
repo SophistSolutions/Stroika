@@ -880,6 +880,13 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          mungedData = mungedData.ReplaceAll (RegularExpression{ "\\b0+" }, "");    // strip all leading zeros
          *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          String a = "a b   \n\t c";
+         *          EXPECT_EQ (a.ReplaceAll (RegularExpression{"\\s+"sv}, " "sv), "a b c");
+         *          EXPECT_EQ (a.ReplaceAll ("\\s+"_RegEx, " "sv), "a b c");
+         *      \endcode
          *
          *  Note - it IS legal to have with contain the original search for string, or even
          *  to have it 'created' as part of where it gets
