@@ -464,14 +464,22 @@ namespace Stroika::Foundation::Memory {
             // we don't need to pay attention to what is initialized and what is not so quicker and easier
             // So slosh bytes after at down, and copy in the new ones
             CopyBytes (span{atPtr, s - at}, span{atPtr + n2Add, s - at});
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), atPtr);
+#else
             ranges::uninitialized_copy (copyFrom, span{atPtr, n2Add});
+#endif
         }
         else {
             // Simple but not super algorithm, append the data (using uninitialized_copy)
             // and then std::rotate () - idea lifted from MSVC std::vector::insert()
             // reason for trixyness, is cuz we need uninitialized_copy for new stuff (into uninitialized memory)
             // and copy with destruction of old stuff for rest (handled by rotate)
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + s);
+#else
             ranges::uninitialized_copy (copyFrom, span{b + s, n2Add});
+#endif
             rotate (atPtr, b + s, b + newS);
         }
         this->fSize_ = newS; // above leaks if exception in copies, but practically impossible...@todo...
