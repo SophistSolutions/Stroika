@@ -525,7 +525,6 @@ namespace Stroika::Foundation::Streams::InputStream {
             this->Seek (saved);
             return result;
         }
-
         [[deprecated ("Since Stroika v3.0d14 maybe")]] span<ElementType> Peek (span<ElementType> intoBuffer,
                                                                                NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
         {
@@ -537,8 +536,6 @@ namespace Stroika::Foundation::Streams::InputStream {
             this->Seek (saved);
             return result;
         }
-
-    public:
         [[deprecated ("Since Stroika v3.0d5 use IsDataAvailableToRead ()")]] optional<size_t> ReadNonBlocking () const;
         [[deprecated ("Since Stroika v3.0d5 use Read (span, NoDataAvailableHandling::eDontBlock )")]] optional<size_t>
         ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
