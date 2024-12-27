@@ -257,7 +257,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& errorMessage, const optio
         }
     }
     if (stderrSubset) {
-        sb << " (captured stderr: "sv + stderrSubset->ReplaceAll (RegularExpression{"[:blank:]+"sv}, " "sv).LimitLength (100) << ")"sv;
+        sb << " (captured stderr: "sv + stderrSubset->ReplaceAll ("\\s+"_RegEx, " "sv).LimitLength (100) << ")"sv;
     }
     return sb;
 }
