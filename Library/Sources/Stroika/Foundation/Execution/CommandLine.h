@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Execution {
          *  Used as optional CTOR argument, to create a CommandLine with 
          *      bash -c "actual string arg"
          *  or
-         *      cmd /K "actual string arg"
+         *      cmd /C "actual string arg"
          */
         enum class WrapInShell {
 #if qStroika_Foundation_Common_Platform_Windows
