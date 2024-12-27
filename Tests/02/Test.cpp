@@ -1994,6 +1994,20 @@ namespace {
         }
         {
             // EXPECT_EQ ("{}"_f(atomic<int>{3}), "3");    // DOES NOT work because formattable requires T be copyable, and stdc++ requires atomic<T> not copyable
+            EXPECT_EQ ("{}"_f(Characters::ToString (atomic<int>{3})), "3"); // but can use ToString() cuz uses reference
+        }
+        {
+            EXPECT_EQ ("{}"_f(Characters::ToString (optional<int>{3})), "3");
+            EXPECT_EQ ("{}"_f(optional<int>{3}), "3");
+        }
+        {
+            auto sp = make_shared<int> (1);
+            EXPECT_EQ ("{}"_f(sp), "*1");
+        }
+        {
+            auto up = make_unique<int> (1);
+            //DbgTrace ("up={}"_f, up); - fails because unique_ptr not copyable
+            DbgTrace ("up={}"_f, Characters::ToString (up)); // but can use ToString() cuz that uses reference, not copy
         }
     }
 }
