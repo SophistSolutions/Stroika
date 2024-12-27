@@ -29,8 +29,6 @@ namespace Stroika::Foundation::Characters {
     class RegularExpression {
     public:
         /**
-         *  not sure what these types mean - find out and document clearly
-         *
          *  \note   We chose ECMAScript as a default, to match what stdC++ chose as the default.
          */
         enum class SyntaxType {
@@ -38,11 +36,27 @@ namespace Stroika::Foundation::Characters {
              *  http://en.cppreference.com/w/cpp/regex/ecmascript
              */
             eECMAScript = regex_constants::ECMAScript,
-            eBasic      = regex_constants::basic,
-            eExtended   = regex_constants::extended,
-            eAwk        = regex_constants::awk,
-            eGrep       = regex_constants::grep,
-            eEGrep      = regex_constants::egrep,
+
+            /**
+             *  https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03
+             */
+            eBasic = regex_constants::basic,
+
+            /**
+             * https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04
+             */
+            eExtended = regex_constants::extended,
+
+            /**
+             *  https://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04
+             */
+            eAwk = regex_constants::awk,
+
+            /**
+             *  https://pubs.opengroup.org/onlinepubs/9699919799/utilities/grep.html
+             */
+            eGrep  = regex_constants::grep,
+            eEGrep = regex_constants::egrep,
 
             eDEFAULT = eECMAScript,
         };
@@ -62,13 +76,13 @@ namespace Stroika::Foundation::Characters {
          *  \par Example Usage
          *      \code
          *          // see https://www.gnu.org/software/emacs/manual/html_node/elisp/Char-Classes.html#Char-Classes
-         *          const auto kSingleWhitespaceChar = RegularExpression{"[:blank:]"sv};
-         *          const auto kSeriesOfWhitespaceCharacters = RegularExpression{"[:blank:]+"sv};
+         *          const auto kSingleWhitespaceChar = RegularExpression{RegularExpression::eBasic, "[:blank:]"sv};
+         *          const auto kSeriesOfWhitespaceCharacters = RegularExpression{RegularExpression::eBasic, "[:blank:]+"sv};
          *      \endcode
          */
         explicit RegularExpression ();
-        explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = eWithCase);
-        explicit RegularExpression (const String& re, CompareOptions co);
+        explicit RegularExpression (SyntaxType syntaxType, const String& re, CompareOptions co = eWithCase);
+        explicit RegularExpression (const String& re, CompareOptions co = eWithCase);
         RegularExpression (const wregex& regEx);
         RegularExpression (wregex&& regEx);
 
@@ -99,6 +113,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         nonvirtual const wregex& GetCompiled () const;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d14 - use SyntaxType before the regexp")]]
+        explicit RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co = eWithCase)
+            : RegularExpression (syntaxType, re, co)
+        {
+        }
 
     private:
         wregex fCompiledRegExp_;

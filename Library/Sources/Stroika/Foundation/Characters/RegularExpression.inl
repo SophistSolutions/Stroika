@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Characters {
     {
     }
     inline RegularExpression::RegularExpression (const String& re, CompareOptions co)
-        : RegularExpression{re, SyntaxType::eDEFAULT, co}
+        : RegularExpression{SyntaxType::eDEFAULT, re, co}
     {
     }
     inline const wregex& RegularExpression::GetCompiled () const

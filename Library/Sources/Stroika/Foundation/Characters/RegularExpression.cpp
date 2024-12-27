@@ -29,7 +29,7 @@ namespace {
  ********************** Characters::RegularExpression ***************************
  ********************************************************************************
  */
-RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co)
+RegularExpression::RegularExpression (SyntaxType syntaxType, const String& re, CompareOptions co)
     : fCompiledRegExp_{re.As<wstring> (), mkOption_ (syntaxType, co)}
 {
 }
