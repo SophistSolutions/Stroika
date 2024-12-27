@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
-                if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) {
+                if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) [[likely]] {
                     return fBufferOfAllReadDataSoFar_.size () - fSeekOffset_; // don't include what we might get upstream cuz more costly to compute
                 }
                 return fRealIn_.AvailableToRead ();
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 Assert (fSeekOffset_ <= fBufferOfAllReadDataSoFar_.size ());
-                if (fSeekOffset_ == fBufferOfAllReadDataSoFar_.size ()) {
+                if (fSeekOffset_ == fBufferOfAllReadDataSoFar_.size ()) [[unlikely]] {
                     ELEMENT_TYPE buf[1024];
                     if (auto r = fRealIn_.Read (span{buf}, blockFlag)) {
                         fBufferOfAllReadDataSoFar_.push_back (*r); // continue, and fall through
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                         return nullopt; // no data pre-read, and nothing available upstream
                     }
                 }
-                if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) {
+                if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) [[likely]] {
                     size_t n2Read = min<size_t> (intoBuffer.size (), fBufferOfAllReadDataSoFar_.size () - fSeekOffset_);
                     auto   result = Memory::CopySpanData (span{fBufferOfAllReadDataSoFar_}.subspan (fSeekOffset_, n2Read), intoBuffer);
                     Assert (result.size () == n2Read);
@@ -207,7 +207,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 auto n = GetNEltsAlreadyBufferedFromUpstream_ ();
-                if (n == 0) {
+                if (n == 0) [[unlikely]] {
                     // read into fIntermediateBuffer_ (not intoBuffer)- OK to overwrite cuz
                     // no seeking allowed, so we will never re-examine that data/buffer
                     auto bufR = fRealIn_.Read (span{fIntermediateBuffer_}, blockFlag);
@@ -215,6 +215,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                         // we filled buffer (possibly with zero elements)
                         fReadOffsetIntoIntermediateBuf_ = 0;
                         n                               = bufR->size ();
+                        fIntermediateBuffer_.resize_uninitialized (n);
                     }
                     else {
                         return nullopt; // no new information, don't change state so can Read again
