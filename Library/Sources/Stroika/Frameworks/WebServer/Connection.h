@@ -267,9 +267,10 @@ namespace Stroika::Frameworks::WebServer {
         unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>                              fRemaining_;
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        atomic<optional<Time::TimePointSeconds>> fStartHandleMessage_;
-        atomic<optional<Time::TimePointSeconds>> fCompletedHandleMessage_;
-        atomic<optional<thread::id>>             fHandlingThread_;
+        // Sigh: atomic doesn't work with time_point, nor optional! - so use double and sentinal
+        atomic<double> fStartHandleMessage_;    // 0 sentinal
+        atomic<double> fCompletedHandleMessage_;
+        atomic<thread::id>             fHandlingThread_;    // thread::id{} sentinal
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;

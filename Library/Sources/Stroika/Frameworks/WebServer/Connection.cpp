@@ -225,10 +225,17 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         // NO - INTERNALLY SYNCRHONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without syncrhonization
         auto                       createdAt = DateTime{thisObj->fConnectionStartedAt_}; // also similar logic - const
-        optional<TimePointSeconds> b1        = thisObj->fStartHandleMessage_.load ();
-        optional<TimePointSeconds> e1        = thisObj->fCompletedHandleMessage_.load ();
-        optional<DateTime>         b         = b1 ? DateTime{*b1} : optional<DateTime>{};
-        optional<DateTime>         e         = e1 ? DateTime{*e1} : optional<DateTime>{};
+       DurationSeconds b1        = DurationSeconds{thisObj->fStartHandleMessage_.load ()};
+        DurationSeconds e1        =DurationSeconds{ thisObj->fCompletedHandleMessage_.load ()};
+
+// static_assert(same_as<DurationSeconds,TimePointSeconds::rep>);
+// auto x0 = TimePointSeconds::rep{1}; //duration
+//         auto x1aa = TimePointSeconds{x0};
+//         auto x1 = TimePointSeconds{TimePointSeconds::rep{1.0}};
+//         auto x2 = TimePointSeconds{*b1};
+        
+        optional<DateTime>         b         = b1!=DurationSeconds{} ? DateTime{TimePointSeconds{b1}} : optional<DateTime>{};
+        optional<DateTime>         e         = e1 != DurationSeconds{}? DateTime{TimePointSeconds{e1}} : optional<DateTime>{};
         Stats                      stats{.fSocketID  = uniqueID,
                                          .fCreatedAt = createdAt,
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
@@ -352,10 +359,10 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
 
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        fStartHandleMessage_             = Time::GetTickCount ();
-        fCompletedHandleMessage_         = nullopt;
+        fStartHandleMessage_             = Time::GetTickCount ().time_since_epoch ().count();
+        fCompletedHandleMessage_         = 0;
         fHandlingThread_                 = std::this_thread::get_id ();
-        [[maybe_unused]] auto&& cleanup2 = Finally ([&] () noexcept { fCompletedHandleMessage_ = Time::GetTickCount (); });
+        [[maybe_unused]] auto&& cleanup2 = Finally ([&] () noexcept { fCompletedHandleMessage_ = Time::GetTickCount ().time_since_epoch ().count (); });
 #endif
 
         auto applyDefaultsToResponseHeaders = [&] () -> void {
