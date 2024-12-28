@@ -386,7 +386,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             WriteLogConnectionMsg_ ("Handing request {} to interceptor chain"_f(request ()));
 #endif
             try {
-                fInterceptorChain_.HandleMessage (*fMessage_.get ());
+                fInterceptorChain_.HandleMessage (*fMessage_);
             }
             catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -446,7 +446,6 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                     }
                 }
             }
-
             if (not this->rwResponse ().End ()) {
                 thisMessageKeepAlive = false;
             }
