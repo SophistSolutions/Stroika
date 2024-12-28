@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Time {
         constexpr TimeOfDay (const TimeOfDay&)         = default;
         constexpr explicit TimeOfDay (uint32_t t);
         explicit TimeOfDay (uint32_t t, DataExchange::ValidationStrategy validationStrategy);
-        explicit constexpr TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
+        explicit constexpr TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds = 0);
         TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds, DataExchange::ValidationStrategy validationStrategy);
 
     public:
