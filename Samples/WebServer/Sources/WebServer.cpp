@@ -143,14 +143,13 @@ namespace {
              *  \note can also use HTMLViewCompiler to generate 'server side html' using more standard html syntax...
              */
             response.writeln ("<html><body>"sv);
-            response.writeln ("<p>Hi Mom</p>"sv);
+            response.writeln ("<p>Run the service (under the debugger if you wish)</p>"sv);
             response.writeln ("<ul>"sv);
-            response.writeln ("Run the service (under the debugger if you wish)"sv);
-            response.writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
-            response.writeln ("<li>curl http://localhost:8080/?useChunked=true OR</li>"sv);
-            response.writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
-            response.writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
-            response.writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
+            response.writeln ("<li>curl -v http://localhost:8080/ OR</li>"sv);
+            response.writeln ("<li>curl -v http://localhost:8080/?useChunked=true OR</li>"sv);
+            response.writeln ("<li>curl -v http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
+            response.writeln ("<li>curl -v -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
+            response.writeln ("<li>curl -v http://localhost:8080/Files/index.html</li>"sv);
             response.writeln ("</ul>"sv);
             response.writeln ("</body></html>"sv);
         }
