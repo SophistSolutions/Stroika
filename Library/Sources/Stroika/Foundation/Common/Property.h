@@ -657,7 +657,7 @@ namespace Stroika::Foundation::Common {
          * 
          *       This means you may find you need to do such comparisons yourself in callbacks before doing much to 'process' the change.
          */
-        using PropertyChangedEventHandler = std::function<PropertyCommon::PropertyChangedEventResultType (const PropertyChangedEvent&)>;
+        using PropertyChangedEventHandler = function<PropertyCommon::PropertyChangedEventResultType (const PropertyChangedEvent&)>;
 
     public:
         /**
@@ -678,26 +678,25 @@ namespace Stroika::Foundation::Common {
          *  this gets handed the original base value (stored), but then each handler gets a crack at overriding the 
          *  value.
          */
-        using PropertyReadEventHandler =
-            std::function<PropertyReadEventHandlerArgAndReturnValue_ (const PropertyReadEventHandlerArgAndReturnValue_&)>;
+        using PropertyReadEventHandler = function<PropertyReadEventHandlerArgAndReturnValue_ (const PropertyReadEventHandlerArgAndReturnValue_&)>;
 
     public:
         /**
          * Use forward_list instead of Sequence<> to avoid a dependency on Stroika containers in a potentially low level component
          */
         ReadOnlyProperty<const std::forward_list<PropertyReadEventHandler>&> propertyReadHandlers;
-        Property<std::forward_list<PropertyReadEventHandler>&>               rwPropertyReadHandlers;
+        Property<forward_list<PropertyReadEventHandler>&>                    rwPropertyReadHandlers;
 
     public:
         /**
          * Use forward_list instead of Sequence<> to avoid a dependency on Stroika containers in a potentially low level component
          */
         ReadOnlyProperty<const std::forward_list<PropertyChangedEventHandler>&> propertyChangedHandlers;
-        Property<std::forward_list<PropertyChangedEventHandler>&>               rwPropertyChangedHandlers;
+        Property<forward_list<PropertyChangedEventHandler>&>                    rwPropertyChangedHandlers;
 
     private:
-        std::forward_list<PropertyReadEventHandler>    fPropertyReadHandlers_;
-        std::forward_list<PropertyChangedEventHandler> fPropertyChangedHandlers_;
+        forward_list<PropertyReadEventHandler>    fPropertyReadHandlers_;
+        forward_list<PropertyChangedEventHandler> fPropertyChangedHandlers_;
     };
 
 }
