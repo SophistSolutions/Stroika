@@ -141,6 +141,29 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 
 /*
  ********************************************************************************
+ ************************* WebServer::Connection::Stats *************************
+ ********************************************************************************
+ */
+String Connection::Stats::ToString () const
+{
+    StringBuilder sb;
+    sb << "{";
+    sb << "unique-id: " << fUniqueID;
+    if (fCreatedAt) {
+        sb << ", createdAt: " << fCreatedAt;
+    }
+    if (fMostRecentMessage) {
+        sb << ", fMostRecentMessage: " << fMostRecentMessage;
+    }
+    if (fHandlingThread) {
+        sb << ", fHandlingThread: " << fHandlingThread;
+    }
+    sb << "}";
+    return sb;
+}
+
+/*
+ ********************************************************************************
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
@@ -173,6 +196,13 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         Connection* thisObj = const_cast<Connection*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse));
         AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
         return thisObj->fMessage_->rwResponse ();
+    }}
+    , stats{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Stats {
+        const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        Stats                                          stats{.fUniqueID = thisObj};
+        // @todo carefully extract other fields - probably using atomics - so this can be internally syncrhonized
+        return stats;
     }}
     , remainingConnectionLimits{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {

@@ -214,7 +214,7 @@ namespace Stroika::Frameworks::WebServer {
          *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
          *  assigned into thread pool for handling.
          */
-        const Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> activeConnections;
+        const Common::ReadOnlyProperty<Collection<Connection::Stats>> activeConnections;
 
     public:
         /**
@@ -249,7 +249,7 @@ namespace Stroika::Frameworks::WebServer {
          *  But this will return just those which are not 'done'. Of course - due to asynchrony,
          *  by the time one looks at the list, some may already be done.
          */
-        Common::ReadOnlyProperty<Collection<shared_ptr<Connection>>> connections;
+        Common::ReadOnlyProperty<Collection<Connection::Stats>> connections;
 
     public:
         /**

@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Stroika/Frameworks/WebServer/InterceptorChain.h"
 #include "Stroika/Frameworks/WebServer/Message.h"
@@ -142,6 +143,41 @@ namespace Stroika::Frameworks::WebServer {
          *  Access a (read-only) reference to the underlying (modifiable) connection response (meaning you cannot assign to the response itself, but you can modify the response object)
          */
         Common::ReadOnlyProperty<Response&> rwResponse;
+
+    public:
+        /**
+         *  Mostly for debugging, but also for ongoing operational diagnostics (late season debugging ;-)).
+         */
+        struct Stats {
+            /**
+             *  Unique (at a given time) 'ID' which can be used to track the connection stats across calls to get stats.
+             */
+            const void* fUniqueID;
+
+            /**
+             *  When the connection object was created
+             */
+            optional<Time::DateTime> fCreatedAt;
+
+            /**
+             */
+            optional<Traversal::Range<Time::DateTime>> fMostRecentMessage;
+
+            /**
+             */
+            optional<thread::id> fHandlingThread;
+
+            /**
+             *  @see Characters::ToString ();
+             */
+            nonvirtual String ToString () const;
+        };
+
+    public:
+        /**
+        * @todo maybe need to do some magic so this is INTERNALLY SYNCRONIZED.. See where we need to call it
+         */
+        const Common::ReadOnlyProperty<Stats> stats;
 
     public:
         /**
