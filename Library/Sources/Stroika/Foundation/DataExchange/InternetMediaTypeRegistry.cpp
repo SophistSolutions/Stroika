@@ -332,14 +332,23 @@ void InternetMediaTypeRegistry::AddOverride (const InternetMediaType& mediaType,
     AssertNotNull (fFrontEndRep_);
     fFrontEndRep_->AddOverride (mediaType, overrideRec);
 }
+
 optional<InternetMediaTypeRegistry::FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
 {
     return Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetPreferredAssociatedFileSuffix (ct);
 }
+
 Containers::Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const InternetMediaType& ct) const
 {
-    return Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetAssociatedFileSuffixes (ct);
+    Containers::Set<String> r;
+    r = Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetAssociatedFileSuffixes (ct);
+    // if a mediatype has a builtin suffix, include that as well...
+    if (auto os = ct.GetSuffix<String> ()) {
+        r += *os;
+    }
+    return r;
 }
+
 optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const InternetMediaType& ct) const
 {
     return Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetAssociatedPrettyName (ct);
