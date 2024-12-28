@@ -162,7 +162,7 @@ namespace Stroika::Frameworks::WebServer {
              *  Unique (at a given time) 'ID' which can be used to track the connection stats across calls to get stats.
              *      (note fUniqueID is opaque integer)
              */
-            Socket::PlatformNativeHandle fUniqueID;
+            Socket::PlatformNativeHandle fSocketID;
 
             /**
              *  Is this connection object currently 'connected' (socket level listen or accept returned).

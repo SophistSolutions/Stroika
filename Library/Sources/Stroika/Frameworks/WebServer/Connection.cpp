@@ -35,6 +35,8 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Traversal;
+using namespace Stroika::Foundation::Time;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
@@ -148,17 +150,35 @@ String Connection::Stats::ToString () const
 {
     StringBuilder sb;
     sb << "{";
-    sb << "unique-id: " << fUniqueID;
-    if (fActive) {
-        sb << ", active: " << fActive;
-    }
+    sb << "socket: " << fSocketID;
     sb << ", createdAt: " << fCreatedAt.AsLocalTime ();
+    if (fActive) {
+        if (*fActive) {
+            sb << ", active ";
+        }
+        else {
+            sb << ", inactive ";
+        }
+    }
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
     if (fMostRecentMessage) {
-        sb << ", mostRecentMessage: " << fMostRecentMessage;
+        // @todo PITA - CLEAN THIS UP!!!
+        Range<DateTime> localMRM = *fMostRecentMessage;
+        if (localMRM.GetLowerBound () != DateTime::kMin) {
+            localMRM = Range<DateTime>{localMRM.GetLowerBound ().AsLocalTime (), localMRM.GetUpperBound ()};
+        }
+        if (localMRM.GetUpperBound () != DateTime::kMax) {
+            localMRM = Range<DateTime>{localMRM.GetLowerBound (), localMRM.GetUpperBound ().AsLocalTime ()};
+        }
+        sb << ", mostRecentMessage: " << localMRM;
     }
     if (fHandlingThread) {
-        sb << ", handlingThread: " << fHandlingThread;
+        if (fActive == true) {
+            sb << ", handlingThread: " << fHandlingThread;
+        }
+        else {
+            sb << ", previousThread: " << fHandlingThread;
+        }
     }
 #endif
     sb << "}";
@@ -203,11 +223,17 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , stats{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Stats {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
         // NO - INTERNALLY SYNCRHONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-        auto uniqueID = thisObj->fSocket_.GetNativeSocket ();             // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without syncrhonization
-        auto  createdAt = Time::DateTime{thisObj->fConnectionStartedAt_}; // also similar logic - const
-        Stats stats{.fUniqueID = uniqueID, .fCreatedAt = createdAt,
+        auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without syncrhonization
+        auto                       createdAt = DateTime{thisObj->fConnectionStartedAt_}; // also similar logic - const
+        optional<TimePointSeconds> b1        = thisObj->fStartHandleMessage_.load ();
+        optional<TimePointSeconds> e1        = thisObj->fCompletedHandleMessage_.load ();
+        optional<DateTime>         b         = b1 ? DateTime{*b1} : optional<DateTime>{};
+        optional<DateTime>         e         = e1 ? DateTime{*e1} : optional<DateTime>{};
+        Stats                      stats{.fSocketID  = uniqueID,
+                                         .fCreatedAt = createdAt,
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-            .fHandlingThread = thisObj->fHandlingThread_.load (),
+                    .fMostRecentMessage = (b or e) ? Range<DateTime>{b, e} : optional<Range<DateTime>>{},
+                    .fHandlingThread    = thisObj->fHandlingThread_.load ()
 #endif
         };
         return stats;
@@ -238,7 +264,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     fSocketStream_ = SocketStream::New (fSocket_);
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     {
-        String socketName = "{}-{}"_f((long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
+        String socketName = "{}-{}"_f((long)DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
         fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
             fSocketStream_,
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}-input-trace.txt"_f(socketName)),
@@ -325,12 +351,19 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { Ensure (fMessage_->response ().responseCompleted ()); });
 #endif
 
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+        fStartHandleMessage_             = Time::GetTickCount ();
+        fCompletedHandleMessage_         = nullopt;
+        fHandlingThread_                 = std::this_thread::get_id ();
+        [[maybe_unused]] auto&& cleanup2 = Finally ([&] () noexcept { fCompletedHandleMessage_ = Time::GetTickCount (); });
+#endif
+
         auto applyDefaultsToResponseHeaders = [&] () -> void {
             if (fDefaultGETResponseHeaders_ and fMessage_->request ().httpMethod () == HTTP::Methods::kGet) {
                 fMessage_->rwResponse ().rwHeaders () += *fDefaultGETResponseHeaders_;
             }
             // https://tools.ietf.org/html/rfc7231#section-7.1.1.2  : ...An origin server MUST send a Date header field in all other cases
-            fMessage_->rwResponse ().rwHeaders ().date = Time::DateTime::Now ();
+            fMessage_->rwResponse ().rwHeaders ().date = DateTime::Now ();
 
             // @todo can short-circuit the acceptEncoding logic if not bodyHasEntity...(but careful about checking that cuz no content yet
             // so may need to revisit the bodyHasEntity logic) - just look at METHOD of request and http-status - oh - that cannot check
@@ -505,7 +538,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
 void Connection::WriteLogConnectionMsg_ (const String& msg) const
 {
-    String useMsg = Time::DateTime::Now ().Format () + " -- "sv + msg.Trim ();
+    String useMsg = DateTime::Now ().Format () + " -- "sv + msg.Trim ();
     fLogConnectionState_.WriteLn (useMsg);
 }
 #endif

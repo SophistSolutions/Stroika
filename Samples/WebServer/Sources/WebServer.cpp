@@ -167,7 +167,7 @@ namespace {
             auto      stats = this->fConnectionMgr_.connections (); // but sometimes when debugging/exploring....
             Response& r     = m.rwResponse ();
             r.contentType   = DataExchange::InternetMediaTypes::kText_PLAIN;
-            r.writeln ("[");
+            r.writeln ("connections: [");
             for (auto s : stats) {
                 r.writeln ("  {},"_f(s));
             }

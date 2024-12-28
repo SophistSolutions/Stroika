@@ -211,11 +211,11 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual ConnectionManager& operator= (const ConnectionManager&) = delete;
 
     private:
-        using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Connection::Stats, size_t,
-                                                                     decltype ([] (const Connection::Stats& t) { return t.fUniqueID; })>;
+        using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Connection::Stats, Socket::PlatformNativeHandle,
+                                                                     decltype ([] (const Connection::Stats& t) { return t.fSocketID; })>;
 
     public:
-        using ConnectionStatsCollection = Containers::KeyedCollection<Connection::Stats, size_t, My_Traits_>;
+        using ConnectionStatsCollection = Containers::KeyedCollection<Connection::Stats, Socket::PlatformNativeHandle, My_Traits_>;
 
     public:
         /**
