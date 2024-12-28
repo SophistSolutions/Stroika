@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Time {
     inline optional<DateTime> DateTime::ParseQuietly (const String& rep, const locale& l, const String& formatPattern, size_t* consumedCharacters)
     {
         if (rep.empty ()) [[unlikely]] {
-            return nullopt; // Stroika v2.1 erroiously threw FormatException::kThe here - missing the word 'Quietly'
+            return nullopt; // Stroika v2.1 erroneously threw FormatException::kThe here - missing the word 'Quietly'
         }
         return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, consumedCharacters);
     }
