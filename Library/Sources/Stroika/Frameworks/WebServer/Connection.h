@@ -123,19 +123,19 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  This returns the (two way) connection oriented stream socket (ptr) used by this connection.
          */
-        Common::ReadOnlyProperty<ConnectionOrientedStreamSocket::Ptr> socket;
+        const Common::ReadOnlyProperty<ConnectionOrientedStreamSocket::Ptr> socket;
 
     public:
         /**
          *  Access a (read-only) reference of the underlying connection request
          */
-        Common::ReadOnlyProperty<const Request&> request;
+        const Common::ReadOnlyProperty<const Request&> request;
 
     public:
         /**
          *  Access a (read-only) reference of the underlying connection request
          */
-        Common::ReadOnlyProperty<const Response&> response;
+        const Common::ReadOnlyProperty<const Response&> response;
 
     public:
         /**
@@ -201,16 +201,16 @@ namespace Stroika::Frameworks::WebServer {
         };
 
     private:
-        InterceptorChain                                 fInterceptorChain_;
-        Headers                                          fDefaultResponseHeaders_;
-        optional<Headers>                                fDefaultGETResponseHeaders_;
-        optional<bool>                                   fAutoComputeETagResponse_;
-        optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
-        ConnectionOrientedStreamSocket::Ptr              fSocket_;
-        Streams::InputOutputStream::Ptr<byte>            fSocketStream_;
-        Time::TimePointSeconds                           fConnectionStartedAt_{};
-        unique_ptr<MyMessage_>                           fMessage_; // always there, but ptr so it can be replaced
-        optional<HTTP::KeepAlive>                        fRemaining_;
+        const InterceptorChain                                 fInterceptorChain_;
+        const Headers                                          fDefaultResponseHeaders_;
+        const optional<Headers>                                fDefaultGETResponseHeaders_;
+        const optional<bool>                                   fAutoComputeETagResponse_;
+        const optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
+        const ConnectionOrientedStreamSocket::Ptr              fSocket_;
+        Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
+        Time::TimePointSeconds                                 fConnectionStartedAt_{};
+        unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
+        optional<HTTP::KeepAlive>                              fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;
 #endif
