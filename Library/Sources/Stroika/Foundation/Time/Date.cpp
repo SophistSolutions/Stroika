@@ -129,7 +129,7 @@ String Date::Format (NonStandardPrintFormat pf) const
              *  and map
              *      12/05/00 to 12/05, but DON'T map 12/15/2000 to 12/15/2000
              */
-            static const String kZero_ = L"0"sv;
+            static const String kZero_ = "0"sv;
             optional<size_t>    i      = 0;
             while ((i = tmp.Find (kZero_, *i))) {
                 // any 0N (where n a digit) is replaced with a single '0'
