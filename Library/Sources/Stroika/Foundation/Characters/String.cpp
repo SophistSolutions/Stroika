@@ -1248,6 +1248,11 @@ String String::NormalizeTextToNL () const
     }
 }
 
+String String::NormalizeSpace (Character useSpaceCharacter) const
+{
+    return ReplaceAll ("\\s+"_RegEx, String{useSpaceCharacter});
+}
+
 Containers::Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
 {
     Containers::Sequence<String> r;

@@ -29,10 +29,6 @@
  *
  * TODO:
  *
- *      @todo   Add NormalizeSpace (Character useSpaceCharacter = ' ');
- *              see Qt 'QString::simplify()'. Idea is Trim() (right and left) - plus replace contiguous substrings with
- *              Character::IsSpace() with a single (given) space character.
- *
  *      @todo   Compare
  *          template    <typename TCHAR>
  *              basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
@@ -906,6 +902,15 @@ namespace Stroika::Foundation::Characters {
          *  Replace any CR or LF or CRLF sequences with plain NL-terminated text.
          */
         nonvirtual String NormalizeTextToNL () const;
+
+    public:
+        /**
+         *  \brief Replace sequences of whitespace characters (space, tab, newline etc) with a single space (or argument space character).
+         * 
+         *  \note  see Qt 'QString::simplify()'.Idea is Trim () (right and left) - plus replace contiguous substrings with* Character::IsSpace () with a
+         *         single (given) space character.
+         */
+        nonvirtual String NormalizeSpace (Character useSpaceCharacter = ' ') const;
 
     public:
         /**
