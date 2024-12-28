@@ -149,15 +149,18 @@ String Connection::Stats::ToString () const
     StringBuilder sb;
     sb << "{";
     sb << "unique-id: " << fUniqueID;
-    if (fCreatedAt) {
-        sb << ", createdAt: " << fCreatedAt;
+    if (fActive) {
+        sb << ", active: " << fActive;
     }
+    sb << ", createdAt: " << fCreatedAt.AsLocalTime ();
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
     if (fMostRecentMessage) {
-        sb << ", fMostRecentMessage: " << fMostRecentMessage;
+        sb << ", mostRecentMessage: " << fMostRecentMessage;
     }
     if (fHandlingThread) {
-        sb << ", fHandlingThread: " << fHandlingThread;
+        sb << ", handlingThread: " << fHandlingThread;
     }
+#endif
     sb << "}";
     return sb;
 }
@@ -199,9 +202,14 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     }}
     , stats{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Stats {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-        Stats                                          stats{.fUniqueID = thisObj};
-        // @todo carefully extract other fields - probably using atomics - so this can be internally syncrhonized
+        // NO - INTERNALLY SYNCRHONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        auto uniqueID = thisObj->fSocket_.GetNativeSocket ();             // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without syncrhonization
+        auto  createdAt = Time::DateTime{thisObj->fConnectionStartedAt_}; // also similar logic - const
+        Stats stats{.fUniqueID = uniqueID, .fCreatedAt = createdAt,
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+            .fHandlingThread = thisObj->fHandlingThread_.load (),
+#endif
+        };
         return stats;
     }}
     , remainingConnectionLimits{

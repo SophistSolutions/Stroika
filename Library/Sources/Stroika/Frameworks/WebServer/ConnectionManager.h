@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
@@ -209,12 +210,19 @@ namespace Stroika::Frameworks::WebServer {
     public:
         nonvirtual ConnectionManager& operator= (const ConnectionManager&) = delete;
 
+    private:
+        using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Connection::Stats, size_t,
+                                                                     decltype ([] (const Connection::Stats& t) { return t.fUniqueID; })>;
+
+    public:
+        using ConnectionStatsCollection = Containers::KeyedCollection<Connection::Stats, size_t, My_Traits_>;
+
     public:
         /**
          *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
          *  assigned into thread pool for handling.
          */
-        const Common::ReadOnlyProperty<Collection<Connection::Stats>> activeConnections;
+        const Common::ReadOnlyProperty<ConnectionStatsCollection> activeConnections;
 
     public:
         /**
@@ -249,7 +257,7 @@ namespace Stroika::Frameworks::WebServer {
          *  But this will return just those which are not 'done'. Of course - due to asynchrony,
          *  by the time one looks at the list, some may already be done.
          */
-        Common::ReadOnlyProperty<Collection<Connection::Stats>> connections;
+        Common::ReadOnlyProperty<ConnectionStatsCollection> connections;
 
     public:
         /**

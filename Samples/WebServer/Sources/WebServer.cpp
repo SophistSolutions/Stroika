@@ -115,7 +115,14 @@ namespace {
                 /*
                  *  Or use complex, pre-built handlers that do something complicated (like feed content from filesystem).
                  */
-                , Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}}
+                , Route{"Files/.*"_RegEx, FileSystemRequestHandler{GetEXEDir () / "html", kFileSystemRouterOptions_}}
+            
+                /*
+                 * Access webserver (connection manager) statistics, and print them (health check?)
+                 */
+                , Route{"stats"_RegEx,  [this] (Message& m) { PrintServerStats_ (m);} }
+                
+            }
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
                               ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
@@ -150,8 +157,21 @@ namespace {
             response.writeln ("<li>curl -v http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
             response.writeln ("<li>curl -v -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
             response.writeln ("<li>curl -v http://localhost:8080/Files/index.html</li>"sv);
+            response.writeln ("<li>curl -v http://localhost:8080/stats OR</li>"sv);
             response.writeln ("</ul>"sv);
             response.writeln ("</body></html>"sv);
+        }
+        void PrintServerStats_ (Message& m)
+        {
+            //auto      stats = this->fConnectionMgr_.activeConnections (); // usually all that is interesting...
+            auto      stats = this->fConnectionMgr_.connections (); // but sometimes when debugging/exploring....
+            Response& r     = m.rwResponse ();
+            r.contentType   = DataExchange::InternetMediaTypes::kText_PLAIN;
+            r.writeln ("[");
+            for (auto s : stats) {
+                r.writeln ("  {},"_f(s));
+            }
+            r.writeln ("}");
         }
         // Can declare arguments as Message& message
         static void SetAppState_ (Message& message)

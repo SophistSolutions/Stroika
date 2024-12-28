@@ -141,11 +141,13 @@ namespace {
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options)
-    : activeConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<Connection::Stats> {
+    : activeConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionStatsCollection {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::activeConnections);
-        Collection<Connection::Stats> r;
+        ConnectionStatsCollection r;
         for (auto i : thisObj->fActiveConnections_.load ()) {
-            r += i->stats ();
+            auto s    = i->stats ();
+            s.fActive = true;
+            r += s;
         }
         return r;
     }}
@@ -173,13 +175,20 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::bindings);
         return thisObj->fBindings_;
     }}
-    , connections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<Connection::Stats> {
+    , connections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionStatsCollection {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::connections);
         scoped_lock critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
         Ensure (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
-        Collection<Connection::Stats> r;
-        for (auto i : (thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ())) {
-            r += i->stats ();
+        ConnectionStatsCollection r;
+        for (auto i : thisObj->fActiveConnections_.load ()) {
+            auto s    = i->stats ();
+            s.fActive = true;
+            r += s;
+        }
+        for (auto i : thisObj->GetInactiveConnections_ ()) {
+            auto s    = i->stats ();
+            s.fActive = false;
+            r += s;
         }
         return r;
     }}

@@ -46,6 +46,15 @@ namespace Stroika::Frameworks::WebServer {
 #endif
 
     /**
+     *  This has a slight cost, so you might want to compile it out of the implementation.
+     *  At least useful when debugging.
+     */
+//#define qStroika_Framework_WebServer_Connection_TrackExtraStats 0
+#ifndef qStroika_Framework_WebServer_Connection_TrackExtraStats
+#define qStroika_Framework_WebServer_Connection_TrackExtraStats 1
+#endif
+
+    /**
      *  \brief  A Connection object represents the state (and socket) for an ongoing, active, HTTP Connection, managed by the ConnectionManager class
      *
      *  This tends to get used internally by the ConnectionManager, but you can use it directly. For example:
@@ -151,14 +160,21 @@ namespace Stroika::Frameworks::WebServer {
         struct Stats {
             /**
              *  Unique (at a given time) 'ID' which can be used to track the connection stats across calls to get stats.
+             *      (note fUniqueID is opaque integer)
              */
-            const void* fUniqueID;
+            Socket::PlatformNativeHandle fUniqueID;
+
+            /**
+             *  Is this connection object currently 'connected' (socket level listen or accept returned).
+             */
+            optional<bool> fActive;
 
             /**
              *  When the connection object was created
              */
-            optional<Time::DateTime> fCreatedAt;
+            Time::DateTime fCreatedAt;
 
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
             /**
              */
             optional<Traversal::Range<Time::DateTime>> fMostRecentMessage;
@@ -166,6 +182,7 @@ namespace Stroika::Frameworks::WebServer {
             /**
              */
             optional<thread::id> fHandlingThread;
+#endif
 
             /**
              *  @see Characters::ToString ();
@@ -175,8 +192,10 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-        * @todo maybe need to do some magic so this is INTERNALLY SYNCRONIZED.. See where we need to call it
-         */
+          * \brief retrieve stats about this connection, like threads used, start/end times. NB: INTERNALLY SYNCRONIZED
+          * 
+          *     \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
+          */
         const Common::ReadOnlyProperty<Stats> stats;
 
     public:
@@ -244,9 +263,14 @@ namespace Stroika::Frameworks::WebServer {
         const optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
         const ConnectionOrientedStreamSocket::Ptr              fSocket_;
         Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
-        Time::TimePointSeconds                                 fConnectionStartedAt_{};
+        const Time::TimePointSeconds                           fConnectionStartedAt_{};
         unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>                              fRemaining_;
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+        atomic<optional<Time::TimePointSeconds>> fStartHandleMessage_;
+        atomic<optional<Time::TimePointSeconds>> fCompletedHandleMessage_;
+        atomic<optional<thread::id>>             fHandlingThread_;
+#endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;
 #endif
