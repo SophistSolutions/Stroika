@@ -606,7 +606,7 @@ namespace {
             Sequence<String> results;
             Streams::InputStream::Ptr<byte> in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
             StringBuilder sb;
-            for (optional<byte> b; (b = in.Read ()).has_value ();) {
+            for (optional<byte> b; (b = in.ReadBlocking ()).has_value ();) {
                 if ((*b) == byte{0}) {
                     results.Append (sb.As<String> ());
                     sb.clear ();
@@ -638,7 +638,7 @@ namespace {
 #endif
                 StringBuilder sb;
                 bool          lastCharNullRemappedToSpace = false;
-                for (optional<byte> b; (b = in.Read ()).has_value ();) {
+                for (optional<byte> b; (b = in.ReadBlocking ()).has_value ();) {
                     if (*b == byte{0}) {
                         sb.Append (' '); // frequently - especially for kernel processes - we see nul bytes that really SB spaces
                         lastCharNullRemappedToSpace = true;
