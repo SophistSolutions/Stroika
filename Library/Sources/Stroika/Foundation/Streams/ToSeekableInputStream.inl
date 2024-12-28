@@ -101,12 +101,12 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                         fOffset_ = newOffset;
                         return newOffset;
                     } break;
-                    case Whence::eFromCurrent: {
-                        return this->SeekRead (Whence::eFromStart, fOffset_ + offset);
+                    case eFromCurrent: {
+                        return this->SeekRead (eFromStart, fOffset_ + offset);
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         if (auto remainingLength = this->RemainingLength ()) {
-                            return this->SeekRead (Whence::eFromStart, fOffset_ + *remainingLength + offset);
+                            return this->SeekRead (eFromStart, fOffset_ + *remainingLength + offset);
                         }
                         else {
                             // implies seeking (fRealIn) to the end, and so reading everything, and then performing the desired seek
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                             }
                             SeekOffsetType realEnd = fCacheBaseOffset_ + fCachedData_.size ();
                             Assert (realEnd == this->fRealIn.GetOffset ());
-                            return this->SeekRead (Whence::eFromStart, realEnd + offset);
+                            return this->SeekRead (eFromStart, realEnd + offset);
                         }
                     } break;
                     default:

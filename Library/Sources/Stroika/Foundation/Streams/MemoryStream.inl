@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 switch (whence) {
-                    case Whence::eFromStart: {
+                    case eFromStart: {
                         if (offset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
                         }
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                         }
                         fReadCursor_ = fData_.begin () + static_cast<size_t> (uOffset);
                     } break;
-                    case Whence::eFromCurrent: {
+                    case eFromCurrent: {
                         Streams::SeekOffsetType       curOffset = fReadCursor_ - fData_.begin ();
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                         }
                         fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 switch (whence) {
-                    case Whence::eFromStart: {
+                    case eFromStart: {
                         if (offset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
                         }
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                         }
                         fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
                     } break;
-                    case Whence::eFromCurrent: {
+                    case eFromCurrent: {
                         Streams::SeekOffsetType       curOffset = fWriteCursor_ - fData_.begin ();
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                         }
                         fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);

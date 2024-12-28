@@ -95,13 +95,13 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 Require (IsOpenRead ());
                 fOriginalStreamRef_.clear (); // in case we hit eof (causing fail) - eof gets cleared by seeking, but not failbit - it appears...--LGP 2024-02-11
                 switch (whence) {
-                    case Whence::eFromStart:
+                    case eFromStart:
                         fOriginalStreamRef_.seekg (offset, ios::beg);
                         break;
-                    case Whence::eFromCurrent:
+                    case eFromCurrent:
                         fOriginalStreamRef_.seekg (offset, ios::cur);
                         break;
-                    case Whence::eFromEnd:
+                    case eFromEnd:
                         fOriginalStreamRef_.seekg (offset, ios::end);
                         break;
                 }

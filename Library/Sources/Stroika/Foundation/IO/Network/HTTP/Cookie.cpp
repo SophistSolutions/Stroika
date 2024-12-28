@@ -124,7 +124,7 @@ Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
     auto skipWS = [&] () {
         while (optional<Character> c = src.ReadBlocking ()) {
             if (not c->IsWhitespace ()) {
-                src.Seek (Streams::Whence::eFromCurrent, -1);
+                src.Seek (eFromCurrent, -1);
                 return;
             }
         }
@@ -156,7 +156,7 @@ Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
         *s = sb.str ();
     };
     auto prevChar = [&] () {
-        src.Seek (Streams::Whence::eFromCurrent, -1);
+        src.Seek (eFromCurrent, -1);
         auto c = src.ReadBlocking ();
         Assert (c.has_value ());
         return *c;

@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                 }
                 switch (whence) {
-                    case Whence::eFromStart: {
+                    case eFromStart: {
                         if (offset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
                         }
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                         }
                         fReadCursor_ = fData_.begin () + static_cast<size_t> (uOffset);
                     } break;
-                    case Whence::eFromCurrent: {
+                    case eFromCurrent: {
                         Streams::SeekOffsetType       curOffset = distance (fData_.cbegin (), fReadCursor_);
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                         }
                         fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                 }
                 switch (whence) {
-                    case Whence::eFromStart: {
+                    case eFromStart: {
                         if (offset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);
                         }
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                         }
                         fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
                     } break;
-                    case Whence::eFromCurrent: {
+                    case eFromCurrent: {
                         Streams::SeekOffsetType       curOffset = distance (fData_.begin (), fWriteCursor_);
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                         }
                         fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kSeekException_);

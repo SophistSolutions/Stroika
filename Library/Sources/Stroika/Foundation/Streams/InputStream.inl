@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         Require (this->IsSeekable ()); // subclassers must override if not seekable
         SeekOffsetType offset = GetReadOffset ();
         // note this impl assumes seek won't fail - perhaps should catch internally rather than std::terminate?
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&, this] () noexcept { this->SeekRead (Whence::eFromStart, offset); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&, this] () noexcept { this->SeekRead (eFromStart, offset); });
         ElementType elts[1]; // typically not useful to know if more than one available, and typically more costly to read extras we will toss out
         try {
             optional<span<ELEMENT_TYPE>> o = this->Read (span{elts}, NoDataAvailableHandling::eDontBlock);
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         Require (this->IsSeekable ());
-        return GetRepRWRef ().SeekRead (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
+        return GetRepRWRef ().SeekRead (eFromStart, static_cast<SignedSeekOffsetType> (offset));
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             // we win, just return the right span size
             if (n % sizeof (POD_TYPE) != 0) {
                 // Read even number of objects and adjust seek pointer
-                this->Seek (Whence::eFromCurrent, -static_cast<SignedSeekOffsetType> (n % sizeof (POD_TYPE)));
+                this->Seek (eFromCurrent, -static_cast<SignedSeekOffsetType> (n % sizeof (POD_TYPE)));
             }
             // we win, just return the right span size
             size_t nObjectsRead = n / sizeof (POD_TYPE);
@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                     result.push_back (c);
                 }
                 else {
-                    this->Seek (Whence::eFromCurrent, -1);
+                    this->Seek (eFromCurrent, -1);
                 }
                 return result.str ();
             }

@@ -33,6 +33,10 @@ namespace Stroika::Foundation::Streams {
         Stroika_Define_Enum_Bounds (eFromStart, eFromEnd)
     };
 
+    constexpr Whence eFromStart   = Whence::eFromStart;
+    constexpr Whence eFromCurrent = Whence::eFromCurrent;
+    constexpr Whence eFromEnd     = Whence::eFromEnd;
+
     /**
      *  SeekOffsetType is unsigned, normally, because for most purposes its zero based.
      *  @see SignedSeekOffsetType.

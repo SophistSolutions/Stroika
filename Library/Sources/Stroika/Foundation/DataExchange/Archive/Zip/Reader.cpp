@@ -2558,10 +2558,10 @@ private:
                         myThis->fInStream_.Seek (offset);
                         break;
                     case ZLIB_FILEFUNC_SEEK_CUR:
-                        myThis->fInStream_.Seek (Streams::Whence::eFromCurrent, offset);
+                        myThis->fInStream_.Seek (Streams::eFromCurrent, offset);
                         break;
                     case ZLIB_FILEFUNC_SEEK_END:
-                        myThis->fInStream_.Seek (Streams::Whence::eFromEnd, offset);
+                        myThis->fInStream_.Seek (Streams::eFromEnd, offset);
                         break;
                     default:
                         AssertNotReached ();

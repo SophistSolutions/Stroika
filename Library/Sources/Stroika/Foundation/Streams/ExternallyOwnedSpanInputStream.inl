@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
                 Require (IsOpenRead ());
                 static const auto kRangeException_ = range_error{"seek"};
                 switch (whence) {
-                    case Whence::eFromStart: {
+                    case eFromStart: {
                         if (offset < 0) [[unlikely]] {
                             Execution::Throw (kRangeException_);
                         }
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
                         }
                         fCursor_ = fStart_ + offset;
                     } break;
-                    case Whence::eFromCurrent: {
+                    case eFromCurrent: {
                         Streams::SeekOffsetType       curOffset = fCursor_ - fStart_;
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
                         }
                         fCursor_ = fStart_ + newOffset;
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = (fEnd_ - fStart_) + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kRangeException_);

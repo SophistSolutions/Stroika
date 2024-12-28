@@ -546,8 +546,8 @@ namespace Stroika::Foundation::Streams::InputStream {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
             Require (IsOpen ());
             SeekOffsetType savedReadFrom = GetOffset ();
-            SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
-            Seek (Whence::eFromStart, savedReadFrom);
+            SeekOffsetType size          = Seek (eFromEnd, 0);
+            Seek (eFromStart, savedReadFrom);
             Assert (size >= savedReadFrom);
             size -= savedReadFrom;
             return size;

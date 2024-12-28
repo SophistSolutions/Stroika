@@ -267,7 +267,7 @@ namespace {
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 switch (whence) {
-                    case Whence::eFromStart: {
+                    case eFromStart: {
                         if (offset < 0) [[unlikely]] {
                             Execution::Throw (kException_);
                         }
@@ -276,7 +276,7 @@ namespace {
                         }
                         fCur = fStart + offset;
                     } break;
-                    case Whence::eFromCurrent: {
+                    case eFromCurrent: {
                         Streams::SeekOffsetType       curOffset = fCur - fStart;
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
@@ -287,7 +287,7 @@ namespace {
                         }
                         fCur = fStart + newOffset;
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = (fEnd - fStart) + offset;
                         if (newOffset < 0) [[unlikely]] {
                             Execution::Throw (kException_);

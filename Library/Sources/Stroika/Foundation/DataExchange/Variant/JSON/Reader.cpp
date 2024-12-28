@@ -28,6 +28,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Traversal;
 
 using Containers::Concrete::Mapping_stdhashmap;
@@ -53,8 +54,8 @@ namespace {
     };
 
     // use StreamReader to get buffering of input data (performance tweak), and a couple helper methods
-    struct MyBufferedStreamReader_ : Streams::StreamReader<Character> {
-        MyBufferedStreamReader_ (const Streams::InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted)
+    struct MyBufferedStreamReader_ : StreamReader<Character> {
+        MyBufferedStreamReader_ (const InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted)
             : StreamReader<Character>{underlyingReadFromStreamAdopted}
         {
         }
@@ -66,11 +67,11 @@ namespace {
         inline void AdvanceOne ()
         {
             Require (not IsAtEOF ());
-            Seek (Streams::Whence::eFromCurrent, 1);
+            Seek (eFromCurrent, 1);
         }
         inline void BackupOne ()
         {
-            Seek (Streams::Whence::eFromCurrent, -1);
+            Seek (eFromCurrent, -1);
         }
     };
 
@@ -794,7 +795,7 @@ public:
                     size_t nParsed = p.write_some (true, reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
                     if (nParsed < actualChunkSize) {
-                        in.Seek (Whence::eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
+                        in.Seek (eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
                         break;
                     }
                     if (p.done ()) {
@@ -822,7 +823,7 @@ public:
                     size_t                    nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
                     if (nParsed < actualChunkSize) {
-                        in.Seek (Whence::eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
+                        in.Seek (eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
                         break;
                     }
                     if (p.done ()) {

@@ -72,13 +72,13 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                 if (fForcedEndInReal_) {
                     SignedSeekOffsetType effectiveRealTarget;
                     switch (whence) {
-                        case Whence::eFromCurrent:
+                        case eFromCurrent:
                             effectiveRealTarget = fRealIn_.GetOffset () + offset;
                             break;
-                        case Whence::eFromStart:
+                        case eFromStart:
                             effectiveRealTarget = fOffsetMine2Real_ + offset;
                             break;
-                        case Whence::eFromEnd:
+                        case eFromEnd:
                             if (fForcedEndInReal_) {
                                 // Don't go to REAL end - that's likely out of range, and not what caller meant
                                 effectiveRealTarget = *fForcedEndInReal_;
@@ -86,8 +86,8 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                             else {
                                 auto getOffsetToEndOfStream = [] (typename InputStream::Ptr<ELEMENT_TYPE> in) {
                                     SeekOffsetType savedReadFrom = in.GetOffset ();
-                                    SeekOffsetType size          = in.Seek (Whence::eFromEnd, 0);
-                                    in.Seek (Whence::eFromStart, savedReadFrom);
+                                    SeekOffsetType size          = in.Seek (eFromEnd, 0);
+                                    in.Seek (eFromStart, savedReadFrom);
                                     Assert (size >= savedReadFrom);
                                     size -= savedReadFrom;
                                     return size;
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                             RequireNotReached ();
                     }
                     ValidateRealOffset_ (effectiveRealTarget);
-                    SignedSeekOffsetType result = fRealIn_.Seek (Whence::eFromStart, effectiveRealTarget);
+                    SignedSeekOffsetType result = fRealIn_.Seek (eFromStart, effectiveRealTarget);
                     ValidateRealOffset_ (result);
                     return result - fOffsetMine2Real_;
                 }

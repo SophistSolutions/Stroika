@@ -49,7 +49,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable"};
 #endif
-        this->SeekRead (Whence::eFromStart, 0);
+        this->SeekRead (eFromStart, 0);
         Character c;
         enum state {
             gotCR,
@@ -84,7 +84,7 @@ public:
                             s = gotCRLF;
                         } break;
                         case gotCRLFCR: {
-                            this->SeekRead (Whence::eFromStart, 0);
+                            this->SeekRead (eFromStart, 0);
                             return true;
                         } break;
                         default: {
@@ -225,7 +225,7 @@ protected:
         Require (IsOpenRead ());
         static const auto kException_ = range_error{"seek"};
         switch (whence) {
-            case Whence::eFromStart: {
+            case eFromStart: {
                 if (offset < 0) [[unlikely]] {
                     Execution::Throw (kException_);
                 }
@@ -236,7 +236,7 @@ protected:
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
                 fOffset_ = static_cast<size_t> (offset);
             } break;
-            case Whence::eFromCurrent: {
+            case eFromCurrent: {
                 Streams::SeekOffsetType       curOffset = fOffset_;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                 if (newOffset < 0) [[unlikely]] {
@@ -249,7 +249,7 @@ protected:
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
                 fOffset_ = static_cast<size_t> (newOffset);
             } break;
-            case Whence::eFromEnd: {
+            case eFromEnd: {
                 Streams::SignedSeekOffsetType newOffset = fBufferFilledUpValidBytes_ + offset;
                 if (newOffset < 0) [[unlikely]] {
                     Execution::Throw (kException_);

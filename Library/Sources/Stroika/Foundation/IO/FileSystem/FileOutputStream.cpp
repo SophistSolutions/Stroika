@@ -169,7 +169,7 @@ namespace {
             static const auto                               kException_ = range_error{"seek"};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             switch (whence) {
-                case Whence::eFromStart: {
+                case eFromStart: {
                     if (offset < 0) [[unlikely]] {
                         Execution::Throw (kException_);
                     }
@@ -181,7 +181,7 @@ namespace {
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
                 } break;
-                case Whence::eFromCurrent: {
+                case eFromCurrent: {
 #if qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -190,7 +190,7 @@ namespace {
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
                 } break;
-                case Whence::eFromEnd: {
+                case eFromEnd: {
 #if qStroika_Foundation_Common_Platform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
 #elif qStroika_Foundation_Common_Platform_Windows

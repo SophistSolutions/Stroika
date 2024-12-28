@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                 size_t                                          sourceLen = fSource_.size ();
                 SeekOffsetType                                  newOffset{};
                 switch (whence) {
-                    case Whence::eFromStart: {
+                    case eFromStart: {
                         if (offset < 0) [[unlikely]] {
                             Execution::Throw (kException_);
                         }
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                         }
                         newOffset = static_cast<SeekOffsetType> (offset);
                     } break;
-                    case Whence::eFromCurrent: {
+                    case eFromCurrent: {
                         Streams::SignedSeekOffsetType tmpOffset = fOffset_ + offset;
                         if (tmpOffset < 0) [[unlikely]] {
                             Execution::Throw (kException_);
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                         }
                         newOffset = static_cast<SeekOffsetType> (tmpOffset);
                     } break;
-                    case Whence::eFromEnd: {
+                    case eFromEnd: {
                         Streams::SignedSeekOffsetType tmpOffset = fSource_.size () + offset;
                         if (tmpOffset < 0) [[unlikely]] {
                             Execution::Throw (kException_);

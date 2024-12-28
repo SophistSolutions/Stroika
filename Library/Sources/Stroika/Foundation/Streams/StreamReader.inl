@@ -173,14 +173,14 @@ namespace Stroika::Foundation::Streams {
     inline SeekOffsetType StreamReader<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset)
     {
         switch (whence) {
-            case Whence::eFromCurrent:
+            case eFromCurrent:
                 fOffset_ += offset;
                 break;
-            case Whence::eFromStart:
+            case eFromStart:
                 fOffset_ = offset;
                 break;
-            case Whence::eFromEnd:
-                fStrm_.Seek (Whence::eFromEnd, offset);
+            case eFromEnd:
+                fStrm_.Seek (eFromEnd, offset);
                 fOffset_ = fStrm_.GetOffset ();
                 break;
         }

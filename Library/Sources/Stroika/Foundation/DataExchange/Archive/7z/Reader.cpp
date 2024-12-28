@@ -23,6 +23,7 @@ extern "C" {
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
+using namespace Stroika::Foundation::Streams;
 
 using Memory::StackBuffer;
 
@@ -56,7 +57,7 @@ private:
     struct MyISeekInStream : ISeekInStream {
         Streams::InputStream::Ptr<byte> fInStream_;
         MyISeekInStream (const Streams::InputStream::Ptr<byte>& in)
-            : fInStream_ (in)
+            : fInStream_{in}
         {
             Read = Stream_Read_;
             Seek = Stream_Seek_;
@@ -77,10 +78,10 @@ private:
                     *pos = pThis->fInStream_.Seek (*pos);
                     break;
                 case SZ_SEEK_CUR:
-                    *pos = pThis->fInStream_.Seek (Streams::Whence::eFromCurrent, *pos);
+                    *pos = pThis->fInStream_.Seek (eFromCurrent, *pos);
                     break;
                 case SZ_SEEK_END:
-                    *pos = pThis->fInStream_.Seek (Streams::Whence::eFromEnd, *pos);
+                    *pos = pThis->fInStream_.Seek (eFromEnd, *pos);
                     break;
                 default:
                     AssertNotReached ();
@@ -94,7 +95,7 @@ private:
 
 public:
     Rep_ (const Streams::InputStream::Ptr<byte>& in)
-        : fInSeekStream_ (in)
+        : fInSeekStream_{in}
     {
         fAllocImp_     = ISzAlloc{Alloc_, Free_};
         fAllocTempImp_ = ISzAlloc{Alloc_, Free_};

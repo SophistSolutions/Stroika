@@ -148,7 +148,7 @@ namespace {
             if (fSeekable_ == eSeekable) {
                 auto saved = GetReadOffset ();
                 auto eof   = SeekRead (Whence::eFromEnd, 0);
-                SeekRead (Whence::eFromStart, saved);
+                SeekRead (eFromStart, saved);
                 Ensure (eof >= saved);
                 return eof - saved;
             }
@@ -229,7 +229,7 @@ namespace {
             static const auto                               kException_ = range_error{"seek"};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             switch (whence) {
-                case Whence::eFromStart: {
+                case eFromStart: {
                     if (offset < 0) [[unlikely]] {
                         Execution::Throw (kException_);
                     }
@@ -241,7 +241,7 @@ namespace {
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
 #endif
                 } break;
-                case Whence::eFromCurrent: {
+                case eFromCurrent: {
 #if qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
 #elif qStroika_Foundation_Common_Platform_Linux
@@ -250,7 +250,7 @@ namespace {
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
 #endif
                 } break;
-                case Whence::eFromEnd: {
+                case eFromEnd: {
 #if qStroika_Foundation_Common_Platform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
 #elif qStroika_Foundation_Common_Platform_Linux

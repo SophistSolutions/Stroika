@@ -381,13 +381,13 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             switch (whence) {
-                case Whence::eFromStart: {
+                case eFromStart: {
                     if (offset < 0) [[unlikely]] {
                         Execution::Throw (kException_);
                     }
                     SeekTo_ (static_cast<SeekOffsetType> (offset));
                 } break;
-                case Whence::eFromCurrent: {
+                case eFromCurrent: {
                     Streams::SeekOffsetType       curOffset = _fOffset;
                     Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                     if (newOffset < 0) [[unlikely]] {
@@ -396,9 +396,9 @@ namespace {
                     SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                     SeekTo_ (static_cast<size_t> (uNewOffset));
                 } break;
-                case Whence::eFromEnd: {
+                case eFromEnd: {
                     // @todo DECIDE IF SeekRead needs blockFlag???
-                    // and fix/simpify code here!!! for blockflag
+                    // and fix/simplify code here!!! for blockflag
                     Character c;
                     for (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eDEFAULT); o && o->size () == 1;
                          o      = Read (span{&c, 1}, NoDataAvailableHandling::eDEFAULT)) {

@@ -50,13 +50,13 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
                 switch (whence) {
-                    case Whence::eFromStart:
+                    case eFromStart:
                         fOriginalStreamRef_.seekp (offset, ios::beg);
                         break;
-                    case Whence::eFromCurrent:
+                    case eFromCurrent:
                         fOriginalStreamRef_.seekp (offset, ios::cur);
                         break;
-                    case Whence::eFromEnd:
+                    case eFromEnd:
                         fOriginalStreamRef_.seekp (offset, ios::end);
                         break;
                 }
