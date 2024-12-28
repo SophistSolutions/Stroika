@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Time {
      *  \note - DayOfMonth was an enum in Stroika v2.1, so this is a significant change.
      * 
      *  \note DayOfMonth can be converted from/to unsigned int.
-     *  \note You can use the suffix 'd' intead of DayOfMonth{n}
+     *  \note You can use the suffix 'd' instead of DayOfMonth{n}
      *
      *  \note not [[nodiscard]] cuz can use CTOR just for quiet validation
      */
