@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Memory {
         static constexpr size_t SizeInBytes_ (size_t nElts) noexcept
         {
             if (nElts == 0) {
-                return 1;
+                return 1; // avoid syntax error due to zero sized array
             }
             return sizeof (T[1]) * nElts; // not sure why return sizeof (T[nElts]); fails on vs2k21?
         }
