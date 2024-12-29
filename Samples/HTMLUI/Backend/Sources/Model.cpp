@@ -279,13 +279,13 @@ const ObjectVariantMapper About::kMapper = [] () {
     });
 
     mapper.AddClass<About::APIServerInfo::WebServer::ConnectionStatistics> ({
-        {"numberOfOpenConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfOpenConnections},
-        {"numberOfActiveConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfActiveConnections},
+        {"open"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfOpenConnections},
+        {"active"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfActiveConnections},
         {"medianDurationOfOpenConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfOpenConnections},
         {"medianDurationOfActiveConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfActiveConnections},
         {"medianDurationOfOpenConnectionRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfOpenConnectionRequests},
         {"medianDurationOfActiveRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfActiveRequests},
-        {"connectionsPiningForTheFjords"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fConnectionsPiningForTheFjords},
+        {"piningForTheFjords"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fConnectionsPiningForTheFjords},
     });
 
     mapper.AddClass<About::APIServerInfo::WebServer> ({

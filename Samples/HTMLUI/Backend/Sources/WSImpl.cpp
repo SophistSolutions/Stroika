@@ -172,15 +172,15 @@ About WSImpl::about_GET () const
         fRep_->fAccessWebServer ([&] (const Stroika::Frameworks::WebServer::ConnectionManager& cm) {
             Stroika::Frameworks::WebServer::ConnectionManager::Statistics rr = cm.statistics ();
             r.fThreadPool.fThreads = static_cast<unsigned int> (rr.fThreadPool.fThreadEntryCount); // todo beginning of data to report
-            r.fThreadPool.fTasksStillQueued   = rr.fThreadPool.fNumberOfTasksAdded - rr.fThreadPool.fNumberOfTasksCompleted;
-            r.fThreadPool.fAverageTaskRunTime = rr.fThreadPool.GetMeanTimeConsumed ();
-            r.fConnections.fNumberOfOpenConnections = rr.fConnections.fNumberOfOpenConnections;
-            r.fConnections.fNumberOfActiveConnections = rr.fConnections.fNumberOfActiveConnections;
+            r.fThreadPool.fTasksStillQueued                   = rr.fThreadPool.fNumberOfTasksAdded - rr.fThreadPool.fNumberOfTasksCompleted;
+            r.fThreadPool.fAverageTaskRunTime                 = rr.fThreadPool.GetMeanTimeConsumed ();
+            r.fConnections.fNumberOfOpenConnections           = rr.fConnections.fNumberOfOpenConnections;
+            r.fConnections.fNumberOfActiveConnections         = rr.fConnections.fNumberOfActiveConnections;
             r.fConnections.fMedianDurationOfOpenConnections   = rr.fConnections.fMedianDurationOfOpenConnections;
             r.fConnections.fMedianDurationOfActiveConnections = rr.fConnections.fMedianDurationOfActiveConnections;
             r.fConnections.fMedianDurationOfOpenConnectionRequests = rr.fConnections.fMedianDurationOfOpenConnectionRequests;
             r.fConnections.fMedianDurationOfActiveRequests         = rr.fConnections.fMedianDurationOfActiveRequests;
-            r.fConnections.fConnectionsPiningForTheFjords = rr.fConnections.fConnectionsPiningForTheFjords;
+            r.fConnections.fConnectionsPiningForTheFjords          = rr.fConnections.fConnectionsPiningForTheFjords;
             return r;
         });
         return r;
