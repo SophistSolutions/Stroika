@@ -757,16 +757,16 @@ namespace {
         EXPECT_EQ ((Range<int>{3, 4}.ToString ()), "[3 ... 4]");
         {
             using namespace Time;
-            EXPECT_TRUE (
-                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==
-                 L"[4/4/03 ... 4/5/03]"));
+            EXPECT_EQ (
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()) ,
+                 "[4/4/03 ... 4/5/03]");
         }
         {
             Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
             using namespace Time;
-            EXPECT_TRUE (
-                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==
-                 "[4/4/1903 ... 4/5/1903]"));
+            EXPECT_EQ (
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()) ,
+                 "[4/4/1903 ... 4/5/1903]");
         }
     }
 }

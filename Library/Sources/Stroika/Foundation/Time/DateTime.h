@@ -355,6 +355,8 @@ namespace Stroika::Foundation::Time {
          *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
          *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
          *      and 04:06:00 PM will become 4:06 PM.
+         * 
+         *      This also may normalize extra space characters to a single space.
          */
         enum class NonStandardPrintFormat : uint8_t {
             eCurrentLocale_WithZerosStripped,
@@ -375,11 +377,26 @@ namespace Stroika::Foundation::Time {
          *  \note A locale has no associated timezone (despite somewhat confusing documentation relating to this).
          *        @see https://stackoverflow.com/questions/52839648/does-a-c-locale-have-an-associated-timezone-and-if-yes-how-do-you-access-it
          * 
-         *  \note for apis with the locale not specified, its assumed to be the default (locale{}), except (perhaps) where the formatString is locale-independent.
+         *  \note for APIs with the locale not specified, its assumed to be the default (locale{}), except (perhaps) where the formatString is locale-independent.
          * 
          *  \note the default for Format() with no arguments is to use the default locale, but with the eCurrentLocale_WithZerosStripped flag set.
          *
          *  \note   @todo - http://stroika-bugs.sophists.com/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)
+         * 
+         *  \par Example Usage
+         *      \code
+         *          // note example assumes current locale is 'C'
+         *          DateTime d{Date{January / 4 / 2017y}, TimeOfDay{3, 3, 0}};
+         *          EXPECT_EQ (d.Format (locale{}).NormalizeSpace (), "Wed Jan 4 03:03:00 2017");   // locale{} on windows adds extra space...
+         *          EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), d.Format ());
+         *          EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "Wed Jan 4 3:03 2017");    // zeros stripped
+         *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          DateTime d{Date (Year{1903}, April, DayOfMonth{5})};
+         *          EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "4/5/03");
+         *      \endcode
          */
         nonvirtual String Format (NonStandardPrintFormat pf = NonStandardPrintFormat::eDEFAULT) const;
         nonvirtual String Format (LocaleIndependentFormat format) const;

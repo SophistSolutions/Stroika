@@ -697,31 +697,39 @@ String DateTime::Format (NonStandardPrintFormat pf) const
         case eCurrentLocale_WithZerosStripped: {
             /*
              *  Use basic current locale formatting, and then use regexp to find special case 0s to strip.
-             *
-             *  Test regexp with test string "Sun Jun 04, 2017 Sun Jun 004 2001 00 10/17/18 13:15:39    04/03/2222 Jun 03, 2004 is 1/1/03   04/04/03 4/4/04" and https://regex101.com/
              */
-            String                         mungedData = Format (locale{});
-            static const RegularExpression kZero2StripPattern_{"\\b0+"sv};
-            constexpr bool                 kKeepZeroOnLastOfYear_ = true; // (MM / DD / 03 should keep the 0 in 03)
-            if constexpr (kKeepZeroOnLastOfYear_) {
-                size_t startAt = 0;
+            String mungedData = Format (locale{});
+            {
+                // FIX Wed Jan 4 03:... to Wed Jan 4 3:
+                static const RegularExpression kZero2StripPattern_{"\\s0\\d"sv}; // space followed zero and a digit
+                size_t                         startAt = 0;
                 while (auto o = mungedData.Find (kZero2StripPattern_, startAt)) {
-                    // Look for preceding / and all digits to end of string
-                    if (o->first != 0 and mungedData[o->first - 1] == '/' and
-                        mungedData.SubString (o->second).All ([] (Character c) { return c.IsDigit (); })) {
-                        // skip this case
-                        startAt = o->second; // but don't encounter it again
-                    }
-                    else {
-                        Assert (o->first >= startAt);
-                        mungedData = mungedData.RemoveAt (*o);
-                    }
+                    Assert (o->first >= startAt);
+                    o->first++;  // dont delete space
+                    o->second--; // dont delete digit
+                    mungedData = mungedData.RemoveAt (*o);
                 }
             }
-            else {
-                mungedData = mungedData.ReplaceAll (kZero2StripPattern_, String{});
+            {
+                // FIX 04/03/01 => 4/3/01
+                static const RegularExpression kZero2StripPattern_{"0\\d/"sv}; // 0 digit slash
+                size_t                         startAt = 0;
+                while (auto o = mungedData.Find (kZero2StripPattern_, startAt)) {
+                    Assert (o->first >= startAt);
+                    mungedData = mungedData.RemoveAt (o->first);
+                }
             }
-            return mungedData;
+            {
+                // FIX 3:00 to 3
+                static const RegularExpression kZero2StripPattern_{":00\\s"sv}; // use \s not \b cuz dont do in middle of 3:00:01
+                size_t                         startAt = 0;
+                while (auto o = mungedData.Find (kZero2StripPattern_, startAt)) {
+                    Assert (o->first >= startAt);
+                    o->second--; // dont delete space
+                    mungedData = mungedData.RemoveAt (*o);
+                }
+            }
+            return mungedData.NormalizeSpace (); // sometimes on windows, extra spaces left around
         }
     }
     AssertNotReached ();

@@ -389,7 +389,7 @@ namespace {
             EXPECT_EQ (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format), d);
         };
         {
-            Date d{Year{1903}, April, DayOfMonth{4}};
+            Date d{1903y, April, 4d};
             TestRoundTripFormatThenParseNoChange_ (d);
             EXPECT_EQ (d.Format (Date::kISO8601Format), "1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
@@ -458,16 +458,16 @@ namespace {
         try {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
-            Date                    d = Date{Year{1903}, April, DayOfMonth{5}};
+            Date                    d = Date{1903y, April, 5d};
             TestRoundTripFormatThenParseNoChange_ (d);
             EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903");
-            EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903");
+            EXPECT_EQ (d.Format (Date::eCurrentLocale_WithZerosStripped), "4/5/1903");
         }
         catch ([[maybe_unused]] const Common::LocaleNotFoundException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
-            Date d = Date (1903y, April, 5d);
+            Date d = Date{1903y, April, 5d};
             EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903" or d.Format (locale{}) == "04/05/03");
             EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/03");
         }
@@ -499,7 +499,7 @@ namespace {
     {
         TraceContextBumper ctx{"TestDateTime_"};
         {
-            DateTime d{Date{Year{1903}, April, DayOfMonth{4}}};
+            DateTime d{Date{1903y, April, 4d}};
             EXPECT_EQ (d.Format (DateTime::kISO8601Format), "1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
@@ -550,7 +550,7 @@ namespace {
         try {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
-            Date                    d = Date{Year{1903}, April, DayOfMonth{5}};
+            Date                    d = Date{1903y, April, 5d};
             DateTime                dt{d, TimeOfDay{101}};
 
             {
@@ -572,7 +572,7 @@ namespace {
             Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing locale");
         }
         {
-            Date d = Date{Year{1903}, April, DayOfMonth{6}};
+            Date d = Date{1903y, April, 6d};
             TestRoundTripFormatThenParseNoChange_ (d);
             DateTime dt{d, TimeOfDay{101}};
             TestRoundTripFormatThenParseNoChange_ (dt);
@@ -646,19 +646,19 @@ namespace {
 
             // Parse eRFC1123
             EXPECT_TRUE (DateTime::Parse ("Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
+                         (DateTime{Date{Time::Year{2021}, June, 9d}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
             EXPECT_TRUE (DateTime::Parse ("Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                         (DateTime{Date{Time::Year{2002}, October, 2d}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
             EXPECT_TRUE (DateTime::Parse ("Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                         (DateTime{Date{Time::Year{2002}, October, 2d}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
             EXPECT_TRUE (DateTime::Parse ("Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                         (DateTime{Date{Time::Year{2002}, October, 2d}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
 
             EXPECT_TRUE (DateTime::Parse ("Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) ==
-                         (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
+                         (DateTime{Date{Time::Year{2018}, November, 6d}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
 
-            roundTripD (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
+            roundTripD (DateTime{Date{Time::Year{2021}, June, 9d}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
 
             // Careful with these, because there are multiple valid string representations for a given date
             roundTripS ("Wed, 02 Oct 2002 13:00:00 GMT");
@@ -669,7 +669,7 @@ namespace {
         {
             // difference
             {
-                constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear{9}, Time::DayOfMonth{29}};
+                constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear{9}, 29d};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 constexpr TimeOfDay kTOD2_{10, 21, 35};
                 EXPECT_TRUE ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSeconds::rep> () == -3);
@@ -684,21 +684,21 @@ namespace {
         {
             // http://stroika-bugs.sophists.com/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
             {
-                constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
+                constexpr Date      kDate_{2016y, Time::MonthOfYear {9}, 29d};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04:00", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 EXPECT_EQ (tdu, (DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
-                constexpr Date      kDate_ = Date {Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
+                constexpr Date      kDate_ = Date {2016y, Time::MonthOfYear {9}, 29d};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-0400", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 EXPECT_EQ (tdu, ( DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
-                constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth {29}};
+                constexpr Date      kDate_{2016y, Time::MonthOfYear {9}, 29d};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
@@ -719,9 +719,9 @@ namespace {
             }
             try {
                 DateTime dt = DateTime::Parse ("1906-05-12 12:00:00+00", DateTime::kISO8601Format);    //allowed to use space or 't'
-                EXPECT_TRUE ((dt.GetDate () == Date{1906y, May, 12d}));
-                EXPECT_TRUE ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
-                EXPECT_TRUE (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
+                EXPECT_EQ (dt.GetDate (), (Date{1906y, May, 12d}));
+                EXPECT_EQ (dt.GetTimeOfDay () ,(TimeOfDay {12, 0, 0}));
+                EXPECT_EQ (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) , 0);
             }
             catch (...) {
                 EXPECT_TRUE (false);
@@ -742,27 +742,27 @@ namespace {
 // clang-format on
 
 namespace {
-    GTEST_TEST (Foundation_Time, DateTimeTimeT_)
+    GTEST_TEST (Foundation_Time, DateTime_time_t_)
     {
-        TraceContextBumper ctx{"DateTimeTimeT_"};
+        TraceContextBumper ctx{"DateTime_time_t_"};
         {
-            DateTime d{Date{Year{2000}, April, DayOfMonth{20}}};
+            DateTime d{Date{2000y, April, DayOfMonth{20}}};
             EXPECT_EQ (d.As<time_t> (), 956188800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3pm", locale{})};
+            DateTime d = DateTime{Date{1995y, June, 4d}, TimeOfDay::Parse ("3pm", locale{})};
             EXPECT_EQ (d.As<time_t> (), 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3pm")};
+            DateTime d = DateTime{Date{1995y, June, 4d}, TimeOfDay::Parse ("3pm")};
             EXPECT_EQ (d.As<time_t> (), 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3am")};
+            DateTime d = DateTime{Date{1995y, June, 4d}, TimeOfDay::Parse ("3am")};
             EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3:00")};
+            DateTime d = DateTime{Date{1995y, June, 4d}, TimeOfDay::Parse ("3:00")};
             EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
@@ -770,6 +770,37 @@ namespace {
             DateTime     d     = DateTime{kTEST};
             EXPECT_EQ (d.As<time_t> (), kTEST); // source - http://www.onlineconversion.com/unix_time.htm
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Time, DateTime_eCurrentLocale_WithZerosStripped)
+    {
+        TraceContextBumper ctx{"DateTime_eCurrentLocale_WithZerosStripped"};
+        //String aa= d.Format ();
+        //String aaw= aa.As<wstring> ();
+        // DbgTrace ("aa={}"_f,aa);
+        {
+            DateTime d{static_cast<time_t> (1735412914)};
+            EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), d.Format ());
+            EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "Sat Dec 28 19:08:34 2024");
+        }
+        {
+            DateTime d{static_cast<time_t> (1733684914)};
+            EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), d.Format ());
+            EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "Sun Dec 8 19:08:34 2024");
+        }
+        {
+            DateTime d{Date{January / 4 / 2017y}, TimeOfDay{3, 3, 0}};
+            EXPECT_EQ (d.Format (locale{}).NormalizeSpace (), "Wed Jan 4 03:03:00 2017"); // locale{} on windows adds extra space...
+            EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), d.Format ());
+            EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "Wed Jan 4 3:03 2017");
+        }
+        {
+            DateTime d{Date (Year{1903}, April, 5d)};
+            EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "4/5/03");
+        }
+
     }
 }
 
@@ -948,17 +979,17 @@ namespace {
     {
         TraceContextBumper ctx{"DateTimeWithDuration_"};
         {
-            DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse ("3:00")};
+            DateTime d = DateTime{Date{1995y, June, 4d}, TimeOfDay::Parse ("3:00")};
             EXPECT_EQ (d.As<time_t> (), 802234800); // source - http://www.onlineconversion.com/unix_time.htm
             const Duration k30Days = Duration{"P30D"};
             DateTime       d2      = d + k30Days;
-            EXPECT_EQ (d2.GetDate ().GetYear (), Year{1995});
+            EXPECT_EQ (d2.GetDate ().GetYear (), 1995y);
             EXPECT_EQ (d2.GetDate ().GetMonth (), July);
-            EXPECT_EQ (d2.GetDate ().GetDayOfMonth (), DayOfMonth{4});
+            EXPECT_EQ (d2.GetDate ().GetDayOfMonth (), 4d);
             EXPECT_EQ (d2.GetTimeOfDay (), d.GetTimeOfDay ());
         }
         {
-            DateTime n1 = DateTime{Date{Year{2015}, June, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
+            DateTime n1 = DateTime{Date{2015y, June, 9d}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{"P100Y"};
             EXPECT_EQ (n2.GetDate ().GetYear (), Year{(int)n1.GetDate ().GetYear () - 100});
 #if 0
@@ -984,7 +1015,7 @@ namespace {
          *  @see http://stroika-bugs.sophists.com/browse/STK-634
          */
         {
-            DateTime n = DateTime{Date{Year{2011}, December, DayOfMonth{30}}, TimeOfDay::Parse ("1 pm", locale::classic ()), Timezone::kLocalTime};
+            DateTime n = DateTime{Date{Year{2011}, December, 30d}, TimeOfDay::Parse ("1 pm", locale::classic ()), Timezone::kLocalTime};
             [[maybe_unused]] optional<bool> isDst = n.IsDaylightSavingsTime ();
             DateTime                        n2    = n.AddDays (180);
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
@@ -1050,33 +1081,34 @@ namespace {
             EXPECT_EQ (d2.GetUpperBound (), Date::kMax);
         }
         {
-            DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
+            static_assert (Year{1903} == 1903y);
+            DiscreteRange<Date> dr{Date{1903y, April, 5d}, Date{1903y, April, 6d}};
             unsigned int        i = 0;
             for (Date d : dr) {
                 ++i;
-                EXPECT_EQ (d.GetYear (), Year{1903});
+                EXPECT_EQ (d.GetYear (), 1903y);
                 EXPECT_EQ (d.GetMonth (), April);
                 if (i == 1) {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{5});
+                    EXPECT_EQ (d.GetDayOfMonth (), 5d);
                 }
                 else {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{6});
+                    EXPECT_EQ (d.GetDayOfMonth (), 6d);
                 }
             }
             EXPECT_EQ (i, 2u);
         }
         {
-            DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
+            DiscreteRange<Date> dr{Date{1903y, April, 5d}, Date{1903y, April, 6d}};
             unsigned int        i = 0;
             for (Date d : dr.Elements ()) {
                 ++i;
-                EXPECT_EQ (d.GetYear (), Year{1903});
+                EXPECT_EQ (d.GetYear (), 1903y);
                 EXPECT_EQ (d.GetMonth (), April);
                 if (i == 1) {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{5});
+                    EXPECT_EQ (d.GetDayOfMonth (), 5d);
                 }
                 else {
-                    EXPECT_EQ (d.GetDayOfMonth (), DayOfMonth{6});
+                    EXPECT_EQ (d.GetDayOfMonth (), 6d);
                 }
             }
             EXPECT_EQ (i, 2u);
@@ -1102,11 +1134,25 @@ namespace {
             EXPECT_EQ (d2.GetUpperBound (), DateTime::kMax);
         }
         {
-            Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
+            Range<DateTime> d1{DateTime{Date{2000y, April, DayOfMonth{20}}}, DateTime{Date{2000y, April, DayOfMonth{22}}}};
             EXPECT_EQ (d1.GetDistanceSpanned () / 2, Duration{"PT1D"});
             // SEE http://stroika-bugs.sophists.com/browse/STK-514 for accuracy of compare (sb .1 or less)
-            EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), DateTime{Date{Year{2000}, April, DayOfMonth{21}}}, DurationSeconds{2}));
+            EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), DateTime{Date{2000y, April, DayOfMonth{21}}}, DurationSeconds{2}));
         }
+
+        {
+            DateTime        d{Date{January / 4 / 2017y}, TimeOfDay{3, 3, 0}};
+            Range<DateTime> d1{d, nullopt};
+
+            DbgTrace ("a={}"_f, d);
+            // EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), d.Format ());
+            // EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "Wed Jan 4 3:03:00 2017");
+
+            ////String aa= d.Format ();
+            // DbgTrace ("aa={}"_f,aa);
+        }
+
+        //        Sun Jun 04, 2017
     }
 }
 
