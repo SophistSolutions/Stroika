@@ -130,9 +130,10 @@ public:
     };
 
     // for usage stats
-    IntervalTimer::Adder fIntervalTimerAdder_;
+    IntervalTimer::Adder fStatsIntervalTimerAdder_;
 
     static const WebServiceMethodDescription kAbout_;
+    static const WebServiceMethodDescription kHeathCheck_;
 
     Rep_ (optional<uint16_t> portNumber)
         : kRoutes_{
@@ -145,6 +146,14 @@ public:
             , Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory{{About::kMapper}, [this] () {
                                                             ActiveCallCounter_ acc{*this};
                                                             return fWSImpl_->about_GET ();
+                                                        }}}
+
+            /**
+             * /healthcheck - health check etc
+             */
+            , Route{"api/healthcheck/?"_RegEx, ObjectRequestHandler::Factory{{HealthStatus::kMapper}, [this] () {
+                                                            ActiveCallCounter_ acc{*this};
+                                                            return fWSImpl_->healthcheck_GET ();
                                                         }}}
 
             /**
@@ -176,10 +185,10 @@ public:
           }
         , fWSImpl_{make_shared<WSImpl> ([this] () -> About::APIServerInfo::WebServer {
             About::APIServerInfo::WebServer r;
-            auto                            rr = this->fConnectionMgr_.statistics ();
-            r.fThreadPool.fThreads             = static_cast<unsigned int> (rr.fThreadPoolSize); // todo beginning of data to report
-            r.fThreadPool.fTasksStillQueued = rr.fThreadPoolStatistics.fNumberOfTasksAdded - rr.fThreadPoolStatistics.fNumberOfTasksCompleted;
-            r.fThreadPool.fAverageTaskRunTime = rr.fThreadPoolStatistics.GetMeanTimeConsumed ();
+            ConnectionManager::Statistics  rr  = this->fConnectionMgr_.statistics ();
+            r.fThreadPool.fThreads             = static_cast<unsigned int> (rr.fThreadPool.fThreadEntryCount); // todo beginning of data to report
+            r.fThreadPool.fTasksStillQueued   = rr.fThreadPool.fNumberOfTasksAdded - rr.fThreadPool.fNumberOfTasksCompleted;
+            r.fThreadPool.fAverageTaskRunTime = rr.fThreadPool.GetMeanTimeConsumed ();
             return r;
         })}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
@@ -187,12 +196,12 @@ public:
                          , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 20,
                                                      .fDefaultResponseHeaders            = kDefaultResponseHeaders_,
                                                      .fCollectStatistics                 = true}}
-        , fIntervalTimerAdder_{[this] () {
+        , fStatsIntervalTimerAdder_{[this] () {
                                    // capture stats at regular time intervals
                                    Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
                                    OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
-                                   OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (fConnectionMgr_.connections ().length ());
-                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fConnectionMgr_.activeConnections ().length ());
+                                   OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (fConnectionMgr_.statistics ().fConnections.fNumberOfOpenConnections);
+                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fConnectionMgr_.statistics ().fConnections.fNumberOfActiveConnections);
                                },
                                15s, IntervalTimer::Adder::eRunImmediately}
     {
@@ -210,10 +219,7 @@ public:
     static void DefaultPage_ (Request&, Response& response)
     {
         WriteDocsPage (
-            response,
-            Sequence<WebServiceMethodDescription>{
-                kAbout_,
-            },
+            response, Sequence<WebServiceMethodDescription>{kAbout_, kHeathCheck_},
             DocsOptions{.fH1Text = "Stroika-Sample-HTMLUI"_k,
                         .fIntroductoryText = "Just a sample set of webservices to show how to hook C++ code into html via ajax callbacks..."_k,
                         .fVariables2Substitute =
@@ -240,6 +246,17 @@ const WebServiceMethodDescription WebServer::Rep_::kAbout_{
         "curl {{ShowAsExternalURI}}/api/about"sv,
     },
     Sequence<String>{"Fetch the component versions, web server connections, thread pool etc, etc."sv},
+};
+
+const WebServiceMethodDescription WebServer::Rep_::kHeathCheck_{
+    "api/healthcheck"sv,
+    Set<String>{HTTP::Methods::kGet},
+    DataExchange::InternetMediaTypes::kJSON,
+    "Data about the Sample HTMLUI server health"sv,
+    Sequence<String>{
+        "curl {{ShowAsExternalURI}}/api/healthcheck"sv,
+    },
+    Sequence<String>{"Fetch the app health status."sv},
 };
 
 WebServer::WebServer (optional<uint16_t> portNumber)

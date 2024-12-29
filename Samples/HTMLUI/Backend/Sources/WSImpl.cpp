@@ -169,9 +169,17 @@ About WSImpl::about_GET () const
     }();
     APIServerInfo::WebServer webServerStats = [&] () { return fRep_->fWebServerStatsFetcher (); }();
     optional<Database>       dbStats; // no DB in this demo
+    auto                     healthcheck = healthcheck_GET ();
 
     return About{AppVersion::kVersion,
-                 APIServerInfo{AppVersion::kVersion, kAPIServerComponents_, machineInfo, processInfo, apiStats, webServerStats, dbStats}};
+                 APIServerInfo{AppVersion::kVersion, kAPIServerComponents_, machineInfo, processInfo, apiStats, webServerStats, dbStats}, healthcheck};
+}
+
+HealthStatus WSImpl::healthcheck_GET () const
+{
+    HealthStatus result;
+    result.fOK = true; // @todo add period interval check for webserver stats - and report to LOGGER when bad as well
+    return result;
 }
 
 TypedBLOB WSImpl::resource_GET (const String& name) const

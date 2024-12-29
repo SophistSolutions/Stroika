@@ -156,6 +156,9 @@ namespace Stroika::Frameworks::WebServer {
     public:
         /**
          *  Mostly for debugging, but also for ongoing operational diagnostics (late season debugging ;-)).
+         * 
+         *  \todo - https://stroika.atlassian.net/browse/STK-1025 - Stats should have STATE flag
+         *  \todo - Consider ALSO adding a Request URI - which might be helpful for debugging when deadlocks happen.
          */
         struct Stats {
             /**

@@ -37,6 +37,20 @@ namespace Stroika::Samples::HTMLUI::Model {
      * @brief  
      * 
      */
+    struct HealthStatus {
+        bool fOK{false};
+
+        optional<Sequence<String>> fWarnings;
+
+        nonvirtual String ToString () const;
+
+        static const DataExchange::ObjectVariantMapper kMapper;
+    };
+
+    /**
+     * @brief  
+     * 
+     */
     struct About {
         Common::Version fOverallApplicationVersion;
 
@@ -161,7 +175,8 @@ namespace Stroika::Samples::HTMLUI::Model {
 
             nonvirtual String ToString () const;
         };
-        APIServerInfo fAPIServerInfo;
+        APIServerInfo          fAPIServerInfo;
+        optional<HealthStatus> fHealthStatus;
 
         nonvirtual String ToString () const;
 

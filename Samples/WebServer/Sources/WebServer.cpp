@@ -163,15 +163,18 @@ namespace {
         }
         void PrintServerStats_ (Message& m)
         {
-            //auto      stats = this->fConnectionMgr_.activeConnections (); // usually all that is interesting...
-            auto      stats = this->fConnectionMgr_.connections (); // but sometimes when debugging/exploring....
-            Response& r     = m.rwResponse ();
-            r.contentType   = DataExchange::InternetMediaTypes::kText_PLAIN;
+            auto      stats       = this->fConnectionMgr_.statistics ();
+            auto      connections = this->fConnectionMgr_.connections (); // but sometimes when debugging/exploring....
+            Response& r           = m.rwResponse ();
+            r.contentType         = DataExchange::InternetMediaTypes::kText_PLAIN;
+            r.writeln ("statistics: {");
+            r.writeln ("  {},"_f(stats));
+            r.writeln ("}");
             r.writeln ("connections: [");
-            for (auto s : stats) {
+            for (auto s : connections) {
                 r.writeln ("  {},"_f(s));
             }
-            r.writeln ("}");
+            r.writeln ("]");
         }
         // Can declare arguments as Message& message
         static void SetAppState_ (Message& message)

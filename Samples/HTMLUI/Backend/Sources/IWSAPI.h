@@ -47,6 +47,11 @@ namespace Stroika::Samples::HTMLUI {
         virtual About about_GET () const = 0;
 
     public:
+        /**
+         */
+        virtual HealthStatus healthcheck_GET () const = 0;
+
+    public:
         virtual TypedBLOB resource_GET (const String& name) const = 0;
     };
 

@@ -26,6 +26,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Time;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Foundation::IO::Network;
@@ -59,6 +60,47 @@ namespace {
 
 /*
  ********************************************************************************
+ ************ WebServer::ConnectionManager::Statistics::ThreadPool **************
+ ********************************************************************************
+ */
+String WebServer::ConnectionManager::Statistics::ThreadPool::ToString () const
+{
+    StringBuilder sb = Execution::ThreadPool::Statistics::ToString ().SubString (0, -1);
+    sb << ", thread-entry-cont: "sv << fThreadEntryCount << ", "sv;
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ ******* WebServer::ConnectionManager::Statistics::ConnectionStatistics *********
+ ********************************************************************************
+ */
+String WebServer::ConnectionManager::Statistics::ConnectionStatistics::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "n-open-connections: "sv << fNumberOfOpenConnections;
+    sb << ", n-active-connections: "sv << fNumberOfActiveConnections;
+    if (fMedianDurationOfActiveConnections) {
+        sb << ", median-duration-active-connections: "sv << fMedianDurationOfActiveConnections;
+    }
+    if (fMedianDurationOfOpenConnections) {
+        sb << ", median-duration-open-connections: "sv << fMedianDurationOfOpenConnections;
+    }
+    if (fMedianDurationOfActiveRequests) {
+        sb << ", median-duration-active-requests: "sv << fMedianDurationOfActiveRequests;
+    }
+    if (fMedianDurationOfOpenConnectionRequests) {
+        sb << ", median-duration-open-requests: "sv << fMedianDurationOfOpenConnectionRequests;
+    }
+    sb << ", n-connections-pining-for-the-fjords: "sv << fConnectionsPiningForTheFjords;
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
  **************** WebServer::ConnectionManager::Statistics **********************
  ********************************************************************************
  */
@@ -66,8 +108,8 @@ Characters::String WebServer::ConnectionManager::Statistics::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "ThreadPool-Size: "sv << fThreadPoolSize << ", "sv;
-    sb << "ThreadPool-Statistics: "sv << fThreadPoolStatistics;
+    sb << "ThreadPool: "sv << fThreadPool;
+    sb << ", Connections: "sv << fConnections;
     sb << "}"sv;
     return sb;
 }
@@ -141,17 +183,7 @@ namespace {
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options)
-    : activeConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionStatsCollection {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::activeConnections);
-        ConnectionStatsCollection r;
-        for (auto i : thisObj->fActiveConnections_.load ()) {
-            auto s    = i->stats ();
-            s.fActive = true;
-            r += s;
-        }
-        return r;
-    }}
-    , afterInterceptors{
+    : afterInterceptors{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
               const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
               return thisObj->fAfterInterceptors_;
@@ -219,10 +251,87 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         return thisObj->fEffectiveOptions_;
     }}
     , statistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::statistics);
-        Require (thisObj->fEffectiveOptions_.fCollectStatistics);
-        return Statistics{.fThreadPoolSize       = thisObj->fActiveConnectionThreads_.GetPoolSize (),
-                          .fThreadPoolStatistics = thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()};
+        const ConnectionManager*  thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::statistics);
+        ConnectionStatsCollection connections;
+        {
+            scoped_lock critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
+            Assert (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
+            for (auto i : thisObj->fActiveConnections_.load ()) {
+                auto s    = i->stats ();
+                s.fActive = true;
+                connections += s;
+            }
+            for (auto i : thisObj->GetInactiveConnections_ ()) {
+                auto s    = i->stats ();
+                s.fActive = false;
+                connections += s;
+            }
+        }
+        Statistics::ThreadPool threadPoolStats = [&] () {
+            if (thisObj->fEffectiveOptions_.fCollectStatistics) {
+                return Statistics::ThreadPool{{thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()},
+                                              thisObj->fActiveConnectionThreads_.GetPoolSize ()};
+            }
+            else {
+                return Statistics::ThreadPool{{}, thisObj->fActiveConnectionThreads_.GetPoolSize ()};
+            }
+        }();
+        Statistics::ConnectionStatistics connectionStats;
+        connectionStats.fNumberOfActiveConnections = connections.Count ([] (const Connection::Stats& s) { return s.fActive == true; });
+        connectionStats.fNumberOfOpenConnections   = connections.size ();
+
+        DateTime now = DateTime::Now ();
+        connectionStats.fMedianDurationOfOpenConnections =
+            connections.Map<Iterable<Duration>> ([&] (const auto& c) { return now - c.fCreatedAt; }).Median ();
+        connectionStats.fMedianDurationOfActiveConnections = connections
+                                                                 .Map<Iterable<Duration>> ([&] (const auto& c) -> optional<Duration> {
+                                                                     if (c.fActive == false)
+                                                                         return nullopt;
+                                                                     return now - c.fCreatedAt;
+                                                                 })
+                                                                 .Median ();
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+        connectionStats.fMedianDurationOfOpenConnectionRequests = connections
+                                                                      .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                                                                          if (cs.fMostRecentMessage) {
+                                                                              DateTime from = cs.fMostRecentMessage->GetLowerBound ();
+                                                                              DateTime to   = cs.fMostRecentMessage->GetUpperBound ();
+                                                                              to            = min<DateTime> (to, now);
+                                                                              return to - from;
+                                                                          }
+                                                                          return nullopt;
+                                                                      })
+                                                                      .Median ();
+        connectionStats.fMedianDurationOfActiveRequests = connections
+                                                              .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                                                                  if (cs.fActive == false)
+                                                                      return nullopt;
+                                                                  if (cs.fMostRecentMessage) {
+                                                                      DateTime from = cs.fMostRecentMessage->GetLowerBound ();
+                                                                      DateTime to   = cs.fMostRecentMessage->GetUpperBound ();
+                                                                      to            = min<DateTime> (to, now);
+                                                                      return to - from;
+                                                                  }
+                                                                  return nullopt;
+                                                              })
+                                                              .Median ();
+        connectionStats.fConnectionsPiningForTheFjords =
+            connections
+                .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                    if (cs.fActive == false)
+                        return nullopt;
+                    if (cs.fMostRecentMessage) {
+                        DateTime from = cs.fMostRecentMessage->GetLowerBound ();
+                        DateTime to   = cs.fMostRecentMessage->GetUpperBound ();
+                        to            = min<DateTime> (to, now);
+                        return to - from;
+                    }
+                    return nullopt;
+                })
+                .Count ([&] (const Duration& d) { return d > thisObj->fEffectiveOptions_.fConnectionPiningForTheFjordsDelay; });
+#endif
+
+        return Statistics{.fThreadPool = threadPoolStats, .fConnections = connectionStats};
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fBindings_{bindAddresses}

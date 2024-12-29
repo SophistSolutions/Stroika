@@ -38,6 +38,7 @@ namespace Stroika::Frameworks::WebServer {
     using Containers::Collection;
     using Containers::Set;
     using IO::Network::HTTP::Headers;
+    using Time::Duration;
     using Traversal::Iterable;
 
     /**
@@ -132,7 +133,7 @@ namespace Stroika::Frameworks::WebServer {
              *
              *  \note - this defaults to 2 seconds (kDefault_AutomaticTCPDisconnectOnClose)
              */
-            optional<Time::DurationSeconds> fAutomaticTCPDisconnectOnClose;
+            optional<Duration> fAutomaticTCPDisconnectOnClose;
 
             /**
              * @see Socket::SetLinger () - SO_LINGER
@@ -153,8 +154,15 @@ namespace Stroika::Frameworks::WebServer {
             optional<String> fThreadPoolName;
 
             /**
+             *  Statistics are available (from the statistics()) property whether this is true or false. But this
+             *  controls whether or not extra statistics are collected and made available.
              */
             bool fCollectStatistics{false};
+
+            /**
+             *  This controls the time used to compute field statistics().fConnections.fConnectionsPiningForTheFjords
+             */
+            Duration fConnectionPiningForTheFjordsDelay{5s};
 
             /**
              *  The number of new TCP connections the kernel will buffer before the application has a chance to accept.
@@ -189,7 +197,7 @@ namespace Stroika::Frameworks::WebServer {
             static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
             static inline const Common::ConstantProperty<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
             static constexpr bool                                     kDefault_AutoComputeETagResponse{true};
-            static constexpr Time::DurationSeconds                    kDefault_AutomaticTCPDisconnectOnClose{2.0s};
+            static constexpr Duration                                 kDefault_AutomaticTCPDisconnectOnClose{2.0s};
             static constexpr optional<int>                            kDefault_Linger{nullopt}; // intentionally optional-valued
             static constexpr bool kDefault_TCPNoDelay{true}; // https://brooker.co.za/blog/2024/05/09/nagle.html (defaults to NO DELAY - disable Nagle - because we are carefully to only write once when the response is fully read)
         };
@@ -216,13 +224,6 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         using ConnectionStatsCollection = Containers::KeyedCollection<Connection::Stats, Socket::PlatformNativeHandle, My_Traits_>;
-
-    public:
-        /**
-         *  Here active refers to being currently processed, reading data, writing data or computing answers. This means
-         *  assigned into thread pool for handling.
-         */
-        const Common::ReadOnlyProperty<ConnectionStatsCollection> activeConnections;
 
     public:
         /**
@@ -253,9 +254,8 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  We need some sort of status flag on connections - saying of they are OPEN or not - or done.
-         *  But this will return just those which are not 'done'. Of course - due to asynchrony,
-         *  by the time one looks at the list, some may already be done.
+         *  Each connection maybe active (currently engaged in the threadpool processing) or inactive (waited on via select/epoll).
+         *  To see just summary statistics, use the statistics() property () of this class.
          */
         Common::ReadOnlyProperty<ConnectionStatsCollection> connections;
 
@@ -289,11 +289,85 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  For now minimal, but perhaps expand....
+         *  Basic statistics about the state of the ConnectionManager (webserver).
          */
         struct Statistics {
-            size_t                            fThreadPoolSize{};
-            Execution::ThreadPool::Statistics fThreadPoolStatistics;
+            /**
+             */
+            struct ThreadPool : Execution::ThreadPool::Statistics {
+                size_t fThreadEntryCount{};
+
+                /**
+                 *  See Characters::ToString ()
+                 */
+                nonvirtual Characters::String ToString () const;
+            };
+            ThreadPool fThreadPool;
+
+            /**
+             * NOTE - call 'connections' property to get full details... - not summary stats
+             */
+            struct ConnectionStatistics {
+                /**
+                 *  Number of sockets with TCP connections between the server web server clients.
+                 */
+                size_t fNumberOfOpenConnections{};
+
+                /**
+                 *  The subset of open connections where there is current activity, such as reading headers,
+                 *  or processing the body of the request, or sending the response (a thread allocated to doing work for this connection).
+                 */
+                size_t fNumberOfActiveConnections{};
+
+                /**
+                 *  Each connection that still exists has been open for a given amount of time. Median of those.
+                 */
+                optional<Duration> fMedianDurationOfOpenConnections;
+
+                /**
+                 *  Each (active) connection that still exists has been open for a given amount of time. Median of those.
+                 */
+                optional<Duration> fMedianDurationOfActiveConnections;
+
+                /**
+                 *  Each connection will in general serve many requests (due to connection keep-alives). This computes 
+                 *  the median duration of currently open requests.   @todo CLARIFY
+                 * 
+                 *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
+                 */
+                optional<Duration> fMedianDurationOfOpenConnectionRequests;
+
+                /**
+                 *  Each connection will in general serve many requests (due to connection keep-alives). This computes 
+                 *  the median duration of currently active connection requests.
+                 * 
+                 *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
+                 */
+                optional<Duration> fMedianDurationOfActiveRequests;
+
+                /**
+                 *  Count the number of currently running requests which have taken longer than options.fConnectionPiningForTheFjordsDelay
+                 * 
+                 *  This can help to detect deadlocked/or problematically slow web service APIs.
+                 * 
+                 *  If this number is non-zero, try the connections () property, and look through for connections with problematic times.
+                 * 
+                 *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
+                 */
+                size_t fConnectionsPiningForTheFjords{};
+
+                /**
+                 *  See Characters::ToString ()
+                 */
+                nonvirtual Characters::String ToString () const;
+            };
+
+            /*
+             *  \brief statistics about current and recent connections and request durations.
+             * 
+             *  \see connections() property for more details about currently connected sockets.
+             */
+            ConnectionStatistics fConnections;
 
             /**
              *  See Characters::ToString ()
@@ -303,9 +377,9 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  \req options.fCollectStatistics set on construction.
-         * 
          *  Then this can be used to fetch the current thread pool statistics.
+         * 
+         *  \note set options.fCollectStatistics = true to use this most effectively - some information maybe missing if this is not set.
          */
         Common::ReadOnlyProperty<Statistics> statistics;
 
@@ -370,13 +444,13 @@ namespace Stroika::Frameworks::WebServer {
 #else
         Connection::Options fUseDefaultConnectionOptions_;
 #endif
-        Execution::Synchronized<optional<Interceptor>>           fDefaultErrorHandler_;
-        Execution::Synchronized<Sequence<Interceptor>>           fEarlyInterceptors_;
-        Execution::Synchronized<Sequence<Interceptor>>           fBeforeInterceptors_;
-        Execution::Synchronized<Sequence<Interceptor>>           fAfterInterceptors_;
-        Execution::Synchronized<optional<Time::DurationSeconds>> fAutomaticTCPDisconnectOnClose_;
-        Router                                                   fRouter_;
-        InterceptorChain fInterceptorChain_; // no need to synchronize cuz it's internally synchronized
+        Execution::Synchronized<optional<Interceptor>> fDefaultErrorHandler_;
+        Execution::Synchronized<Sequence<Interceptor>> fEarlyInterceptors_;
+        Execution::Synchronized<Sequence<Interceptor>> fBeforeInterceptors_;
+        Execution::Synchronized<Sequence<Interceptor>> fAfterInterceptors_;
+        Execution::Synchronized<optional<Duration>>    fAutomaticTCPDisconnectOnClose_;
+        Router                                         fRouter_;
+        InterceptorChain                               fInterceptorChain_; // no need to synchronize cuz it's internally synchronized
 
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;

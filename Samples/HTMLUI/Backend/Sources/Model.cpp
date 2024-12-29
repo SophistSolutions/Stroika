@@ -22,6 +22,34 @@ using namespace Stroika::Samples::HTMLUI::Model;
 
 /*
  ********************************************************************************
+ ******************************** Model::HealthStatus ***************************
+ ********************************************************************************
+ */
+String HealthStatus::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "ok: "sv << fOK;
+    if (fWarnings) {
+        sb << ", warnings: "sv << fWarnings;
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+const ObjectVariantMapper HealthStatus::kMapper = [] () {
+    ObjectVariantMapper mapper;
+    mapper.AddCommonType<Sequence<String>> ();
+    mapper.AddCommonType<optional<Sequence<String>>> ();
+    mapper.AddClass<HealthStatus> ({
+        {"ok"sv, &HealthStatus::fOK},
+        {"warnings"sv, &HealthStatus::fWarnings},
+    });
+    return mapper;
+}();
+
+/*
+ ********************************************************************************
  ************ Model::About::APIServerInfo::OperatingSystem **********************
  ********************************************************************************
  */
@@ -186,12 +214,18 @@ String About::ToString () const
     sb << "{"sv;
     sb << "Overall-Application-Version: "sv << fOverallApplicationVersion << ", "sv;
     sb << "API-Server-Info: "sv << fAPIServerInfo;
+    if (fHealthStatus) {
+        sb << ", healthstatus: "sv << fHealthStatus;
+    }
     sb << "}"sv;
     return sb;
 }
 
 const ObjectVariantMapper About::kMapper = [] () {
     ObjectVariantMapper mapper;
+
+    mapper += HealthStatus::kMapper;
+    mapper.AddCommonType<optional<HealthStatus>> ();
 
     mapper += APIServerInfo::OperatingSystem::kMapper;
 
@@ -275,6 +309,7 @@ const ObjectVariantMapper About::kMapper = [] () {
     mapper.AddClass<About> ({
         {"applicationVersion"sv, &About::fOverallApplicationVersion},
         {"serverInfo"sv, &About::fAPIServerInfo},
+        {"healthstatus"sv, &About::fHealthStatus},
     });
 
     return mapper;
@@ -294,6 +329,7 @@ const ObjectVariantMapper Stroika::Samples::HTMLUI::Model::kMapper = [] () {
     mapper.AddCommonType<Collection<Common::GUID>> ();
 
     mapper += About::kMapper;
+    mapper += HealthStatus::kMapper;
 
     mapper.AddCommonType<Collection<String>> ();
 

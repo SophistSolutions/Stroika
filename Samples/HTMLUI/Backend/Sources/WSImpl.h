@@ -29,6 +29,9 @@ namespace Stroika::Samples::HTMLUI {
         virtual About about_GET () const override;
 
     public:
+        virtual HealthStatus healthcheck_GET () const override;
+
+    public:
         virtual TypedBLOB resource_GET (const String& name) const override;
 
     private:
