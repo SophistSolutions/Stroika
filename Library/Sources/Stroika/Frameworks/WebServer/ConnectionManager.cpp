@@ -251,7 +251,11 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         return thisObj->fEffectiveOptions_;
     }}
     , statistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
-        const ConnectionManager*  thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::statistics);
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::statistics);
+
+        // NOTE - this computation can be expensive, so consider caching so only recomputed at most every 30 seconds or so...???
+        // would need to be controlled via OPTIONS!
+
         ConnectionStatsCollection connections;
         {
             scoped_lock critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
@@ -291,40 +295,33 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                                                                  })
                                                                  .Median ();
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        connectionStats.fMedianDurationOfOpenConnectionRequests = connections
-                                                                      .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
-                                                                          if (cs.fMostRecentMessage) {
-                                                                              DateTime from = cs.fMostRecentMessage->GetLowerBound ();
-                                                                              DateTime to   = cs.fMostRecentMessage->GetUpperBound ();
-                                                                              to            = min<DateTime> (to, now);
-                                                                              return to - from;
-                                                                          }
-                                                                          return nullopt;
-                                                                      })
-                                                                      .Median ();
-        connectionStats.fMedianDurationOfActiveRequests = connections
-                                                              .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
-                                                                  if (cs.fActive == false)
-                                                                      return nullopt;
-                                                                  if (cs.fMostRecentMessage) {
-                                                                      DateTime from = cs.fMostRecentMessage->GetLowerBound ();
-                                                                      DateTime to   = cs.fMostRecentMessage->GetUpperBound ();
-                                                                      to            = min<DateTime> (to, now);
-                                                                      return to - from;
-                                                                  }
-                                                                  return nullopt;
-                                                              })
-                                                              .Median ();
+        connectionStats.fMedianDurationOfOpenConnectionRequests =
+            connections
+                .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                    if (cs.fMostRecentMessage) {
+                        return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+                    }
+                    return nullopt;
+                })
+                .Median ();
+        connectionStats.fMedianDurationOfActiveRequests =
+            connections
+                .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                    if (cs.fActive == false)
+                        return nullopt;
+                    if (cs.fMostRecentMessage) {
+                        return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+                    }
+                    return nullopt;
+                })
+                .Median ();
         connectionStats.fConnectionsPiningForTheFjords =
             connections
                 .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
                     if (cs.fActive == false)
                         return nullopt;
                     if (cs.fMostRecentMessage) {
-                        DateTime from = cs.fMostRecentMessage->GetLowerBound ();
-                        DateTime to   = cs.fMostRecentMessage->GetUpperBound ();
-                        to            = min<DateTime> (to, now);
-                        return to - from;
+                        return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
                     }
                     return nullopt;
                 })
