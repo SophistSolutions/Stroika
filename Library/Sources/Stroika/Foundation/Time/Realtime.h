@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Time {
      *      say we define REALLY_BIG_TIMEOUT = DURUATION::max();
      *          if we used fixed point numbers, REALLY_BIG_TIMOUT + tiny number wraps - basically back to zero.
      *          with floating point numbers, max + small number remains max.
-     *      Thats a HUGE, and USEFUL simplification of wildly common code.
+     *      That's a HUGE, and USEFUL simplification of wildly common code.
      */
     using DurationSeconds = chrono::duration<double>;
     static_assert (sizeof (DurationSeconds::rep) == sizeof (DurationSeconds));
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Time {
     /**
      *  \brief this is an alias for steady_clock; this is the clock used for GetTickCount () results.
      *  
-     *  The clock it uses IS guaraneed to be a 'steady' clock, though not necessarily THE 'steady_clock' class.
+     *  The clock it uses IS guaranteed to be a 'steady' clock, though not necessarily THE 'steady_clock' class.
      * 
      *  \note - could use AppStartZeroedClock to get zero-based results, or clock_cast to map from regular tick-counts to zero based.
      * 
