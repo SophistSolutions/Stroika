@@ -344,6 +344,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 } break;
                 default:
                     AssertNotReached ();
+                    return nullopt;
             }
         };
         // First read the HTTP request line, and the headers (and abort this ReadAndProcessMessage attempt if not ready)
