@@ -338,10 +338,10 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  This returns Range (
+         *  This returns Range{
          *              TraitsType::kLowerBound, TraitsType::kUpperBound,
          *              TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
-         *          );
+         *          };
          */
         static constexpr Range FullRange ();
 
@@ -534,16 +534,29 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Print a displayable rendition of the given range, using the argument function to format
          *  the basic value_type.
-         *
+         * 
          *  \par Example Usage
          *      \code
          *          Assert (Range<int>{3, 4}.ToString () == "[3 ... 4)");
          *          Assert (Range<int>{3, 4}.ToString ([] (int n) { return "{}"_f (n); }) == "[3 ... 4)");
          *      \endcode
          *
+         *  if the 'UpperBound' == kUpperBound, its not shown 
+         *
+         *  \par Example Usage
+         *      \code
+         *          Assert (Range<int>{3, nullopt}.ToString () == "[3 ... ]");
+         *      \endcode
+         *
+         *  Similarly for (only) LowerBound == kLowerBound 
+         *
+         *  \par Example Usage
+         *      \code
+         *          Assert (Range<int>{nullopt, 4}.ToString () == "[ ... 4]");
+         *      \endcode
          *  @see Characters::ToString ();
          */
-        nonvirtual Characters::String ToString (const function<Characters::String (T)>& elt2String = [] (T x) -> Characters::String {
+        nonvirtual Characters::String ToString (const function<Characters::String (const T&)>& elt2String = [] (const T& x) -> Characters::String {
             return Characters::ToString (x);
         }) const;
 

@@ -750,23 +750,27 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Traversal, Test14_ToString_)
+    GTEST_TEST (Foundation_Traversal, Range_ToString_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test14_ToString_"};
+        Debug::TraceContextBumper ctx{"{}::Range_ToString_"};
         EXPECT_EQ ((Range<int>{3, 4}.ToString ([] (int n) { return "{}"_f(n); })), "[3 ... 4]");
         EXPECT_EQ ((Range<int>{3, 4}.ToString ()), "[3 ... 4]");
         {
             using namespace Time;
             EXPECT_EQ (
-                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()) ,
-                 "[4/4/03 ... 4/5/03]");
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()),
+                "[4/4/03 ... 4/5/03]");
         }
         {
             Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
             using namespace Time;
             EXPECT_EQ (
-                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()) ,
-                 "[4/4/1903 ... 4/5/1903]");
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()),
+                "[4/4/1903 ... 4/5/1903]");
+        }
+        {
+            EXPECT_EQ ((Range<int>{3, nullopt}.ToString ()), "[3 ... ]");
+            EXPECT_EQ ((Range<int>{nullopt, 4}.ToString ()), "[ ... 4]");
         }
     }
 }

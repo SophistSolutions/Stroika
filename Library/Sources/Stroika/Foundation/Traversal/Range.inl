@@ -413,7 +413,7 @@ namespace Stroika::Foundation::Traversal {
         return Range{static_cast<T> (GetLowerBound () * o), static_cast<T> (GetUpperBound () * o), GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
     }
     template <typename T, typename TRAITS>
-    Characters::String Range<T, TRAITS>::ToString (const function<Characters::String (T)>& eltToString) const
+    Characters::String Range<T, TRAITS>::ToString (const function<Characters::String (const T&)>& eltToString) const
     {
         Characters::StringBuilder out;
         if (empty ()) {
@@ -425,9 +425,13 @@ namespace Stroika::Foundation::Traversal {
         }
         else {
             out << ((GetLowerBoundOpenness () == Openness::eClosed) ? "["sv : "("sv);
-            out << eltToString (GetLowerBound ());
+            if (GetLowerBound () != TRAITS::kLowerBound) {
+                out << eltToString (GetLowerBound ());
+            }
             out << " ... "sv;
-            out << eltToString (GetUpperBound ());
+            if (GetUpperBound () != TRAITS::kUpperBound) {
+                out << eltToString (GetUpperBound ());
+            }
             out << ((GetUpperBoundOpenness () == Openness::eClosed) ? "]"sv : ")"sv);
         }
         return out.str ();

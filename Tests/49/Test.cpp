@@ -777,9 +777,6 @@ namespace {
     GTEST_TEST (Foundation_Time, DateTime_eCurrentLocale_WithZerosStripped)
     {
         TraceContextBumper ctx{"DateTime_eCurrentLocale_WithZerosStripped"};
-        //String aa= d.Format ();
-        //String aaw= aa.As<wstring> ();
-        // DbgTrace ("aa={}"_f,aa);
         {
             DateTime d{static_cast<time_t> (1735412914)};
             EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), d.Format ());
@@ -800,7 +797,6 @@ namespace {
             DateTime d{Date (Year{1903}, April, 5d)};
             EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "4/5/03");
         }
-
     }
 }
 
@@ -919,13 +915,13 @@ namespace {
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
             for (time_t i = -45; i < 60 * 3 * 60 + 99; i += K) {
-                EXPECT_TRUE (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
+                EXPECT_EQ (Duration{Duration{i}.As<String> ()}.As<time_t> (), i);
             }
         }
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 2630 : 263;
             for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += K) {
-                EXPECT_TRUE (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
+                EXPECT_EQ (Duration{Duration{i}.As<String> ()}.As<time_t> (), i);
             }
         }
         EXPECT_TRUE (Duration::min () < Duration::max ());
@@ -1144,7 +1140,10 @@ namespace {
             DateTime        d{Date{January / 4 / 2017y}, TimeOfDay{3, 3, 0}};
             Range<DateTime> d1{d, nullopt};
 
-            DbgTrace ("a={}"_f, d);
+            DbgTrace ("d1={}"_f, d1);
+            auto t = Characters::ToString (d1);
+            DbgTrace ("t={}"_f, t);
+            auto t1 = Characters::ToString (d1);
             // EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), d.Format ());
             // EXPECT_EQ (d.Format (DateTime::eCurrentLocale_WithZerosStripped), "Wed Jan 4 3:03:00 2017");
 
