@@ -172,6 +172,8 @@ namespace {
             r.writeln ("}");
             r.writeln ("connections: [");
             for (auto s : connections) {
+                // could check if slow-handled-connection:
+                //   return s.fMostRecentMessage and s.fMostRecentMessage->ReplaceEnd (min (s.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned () > threshold
                 r.writeln ("  {},"_f(s));
             }
             r.writeln ("]");
