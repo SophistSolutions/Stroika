@@ -111,6 +111,18 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename TRAITS>
+    constexpr auto Range<T, TRAITS>::ReplaceStart (Common::ArgByValueType<T> start) const -> Range
+    {
+        Require (start <= GetUpperBound ());
+        return Range{start, GetUpperBound (), GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
+    }
+    template <typename T, typename TRAITS>
+    constexpr auto Range<T, TRAITS>::ReplaceEnd (Common::ArgByValueType<T> end) const -> Range
+    {
+        Require (GetLowerBound () <= end);
+        return Range{GetLowerBound (), end, GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
+    }
+    template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Ball (Common::ArgByValueType<T> center, Common::ArgByValueType<UnsignedDifferenceType> radius,
                                                        Openness lhsOpen, Openness rhsOpen)
     {

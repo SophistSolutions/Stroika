@@ -323,6 +323,20 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief Construct a new Range from this, but with the given start
+         *      \req start <= GetUpperBound ()
+         */
+        constexpr Range ReplaceStart (Common::ArgByValueType<T> start) const;
+
+    public:
+        /**
+         *  \brief Construct a new Range from this, but with the given end
+         *      \req GetLowerBound () <= end
+         */
+        constexpr Range ReplaceEnd (Common::ArgByValueType<T> end) const;
+
+    public:
+        /**
          *  \brief returns a range centered around center, with the given radius (and optionally argument openness).
          */
         static constexpr Range Ball (Common::ArgByValueType<T> center, Common::ArgByValueType<UnsignedDifferenceType> radius,
