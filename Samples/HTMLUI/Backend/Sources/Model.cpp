@@ -278,8 +278,19 @@ const ObjectVariantMapper About::kMapper = [] () {
         {"averageTaskRunTime"sv, &About::APIServerInfo::WebServer::ThreadPool::fAverageTaskRunTime},
     });
 
+    mapper.AddClass<About::APIServerInfo::WebServer::ConnectionStatistics> ({
+        {"numberOfOpenConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfOpenConnections},
+        {"numberOfActiveConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfActiveConnections},
+        {"medianDurationOfOpenConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfOpenConnections},
+        {"medianDurationOfActiveConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfActiveConnections},
+        {"medianDurationOfOpenConnectionRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfOpenConnectionRequests},
+        {"medianDurationOfActiveRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfActiveRequests},
+        {"connectionsPiningForTheFjords"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fConnectionsPiningForTheFjords},
+    });
+
     mapper.AddClass<About::APIServerInfo::WebServer> ({
         {"threadPool"sv, &About::APIServerInfo::WebServer::fThreadPool},
+        {"connections"sv, &About::APIServerInfo::WebServer::fConnections},
     });
     mapper.AddCommonType<optional<About::APIServerInfo::WebServer>> ();
 

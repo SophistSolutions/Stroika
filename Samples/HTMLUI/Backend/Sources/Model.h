@@ -151,6 +151,17 @@ namespace Stroika::Samples::HTMLUI::Model {
                 };
                 ThreadPool fThreadPool;
 
+                struct ConnectionStatistics {
+                    size_t             fNumberOfOpenConnections{};
+                    size_t             fNumberOfActiveConnections{};
+                    optional<Duration> fMedianDurationOfOpenConnections;
+                    optional<Duration> fMedianDurationOfActiveConnections;
+                    optional<Duration> fMedianDurationOfOpenConnectionRequests;
+                    optional<Duration> fMedianDurationOfActiveRequests;
+                    size_t             fConnectionsPiningForTheFjords{};
+                };
+                ConnectionStatistics fConnections;
+
                 nonvirtual String ToString () const;
             };
             optional<WebServer> fWebServer;

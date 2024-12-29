@@ -144,17 +144,17 @@ public:
              * /about - health check etc
              */
             , Route{"api/about/?"_RegEx, ObjectRequestHandler::Factory{{About::kMapper}, [this] () {
-                                                            ActiveCallCounter_ acc{*this};
-                                                            return fWSImpl_->about_GET ();
-                                                        }}}
+                                            ActiveCallCounter_ acc{*this};
+                                            return fWSImpl_->about_GET ();
+                                        }}}
 
             /**
              * /healthcheck - health check etc
              */
             , Route{"api/healthcheck/?"_RegEx, ObjectRequestHandler::Factory{{HealthStatus::kMapper}, [this] () {
-                                                            ActiveCallCounter_ acc{*this};
-                                                            return fWSImpl_->healthcheck_GET ();
-                                                        }}}
+                                                    ActiveCallCounter_ acc{*this};
+                                                    return fWSImpl_->healthcheck_GET ();
+                                            }}}
 
             /**
              * /resource
@@ -165,7 +165,7 @@ public:
             , Route{HTTP::MethodsRegEx::kGet, "api/resource/(.+)"_RegEx,
                     [this] (Message& m, const String& resID) {
                         ActiveCallCounter_ acc{*this};
-                        auto               r         = fWSImpl_->resource_GET (resID);
+                        auto               r        = fWSImpl_->resource_GET (resID);
                         m.rwResponse ().contentType = r.fType;
                         m.rwResponse ().write (r.fData);
                     }}
@@ -173,7 +173,8 @@ public:
             /*
              * configuration data for web-gui - private - just so can communicate with /api
              */
-           , Route{"config.json"_RegEx, ObjectRequestHandler::Factory{{Config_::kMapper}, [=] () { return GetConfig_ (); }}}
+           , Route{"config.json"_RegEx, ObjectRequestHandler::Factory{{Config_::kMapper}, [=] () {
+                return GetConfig_ (); }}}
 
             /*
              * Serve up contents of html folder as static site
@@ -183,14 +184,7 @@ public:
              */
            , Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}}
           }
-        , fWSImpl_{make_shared<WSImpl> ([this] () -> About::APIServerInfo::WebServer {
-            About::APIServerInfo::WebServer r;
-            ConnectionManager::Statistics  rr  = this->fConnectionMgr_.statistics ();
-            r.fThreadPool.fThreads             = static_cast<unsigned int> (rr.fThreadPool.fThreadEntryCount); // todo beginning of data to report
-            r.fThreadPool.fTasksStillQueued   = rr.fThreadPool.fNumberOfTasksAdded - rr.fThreadPool.fNumberOfTasksCompleted;
-            r.fThreadPool.fAverageTaskRunTime = rr.fThreadPool.GetMeanTimeConsumed ();
-            return r;
-        })}
+        , fWSImpl_{ make_shared<WSImpl>(   [this](const WSImpl::WithWebServerCallbackType& f) { f (fConnectionMgr_);}  )}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
                          , kRoutes_
                          , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 20,

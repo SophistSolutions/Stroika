@@ -81,13 +81,13 @@ namespace {
  ********************************************************************************
  */
 struct WSImpl::Rep_ {
-    MyCapturer_                                  fMyCapturer;
-    function<About::APIServerInfo::WebServer ()> fWebServerStatsFetcher;
+    MyCapturer_                                       fMyCapturer;
+    function<void (const WithWebServerCallbackType&)> fAccessWebServer;
 };
-WSImpl::WSImpl (function<About::APIServerInfo::WebServer ()> webServerStatsFetcher)
+WSImpl::WSImpl (function<void (const WithWebServerCallbackType&)> passWS2Callback)
     : fRep_{make_shared<Rep_> ()}
 {
-    fRep_->fWebServerStatsFetcher = webServerStatsFetcher;
+    fRep_->fAccessWebServer = passWS2Callback;
 }
 
 OpenAPI::Specification WSImpl::GetOpenAPISpecification () const
@@ -167,9 +167,26 @@ About WSImpl::about_GET () const
         r.fMedianRunningAPITasks                = stats.fRecentAPI.fMedianRunningAPITasks;
         return r;
     }();
-    APIServerInfo::WebServer webServerStats = [&] () { return fRep_->fWebServerStatsFetcher (); }();
-    optional<Database>       dbStats; // no DB in this demo
-    auto                     healthcheck = healthcheck_GET ();
+    APIServerInfo::WebServer webServerStats = [&] () {
+        About::APIServerInfo::WebServer r;
+        fRep_->fAccessWebServer ([&] (const Stroika::Frameworks::WebServer::ConnectionManager& cm) {
+            Stroika::Frameworks::WebServer::ConnectionManager::Statistics rr = cm.statistics ();
+            r.fThreadPool.fThreads = static_cast<unsigned int> (rr.fThreadPool.fThreadEntryCount); // todo beginning of data to report
+            r.fThreadPool.fTasksStillQueued   = rr.fThreadPool.fNumberOfTasksAdded - rr.fThreadPool.fNumberOfTasksCompleted;
+            r.fThreadPool.fAverageTaskRunTime = rr.fThreadPool.GetMeanTimeConsumed ();
+            r.fConnections.fNumberOfOpenConnections = rr.fConnections.fNumberOfOpenConnections;
+            r.fConnections.fNumberOfActiveConnections = rr.fConnections.fNumberOfActiveConnections;
+            r.fConnections.fMedianDurationOfOpenConnections   = rr.fConnections.fMedianDurationOfOpenConnections;
+            r.fConnections.fMedianDurationOfActiveConnections = rr.fConnections.fMedianDurationOfActiveConnections;
+            r.fConnections.fMedianDurationOfOpenConnectionRequests = rr.fConnections.fMedianDurationOfOpenConnectionRequests;
+            r.fConnections.fMedianDurationOfActiveRequests         = rr.fConnections.fMedianDurationOfActiveRequests;
+            r.fConnections.fConnectionsPiningForTheFjords = rr.fConnections.fConnectionsPiningForTheFjords;
+            return r;
+        });
+        return r;
+    }();
+    optional<Database> dbStats; // no DB in this demo
+    auto               healthcheck = healthcheck_GET ();
 
     return About{AppVersion::kVersion,
                  APIServerInfo{AppVersion::kVersion, kAPIServerComponents_, machineInfo, processInfo, apiStats, webServerStats, dbStats}, healthcheck};

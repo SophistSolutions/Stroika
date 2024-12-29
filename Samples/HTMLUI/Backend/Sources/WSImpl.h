@@ -6,6 +6,8 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Frameworks/WebServer/ConnectionManager.h"
+
 #include "IWSAPI.h"
 
 /**
@@ -20,7 +22,18 @@ namespace Stroika::Samples::HTMLUI {
      */
     class WSImpl : public IWSAPI {
     public:
-        WSImpl (function<About::APIServerInfo::WebServer ()> webServerStatsFetcher);
+        /**
+         * Function that can be called safely on a webserver connection-manager
+         */
+        using WithWebServerCallbackType = function<void (const Stroika::Frameworks::WebServer::ConnectionManager&)>;
+
+    public:
+        /**
+         *  WSImpl may need access to webserver connection manager (const API access) occasionally, so provide in
+         *  controlled way that can work with locking if needed; note effectively same as passing in ConnectionManager&,
+         *  except that the caller might want to control when the ConnectionManager& is referenced (e.g. locking).
+         */
+        WSImpl (function<void (const WithWebServerCallbackType&)> passWS2Callback);
 
     public:
         virtual Stroika::Frameworks::WebService::OpenAPI::Specification GetOpenAPISpecification () const override;
