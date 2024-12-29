@@ -53,12 +53,26 @@ bool IsAllWhitespace (String s) const
 Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
 EXPECT_TRUE (c.Distinct ().SetEquals ({ 1, 2, 4, 5, 6, 9 }));
 
-Iterable<int> c { 3, 4, 7 };
 // Map iterates over 'c' and produces the template argument container
 // automatically by appending the result of each lambda application
+Iterable<int> c { 3, 4, 7 };
 EXPECT_EQ (c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), 
            (vector<String>{"3", "4", "7"}));
+
+// Use Map<> to transform, select subobjects, and filter, and pipe into algorithms like Median
+DateTime now = DateTime::Now ();
+auto medianDurationOfOpenConnections =
+    connections.Map<Iterable<Duration>> ([&] (const auto& c) { return now - c.fCreatedAt; }).Median ();
+auto medianDurationOfActiveConnections = 
+  connections
+    .Map<Iterable<Duration>> ([&] (const auto& c) -> optional<Duration> {
+        if (c.fActive == false)
+            return nullopt;
+        return now - c.fCreatedAt;
+    })
+    .Median ();
 ~~~
+
  </details>
 
 
