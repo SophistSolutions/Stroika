@@ -106,6 +106,26 @@ namespace Stroika::Foundation::Math {
     template <ranges::range CONTAINER_OF_T>
     auto StandardDeviation (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type;
 
+    /**
+     *  Collect together a bunch of common statistical measures of a random variable.
+     */
+    template <typename T>
+    struct CommonStatistics {
+        optional<T> fMin;
+        optional<T> fMax;
+        optional<T> fMean;
+        optional<T> fMedian;
+        optional<T> fStandardDeviation;
+    };
+
+    /**
+     *  \brief handy aggregation of several common random-variable statistics/measurements.
+     */
+    template <Common::IBuiltinArithmetic T, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    CommonStatistics<T> ComputeCommonStatistics (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
+    template <ranges::range CONTAINER_OF_T>
+    auto ComputeCommonStatistics (const CONTAINER_OF_T& container) -> CommonStatistics<typename CONTAINER_OF_T::value_type>;
+
 }
 
 /*

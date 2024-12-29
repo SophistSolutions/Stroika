@@ -113,4 +113,28 @@ namespace Stroika::Foundation::Math {
         return StandardDeviation<typename CONTAINER_OF_T::value_type> (begin (container), end (container));
     }
 
+    /*
+     ********************************************************************************
+     **************************** ComputeCommonStatistics ***************************
+     ********************************************************************************
+     */
+    template <Common::IBuiltinArithmetic T, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    CommonStatistics<T> ComputeCommonStatistics (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
+    {
+        CommonStatistics<T> results;
+        if (start != end) {
+            results.fMin               = *min_element (start, end);
+            results.fMax               = *max_element (start, end);
+            results.fMean              = Mean (start, end);
+            results.fMedian            = Median (start, end);
+            results.fStandardDeviation = StandardDeviation (start, end);
+        }
+        return results;
+    }
+    template <ranges::range CONTAINER_OF_T>
+    auto ComputeCommonStatistics (const CONTAINER_OF_T& container) -> CommonStatistics<typename CONTAINER_OF_T::value_type>
+    {
+        return ComputeCommonStatistics (begin (container), end (container));
+    }
+
 }
