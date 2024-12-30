@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *      RFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
+         *      RFC1123  is a very old format (same as RFC822 except 4 digit year instead of 2-digit year), but is still used in the 
          *      current HTTP specification (e.g. for cookies).
          *      The spec is originally documented in 
          *          https://tools.ietf.org/html/rfc1123#5.2.14
