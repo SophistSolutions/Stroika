@@ -50,6 +50,8 @@ namespace Stroika::Foundation::Time {
     /**
      * Description:
      *      A time value - which is assumed to be within a given day - e.g 2:30 pm.
+     * 
+     *      TimeOfDay precision is up to the second (use TimePointSeconds for more precision).
      *
      *  \note this implies NO NOTION of timezone. Its a time relative to midnight of a given day.
      *
