@@ -34,8 +34,6 @@ namespace Stroika::Frameworks::WebServer {
 
     using Stroika::Foundation::IO::Network::HTTP::Headers;
 
-    class ConnectionManager;
-
     /**
      *  Write out files to %TEMP% dir, with logs of the details of the HTTP conversation, for debugging
      *  HTTP conversations.
@@ -75,7 +73,6 @@ namespace Stroika::Frameworks::WebServer {
      *      \endcode
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
      */
     class Connection : Debug::AssertExternallySynchronizedMutex {
     public:
@@ -278,9 +275,6 @@ namespace Stroika::Frameworks::WebServer {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;
 #endif
-
-    private:
-        friend ConnectionManager;
     };
 
 }
