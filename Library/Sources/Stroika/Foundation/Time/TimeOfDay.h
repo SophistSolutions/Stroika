@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Time {
         };
 
     public:
-        static constexpr NonStandardPrintFormat eCurrentLocale_WithZerosStripped = NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;
+        using NonStandardPrintFormat::eCurrentLocale_WithZerosStripped;
 
     public:
         /**
