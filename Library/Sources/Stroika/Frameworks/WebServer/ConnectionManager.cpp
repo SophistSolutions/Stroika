@@ -67,7 +67,7 @@ namespace {
 String WebServer::ConnectionManager::Statistics::ThreadPool::ToString () const
 {
     StringBuilder sb = Execution::ThreadPool::Statistics::ToString ().SubString (0, -1);
-    sb << ", thread-entry-cont: "sv << fThreadEntryCount << ", "sv;
+    sb << ", thread-entry-cont: "sv << fThreadEntryCount;
     sb << "}"sv;
     return sb;
 }
@@ -405,9 +405,8 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             {
                 scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-                DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, inactiveOpenConnections_=%s",
-                          Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (),
-                          Characters::ToString (GetInactiveConnections_ ()).c_str ());
+                DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_={}, inactiveOpenConnections_={}"_f,
+                          fActiveConnections_.cget ().cref (), GetInactiveConnections_ ());
             }
 #endif
             for (shared_ptr<Connection> readyConnection : fInactiveSockSetPoller_.WaitQuietly ()) {
@@ -453,11 +452,10 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     {
                         scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-                        DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, "
-                                  L"inactiveOpenConnections_=%s",
-                                  Characters::ToString (keepAlive).c_str (), Characters::ToString (readyConnection).c_str (),
-                                  Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (),
-                                  Characters::ToString (GetInactiveConnections_ ()).c_str ());
+                        DbgTrace ("at end of read&process task (keepAlive={}) for connection {}: fActiveConnections_={}, inactiveOpenConnections_={}"_f,
+                                  keepAlive, readyConnection,
+                                  fActiveConnections_.cget ().cref (),
+                                  GetInactiveConnections_ ());
                     }
 #endif
                 };
@@ -478,7 +476,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
             Execution::ReThrow ();
         }
         catch (...) {
-            DbgTrace ("Internal exception in WaitForReadyConnectionLoop_ loop suppressed: {}"_f, Characters::ToString (current_exception ()));
+            DbgTrace ("Internal exception in WaitForReadyConnectionLoop_ loop suppressed: {}"_f, current_exception ());
         }
     }
 }
@@ -525,16 +523,16 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
 {
     switch (relativeTo) {
-        case InterceptorAddRelativeTo::ePrependsToEarly:
+        case ePrependsToEarly:
             fEarlyInterceptors_.rwget ()->Prepend (i);
             break;
-        case InterceptorAddRelativeTo::ePrepend:
+        case ePrepend:
             fBeforeInterceptors_.rwget ()->Prepend (i);
             break;
-        case InterceptorAddRelativeTo::eAppend:
+        case eAppend:
             fAfterInterceptors_.rwget ()->Append (i);
             break;
-        case InterceptorAddRelativeTo::eAfterBeforeInterceptors:
+        case eAfterBeforeInterceptors:
             fBeforeInterceptors_.rwget ()->Append (i);
             break;
     }
