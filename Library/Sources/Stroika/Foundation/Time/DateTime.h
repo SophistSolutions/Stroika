@@ -67,6 +67,8 @@ namespace Stroika::Foundation::Time {
      *
      *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
+     * 
+     *  \note   DateTime is only precise up to the nearest second - use TimePointSeconds for more precision.
      *
      *  \note   DateTime values are (optionally) associated with a particular timezone. If the value of the timezone is localtime and
      *          localtime changes, the DateTime then is relative to that new localtime. If the associated timezone is localtime, the
@@ -107,13 +109,16 @@ namespace Stroika::Foundation::Time {
          *      Creates a DateTime object in UTC, using UNIX Epoch time.
          *
          *  explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::UTC ()) noexcept;
-         *      Most windows APIs return filetimes in UTC (or so it appears). Because of this,
+         *      Most windows APIs return file-times in UTC (or so it appears). Because of this,
          *      our default interpretation of a FILETIME structure as as UTC.
          *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
          *
          *  \note DateTime (time_t unixEpochTime) returns a datetime in UTC
          *
          *  \note All DateTime constructors REQUIRE valid (in range) arguments.
+         * 
+         *  \note Since DateTime is only precise up to the nearest second, some constructions (like from time_point)
+         *        will necessarily round/lose precision.
          */
         constexpr DateTime (DateTime&& src) noexcept = default;
         constexpr DateTime (const DateTime& src)     = default;
@@ -442,7 +447,7 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T As () const
-        // new bug define for clang/xcode? cannot do requires and tmeplate specailize?
+        // new bug define for clang/XCode? cannot do requires and tmeplate specialize?
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
             requires (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
 #if qStroika_Foundation_Common_Platform_Windows
