@@ -392,10 +392,10 @@ namespace Stroika::Frameworks::WebServer {
             eAppend,
             eAfterBeforeInterceptors,
         };
-        static constexpr InterceptorAddRelativeTo ePrependsToEarly         = InterceptorAddRelativeTo::ePrependsToEarly;
-        static constexpr InterceptorAddRelativeTo ePrepend                 = InterceptorAddRelativeTo::ePrepend;
-        static constexpr InterceptorAddRelativeTo eAppend                  = InterceptorAddRelativeTo::eAppend;
-        static constexpr InterceptorAddRelativeTo eAfterBeforeInterceptors = InterceptorAddRelativeTo::eAfterBeforeInterceptors;
+        using InterceptorAddRelativeTo::eAfterBeforeInterceptors;
+        using InterceptorAddRelativeTo::eAppend;
+        using InterceptorAddRelativeTo::ePrepend;
+        using InterceptorAddRelativeTo::ePrependsToEarly;
 
     public:
         /**

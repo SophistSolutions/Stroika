@@ -453,9 +453,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     {
                         scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
                         DbgTrace ("at end of read&process task (keepAlive={}) for connection {}: fActiveConnections_={}, inactiveOpenConnections_={}"_f,
-                                  keepAlive, readyConnection,
-                                  fActiveConnections_.cget ().cref (),
-                                  GetInactiveConnections_ ());
+                                  keepAlive, readyConnection, fActiveConnections_.cget ().cref (), GetInactiveConnections_ ());
                     }
 #endif
                 };
