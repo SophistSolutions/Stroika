@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  This flag ignores missing code points (when transforming from UNICODE to some character set that might not contain them),
      *  and does the best possible to map characters. Needed for things like translating a UNICODE error message to a locale{} 
-     *  characterset which might not contain some of those UNICODE characters.
+     *  character set which might not contain some of those UNICODE characters.
      */
     enum class AllowMissingCharacterErrorsFlag {
         eIgnoreErrors
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Characters {
     using AllowMissingCharacterErrorsFlag::eIgnoreErrors;
 
     /**
-     *  Convert string/span of 'char' - interpretting the char in the locale/active code page of the current
+     *  Convert string/span of 'char' - interpreting the char in the locale/active code page of the current
      *  operating systems (@see SDKChar).
      * 
      *  On most platforms, this does nothing, but on Windows, it maps strings to wstring using code-page CP_ACP
