@@ -176,11 +176,10 @@ About WSImpl::about_GET () const
             r.fThreadPool.fAverageTaskRunTime                 = rr.fThreadPool.GetMeanTimeConsumed ();
             r.fConnections.fNumberOfOpenConnections           = rr.fConnections.fNumberOfOpenConnections;
             r.fConnections.fNumberOfActiveConnections         = rr.fConnections.fNumberOfActiveConnections;
-            r.fConnections.fMedianDurationOfOpenConnections   = rr.fConnections.fMedianDurationOfOpenConnections;
-            r.fConnections.fMedianDurationOfActiveConnections = rr.fConnections.fMedianDurationOfActiveConnections;
-            r.fConnections.fMedianDurationOfOpenConnectionRequests = rr.fConnections.fMedianDurationOfOpenConnectionRequests;
-            r.fConnections.fMedianDurationOfActiveRequests         = rr.fConnections.fMedianDurationOfActiveRequests;
-            r.fConnections.fConnectionsPiningForTheFjords          = rr.fConnections.fConnectionsPiningForTheFjords;
+            r.fConnections.fDurationOfOpenConnections         = rr.fConnections.fDurationOfOpenConnections;
+            r.fConnections.fDurationOfOpenConnectionsRequests = rr.fConnections.fDurationOfOpenConnectionsRequests;
+            r.fConnections.fDurationOfActiveConnectionsRequests = rr.fConnections.fDurationOfActiveConnectionsRequests;
+            r.fConnections.fConnectionsPiningForTheFjords       = rr.fConnections.fConnectionsPiningForTheFjords;
             return r;
         });
         return r;
@@ -196,6 +195,17 @@ HealthStatus WSImpl::healthcheck_GET () const
 {
     HealthStatus result;
     result.fOK = true; // @todo add period interval check for webserver stats - and report to LOGGER when bad as well
+
+    fRep_->fAccessWebServer ([&] (const Stroika::Frameworks::WebServer::ConnectionManager& cm) {
+        Stroika::Frameworks::WebServer::ConnectionManager::Statistics rr = cm.statistics ();
+
+        if (rr.fConnections.fConnectionsPiningForTheFjords != 0) {
+
+            // add warnings
+            // grab connections and add warnings for bad ones...
+        }
+    });
+
     return result;
 }
 

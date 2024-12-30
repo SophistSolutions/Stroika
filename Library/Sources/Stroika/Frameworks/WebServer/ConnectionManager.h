@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
+#include "Stroika/Foundation/Math/Statistics.h"
 
 #include "Stroika/Frameworks/WebServer/CORS.h"
 #include "Stroika/Frameworks/WebServer/Connection.h"
@@ -38,6 +39,7 @@ namespace Stroika::Frameworks::WebServer {
     using Containers::Collection;
     using Containers::Set;
     using IO::Network::HTTP::Headers;
+    using Math::CommonStatistics;
     using Time::Duration;
     using Traversal::Iterable;
 
@@ -322,12 +324,7 @@ namespace Stroika::Frameworks::WebServer {
                 /**
                  *  Each connection that still exists has been open for a given amount of time. Median of those.
                  */
-                optional<Duration> fMedianDurationOfOpenConnections;
-
-                /**
-                 *  Each (active) connection that still exists has been open for a given amount of time. Median of those.
-                 */
-                optional<Duration> fMedianDurationOfActiveConnections;
+                CommonStatistics<Duration> fDurationOfOpenConnections;
 
                 /**
                  *  Each connection will in general serve many requests (due to connection keep-alives). This computes 
@@ -335,7 +332,7 @@ namespace Stroika::Frameworks::WebServer {
                  * 
                  *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
                  */
-                optional<Duration> fMedianDurationOfOpenConnectionRequests;
+                CommonStatistics<Duration> fDurationOfOpenConnectionsRequests;
 
                 /**
                  *  Each connection will in general serve many requests (due to connection keep-alives). This computes 
@@ -343,7 +340,7 @@ namespace Stroika::Frameworks::WebServer {
                  * 
                  *  \note REQUIRES qStroika_Framework_WebServer_Connection_TrackExtraStats (maybe @todo use options.fCollectStats)
                  */
-                optional<Duration> fMedianDurationOfActiveRequests;
+                CommonStatistics<Duration> fDurationOfActiveConnectionsRequests;
 
                 /**
                  *  Count the number of currently running requests which have taken longer than options.fConnectionPiningForTheFjordsDelay

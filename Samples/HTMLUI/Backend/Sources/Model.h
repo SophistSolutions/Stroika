@@ -30,6 +30,7 @@ namespace Stroika::Samples::HTMLUI::Model {
     using Characters::String;
     using Containers::Sequence;
     using IO::Network::URI;
+    using Math::CommonStatistics;
     using Time::DateTime;
     using Time::Duration;
 
@@ -152,13 +153,12 @@ namespace Stroika::Samples::HTMLUI::Model {
                 ThreadPool fThreadPool;
 
                 struct ConnectionStatistics {
-                    size_t             fNumberOfOpenConnections{};
-                    size_t             fNumberOfActiveConnections{};
-                    optional<Duration> fMedianDurationOfOpenConnections;
-                    optional<Duration> fMedianDurationOfActiveConnections;
-                    optional<Duration> fMedianDurationOfOpenConnectionRequests;
-                    optional<Duration> fMedianDurationOfActiveRequests;
-                    size_t             fConnectionsPiningForTheFjords{};
+                    size_t                     fNumberOfOpenConnections{};
+                    size_t                     fNumberOfActiveConnections{};
+                    CommonStatistics<Duration> fDurationOfOpenConnections;
+                    CommonStatistics<Duration> fDurationOfOpenConnectionsRequests;
+                    CommonStatistics<Duration> fDurationOfActiveConnectionsRequests;
+                    size_t                     fConnectionsPiningForTheFjords{};
                 };
                 ConnectionStatistics fConnections;
 

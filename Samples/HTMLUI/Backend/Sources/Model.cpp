@@ -278,13 +278,14 @@ const ObjectVariantMapper About::kMapper = [] () {
         {"averageTaskRunTime"sv, &About::APIServerInfo::WebServer::ThreadPool::fAverageTaskRunTime},
     });
 
+    mapper.AddCommonType<Math::CommonStatistics<Duration>> ();
+
     mapper.AddClass<About::APIServerInfo::WebServer::ConnectionStatistics> ({
         {"open"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfOpenConnections},
         {"active"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfActiveConnections},
-        {"medianDurationOfOpenConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfOpenConnections},
-        {"medianDurationOfActiveConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfActiveConnections},
-        {"medianDurationOfOpenConnectionRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfOpenConnectionRequests},
-        {"medianDurationOfActiveRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fMedianDurationOfActiveRequests},
+        {"openConnections"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfOpenConnections},
+        {"openConnectionsRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfOpenConnectionsRequests},
+        {"activeConnectionsRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfActiveConnectionsRequests},
         {"piningForTheFjords"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fConnectionsPiningForTheFjords},
     });
 

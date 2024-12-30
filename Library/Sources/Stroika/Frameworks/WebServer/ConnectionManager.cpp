@@ -25,6 +25,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Math;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
@@ -82,18 +83,9 @@ String WebServer::ConnectionManager::Statistics::ConnectionStatistics::ToString 
     sb << "{"sv;
     sb << "n-open-connections: "sv << fNumberOfOpenConnections;
     sb << ", n-active-connections: "sv << fNumberOfActiveConnections;
-    if (fMedianDurationOfActiveConnections) {
-        sb << ", median-duration-active-connections: "sv << fMedianDurationOfActiveConnections;
-    }
-    if (fMedianDurationOfOpenConnections) {
-        sb << ", median-duration-open-connections: "sv << fMedianDurationOfOpenConnections;
-    }
-    if (fMedianDurationOfActiveRequests) {
-        sb << ", median-duration-active-requests: "sv << fMedianDurationOfActiveRequests;
-    }
-    if (fMedianDurationOfOpenConnectionRequests) {
-        sb << ", median-duration-open-requests: "sv << fMedianDurationOfOpenConnectionRequests;
-    }
+    sb << ", duration-open-connections: "sv << fDurationOfOpenConnections;
+    sb << ", duration-active-requests: "sv << fDurationOfOpenConnectionsRequests;
+    sb << ", duration-open-requests: "sv << fDurationOfActiveConnectionsRequests;
     sb << ", n-connections-pining-for-the-fjords: "sv << fConnectionsPiningForTheFjords;
     sb << "}"sv;
     return sb;
@@ -116,7 +108,7 @@ Characters::String WebServer::ConnectionManager::Statistics::ToString () const
 
 /*
  ********************************************************************************
- ************************* WebServer::ConnectionManager *************************
+ ************************ WebServer::ConnectionManager **************************
  ********************************************************************************
  */
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Sequence<Route>& routes, const Options& options)
@@ -284,37 +276,27 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         connectionStats.fNumberOfActiveConnections = connections.Count ([] (const Connection::Stats& s) { return s.fActive == true; });
         connectionStats.fNumberOfOpenConnections   = connections.size ();
 
-        DateTime now = DateTime::Now ();
-        connectionStats.fMedianDurationOfOpenConnections =
-            connections.Map<Iterable<Duration>> ([&] (const auto& c) { return now - c.fCreatedAt; }).Median ();
-        connectionStats.fMedianDurationOfActiveConnections = connections
-                                                                 .Map<Iterable<Duration>> ([&] (const auto& c) -> optional<Duration> {
-                                                                     if (c.fActive == false)
-                                                                         return nullopt;
-                                                                     return now - c.fCreatedAt;
-                                                                 })
-                                                                 .Median ();
+        DateTime now                               = DateTime::Now ();
+        connectionStats.fDurationOfOpenConnections = ComputeCommonStatistics (
+            connections.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> { return now - cs.fCreatedAt; }));
+
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        connectionStats.fMedianDurationOfOpenConnectionRequests =
-            connections
-                .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
-                    if (cs.fMostRecentMessage) {
-                        return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
-                    }
+        connectionStats.fDurationOfOpenConnectionsRequests =
+            ComputeCommonStatistics (connections.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                if (cs.fMostRecentMessage) {
+                    return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+                }
+                return nullopt;
+            }));
+        connectionStats.fDurationOfActiveConnectionsRequests =
+            ComputeCommonStatistics (connections.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                if (cs.fActive == false)
                     return nullopt;
-                })
-                .Median ();
-        connectionStats.fMedianDurationOfActiveRequests =
-            connections
-                .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
-                    if (cs.fActive == false)
-                        return nullopt;
-                    if (cs.fMostRecentMessage) {
-                        return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
-                    }
-                    return nullopt;
-                })
-                .Median ();
+                if (cs.fMostRecentMessage) {
+                    return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+                }
+                return nullopt;
+            }));
         connectionStats.fConnectionsPiningForTheFjords =
             connections
                 .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
