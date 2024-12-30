@@ -133,6 +133,7 @@ public:
     IntervalTimer::Adder fStatsIntervalTimerAdder_;
 
     static const WebServiceMethodDescription kAbout_;
+    static const WebServiceMethodDescription kConnections_;
     static const WebServiceMethodDescription kHeathCheck_;
 
     Rep_ (optional<uint16_t> portNumber)
@@ -155,6 +156,19 @@ public:
                                                     ActiveCallCounter_ acc{*this};
                                                     return fWSImpl_->healthcheck_GET ();
                                             }}}
+
+            /**
+             * /connections - just for debugging - maybe useful - probably wouldn't leave i a real product
+             */
+            , Route{"api/connections/?"_RegEx, [this] (Message& m) {
+                        ActiveCallCounter_ acc{*this};
+                        m.rwResponse ().contentType = InternetMediaTypes::kText_PLAIN;
+                        m.rwResponse ().writeln ("["sv);
+                        for (auto i : this->fConnectionMgr_.connections ()) {
+                            m.rwResponse ().writeln ("  {}"_f(i));
+                        }
+                        m.rwResponse ().writeln ("]"sv);
+                    }}
 
             /**
              * /resource
@@ -213,7 +227,7 @@ public:
     static void DefaultPage_ (Request&, Response& response)
     {
         WriteDocsPage (
-            response, Sequence<WebServiceMethodDescription>{kAbout_, kHeathCheck_},
+            response, Sequence<WebServiceMethodDescription>{kAbout_, kConnections_, kHeathCheck_},
             DocsOptions{.fH1Text = "Stroika-Sample-HTMLUI"_k,
                         .fIntroductoryText = "Just a sample set of webservices to show how to hook C++ code into html via ajax callbacks..."_k,
                         .fVariables2Substitute =
@@ -240,6 +254,17 @@ const WebServiceMethodDescription WebServer::Rep_::kAbout_{
         "curl {{ShowAsExternalURI}}/api/about"sv,
     },
     Sequence<String>{"Fetch the component versions, web server connections, thread pool etc, etc."sv},
+};
+
+const WebServiceMethodDescription WebServer::Rep_::kConnections_{
+    "api/connections"sv,
+    Set<String>{HTTP::Methods::kGet},
+    DataExchange::InternetMediaTypes::kText_PLAIN,
+    "debugging dump of connections internals"sv,
+    Sequence<String>{
+        "curl {{ShowAsExternalURI}}/api/connections"sv,
+    },
+    Sequence<String>{"Fetch the webservers connections list."sv},
 };
 
 const WebServiceMethodDescription WebServer::Rep_::kHeathCheck_{
