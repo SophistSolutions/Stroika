@@ -194,18 +194,26 @@ About WSImpl::about_GET () const
 HealthStatus WSImpl::healthcheck_GET () const
 {
     HealthStatus result;
-    result.fOK = true; // @todo add period interval check for webserver stats - and report to LOGGER when bad as well
-
     fRep_->fAccessWebServer ([&] (const Stroika::Frameworks::WebServer::ConnectionManager& cm) {
         Stroika::Frameworks::WebServer::ConnectionManager::Statistics rr = cm.statistics ();
-
         if (rr.fConnections.fConnectionsPiningForTheFjords != 0) {
-
-            // add warnings
-            // grab connections and add warnings for bad ones...
+            // add warnings; grab connections and add warnings for bad ones...
+            Sequence<String> warnings;
+            warnings += "connectionsPiningForTheFjords: {}"_f(rr.fConnections.fConnectionsPiningForTheFjords);
+            auto connections = cm.connections ();
+            auto now         = DateTime::Now ();
+            for (auto c : connections) {
+                if (c.fActive == true and c.fMostRecentMessage) {
+                    Duration d = c.fMostRecentMessage->ReplaceEnd (min (c.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+                    if (d >= cm.options ().fConnectionPiningForTheFjordsDelay) {
+                        warnings += "connection: {}"_f(c);
+                    }
+                }
+            }
+            result.fWarnings = warnings;
         }
+        result.fOK = true; // @todo add period interval check for webserver stats - and report to LOGGER when bad as well
     });
-
     return result;
 }
 
