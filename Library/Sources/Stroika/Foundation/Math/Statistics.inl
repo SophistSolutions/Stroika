@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Math {
     inline auto Mean (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
-        return Mean<typename CONTAINER_OF_T::value_type> (begin (container), end (container));
+        return Mean<typename CONTAINER_OF_T::value_type> (ranges::begin (container), ranges::end (container));
     }
 
     /*
@@ -77,7 +77,8 @@ namespace Stroika::Foundation::Math {
     inline auto Median (const CONTAINER_OF_T& container, INORDER_COMPARE_FUNCTION&& compare) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ());
-        return Median<typename CONTAINER_OF_T::value_type> (begin (container), end (container), forward<INORDER_COMPARE_FUNCTION> (compare));
+        return Median<typename CONTAINER_OF_T::value_type> (ranges::begin (container), ranges::end (container),
+                                                            forward<INORDER_COMPARE_FUNCTION> (compare));
     }
 
     /*
@@ -110,7 +111,7 @@ namespace Stroika::Foundation::Math {
     inline auto StandardDeviation (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type
     {
         Require (not container.empty ()); // the std-deviation of no values would be undefined
-        return StandardDeviation<typename CONTAINER_OF_T::value_type> (begin (container), end (container));
+        return StandardDeviation<typename CONTAINER_OF_T::value_type> (ranges::begin (container), ranges::end (container));
     }
 
     /*
@@ -118,23 +119,27 @@ namespace Stroika::Foundation::Math {
      **************************** ComputeCommonStatistics ***************************
      ********************************************************************************
      */
-    template <Common::IBuiltinArithmetic T, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    template <typename T, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
     CommonStatistics<T> ComputeCommonStatistics (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end)
     {
         CommonStatistics<T> results;
         if (start != end) {
-            results.fMin               = *min_element (start, end);
-            results.fMax               = *max_element (start, end);
-            results.fMean              = Mean (start, end);
-            results.fMedian            = Median (start, end);
-            results.fStandardDeviation = StandardDeviation (start, end);
+            if constexpr (Common::IBuiltinArithmetic<T>) {
+                results.fMin = *min_element (start, forward<ITERATOR_OF_T2> (end));
+                results.fMax = *max_element (start, forward<ITERATOR_OF_T2> (end));
+            }
+            results.fMean   = Mean (start, forward<ITERATOR_OF_T2> (end));
+            results.fMedian = Median (start, forward<ITERATOR_OF_T2> (end));
+            if constexpr (Common::IBuiltinArithmetic<T>) {
+                results.fStandardDeviation = StandardDeviation (start, forward<ITERATOR_OF_T2> (end));
+            }
         }
         return results;
     }
     template <ranges::range CONTAINER_OF_T>
-    auto ComputeCommonStatistics (const CONTAINER_OF_T& container) -> CommonStatistics<typename CONTAINER_OF_T::value_type>
+    inline auto ComputeCommonStatistics (const CONTAINER_OF_T& container) -> CommonStatistics<typename CONTAINER_OF_T::value_type>
     {
-        return ComputeCommonStatistics (begin (container), end (container));
+        return ComputeCommonStatistics<typename CONTAINER_OF_T::value_type> (ranges::begin (container), ranges::end (container));
     }
 
 }

@@ -20,7 +20,7 @@
  *              Mean()
  *              Mode()
  *              Median()
- *          If random-accessable iterators, (array etc), use
+ *          If random-accessible iterators, (array etc), use
  *          http://en.cppreference.com/w/cpp/algorithm/nth_element
  *          else copy to vector<> and then use nth_element?
  *          Just need something quickie
@@ -107,7 +107,8 @@ namespace Stroika::Foundation::Math {
     auto StandardDeviation (const CONTAINER_OF_T& container) -> typename CONTAINER_OF_T::value_type;
 
     /**
-     *  Collect together a bunch of common statistical measures of a random variable.
+     *  Collect together a bunch of common statistical measures of a random variable. Don't store this as its not compact,
+     *  and could easily be expanded in future releases of Stroika (quartile, mode, ...)
      */
     template <typename T>
     struct CommonStatistics {
@@ -121,7 +122,7 @@ namespace Stroika::Foundation::Math {
     /**
      *  \brief handy aggregation of several common random-variable statistics/measurements.
      */
-    template <Common::IBuiltinArithmetic T, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
+    template <typename T, input_iterator ITERATOR_OF_T, sentinel_for<ITERATOR_OF_T> ITERATOR_OF_T2>
     CommonStatistics<T> ComputeCommonStatistics (const ITERATOR_OF_T& start, ITERATOR_OF_T2&& end);
     template <ranges::range CONTAINER_OF_T>
     auto ComputeCommonStatistics (const CONTAINER_OF_T& container) -> CommonStatistics<typename CONTAINER_OF_T::value_type>;
