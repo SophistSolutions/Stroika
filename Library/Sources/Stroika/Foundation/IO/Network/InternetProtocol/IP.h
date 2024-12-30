@@ -98,7 +98,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
             uint8_t  tos;        // Type of service
             uint16_t tot_len;    // Length of the packet in dwords
             uint16_t id;         // unique identifier
-            uint16_t frag_off;   // Flags and Frament Offset
+            uint16_t frag_off;   // Flags and Fragment Offset
             uint8_t  ttl;        // Time to live
             uint8_t  protocol;   // Protocol number (TCP, UDP etc)
             uint16_t check;      // IP checksum
