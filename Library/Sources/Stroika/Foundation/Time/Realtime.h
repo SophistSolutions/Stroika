@@ -8,6 +8,7 @@
 
 #include <chrono>
 
+#include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Time/Clock.h"
 #include "Stroika/Foundation/Traversal/Common.h"
 
@@ -77,7 +78,7 @@ namespace Stroika::Foundation::Time {
     static_assert (sizeof (DurationSeconds::rep) == sizeof (TimePointSeconds));
 
     /**
-     *  \brief get the current (monontonically increasing) time - from RealtimeClock
+     *  \brief get the current (monotonically increasing) time - from RealtimeClock
      * 
      *  \note no longer true, but in Stroika v2.1:
      *      this always started at offset zero for start of app.
@@ -110,7 +111,7 @@ namespace Stroika::Foundation::Time {
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
     /*
-     *  Cannot #include Traversal/Range (easily) due to mutual include nightmare. So just forwward declare template, and still
+     *  Cannot #include Traversal/Range (easily) due to mutual include nightmare. So just forward declare template, and still
      *  define it anyhow (only need to #include enuf for Openness enum).
      * 
      *  Then we can easily construct Ranges of DurationSeconds, and TimePointSeconds (time ranges).
@@ -132,6 +133,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
         static value_type GetNext (value_type i);
         static value_type GetPrevious (value_type i);
+
+        static constexpr SignedDifferenceType Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs);
     };
 
     template <>
@@ -148,6 +151,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
         static value_type GetNext (value_type i);
         static value_type GetPrevious (value_type i);
+
+        static constexpr SignedDifferenceType Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs);
     };
 
     template <>
@@ -164,6 +169,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
         static value_type GetNext (value_type i);
         static value_type GetPrevious (value_type i);
+
+        static constexpr SignedDifferenceType Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs);
     };
 
 }

@@ -62,6 +62,10 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         using namespace Time;
         return DurationSeconds{nextafter (i.count (), numeric_limits<DurationSeconds::rep>::min ())};
     }
+    constexpr auto Default<Time::DurationSeconds>::Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+    {
+        return lhs - rhs;
+    }
 
     /*
      ********************************************************************************
@@ -80,6 +84,10 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         return TimePointSeconds{
             TimePointSeconds::duration{nextafter (i.time_since_epoch ().count (), numeric_limits<TimePointSeconds::duration::rep>::min ())}};
     }
+    constexpr auto Default<Time::TimePointSeconds>::Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+    {
+        return lhs - rhs;
+    }
 
     /*
      ********************************************************************************
@@ -95,6 +103,11 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     {
         using namespace Time;
         return value_type{value_type::duration{nextafter (i.time_since_epoch ().count (), numeric_limits<value_type::duration::rep>::min ())}};
+    }
+    constexpr auto Default<chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>>::Difference (
+        Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+    {
+        return lhs - rhs;
     }
 
 }
