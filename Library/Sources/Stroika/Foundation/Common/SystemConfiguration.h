@@ -199,11 +199,11 @@ namespace Stroika::Foundation::Common {
             };
 
             /**
-             *  Some UNIX systems use rpm (redhat, and many others), and others use dpkg (debian based).
+             *  Some UNIX systems use rpm (redhat, and many others), and others use dpkg (Debian based).
              *  Windows uses MSI.
              *  But there are a wide variety of other choices (portage, ports, etc).
              */
-            optional<InstallerTechnology> fPreferedInstallerTechnology;
+            optional<InstallerTechnology> fPreferredInstallerTechnology;
 
             /**
              *  @see Characters::ToString ();

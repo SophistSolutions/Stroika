@@ -151,8 +151,8 @@ String SystemConfiguration::OperatingSystem::ToString () const
     sb << "Major-Minor-Version-String: "sv + fMajorMinorVersionString + ", "sv;
     sb << "RFC1945-Compat-Product-Token-With-Version: "sv + fRFC1945CompatProductTokenWithVersion + ", "sv;
     sb << "Bits: "sv << fBits << ", "sv;
-    if (fPreferedInstallerTechnology) {
-        sb << "Preferred-Installer-Technology: "sv << *fPreferedInstallerTechnology;
+    if (fPreferredInstallerTechnology) {
+        sb << "Preferred-Installer-Technology: "sv << *fPreferredInstallerTechnology;
     }
     sb << "}"sv;
     return sb;
@@ -634,28 +634,28 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
         using Characters::CompareOptions;
 
         // No good way I can find to tell...
-        if (not tmp.fPreferedInstallerTechnology.has_value ()) {
+        if (not tmp.fPreferredInstallerTechnology.has_value ()) {
             auto nameEqComparer = String::EqualsComparer{eCaseInsensitive};
             if (nameEqComparer (tmp.fShortPrettyName, "Centos"sv) or nameEqComparer (tmp.fShortPrettyName, "RedHat"sv)) {
-                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
+                tmp.fPreferredInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             else if (nameEqComparer (tmp.fShortPrettyName, "Ubuntu"sv)) {
-                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
+                tmp.fPreferredInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
         }
         // not a great way to test since some systems have both, like ubuntu
-        if (not tmp.fPreferedInstallerTechnology.has_value ()) {
+        if (not tmp.fPreferredInstallerTechnology.has_value ()) {
             try {
                 (void)Execution::ProcessRunner{"dpkg --help"}.Run (String{});
-                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
+                tmp.fPreferredInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
             catch (...) {
             }
         }
-        if (not tmp.fPreferedInstallerTechnology.has_value ()) {
+        if (not tmp.fPreferredInstallerTechnology.has_value ()) {
             try {
                 (void)Execution::ProcessRunner{"rpm --help"}.Run (String{});
-                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
+                tmp.fPreferredInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             catch (...) {
             }
@@ -790,7 +790,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
             Assert (sizeof (void*) == 8);
             tmp.fBits = 64;
         }
-        tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
+        tmp.fPreferredInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
 #else
         AssertNotImplemented ();
 #endif
