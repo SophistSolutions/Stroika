@@ -65,9 +65,8 @@ namespace Stroika::Foundation::Streams {
 
         Stroika_Define_Enum_Bounds (eNotSeekable, eSeekable)
     };
-
-    constexpr SeekableFlag eSeekable    = SeekableFlag::eSeekable;
-    constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
+    using SeekableFlag::eNotSeekable;
+    using SeekableFlag::eSeekable;
 
     template <typename ELEMENT_TYPE>
     class IRep;

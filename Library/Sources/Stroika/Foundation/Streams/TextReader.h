@@ -79,8 +79,8 @@ namespace Stroika::Foundation::Streams::TextReader {
         eReadAheadNever,
         eReadAheadAllowed,
     };
-    constexpr ReadAhead eReadAheadNever   = ReadAhead::eReadAheadNever;
-    constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
+    using ReadAhead::eReadAheadAllowed;
+    using ReadAhead::eReadAheadNever;
 
     /**
      */
@@ -90,8 +90,8 @@ namespace Stroika::Foundation::Streams::TextReader {
 
         eDEFAULT = eReadBOMAndIfNotPresentUseCurrentLocale
     };
-    constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseUTF8 = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
-    constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseCurrentLocale = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
+    using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
+    using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
 
     /**
      *  Seekable defaults to the same value as that of the underlying stream wrapped.
