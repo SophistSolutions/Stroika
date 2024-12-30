@@ -78,7 +78,7 @@ namespace {
             default:
                 return NULL;
         }
-        Memory::StackBuffer<wchar_t> buf{Memory::eUninitiialized, size + 1};
+        StackBuffer<wchar_t> buf{eUninitiialized, size + 1};
         unsigned long                s = size;
         DWORD                        d = WSAAddressToStringW ((struct sockaddr*)&ss, sizeof (ss), NULL, buf.begin (), &s);
         if (d == 0) {
@@ -365,7 +365,7 @@ String InternetAddress::ToString () const
 InternetAddress InternetAddress::KeepSignificantBits (unsigned int significantBits) const
 {
     // Mask address by significant bits
-    vector<uint8_t> r;
+    StackBuffer<uint8_t> r;
     unsigned int    sigBitsLeft = significantBits;
     for (uint8_t b : this->As<vector<uint8_t>> ()) {
         if (sigBitsLeft >= 8) {
