@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         * Checks if the given character is uppper case. Can be called on any character.
+         * Checks if the given character is upper case. Can be called on any character.
          * Returns false if not alphabetic
          */
         nonvirtual bool IsUpperCase () const noexcept;
