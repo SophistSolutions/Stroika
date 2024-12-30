@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Intentionally omit case of spurrious wakeout we get from condition variables.
+         *  Intentionally omit case of spurious wakeup we get from condition variables.
          */
         enum class WaitStatus {
             eTimeout,
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Wait the given period of time, and return true if event occured (Set called), and false on timeout.
+         *  Wait the given period of time, and return true if event occurred (Set called), and false on timeout.
          *  This is mostly useful if we want a wait, for advisory purposes (say to avoid races), but don't
          *  want an exception as its not an issue to handle specially.
          *
@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  TimeOutException throws if the event is not signaled before timeoutAt is
-         *  exceeeded (includes when reached).
+         *  exceeded (includes when reached).
          *
          *  @see Wait ()
          *  @see WaitQuietly ()
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  Returns:    true (kWaitQuietlySetResult) if event signaled/occurred, and false (kWaitQuietlyTimeoutResult) if timeout
          * 
-         *  Note - unlike condition variable - will not return with spurrious wakeup.
+         *  Note - unlike condition variable - will not return with spurious wakeup.
          *  So a return of triggered means it definitely was triggered!
          *
          *  @see Wait ()
