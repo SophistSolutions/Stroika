@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Enumeration.h"
+#include "Stroika/Foundation/Math/Statistics.h"
 
 namespace Stroika::Foundation::Time {
     class Duration;
@@ -340,6 +341,30 @@ namespace Stroika::Foundation::Characters {
         inline String ToString (T t, FloatConversion::ToStringOptions o)
         {
             return FloatConversion::ToString (t, o);
+        }
+        template <typename T>
+        inline String ToString (const Math::CommonStatistics<T>& t)
+        {
+            Characters::StringBuilder sb;
+
+            sb << "{"sv;
+            if (t.fMin) {
+                sb << "min: " << *t.fMin;
+            }
+            if (t.fMax) {
+                sb << "max: " << *t.fMax;
+            }
+            if (t.fMean) {
+                sb << "mean: " << *t.fMean;
+            }
+            if (t.fMedian) {
+                sb << "median: " << *t.fMedian;
+            }
+            if (t.fStandardDeviation) {
+                sb << "standard-deviation: " << *t.fStandardDeviation;
+            };
+            sb << "}"sv;
+            return sb;
         }
         template <typename T>
         inline String ToString (const shared_ptr<T>& pt)
