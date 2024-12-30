@@ -32,6 +32,7 @@
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
@@ -1042,6 +1043,8 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual void AssertDependentTypesAlreadyInRegistry_ (const T (*)[SZ]);
 
     private:
+        template <typename T>
+        static TypeMappingDetails MakeCommonSerializer_ (const Math::CommonStatistics<T>*);
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
         static TypeMappingDetails MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*);
         template <typename T>

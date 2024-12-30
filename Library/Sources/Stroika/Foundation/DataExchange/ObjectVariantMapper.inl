@@ -564,6 +564,19 @@ namespace Stroika::Foundation::DataExchange {
     {
         return MakeCommonSerializer_ForClassObject_and_check_<T> (typeid (T), sizeof (T), fieldDescriptions, options, mapperToCheckAgainst);
     }
+    template <typename T>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Math::CommonStatistics<T>*)
+    {
+        return MakeClassSerializer_<Math::CommonStatistics<T>> (
+            {
+                {"min"sv, &Math::CommonStatistics<T>::fMin},
+                {"max"sv, &Math::CommonStatistics<T>::fMax},
+                {"mean"sv, &Math::CommonStatistics<T>::fMean},
+                {"median"sv, &Math::CommonStatistics<T>::fMedian},
+                {"stddev"sv, &Math::CommonStatistics<T>::fStandardDeviation},
+            },
+            ClassMapperOptions<Math::CommonStatistics<T>>{}, nullptr);
+    }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
     {
