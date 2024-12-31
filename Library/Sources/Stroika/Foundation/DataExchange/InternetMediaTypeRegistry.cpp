@@ -342,7 +342,7 @@ Containers::Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (co
 {
     Containers::Set<String> r;
     r = Memory::NullCoalesce (fFrontEndRep_, kDefaultFrontEndForNoBackend_).GetAssociatedFileSuffixes (ct);
-    // if a mediatype has a builtin suffix, include that as well...
+    // if a MediaType has a builtin suffix, include that as well...
     if (auto os = ct.GetSuffix<String> ()) {
         r += *os;
     }
@@ -528,7 +528,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                             }
                         }
 
-                        // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
+                        // Because on raspberrypi/Debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
                         fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, ".txt"_k);
                     }
                     catch (...) {
