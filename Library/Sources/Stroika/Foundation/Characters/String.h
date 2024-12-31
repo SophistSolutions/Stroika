@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Characters {
         static String mkSTR_ (PATHLIKE_TOSTRINGABLE&& s);
 
     private:
-        static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char>& str); // char==ASCII
+        static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<ASCII>& str);
         static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char8_t>& str);
         static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char16_t>& str);
         static shared_ptr<_IRep> CTORFromBasicStringView_ (const basic_string_view<char32_t>& str);
@@ -370,7 +370,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *   \brief Take the given argument data (constant span) - which must remain unchanged - constant - for the application lifetime - and treat it as a Stroika String object
          * 
-         * This allows creation of String objects with fewer memory allocations, and more efficient storage, but only in constrained situations
+         *  This allows creation of String objects with fewer memory allocations and less copyinh, and more efficient storage, in most situations
          *
          *  The resulting String is a perfectly compliant Stroika String (somewhat akin to std::string_view vs std::string).
          *
@@ -383,35 +383,27 @@ namespace Stroika::Foundation::Characters {
          *          String  tmp5    =   "FRED"_k;                               // equivalent to FromStringConstant
          *      \endcode
          *
-         *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
+         *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime (intended use case is C string literals).
          * 
-         *  \req argument string must be nul-terminated (but CAN contain additional embedded nul characters)
+         *  \req argument string MAY contain embedded nul characters (but for char* overloads wrong size inferred).
          * 
          *  \note In Stroika v2.1 this was called class String_ExternalMemoryOwnership_ApplicationLifetime.
          *  \note In Stroika v2.1 this was called class String_Constant.
-         * 
-         *  The constructor requires an application lifetime NUL-terminated array of characters - such as one
-         *  created with "sample" (but allows embedded NUL-characters).
-         *
-         *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
-         *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
+         *  \note In Stroika v2.1 this required NUL-char termination, but no longer
          * 
          *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and interpret as Latin1)
          *        For the case of char, we also do not check/require the nul-termination bit.
-         * 
-         *  \note for overloads with wchar_t, if sizeof (wchar_t) == 2
-         *        \req Require (UTFConvert::AllFitsInTwoByteEncoding (s));
          */
-        template <size_t SIZE>
-        static String FromStringConstant (const ASCII (&cString)[SIZE]);
-        template <size_t SIZE>
-        static String FromStringConstant (const wchar_t (&cString)[SIZE]);
-        static String FromStringConstant (const basic_string_view<ASCII>& str);
-        static String FromStringConstant (const basic_string_view<wchar_t>& str);
-        static String FromStringConstant (const basic_string_view<char32_t>& str);
-        static String FromStringConstant (span<const ASCII> s);
-        static String FromStringConstant (span<const wchar_t> s);
-        static String FromStringConstant (span<const char32_t> s);
+        template <size_t SIZE, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        static String FromStringConstant (const CHAR_T (&cString)[SIZE]);
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        static String FromStringConstant (const basic_string_view<CHAR_T>& str);
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        static String FromStringConstant (span<const CHAR_T> str);
+        static String FromStringConstant (span<const ASCII> s);    // better impl in CPP file
+        static String FromStringConstant (span<const char16_t> s); // ""
+        static String FromStringConstant (span<const wchar_t> s);  // "" (inl file)
+        static String FromStringConstant (span<const char32_t> s); // ""
 
     public:
         /**
@@ -1857,8 +1849,11 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1)
          */
-        String operator"" _k (const char* s, size_t len);
+        String operator"" _k (const ASCII* s, size_t len);
         String operator"" _k (const wchar_t* s, size_t len);
+        String operator"" _k (const char8_t* s, size_t len);
+        String operator"" _k (const char16_t* s, size_t len);
+        String operator"" _k (const char32_t* s, size_t len);
     }
 
     /**

@@ -382,27 +382,39 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const Latin1>{buf.begin (), pOut});
         }
     }
-    template <size_t SIZE>
-    inline String String::FromStringConstant (const ASCII (&cString)[SIZE])
+    template <size_t SIZE, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline String String::FromStringConstant (const CHAR_T (&cString)[SIZE])
     {
-        return FromStringConstant (span<const ASCII>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
+        return FromStringConstant (span<const CHAR_T>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
     }
-    template <size_t SIZE>
-    inline String String::FromStringConstant (const wchar_t (&cString)[SIZE])
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline String String::FromStringConstant (const basic_string_view<CHAR_T>& str)
     {
-        return FromStringConstant (span<const wchar_t>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
+        return FromStringConstant (span<const CHAR_T>{str.data (), str.size ()});
     }
-    inline String String::FromStringConstant (const basic_string_view<char>& str)
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline String String::FromStringConstant (span<const CHAR_T> str)
     {
-        return FromStringConstant (span<const char>{str.data (), str.size ()});
+        // todo  add test cases..
+        // todo add low pri jira ticket - at least for UTF-8 case - could do native utf8 rep (multibyte indexing)
+
+        if constexpr (same_as<CHAR_T, char8_t>) {
+            if (Character::IsASCII (str)) {
+                return FromStringConstant (Memory::SpanBytesCast<span<const ASCII>> (str));
+            }
+        }
+        // other cases -  just copy
+        return String{str}; // fallback implementation - not any quicker, but allows saying intent of string-constant and later impl faster version
     }
-    inline String String::FromStringConstant (const basic_string_view<wchar_t>& str)
+    inline String String::FromStringConstant (span<const wchar_t> s)
     {
-        return FromStringConstant (span<const wchar_t>{str.data (), str.size ()});
-    }
-    inline String String::FromStringConstant (const basic_string_view<char32_t>& str)
-    {
-        return FromStringConstant (span<const char32_t>{str.data (), str.size ()});
+        if constexpr (sizeof (wchar_t) == 2) {
+            return FromStringConstant (Memory::SpanBytesCast<span<const char16_t>> (s));
+        }
+        else {
+            Assert (sizeof (wchar_t) == 4);
+            return FromStringConstant (Memory::SpanBytesCast<span<const char32_t>> (s));
+        }
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (span<CHAR_T> s)
@@ -1071,13 +1083,25 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline namespace Literals {
-        inline String operator"" _k (const char* s, size_t len)
+        inline String operator"" _k (const ASCII* s, size_t len)
         {
             return String::FromStringConstant (span<const char>{s, len});
+        }
+        inline String operator"" _k (const char8_t* s, size_t len)
+        {
+            return String::FromStringConstant (span<const char8_t>{s, len});
         }
         inline String operator"" _k (const wchar_t* s, size_t len)
         {
             return String::FromStringConstant (span<const wchar_t>{s, len});
+        }
+        inline String operator"" _k (const char16_t* s, size_t len)
+        {
+            return String::FromStringConstant (span<const char16_t>{s, len});
+        }
+        inline String operator"" _k (const char32_t* s, size_t len)
+        {
+            return String::FromStringConstant (span<const char32_t>{s, len});
         }
     }
 

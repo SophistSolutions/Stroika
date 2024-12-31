@@ -544,23 +544,35 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, ReadOnlyStrings_)
+    GTEST_TEST (Foundation_Characters, StringConstants_)
     {
-        Debug::TraceContextBumper ctx{"ReadOnlyStrings_"};
-        // NOTE - THIS TESTS String_Constant
-        //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
-        StringBuilder s = String::FromStringConstant ("fred");
-        EXPECT_TRUE (s[0] == 'f');
-        s.erase (3);
-        EXPECT_TRUE (s[0] == 'f');
-        EXPECT_TRUE (s.size () == 3);
-        EXPECT_TRUE (s == "fre");
-        s += "x";
-        EXPECT_TRUE (s.size () == 4);
-        EXPECT_TRUE (s[3] == 'x');
-        EXPECT_TRUE (s == "frex");
-        s.InsertAt ('x', 2);
-        EXPECT_TRUE (s == "frxex");
+        Debug::TraceContextBumper ctx{"StringConstants_"};
+        {
+            String test = "abc123";
+            EXPECT_EQ (test, "abc123"_k);
+            EXPECT_EQ (test, u8"abc123"_k);
+            EXPECT_EQ (test, u"abc123"_k);
+            EXPECT_EQ (test, U"abc123"_k);
+            EXPECT_EQ (test, L"abc123"_k);
+            EXPECT_EQ (test, u8"abc123"sv);
+            EXPECT_EQ (test, u"abc123"sv);
+            EXPECT_EQ (test, U"abc123"sv);
+            EXPECT_EQ (test, L"abc123"sv);
+        }
+        {
+            StringBuilder s = String::FromStringConstant ("fred");
+            EXPECT_EQ (s[0], 'f');
+            s.erase (3);
+            EXPECT_EQ (s[0], 'f');
+            EXPECT_EQ (s.size (), 3u);
+            EXPECT_EQ (s, "fre");
+            s += "x";
+            EXPECT_EQ (s.size (), 4);
+            EXPECT_EQ (s[3], 'x');
+            EXPECT_EQ (s, "frex");
+            s.InsertAt ('x', 2);
+            EXPECT_EQ (s, "frxex");
+        }
     }
 }
 

@@ -378,42 +378,22 @@ namespace {
         using inherited = String;
 
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
+        class DirectIndexRep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>,
+                                     public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
         public:
-            Rep (span<const CHAR_T> s)
+            DirectIndexRep (span<const CHAR_T> s)
                 : inherited{s} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
-                if constexpr (same_as<CHAR_T, wchar_t>) {
-#if qStroika_Foundation_Debug_AssertionsChecked
-                    const CHAR_T* start = s.data ();
-                    const CHAR_T* end   = start + s.size ();
-                    // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
-                    Require (*end == '\0' and start + ::wcslen (start) <= end);
-#endif
-                }
             }
 
         public:
             // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
-                // if used for appropriately sized character (equiv to wchar_t) - then use that nul-terminated string
-                // and else return nullptr, so it will get wrapped
-                if constexpr (same_as<CHAR_T, wchar_t>) {
-                    // we check/require this in CTOR, so should still be true
-                    const wchar_t* start = reinterpret_cast<const wchar_t*> (this->_fData.data ());
-#if qStroika_Foundation_Debug_AssertionsChecked
-                    const wchar_t* end = start + this->_fData.size ();
-                    Assert (*end == '\0' and start + ::wcslen (start) <= end); // less or equal because you can call c_str() even through the string has embedded nuls
-#endif
-                    return start;
-                }
-                else {
-                    return nullptr;
-                }
+                return nullptr;
             }
         };
     };
@@ -544,18 +524,16 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ************************************* String ***********************************
  ********************************************************************************
  */
-shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char>& str)
+shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<ASCII>& str)
 {
     RequireExpression (Character::IsASCII (span{str.data (), str.size ()}));
-    return Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()});
+    return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (span{str.data (), str.size ()});
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char8_t>& str)
 {
-    // StringConstant_::Rep<char8_t> not supported
     if (Character::IsASCII (span{str.data (), str.size ()})) {
-        // saves data ptr - without copying
-        return CTORFromBasicStringView_ (basic_string_view{reinterpret_cast<const char*> (str.data ()), str.size ()});
+        return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (Memory::SpanBytesCast<span<const ASCII>> (span{str.data (), str.size ()}));
     }
     else {
         return mk_ (span<const char8_t>{str.data (), str.size ()}); // copies data
@@ -564,45 +542,43 @@ shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_v
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char16_t>& str)
 {
-    return Memory::MakeSharedPtr<StringConstant_::Rep<char16_t>> (span{str.data (), str.size ()});
+    if (UTFConvert::AllFitsInTwoByteEncoding (span{str})) {
+        return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char16_t>> (span{str.data (), str.size ()});
+    }
+    else {
+        return mk_ (span<const char16_t>{str.data (), str.size ()}); // copies data
+    }
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char32_t>& str)
 {
-    return Memory::MakeSharedPtr<StringConstant_::Rep<char32_t>> (span{str.data (), str.size ()});
+    return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (span{str.data (), str.size ()});
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<wchar_t>& str)
 {
-    Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
-                                               // for these const strings are also nul-terminated.
-    // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
-    // be nul-terminated.
-    // -- LGP 2019-01-29
-    return Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()});
+    return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{str.data (), str.size ()});
 }
 
 String String::FromStringConstant (span<const ASCII> s)
 {
     Require (Character::IsASCII (s));
-    return String{Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (s)};
+    return String{Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (s)};
 }
 
-String String::FromStringConstant (span<const wchar_t> s)
+String String::FromStringConstant (span<const char16_t> s)
 {
-    if constexpr (sizeof (wchar_t) == 2) {
-        Require (UTFConvert::AllFitsInTwoByteEncoding (s));
+    if (UTFConvert::AllFitsInTwoByteEncoding (s)) {
+        return String{Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char16_t>> (s)};
     }
-    Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
-        // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
-    return String{Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (s)};
+    else {
+        return String{s};
+    }
 }
 
 String String::FromStringConstant (span<const char32_t> s)
 {
-    Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
-        // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
-    return String{Memory::MakeSharedPtr<StringConstant_::Rep<char32_t>> (s)};
+    return String{Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (s)};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
@@ -630,9 +606,8 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 
 shared_ptr<String::_IRep> String::mkEmpty_ ()
 {
-    static constexpr wchar_t kEmptyCStr_[] = L"";
-    // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
-    static const shared_ptr<_IRep> s_ = Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
+    static constexpr wchar_t       kEmptyCStr_[] = L"";
+    static const shared_ptr<_IRep> s_ = Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
     return s_;
 }
 
@@ -659,7 +634,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
      *  caches, and divides up nicely, and leaves enuf room for a decent number of characters typically.
      * 
      *  So compute/guestimate a few sizes, and add static_asserts to check where we can. Often if these fail
-     *  you can just get rid/or fix them. Not truely counted on, just trying ot generate vaguely reasonable
+     *  you can just get rid/or fix them. Not truly counted on, just trying ot generate vaguely reasonable
      *  number of characters to use.
      */
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
@@ -760,7 +735,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
 
 String String::Concatenate_ (const String& rhs) const
 {
-    // KISS, simple default 'fallthru' case
+    // KISS, simple default 'fall-thru' case
     Memory::StackBuffer<char32_t> ignoredA;
     span                          leftSpan = GetData (&ignoredA);
     Memory::StackBuffer<char32_t> ignoredB;
@@ -773,7 +748,7 @@ String String::Concatenate_ (const String& rhs) const
 
 void String::SetCharAt (Character c, size_t i)
 {
-    // @Todo - redo with check if char is acttually chanigng and if so use
+    // @Todo - redo with check if char is actually changing and if so use
     // mk/4 4 arg string maker instead.??? Or some such...
     Require (i >= 0);
     Require (i < size ());
