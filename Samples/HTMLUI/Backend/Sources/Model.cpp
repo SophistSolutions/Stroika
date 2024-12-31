@@ -281,9 +281,9 @@ const ObjectVariantMapper About::kMapper = [] () {
     mapper.AddClass<About::APIServerInfo::WebServer::ConnectionStatistics> ({
         {"open"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfOpenConnections},
         {"active"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fNumberOfActiveConnections},
-        {"openConnectionsWindow"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfOpenConnections},
-        {"openConnectionsRequestsWindow"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfOpenConnectionsRequests},
-        {"activeConnectionsRequestsWindow"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfActiveConnectionsRequests},
+        {"openConnectionsLifetime"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfOpenConnections},
+        {"openConnectionsRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfOpenConnectionsRequests},
+        {"activeConnectionsRequests"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fDurationOfActiveConnectionsRequests},
         {"piningForTheFjords"sv, &About::APIServerInfo::WebServer::ConnectionStatistics::fConnectionsPiningForTheFjords},
     });
 
