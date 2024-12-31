@@ -1210,6 +1210,25 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 		if ($ENABLE_LTO == true) {
 			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
+			if ($itsVersion < 13.0) {
+				# Linking Test Builds/g++-12-release++2b/Tests/Test52 (Frameworks::WebServer) ... 
+				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:67:11: warning: type ‘struct ConnectionManager’ violates the C++ One Definition Rule [-Wodr]
+				# 67 |     class ConnectionManager {
+				# 	|           ^
+				# ../../Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:67:11: note: a different type is defined in another translation unit
+				# 67 |     class ConnectionManager {
+				# 	|           ^
+				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:262:61: note: the first difference of corresponding definitions is field ‘connections’
+				# 262 |         Common::ReadOnlyProperty<ConnectionStatsCollection> connections;
+				# 	|                                                             ^
+				# ../../Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:262:61: note: a field of same name but different type is defined in another translation unit
+				# 262 |         Common::ReadOnlyProperty<ConnectionStatsCollection> connections;
+				# 	|                                                             ^
+				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
+				# NOTE EVEN WITH THIS WE STILL GET
+				#		Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
+			}
 			if (13.0 <= $itsVersion && $itsVersion < 14) {
 				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
 				# are hard to figure out what todo about --LGP 2023-10-04
