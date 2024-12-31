@@ -11,6 +11,9 @@
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
+    /**
+     * See https://www.rfc-editor.org/rfc/rfc9110.html#name-status-codes for details on these status codes.
+     */
     using Status = unsigned int;
 
     /*
