@@ -125,6 +125,9 @@ namespace Stroika::Samples::HTMLUI::Model {
 
             /**
              * WSAPI related stats - for now - averaged over the last 5 minutes.
+             * 
+             *      Note - some of these stats are a bit redundant, given the WebServer
+             *      ConnectionStatistics; could lose them, but maybe useful anyhow.
              */
             struct APIEndpoint {
                 unsigned int               fCallsCompleted{};
