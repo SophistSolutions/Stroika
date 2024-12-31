@@ -52,6 +52,8 @@
 namespace Stroika::Foundation::Time {
 
     /**
+     *  \brief Duration is a chrono::duration<double> (=\see DurationSeconds) - but adding ISO-8601 string representation support
+     * 
      * (basic) support for ISO 8601 Durations
      *      http://en.wikipedia.org/wiki/ISO_8601#Durations
      *
@@ -75,6 +77,11 @@ namespace Stroika::Foundation::Time {
      *  to number of seconds for comparison sakes.
      *
      *  \note constexpr not really working (though declared) - see @todo above
+     * 
+     *  \note Reason Duration functionality not merged into DurationSeconds (why two separate types):
+     *        Duration maintains the ability to recover the original string (in case conversion to float loses
+     *        precision) - so Duration{"PT2.3M"} always returns that - As<String> () value, even if its converted
+     *        to something else; DurationSeconds is more lightweight (and constexpr friendly).
      *
      *  \note Design Note - why no c_str () method
      *      In order to implement c_str () - we would need to return an internal pointer. That would

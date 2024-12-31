@@ -26,14 +26,17 @@ namespace Stroika::Foundation::Time {
     using chrono::time_point;
 
     /**
-     *  \brief chrono::duration<double> - a time span (length of time) measured in seconds.
+     *  \brief chrono::duration<double> - a time span (length of time) measured in seconds, but high precision.
      *
      *  DurationSeconds is just a choice of what chrono::duration template parameters to use to make use much simpler.
      *  Converting to a common sensible base format greatly simplifies a number of Stroika APIs, so rather than having to
      *  template all your 'duration' arguments, just use this DurationSeconds for simplicity, clarity, and at only
-     * a small cost.
+     *  a small cost.
      * 
      *  \note this is one of two types which replaces the Stroika v2.1 DurationSecondsType (DurationSeconds and TimePointSeconds)
+     * 
+     *  \note Because chrono::duration supports automatic conversion from other 'base units' etc, you can maintain your code/data
+     *        structures with any chrono::duration<> and seamlessly use Stroika APIs which expect DurationSeconds.
      * 
      *  \note Use double instead of long double (as the rep) because we don't have time to test performance impact, and only some (gcc/unix)
      *  systems make a difference anyhow (not on ppc). Everything else in Stroika should key off this choice, so this is the place to change
@@ -48,6 +51,8 @@ namespace Stroika::Foundation::Time {
      *          if we used fixed point numbers, REALLY_BIG_TIMOUT + tiny number wraps - basically back to zero.
      *          with floating point numbers, max + small number remains max.
      *      That's a HUGE, and USEFUL simplification of wildly common code.
+     * 
+     *  \see See Also Duration - which can be easily interoperate with DurationSeconds - which provides additional functionality.
      */
     using DurationSeconds = chrono::duration<double>;
     static_assert (sizeof (DurationSeconds::rep) == sizeof (DurationSeconds));
