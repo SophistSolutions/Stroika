@@ -17,6 +17,9 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
+# Hopefully address occasional:
+#		Cannot create output directory : errno=17 : File exists : /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2410_x86_64/IntermediateFiles/Debug/ThirdPartyComponents/lzma/
+.NOTPARALLEL:
 
 .PHONY:	all clean clobber check doBuilds_
 
