@@ -244,73 +244,9 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     }}
     , statistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::statistics);
-
         // NOTE - this computation can be expensive, so consider caching so only recomputed at most every 30 seconds or so...???
         // would need to be controlled via OPTIONS!
-
-        ConnectionStatsCollection connections;
-        {
-            scoped_lock critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
-            Assert (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
-            for (auto i : thisObj->fActiveConnections_.load ()) {
-                auto s    = i->stats ();
-                s.fActive = true;
-                connections += s;
-            }
-            for (auto i : thisObj->GetInactiveConnections_ ()) {
-                auto s    = i->stats ();
-                s.fActive = false;
-                connections += s;
-            }
-        }
-        Statistics::ThreadPool threadPoolStats = [&] () {
-            if (thisObj->fEffectiveOptions_.fCollectStatistics) {
-                return Statistics::ThreadPool{{thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()},
-                                              thisObj->fActiveConnectionThreads_.GetPoolSize ()};
-            }
-            else {
-                return Statistics::ThreadPool{{}, thisObj->fActiveConnectionThreads_.GetPoolSize ()};
-            }
-        }();
-        Statistics::ConnectionStatistics connectionStats;
-        connectionStats.fNumberOfActiveConnections = connections.Count ([] (const Connection::Stats& s) { return s.fActive == true; });
-        connectionStats.fNumberOfOpenConnections   = connections.size ();
-
-        DateTime now                               = DateTime::Now ();
-        connectionStats.fDurationOfOpenConnections = ComputeCommonStatistics (
-            connections.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> { return now - cs.fCreatedAt; }));
-
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        connectionStats.fDurationOfOpenConnectionsRequests =
-            ComputeCommonStatistics (connections.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
-                if (cs.fMostRecentMessage) {
-                    return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
-                }
-                return nullopt;
-            }));
-        connectionStats.fDurationOfActiveConnectionsRequests =
-            ComputeCommonStatistics (connections.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
-                if (cs.fActive == false)
-                    return nullopt;
-                if (cs.fMostRecentMessage) {
-                    return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
-                }
-                return nullopt;
-            }));
-        connectionStats.fConnectionsPiningForTheFjords =
-            connections
-                .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
-                    if (cs.fActive == false)
-                        return nullopt;
-                    if (cs.fMostRecentMessage) {
-                        return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
-                    }
-                    return nullopt;
-                })
-                .Count ([&] (const Duration& d) { return d > thisObj->fEffectiveOptions_.fConnectionPiningForTheFjordsDelay; });
-#endif
-
-        return Statistics{.fThreadPool = threadPoolStats, .fConnections = connectionStats};
+        return thisObj->ComputeStatistics_ ();
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fBindings_{bindAddresses}
@@ -516,6 +452,78 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
 void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 {
     AssertNotImplemented ();
+}
+
+auto ConnectionManager::ComputeStatistics_ () const -> Statistics
+{
+    constexpr bool            kExtraDebugging_ = false;
+    ConnectionStatsCollection conns;
+    {
+        scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
+        Assert (Set<shared_ptr<Connection>>{fActiveConnections_.load ()}.Intersection (GetInactiveConnections_ ()).empty ());
+        for (auto i : fActiveConnections_.load ()) {
+            auto s    = i->stats ();
+            s.fActive = true;
+            conns += s;
+            if constexpr (kExtraDebugging_) {
+                DbgTrace ("Conn={}"_f, s);
+            }
+        }
+        for (auto i : GetInactiveConnections_ ()) {
+            auto s    = i->stats ();
+            s.fActive = false;
+            conns += s;
+            if constexpr (kExtraDebugging_) {
+                DbgTrace ("Conn={}"_f, s);
+            }
+        }
+    }
+    Statistics::ThreadPool threadPoolStats = [&] () {
+        if (fEffectiveOptions_.fCollectStatistics) {
+            return Statistics::ThreadPool{{fActiveConnectionThreads_.GetCurrentStatistics ()}, fActiveConnectionThreads_.GetPoolSize ()};
+        }
+        else {
+            return Statistics::ThreadPool{{}, fActiveConnectionThreads_.GetPoolSize ()};
+        }
+    }();
+    Statistics::ConnectionStatistics connectionStats;
+    connectionStats.fNumberOfActiveConnections = conns.Count ([] (const Connection::Stats& s) { return s.fActive == true; });
+    connectionStats.fNumberOfOpenConnections   = conns.size ();
+
+    TimePointSeconds now                       = Time::GetTickCount ();
+    connectionStats.fDurationOfOpenConnections = ComputeCommonStatistics (
+        conns.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> { return now - cs.fCreatedAt; }));
+
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+    connectionStats.fDurationOfOpenConnectionsRequests =
+        ComputeCommonStatistics (conns.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+            if (cs.fMostRecentMessage) {
+                return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+            }
+            return nullopt;
+        }));
+    connectionStats.fDurationOfActiveConnectionsRequests =
+        ComputeCommonStatistics (conns.Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+            if (cs.fActive == false)
+                return nullopt;
+            if (cs.fMostRecentMessage) {
+                return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+            }
+            return nullopt;
+        }));
+    connectionStats.fConnectionsPiningForTheFjords =
+        conns
+            .Map<Iterable<Duration>> ([&] (const Connection::Stats& cs) -> optional<Duration> {
+                if (cs.fActive == false)
+                    return nullopt;
+                if (cs.fMostRecentMessage) {
+                    return cs.fMostRecentMessage->ReplaceEnd (min (cs.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();
+                }
+                return nullopt;
+            })
+            .Count ([&] (const Duration& d) { return d > fEffectiveOptions_.fConnectionPiningForTheFjordsDelay; });
+#endif
+    return Statistics{.fThreadPool = threadPoolStats, .fConnections = connectionStats};
 }
 
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)

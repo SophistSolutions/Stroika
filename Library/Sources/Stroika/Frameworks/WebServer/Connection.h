@@ -172,12 +172,12 @@ namespace Stroika::Frameworks::WebServer {
             /**
              *  When the connection object was created
              */
-            Time::DateTime fCreatedAt;
+            Time::TimePointSeconds fCreatedAt;
 
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
             /**
              */
-            optional<Traversal::Range<Time::DateTime>> fMostRecentMessage;
+            optional<Traversal::Range<Time::TimePointSeconds>> fMostRecentMessage;
 
             /**
              */

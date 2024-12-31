@@ -127,14 +127,12 @@ namespace Stroika::Samples::HTMLUI::Model {
              * WSAPI related stats - for now - averaged over the last 5 minutes.
              */
             struct APIEndpoint {
-                unsigned int       fCallsCompleted{};
-                optional<Duration> fMeanDuration;
-                optional<Duration> fMedianDuration;
-                optional<Duration> fMaxDuration;
-                unsigned int       fErrors{};
-                optional<float>    fMedianWebServerConnections;
-                optional<float>    fMedianProcessingWebServerConnections;
-                optional<float>    fMedianRunningAPITasks;
+                unsigned int               fCallsCompleted{};
+                CommonStatistics<Duration> fCallTimes;
+                unsigned int               fErrors{};
+                optional<float>            fMedianWebServerConnections;
+                optional<float>            fMedianProcessingWebServerConnections;
+                optional<float>            fMedianRunningAPITasks;
 
                 nonvirtual String ToString () const;
             };

@@ -11,12 +11,17 @@ export interface ICurrentMachine {
   runQLength?: number;
   totalCPUUsage?: number;
 }
+ interface ICommonStatistics {
+  min?: string;
+  max?: string;
+  mean?: string;
+  median?: string;
+  stddev?: string;
+}
 export interface IAPIEndpoint {
   callsCompleted: number;
   errors: number;
-  maxDuration?: string;
-  meanDuration?: string;
-  medianDuration?: string;
+  callTimes?: ICommonStatistics;
   medianProcessingWebServerConnections?: number;
   medianRunningAPITasks?: number;
   medianWebServerConnections?: number;

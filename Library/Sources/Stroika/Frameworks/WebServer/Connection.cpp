@@ -151,7 +151,7 @@ String Connection::Stats::ToString () const
     StringBuilder sb;
     sb << "{";
     sb << "socket: " << fSocketID;
-    sb << ", createdAt: " << fCreatedAt.AsLocalTime ();
+    sb << ", createdAt: " << fCreatedAt;
     if (fActive) {
         if (*fActive) {
             sb << ", active ";
@@ -162,15 +162,7 @@ String Connection::Stats::ToString () const
     }
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
     if (fMostRecentMessage) {
-        // @todo PITA - CLEAN THIS UP!!!
-        Range<DateTime> localMRM = *fMostRecentMessage;
-        if (localMRM.GetLowerBound () != DateTime::kMin) {
-            localMRM = Range<DateTime>{localMRM.GetLowerBound ().AsLocalTime (), localMRM.GetUpperBound ()};
-        }
-        if (localMRM.GetUpperBound () != DateTime::kMax) {
-            localMRM = Range<DateTime>{localMRM.GetLowerBound (), localMRM.GetUpperBound ().AsLocalTime ()};
-        }
-        sb << ", mostRecentMessage: " << localMRM;
+        sb << ", mostRecentMessage: " << *fMostRecentMessage;
     }
     if (fHandlingThread) {
         if (fActive == true) {
@@ -224,20 +216,20 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
         // NO - INTERNALLY SYNCRHONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without syncrhonization
-        auto createdAt = DateTime{thisObj->fConnectionStartedAt_}; // also similar logic - const
+        TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
         // all this mishigas is due to atomic<optional<...>> stuff not working - sigh - apparently still not allowed in C++23 (26?)
-        DurationSeconds      b1   = DurationSeconds{thisObj->fStartHandleMessage_.load ()};
-        DurationSeconds      e1   = DurationSeconds{thisObj->fCompletedHandleMessage_.load ()};
-        thread::id           tid1 = thisObj->fHandlingThread_.load ();
-        optional<DateTime>   b    = b1 != DurationSeconds{} ? DateTime{TimePointSeconds{b1}} : optional<DateTime>{};
-        optional<DateTime>   e    = e1 != DurationSeconds{} ? DateTime{TimePointSeconds{e1}} : optional<DateTime>{};
-        optional<thread::id> tid  = tid1 == thread::id{} ? optional<thread::id>{} : tid1;
+        DurationSeconds            b1   = DurationSeconds{thisObj->fStartHandleMessage_.load ()};
+        DurationSeconds            e1   = DurationSeconds{thisObj->fCompletedHandleMessage_.load ()};
+        thread::id                 tid1 = thisObj->fHandlingThread_.load ();
+        optional<TimePointSeconds> b    = b1 != DurationSeconds{} ? TimePointSeconds{b1} : optional<TimePointSeconds>{};
+        optional<TimePointSeconds> e    = e1 != DurationSeconds{} ? TimePointSeconds{e1} : optional<TimePointSeconds>{};
+        optional<thread::id>       tid  = tid1 == thread::id{} ? optional<thread::id>{} : tid1;
 #endif
         Stats stats{.fSocketID  = uniqueID,
                     .fCreatedAt = createdAt,
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-                    .fMostRecentMessage = (b or e) ? Range<DateTime>{b, e} : optional<Range<DateTime>>{},
+                    .fMostRecentMessage = (b or e) ? Range<TimePointSeconds>{b, e} : optional<Range<TimePointSeconds>>{},
                     .fHandlingThread    = tid
 #endif
         };

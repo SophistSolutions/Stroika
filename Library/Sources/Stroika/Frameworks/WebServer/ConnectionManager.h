@@ -380,6 +380,9 @@ namespace Stroika::Frameworks::WebServer {
          */
         Common::ReadOnlyProperty<Statistics> statistics;
 
+    private:
+        nonvirtual Statistics ComputeStatistics_ () const;
+
     public:
         /**
          *  These 'before' and 'after' values are relative to the router, which towards the end of the chain.

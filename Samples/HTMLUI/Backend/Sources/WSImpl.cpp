@@ -157,10 +157,9 @@ About WSImpl::about_GET () const
     OperationalStatisticsMgr::Statistics stats    = OperationalStatisticsMgr::sThe.GetStatistics ();
     APIEndpoint                          apiStats = [&] () {
         APIEndpoint r;
-        r.fCallsCompleted                       = stats.fRecentAPI.fCallsCompleted;
-        r.fMeanDuration                         = stats.fRecentAPI.fMeanDuration;
-        r.fMedianDuration                       = stats.fRecentAPI.fMedianDuration;
-        r.fMaxDuration                          = stats.fRecentAPI.fMaxDuration;
+        r.fCallsCompleted = stats.fRecentAPI.fCallsCompleted;
+        r.fCallTimes      = CommonStatistics<Duration>{
+                                          .fMax = stats.fRecentAPI.fMaxDuration, .fMean = stats.fRecentAPI.fMeanDuration, .fMedian = stats.fRecentAPI.fMedianDuration};
         r.fErrors                               = stats.fRecentAPI.fErrors;
         r.fMedianWebServerConnections           = stats.fRecentAPI.fMedianWebServerConnections;
         r.fMedianProcessingWebServerConnections = stats.fRecentAPI.fMedianProcessingWebServerConnections;
@@ -201,7 +200,7 @@ HealthStatus WSImpl::healthcheck_GET () const
             Sequence<String> warnings;
             warnings += "connectionsPiningForTheFjords: {}"_f(rr.fConnections.fConnectionsPiningForTheFjords);
             auto connections = cm.connections ();
-            auto now         = DateTime::Now ();
+            auto now         = Time::GetTickCount ();
             for (auto c : connections) {
                 if (c.fActive == true and c.fMostRecentMessage) {
                     Duration d = c.fMostRecentMessage->ReplaceEnd (min (c.fMostRecentMessage->GetUpperBound (), now)).GetDistanceSpanned ();

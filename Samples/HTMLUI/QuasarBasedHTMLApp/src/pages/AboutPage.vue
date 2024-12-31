@@ -74,13 +74,13 @@ function wsAPIMsg(info: IAPIEndpoint, showShort: boolean): string {
       } active, and Med ${info.medianRunningAPITasks ?? "?"} active API calls); `;
   }
   if (showShort) {
-    msg += `${prettyPrintMSTime(info.medianDuration)}, max ${prettyPrintMSTime(
-      info.maxDuration
+    msg += `${prettyPrintMSTime(info.callTimes.median)}, max ${prettyPrintMSTime(
+      info.callTimes.max
     )}`;
   } else {
     msg += `Med ${prettyPrintMSTime(
-      info.medianDuration
-    )} call time,  max ${prettyPrintMSTime(info.maxDuration)} call time`;
+      info.callTimes.median
+    )} call time,  max ${prettyPrintMSTime(info.callTimes.max)} call time`;
   }
   return msg;
 }
