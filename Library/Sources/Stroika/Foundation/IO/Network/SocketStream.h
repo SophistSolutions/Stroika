@@ -21,14 +21,6 @@
 namespace Stroika::Foundation::IO::Network::SocketStream {
 
     /**
-     *  \par Example Usage
-     *      \code
-     *            ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
-     *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
-     *      \endcode
-     */
-    using Ptr = Streams::InputOutputStream::Ptr<byte>;
-    /**
      *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
      *
      *  The only real connection is that they share a common socket, and if it is closed,
@@ -40,7 +32,14 @@ namespace Stroika::Foundation::IO::Network::SocketStream {
      *              But SocketStream is an InputOutputStream - so you can close the input and output sides separately.
      *              If you call close on only one side of the input stream, Shutdown () will be used to shutdown
      *              just that end of the stream.
+     *
+     *  \par Example Usage
+     *      \code
+     *            ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
+     *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
+     *      \endcode
      */
+    using Ptr = Streams::InputOutputStream::Ptr<byte>;
 
     /**
      *  To copy a SocketStream, use SocketStream<T>::Ptr
@@ -49,7 +48,7 @@ namespace Stroika::Foundation::IO::Network::SocketStream {
      *      \code
      *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
      *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
-     *           InputStream::Ptr<byte>              in  = BufferedInputStream::New<byte> (socketStream);  // not important, but a good idea, to avoid excessiveos read/write calls
+     *           InputStream::Ptr<byte>              in  = BufferedInputStream::New<byte> (socketStream);  // not important, but a good idea, to avoid excessive read/write calls
      *           OutputStream::Ptr<byte>             out = BufferedOutputStream::New<byte> (socketStream); // more important so we don't write multiple packets
      *      \endcode
      */
