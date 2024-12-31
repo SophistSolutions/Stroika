@@ -456,7 +456,11 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 
 auto ConnectionManager::ComputeStatistics_ () const -> Statistics
 {
-    constexpr bool            kExtraDebugging_ = false;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    constexpr bool kExtraDebugging_ = true;
+#else
+    constexpr bool kExtraDebugging_ = false;
+#endif
     ConnectionStatsCollection conns;
     {
         scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
