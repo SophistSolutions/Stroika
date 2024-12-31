@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     }
     constexpr auto Default<Time::DurationSeconds>::Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
     {
-        return lhs - rhs;
+        return rhs - lhs;
     }
 
     /*
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     }
     constexpr auto Default<Time::TimePointSeconds>::Difference (Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
     {
-        return lhs - rhs;
+        return rhs - lhs;
     }
 
     /*
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     constexpr auto Default<chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>>::Difference (
         Common::ArgByValueType<value_type> lhs, Common::ArgByValueType<value_type> rhs) -> SignedDifferenceType
     {
-        return lhs - rhs;
+        return rhs - lhs;
     }
 
 }
