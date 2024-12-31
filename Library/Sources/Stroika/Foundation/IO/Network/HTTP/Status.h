@@ -51,7 +51,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          */
         constexpr Status kInternalError = 500;
         /*
-         * Tndicates that the server is temporarily unavailable, usually due to high load or maintenance.
+         * Indicates that the server is temporarily unavailable, usually due to high load or maintenance.
          */
         constexpr Status kServiceUnavailable = 503;
         /*
@@ -61,6 +61,28 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr Status kGatewayTimeout = 504;
     }
 
+    /**
+     *  \brief several status codes considered OK, so check if it is among them
+     */
+    constexpr bool IsOK (Status s);
+
+    /**
+     *  \brief several status codes considered client error, so check if it is among them
+     */
+    constexpr bool IsClientError (Status s);
+
+    /**
+     *  \brief several status codes considered Server Error, so check if it is among them
+     */
+    constexpr bool IsServerError (Status s);
+
 }
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "Status.inl"
 
 #endif /*_Stroika_Foundation_IO_Network_HTTP_Status_h_*/

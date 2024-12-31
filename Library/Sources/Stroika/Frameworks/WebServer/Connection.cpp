@@ -502,7 +502,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          *  comparing the ETag with the ifNoneMatch header.
          */
         auto completeResponse = [&] () {
-            if (not this->response ().responseStatusSent () and this->response ().status == HTTP::StatusCodes::kOK) {
+            if (not this->response ().responseStatusSent () and  HTTP::IsOK( this->response ().status)) {
                 if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
                     if (auto actualETag = this->response ().headers ().ETag ()) {
                         bool ctm = this->response ().chunkedTransferMode ();

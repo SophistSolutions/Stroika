@@ -33,7 +33,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         static void ThrowIfError (Status status, const String& reason = {});
         static void ThrowIfError (const String& status, const String& reason = {});
 
-        static bool IsHTTPStatusOK (Status status);
+        [[deprecated ("Since Stroika v3.0d14 use IsOK directly")]] static bool IsHTTPStatusOK (Status status)
+        {
+            return IsOK (status);
+        }
 
     public:
         /*

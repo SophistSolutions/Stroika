@@ -3684,6 +3684,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />

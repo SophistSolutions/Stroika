@@ -1100,6 +1100,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Request.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Response.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl" />
