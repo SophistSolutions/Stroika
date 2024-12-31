@@ -122,7 +122,7 @@ String Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
 
 void Exception::ThrowIfError (Status status, const String& reason)
 {
-    if (IsHTTPStatusOK (status)) [[likely]] {
+    if (IsOK (status)) [[likely]] {
         // OK - ignore
     }
     else {

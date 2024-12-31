@@ -34,7 +34,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     }
     inline bool Response::GetSucceeded () const
     {
-        return HTTP::Exception::IsHTTPStatusOK (fStatus_);
+        return HTTP::IsOK (fStatus_);
     }
     inline bool Response::GetFailed () const
     {
