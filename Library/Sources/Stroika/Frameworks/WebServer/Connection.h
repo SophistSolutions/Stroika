@@ -268,9 +268,10 @@ namespace Stroika::Frameworks::WebServer {
         optional<HTTP::KeepAlive>                              fRemaining_;
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
         // Sigh: atomic doesn't work with time_point, nor optional! - so use double and sentinel
-        atomic<double>     fStartHandleMessage_; // 0 sentinel
-        atomic<double>     fCompletedHandleMessage_;
-        atomic<thread::id> fHandlingThread_; // thread::id{} sentinel
+        static constexpr double kAtomicTimeSentinel_ = -1;
+        atomic<double>          fStartHandleMessage_{kAtomicTimeSentinel_};
+        atomic<double>          fCompletedHandleMessage_{kAtomicTimeSentinel_};
+        atomic<thread::id>      fHandlingThread_; // thread::id{} sentinel
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::TextWriter::Ptr fLogConnectionState_;

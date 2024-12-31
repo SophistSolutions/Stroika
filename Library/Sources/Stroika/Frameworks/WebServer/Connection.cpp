@@ -219,11 +219,11 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
         TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
         // all this mishigas is due to atomic<optional<...>> stuff not working - sigh - apparently still not allowed in C++23 (26?)
-        DurationSeconds            b1   = DurationSeconds{thisObj->fStartHandleMessage_.load ()};
-        DurationSeconds            e1   = DurationSeconds{thisObj->fCompletedHandleMessage_.load ()};
+        DurationSeconds::rep       b1   = thisObj->fStartHandleMessage_.load ();
+        DurationSeconds::rep       e1   = thisObj->fCompletedHandleMessage_.load ();
         thread::id                 tid1 = thisObj->fHandlingThread_.load ();
-        optional<TimePointSeconds> b    = b1 != DurationSeconds{} ? TimePointSeconds{b1} : optional<TimePointSeconds>{};
-        optional<TimePointSeconds> e    = e1 != DurationSeconds{} ? TimePointSeconds{e1} : optional<TimePointSeconds>{};
+        optional<TimePointSeconds> b    = b1 != kAtomicTimeSentinel_ ? TimePointSeconds{DurationSeconds{b1}} : optional<TimePointSeconds>{};
+        optional<TimePointSeconds> e    = e1 != kAtomicTimeSentinel_ ? TimePointSeconds{DurationSeconds{e1}} : optional<TimePointSeconds>{};
         optional<thread::id>       tid  = tid1 == thread::id{} ? optional<thread::id>{} : tid1;
 #endif
         Stats stats{.fSocketID  = uniqueID,
@@ -351,7 +351,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
         fStartHandleMessage_     = Time::GetTickCount ().time_since_epoch ().count ();
-        fCompletedHandleMessage_ = 0;
+        fCompletedHandleMessage_ = kAtomicTimeSentinel_;
         fHandlingThread_         = std::this_thread::get_id ();
         [[maybe_unused]] auto&& cleanup2 =
             Finally ([&] () noexcept { fCompletedHandleMessage_ = Time::GetTickCount ().time_since_epoch ().count (); });
