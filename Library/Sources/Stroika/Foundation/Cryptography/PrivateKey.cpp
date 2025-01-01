@@ -4,11 +4,11 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_OpenSSL
-#include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 #else
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
-#include "Certificate.h"
+#include "PrivateKey.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
@@ -18,13 +18,13 @@ using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- **************************** Cryptography::Certificate *************************
+ **************************** Cryptography::PrivateKey **************************
  ********************************************************************************
  */
-auto Cryptography::Certificate::New (const PEMFile& pemFile) -> Ptr
+auto Cryptography::PrivateKey::New (const PEMFile& pem) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::Certificate::New (pemFile);
+    return Cryptography::OpenSSL::PrivateKey::New (pem);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

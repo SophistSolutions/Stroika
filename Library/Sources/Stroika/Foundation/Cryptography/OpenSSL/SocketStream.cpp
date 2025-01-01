@@ -16,6 +16,7 @@
 #include <openssl/ssl.h>
 #endif
 
+#include "Stroika/Foundation/Cryptography/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedInputOutputStream.h"
 
@@ -31,28 +32,34 @@ using std::byte;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
-    // @todo wrong use OPENSSL API
+    // @todo wrong use OPENSSL API -- very rough draft of almost using SSL for IO - initail part of connect might be righ tnow...
     class Rep_ : public InputOutputStream::IRep<byte> {
     public:
-        bool           fOpenForRead_{true};
-        bool           fOpenForWrite_{true};
-        SeekOffsetType fReadSeekOffset_{};
-        SSL_CTX*       ctx = SSL_CTX_new (TLS_server_method ());
+        bool                                                              fOpenForRead_{true};
+        bool                                                              fOpenForWrite_{true};
+        SeekOffsetType                                                    fReadSeekOffset_{};
+        variant<OpenSSL::ClientContext::Ptr, OpenSSL::ServerContext::Ptr> fContext_;
+        ::SSL* fSSLConnection_{nullptr}; // cache actual ptr - for slight temporary brevity
 
         Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd, const OpenSSL::ClientContext::Options& o)
             : fSD_{sd}
+            , fContext_{OpenSSL::ClientContext::New (o)}
+            , fSSLConnection_{::SSL_new (get<OpenSSL::ClientContext::Ptr> (fContext_)->Get_SSL_CTX ())}
         {
-            //if (SSL_CTX_use_certificate (ctx, o.fClientCertificate->AsXXX()->Get_X509()) <= 0) {
-            //    // Handle error
-            //}
-            //if (SSL_CTX_use_certificate_file (ctx, "cert.pem", SSL_FILETYPE_PEM) <= 0) {
-            //    std::cerr << "Error loading certificate\n";
-            //    // Handle error
-            //}
+            OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_set_fd (fSSLConnection_, static_cast<int> (fSD_.GetNativeSocket ())));
         }
         Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd, const OpenSSL::ServerContext::Options& o)
             : fSD_{sd}
+            , fContext_{OpenSSL::ServerContext::New (o)}
+            , fSSLConnection_{::SSL_new (get<OpenSSL::ServerContext::Ptr> (fContext_)->Get_SSL_CTX ())}
         {
+            OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_set_fd (fSSLConnection_, static_cast<int> (fSD_.GetNativeSocket ())));
+        }
+        ~Rep_ ()
+        {
+            // almost - maybe??? - maybe do SSL_shutdown on the close...
+            ::SSL_shutdown (fSSLConnection_);
+            ::SSL_free (fSSLConnection_);
         }
         virtual bool IsSeekable () const override
         {

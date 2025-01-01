@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
-#include "Certificate.h"
+#include "PrivateKey.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -25,36 +25,30 @@ using namespace Stroika::Foundation::Debug;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
-    struct Rep_ : Cryptography::OpenSSL::Certificate::IRep {
+    struct Rep_ : Cryptography::OpenSSL::PrivateKey::IRep {
 
-        X509* fCert_{nullptr};
+        EVP_PKEY* fKey_{nullptr};
 
         Rep_ (const PEMFile& pem)
         {
-            auto d   = pem.fData.As<span<const uint8_t>> ();
-            auto dd  = d.data ();
-            BIO* bio = ::BIO_new_mem_buf (dd, static_cast<int> (d.size ())); // example had sz -1, but seems probably wrong here
-            fCert_   = ::PEM_read_bio_X509 (bio, NULL, NULL, NULL);
-            ::BIO_free (bio);
-            if (fCert_ == nullptr) {
-                throw ("oops");
-                // fprintf(stderr, "Error reading certificate: %s\n", ERR_error_string(ERR_get_error(), NULL));
-            }
+            auto d  = pem.fData.As<span<const uint8_t>> ();
+            auto dd = d.data ();
+            fKey_   = ::b2i_PrivateKey (&dd, static_cast<long> (d.size ())); // cannot find docs on this API
         }
         ~Rep_ ()
         {
-            ::X509_free (fCert_);
+            ::EVP_PKEY_free (fKey_);
         }
-        virtual X509* Get_X509 () const override
+        virtual EVP_PKEY* Get_EVP_PKEY () const override
         {
-            return fCert_;
+            return fKey_;
         }
     };
 }
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-auto Cryptography::OpenSSL::Certificate::New (const PEMFile& pem) -> Ptr
+auto Cryptography::OpenSSL::PrivateKey::New (const PEMFile& pem) -> Ptr
 {
     return make_shared<Rep_> (pem);
 }

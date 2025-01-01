@@ -26,7 +26,10 @@ vpath %cpp $(SrcDir)
 
 
 Objs	:=	\
+	$(ObjDir)Certificate${OBJ_SUFFIX}\
 	$(ObjDir)Format${OBJ_SUFFIX}\
+	$(ObjDir)PrivateKey${OBJ_SUFFIX}\
+	$(ObjDir)PEMFile${OBJ_SUFFIX}\
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 

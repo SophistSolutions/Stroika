@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_OpenSSL_Certificate_h_
-#define _Stroika_Foundation_Cryptography_OpenSSL_Certificate_h_ 1
+#ifndef _Stroika_Foundation_Cryptography_OpenSSL_PrivateKey_h_
+#define _Stroika_Foundation_Cryptography_OpenSSL_PrivateKey_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -14,25 +14,25 @@
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Cryptography/Certificate.h"
+#include "Stroika/Foundation/Cryptography/PrivateKey.h"
 
-namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
+namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
 
     /**
      */
-    struct IRep : Cryptography::Certificate::IRep {
-        virtual X509* Get_X509 () const = 0;
+    struct IRep : Cryptography::PrivateKey::IRep {
+        virtual EVP_PKEY* Get_EVP_PKEY () const = 0;
     };
 
     /**
-     */
+    */
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
          */
         using inherited::inherited;
 
-        Ptr (Cryptography::Certificate::Ptr p)
+        Ptr (Cryptography::PrivateKey::Ptr p)
         {
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {
                 *this = Ptr{pp};
@@ -42,16 +42,14 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
             }
         }
 
-        X509* Get_X509 () const
+        EVP_PKEY* Get_EVP_PKEY () const
         {
-            return get ()->Get_X509 ();
+            return get ()->Get_EVP_PKEY ();
         }
     };
 
-    /**
-     *  \brief Construct a Certificate object (for now just supported from PEMFile)
-     */
-    Ptr New (const PEMFile& pemFile);
+    // @todo VERY rough - needs optional private key, and TYPE info
+    Ptr New (const PEMFile& pem);
 
 }
 
@@ -61,4 +59,4 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
  ********************************************************************************
  */
 
-#endif /*_Stroika_Foundation_Cryptography_OpenSSL_Certificate_h_*/
+#endif /*_Stroika_Foundation_Cryptography_OpenSSL_PrivateKey_h_*/

@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/Certificate.h"
+#include "Stroika/Foundation/Cryptography/PrivateKey.h"
 #include "Stroika/Foundation/Cryptography/SSL/Common.h"
 
 namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
@@ -28,7 +29,11 @@ namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
      */
     struct Options {
         // @todo  typical args here are -METHOD : SSL-VERSION (TLS1.3, etc) - CERT, and PRIVATE KEY
-        Certificate::Ptr fCertificate;
+
+        /**
+         *  To server SSL, need both private key and public CERT
+         */
+        tuple<PrivateKey::Ptr, Certificate::Ptr> fCertificate;
     };
 
     /**

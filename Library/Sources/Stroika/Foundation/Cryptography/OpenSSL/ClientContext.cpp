@@ -8,6 +8,9 @@
 #include <openssl/ssl.h>
 #endif
 
+#include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/Exception.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
@@ -32,16 +35,15 @@ namespace {
             : fCtx_{SSL_CTX_new (TLS_client_method ()), SSL_CTX_free}
         {
             if (o.fClientCertificate) {
-                // Load client certificate and key (if required)
-                // if (SSL_CTX_use_certificate_file(ctx.get(), "client.crt", SSL_FILETYPE_PEM) <= 0) {
-                //     std::cerr << "Error loading client certificate: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
-                //     return 1;
-                // }
-                // if (SSL_CTX_use_PrivateKey_file(ctx.get(), "client.key", SSL_FILETYPE_PEM) <= 0) {
-                //     std::cerr << "Error loading client private key: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
-                //     return 1;
-                // }
+                Cryptography::Certificate::Ptr clientCert = get<Cryptography::Certificate::Ptr> (*o.fClientCertificate);
+                OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_certificate (fCtx_.get (), OpenSSL::Certificate::Ptr{clientCert}.Get_X509 ()));
+                Cryptography::PrivateKey::Ptr pkey = get<Cryptography::PrivateKey::Ptr> (*o.fClientCertificate);
+                OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_PrivateKey (fCtx_.get (), OpenSSL::PrivateKey::Ptr{pkey}.Get_EVP_PKEY ()));
             }
+        }
+        SSL_CTX* Get_SSL_CTX () const override
+        {
+            return fCtx_.get ();
         }
     };
 }

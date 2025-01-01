@@ -17,14 +17,18 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::ClientContext {
 
-    struct IRep : Cryptography::SSL::ClientContext::IRep {};
     /**
-         */
+     */
+    struct IRep : Cryptography::SSL::ClientContext::IRep {
+        virtual SSL_CTX* Get_SSL_CTX () const = 0;
+    };
+
+    /**
+     */
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
-             *  @todo fix - inherit fewer CTORS - must be from OpenSSL
-             */
+         */
         using inherited::inherited;
     };
 

@@ -17,22 +17,36 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::ServerContext {
 
+    /**
+     */
     struct IRep : Cryptography::SSL::ServerContext::IRep {
-
         virtual SSL_CTX* Get_SSL_CTX () const = 0;
     };
+
     /**
      */
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
-             *   @todo fix - inherit fewer CTORS - must be from OpenSSL IRep
-             */
+         */
         using inherited::inherited;
-    };
-    // Need function SSL::Ptr -> OpenSSL::Ptr (or throw, or assert?)
 
-    struct Options : SSL::ServerContext::Options {};
+        Ptr (SSL::ServerContext::Ptr p)
+        {
+            if (auto pp = dynamic_pointer_cast<IRep> (p)) {
+                *this = Ptr{pp};
+            }
+            else {
+                // Need function SSL::Ptr -> OpenSSL::Ptr (or throw, or assert?)
+                throw ("oops");
+            }
+        }
+    };
+
+    struct Options : SSL::ServerContext::Options {
+
+        const SSL_METHOD* fMethod{nullptr}; // e.g. TLS_1.3_method ()
+    };
 
     /**
      */

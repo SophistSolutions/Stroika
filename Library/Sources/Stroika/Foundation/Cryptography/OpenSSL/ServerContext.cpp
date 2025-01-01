@@ -8,6 +8,9 @@
 #include <openssl/ssl.h>
 #endif
 
+#include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/Exception.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
@@ -26,27 +29,17 @@ using namespace Stroika::Foundation::Debug;
 namespace {
     using OpenSSL::ServerContext::Options;
     struct Rep_ : OpenSSL::ServerContext::IRep {
-        unique_ptr<SSL_CTX, decltype (&SSL_CTX_free)> fCtx_;
+        unique_ptr<SSL_CTX, decltype (&::SSL_CTX_free)> fCtx_;
 
         Rep_ (const Options& o)
-            : fCtx_{SSL_CTX_new (TLS_client_method ()), SSL_CTX_free} // wrong method and will need args
+            : fCtx_{SSL_CTX_new (o.fMethod), ::SSL_CTX_free}
         {
-            RequireNotNull (o.fCertificate);
-            // if (SSL_CTX_use_certificate (fCtx_.get (), o.fCertificate.GetX509()) <= 0) {
-            ////     std::cerr << "Error loading certificate\n";
-            //     // Handle error
-
-            // }
-            //// Load certificate and private key
-            //if (SSL_CTX_use_certificate_file (ctx, "cert.pem", SSL_FILETYPE_PEM) <= 0) {
-            //    std::cerr << "Error loading certificate\n";
-            //    // Handle error
-            //}
-
-            //if (SSL_CTX_use_PrivateKey_file (ctx, "key.pem", SSL_FILETYPE_PEM) <= 0) {
-            //    std::cerr << "Error loading private key\n";
-            //    // Handle error
-            //}
+            RequireNotNull (get<Cryptography::Certificate::Ptr> (o.fCertificate));
+            OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_certificate (
+                fCtx_.get (), OpenSSL::Certificate::Ptr{get<Cryptography::Certificate::Ptr> (o.fCertificate)}.Get_X509 ()));
+            RequireNotNull (get<Cryptography::PrivateKey::Ptr> (o.fCertificate));
+            OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_PrivateKey (
+                fCtx_.get (), OpenSSL::PrivateKey::Ptr{get<Cryptography::PrivateKey::Ptr> (o.fCertificate)}.Get_EVP_PKEY ()));
         }
 
         virtual SSL_CTX* Get_SSL_CTX () const override

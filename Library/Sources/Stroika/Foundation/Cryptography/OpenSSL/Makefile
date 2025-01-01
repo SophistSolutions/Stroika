@@ -18,12 +18,14 @@ SubDirs	:=	\
 vpath %cpp $(SrcDir)
 
 Objs	:=	\
+	$(ObjDir)Certificate${OBJ_SUFFIX}\
 	$(ObjDir)CipherAlgorithm${OBJ_SUFFIX}\
 	$(ObjDir)ClientContext${OBJ_SUFFIX}\
 	$(ObjDir)DigestAlgorithm${OBJ_SUFFIX}\
 	$(ObjDir)DerivedKey${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)LibraryContext${OBJ_SUFFIX}\
+	$(ObjDir)PrivateKey${OBJ_SUFFIX}\
 	$(ObjDir)ServerContext${OBJ_SUFFIX}\
 	$(ObjDir)SocketStream${OBJ_SUFFIX}\
 

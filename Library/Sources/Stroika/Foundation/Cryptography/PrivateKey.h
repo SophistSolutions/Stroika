@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_Certificate_h_
-#define _Stroika_Foundation_Cryptography_Certificate_h_ 1
+#ifndef _Stroika_Foundation_Cryptography_PrivateKey_h_
+#define _Stroika_Foundation_Cryptography_PrivateKey_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Cryptography/PEMFile.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
-namespace Stroika::Foundation::Cryptography::Certificate {
+namespace Stroika::Foundation::Cryptography::PrivateKey {
 
     /**
      */
@@ -33,11 +33,10 @@ namespace Stroika::Foundation::Cryptography::Certificate {
         // add to/update?
     };
 
-    Ptr New (const PEMFile& pemFile);
-
-    // and example loading PEM .CER files...
-    // (regtests)
-    // @todo add 'make self-signed-cert' https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
+    /**
+     *  \brief Create a PrivateKey (for now just from a PEM file)
+     */
+    Ptr New (const PEMFile& pem);
 
 }
 
@@ -47,4 +46,4 @@ namespace Stroika::Foundation::Cryptography::Certificate {
  ********************************************************************************
  */
 
-#endif /*_Stroika_Foundation_Cryptography_Certificate_h_*/
+#endif /*_Stroika_Foundation_Cryptography_PrivateKey_h_*/

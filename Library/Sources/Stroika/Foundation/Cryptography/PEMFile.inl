@@ -1,0 +1,17 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
+ */
+
+namespace Stroika::Foundation::Cryptography {
+
+    /*
+     ********************************************************************************
+     ************************ Cryptography::PEMFile *********************************
+     ********************************************************************************
+     */
+    inline PEMFile::PEMFile (const Memory::BLOB& b)
+        : fData{b}
+    {
+    }
+
+}
