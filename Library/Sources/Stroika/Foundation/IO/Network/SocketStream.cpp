@@ -44,6 +44,7 @@ namespace {
                     fSD_.Close ();
                     fSD_.reset ();
                 }
+                fOpenForWrite_ = false;
             }
             Ensure (not IsOpenWrite ());
         }
@@ -59,6 +60,7 @@ namespace {
                     fSD_.Close ();
                     fSD_.reset ();
                 }
+                fOpenForRead_ = false;
             }
             Ensure (not IsOpenRead ());
         }

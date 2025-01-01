@@ -157,7 +157,7 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
-             *  Automatically call Shutdown () when closing socket, and Wait this number of seconds to recieve the
+             *  Automatically call Shutdown () when closing socket, and Wait this number of seconds to receive the
              *  peer's close acknowledgment. If missing, don't automatically call Shutdown, nor do any waiting for the acknowledgment.
              *
              *  @see SetAutomaticTCPDisconnectOnClose ()
