@@ -21,17 +21,24 @@ namespace Stroika::Foundation::Cryptography::Certificate {
     };
 
     /**
-         */
+     */
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
              *  inherit all CTORS from base
              */
         using inherited::inherited;
+
+        // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe 
+        // add to/update?
     };
 
     // @todo VERY rough - needs optional private key, and TYPE info
     Ptr New (Memory::BLOB pubKey, Memory::BLOB privateKey);
+
+    // and example loading PEM .CER files...
+    // (regtests)
+    // @todo add 'make self-signed-cert' https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
 
 }
 

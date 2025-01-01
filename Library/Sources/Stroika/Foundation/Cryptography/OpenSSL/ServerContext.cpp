@@ -24,17 +24,29 @@ using namespace Stroika::Foundation::Debug;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
+    using OpenSSL::ServerContext::Options;
     struct Rep_ : OpenSSL::ServerContext::IRep {
         unique_ptr<SSL_CTX, decltype (&SSL_CTX_free)> fCtx_;
 
-        Rep_ ()
+        Rep_ (const Options& o)
             : fCtx_{SSL_CTX_new (TLS_client_method ()), SSL_CTX_free} // wrong method and will need args
         {
-        }
+            RequireNotNull (o.fCertificate);
+            // if (SSL_CTX_use_certificate (fCtx_.get (), o.fCertificate.GetX509()) <= 0) {
+            ////     std::cerr << "Error loading certificate\n";
+            //     // Handle error
 
-        virtual void UseCert ([[maybe_unused]] const Certificate::Ptr& c) override
-        {
-            //NYI
+            // }
+            //// Load certificate and private key
+            //if (SSL_CTX_use_certificate_file (ctx, "cert.pem", SSL_FILETYPE_PEM) <= 0) {
+            //    std::cerr << "Error loading certificate\n";
+            //    // Handle error
+            //}
+
+            //if (SSL_CTX_use_PrivateKey_file (ctx, "key.pem", SSL_FILETYPE_PEM) <= 0) {
+            //    std::cerr << "Error loading private key\n";
+            //    // Handle error
+            //}
         }
 
         virtual SSL_CTX* Get_SSL_CTX () const override
@@ -46,8 +58,8 @@ namespace {
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-auto Cryptography::OpenSSL::ServerContext::New () -> Ptr
+auto Cryptography::OpenSSL::ServerContext::New (const Options& o) -> Ptr
 {
-    return make_shared<Rep_> ();
+    return make_shared<Rep_> (o);
 }
 #endif

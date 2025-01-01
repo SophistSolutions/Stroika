@@ -21,7 +21,7 @@ using namespace Stroika::Foundation::Execution;
  ************************ Cryptography::SSL::ClientContext **********************
  ********************************************************************************
  */
-auto Cryptography::SSL::ClientContext::New ([[maybe_unused]]const Options& options) -> Ptr
+auto Cryptography::SSL::ClientContext::New ([[maybe_unused]] const Options& options) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::OpenSSL::ClientContext::New (options);

@@ -21,10 +21,10 @@ using namespace Stroika::Foundation::Execution;
  ************************ Cryptography::SSL::ServerContext **********************
  ********************************************************************************
  */
-auto Cryptography::SSL::ServerContext::New () -> Ptr
+auto Cryptography::SSL::ServerContext::New ([[maybe_unused]] const Options& o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::ServerContext::New ();
+    return Cryptography::OpenSSL::ServerContext::New (o);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

@@ -26,17 +26,12 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::ClientContext {
              *  @todo fix - inherit fewer CTORS - must be from OpenSSL
              */
         using inherited::inherited;
-
-
     };
 
-    struct Options : SSL::ClientContext::Options {
-        using SSL::ClientContext::Options::Options;
-    };
-
+    struct Options : SSL::ClientContext::Options {};
 
     /**
-         */
+     */
     Ptr New (const Options& o = {});
 
 }

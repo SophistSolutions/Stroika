@@ -30,10 +30,14 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::ServerContext {
              */
         using inherited::inherited;
     };
+    // Need function SSL::Ptr -> OpenSSL::Ptr (or throw, or assert?)
+
+
+    struct Options : SSL::ServerContext::Options {};
 
     /**
      */
-    Ptr New ();
+    Ptr New (const Options& o);
 
 }
 

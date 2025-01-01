@@ -14,22 +14,25 @@
 
 namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
 
-    // Certs, policies, options etc - for a client trying to open an SSL connection
-
-    // typical args here are - SSL-VERSION (TLS1.3, etc) - CERT, and PRIVATE KEY
     /**
-         */
+     */
     class IRep {
     public:
         virtual ~IRep () = 0;
-
-    public:
-        // early draft of this API - need to add 'type' - really define CERT object in another file
-        virtual void UseCert (const Certificate::Ptr& c) = 0;
+    };
+    /**
+     *  \note Design Note:
+     *      Could have had get/set properites on IRep, or passed in Options. The former a bit more flexible
+     *      but that flexability rarely (never) used, so go with simpler API, which may be easier to adapt to
+     *      diffderent backend ssl impls (and simpler threading implications).
+     */
+    struct Options {
+        // @todo  typical args here are -METHOD : SSL-VERSION (TLS1.3, etc) - CERT, and PRIVATE KEY
+        Certificate::Ptr fCertificate;
     };
 
     /**
-         */
+     */
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
@@ -38,7 +41,7 @@ namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
         using inherited::inherited;
     };
 
-    Ptr New ();
+    Ptr New (const Options& o);
 
 }
 

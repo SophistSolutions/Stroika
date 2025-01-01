@@ -11,7 +11,6 @@
 #include <cstdlib>
 
 #if qStroika_HasComponent_OpenSSL
-//#include <openssl/applink.c>
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
@@ -23,6 +22,7 @@
 #include "SocketStream.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
@@ -37,7 +37,20 @@ namespace {
         bool           fOpenForRead_{true};
         bool           fOpenForWrite_{true};
         SeekOffsetType fReadSeekOffset_{};
-        Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd)
+        SSL_CTX*       ctx = SSL_CTX_new (TLS_server_method ());
+
+        Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd, const OpenSSL::ClientContext::Options& o)
+            : fSD_{sd}
+        {
+            //if (SSL_CTX_use_certificate (ctx, o.fClientCertificate->AsXXX()->Get_X509()) <= 0) {
+            //    // Handle error
+            //}
+            //if (SSL_CTX_use_certificate_file (ctx, "cert.pem", SSL_FILETYPE_PEM) <= 0) {
+            //    std::cerr << "Error loading certificate\n";
+            //    // Handle error
+            //}
+        }
+        Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd, const OpenSSL::ServerContext::Options& o)
             : fSD_{sd}
         {
         }
@@ -145,23 +158,12 @@ namespace {
  ****************** Cryptography::OpenSSL::SocketStream *************************
  ********************************************************************************
  */
-auto Cryptography::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
+auto Cryptography::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (sd)};
+    return Ptr{make_shared<Rep_> (sd, o)};
 }
-
-auto Cryptography::OpenSSL::SocketStream::New (Execution::InternallySynchronized          internallySynchronized,
-                                               const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
+auto Cryptography::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ServerContext::Options& o) -> Ptr
 {
-    switch (internallySynchronized) {
-        case Execution::eInternallySynchronized:
-            return InternallySynchronizedInputOutputStream::New<Rep_> ({}, sd);
-        case Execution::eNotKnownInternallySynchronized:
-            return New (sd);
-        default:
-            RequireNotReached ();
-            return nullptr;
-    }
+    return Ptr{make_shared<Rep_> (sd, o)};
 }
-
 #endif

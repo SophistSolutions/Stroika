@@ -19,23 +19,21 @@ using namespace Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- **************************** IO::Network::SocketStream *************************
+ ************************* Cryptography::SSL::SocketStream **********************
  ********************************************************************************
  */
-auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Cryptography::SSL::SocketStream::Ptr
+auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::SocketStream::New (sd);
+    return OpenSSL::SocketStream::New (sd, OpenSSL::ClientContext::Options{o});
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
 }
-
-auto Cryptography::SSL::SocketStream::New (InternallySynchronized                     internallySynchronized,
-                                           const ConnectionOrientedStreamSocket::Ptr& sd) -> Cryptography::SSL::SocketStream::Ptr
+auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ServerContext::Options& o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::SocketStream::New (internallySynchronized, sd);
+    return OpenSSL::SocketStream::New (sd, OpenSSL::ServerContext::Options{o});
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

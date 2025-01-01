@@ -10,6 +10,7 @@
 
 #if qStroika_HasComponent_OpenSSL
 #include <openssl/ssl.h>
+#include <openssl/x509.h>
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
@@ -17,7 +18,10 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
 
-    struct IRep : Cryptography::Certificate::IRep {};
+    struct IRep : Cryptography::Certificate::IRep {
+
+        virtual const X509* Get_X509 () const = 0;
+    };
     /**
          */
     struct Ptr : shared_ptr<IRep> {

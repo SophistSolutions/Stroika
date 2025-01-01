@@ -6,7 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Cryptography/OpenSSL/ClientContext.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/LibraryContext.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/ServerContext.h"
 #include "Stroika/Foundation/Cryptography/SSL/SocketStream.h"
 
 /**
@@ -24,8 +26,8 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::SocketStream {
      */
     using Ptr = Cryptography::SSL::SocketStream::Ptr;
 
-    Ptr New (Execution::InternallySynchronized internallySynchronized, const IO::Network::ConnectionOrientedStreamSocket::Ptr& sd);
-    Ptr New (const IO::Network::ConnectionOrientedStreamSocket::Ptr& sd);
+    Ptr New (const IO::Network::ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o);
+    Ptr New (const IO::Network::ConnectionOrientedStreamSocket::Ptr& sd, const ServerContext::Options& o);
 #endif
 
 }

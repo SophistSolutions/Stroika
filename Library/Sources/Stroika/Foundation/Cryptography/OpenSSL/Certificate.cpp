@@ -26,8 +26,13 @@ using namespace Stroika::Foundation::Debug;
 namespace {
     struct Rep_ : Cryptography::OpenSSL::Certificate::IRep {
 
-        Rep_ ()
+        Rep_ (Memory::BLOB pubKey, Memory::BLOB privateKey)
         {
+        }
+
+        virtual const X509* Get_X509 () const override
+        {
+            return nullptr;
         }
     };
 }
@@ -36,6 +41,6 @@ namespace {
 #if qStroika_HasComponent_OpenSSL
 auto Cryptography::OpenSSL::Certificate::New (Memory::BLOB pubKey, Memory::BLOB privateKey) -> Ptr
 {
-    return make_shared<Rep_> ();
+    return make_shared<Rep_> (pubKey, privateKey);
 }
 #endif
