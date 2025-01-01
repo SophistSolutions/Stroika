@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Cryptography::Certificate {
              */
         using inherited::inherited;
 
-        // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe 
+        // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
         // add to/update?
     };
 

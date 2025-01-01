@@ -32,7 +32,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::ServerContext {
     };
     // Need function SSL::Ptr -> OpenSSL::Ptr (or throw, or assert?)
 
-
     struct Options : SSL::ServerContext::Options {};
 
     /**
