@@ -6,8 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <string>
-#include <vector>
+#include <memory>
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/SSL/Common.h"
@@ -15,7 +14,16 @@
 namespace Stroika::Foundation::Cryptography::SSL {
 
     // Certs, policies, options etc - for a client trying to open an SSL connection
-    class ClientContext {};
+    namespace ClientContext {
+
+        class IRep {
+        public:
+            virtual ~IRep () = 0;
+        };
+        using Ptr = shared_ptr<IRep>;
+
+        Ptr New ();
+    };
 }
 
 /*

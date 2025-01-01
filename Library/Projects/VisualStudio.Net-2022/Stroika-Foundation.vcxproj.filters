@@ -864,6 +864,18 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ClientContext.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2247,6 +2259,12 @@
       <Filter>Sources\Cryptography\SSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ClientContext.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3718,6 +3736,12 @@
       <Filter>Sources\Cryptography\SSL</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.inl">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ClientContext.inl">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
   </ItemGroup>
