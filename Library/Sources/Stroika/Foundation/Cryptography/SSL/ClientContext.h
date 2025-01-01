@@ -10,20 +10,38 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/SSL/Common.h"
+#include "Stroika/Foundation/Cryptography/Certificate.h"
 
-namespace Stroika::Foundation::Cryptography::SSL {
+namespace Stroika::Foundation::Cryptography::SSL::ClientContext {
 
     // Certs, policies, options etc - for a client trying to open an SSL connection
-    namespace ClientContext {
 
-        class IRep {
-        public:
-            virtual ~IRep () = 0;
-        };
-        using Ptr = shared_ptr<IRep>;
-
-        Ptr New ();
+    /**
+         */
+    class IRep {
+    public:
+        virtual ~IRep () = 0;
     };
+
+    /**
+         */
+    struct Ptr : shared_ptr<IRep> {
+        using inherited = shared_ptr<IRep>;
+        /**
+             *  inherit all CTORS from base
+             */
+        using inherited::inherited;
+    };
+
+    
+        // todo add method for 'UseClientCert', or better to have OPTIONS object passed to NEW() probably sufficnet API and
+    // more flexibly applied to other backend apis maybe(non openssl crypto and threading issues)
+    struct Options {
+        optional<Certificate::Ptr> fClientCertificate;
+    };
+
+    Ptr New (const Options& options = {});
+
 }
 
 /*

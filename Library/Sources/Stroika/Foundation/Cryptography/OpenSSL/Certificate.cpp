@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
-#include "ServerContext.h"
+#include "Certificate.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -24,29 +24,17 @@ using namespace Stroika::Foundation::Debug;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
-    struct Rep_ : OpenSSL::ServerContext::IRep {
-        unique_ptr<SSL_CTX, decltype (&SSL_CTX_free)> fCtx_;
+    struct Rep_ : Cryptography::OpenSSL::Certificate::IRep {
 
         Rep_ ()
-            : fCtx_{SSL_CTX_new (TLS_client_method ()), SSL_CTX_free} // wrong method and will need args
         {
-        }
-
-        virtual void UseCert ([[maybe_unused]] const Certificate::Ptr& c) override
-        {
-            //NYI
-        }
-
-        virtual SSL_CTX* Get_SSL_CTX () const override
-        {
-            return fCtx_.get ();
         }
     };
 }
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-auto Cryptography::OpenSSL::ServerContext::New () -> Ptr
+auto Cryptography::OpenSSL::Certificate::New (Memory::BLOB pubKey, Memory::BLOB privateKey) -> Ptr
 {
     return make_shared<Rep_> ();
 }

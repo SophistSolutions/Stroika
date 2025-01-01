@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_OpenSSL_ServerContext_h_
-#define _Stroika_Foundation_Cryptography_OpenSSL_ServerContext_h_ 1
+#ifndef _Stroika_Foundation_Cryptography_OpenSSL_Certificate_h_
+#define _Stroika_Foundation_Cryptography_OpenSSL_Certificate_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -13,27 +13,23 @@
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Cryptography/SSL/ServerContext.h"
+#include "Stroika/Foundation/Cryptography/Certificate.h"
 
-namespace Stroika::Foundation::Cryptography::OpenSSL::ServerContext {
+namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
 
-    struct IRep : Cryptography::SSL::ServerContext::IRep {
-
-        virtual SSL_CTX* Get_SSL_CTX () const = 0;
-    };
+    struct IRep : Cryptography::Certificate::IRep {};
     /**
-     */
+         */
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
-             *   @todo fix - inherit fewer CTORS - must be from OpenSSL IRep
+             *  @todo fix - inherit fewer CTORS - must be from OpenSSL
              */
         using inherited::inherited;
     };
 
-    /**
-     */
-    Ptr New ();
+    // @todo VERY rough - needs optional private key, and TYPE info
+    Ptr New (Memory::BLOB pubKey, Memory::BLOB privateKey);
 
 }
 
@@ -43,4 +39,4 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::ServerContext {
  ********************************************************************************
  */
 
-#endif /*_Stroika_Foundation_Cryptography_OpenSSL_ServerContext_h_*/
+#endif /*_Stroika_Foundation_Cryptography_OpenSSL_Certificate_h_*/

@@ -24,20 +24,32 @@ using namespace Stroika::Foundation::Debug;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
-    struct Rep_ : Cryptography::SSL::ClientContext::IRep {
+    using Cryptography::OpenSSL::ClientContext::Options;
+    struct Rep_ : Cryptography::OpenSSL::ClientContext::IRep {
         unique_ptr<SSL_CTX, decltype (&SSL_CTX_free)> fCtx_;
 
-        Rep_ ()
+        Rep_ (const Options& o)
             : fCtx_{SSL_CTX_new (TLS_client_method ()), SSL_CTX_free}
         {
+            if (o.fClientCertificate) {
+                // Load client certificate and key (if required)
+                // if (SSL_CTX_use_certificate_file(ctx.get(), "client.crt", SSL_FILETYPE_PEM) <= 0) {
+                //     std::cerr << "Error loading client certificate: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
+                //     return 1;
+                // }
+                // if (SSL_CTX_use_PrivateKey_file(ctx.get(), "client.key", SSL_FILETYPE_PEM) <= 0) {
+                //     std::cerr << "Error loading client private key: " << ERR_error_string(ERR_get_error(), nullptr) << std::endl;
+                //     return 1;
+                // }
+            }
         }
     };
 }
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-auto Cryptography::OpenSSL::ClientContext::New () -> Ptr
+auto Cryptography::OpenSSL::ClientContext::New (const Options& o) -> Ptr
 {
-    return make_shared<Rep_> ();
+    return make_shared<Rep_> (o);
 }
 #endif

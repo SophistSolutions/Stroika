@@ -1,31 +1,23 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Cryptography_SSL_ServerContext_h_
-#define _Stroika_Foundation_Cryptography_SSL_ServerContext_h_ 1
+#ifndef _Stroika_Foundation_Cryptography_Certificate_h_
+#define _Stroika_Foundation_Cryptography_Certificate_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <memory>
 
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Cryptography/Certificate.h"
-#include "Stroika/Foundation/Cryptography/SSL/Common.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
-namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
+namespace Stroika::Foundation::Cryptography::Certificate {
 
-    // Certs, policies, options etc - for a client trying to open an SSL connection
-
-    // typical args here are - SSL-VERSION (TLS1.3, etc) - CERT, and PRIVATE KEY
     /**
          */
     class IRep {
     public:
         virtual ~IRep () = 0;
-
-    public:
-        // early draft of this API - need to add 'type' - really define CERT object in another file
-        virtual void UseCert (const Certificate::Ptr& c) = 0;
     };
 
     /**
@@ -38,7 +30,8 @@ namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
         using inherited::inherited;
     };
 
-    Ptr New ();
+    // @todo VERY rough - needs optional private key, and TYPE info
+    Ptr New (Memory::BLOB pubKey, Memory::BLOB privateKey);
 
 }
 
@@ -47,4 +40,5 @@ namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#endif /*_Stroika_Foundation_Cryptography_SSL_ServerContext_h_*/
+
+#endif /*_Stroika_Foundation_Cryptography_Certificate_h_*/
