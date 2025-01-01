@@ -32,7 +32,6 @@ using std::byte;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
-    // @todo wrong use OPENSSL API -- very rough draft of almost using SSL for IO - initail part of connect might be righ tnow...
     class Rep_ : public InputOutputStream::IRep<byte> {
     public:
         bool                                                              fOpenForRead_{true};
@@ -127,7 +126,6 @@ namespace {
             optional<span<byte>> result;
             switch (blockFlag) {
                 case NoDataAvailableHandling::eBlockIfNoDataAvailable: {
-
                     auto r = ::SSL_read (fSSLConnection_.get (), intoBuffer.data (), static_cast<int> (intoBuffer.size ()));
                     if (r > 0) {
                         result = intoBuffer.subspan (0, r);
