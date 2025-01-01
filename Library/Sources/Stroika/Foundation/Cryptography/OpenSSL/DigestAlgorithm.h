@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 #if qStroika_HasComponent_OpenSSL
 
     /**
-     *  \brief object oriented wrapper on OpenSSL digest algoritms (const EVP_MD*)
+     *  \brief object oriented wrapper on OpenSSL digest algorithms (const EVP_MD*)
      */
     class DigestAlgorithm {
     public:

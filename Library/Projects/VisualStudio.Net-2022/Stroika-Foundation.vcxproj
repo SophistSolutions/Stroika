@@ -101,6 +101,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.cpp" />
@@ -244,6 +246,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SystemFirewall.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.cpp" />
@@ -458,9 +461,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.h" />
@@ -649,6 +654,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SystemFirewall.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Connection.h" />
@@ -924,8 +930,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.inl" />
@@ -1119,6 +1127,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SystemFirewall.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Cache.inl" />

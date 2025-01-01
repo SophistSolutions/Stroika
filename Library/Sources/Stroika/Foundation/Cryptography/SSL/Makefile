@@ -15,7 +15,8 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 vpath %cpp $(SrcDir)
 
-Objs	:=
+Objs	:=	\
+	$(ObjDir)SocketStream${OBJ_SUFFIX}\
 
 
 all:	$(Objs)

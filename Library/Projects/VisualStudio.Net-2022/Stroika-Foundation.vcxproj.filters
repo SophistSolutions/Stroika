@@ -220,6 +220,9 @@
     <Filter Include="Sources\Common\Private">
       <UniqueIdentifier>{2af7d083-410c-43e9-bd89-782acc27acb1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\IO\Network\SSL">
+      <UniqueIdentifier>{f6761ec2-77f8-442c-9e7e-c6e37a0075a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -851,6 +854,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Common.cpp">
       <Filter>Sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.cpp">
+      <Filter>Sources\IO\Network\SSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.cpp">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2227,6 +2239,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\TypedBLOB.h">
       <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.h">
+      <Filter>Sources\IO\Network\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.h">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3686,6 +3707,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\Makefile">
+      <Filter>Sources\IO\Network\SSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.inl">
+      <Filter>Sources\IO\Network\SSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.inl">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.inl">
+      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

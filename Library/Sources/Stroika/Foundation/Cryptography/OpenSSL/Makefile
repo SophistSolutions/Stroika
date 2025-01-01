@@ -23,6 +23,7 @@ Objs	:=	\
 	$(ObjDir)DerivedKey${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)LibraryContext${OBJ_SUFFIX}\
+	$(ObjDir)SocketStream${OBJ_SUFFIX}\
 
 
 all:	$(Objs)  $(SubDirs)
