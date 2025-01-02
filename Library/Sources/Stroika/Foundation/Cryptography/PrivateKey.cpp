@@ -8,6 +8,8 @@
 #else
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
+#include "Stroika/Foundation/Characters/ToString.h"
+
 #include "PrivateKey.h"
 
 using namespace Stroika::Foundation;
@@ -24,7 +26,13 @@ using namespace Stroika::Foundation::Execution;
  */
 auto Cryptography::PrivateKey::Ptr::ToString () const -> String
 {
-    return String{}; //tmphack
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "type: "sv << this->GetType ();
+    sb << ", bits: "sv << this->GetBits ();
+    sb << ", summary: "sv << this->GetPrintSummary ();
+    sb << "}"sv;
+    return sb;
 }
 #if 0
 /*

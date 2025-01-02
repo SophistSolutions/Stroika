@@ -10,16 +10,23 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
-//#include "Stroika/Foundation/Cryptography/PEMFile.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 namespace Stroika::Foundation::Cryptography::PrivateKey {
+
+    using Characters::String;
+    using Memory::BLOB;
 
     /**
      */
     class IRep {
     public:
         virtual ~IRep () = default;
+
+        // @todo type notion not super useful like this
+        virtual int          GetType () const         = 0;
+        virtual unsigned int GetBits () const         = 0;
+        virtual String       GetPrintSummary () const = 0;
     };
 
     /**
@@ -32,14 +39,27 @@ namespace Stroika::Foundation::Cryptography::PrivateKey {
 
         Characters::String ToString () const;
 
-        // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
-        // add to/update?
+        int GetType () const
+        {
+            return get ()->GetType ();
+        }
+        // the cryptographic length of the cryptosystem to which the key in pkey belongs, in bits
+        unsigned int GetBits () const
+        {
+            return get ()->GetBits ();
+        }
+        String GetPrintSummary () const
+        {
+            return get ()->GetPrintSummary ();
+        }
     };
 
+#if 0
     /**
      *  \brief Create a PrivateKey (for now just from a PEM file)
      */
     //Ptr New (const PEMFile& pem);
+#endif
 
 }
 

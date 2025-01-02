@@ -9,14 +9,17 @@
 #include <openssl/ssl.h>
 #endif
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
 #include "Certificate.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Debug;
@@ -55,6 +58,35 @@ namespace {
         {
         }
 #endif
+        virtual String GetSubjectName () const override
+        {
+            X509_NAME* subjectName = X509_get_subject_name (fCert_.get ());
+            return ""sv;
+        }
+        virtual Mapping<String, String> GetCommonNames () const override
+
+        {
+            Mapping<String, String> r;
+
+            X509_NAME* subjectName = X509_get_subject_name (fCert_.get ());
+
+            int numEntries = X509_NAME_entry_count (subjectName);
+            for (int i = 0; i < numEntries; ++i) {
+                X509_NAME_ENTRY* entry = X509_NAME_get_entry (subjectName, i);
+
+                // Check if the entry is a Common Name (CN)
+                ASN1_OBJECT* nid = X509_NAME_ENTRY_get_object (entry);
+                if (OBJ_cmp (nid, OBJ_nid2obj (NID_commonName)) == 0) {
+                    // Extract and print the CN value
+                    unsigned char* cn = X509_NAME_ENTRY_get_data (entry)->data;
+
+                    String nnn = String::FromUTF8 ((const char*)cn);
+                    DbgTrace ("nnn={}"_f, nnn);
+                    //  std::cout << "CN: " << cn << std::endl;
+                }
+            }
+            return r;
+        }
 
         virtual X509* Get_X509 () const override
         {

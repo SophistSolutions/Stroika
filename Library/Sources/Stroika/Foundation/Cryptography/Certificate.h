@@ -9,17 +9,24 @@
 #include <memory>
 
 #include "Stroika/Foundation/Common/Common.h"
-//#include "Stroika/Foundation/Cryptography/PEMFile.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Cryptography/PrivateKey.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 namespace Stroika::Foundation::Cryptography::Certificate {
+
+    using Containers::Mapping;
+
+    using Characters::String;
 
     /**
      */
     class IRep {
     public:
         virtual ~IRep () = default;
+
+        virtual String                  GetSubjectName () const = 0;
+        virtual Mapping<String, String> GetCommonNames () const = 0;
     };
 
     /**
@@ -32,7 +39,14 @@ namespace Stroika::Foundation::Cryptography::Certificate {
 
         // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
         // add to/update?
-
+        String GetSubjectName () const
+        {
+            return get ()->GetSubjectName ();
+        }
+        Mapping<String, String> GetCommonNames () const
+        {
+            return get ()->GetCommonNames ();
+        }
         nonvirtual Characters::String ToString () const;
     };
 

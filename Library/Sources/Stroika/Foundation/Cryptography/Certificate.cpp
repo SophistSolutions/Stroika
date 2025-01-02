@@ -24,7 +24,13 @@ using namespace Stroika::Foundation::Execution;
  */
 auto Cryptography::Certificate::Ptr::ToString () const -> String
 {
-    return String{}; //tmphack
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "subjectName: " << GetSubjectName ();
+    sb << ", commonammes: " << GetCommonNames ();
+    sb << "}"sv;
+
+    return sb;
 }
 
 #if 0
