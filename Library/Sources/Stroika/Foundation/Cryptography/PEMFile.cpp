@@ -4,6 +4,10 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#if qStroika_HasComponent_OpenSSL
+#include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
+#endif
 #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "PEMFile.h"
@@ -14,10 +18,26 @@ using namespace Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- ******************************** Cryptography::PEMFile *************************
+ ************************* Cryptography::PEMFile::Ptr ***************************
  ********************************************************************************
  */
-Characters::String PEMFile::ToString () const
+Characters::String PEMFile::Ptr::ToString () const
 {
-    return TextReader::New (fData).ReadAll ();
+    return TextReader::New (get ()->GetData ()).ReadAll ();
 }
+
+#if 0
+/*
+ ********************************************************************************
+ ****************************** Cryptography::PEMFile ***************************
+ ********************************************************************************
+ */
+auto Cryptography::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
+{
+#if qStroika_HasComponent_OpenSSL
+    return Cryptography::OpenSSL::PEMFile::New (pemData);
+#else
+    Throw (RequiredComponentMissingException{"SSL providing service"sv});
+#endif
+}
+#endif

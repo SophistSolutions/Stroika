@@ -27,37 +27,27 @@ using namespace Stroika::Foundation::Debug;
 namespace {
     struct Rep_ : Cryptography::OpenSSL::PrivateKey::IRep {
 
-        EVP_PKEY* fKey_{nullptr};
+        using EVP_KEY_UPTR_ = unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>;
+        EVP_KEY_UPTR_ fKey_;
 
-        Rep_ (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p)
+        Rep_ ()            = delete;
+        Rep_ (const Rep_&) = delete;
+        Rep_ (Rep_&&)      = default;
+        Rep_ (EVP_KEY_UPTR_&& p)
+            : fKey_{move (p)}
         {
-        }
-        Rep_ (const PEMFile& pem)
-        {
-            auto d  = pem.fData.As<span<const uint8_t>> ();
-            auto dd = d.data ();
-            fKey_   = ::b2i_PrivateKey (&dd, static_cast<long> (d.size ())); // cannot find docs on this API
-        }
-        ~Rep_ ()
-        {
-            ::EVP_PKEY_free (fKey_);
         }
         virtual EVP_PKEY* Get_EVP_PKEY () const override
         {
-            return fKey_;
+            return fKey_.get ();
         }
     };
 }
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-Cryptography::OpenSSL::PrivateKey::Ptr::Ptr (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p)
-    : Ptr{make_shared<Rep_> (move (p))}
+auto Cryptography::OpenSSL::PrivateKey::New (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p) -> Ptr
 {
-}
-
-auto Cryptography::OpenSSL::PrivateKey::New (const PEMFile& pem) -> Ptr
-{
-    return make_shared<Rep_> (pem);
+    return make_shared<Rep_> (move (p));
 }
 #endif

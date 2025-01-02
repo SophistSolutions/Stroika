@@ -25,6 +25,7 @@ Objs	:=	\
 	$(ObjDir)DerivedKey${OBJ_SUFFIX}\
 	$(ObjDir)Exception${OBJ_SUFFIX}\
 	$(ObjDir)LibraryContext${OBJ_SUFFIX}\
+	$(ObjDir)PEMFile${OBJ_SUFFIX}\
 	$(ObjDir)PrivateKey${OBJ_SUFFIX}\
 	$(ObjDir)ServerContext${OBJ_SUFFIX}\
 	$(ObjDir)SocketStream${OBJ_SUFFIX}\

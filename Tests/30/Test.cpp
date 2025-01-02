@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
+#include "Stroika/Foundation/Cryptography/Certificate.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
@@ -808,6 +809,15 @@ namespace {
             EXPECT_TRUE (DecodeAES (kDerivedKey, encResult, AESOptions::e256_CBC) == srcText);
 #endif
         }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Cryptography, SelfSignedCert)
+    {
+        auto [pk, cert] = Certificate::NewSelfSigned ();
+        DbgTrace ("pk={}"_f, pk);
+        DbgTrace ("cert={}"_f, cert);
     }
 }
 #endif

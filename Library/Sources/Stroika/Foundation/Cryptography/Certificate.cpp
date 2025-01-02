@@ -11,11 +11,23 @@
 #include "Certificate.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Cryptography;
 #if !qStroika_HasComponent_OpenSSL
 using namespace Stroika::Foundation::Execution;
 #endif
 
+/*
+ ********************************************************************************
+ *********************** Cryptography::Certificate::Ptr *************************
+ ********************************************************************************
+ */
+auto Cryptography::Certificate::Ptr::ToString () const -> String
+{
+    return String{}; //tmphack
+}
+
+#if 0
 /*
  ********************************************************************************
  **************************** Cryptography::Certificate *************************
@@ -29,6 +41,7 @@ auto Cryptography::Certificate::New (const PEMFile& pemFile) -> Ptr
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
 }
+#endif
 
 /*
  ********************************************************************************

@@ -28,12 +28,16 @@ using namespace Stroika::Foundation::Debug;
 namespace {
     struct Rep_ : Cryptography::OpenSSL::Certificate::IRep {
 
-        unique_ptr<::X509, decltype (&::X509_free)> fCert_;
+        OpenSSL::Certificate::LibRepType fCert_;
 
-        Rep_ (unique_ptr<::X509, decltype (&::X509_free)>&& p)
+        Rep_ ()            = delete;
+        Rep_ (const Rep_&) = delete;
+        Rep_ (Rep_&&)      = default;
+        Rep_ (OpenSSL::Certificate::LibRepType&& p)
             : fCert_{move (p)}
         {
         }
+#if 0
         Rep_ (const PEMFile& pem)
             : fCert_{[&] () {
                          auto d  = pem.fData.As<span<const uint8_t>> ();
@@ -50,6 +54,7 @@ namespace {
                      &::X509_free}
         {
         }
+#endif
 
         virtual X509* Get_X509 () const override
         {
@@ -60,6 +65,8 @@ namespace {
 #endif
 
 #if qStroika_HasComponent_OpenSSL
+
+#if 0
 /*
  ********************************************************************************
  ************************* OpenSSL::Certificate::Ptr ****************************
@@ -69,15 +76,16 @@ Cryptography::OpenSSL::Certificate::Ptr::Ptr (unique_ptr<::X509, decltype (&::X5
     : Ptr{make_shared<Rep_> (move (p))}
 {
 }
+#endif
 
 /*
  ********************************************************************************
  ****************************** OpenSSL::Certificate ****************************
  ********************************************************************************
  */
-auto Cryptography::OpenSSL::Certificate::New (const PEMFile& pem) -> Ptr
+auto Cryptography::OpenSSL::Certificate::New (LibRepType&& x509) -> Ptr
 {
-    return make_shared<Rep_> (pem);
+    return make_shared<Rep_> (move (x509));
 }
 
 auto OpenSSL::Certificate::NewSelfSigned () -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>
@@ -107,6 +115,6 @@ auto OpenSSL::Certificate::NewSelfSigned () -> tuple<OpenSSL::PrivateKey::Ptr, P
 
     // Now sign with SHA1 digest
     ::X509_sign (newCert.get (), pkey.get (), EVP_sha1 ());
-    return make_tuple (Cryptography::OpenSSL::PrivateKey::Ptr{move (pkey)}, Ptr{move (newCert)});
+    return make_tuple (Cryptography::OpenSSL::PrivateKey::New (move (pkey)), New (move (newCert)));
 }
 #endif

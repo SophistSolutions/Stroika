@@ -8,8 +8,9 @@
 
 #include <memory>
 
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Cryptography/PEMFile.h"
+//#include "Stroika/Foundation/Cryptography/PEMFile.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 namespace Stroika::Foundation::Cryptography::PrivateKey {
@@ -18,7 +19,7 @@ namespace Stroika::Foundation::Cryptography::PrivateKey {
      */
     class IRep {
     public:
-        virtual ~IRep () = 0;
+        virtual ~IRep () = default;
     };
 
     /**
@@ -29,6 +30,8 @@ namespace Stroika::Foundation::Cryptography::PrivateKey {
          */
         using inherited::inherited;
 
+        Characters::String ToString () const;
+
         // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
         // add to/update?
     };
@@ -36,7 +39,7 @@ namespace Stroika::Foundation::Cryptography::PrivateKey {
     /**
      *  \brief Create a PrivateKey (for now just from a PEM file)
      */
-    Ptr New (const PEMFile& pem);
+    //Ptr New (const PEMFile& pem);
 
 }
 

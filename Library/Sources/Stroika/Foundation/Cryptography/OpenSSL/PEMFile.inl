@@ -6,15 +6,8 @@ namespace Stroika::Foundation::Cryptography {
 
     /*
      ********************************************************************************
-     ************************ Cryptography::PEMFile::Ptr ****************************
+     ************************ Cryptography::PEMFile *********************************
      ********************************************************************************
      */
-    inline Memory::BLOB PEMFile::Ptr::GetData () const
-    {
-        return get ()->GetData ();
-    }
-    inline auto PEMFile::Ptr::GetEntries () const -> Sequence<EntryType>
-    {
-        return get ()->GetEntries ();
-    }
+
 }

@@ -9,14 +9,15 @@
 #include <memory>
 
 #if qStroika_HasComponent_OpenSSL
-#include <openssl/ssl.h>
-#include <openssl/x509.h>
+#include <openssl/evp.h>
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/PrivateKey.h"
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
+
+    using LibRepType = unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>;
 
     /**
      */
@@ -32,7 +33,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
          */
         using inherited::inherited;
 
-        Ptr (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p);
         Ptr (Cryptography::PrivateKey::Ptr p)
         {
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {
@@ -49,8 +49,9 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
         }
     };
 
-    // @todo VERY rough - needs optional private key, and TYPE info
-    Ptr New (const PEMFile& pem);
+    /**
+     */
+    Ptr New (LibRepType&& pkey);
 
 }
 

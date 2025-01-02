@@ -11,11 +11,22 @@
 #include "PrivateKey.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Cryptography;
 #if !qStroika_HasComponent_OpenSSL
 using namespace Stroika::Foundation::Execution;
 #endif
 
+/*
+ ********************************************************************************
+ *********************** Cryptography::PrivateKey::Ptr **************************
+ ********************************************************************************
+ */
+auto Cryptography::PrivateKey::Ptr::ToString () const -> String
+{
+    return String{}; //tmphack
+}
+#if 0
 /*
  ********************************************************************************
  **************************** Cryptography::PrivateKey **************************
@@ -29,3 +40,4 @@ auto Cryptography::PrivateKey::New (const PEMFile& pem) -> Ptr
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
 }
+#endif
