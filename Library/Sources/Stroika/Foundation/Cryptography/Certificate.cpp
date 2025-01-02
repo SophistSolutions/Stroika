@@ -29,3 +29,17 @@ auto Cryptography::Certificate::New (const PEMFile& pemFile) -> Ptr
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
 }
+
+/*
+ ********************************************************************************
+ ****************** Cryptography::Certificate::NewSelfSigned ********************
+ ********************************************************************************
+ */
+auto Cryptography::Certificate::NewSelfSigned () -> tuple<Cryptography::PrivateKey::Ptr, Ptr>
+{
+#if qStroika_HasComponent_OpenSSL
+    return Cryptography::OpenSSL::Certificate::NewSelfSigned ();
+#else
+    Throw (RequiredComponentMissingException{"SSL providing service"sv});
+#endif
+}

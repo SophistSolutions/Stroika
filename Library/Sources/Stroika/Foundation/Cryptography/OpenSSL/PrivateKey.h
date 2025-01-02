@@ -32,6 +32,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
          */
         using inherited::inherited;
 
+        Ptr (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p);
         Ptr (Cryptography::PrivateKey::Ptr p)
         {
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {

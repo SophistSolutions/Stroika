@@ -29,6 +29,9 @@ namespace {
 
         EVP_PKEY* fKey_{nullptr};
 
+        Rep_ (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p)
+        {
+        }
         Rep_ (const PEMFile& pem)
         {
             auto d  = pem.fData.As<span<const uint8_t>> ();
@@ -48,6 +51,11 @@ namespace {
 #endif
 
 #if qStroika_HasComponent_OpenSSL
+Cryptography::OpenSSL::PrivateKey::Ptr::Ptr (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p)
+    : Ptr{make_shared<Rep_> (move (p))}
+{
+}
+
 auto Cryptography::OpenSSL::PrivateKey::New (const PEMFile& pem) -> Ptr
 {
     return make_shared<Rep_> (pem);

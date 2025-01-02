@@ -15,6 +15,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/Certificate.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
 
@@ -32,6 +33,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
          */
         using inherited::inherited;
 
+        Ptr (unique_ptr<::X509, decltype (&::X509_free)>&& p);
         Ptr (Cryptography::Certificate::Ptr p)
         {
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {
@@ -52,6 +54,12 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
      *  \brief Construct a Certificate object (for now just supported from PEMFile)
      */
     Ptr New (const PEMFile& pemFile);
+
+    /**
+     *  \brief generate a new self-signed certificate (and private key)
+     *  \see https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
+     */
+    tuple<OpenSSL::PrivateKey::Ptr, Ptr> NewSelfSigned ();
 
 }
 

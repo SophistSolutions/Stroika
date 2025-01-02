@@ -10,6 +10,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Cryptography/PEMFile.h"
+#include "Stroika/Foundation/Cryptography/PrivateKey.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 namespace Stroika::Foundation::Cryptography::Certificate {
@@ -34,6 +35,12 @@ namespace Stroika::Foundation::Cryptography::Certificate {
     };
 
     Ptr New (const PEMFile& pemFile);
+
+    /**
+     *  \brief generate a new self-signed certificate (and private key)
+     *  \see https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
+     */
+    tuple<Cryptography::PrivateKey::Ptr, Ptr> NewSelfSigned ();
 
     // and example loading PEM .CER files...
     // (regtests)
