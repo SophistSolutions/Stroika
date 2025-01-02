@@ -60,12 +60,21 @@ namespace {
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-
+/*
+ ********************************************************************************
+ ************************* OpenSSL::Certificate::Ptr ****************************
+ ********************************************************************************
+ */
 Cryptography::OpenSSL::Certificate::Ptr::Ptr (unique_ptr<::X509, decltype (&::X509_free)>&& p)
     : Ptr{make_shared<Rep_> (move (p))}
 {
 }
 
+/*
+ ********************************************************************************
+ ****************************** OpenSSL::Certificate ****************************
+ ********************************************************************************
+ */
 auto Cryptography::OpenSSL::Certificate::New (const PEMFile& pem) -> Ptr
 {
     return make_shared<Rep_> (pem);
@@ -74,14 +83,7 @@ auto Cryptography::OpenSSL::Certificate::New (const PEMFile& pem) -> Ptr
 auto OpenSSL::Certificate::NewSelfSigned () -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>
 {
     // Code adapted from https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
-    unique_ptr<EVP_PKEY, decltype (&::EVP_PKEY_free)> pkey{EVP_PKEY_new (), ::EVP_PKEY_free};
-
-    RSA* rsa = ::RSA_generate_key (2048,   /* number of bits for the key - 2048 is a sensible value */
-                                   RSA_F4, /* exponent - RSA_F4 is defined as 0x10001L */
-                                   NULL,   /* callback - can be NULL if we aren't displaying progress */
-                                   NULL    /* callback argument - not needed in this case */
-    );
-    EVP_PKEY_assign_RSA (pkey.get (), rsa); // adopts rsa memory so no need to free
+    unique_ptr<EVP_PKEY, decltype (&::EVP_PKEY_free)> pkey{EVP_RSA_gen (2048), ::EVP_PKEY_free};
 
     unique_ptr<X509, decltype (&::X509_free)> newCert{X509_new (), ::X509_free};
 
