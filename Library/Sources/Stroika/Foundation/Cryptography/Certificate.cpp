@@ -8,6 +8,9 @@
 #else
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
+
+#include "Stroika/Foundation/Characters/ToString.h"
+
 #include "Certificate.h"
 
 using namespace Stroika::Foundation;
