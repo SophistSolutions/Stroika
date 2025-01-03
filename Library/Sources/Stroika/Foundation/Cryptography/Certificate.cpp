@@ -25,14 +25,29 @@ using namespace Stroika::Foundation::Execution;
  *********************** Cryptography::Certificate::Ptr *************************
  ********************************************************************************
  */
+String Cryptography::Certificate::SubjectInfo::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "country: "sv << fCountry;
+    sb << ", organization: "sv << fOrganization;
+    sb << ", commonName: "sv << fCommonName;
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ *********************** Cryptography::Certificate::Ptr *************************
+ ********************************************************************************
+ */
 auto Cryptography::Certificate::Ptr::ToString () const -> String
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "subjectName: " << GetSubjectName ();
-    sb << ", commonammes: " << GetCommonNames ();
+    sb << "subject: "sv << this->GetSubject ();
+    sb << ", valid-dates: "sv << this->GetValidDates ();
     sb << "}"sv;
-
     return sb;
 }
 
@@ -57,10 +72,10 @@ auto Cryptography::Certificate::New (const PEMFile& pemFile) -> Ptr
  ****************** Cryptography::Certificate::NewSelfSigned ********************
  ********************************************************************************
  */
-auto Cryptography::Certificate::NewSelfSigned () -> tuple<Cryptography::PrivateKey::Ptr, Ptr>
+auto Cryptography::Certificate::NewSelfSigned (const SelfSignedCertParams& params) -> tuple<Cryptography::PrivateKey::Ptr, Ptr>
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::Certificate::NewSelfSigned ();
+    return Cryptography::OpenSSL::Certificate::NewSelfSigned (params);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

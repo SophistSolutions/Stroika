@@ -7,8 +7,6 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
-#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Cryptography/PEMFile.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
@@ -32,28 +30,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::PEMFile {
 
     // @todo VERY rough - needs optional private key, and TYPE info
     Ptr New (const Memory::BLOB& pemData);
-
-/**
-     *  @todo CerticateRequest
-     */
-#if 0
-    struct PEMFile : public Cryptography::PEMFile {
-        using inherited = Cryptography::PEMFile;
-        using inherited::inherited;
-
-        /**
-       // can be null if missing - an optional itme in PEM file
-        */
-        Certificate::Ptr GetCertificate () const;
-
-        /**
-       // can be null if missing - an optional itme in PEM file
-        */
-        PrivateKey::Ptr GetPrivateKey () const;
-
-        nonvirtual Characters::String ToString () const;
-    };
-#endif
 
 }
 

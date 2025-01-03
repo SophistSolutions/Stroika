@@ -21,6 +21,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::Certificate;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 
@@ -40,54 +41,38 @@ namespace {
             : fCert_{move (p)}
         {
         }
-#if 0
-        Rep_ (const PEMFile& pem)
-            : fCert_{[&] () {
-                         auto d  = pem.fData.As<span<const uint8_t>> ();
-                         auto dd = d.data ();
-                         BIO* bio = ::BIO_new_mem_buf (dd, static_cast<int> (d.size ())); // example had sz -1, but seems probably wrong here
-                         auto r = ::PEM_read_bio_X509 (bio, NULL, NULL, NULL);
-                         ::BIO_free (bio);
-                         if (fCert_ == nullptr) {
-                             throw ("oops");
-                             // fprintf(stderr, "Error reading certificate: %s\n", ERR_error_string(ERR_get_error(), NULL));
-                         }
-                         return r;
-                     }(),
-                     &::X509_free}
+        virtual Range<DateTime> GetValidDates () const override
         {
+            using Time::Timezone;
+            struct tm from {};
+            struct tm to {};
+            ::ASN1_TIME_to_tm (X509_get_notBefore (fCert_.get ()), &from);
+            ::ASN1_TIME_to_tm (X509_get_notAfter (fCert_.get ()), &to);
+            return Range<DateTime>{DateTime{from, Timezone::kUTC}, DateTime{to, Timezone::kUTC}};
         }
-#endif
-        virtual String GetSubjectName () const override
+        virtual SubjectInfo GetSubject () const override
         {
-            X509_NAME* subjectName = X509_get_subject_name (fCert_.get ());
-            return ""sv;
-        }
-        virtual Mapping<String, String> GetCommonNames () const override
-
-        {
-            Mapping<String, String> r;
-
-            X509_NAME* subjectName = X509_get_subject_name (fCert_.get ());
-
-            int numEntries = X509_NAME_entry_count (subjectName);
+            SubjectInfo result;
+            X509_NAME*  subject    = ::X509_get_subject_name (fCert_.get ());
+            int         numEntries = ::X509_NAME_entry_count (subject);
             for (int i = 0; i < numEntries; ++i) {
-                X509_NAME_ENTRY* entry = X509_NAME_get_entry (subjectName, i);
-
-                // Check if the entry is a Common Name (CN)
-                ASN1_OBJECT* nid = X509_NAME_ENTRY_get_object (entry);
-                if (OBJ_cmp (nid, OBJ_nid2obj (NID_commonName)) == 0) {
-                    // Extract and print the CN value
-                    unsigned char* cn = X509_NAME_ENTRY_get_data (entry)->data;
-
-                    String nnn = String::FromUTF8 ((const char*)cn);
-                    DbgTrace ("nnn={}"_f, nnn);
-                    //  std::cout << "CN: " << cn << std::endl;
+                X509_NAME_ENTRY* entry = ::X509_NAME_get_entry (subject, i);
+                ASN1_OBJECT*     nid   = ::X509_NAME_ENTRY_get_object (entry);
+                if (::OBJ_cmp (nid, ::OBJ_nid2obj (NID_commonName)) == 0) {
+                    unsigned char* cn  = X509_NAME_ENTRY_get_data (entry)->data;
+                    result.fCommonName = String::FromUTF8 ((const char*)cn);
+                }
+                else if (::OBJ_cmp (nid, ::OBJ_nid2obj (NID_countryName)) == 0) {
+                    unsigned char* cn = ::X509_NAME_ENTRY_get_data (entry)->data;
+                    result.fCountry   = String::FromUTF8 ((const char*)cn);
+                }
+                else if (::OBJ_cmp (nid, ::OBJ_nid2obj (NID_organizationName)) == 0) {
+                    unsigned char* cn    = ::X509_NAME_ENTRY_get_data (entry)->data;
+                    result.fOrganization = String::FromUTF8 ((const char*)cn);
                 }
             }
-            return r;
+            return result;
         }
-
         virtual X509* Get_X509 () const override
         {
             return fCert_.get ();
@@ -97,19 +82,6 @@ namespace {
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-
-#if 0
-/*
- ********************************************************************************
- ************************* OpenSSL::Certificate::Ptr ****************************
- ********************************************************************************
- */
-Cryptography::OpenSSL::Certificate::Ptr::Ptr (unique_ptr<::X509, decltype (&::X509_free)>&& p)
-    : Ptr{make_shared<Rep_> (move (p))}
-{
-}
-#endif
-
 /*
  ********************************************************************************
  ****************************** OpenSSL::Certificate ****************************
@@ -120,33 +92,35 @@ auto Cryptography::OpenSSL::Certificate::New (LibRepType&& x509) -> Ptr
     return make_shared<Rep_> (move (x509));
 }
 
-auto OpenSSL::Certificate::NewSelfSigned () -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>
+auto OpenSSL::Certificate::NewSelfSigned (const SelfSignedCertParams& params) -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>
 {
     // Code adapted from https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
     unique_ptr<EVP_PKEY, decltype (&::EVP_PKEY_free)> pkey{EVP_RSA_gen (2048), ::EVP_PKEY_free};
 
-    unique_ptr<X509, decltype (&::X509_free)> newCert{X509_new (), ::X509_free};
+    LibRepType newCert{X509_new (), ::X509_free};
 
-    ASN1_INTEGER_set (X509_get_serialNumber (newCert.get ()), 1);
+    ::ASN1_INTEGER_set (::X509_get_serialNumber (newCert.get ()), 1);
 
-    X509_gmtime_adj (X509_get_notBefore (newCert.get ()), 0);
-    constexpr auto kSecondsValid_ = 60 * 60 * 24 * 365; // 1 yr
-    X509_gmtime_adj (X509_get_notAfter (newCert.get ()), kSecondsValid_);
+    ::ASN1_TIME_set (X509_get_notBefore (newCert.get ()), params.fValidDates.GetLowerBound ().AsUTC ().As<time_t> ());
+    ::ASN1_TIME_set (X509_get_notAfter (newCert.get ()), params.fValidDates.GetUpperBound ().AsUTC ().As<time_t> ());
 
     // Set public key to be the key we generated earlier
-    X509_set_pubkey (newCert.get (), pkey.get ());
+    ::X509_set_pubkey (newCert.get (), pkey.get ());
 
-    X509_NAME* name = X509_get_subject_name (newCert.get ());
+    X509_NAME* name    = ::X509_get_subject_name (newCert.get ());
+    u8string   org     = params.fSubject.fOrganization.AsUTF8 ();
+    u8string   cn      = params.fSubject.fCommonName.AsUTF8 ();
+    u8string   country = params.fSubject.fCountry.AsUTF8 ();
 
-    ::X509_NAME_add_entry_by_txt (name, "C", MBSTRING_ASC, (unsigned char*)"US", -1, -1, 0);
-    ::X509_NAME_add_entry_by_txt (name, "O", MBSTRING_ASC, (unsigned char*)"MyCompany Inc.", -1, -1, 0);
-    ::X509_NAME_add_entry_by_txt (name, "CN", MBSTRING_ASC, (unsigned char*)"localhost", -1, -1, 0);
+    ::X509_NAME_add_entry_by_txt (name, "C", MBSTRING_UTF8, (unsigned char*)country.c_str (), -1, -1, 0);
+    ::X509_NAME_add_entry_by_txt (name, "O", MBSTRING_UTF8, (unsigned char*)org.c_str (), -1, -1, 0);
+    ::X509_NAME_add_entry_by_txt (name, "CN", MBSTRING_UTF8, (unsigned char*)cn.c_str (), -1, -1, 0);
 
     // Since this is a self-signed certificate, we set the name of the issuer to the name of the subject
     ::X509_set_issuer_name (newCert.get (), name);
 
     // Now sign with SHA1 digest
-    ::X509_sign (newCert.get (), pkey.get (), EVP_sha1 ());
+    ::X509_sign (newCert.get (), pkey.get (), ::EVP_sha1 ());
     return make_tuple (Cryptography::OpenSSL::PrivateKey::New (move (pkey)), New (move (newCert)));
 }
 #endif

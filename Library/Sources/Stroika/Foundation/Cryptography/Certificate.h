@@ -12,12 +12,26 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Cryptography/PrivateKey.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 namespace Stroika::Foundation::Cryptography::Certificate {
 
-    using Containers::Mapping;
-
     using Characters::String;
+    using Containers::Mapping;
+    using Time::DateTime;
+    using Traversal::Range;
+
+    /**
+     * EG Subject: C=US, ST=California, L=San Francisco, O=Wikimedia Foundation, Inc., CN=*.wikipedia.org
+     */
+    struct SubjectInfo {
+        String fCountry;
+        String fOrganization;
+        String fCommonName;
+
+        String ToString () const;
+    };
 
     /**
      */
@@ -25,8 +39,9 @@ namespace Stroika::Foundation::Cryptography::Certificate {
     public:
         virtual ~IRep () = default;
 
-        virtual String                  GetSubjectName () const = 0;
-        virtual Mapping<String, String> GetCommonNames () const = 0;
+        // Not Before thru Not After
+        virtual Range<DateTime> GetValidDates () const = 0;
+        virtual SubjectInfo     GetSubject () const    = 0;
     };
 
     /**
@@ -39,24 +54,31 @@ namespace Stroika::Foundation::Cryptography::Certificate {
 
         // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
         // add to/update?
-        String GetSubjectName () const
+        SubjectInfo GetSubject () const
         {
-            return get ()->GetSubjectName ();
+            return get ()->GetSubject ();
         }
-        Mapping<String, String> GetCommonNames () const
+        Range<DateTime> GetValidDates () const
         {
-            return get ()->GetCommonNames ();
+            return get ()->GetValidDates ();
         }
         nonvirtual Characters::String ToString () const;
     };
 
-    // Ptr New (const PEMFile& pemFile);
+    /**
+      */
+    struct SelfSignedCertParams {
+        // Not Before thru Not After
+        Range<DateTime>  fValidDates{Time::DateTime::Now (), Time::DateTime::Now () + Time::Duration{"PT1Y"sv}};
+        SubjectInfo      fSubject;
+        optional<String> fSubjectAlternativeName; // SAN
+    };
 
     /**
      *  \brief generate a new self-signed certificate (and private key)
      *  \see https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
      */
-    tuple<PrivateKey::Ptr, Ptr> NewSelfSigned ();
+    tuple<PrivateKey::Ptr, Ptr> NewSelfSigned (const SelfSignedCertParams& params);
 
     // and example loading PEM .CER files...
     // (regtests)

@@ -19,6 +19,7 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
 
+    using namespace Cryptography::Certificate;
     using LibRepType = unique_ptr<::X509, decltype (&::X509_free)>;
     /**
      */
@@ -61,7 +62,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
      *  \brief generate a new self-signed certificate (and private key)
      *  \see https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
      */
-    tuple<OpenSSL::PrivateKey::Ptr, Ptr> NewSelfSigned ();
+    tuple<OpenSSL::PrivateKey::Ptr, Ptr> NewSelfSigned (const SelfSignedCertParams& params);
 
 }
 

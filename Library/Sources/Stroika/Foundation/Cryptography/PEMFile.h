@@ -14,7 +14,18 @@
 
 /**
  *  \file
- *
+ * 
+ *  \brief a PEM File is a data structure commonly used to store private keys, and or certificates (as well as several other things not currently supported here).
+ * 
+ *  At this level of abstraction - its just a bunch of bytes, but used in overloading, in other APIs, so they correctly
+ *  know how to interpret the bytes.
+ * 
+ *      https://datatracker.ietf.org/doc/html/rfc7468
+ * 
+ *  \par Example Usage:     @todo example wrong - and need example constructed form CERT tsielf... and getting Cert...
+ *      \code
+ *          PEMFile myCertPem{IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ())};
+ *      \endcode
  */
 
 namespace Stroika::Foundation::Cryptography::PEMFile {
@@ -54,33 +65,9 @@ namespace Stroika::Foundation::Cryptography::PEMFile {
         // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
         // add to/update?
     };
+
+    // @todo NEED NEW method given sequence of Entry's (e.g. Cert+PrivateKey).
     Ptr New (const Memory::BLOB& pemData);
-
-#if 0
-    /**
-     *  \brief a PEM File is a data structure commonly used to store private keys, and or certificates (as well as several other things not currently supported here).
-     * 
-     *  At this level of abstraction - its just a bunch of bytes, but used in overloading, in other APIs, so they correctly
-     *  know how to interpret the bytes.
-     * 
-     *      https://datatracker.ietf.org/doc/html/rfc7468
-     * 
-     *  \par Example Usage:
-     *      \code
-     *          PEMFile myCertPem{IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ())};
-     *      \endcode
-     */
-    struct PEMFile {
-        /**
-         *  Future versions of this API might validate the argument to assure its a valid pem file and throw if not.
-         */
-        PEMFile (const Memory::BLOB& b);
-
-        const Memory::BLOB fData;
-
-        nonvirtual Characters::String ToString () const;
-    };
-#endif
 
 }
 

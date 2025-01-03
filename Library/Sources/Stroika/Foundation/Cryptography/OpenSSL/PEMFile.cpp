@@ -58,29 +58,9 @@ namespace {
 
 /*
  ********************************************************************************
- ****************************** Cryptography::OpenSSL::PEMFile ***************************
+ ********************* Cryptography::OpenSSL::PEMFile ***************************
  ********************************************************************************
  */
-
-#if 0
-auto OpenSSL::PEMFile::GetCertificate () const -> Certificate::Ptr
-{
-    return Certificate::New (*this);
-}
-
-auto OpenSSL::PEMFile::GetPrivateKey () const -> PrivateKey::Ptr
-{
-    using PrivateKey::LibRepType;
-        auto d  = fData.As<span<const uint8_t>> ();
-        auto dd = d.data ();
-        return PrivateKey::New (PrivateKey::LibRepType{::b2i_PrivateKey (&dd, static_cast<long> (d.size ())), &::EVP_PKEY_free}); // cannot find docs on b2i_PrivateKey API
-    }
-
- String OpenSSL::PEMFile::ToString () const
-{
-     return Cryptography::PEMFile::ToString ();
- }
-#endif
 
 #if qStroika_HasComponent_OpenSSL
 auto Cryptography::OpenSSL::PEMFile::New (const Memory::BLOB& pemData) -> Ptr

@@ -31,6 +31,7 @@
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/LibraryContext.h"
+#include "Stroika/Foundation/Cryptography/SSL/SocketStream.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
@@ -472,7 +473,6 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Cryptography, AllSSLEncryptionRoundtrip)
     {
-        return; //tmphack for speed
         using namespace Cryptography::Encoding;
         using namespace Cryptography::Encoding::Algorithm;
         Debug::TraceContextBumper ctx{"...AllSSLEncryptionRoundtrip"};
@@ -816,10 +816,33 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Cryptography, SelfSignedCert)
     {
+        using Time::DateTime;
+        using Traversal::Range;
         Debug::TraceContextBumper ctx{"::SelfSignedCert"};
-        auto [pk, cert] = Certificate::NewSelfSigned ();
+        DateTime                  now = DateTime::Now ();
+        Range<DateTime>           validDates{now, now + Time::Duration{"PT1Y"sv}};
+        auto [pk, cert] = Certificate::NewSelfSigned (
+            {.fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
         DbgTrace ("pk={}"_f, pk);
         DbgTrace ("cert={}"_f, cert);
+        EXPECT_EQ (cert.GetSubject ().fCommonName, "localhost"sv);
+        EXPECT_EQ (cert.GetSubject ().fCountry, "US"sv);
+        EXPECT_EQ (cert.GetSubject ().fOrganization, "MyCompany Inc."sv);
+        EXPECT_EQ (cert.GetValidDates ().GetLowerBound (), now);
+        EXPECT_TRUE (cert.GetValidDates ().Contains (now));
+
+        // ADD WRITING TO PEMFILE
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Cryptography, BasicSSLStream)
+    {
+        Debug::TraceContextBumper ctx{"::BasicSSLStream"};
+        auto [pk, cert] =
+            Certificate::NewSelfSigned ({.fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+
+        // auto serverContext = Cryptography::SSL::ServerContext::Options serverOpts;
     }
 }
 #endif
