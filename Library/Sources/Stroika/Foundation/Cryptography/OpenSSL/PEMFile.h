@@ -17,6 +17,7 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::PEMFile {
 
+    using namespace Cryptography::PKI::PEMFile;
     struct IRep : Cryptography::PKI::PEMFile::IRep {};
 
     /**
@@ -28,8 +29,11 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::PEMFile {
         using inherited::inherited;
     };
 
-    // @todo VERY rough - needs optional private key, and TYPE info
+    /**
+     *  pemData argument is raw bytes from .pem file.
+     */
     Ptr New (const Memory::BLOB& pemData);
+    Ptr New (const Sequence<EntryType>& entries);
 
 }
 

@@ -53,13 +53,13 @@ auto Cryptography::PKI::Certificate::Ptr::ToString () const -> String
 
 /*
  ********************************************************************************
- ****************** Cryptography::Certificate::NewSelfSigned ********************
+ ************************ Cryptography::Certificate::New ************************
  ********************************************************************************
  */
-auto Cryptography::PKI::Certificate::NewSelfSigned (const SelfSignedCertParams& params) -> tuple<Cryptography::PKI::PrivateKey::Ptr, Ptr>
+auto Cryptography::PKI::Certificate::New (const SelfSignedCertParams& params) -> tuple<Cryptography::PKI::PrivateKey::Ptr, Ptr>
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::Certificate::NewSelfSigned (params);
+    return Cryptography::OpenSSL::Certificate::New (params);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

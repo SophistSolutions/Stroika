@@ -34,7 +34,9 @@ namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
     using Memory::BLOB;
 
     /**
-     *  @todo - can also be CRL, cetificate request, etc... - message, many things can be inside
+     *  @todo - can also be CRL, certificate request, etc... - message, many things can be inside
+     * 
+     *  \note since this is being developed to support webserver, main target support is PrivateKey/Cert --LGP 2025-01-03
      */
     using EntryType = variant<PrivateKey::Ptr, Certificate::Ptr>;
 
@@ -68,6 +70,7 @@ namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
 
     // @todo NEED NEW method given sequence of Entry's (e.g. Cert+PrivateKey).
     Ptr New (const Memory::BLOB& pemData);
+    Ptr New (const Sequence<EntryType>& entries);
 
 }
 

@@ -92,7 +92,7 @@ auto Cryptography::OpenSSL::Certificate::New (LibRepType&& x509) -> Ptr
     return make_shared<Rep_> (move (x509));
 }
 
-auto OpenSSL::Certificate::NewSelfSigned (const SelfSignedCertParams& params) -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>
+auto OpenSSL::Certificate::New (const SelfSignedCertParams& params) -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>
 {
     // Code adapted from https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
     unique_ptr<EVP_PKEY, decltype (&::EVP_PKEY_free)> pkey{EVP_RSA_gen (2048), ::EVP_PKEY_free};

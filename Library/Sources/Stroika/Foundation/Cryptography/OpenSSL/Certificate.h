@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
      *  \brief generate a new self-signed certificate (and private key)
      *  \see https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
      */
-    tuple<OpenSSL::PrivateKey::Ptr, Ptr> NewSelfSigned (const SelfSignedCertParams& params);
+    tuple<OpenSSL::PrivateKey::Ptr, Ptr> New (const SelfSignedCertParams& params);
 
 }
 

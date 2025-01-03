@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Cryptography::PKI::Certificate {
      *  \brief generate a new self-signed certificate (and private key)
      *  \see https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
      */
-    tuple<PrivateKey::Ptr, Ptr> NewSelfSigned (const SelfSignedCertParams& params);
+    tuple<PrivateKey::Ptr, Ptr> New (const SelfSignedCertParams& params);
 
     // and example loading PEM .CER files...
     // (regtests)

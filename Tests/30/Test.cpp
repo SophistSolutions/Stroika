@@ -19,7 +19,6 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
-#include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
@@ -31,6 +30,7 @@
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/LibraryContext.h"
+#include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
 #include "Stroika/Foundation/Cryptography/PKI/PEMFile.h"
 #include "Stroika/Foundation/Cryptography/SSL/SocketStream.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -823,8 +823,8 @@ namespace {
         Debug::TraceContextBumper ctx{"::SelfSignedCert"};
         DateTime                  now = DateTime::Now ();
         Range<DateTime>           validDates{now, now + Time::Duration{"PT1Y"sv}};
-        auto [pk, cert] = Certificate::NewSelfSigned (
-            {.fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+        auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
+            .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
         DbgTrace ("pk={}"_f, pk);
         DbgTrace ("cert={}"_f, cert);
         EXPECT_EQ (cert.GetSubject ().fCommonName, "localhost"sv);
@@ -846,8 +846,8 @@ namespace {
         Debug::TraceContextBumper ctx{"::TestPEMFileIO"};
         DateTime                  now = DateTime::Now ();
         Range<DateTime>           validDates{now, now + Time::Duration{"PT1Y"sv}};
-        auto [pk, cert] = Certificate::NewSelfSigned (
-            {.fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+        auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
+            .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
 
         // ADD WRITING TO PEMFILE
         // Create PEMFile from PrivateKey and read back - verify works.

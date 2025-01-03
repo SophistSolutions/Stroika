@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- ************************* Cryptography::PEMFile::Ptr ***************************
+ ********************** Cryptography::PKI::PEMFile::Ptr *************************
  ********************************************************************************
  */
 Characters::String PEMFile::Ptr::ToString () const
@@ -30,13 +30,21 @@ Characters::String PEMFile::Ptr::ToString () const
 
 /*
  ********************************************************************************
- ****************************** Cryptography::PEMFile ***************************
+ **************************** Cryptography::PKI::PEMFile ************************
  ********************************************************************************
  */
 auto Cryptography::PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::OpenSSL::PEMFile::New (pemData);
+#else
+    Throw (RequiredComponentMissingException{"SSL providing service"sv});
+#endif
+}
+auto Cryptography::PKI::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
+{
+#if qStroika_HasComponent_OpenSSL
+    return Cryptography::OpenSSL::PEMFile::New (entries);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

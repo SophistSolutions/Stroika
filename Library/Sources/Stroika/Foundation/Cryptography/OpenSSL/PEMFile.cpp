@@ -24,6 +24,7 @@ namespace {
     struct Rep_ : Cryptography::OpenSSL::PEMFile::IRep {
         BLOB                fData_;
         Sequence<EntryType> fEntries_;
+
         Rep_ (const BLOB& b)
             : fData_{b}
         {
@@ -44,7 +45,11 @@ namespace {
                 fEntries_ += c1;
             }
         }
-
+        Rep_ (const Sequence<EntryType>& entries)
+            : fEntries_{entries}
+        {
+            AssertNotImplemented ();
+        }
         virtual BLOB GetData () const override
         {
             return fData_;
@@ -66,5 +71,9 @@ namespace {
 auto Cryptography::OpenSSL::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {
     return make_shared<Rep_> (pemData);
+}
+auto Cryptography::OpenSSL::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
+{
+    return make_shared<Rep_> (entries);
 }
 #endif
