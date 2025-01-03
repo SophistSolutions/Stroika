@@ -66,7 +66,13 @@ namespace Stroika::Foundation::Cryptography::PKI::Certificate {
     };
 
     /**
-      */
+     *  \brief data used to create a self-signed certificate.
+     * 
+     *  A private-key/public certificate pair is required to operate SSL, but sometimes you want to run
+     *  SSL connecting to a host without the usual PKI checking to validate its DNS name (say by IP address
+     *  or in some private compute situation, like within a home). In such cases, and probably others, its handy
+     *  to be able to create a key/cert pair, but without the usual trusted validator of subject (domain) ownership.
+     */
     struct SelfSignedCertParams {
         // Not Before thru Not After
         Range<DateTime>  fValidDates{Time::DateTime::Now (), Time::DateTime::Now () + Time::Duration{"PT1Y"sv}};

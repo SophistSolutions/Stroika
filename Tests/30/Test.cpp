@@ -860,8 +860,9 @@ namespace {
     GTEST_TEST (Foundation_Cryptography, BasicSSLStream)
     {
         Debug::TraceContextBumper ctx{"::BasicSSLStream"};
-        auto [pk, cert] =
-            Certificate::NewSelfSigned ({.fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+        using namespace Cryptography::PKI;
+        auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
+            .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
 
         // auto serverContext = Cryptography::SSL::ServerContext::Options serverOpts;
     }
