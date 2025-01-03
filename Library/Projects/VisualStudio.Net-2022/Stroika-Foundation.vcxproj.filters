@@ -223,6 +223,9 @@
     <Filter Include="Sources\IO\Network\SSL">
       <UniqueIdentifier>{f6761ec2-77f8-442c-9e7e-c6e37a0075a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Cryptography\PKI">
+      <UniqueIdentifier>{560fa7a3-d80d-4145-b87e-4e97975e676d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -876,23 +879,23 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp">
       <Filter>Sources\Cryptography\SSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Certificate.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Certificate.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PrivateKey.cpp">
-      <Filter>Sources\Cryptography</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PrivateKey.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PEMFile.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PEMFile.cpp">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Certificate.cpp">
+      <Filter>Sources\Cryptography\PKI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PEMFile.cpp">
+      <Filter>Sources\Cryptography\PKI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PrivateKey.cpp">
+      <Filter>Sources\Cryptography\PKI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2285,23 +2288,23 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Certificate.h">
-      <Filter>Sources\Cryptography</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Certificate.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PrivateKey.h">
-      <Filter>Sources\Cryptography</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PrivateKey.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PEMFile.h">
-      <Filter>Sources\Cryptography</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PEMFile.h">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Certificate.h">
+      <Filter>Sources\Cryptography\PKI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PEMFile.h">
+      <Filter>Sources\Cryptography\PKI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PrivateKey.h">
+      <Filter>Sources\Cryptography\PKI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3780,11 +3783,17 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PEMFile.inl">
-      <Filter>Sources\Cryptography</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PEMFile.inl">
       <Filter>Sources\Cryptography\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Makefile">
+      <Filter>Sources\Cryptography\PKI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PEMFile.inl">
+      <Filter>Sources\Cryptography\PKI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\ReadMe.md">
+      <Filter>Sources\Cryptography\PKI</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

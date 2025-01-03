@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Cryptography/PEMFile.h"
+#include "Stroika/Foundation/Cryptography/PKI/PEMFile.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 /**
@@ -17,7 +17,7 @@
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::PEMFile {
 
-    struct IRep : Cryptography::PEMFile::IRep {};
+    struct IRep : Cryptography::PKI::PEMFile::IRep {};
 
     /**
     */

@@ -14,16 +14,20 @@
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Cryptography/Certificate.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
+#include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
 
-    using namespace Cryptography::Certificate;
-    using LibRepType = unique_ptr<::X509, decltype (&::X509_free)>;
+    using namespace Cryptography::PKI::Certificate;
+
     /**
      */
-    struct IRep : Cryptography::Certificate::IRep {
+    using LibRepType = unique_ptr<::X509, decltype (&::X509_free)>;
+
+    /**
+     */
+    struct IRep : Cryptography::PKI::Certificate::IRep {
         virtual X509* Get_X509 () const = 0;
     };
 
@@ -35,9 +39,9 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
          */
         using inherited::inherited;
 
-        // Ptr (LibRepType&& p);
-        Ptr (Cryptography::Certificate::Ptr p)
+        Ptr (Cryptography::PKI::Certificate::Ptr p)
         {
+            // @todo decide assert or throw?
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {
                 *this = Ptr{pp};
             }
@@ -55,7 +59,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::Certificate {
     /**
      *  \brief Construct a Certificate object (for now just supported from PEMFile)
      */
-    // Ptr New (const PEMFile& pemFile);
     Ptr New (LibRepType&& x509);
 
     /**

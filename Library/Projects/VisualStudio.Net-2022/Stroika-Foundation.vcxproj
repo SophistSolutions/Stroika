@@ -87,7 +87,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\StroikaConfig.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\SystemConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Version.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Certificate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.cpp" />
@@ -108,8 +107,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PrivateKey.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PEMFile.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PrivateKey.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Certificate.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PEMFile.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PrivateKey.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.cpp" />
@@ -452,7 +452,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReserveTweaks.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Certificate.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h" />
@@ -478,8 +477,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PrivateKey.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PEMFile.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PrivateKey.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Certificate.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PEMFile.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PrivateKey.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
@@ -952,7 +952,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PEMFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PEMFile.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PEMFile.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.inl" />

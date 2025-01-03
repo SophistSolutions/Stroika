@@ -10,12 +10,12 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
-#include "Stroika/Foundation/Cryptography/PrivateKey.h"
+#include "Stroika/Foundation/Cryptography/PKI/PrivateKey.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-namespace Stroika::Foundation::Cryptography::Certificate {
+namespace Stroika::Foundation::Cryptography::PKI::Certificate {
 
     using Characters::String;
     using Containers::Mapping;

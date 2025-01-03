@@ -15,7 +15,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
-using namespace Stroika::Foundation::Cryptography::PEMFile;
+using namespace Stroika::Foundation::Cryptography::PKI::PEMFile;
 using namespace Stroika::Foundation::Streams;
 
 using Memory::BLOB;
@@ -32,7 +32,7 @@ namespace {
 
             // cannot find docs on b2i_PrivateKey API
             if (auto pp = ::b2i_PrivateKey (&dd, static_cast<long> (d.size ()))) {
-                Cryptography::PrivateKey::Ptr pk1 = OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp, EVP_PKEY_free});
+                Cryptography::PKI::PrivateKey::Ptr pk1 = OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp, EVP_PKEY_free});
                 fEntries_ += pk1;
             }
 
@@ -40,7 +40,7 @@ namespace {
             auto r   = ::PEM_read_bio_X509 (bio, NULL, NULL, NULL);
             ::BIO_free (bio);
             if (r != nullptr) {
-                Cryptography::Certificate::Ptr c1 = OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r, &::X509_free});
+                Cryptography::PKI::Certificate::Ptr c1 = OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r, &::X509_free});
                 fEntries_ += c1;
             }
         }

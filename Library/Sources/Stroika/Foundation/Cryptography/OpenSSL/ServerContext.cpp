@@ -19,6 +19,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::PKI;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 
@@ -34,14 +35,13 @@ namespace {
         Rep_ (const Options& o)
             : fCtx_{SSL_CTX_new (o.fMethod), ::SSL_CTX_free}
         {
-            RequireNotNull (get<Cryptography::Certificate::Ptr> (o.fCertificate));
+            RequireNotNull (get<Cryptography::PKI::Certificate::Ptr> (o.fCertificate));
             OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_certificate (
-                fCtx_.get (), OpenSSL::Certificate::Ptr{get<Cryptography::Certificate::Ptr> (o.fCertificate)}.Get_X509 ()));
-            RequireNotNull (get<Cryptography::PrivateKey::Ptr> (o.fCertificate));
+                fCtx_.get (), OpenSSL::Certificate::Ptr{get<Cryptography::PKI::Certificate::Ptr> (o.fCertificate)}.Get_X509 ()));
+            RequireNotNull (get<Cryptography::PKI::PrivateKey::Ptr> (o.fCertificate));
             OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_PrivateKey (
-                fCtx_.get (), OpenSSL::PrivateKey::Ptr{get<Cryptography::PrivateKey::Ptr> (o.fCertificate)}.Get_EVP_PKEY ()));
+                fCtx_.get (), OpenSSL::PrivateKey::Ptr{get<Cryptography::PKI::PrivateKey::Ptr> (o.fCertificate)}.Get_EVP_PKEY ()));
         }
-
         virtual SSL_CTX* Get_SSL_CTX () const override
         {
             return fCtx_.get ();

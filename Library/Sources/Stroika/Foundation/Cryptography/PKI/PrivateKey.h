@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
-namespace Stroika::Foundation::Cryptography::PrivateKey {
+namespace Stroika::Foundation::Cryptography::PKI::PrivateKey {
 
     using Characters::String;
     using Memory::BLOB;
@@ -55,6 +55,7 @@ namespace Stroika::Foundation::Cryptography::PrivateKey {
     };
 
 #if 0
+    // Probably no useful CTOR of this type - must have 'type' and possibly extra params for that type and construct subtypes.
     /**
      *  \brief Create a PrivateKey (for now just from a PEM file)
      */

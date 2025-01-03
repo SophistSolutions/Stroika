@@ -8,8 +8,8 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Cryptography/Certificate.h"
-#include "Stroika/Foundation/Cryptography/PrivateKey.h"
+#include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
+#include "Stroika/Foundation/Cryptography/PKI/PrivateKey.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
 /**
@@ -28,7 +28,7 @@
  *      \endcode
  */
 
-namespace Stroika::Foundation::Cryptography::PEMFile {
+namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
 
     using Containers::Sequence;
     using Memory::BLOB;

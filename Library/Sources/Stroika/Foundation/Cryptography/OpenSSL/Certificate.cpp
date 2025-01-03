@@ -21,7 +21,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
-using namespace Stroika::Foundation::Cryptography::Certificate;
+using namespace Stroika::Foundation::Cryptography::PKI::Certificate;
 using namespace Stroika::Foundation::Cryptography::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 

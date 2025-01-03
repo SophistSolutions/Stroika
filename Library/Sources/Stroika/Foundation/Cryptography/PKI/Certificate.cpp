@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::Execution;
  *********************** Cryptography::Certificate::Ptr *************************
  ********************************************************************************
  */
-String Cryptography::Certificate::SubjectInfo::ToString () const
+String Cryptography::PKI::Certificate::SubjectInfo::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
@@ -41,7 +41,7 @@ String Cryptography::Certificate::SubjectInfo::ToString () const
  *********************** Cryptography::Certificate::Ptr *************************
  ********************************************************************************
  */
-auto Cryptography::Certificate::Ptr::ToString () const -> String
+auto Cryptography::PKI::Certificate::Ptr::ToString () const -> String
 {
     StringBuilder sb;
     sb << "{"sv;
@@ -51,28 +51,12 @@ auto Cryptography::Certificate::Ptr::ToString () const -> String
     return sb;
 }
 
-#if 0
-/*
- ********************************************************************************
- **************************** Cryptography::Certificate *************************
- ********************************************************************************
- */
-auto Cryptography::Certificate::New (const PEMFile& pemFile) -> Ptr
-{
-#if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::Certificate::New (pemFile);
-#else
-    Throw (RequiredComponentMissingException{"SSL providing service"sv});
-#endif
-}
-#endif
-
 /*
  ********************************************************************************
  ****************** Cryptography::Certificate::NewSelfSigned ********************
  ********************************************************************************
  */
-auto Cryptography::Certificate::NewSelfSigned (const SelfSignedCertParams& params) -> tuple<Cryptography::PrivateKey::Ptr, Ptr>
+auto Cryptography::PKI::Certificate::NewSelfSigned (const SelfSignedCertParams& params) -> tuple<Cryptography::PKI::PrivateKey::Ptr, Ptr>
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::OpenSSL::Certificate::NewSelfSigned (params);

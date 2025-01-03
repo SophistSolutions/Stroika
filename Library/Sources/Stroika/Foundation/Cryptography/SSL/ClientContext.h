@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Cryptography/Certificate.h"
-#include "Stroika/Foundation/Cryptography/PrivateKey.h"
+#include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
+#include "Stroika/Foundation/Cryptography/PKI/PrivateKey.h"
 #include "Stroika/Foundation/Cryptography/SSL/Common.h"
 
 namespace Stroika::Foundation::Cryptography::SSL::ClientContext {
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Cryptography::SSL::ClientContext {
          *  Rarely used, but can be used if client-side certs needed
          *      \see https://en.wikipedia.org/wiki/Client_certificate
          */
-        optional<tuple<PrivateKey::Ptr, Certificate::Ptr>> fClientCertificate;
+        optional<tuple<PKI::PrivateKey::Ptr, PKI::Certificate::Ptr>> fClientCertificate;
     };
 
     Ptr New (const Options& options = {});

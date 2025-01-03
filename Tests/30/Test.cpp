@@ -19,7 +19,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/MultiSet.h"
-#include "Stroika/Foundation/Cryptography/Certificate.h"
+#include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/CRC32.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/Jenkins.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.h"
@@ -31,6 +31,7 @@
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/LibraryContext.h"
+#include "Stroika/Foundation/Cryptography/PKI/PEMFile.h"
 #include "Stroika/Foundation/Cryptography/SSL/SocketStream.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -816,6 +817,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Cryptography, SelfSignedCert)
     {
+        using namespace Cryptography::PKI;
         using Time::DateTime;
         using Traversal::Range;
         Debug::TraceContextBumper ctx{"::SelfSignedCert"};
@@ -832,6 +834,25 @@ namespace {
         EXPECT_TRUE (cert.GetValidDates ().Contains (now));
 
         // ADD WRITING TO PEMFILE
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Cryptography, TestPEMFileIO)
+    {
+        using namespace Cryptography::PKI;
+        using Time::DateTime;
+        using Traversal::Range;
+        Debug::TraceContextBumper ctx{"::TestPEMFileIO"};
+        DateTime                  now = DateTime::Now ();
+        Range<DateTime>           validDates{now, now + Time::Duration{"PT1Y"sv}};
+        auto [pk, cert] = Certificate::NewSelfSigned (
+            {.fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+
+        // ADD WRITING TO PEMFILE
+        // Create PEMFile from PrivateKey and read back - verify works.
+        // Then Create from CERT and do likewise.
+        // Then create from Cert+PrivateKey, and do likewise.
     }
 }
 

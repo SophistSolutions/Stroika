@@ -13,7 +13,7 @@
 #endif
 
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Cryptography/PrivateKey.h"
+#include "Stroika/Foundation/Cryptography/PKI/PrivateKey.h"
 
 namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
 
@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
 
     /**
      */
-    struct IRep : Cryptography::PrivateKey::IRep {
+    struct IRep : Cryptography::PKI::PrivateKey::IRep {
         virtual EVP_PKEY* Get_EVP_PKEY () const = 0;
     };
 
@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL::PrivateKey {
          */
         using inherited::inherited;
 
-        Ptr (Cryptography::PrivateKey::Ptr p)
+        Ptr (Cryptography::PKI::PrivateKey::Ptr p)
         {
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {
                 *this = Ptr{pp};

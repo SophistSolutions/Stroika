@@ -32,12 +32,12 @@ namespace {
         unique_ptr<SSL_CTX, decltype (&SSL_CTX_free)> fCtx_;
 
         Rep_ (const Options& o)
-            : fCtx_{SSL_CTX_new (TLS_client_method ()), SSL_CTX_free}
+            : fCtx_{::SSL_CTX_new (::TLS_client_method ()), ::SSL_CTX_free}
         {
             if (o.fClientCertificate) {
-                Cryptography::Certificate::Ptr clientCert = get<Cryptography::Certificate::Ptr> (*o.fClientCertificate);
+                Cryptography::PKI::Certificate::Ptr clientCert = get<Cryptography::PKI::Certificate::Ptr> (*o.fClientCertificate);
                 OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_certificate (fCtx_.get (), OpenSSL::Certificate::Ptr{clientCert}.Get_X509 ()));
-                Cryptography::PrivateKey::Ptr pkey = get<Cryptography::PrivateKey::Ptr> (*o.fClientCertificate);
+                Cryptography::PKI::PrivateKey::Ptr pkey = get<Cryptography::PKI::PrivateKey::Ptr> (*o.fClientCertificate);
                 OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_PrivateKey (fCtx_.get (), OpenSSL::PrivateKey::Ptr{pkey}.Get_EVP_PKEY ()));
             }
         }
