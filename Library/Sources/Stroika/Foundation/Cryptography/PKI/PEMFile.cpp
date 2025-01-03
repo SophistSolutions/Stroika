@@ -6,8 +6,8 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #if qStroika_HasComponent_OpenSSL
 #include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
-#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Cryptography/OpenSSL/PEMFile.h"
+#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
 #endif
 #include "Stroika/Foundation/Streams/TextReader.h"
 
