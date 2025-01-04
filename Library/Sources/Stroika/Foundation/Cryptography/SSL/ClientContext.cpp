@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_OpenSSL
-#include "Stroika/Foundation/Cryptography/OpenSSL/ClientContext.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/ClientContext.h"
 #else
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Execution;
 auto Cryptography::SSL::ClientContext::New ([[maybe_unused]] const Options& options) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::ClientContext::New (options);
+    return Cryptography::Providers::OpenSSL::ClientContext::New (options);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

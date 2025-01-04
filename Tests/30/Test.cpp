@@ -29,9 +29,9 @@
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.h"
 #include "Stroika/Foundation/Cryptography/Encoding/OpenSSLCryptoStream.h"
 #include "Stroika/Foundation/Cryptography/Format.h"
-#include "Stroika/Foundation/Cryptography/OpenSSL/LibraryContext.h"
 #include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
 #include "Stroika/Foundation/Cryptography/PKI/PEMFile.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/LibraryContext.h"
 #include "Stroika/Foundation/Cryptography/SSL/SocketStream.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -48,10 +48,15 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::Providers;
 using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
+
+using Common::GUID;
+using Memory::BLOB;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -60,9 +65,7 @@ using namespace Stroika::Frameworks;
 namespace {
     uint32_t ToLE_ (uint32_t n)
     {
-        using Common::Endian;
-        using Common::EndianConverter;
-        return EndianConverter<uint32_t> (n, Common::GetEndianness (), Endian::eLittle);
+        return EndianConverter<uint32_t> (n, GetEndianness (), Endian::eLittle);
     }
 }
 
@@ -94,12 +97,11 @@ namespace {
                     return static_cast<const char*> (relBuf);
                 }
                 else {
-                    EXPECT_TRUE (lb == LineBreak::eLF_LB);
+                    EXPECT_EQ (lb, LineBreak::eLF_LB);
                     string result;
                     result.reserve (relEncodedSize);
                     for (int i = 0; i < relEncodedSize; ++i) {
                         if (relBuf[i] == '\r') {
-                            //
                             result.push_back ('\n');
                             ++i; // skip LF
                         }
@@ -135,8 +137,8 @@ namespace {
 
         void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
         {
-            EXPECT_TRUE (Encoding::Algorithm::Base64::Decode (
-                             Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))) == bytes);
+            EXPECT_EQ (Encoding::Algorithm::Base64::Decode (Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))),
+                       bytes);
         }
 
         void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
@@ -206,8 +208,8 @@ namespace {
         {
             const char kSrc[]        = "This is a very good test of a very good test";
             const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-            EXPECT_TRUE (Cryptography::Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (
-                             (const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+            EXPECT_EQ (Cryptography::Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))),
+                       kEncodedVal);
         }
         {
             int    tmp = 3;
@@ -239,10 +241,10 @@ namespace {
                 auto operator() (String s)
                 {
                     wstring ws = s.As<wstring> ();
-                    return s.empty () ? Memory::BLOB{} : Memory::BLOB{(const byte*)ws.c_str (), (const byte*)ws.c_str () + 1};
+                    return s.empty () ? BLOB{} : BLOB{(const byte*)ws.c_str (), (const byte*)ws.c_str () + 1};
                 };
             };
-            //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
+            //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? BLOB{} : BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
             EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}("xxx")));
             EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") ==
                           Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
@@ -269,19 +271,19 @@ namespace {
         Debug::TraceContextBumper ctx{"{}...DigestAltResults"};
         using namespace Cryptography::Digest;
 
-        // Excercise uses of ConvertResult()
+        // Exercise uses of ConvertResult()
         {
             using namespace Memory;
             using namespace DataExchange;
             using namespace IO::Network;
-            auto                          digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
-            auto                          digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
-            auto                          digesterWithResult_GUID_t  = Digester<Digest::Algorithm::SuperFastHash, Common::GUID>{};
-            Memory::BLOB                  value2Hash = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
-            auto                          h1         = digesterWithDefaultResult (value2Hash);
-            uint8_t                       h2         = digesterWithResult_uint8_t (value2Hash);
-            std::array<byte, 40>          h3         = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
-            [[maybe_unused]] Common::GUID h4         = digesterWithResult_GUID_t (value2Hash);
+            auto                  digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
+            auto                  digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
+            auto                  digesterWithResult_GUID_t  = Digester<Digest::Algorithm::SuperFastHash, GUID>{};
+            BLOB                  value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
+            auto                  h1                         = digesterWithDefaultResult (value2Hash);
+            uint8_t               h2                         = digesterWithResult_uint8_t (value2Hash);
+            std::array<byte, 40>  h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
+            [[maybe_unused]] GUID h4 = digesterWithResult_GUID_t (value2Hash);
 
             /*
              *  NOTE - basically ALL these tests vary on a number of parameters
@@ -300,11 +302,11 @@ namespace {
             // copy array to smaller type
             using namespace DataExchange;
             using namespace IO::Network;
-            auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::MD5>{};
-            auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::MD5, uint8_t>{};
-            Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
-            auto         h1                         = digesterWithDefaultResult (value2Hash);
-            uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
+            auto    digesterWithDefaultResult  = Digester<Digest::Algorithm::MD5>{};
+            auto    digesterWithResult_uint8_t = Digester<Digest::Algorithm::MD5, uint8_t>{};
+            BLOB    value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
+            auto    h1                         = digesterWithDefaultResult (value2Hash);
+            uint8_t h2                         = digesterWithResult_uint8_t (value2Hash);
             EXPECT_TRUE (h2 == h1[0]);
             auto digesterWithResult_string = Digester<Digest::Algorithm::MD5, string>{};
             // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
@@ -343,7 +345,7 @@ namespace {
     void DoCommonDigesterTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
         EXPECT_TRUE (DIGESTER{}(dataStart, dataEnd) == answer);
-        EXPECT_TRUE (DIGESTER{}(Memory::BLOB{dataStart, dataEnd}.As<Streams::InputStream::Ptr<byte>> ()) == answer);
+        EXPECT_TRUE (DIGESTER{}(BLOB{dataStart, dataEnd}.As<Streams::InputStream::Ptr<byte>> ()) == answer);
     }
 
     GTEST_TEST (Foundation_Cryptography, Digest_CRC32_)
@@ -368,8 +370,6 @@ namespace {
 
         Debug::TraceContextBumper ctx{"...Digest_Jenkins_"};
 
-        using Common::Endian;
-        using Common::EndianConverter;
         using USE_DIGESTER_ = Digester<Algorithm::Jenkins>;
         {
             EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
@@ -402,8 +402,8 @@ namespace {
             using namespace Characters; // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
             EXPECT_TRUE (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
             EXPECT_TRUE (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
-            EXPECT_TRUE ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
-            EXPECT_TRUE ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+            EXPECT_TRUE ((GUID{Hash<string, USE_DIGESTER_>{}("x")} == GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+            EXPECT_TRUE ((Hash<string, USE_DIGESTER_, GUID>{}("x") == GUID{"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
         }
     }
 }
@@ -479,7 +479,6 @@ namespace {
         Debug::TraceContextBumper ctx{"...AllSSLEncryptionRoundtrip"};
 
 #if qStroika_HasComponent_OpenSSL
-        using Memory::BLOB;
         using namespace Stroika::Foundation::Cryptography::Encoding;
 
         auto roundTripTester_ = [] (const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
@@ -668,7 +667,6 @@ namespace {
 
 #if qStroika_HasComponent_OpenSSL
         using Characters::String;
-        using Memory::BLOB;
         using namespace Stroika::Foundation::Cryptography::Encoding;
 
         auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const DerivedKey& expected) {
@@ -728,7 +726,6 @@ namespace {
 
 #if qStroika_HasComponent_OpenSSL
         using Characters::String;
-        using Memory::BLOB;
         using namespace Stroika::Foundation::Cryptography::Encoding;
 
         auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src,
@@ -796,12 +793,12 @@ namespace {
              *      echo -n "This is a very good test of a very good test" | openssl enc -k password -e -aes-256-cbc -nosalt | od -t x1 --width=100
              *          0000000 62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd
              */
-            const Memory::BLOB srcText =
-                Memory::BLOB::FromHex ("2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 "
-                                       "20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
-            const Memory::BLOB encResult =
-                Memory::BLOB::FromHex ("62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 "
-                                       "ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
+            const BLOB srcText =
+                BLOB::FromHex ("2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 "
+                               "20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
+            const BLOB encResult =
+                BLOB::FromHex ("62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 "
+                               "ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
 #if qStroika_HasComponent_OpenSSL
             const OpenSSL::DerivedKey kDerivedKey =
                 OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};

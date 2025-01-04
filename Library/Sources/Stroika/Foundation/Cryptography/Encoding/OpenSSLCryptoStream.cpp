@@ -78,7 +78,7 @@ namespace {
         {
             Require (outBuf.size () >= _GetMinOutBufSize (data2Process.size ())); // always need out buf big enuf for inbuf
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (
+            Cryptography::Providers::OpenSSL::Exception::ThrowLastErrorIfFailed (
                 ::EVP_CipherUpdate (fCTX_, reinterpret_cast<unsigned char*> (outBuf.data ()), &outLen,
                                     reinterpret_cast<const unsigned char*> (data2Process.data ()), static_cast<int> (data2Process.size ())));
             Ensure (outLen >= 0);
@@ -94,7 +94,7 @@ namespace {
                 return 0; // not an error - just zero more bytes
             }
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (
+            Cryptography::Providers::OpenSSL::Exception::ThrowLastErrorIfFailed (
                 ::EVP_CipherFinal_ex (fCTX_, reinterpret_cast<unsigned char*> (outBufStart), &outLen));
             fFinalCalled_ = true;
             Ensure (outLen >= 0);
@@ -317,7 +317,7 @@ namespace {
         if (nopad) {
             Verify (::EVP_CIPHER_CTX_set_padding (ctx, 0) == 1);
         }
-        Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc));
+        Cryptography::Providers::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc));
         size_t keyLen = ::EVP_CIPHER_CTX_key_length (ctx);
         size_t ivLen  = ::EVP_CIPHER_CTX_iv_length (ctx);
 
@@ -336,14 +336,14 @@ namespace {
         if (not initialIV.empty ()) {
             (void)::memcpy (useIV.begin (), initialIV.begin (), min (ivLen, initialIV.size ()));
         }
-        Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (
+        Cryptography::Providers::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (
             ctx, nullptr, NULL, reinterpret_cast<unsigned char*> (useKey.begin ()), reinterpret_cast<unsigned char*> (useIV.begin ()), enc));
     }
 }
 
 OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const BLOB& key, const BLOB& initialIV)
 {
-    using namespace OpenSSL;
+    using namespace Providers::OpenSSL;
     bool nopad                = false;
     bool useArgumentKeyLength = false;
     if (alg == CipherAlgorithms::kRC2_CBC () or alg == CipherAlgorithms::kRC2_ECB () or alg == CipherAlgorithms::kRC2_CFB () or

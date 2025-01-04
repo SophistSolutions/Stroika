@@ -17,6 +17,7 @@ INCOMPAT CHANGE - INPUT_STREAM::
         Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
 
 
+        Refactor (not backward compatible) - Cryptography::OpenSSL code down to Cryptography::Providers::OpenSSL
 
 
 

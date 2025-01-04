@@ -82,9 +82,6 @@
     <Filter Include="Sources\Execution\Platform\POSIX">
       <UniqueIdentifier>{e3cb51f2-90a4-4e1e-b12c-4626c86fe91e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Cryptography\SSL">
-      <UniqueIdentifier>{e5bc13d3-660a-4be2-95df-297eba6a4330}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Cache">
       <UniqueIdentifier>{d2eadc00-4e81-4df2-be06-55d6391cb34b}</UniqueIdentifier>
     </Filter>
@@ -129,9 +126,6 @@
     </Filter>
     <Filter Include="Sources\IO\Network\Platform\Windows">
       <UniqueIdentifier>{de6d3307-094f-4e56-9f90-5a1a1919a053}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cryptography\OpenSSL">
-      <UniqueIdentifier>{a561a186-939b-4767-ae45-66afe4224565}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\DataExchange\StructuredStreamEvents">
       <UniqueIdentifier>{5e550cdb-ffe0-4576-8941-d7ec6508fb41}</UniqueIdentifier>
@@ -225,6 +219,15 @@
     </Filter>
     <Filter Include="Sources\Cryptography\PKI">
       <UniqueIdentifier>{560fa7a3-d80d-4145-b87e-4e97975e676d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Cryptography\Providers">
+      <UniqueIdentifier>{e21c8210-7b02-4de2-8d11-b0e9fbc80d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Cryptography\Providers\OpenSSL">
+      <UniqueIdentifier>{e60bca89-13fc-4908-9da3-fb5121ca1cdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Cryptography\SSL">
+      <UniqueIdentifier>{c78a5d76-9e95-4cf6-b220-34efd8242b16}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -455,18 +458,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp">
       <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
@@ -729,9 +720,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\TransferEncoding.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.cpp">
       <Filter>Sources\Database\SQL</Filter>
     </ClCompile>
@@ -861,33 +849,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.cpp">
       <Filter>Sources\IO\Network\SSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ClientContext.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Certificate.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PrivateKey.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PEMFile.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Certificate.cpp">
       <Filter>Sources\Cryptography\PKI</Filter>
     </ClCompile>
@@ -896,6 +857,48 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PrivateKey.cpp">
       <Filter>Sources\Cryptography\PKI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Certificate.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\CipherAlgorithm.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ClientContext.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\DerivedKey.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\DigestAlgorithm.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Exception.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\LibraryContext.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PEMFile.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PrivateKey.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ServerContext.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\SocketStream.cpp">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.cpp">
+      <Filter>Sources\Cryptography\SSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1037,15 +1040,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h">
       <Filter>Sources\Streams\iostream</Filter>
@@ -1415,18 +1409,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
@@ -1977,9 +1959,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h">
       <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.h">
       <Filter>Sources\Database\SQL</Filter>
     </ClInclude>
@@ -2276,27 +2255,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.h">
       <Filter>Sources\IO\Network\SSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ClientContext.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Certificate.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PrivateKey.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PEMFile.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Certificate.h">
       <Filter>Sources\Cryptography\PKI</Filter>
     </ClInclude>
@@ -2305,6 +2263,51 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PrivateKey.h">
       <Filter>Sources\Cryptography\PKI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Certificate.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\CipherAlgorithm.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ClientContext.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\DerivedKey.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\DigestAlgorithm.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Exception.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\LibraryContext.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PEMFile.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PrivateKey.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ServerContext.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\SocketStream.h">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.h">
+      <Filter>Sources\Cryptography\SSL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2819,12 +2822,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Stream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
@@ -3067,12 +3064,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Makefile">
       <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Makefile">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile">
-      <Filter>Sources\Cryptography\SSL</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Makefile">
       <Filter>Sources\DataExchange</Filter>
@@ -3443,15 +3434,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\ObjectForSideEffects.inl">
       <Filter>Sources\Common</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\LibraryContext.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile">
       <Filter>Sources\Database</Filter>
     </None>
@@ -3771,21 +3753,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SSL\SocketStream.inl">
       <Filter>Sources\IO\Network\SSL</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.inl">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\SocketStream.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ClientContext.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\ServerContext.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\PEMFile.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\Makefile">
       <Filter>Sources\Cryptography\PKI</Filter>
     </None>
@@ -3794,6 +3761,54 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\ReadMe.md">
       <Filter>Sources\Cryptography\PKI</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\CipherAlgorithm.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ClientContext.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\DerivedKey.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\DigestAlgorithm.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Exception.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\LibraryContext.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Makefile">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PEMFile.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ReadMe.md">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ServerContext.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\SocketStream.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\Makefile">
+      <Filter>Sources\Cryptography\Providers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\ReadMe.md">
+      <Filter>Sources\Cryptography\Providers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ReadMe.md">
+      <Filter>Sources\Cryptography\SSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.inl">
+      <Filter>Sources\Cryptography\SSL</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

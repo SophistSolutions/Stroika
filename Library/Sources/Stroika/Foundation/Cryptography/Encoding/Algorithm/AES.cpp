@@ -12,9 +12,13 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::Providers;
 using namespace Stroika::Foundation::Cryptography::Encoding;
 using namespace Stroika::Foundation::Cryptography::Encoding::Algorithm;
-using namespace Stroika::Foundation::Cryptography::OpenSSL;
+#if qStroika_HasComponent_OpenSSL
+using namespace Stroika::Foundation::Cryptography::Providers::OpenSSL;
+#endif
+using namespace Stroika::Foundation::Streams;
 
 using Memory::BLOB;
 
@@ -73,7 +77,7 @@ namespace {
  ***************************** Algorithm::DecodeAES *****************************
  ********************************************************************************
  */
-Streams::InputStream::Ptr<byte> Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in, AESOptions options)
+Streams::InputStream::Ptr<byte> Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const InputStream::Ptr<byte>& in, AESOptions options)
 {
     return OpenSSLInputStream::New (cvt_ (key, options), Direction::eDecrypt, in);
 }
@@ -89,13 +93,13 @@ Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory:
  ****************************** Algorithm::EncodeAES ****************************
  ********************************************************************************
  */
-Streams::InputStream::Ptr<byte> Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in, AESOptions options)
+Streams::InputStream::Ptr<byte> Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const InputStream::Ptr<byte>& in, AESOptions options)
 {
     return OpenSSLInputStream::New (cvt_ (key, options), Direction::eEncrypt, in);
 }
 Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options)
 {
-    return EncodeAES (key, in.As<Streams::InputStream::Ptr<byte>> (), options).ReadAll ();
+    return EncodeAES (key, in.As<InputStream::Ptr<byte>> (), options).ReadAll ();
 }
 #endif
 
@@ -105,7 +109,7 @@ Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory:
  **************************** Algorithm::AESEncoder *****************************
  ********************************************************************************
  */
-Streams::OutputStream::Ptr<byte> Algorithm::AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream::Ptr<byte>& out, AESOptions options)
+OutputStream::Ptr<byte> Algorithm::AESDecoder (const OpenSSL::DerivedKey& key, const OutputStream::Ptr<byte>& out, AESOptions options)
 {
     return OpenSSLOutputStream::New (cvt_ (key, options), Direction::eDecrypt, out);
 }
@@ -117,7 +121,7 @@ Streams::OutputStream::Ptr<byte> Algorithm::AESDecoder (const OpenSSL::DerivedKe
  ****************************** Algorithm::AESEncoder ***************************
  ********************************************************************************
  */
-Streams::OutputStream::Ptr<byte> Algorithm::AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream::Ptr<byte>& out, AESOptions options)
+OutputStream::Ptr<byte> Algorithm::AESEncoder (const OpenSSL::DerivedKey& key, const OutputStream::Ptr<byte>& out, AESOptions options)
 {
     return OpenSSLOutputStream::New (cvt_ (key, options), Direction::eEncrypt, out);
 }

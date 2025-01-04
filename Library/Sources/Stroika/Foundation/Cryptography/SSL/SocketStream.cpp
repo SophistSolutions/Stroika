@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_OpenSSL
-#include "Stroika/Foundation/Cryptography/OpenSSL/SocketStream.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/SocketStream.h"
 #else
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
@@ -25,7 +25,7 @@ using namespace Stroika::Foundation::Streams;
 auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return OpenSSL::SocketStream::New (sd, OpenSSL::ClientContext::Options{o});
+    return Providers::OpenSSL::SocketStream::New (sd, Providers::OpenSSL::ClientContext::Options{o});
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
@@ -33,7 +33,7 @@ auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket:
 auto Cryptography::SSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ServerContext::Options& o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return OpenSSL::SocketStream::New (sd, OpenSSL::ServerContext::Options{o});
+    return Providers::OpenSSL::SocketStream::New (sd, Providers::OpenSSL::ServerContext::Options{o});
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

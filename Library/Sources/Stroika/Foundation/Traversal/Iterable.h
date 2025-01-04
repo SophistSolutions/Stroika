@@ -603,6 +603,8 @@ namespace Stroika::Foundation::Traversal {
          *              return not s.Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
          *          }
          *      \endcode
+         * 
+         *  \see See Also First (f) - if you just want the first one...
          *
          *  \note - because the lifetime of the iterable must exceed that of the iterator, its generally unsafe to use Find()
          *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary

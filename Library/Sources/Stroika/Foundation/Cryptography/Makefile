@@ -18,7 +18,7 @@ endif
 SubDirs	:=		\
 	Digest		\
 	Encoding	\
-	OpenSSL		\
+	Providers	\
 	PKI			\
 	SSL			\
 

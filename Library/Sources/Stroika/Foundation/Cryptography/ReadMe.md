@@ -7,11 +7,9 @@ a stream of data in some 'encoded' format (folder 'Encoding').
 
 And it contains functions that compute a cryptographic digest (or hash), in the folder 'Hash'.
 
-NB: it is because of this organizational principle, that Base64 is grouped here
-(not in data format exchange).
-
-- [Digest/](Digest/)
-- [Encoding/](Encoding/)
-- [Format.h](Format.h)
-- [OpenSSL](OpenSSL/)
-- [SSL](SSL/)
+- [Digest/](Digest/) - algorithms to 'hash' content
+- [Encoding/](Encoding/) - algorithms to 'encrypt' (or decrypt), or otherwise transform such as base64
+- [Format.h](Format.h) - utility to format some binary structures in common ways done for crypto
+- [PKI](PKI/) - private keys, certificates, pem files, etc
+- [Providers](Providers/) - integration with libraries that provide most of the underlying functionality (such as openssl)
+- [SSL](SSL/) - code to manage SSL streams (networking)

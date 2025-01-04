@@ -22,9 +22,10 @@
  * 
  *      https://datatracker.ietf.org/doc/html/rfc7468
  * 
- *  \par Example Usage:     @todo example wrong - and need example constructed form CERT tsielf... and getting Cert...
+ *  \par Example Usage:     @todo need example constructed form CERT tsielf... and getting Cert...
  *      \code
  *          PEMFile myCertPem{IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ())};
+ *          Certificate::Ptr cert = myCertPem.GetEntries ().GetFirst ([] (const auto& e) { return get_if<Certificate::Ptr> (&e); }).value_or (nullptr);
  *      \endcode
  */
 

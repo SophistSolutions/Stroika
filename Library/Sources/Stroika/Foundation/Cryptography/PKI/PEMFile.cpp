@@ -5,9 +5,9 @@
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #if qStroika_HasComponent_OpenSSL
-#include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
-#include "Stroika/Foundation/Cryptography/OpenSSL/PEMFile.h"
-#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Certificate.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PEMFile.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
 #endif
 #include "Stroika/Foundation/Streams/TextReader.h"
 
@@ -36,7 +36,7 @@ Characters::String PEMFile::Ptr::ToString () const
 auto Cryptography::PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::PEMFile::New (pemData);
+    return Cryptography::Providers::OpenSSL::PEMFile::New (pemData);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
@@ -44,7 +44,7 @@ auto Cryptography::PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 auto Cryptography::PKI::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::PEMFile::New (entries);
+    return Cryptography::Providers::OpenSSL::PEMFile::New (entries);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_OpenSSL
-#include "Stroika/Foundation/Cryptography/OpenSSL/Certificate.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Certificate.h"
 #else
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
@@ -59,7 +59,7 @@ auto Cryptography::PKI::Certificate::Ptr::ToString () const -> String
 auto Cryptography::PKI::Certificate::New (const SelfSignedCertParams& params) -> tuple<Cryptography::PKI::PrivateKey::Ptr, Ptr>
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::Certificate::New (params);
+    return Cryptography::Providers::OpenSSL::Certificate::New (params);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif

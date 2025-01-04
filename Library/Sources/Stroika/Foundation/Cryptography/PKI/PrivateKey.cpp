@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_OpenSSL
-#include "Stroika/Foundation/Cryptography/OpenSSL/PrivateKey.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
 #else
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif

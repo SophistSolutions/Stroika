@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Execution;
 auto Cryptography::SSL::ServerContext::New ([[maybe_unused]] const Options& o) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
-    return Cryptography::OpenSSL::ServerContext::New (o);
+    return Cryptography::Providers::OpenSSL::ServerContext::New (o);
 #else
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
