@@ -35,8 +35,12 @@
 #include "Stroika/Foundation/Cryptography/SSL/SocketStream.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
 #include "Stroika/Foundation/IO/Network/InternetAddress.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
@@ -829,8 +833,6 @@ namespace {
         EXPECT_EQ (cert.GetSubject ().fOrganization, "MyCompany Inc."sv);
         EXPECT_EQ (cert.GetValidDates ().GetLowerBound (), now);
         EXPECT_TRUE (cert.GetValidDates ().Contains (now));
-
-        // ADD WRITING TO PEMFILE
     }
 }
 
@@ -841,15 +843,48 @@ namespace {
         using Time::DateTime;
         using Traversal::Range;
         Debug::TraceContextBumper ctx{"::TestPEMFileIO"};
-        DateTime                  now = DateTime::Now ();
-        Range<DateTime>           validDates{now, now + Time::Duration{"PT1Y"sv}};
-        auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
-            .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
 
-        // ADD WRITING TO PEMFILE
-        // Create PEMFile from PrivateKey and read back - verify works.
-        // Then Create from CERT and do likewise.
-        // Then create from Cert+PrivateKey, and do likewise.
+        {
+            DateTime        now = DateTime::Now ();
+            Range<DateTime> validDates{now, now + Time::Duration{"PT1Y"sv}};
+            auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
+                .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+
+            // ADD WRITING TO PEMFILE
+            // Create PEMFile from PrivateKey and read back - verify works.
+            // Then Create from CERT and do likewise.
+            // Then create from Cert+PrivateKey, and do likewise.
+            //    *          PEMFile myCertPem{IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ())};
+            //   *Certificate::Ptr cert = myCertPem.GetEntries ().GetFirst ([] (const auto& e) { return get_if<Certificate::Ptr> (&e); }).value_or (nullptr);
+        }
+
+        try {
+            // Use ProcessRunner and external openssl to create self-signed cert
+            // openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem
+            IO::FileSystem::ScopedTmpFile f{"cert.pem"};
+            using namespace Execution;
+            String commonName = "localhost"sv;
+            String company    = "MyCompany Inc."sv;
+            // use bash cuz openssl not in my path, but is installed in msys (windows)
+            // split path into dir/filename and only use filename cuz something getting confused about
+            // finding filenames with paths (from here, not directly on commandline but PITA to debug and not the point of this test)
+            ProcessRunner{CommandLine{CommandLine::WrapInShell::eBash,
+                                      "openssl req -new -x509 -days 365 -nodes -out {} -keyout {}"_f(
+                                          static_cast<filesystem::path> (f).filename (), static_cast<filesystem::path> (f).filename ())},
+                          {.fWorkingDirectory = static_cast<filesystem::path> (f).parent_path ()}}
+                .Run ("US\nMA\nSudbury\n{}\n\n{}\nlewis@sophists.com\n"_f(company, commonName));
+            PEMFile::Ptr     pem  = PEMFile::New (IO::FileSystem::FileInputStream::New (f).ReadAll ());
+            Certificate::Ptr cert = pem.GetByType<Certificate::Ptr> ().FirstValue (nullptr);
+            PrivateKey::Ptr  pkey = pem.GetByType<PrivateKey::Ptr> ().FirstValue (nullptr);
+            DbgTrace ("read from file: cert={}"_f, cert);
+            DbgTrace ("read from file: pkey={}"_f, pkey);
+            EXPECT_NE (pkey, nullptr);
+            EXPECT_EQ (cert.GetSubject ().fCommonName, commonName);
+            EXPECT_EQ (cert.GetSubject ().fOrganization, company);
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue ("openssl commandline tool failure (installed?): {}"_f(current_exception ()));
+        }
     }
 }
 
@@ -862,6 +897,7 @@ namespace {
             .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
 
         // auto serverContext = Cryptography::SSL::ServerContext::Options serverOpts;
+        //
     }
 }
 #endif
