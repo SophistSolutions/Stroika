@@ -26,6 +26,9 @@ using namespace Stroika::Foundation::Execution;
  */
 auto Cryptography::PKI::PrivateKey::Ptr::ToString () const -> String
 {
+    if (*this == nullptr) {
+        return "nullptr"sv;
+    }
     StringBuilder sb;
     sb << "{"sv;
     sb << "type: "sv << this->GetType ();

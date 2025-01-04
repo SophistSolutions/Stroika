@@ -43,6 +43,9 @@ String Cryptography::PKI::Certificate::SubjectInfo::ToString () const
  */
 auto Cryptography::PKI::Certificate::Ptr::ToString () const -> String
 {
+    if (*this == nullptr) {
+        return "nullptr"sv;
+    }
     StringBuilder sb;
     sb << "{"sv;
     sb << "subject: "sv << this->GetSubject ();
