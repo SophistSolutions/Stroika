@@ -257,7 +257,8 @@ String ProcessRunner::Exception::mkMsg_ (const String& errorMessage, const optio
         }
     }
     if (stderrSubset) {
-        sb << " (captured stderr: "sv + stderrSubset->ReplaceAll ("\\s+"_RegEx, " "sv).LimitLength (100) << ")"sv;
+        sb << " (captured stderr: "sv
+           << stderrSubset->ReplaceAll ("\\s+"_RegEx, " "sv).LimitLength (100, StringShorteningPreference::ePreferKeepRight) << ")"sv;
     }
     return sb;
 }
@@ -994,7 +995,7 @@ namespace {
 #if qStroika_Foundation_Debug_AssertionsChecked
                 if (useEXEPath) {
                     if (!FindExecutableInPath (*useEXEPath)) {
-                        DbgTrace ("Cannot find exe '{}' in PATH ({})"_f, useEXEPath, kPath ());
+                        DbgTrace ("Warning: Cannot find exe '{}' in PATH ({})"_f, useEXEPath, kPath ());
                     }
                 }
                 else {
@@ -1003,7 +1004,7 @@ namespace {
                     if (cmdArgs.size () >= 1) {
                         filesystem::path exe2Find = cmdArgs[0].As<filesystem::path> ();
                         if (!FindExecutableInPath (exe2Find)) {
-                            DbgTrace ("Cannot find exe '{}' in PATH ({})"_f, exe2Find, kPath ());
+                            DbgTrace ("Warning: Cannot find exe '{}' in PATH ({})"_f, exe2Find, kPath ());
                         }
                     }
                 }

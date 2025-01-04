@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Execution {
             /**
              *  \brief pwd/cwd of the created process
              *      defaults to 'missing'. If missing, then WellKnownDirectories::GetTemporary () is 
-             *      used (since this is a generally safe place to run an executable); use GetCurrentDirectory () if that is the intention.
+             *      used (since this is a generally safe place to run an executable); use filesystem::current_path () if that is the intention.
              */
             optional<filesystem::path> fWorkingDirectory;
 
