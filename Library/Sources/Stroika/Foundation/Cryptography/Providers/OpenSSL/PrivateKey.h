@@ -17,6 +17,7 @@
 
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PrivateKey {
 
+#if qStroika_HasComponent_OpenSSL
     using LibRepType = unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>;
 
     /**
@@ -57,6 +58,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PrivateKey {
     /**
      */
     Ptr New (LibRepType&& pkey);
+    #endif
 
 }
 

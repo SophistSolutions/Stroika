@@ -17,6 +17,7 @@
 
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ClientContext {
 
+#if qStroika_HasComponent_OpenSSL
     /**
      */
     struct IRep : Cryptography::SSL::ClientContext::IRep {
@@ -37,6 +38,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ClientContext {
     /**
      */
     Ptr New (const Options& o = {});
+#endif
 
 }
 

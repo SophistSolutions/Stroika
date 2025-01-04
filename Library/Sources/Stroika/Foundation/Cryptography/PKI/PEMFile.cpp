@@ -5,6 +5,8 @@
 
 #if qStroika_HasComponent_OpenSSL
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PEMFile.h"
+#else
+#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -14,6 +16,9 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::PKI;
+#if !qStroika_HasComponent_OpenSSL
+using namespace Stroika::Foundation::Execution;
+#endif
 using namespace Stroika::Foundation::Streams;
 
 /*
@@ -28,7 +33,7 @@ Characters::String PEMFile::Ptr::ToString () const
 
 /*
  ********************************************************************************
- ************************************* PKI::PEMFile *****************************
+ ********************************* PKI::PEMFile *********************************
  ********************************************************************************
  */
 auto PKI::PEMFile::New (const filesystem::path& pemFile) -> Ptr

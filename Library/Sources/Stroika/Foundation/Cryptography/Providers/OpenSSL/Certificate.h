@@ -21,6 +21,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::Certificate {
 
     using namespace Cryptography::PKI::Certificate;
 
+#if qStroika_HasComponent_OpenSSL
     /**
      */
     using LibRepType = unique_ptr<::X509, decltype (&::X509_free)>;
@@ -70,6 +71,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::Certificate {
      *  \see https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
      */
     tuple<OpenSSL::PrivateKey::Ptr, Ptr> New (const SelfSignedCertParams& params);
+#endif
 
 }
 

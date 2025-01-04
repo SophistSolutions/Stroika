@@ -22,6 +22,7 @@ using namespace Stroika::Foundation::Streams;
 
 using Memory::BLOB;
 
+#if qStroika_HasComponent_OpenSSL
 namespace {
     // https://linux.die.net/man/3/bio_s_mem
     struct BIO2BLOB_ {
@@ -108,7 +109,6 @@ namespace {
  ********************* Cryptography::Providers::OpenSSL::PEMFile ****************
  ********************************************************************************
  */
-#if qStroika_HasComponent_OpenSSL
 auto Cryptography::Providers::OpenSSL::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {
     return make_shared<Rep_> (pemData);

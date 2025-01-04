@@ -17,6 +17,7 @@
 
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ServerContext {
 
+#if qStroika_HasComponent_OpenSSL
     /**
      */
     struct IRep : Cryptography::SSL::ServerContext::IRep {
@@ -44,13 +45,13 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ServerContext {
     };
 
     struct Options : SSL::ServerContext::Options {
-
         const SSL_METHOD* fMethod{nullptr}; // e.g. TLS_1.3_method ()
     };
 
     /**
      */
     Ptr New (const Options& o);
+#endif
 
 }
 

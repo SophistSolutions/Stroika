@@ -4,6 +4,7 @@
 
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
 
+#if qStroika_HasComponent_OpenSSL
     /*
      ********************************************************************************
      *************************** OpenSSL::Exception *********************************
@@ -15,5 +16,6 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
             ThrowLastError ();
         }
     }
+#endif
 
 }
