@@ -24,6 +24,8 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         using inherited = Execution::RuntimeErrorException<>;
 
     public:
+        /**
+         */
         using InternalErrorCodeType = unsigned long;
 
     public:
