@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PrivateKey {
     /**
      */
     Ptr New (LibRepType&& pkey);
-    #endif
+#endif
 
 }
 

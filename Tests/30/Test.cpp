@@ -870,6 +870,10 @@ namespace {
         }
 
         try {
+            // @todo COULD add to PATH so we find the (our built) ThirdPartyComponents openssl (maybe - if we built it)
+            // and use that one preferentially... - then maybe dont need bash trick...
+            // --LGP 2025-01-04
+
             // Use ProcessRunner and external openssl to create self-signed cert
             // openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem
             IO::FileSystem::ScopedTmpFile f{"cert.pem"};

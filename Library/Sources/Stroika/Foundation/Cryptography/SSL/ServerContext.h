@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
     public:
         virtual ~IRep () = 0;
     };
-    
+
     /**
      *  \note Design Note:
      *      Could have had get/set properites on IRep, or passed in Options. The former a bit more flexible
