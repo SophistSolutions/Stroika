@@ -30,20 +30,27 @@ namespace {
             : fData_{b}
         {
             auto d  = fData_.As<span<const uint8_t>> ();
-            auto dd = d.data ();
-
+#if 0
             // cannot find docs on b2i_PrivateKey API
             if (auto pp = ::b2i_PrivateKey (&dd, static_cast<long> (d.size ()))) {
                 Cryptography::PKI::PrivateKey::Ptr pk1 = OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp, EVP_PKEY_free});
                 fEntries_ += pk1;
             }
+#endif
+            BIO* bio     = ::BIO_new_mem_buf (d.data (), static_cast<int> (d.size ())); // example had sz -1, but seems probably wrong here
+            auto cleanup = Execution::Finally ([&] () { ::BIO_free (bio); });
 
-            BIO* bio = ::BIO_new_mem_buf (dd, static_cast<int> (d.size ())); // example had sz -1, but seems probably wrong here
-            auto r   = ::PEM_read_bio_X509 (bio, NULL, NULL, NULL);
-            ::BIO_free (bio);
-            if (r != nullptr) {
-                Cryptography::PKI::Certificate::Ptr c1 = OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r, &::X509_free});
-                fEntries_ += c1;
+            {
+                EVP_PKEY* pp = nullptr;
+                if (auto r = ::PEM_read_bio_PrivateKey (bio, &pp, nullptr, nullptr)) {
+                    fEntries_ += OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp, EVP_PKEY_free});
+                }
+            }
+            {
+                auto r = ::PEM_read_bio_X509 (bio, nullptr, nullptr, nullptr);
+                if (r != nullptr) {
+                    fEntries_ += OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r, &::X509_free});
+                }
             }
         }
         Rep_ (const Sequence<EntryType>& entries)
