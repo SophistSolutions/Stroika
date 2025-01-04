@@ -22,10 +22,16 @@
  * 
  *      https://datatracker.ietf.org/doc/html/rfc7468
  * 
- *  \par Example Usage:     @todo need example constructed form CERT tsielf... and getting Cert...
+ *  \par Example Usage:
  *      \code
  *          PEMFile myCertPem{IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ())};
- *          Certificate::Ptr cert = myCertPem.GetEntries ().GetFirst ([] (const auto& e) { return get_if<Certificate::Ptr> (&e); }).value_or (nullptr);
+ *          Certificate::Ptr cert = pem.GetByType<Certificate::Ptr> ().FirstValue (nullptr);
+ *          PrivateKey::Ptr  pkey = pem.GetByType<PrivateKey::Ptr> ().FirstValue (nullptr);
+ *      \endcode
+ * 
+ *  \par Example Usage:     @todo need example constructed form CERT tsielf... and getting Cert...
+ *      \code
+ *          
  *      \endcode
  */
 
@@ -33,13 +39,14 @@ namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
 
     using Containers::Sequence;
     using Memory::BLOB;
+    using Traversal::Iterable;
 
     /**
      *  @todo - can also be CRL, certificate request, etc... - message, many things can be inside
      * 
      *  \note since this is being developed to support webserver, main target support is PrivateKey/Cert --LGP 2025-01-03
      */
-    using EntryType = variant<PrivateKey::Ptr, Certificate::Ptr>;
+    using EntryType = variant<Certificate::Ptr, PrivateKey::Ptr>;
 
     /**
      */
@@ -64,6 +71,8 @@ namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
 
         BLOB                GetData () const;
         Sequence<EntryType> GetEntries () const;
+        template <Common::IAnyOf<Certificate::Ptr, PrivateKey::Ptr> T>
+        Iterable<T> GetByType () const;
 
         // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
         // add to/update?
