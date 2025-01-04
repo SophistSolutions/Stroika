@@ -18,9 +18,21 @@
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ClientContext {
 
 #if qStroika_HasComponent_OpenSSL
+
+    /**
+     *  \brief openssl library 'unique_ptr' representation of a ssl client context
+     */
+    struct LibRepType : unique_ptr<::SSL_CTX, decltype (&::SSL_CTX_free)> {
+        using inherited = unique_ptr<::SSL_CTX, decltype (&::SSL_CTX_free)>;
+
+        LibRepType (nullptr_t);
+        LibRepType (LibRepType&&) = default;
+        LibRepType (SSL_CTX* p);
+    };
+
     /**
      */
-    struct IRep : Cryptography::SSL::ClientContext::IRep {
+    struct IRep : SSL::ClientContext::IRep {
         virtual SSL_CTX* Get_SSL_CTX () const = 0;
     };
 
@@ -28,9 +40,15 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ClientContext {
      */
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
+
         /**
+         *  (1) normal shared_ptr constructors supported
+         *  (2) copy from const shared_ptr<IRep>&, to clarify overload avoid ambiguity
+         *  (3) shared_ptr<PKI::Certificate::IRep>& - a dynamic_pointer_cast - which only works - which throws if not the right type
          */
         using inherited::inherited;
+        Ptr (const shared_ptr<IRep>& p);
+        Ptr (const shared_ptr<SSL::ClientContext::IRep>& p);
     };
 
     struct Options : SSL::ClientContext::Options {};
@@ -47,5 +65,6 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ClientContext {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+//#include "ClientContext.inl"
 
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_ClientContext_h_*/

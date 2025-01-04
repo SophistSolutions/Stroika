@@ -12,7 +12,6 @@
 
 #if qStroika_HasComponent_OpenSSL
 #include <openssl/bio.h>
-#include <openssl/err.h>
 #include <openssl/ssl.h>
 #endif
 
@@ -33,7 +32,7 @@ using std::byte;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
-    class Rep_ : public InputOutputStream::IRep<byte> {
+    class Rep_ : public OpenSSL::SocketStream::IRep {
     public:
         bool                                                              fOpenForRead_{true};
         bool                                                              fOpenForWrite_{true};
@@ -41,6 +40,10 @@ namespace {
         variant<OpenSSL::ClientContext::Ptr, OpenSSL::ServerContext::Ptr> fContext_;
         unique_ptr<::SSL, decltype (&::SSL_free)> fSSLConnection_; // cache actual ptr - for slight temporary brevity
 
+        Rep_ (OpenSSL::SocketStream::LibRepType&& r)
+            : fSSLConnection_{move (r)}
+        {
+        }
         Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd, const OpenSSL::ClientContext::Options& o)
             : fContext_{OpenSSL::ClientContext::New (o)}
             , fSSLConnection_{::SSL_new (get<OpenSSL::ClientContext::Ptr> (fContext_)->Get_SSL_CTX ()), ::SSL_free}
@@ -60,6 +63,8 @@ namespace {
                 ::SSL_shutdown (fSSLConnection_.get ());
             }
         }
+
+        // Streams::InputOutputStream::IRep overrides
         virtual bool IsSeekable () const override
         {
             return false;
@@ -67,7 +72,7 @@ namespace {
         virtual void CloseWrite () override
         {
             if (IsOpenWrite ()) {
-                if (SSL_get_shutdown (fSSLConnection_.get ()) == 0) {
+                if (::SSL_get_shutdown (fSSLConnection_.get ()) == 0) {
                     ::SSL_shutdown (fSSLConnection_.get ());
                 }
                 fOpenForWrite_ = false;
@@ -84,7 +89,7 @@ namespace {
         virtual void CloseRead () override
         {
             if (fOpenForRead_) {
-                if (SSL_get_shutdown (fSSLConnection_.get ()) == 0) {
+                if (::SSL_get_shutdown (fSSLConnection_.get ()) == 0) {
                     ::SSL_shutdown (fSSLConnection_.get ());
                 }
                 fOpenForRead_ = false;
@@ -192,14 +197,24 @@ namespace {
             Require (IsOpenWrite ());
             // OpenSSL has no flush API, so write must do the trick...
         }
+
+        // OpenSSL::SocketStream::IRep overrides
+        virtual ::SSL* Get_SSL () const override
+        {
+            return fSSLConnection_.get ();
+        }
     };
 }
 
 /*
  ********************************************************************************
- ****************** Cryptography::Providers::OpenSSL::SocketStream *************************
+ ************** Cryptography::Providers::OpenSSL::SocketStream ******************
  ********************************************************************************
  */
+auto Cryptography::Providers::OpenSSL::SocketStream::New (LibRepType&& r) -> Ptr
+{
+    return Ptr{make_shared<Rep_> (move (r))};
+}
 auto Cryptography::Providers::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o) -> Ptr
 {
     return Ptr{make_shared<Rep_> (sd, o)};

@@ -18,6 +18,17 @@
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ServerContext {
 
 #if qStroika_HasComponent_OpenSSL
+
+    /**
+     */
+    struct LibRepType : unique_ptr<::SSL_CTX, decltype (&::SSL_CTX_free)> {
+        using inherited = unique_ptr<::SSL_CTX, decltype (&::SSL_CTX_free)>;
+
+        LibRepType (nullptr_t);
+        LibRepType (LibRepType&&) = default;
+        LibRepType (SSL_CTX* p);
+    };
+
     /**
      */
     struct IRep : Cryptography::SSL::ServerContext::IRep {
@@ -29,19 +40,13 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ServerContext {
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
+         *  (1) normal shared_ptr constructors supported
+         *  (2) copy from const shared_ptr<IRep>&, to clarify overload avoid ambiguity
+         *  (3) shared_ptr<PKI::Certificate::IRep>& - a dynamic_pointer_cast - which only works - which throws if not the right type
          */
         using inherited::inherited;
-
-        Ptr (SSL::ServerContext::Ptr p)
-        {
-            if (auto pp = dynamic_pointer_cast<IRep> (p)) {
-                *this = Ptr{pp};
-            }
-            else {
-                // Need function SSL::Ptr -> OpenSSL::Ptr (or throw, or assert?)
-                throw ("oops");
-            }
-        }
+        Ptr (const shared_ptr<IRep>& p);
+        Ptr (const shared_ptr<SSL::ServerContext::IRep>& p);
     };
 
     struct Options : SSL::ServerContext::Options {
@@ -60,5 +65,6 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ServerContext {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "ServerContext.inl"
 
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_ServerContext_h_*/

@@ -64,9 +64,6 @@ namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
         Sequence<EntryType> GetEntries () const;
         template <Common::IAnyOf<Certificate::Ptr, PrivateKey::Ptr> T>
         Iterable<T> GetByType () const;
-
-        // I THINK consists of mapping of assertions (?) or sequence? key-value pairs.. - sb able to retrive and maybe
-        // add to/update?
     };
 
     /**
@@ -77,13 +74,21 @@ namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
      *          PrivateKey::Ptr  pkey = pem.GetByType<PrivateKey::Ptr> ().FirstValue (nullptr);
      *      \endcode
      * 
-     *  \par Example Usage:     @todo need example constructed form CERT tsielf... and getting Cert...
+     *  \par Example Usage:
      *      \code
-     *          
+     *          PEMFile::Ptr myCertPem{"my-cert.pem"};  // same as above example, uses FileInputStream::New as above
+     *      \endcode
+     * 
+     *  \par Example Usage:
+     *      \code
+     *          auto [pk, cert]   = Certificate::New (Certificate::SelfSignedCertParams{
+     *            .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = company, .fCommonName = commonName}});
+     *          // construct from existing collection of certs, and private keys
+     *          PEMFile::Ptr pem = PEMFile::New ({pk, cert});
      *      \endcode
      */
     Ptr New (const filesystem::path& pemFile);
-    Ptr New (const Memory::BLOB& pemData);
+    Ptr New (const BLOB& pemData);
     Ptr New (const Sequence<EntryType>& entries);
 
 }

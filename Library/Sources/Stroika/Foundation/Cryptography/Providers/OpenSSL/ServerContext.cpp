@@ -31,17 +31,17 @@ using namespace Stroika::Foundation::Debug;
 namespace {
     using OpenSSL::ServerContext::Options;
     struct Rep_ : OpenSSL::ServerContext::IRep {
-        unique_ptr<SSL_CTX, decltype (&::SSL_CTX_free)> fCtx_;
+        OpenSSL::ServerContext::LibRepType fCtx_;
 
         Rep_ (const Options& o)
-            : fCtx_{SSL_CTX_new (o.fMethod), ::SSL_CTX_free}
+            : fCtx_{SSL_CTX_new (o.fMethod)}
         {
             RequireNotNull (get<Cryptography::PKI::Certificate::Ptr> (o.fCertificate));
             OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_certificate (
                 fCtx_.get (), OpenSSL::Certificate::Ptr{get<Cryptography::PKI::Certificate::Ptr> (o.fCertificate)}.Get_X509 ()));
-            RequireNotNull (get<Cryptography::PKI::PrivateKey::Ptr> (o.fCertificate));
-            OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_PrivateKey (
-                fCtx_.get (), OpenSSL::PrivateKey::Ptr{get<Cryptography::PKI::PrivateKey::Ptr> (o.fCertificate)}.Get_EVP_PKEY ()));
+            RequireNotNull (get<PKI::PrivateKey::Ptr> (o.fCertificate));
+            OpenSSL::Exception::ThrowLastErrorIfFailed (
+                ::SSL_CTX_use_PrivateKey (fCtx_.get (), OpenSSL::PrivateKey::Ptr{get<PKI::PrivateKey::Ptr> (o.fCertificate)}.Get_EVP_PKEY ()));
         }
         virtual SSL_CTX* Get_SSL_CTX () const override
         {
@@ -49,10 +49,8 @@ namespace {
         }
     };
 }
-#endif
 
-#if qStroika_HasComponent_OpenSSL
-auto Cryptography::Providers::OpenSSL::ServerContext::New (const Options& o) -> Ptr
+auto OpenSSL::ServerContext::New (const Options& o) -> Ptr
 {
     return make_shared<Rep_> (o);
 }

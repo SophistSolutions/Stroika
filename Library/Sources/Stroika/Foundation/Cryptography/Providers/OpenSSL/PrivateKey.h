@@ -18,7 +18,15 @@
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PrivateKey {
 
 #if qStroika_HasComponent_OpenSSL
-    using LibRepType = unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>;
+    /**
+     */
+    struct LibRepType : unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)> {
+        using inherited = unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>;
+
+        LibRepType (nullptr_t);
+        LibRepType (LibRepType&&) = default;
+        LibRepType (EVP_PKEY* p);
+    };
 
     /**
      */
@@ -31,31 +39,19 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PrivateKey {
     struct Ptr : shared_ptr<IRep> {
         using inherited = shared_ptr<IRep>;
         /**
+         *  (1) normal shared_ptr constructors supported
+         *  (2) copy from const shared_ptr<IRep>&, to clarify overload avoid ambiguity
+         *  (3) shared_ptr<PKI::PrivateKey::IRep>& - a dynamic_pointer_cast - which only works - which throws if not the right type
          */
         using inherited::inherited;
-
-        // @todo decide if throw or assert???
-        Ptr (const shared_ptr<IRep>& p)
-            : inherited{p}
-        {
-        }
-        Ptr (const shared_ptr<PKI::PrivateKey::IRep>& p)
-        {
-            if (auto pp = dynamic_pointer_cast<IRep> (p)) {
-                *this = Ptr{pp};
-            }
-            else {
-                throw ("oops");
-            }
-        }
-
-        EVP_PKEY* Get_EVP_PKEY () const
-        {
-            return get ()->Get_EVP_PKEY ();
-        }
+        Ptr (const shared_ptr<IRep>& p);
+        Ptr (const shared_ptr<PKI::PrivateKey::IRep>& p);
+        EVP_PKEY* Get_EVP_PKEY () const;
     };
 
     /**
+     *  \brief Construct a PrivateKey object
+     *      (1) from an adopted unique_ptr to the underlying library object
      */
     Ptr New (LibRepType&& pkey);
 #endif
@@ -67,5 +63,6 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PrivateKey {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "PrivateKey.inl"
 
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_PrivateKey_h_*/

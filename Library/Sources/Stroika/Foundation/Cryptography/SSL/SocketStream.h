@@ -20,6 +20,10 @@
 namespace Stroika::Foundation::Cryptography::SSL::SocketStream {
 
     /**
+     */
+    using IRep = IO::Network::SocketStream::IRep;
+
+    /**
         // very rough - going to need more stuff
      */
     using Ptr = IO::Network::SocketStream::Ptr;

@@ -911,8 +911,10 @@ namespace {
         auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
             .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
 
+        // @todo next
         // auto serverContext = Cryptography::SSL::ServerContext::Options serverOpts;
-        //
+        // for now - just create socketpair (TCP socketpair) - and on one, bind both the SSLStreams, and write 'hello' to one, and then 'read' back
+        // hello from the other - no need for threads to read/write in parallel for now...
     }
 }
 #endif

@@ -3810,6 +3810,12 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.inl">
       <Filter>Sources\Cryptography\SSL</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Certificate.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PrivateKey.inl">
+      <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />

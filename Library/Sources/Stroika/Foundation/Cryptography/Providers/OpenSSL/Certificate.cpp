@@ -96,14 +96,14 @@ auto OpenSSL::Certificate::New (LibRepType&& x509) -> Ptr
 auto OpenSSL::Certificate::New (const SelfSignedCertParams& params) -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>
 {
     // Code adapted from https://stackoverflow.com/questions/256405/programmatically-create-x509-certificate-using-openssl
-    unique_ptr<EVP_PKEY, decltype (&::EVP_PKEY_free)> pkey{EVP_RSA_gen (2048), ::EVP_PKEY_free};
+    PrivateKey::LibRepType pkey{::EVP_RSA_gen (2048)};
 
-    LibRepType newCert{X509_new (), ::X509_free};
+    LibRepType newCert{X509_new ()};
 
     Exception::ThrowLastErrorIfFailed (::ASN1_INTEGER_set (::X509_get_serialNumber (newCert.get ()), 1));
 
-    ::ASN1_TIME_set (X509_get_notBefore (newCert.get ()), params.fValidDates.GetLowerBound ().AsUTC ().As<time_t> ());
-    ::ASN1_TIME_set (X509_get_notAfter (newCert.get ()), params.fValidDates.GetUpperBound ().AsUTC ().As<time_t> ());
+    ::ASN1_TIME_set (::X509_get_notBefore (newCert.get ()), params.fValidDates.GetLowerBound ().AsUTC ().As<time_t> ());
+    ::ASN1_TIME_set (::X509_get_notAfter (newCert.get ()), params.fValidDates.GetUpperBound ().AsUTC ().As<time_t> ());
 
     // Set public key to be the key we generated earlier
     Exception::ThrowLastErrorIfFailed (::X509_set_pubkey (newCert.get (), pkey.get ()));

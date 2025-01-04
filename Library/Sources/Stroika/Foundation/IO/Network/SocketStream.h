@@ -13,12 +13,13 @@
 
 /**
  *  \file
- *
- *      TODO:
- *
  */
 
 namespace Stroika::Foundation::IO::Network::SocketStream {
+
+    /**
+     */
+    using IRep = Streams::InputOutputStream::IRep<byte>;
 
     /**
      *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.

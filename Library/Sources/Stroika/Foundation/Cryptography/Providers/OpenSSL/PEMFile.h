@@ -18,16 +18,15 @@
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PEMFile {
 
     using namespace Cryptography::PKI::PEMFile;
-    struct IRep : Cryptography::PKI::PEMFile::IRep {};
+    using Memory::BLOB;
 
     /**
-    */
-    struct Ptr : shared_ptr<IRep> {
-        using inherited = shared_ptr<IRep>;
-        /**
-         */
-        using inherited::inherited;
-    };
+     */
+    using IRep = Cryptography::PKI::PEMFile::IRep;
+
+    /**
+     */
+    using Ptr = Cryptography::PKI::PEMFile::Ptr;
 
     /**
      *  pemData argument is raw bytes from .pem file.
@@ -35,7 +34,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PEMFile {
      *  \note - this implementation doesn't support password-protected private keys 
      *        (would without too much difficult, but not clear I see the point).
      */
-    Ptr New (const Memory::BLOB& pemData);
+    Ptr New (const BLOB& pemData);
     Ptr New (const Sequence<EntryType>& entries);
 
 }
@@ -45,5 +44,6 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PEMFile {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "PEMFile.inl"
 
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_PEMFile_h_*/

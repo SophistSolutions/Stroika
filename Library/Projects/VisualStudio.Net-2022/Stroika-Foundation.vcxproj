@@ -946,6 +946,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\PEMFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\PKI\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Certificate.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\CipherAlgorithm.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ClientContext.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\DerivedKey.inl" />
@@ -954,6 +955,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\LibraryContext.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PEMFile.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PrivateKey.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\ServerContext.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\SocketStream.inl" />

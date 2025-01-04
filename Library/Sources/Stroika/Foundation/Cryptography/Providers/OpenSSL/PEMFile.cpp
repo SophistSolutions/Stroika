@@ -26,21 +26,21 @@ using Memory::BLOB;
 namespace {
     // https://linux.die.net/man/3/bio_s_mem
     struct BIO2BLOB_ {
-        BIO* b{nullptr};
+        BIO* fBIO{nullptr};
         BIO2BLOB_ ()
         {
-            b = ::BIO_new (::BIO_s_mem ());
+            fBIO = ::BIO_new (::BIO_s_mem ());
         }
         BIO2BLOB_ (const BIO2BLOB_&) = delete;
         BLOB ToBLOB ()
         {
             BUF_MEM* p;
-            BIO_get_mem_ptr (b, &p);
+            BIO_get_mem_ptr (fBIO, &p);
             return BLOB{span{p->data, p->length}};
         }
         ~BIO2BLOB_ ()
         {
-            ::BIO_free (b);
+            ::BIO_free (fBIO);
         }
     };
 }
@@ -57,7 +57,7 @@ namespace {
 #if 0
             // cannot find docs on b2i_PrivateKey API
             if (auto pp = ::b2i_PrivateKey (&dd, static_cast<long> (d.size ()))) {
-                Cryptography::PKI::PrivateKey::Ptr pk1 = OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp, EVP_PKEY_free});
+                Cryptography::PKI::PrivateKey::Ptr pk1 = OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp});
                 fEntries_ += pk1;
             }
 #endif
@@ -67,13 +67,13 @@ namespace {
             {
                 EVP_PKEY* pp = nullptr;
                 if (auto r = ::PEM_read_bio_PrivateKey (bio, &pp, nullptr, nullptr)) {
-                    fEntries_ += OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp, EVP_PKEY_free});
+                    fEntries_ += OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp});
                 }
             }
             {
-                auto r = ::PEM_read_bio_X509 (bio, nullptr, nullptr, nullptr);
+                X509* r = ::PEM_read_bio_X509 (bio, nullptr, nullptr, nullptr);
                 if (r != nullptr) {
-                    fEntries_ += OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r, &::X509_free});
+                    fEntries_ += OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r});
                 }
             }
         }
@@ -84,11 +84,11 @@ namespace {
             for (auto e : entries) {
                 if (auto oc = get_if<PKI::Certificate::Ptr> (&e)) {
                     auto cert = Certificate::Ptr{*oc}.Get_X509 ();
-                    Exception::ThrowLastErrorIfFailed (::PEM_write_bio_X509 (b.b, cert));
+                    Exception::ThrowLastErrorIfFailed (::PEM_write_bio_X509 (b.fBIO, cert));
                 }
                 else if (auto op = get_if<PKI::PrivateKey::Ptr> (&e)) {
                     auto key = PrivateKey::Ptr{*op}.Get_EVP_PKEY ();
-                    Exception::ThrowLastErrorIfFailed (::PEM_write_bio_PrivateKey (b.b, key, nullptr, nullptr, 0, 0, nullptr));
+                    Exception::ThrowLastErrorIfFailed (::PEM_write_bio_PrivateKey (b.fBIO, key, nullptr, nullptr, 0, 0, nullptr));
                 }
             }
             fData_ = b.ToBLOB ();

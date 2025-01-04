@@ -17,6 +17,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Cryptography;
+using namespace Stroika::Foundation::Cryptography::Providers;
 using namespace Stroika::Foundation::Cryptography::Providers::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 
@@ -51,15 +52,14 @@ namespace {
 }
 
 namespace {
-    struct Rep_ : Cryptography::Providers::OpenSSL::PrivateKey::IRep {
+    struct Rep_ : OpenSSL::PrivateKey::IRep {
 
-        using EVP_KEY_UPTR_ = unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>;
-        EVP_KEY_UPTR_ fKey_;
+        OpenSSL::PrivateKey::LibRepType fKey_;
 
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;
         Rep_ (Rep_&&)      = default;
-        Rep_ (EVP_KEY_UPTR_&& p)
+        Rep_ (OpenSSL::PrivateKey::LibRepType&& p)
             : fKey_{move (p)}
         {
         }
@@ -104,7 +104,7 @@ namespace {
 #endif
 
 #if qStroika_HasComponent_OpenSSL
-auto Cryptography::Providers::OpenSSL::PrivateKey::New (unique_ptr<::EVP_PKEY, decltype (&::EVP_PKEY_free)>&& p) -> Ptr
+auto OpenSSL::PrivateKey::New (LibRepType&& p) -> Ptr
 {
     return make_shared<Rep_> (move (p));
 }
