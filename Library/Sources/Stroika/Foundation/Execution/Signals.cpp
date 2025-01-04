@@ -27,6 +27,10 @@ Characters::String Execution::SignalToName (SignalID signal)
             return "SIGILL"sv;
         case SIGSEGV:
             return "SIGSEGV"sv;
+#if defined(SIGTRAP)
+        case SIGTRAP:
+        return "SIGTRAP"sv;
+#endif
         case SIGABRT:
             return "SIGABRT"sv;
         case SIGFPE:
