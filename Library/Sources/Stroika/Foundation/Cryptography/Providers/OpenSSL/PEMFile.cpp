@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Certificate.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
@@ -22,6 +23,28 @@ using namespace Stroika::Foundation::Streams;
 using Memory::BLOB;
 
 namespace {
+    // https://linux.die.net/man/3/bio_s_mem
+    struct BIO2BLOB_ {
+        BIO* b{nullptr};
+        BIO2BLOB_ ()
+        {
+            b = ::BIO_new (::BIO_s_mem ());
+        }
+        BIO2BLOB_ (const BIO2BLOB_&) = delete;
+        BLOB ToBLOB ()
+        {
+            BUF_MEM* p;
+            BIO_get_mem_ptr (b, &p);
+            return BLOB{span{p->data, p->length}};
+        }
+        ~BIO2BLOB_ ()
+        {
+            ::BIO_free (b);
+        }
+    };
+}
+
+namespace {
     struct Rep_ : Cryptography::Providers::OpenSSL::PEMFile::IRep {
         BLOB                fData_;
         Sequence<EntryType> fEntries_;
@@ -29,7 +52,7 @@ namespace {
         Rep_ (const BLOB& b)
             : fData_{b}
         {
-            auto d  = fData_.As<span<const uint8_t>> ();
+            auto d = fData_.As<span<const uint8_t>> ();
 #if 0
             // cannot find docs on b2i_PrivateKey API
             if (auto pp = ::b2i_PrivateKey (&dd, static_cast<long> (d.size ()))) {
@@ -56,7 +79,18 @@ namespace {
         Rep_ (const Sequence<EntryType>& entries)
             : fEntries_{entries}
         {
-            AssertNotImplemented ();
+            BIO2BLOB_ b;
+            for (auto e : entries) {
+                if (auto oc = get_if<PKI::Certificate::Ptr> (&e)) {
+                    auto cert = Certificate::Ptr{*oc}.Get_X509 ();
+                    Exception::ThrowLastErrorIfFailed (::PEM_write_bio_X509 (b.b, cert));
+                }
+                else if (auto op = get_if<PKI::PrivateKey::Ptr> (&e)) {
+                    auto key = PrivateKey::Ptr{*op}.Get_EVP_PKEY ();
+                    Exception::ThrowLastErrorIfFailed (::PEM_write_bio_PrivateKey (b.b, key, nullptr, nullptr, 0, 0, nullptr));
+                }
+            }
+            fData_ = b.ToBLOB ();
         }
         virtual BLOB GetData () const override
         {
@@ -71,10 +105,9 @@ namespace {
 
 /*
  ********************************************************************************
- ********************* Cryptography::Providers::OpenSSL::PEMFile ***************************
+ ********************* Cryptography::Providers::OpenSSL::PEMFile ****************
  ********************************************************************************
  */
-
 #if qStroika_HasComponent_OpenSSL
 auto Cryptography::Providers::OpenSSL::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {

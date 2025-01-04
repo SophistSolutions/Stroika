@@ -3,4 +3,17 @@
  */
 
 namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
+
+    /*
+     ********************************************************************************
+     *************************** OpenSSL::Exception *********************************
+     ********************************************************************************
+     */
+    inline void Exception::ThrowLastErrorIfFailed (int status)
+    {
+        if (status == 0) [[unlikely]] {
+            ThrowLastError ();
+        }
+    }
+
 }

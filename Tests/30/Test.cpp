@@ -837,25 +837,36 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Cryptography, TestPEMFileIO)
+    GTEST_TEST (Foundation_Cryptography, PEMFileIO)
     {
         using namespace Cryptography::PKI;
         using Time::DateTime;
         using Traversal::Range;
-        Debug::TraceContextBumper ctx{"::TestPEMFileIO"};
+        Debug::TraceContextBumper ctx{"::PEMFileIO"};
 
         {
             DateTime        now = DateTime::Now ();
             Range<DateTime> validDates{now, now + Time::Duration{"PT1Y"sv}};
-            auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
-                .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
 
-            // ADD WRITING TO PEMFILE
-            // Create PEMFile from PrivateKey and read back - verify works.
-            // Then Create from CERT and do likewise.
-            // Then create from Cert+PrivateKey, and do likewise.
-            //    *          PEMFile myCertPem{IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ())};
-            //   *Certificate::Ptr cert = myCertPem.GetEntries ().GetFirst ([] (const auto& e) { return get_if<Certificate::Ptr> (&e); }).value_or (nullptr);
+            String commonName = "localhost"sv;
+            String company    = "MyCompany Inc."sv;
+            auto [pk, cert]   = Certificate::New (Certificate::SelfSignedCertParams{
+                  .fValidDates = validDates, .fSubject = {.fCountry = "US"sv, .fOrganization = company, .fCommonName = commonName}});
+
+            PEMFile::Ptr pem = PEMFile::New ({pk, cert});
+            DbgTrace ("pem={}"_f, pem);
+
+            {
+                PEMFile::Ptr newPEMFile = PEMFile::New (pem.GetData ()); // force 'write' of old PEM file as data, and construct just from the PEM data bytes
+                Certificate::Ptr certOut = newPEMFile.GetByType<Certificate::Ptr> ().FirstValue (nullptr);
+                PrivateKey::Ptr  pkeyOut = newPEMFile.GetByType<PrivateKey::Ptr> ().FirstValue (nullptr);
+                DbgTrace ("read from file: cert={}"_f, certOut);
+                DbgTrace ("read from file: pkey={}"_f, pkeyOut);
+                EXPECT_NE (pkeyOut, nullptr);
+                EXPECT_EQ (certOut.GetSubject ().fCommonName, commonName);
+                EXPECT_EQ (certOut.GetSubject ().fOrganization, company);
+                EXPECT_EQ (certOut.GetValidDates (), validDates);
+            }
         }
 
         try {
@@ -873,7 +884,7 @@ namespace {
                                           static_cast<filesystem::path> (f).filename (), static_cast<filesystem::path> (f).filename ())},
                           {.fWorkingDirectory = static_cast<filesystem::path> (f).parent_path ()}}
                 .Run ("US\nMA\nSudbury\n{}\n\n{}\nlewis@sophists.com\n"_f(company, commonName));
-            PEMFile::Ptr     pem  = PEMFile::New (IO::FileSystem::FileInputStream::New (f).ReadAll ());
+            PEMFile::Ptr     pem  = PEMFile::New (f);
             Certificate::Ptr cert = pem.GetByType<Certificate::Ptr> ().FirstValue (nullptr);
             PrivateKey::Ptr  pkey = pem.GetByType<PrivateKey::Ptr> ().FirstValue (nullptr);
             DbgTrace ("read from file: cert={}"_f, cert);

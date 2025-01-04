@@ -6,10 +6,10 @@
 #if qStroika_HasComponent_OpenSSL
 #include <openssl/evp.h>
 #include <openssl/pem.h>
-#include <openssl/ssl.h>
 #endif
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -47,8 +47,8 @@ namespace {
             using Time::Timezone;
             struct tm from {};
             struct tm to {};
-            ::ASN1_TIME_to_tm (X509_get_notBefore (fCert_.get ()), &from);
-            ::ASN1_TIME_to_tm (X509_get_notAfter (fCert_.get ()), &to);
+            Exception::ThrowLastErrorIfFailed (::ASN1_TIME_to_tm (X509_get_notBefore (fCert_.get ()), &from));
+            Exception::ThrowLastErrorIfFailed (::ASN1_TIME_to_tm (X509_get_notAfter (fCert_.get ()), &to));
             return Range<DateTime>{DateTime{from, Timezone::kUTC}, DateTime{to, Timezone::kUTC}};
         }
         virtual SubjectInfo GetSubject () const override
@@ -100,28 +100,28 @@ auto OpenSSL::Certificate::New (const SelfSignedCertParams& params) -> tuple<Ope
 
     LibRepType newCert{X509_new (), ::X509_free};
 
-    ::ASN1_INTEGER_set (::X509_get_serialNumber (newCert.get ()), 1);
+    Exception::ThrowLastErrorIfFailed (::ASN1_INTEGER_set (::X509_get_serialNumber (newCert.get ()), 1));
 
     ::ASN1_TIME_set (X509_get_notBefore (newCert.get ()), params.fValidDates.GetLowerBound ().AsUTC ().As<time_t> ());
     ::ASN1_TIME_set (X509_get_notAfter (newCert.get ()), params.fValidDates.GetUpperBound ().AsUTC ().As<time_t> ());
 
     // Set public key to be the key we generated earlier
-    ::X509_set_pubkey (newCert.get (), pkey.get ());
+    Exception::ThrowLastErrorIfFailed (::X509_set_pubkey (newCert.get (), pkey.get ()));
 
     X509_NAME* name    = ::X509_get_subject_name (newCert.get ());
     u8string   org     = params.fSubject.fOrganization.AsUTF8 ();
     u8string   cn      = params.fSubject.fCommonName.AsUTF8 ();
     u8string   country = params.fSubject.fCountry.AsUTF8 ();
 
-    ::X509_NAME_add_entry_by_txt (name, "C", MBSTRING_UTF8, (unsigned char*)country.c_str (), -1, -1, 0);
-    ::X509_NAME_add_entry_by_txt (name, "O", MBSTRING_UTF8, (unsigned char*)org.c_str (), -1, -1, 0);
-    ::X509_NAME_add_entry_by_txt (name, "CN", MBSTRING_UTF8, (unsigned char*)cn.c_str (), -1, -1, 0);
+    Exception::ThrowLastErrorIfFailed (::X509_NAME_add_entry_by_txt (name, "C", MBSTRING_UTF8, (unsigned char*)country.c_str (), -1, -1, 0));
+    Exception::ThrowLastErrorIfFailed (::X509_NAME_add_entry_by_txt (name, "O", MBSTRING_UTF8, (unsigned char*)org.c_str (), -1, -1, 0));
+    Exception::ThrowLastErrorIfFailed (::X509_NAME_add_entry_by_txt (name, "CN", MBSTRING_UTF8, (unsigned char*)cn.c_str (), -1, -1, 0));
 
     // Since this is a self-signed certificate, we set the name of the issuer to the name of the subject
-    ::X509_set_issuer_name (newCert.get (), name);
+    Exception::ThrowLastErrorIfFailed (::X509_set_issuer_name (newCert.get (), name));
 
     // Now sign with SHA1 digest
-    ::X509_sign (newCert.get (), pkey.get (), ::EVP_sha1 ());
+    Exception::ThrowLastErrorIfFailed (::X509_sign (newCert.get (), pkey.get (), ::EVP_sha1 ()));
     return make_tuple (OpenSSL::PrivateKey::New (move (pkey)), New (move (newCert)));
 }
 #endif

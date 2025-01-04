@@ -6,6 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <filesystem>
+
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Cryptography/PKI/Certificate.h"
@@ -22,17 +24,6 @@
  * 
  *      https://datatracker.ietf.org/doc/html/rfc7468
  * 
- *  \par Example Usage:
- *      \code
- *          PEMFile myCertPem{IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ())};
- *          Certificate::Ptr cert = pem.GetByType<Certificate::Ptr> ().FirstValue (nullptr);
- *          PrivateKey::Ptr  pkey = pem.GetByType<PrivateKey::Ptr> ().FirstValue (nullptr);
- *      \endcode
- * 
- *  \par Example Usage:     @todo need example constructed form CERT tsielf... and getting Cert...
- *      \code
- *          
- *      \endcode
  */
 
 namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
@@ -78,7 +69,20 @@ namespace Stroika::Foundation::Cryptography::PKI::PEMFile {
         // add to/update?
     };
 
-    // @todo NEED NEW method given sequence of Entry's (e.g. Cert+PrivateKey).
+    /**
+     *  \par Example Usage:
+     *      \code
+     *          PEMFile::Ptr myCertPem{New (IO::FileSystem::FileInputStream::New ("my-cert.pem").ReadAll ()))};
+     *          Certificate::Ptr cert = pem.GetByType<Certificate::Ptr> ().FirstValue (nullptr);
+     *          PrivateKey::Ptr  pkey = pem.GetByType<PrivateKey::Ptr> ().FirstValue (nullptr);
+     *      \endcode
+     * 
+     *  \par Example Usage:     @todo need example constructed form CERT tsielf... and getting Cert...
+     *      \code
+     *          
+     *      \endcode
+     */
+    Ptr New (const filesystem::path& pemFile);
     Ptr New (const Memory::BLOB& pemData);
     Ptr New (const Sequence<EntryType>& entries);
 

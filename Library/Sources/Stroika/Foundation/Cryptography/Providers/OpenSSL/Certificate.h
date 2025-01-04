@@ -39,7 +39,11 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::Certificate {
          */
         using inherited::inherited;
 
-        Ptr (Cryptography::PKI::Certificate::Ptr p)
+        Ptr (const shared_ptr<IRep>& p)
+            : inherited{p}
+        {
+        }
+        Ptr (const shared_ptr<PKI::Certificate::IRep>& p)
         {
             // @todo decide assert or throw?
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {

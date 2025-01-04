@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
 
     public:
         /**
-         * ThrowLastErrorIfFailed throws if status is not = 1
+         * ThrowLastErrorIfFailed throws if status is zero (usually 1 means good, but often APIs return something else for good cases)
          */
         static void ThrowLastErrorIfFailed (int status);
 

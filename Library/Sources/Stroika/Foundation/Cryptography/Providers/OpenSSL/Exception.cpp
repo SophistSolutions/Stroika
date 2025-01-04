@@ -86,15 +86,8 @@ Characters::String Exception::GetMessage (InternalErrorCodeType errorCode)
     LoadStringsIfNeeded_ ();
     char buf[10 * 1024];
     buf[0] = '\0';
-    ERR_error_string_n (errorCode, buf, NEltsOf (buf));
+    ::ERR_error_string_n (errorCode, buf, NEltsOf (buf));
     return Characters::String::FromNarrowSDKString (buf);
-}
-
-void Exception::ThrowLastErrorIfFailed (int status)
-{
-    if (status != 1) {
-        ThrowLastError ();
-    }
 }
 
 void Exception::ThrowLastError ()

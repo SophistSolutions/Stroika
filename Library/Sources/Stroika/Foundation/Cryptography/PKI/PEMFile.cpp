@@ -3,12 +3,10 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/StringBuilder.h"
 #if qStroika_HasComponent_OpenSSL
-#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Certificate.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PEMFile.h"
-#include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
 #endif
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "PEMFile.h"
@@ -20,7 +18,7 @@ using namespace Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- ********************** Cryptography::PKI::PEMFile::Ptr *************************
+ ****************************** PKI::PEMFile::Ptr *******************************
  ********************************************************************************
  */
 Characters::String PEMFile::Ptr::ToString () const
@@ -30,10 +28,14 @@ Characters::String PEMFile::Ptr::ToString () const
 
 /*
  ********************************************************************************
- **************************** Cryptography::PKI::PEMFile ************************
+ ************************************* PKI::PEMFile *****************************
  ********************************************************************************
  */
-auto Cryptography::PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
+auto PKI::PEMFile::New (const filesystem::path& pemFile) -> Ptr
+{
+    return New (IO::FileSystem::FileInputStream::New (pemFile).ReadAll ());
+}
+auto PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::Providers::OpenSSL::PEMFile::New (pemData);
@@ -41,7 +43,7 @@ auto Cryptography::PKI::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
     Throw (RequiredComponentMissingException{"SSL providing service"sv});
 #endif
 }
-auto Cryptography::PKI::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
+auto PKI::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
 {
 #if qStroika_HasComponent_OpenSSL
     return Cryptography::Providers::OpenSSL::PEMFile::New (entries);

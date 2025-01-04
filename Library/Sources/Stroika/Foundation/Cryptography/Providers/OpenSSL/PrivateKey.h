@@ -33,7 +33,12 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PrivateKey {
          */
         using inherited::inherited;
 
-        Ptr (Cryptography::PKI::PrivateKey::Ptr p)
+        // @todo decide if throw or assert???
+        Ptr (const shared_ptr<IRep>& p)
+            : inherited{p}
+        {
+        }
+        Ptr (const shared_ptr<PKI::PrivateKey::IRep>& p)
         {
             if (auto pp = dynamic_pointer_cast<IRep> (p)) {
                 *this = Ptr{pp};

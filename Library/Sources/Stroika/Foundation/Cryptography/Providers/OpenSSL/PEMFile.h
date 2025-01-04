@@ -31,6 +31,9 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::PEMFile {
 
     /**
      *  pemData argument is raw bytes from .pem file.
+     * 
+     *  \note - this implementation doesn't support password-protected private keys 
+     *        (would without too much difficult, but not clear I see the point).
      */
     Ptr New (const Memory::BLOB& pemData);
     Ptr New (const Sequence<EntryType>& entries);
