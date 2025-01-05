@@ -67,14 +67,12 @@ namespace {
             {
                 EVP_PKEY* pp = nullptr;
                 if (auto r = ::PEM_read_bio_PrivateKey (bio, &pp, nullptr, nullptr)) {
-                    fEntries_ += OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{pp});
+                    Assert (r == pp);
+                    fEntries_ += OpenSSL::PrivateKey::New (OpenSSL::PrivateKey::LibRepType{r});
                 }
             }
-            {
-                X509* r = ::PEM_read_bio_X509 (bio, nullptr, nullptr, nullptr);
-                if (r != nullptr) {
-                    fEntries_ += OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r});
-                }
+            if (X509* r = ::PEM_read_bio_X509 (bio, nullptr, nullptr, nullptr)) {
+                fEntries_ += OpenSSL::Certificate::New (OpenSSL::Certificate::LibRepType{r});
             }
         }
         Rep_ (const Sequence<EntryType>& entries)

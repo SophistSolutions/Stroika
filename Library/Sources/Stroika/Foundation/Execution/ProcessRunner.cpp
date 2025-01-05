@@ -563,10 +563,10 @@ namespace {
          *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
          *  fork, we are VERY limited as to what we can safely do.
          */
-        const char*        thisEXEPath_cstr = nullptr;
-        char**             thisEXECArgv     = nullptr;
-        StackBuffer<char>  execDataArgsBuffer;
-        StackBuffer<char*, 10*sizeof(void*)> execArgsPtrBuffer;     // avoid needless use of stackspace in most cases
+        const char*                             thisEXEPath_cstr = nullptr;
+        char**                                  thisEXECArgv     = nullptr;
+        StackBuffer<char>                       execDataArgsBuffer;
+        StackBuffer<char*, 10 * sizeof (void*)> execArgsPtrBuffer; // avoid needless use of stackspace in most cases
         {
             Sequence<String> commandLine{cmdLine.GetArguments ()};
             Sequence<size_t> argsIdx;
@@ -583,9 +583,9 @@ namespace {
             }
             execDataArgsBuffer.push_back ('\0');
             for (size_t i = 0; i < commandLine.size (); ++i) {
-                execArgsPtrBuffer.push_back(execDataArgsBuffer.begin () + argsIdx[i]);
+                execArgsPtrBuffer.push_back (execDataArgsBuffer.begin () + argsIdx[i]);
             }
-            execArgsPtrBuffer.push_back(nullptr);
+            execArgsPtrBuffer.push_back (nullptr);
             execArgsPtrBuffer[commandLine.size ()] = nullptr;
 
             // no longer change buffers, and just make pointers point to right place
@@ -761,20 +761,22 @@ namespace {
                 int skipedThisMany{};
 #endif
                 while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
-                    Assert (nBytesRead <= sizeof(buf));
+                    Assert (nBytesRead <= sizeof (buf));
                     if (stream != nullptr) {
                         stream.Write (span{buf, static_cast<size_t> (nBytesRead)});
                     }
                     if (write2StdErrCache) {
                         for (size_t i = 0; i < nBytesRead; ++i) {
-                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and trailingStderrBufNextByte2WriteAt < end(trailingStderrBuf));
+                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and
+                                    trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf));
                             *trailingStderrBufNextByte2WriteAt = buf[i];
                             ++trailingStderrBufNWritten;
                             ++trailingStderrBufNextByte2WriteAt;
                             if (trailingStderrBufNextByte2WriteAt == end (trailingStderrBuf)) {
                                 trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
                             }
-                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and trailingStderrBufNextByte2WriteAt < end(trailingStderrBuf));
+                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and
+                                    trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf));
                         }
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
