@@ -418,6 +418,12 @@ ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::Attach (Plat
     return Ptr{make_shared<Rep_> (sd)};
 }
 
+auto ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol) -> tuple<Ptr, Ptr>
+{
+    auto sp = _Protected::mkLowLevelSocketPair_ (family, socketKind, protocol);
+    return make_tuple (Attach (get<0> (sp)), Attach (get<1> (sp)));
+}
+
 /*
  ********************************************************************************
  ******************** ConnectionOrientedStreamSocket::Ptr ***********************

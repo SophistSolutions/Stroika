@@ -273,6 +273,25 @@ namespace Stroika::Foundation::IO::Network {
         Ptr NewConnection (const SocketAddress& sockAddr);
 
         /**
+         * \brief Create a pair of sockets which talk locally, directly to one another (both endpoints on this machine)
+         * 
+         *  \see https://man7.org/linux/man-pages/man2/socketpair.2.html
+         * 
+         *  note could be implemented with SocketPair, or equivalent to
+                // Create a Listening master socket, bind it, and get it listening
+                // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
+                auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
+                connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
+                connectionOrientedMaster.Listen (1);
+
+                // now make a NEW socket, with the bound address and connect;
+                fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
+                fWriteSocket_ = connectionOrientedMaster.Accept ();
+                return two sockets (allowing master socket to be destroyed);
+         */
+        tuple<Ptr, Ptr> NewPair (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
+
+        /**
          *  This function associates a Platform native socket handle with a Stroika wrapper object.
          *
          *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
