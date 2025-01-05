@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "InternallySynchronizedOutputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"

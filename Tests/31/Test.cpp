@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 //  TEST    Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)
 #include "Stroika/Foundation/StroikaPreComp.h"
