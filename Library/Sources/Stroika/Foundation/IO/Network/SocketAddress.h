@@ -31,15 +31,16 @@ namespace Stroika::Foundation::IO::Network {
     class SocketAddress {
     public:
         /**
-        */
+         *  \brief Socket address family - also sometimes referred to as domain (argument to ::socket calls it domain)
+         */
         enum class FamilyType : u_short {
             UNSPEC = AF_UNSPEC,
             UNIX   = AF_UNIX,
             INET   = AF_INET,
             INET6  = AF_INET6,
         };
-        static constexpr FamilyType INET  = FamilyType::INET;
-        static constexpr FamilyType INET6 = FamilyType::INET6;
+        using FamilyType::INET;
+        using FamilyType::INET6;
 
     public:
         /** 
