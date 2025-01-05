@@ -67,7 +67,7 @@ namespace Stroika::Foundation::IO::Network {
      *              and acutally handle all the nullptr cases...
      *
      *      @todo   See about socket 'connected' state, and the 'connect' operation.
-     *              And see about send/recv() API - and docuemnt about only working when
+     *              And see about send/recv() API - and document about only working when
      *              connected.
      *
      *  \note   \em Thread-Safety   not constructable
@@ -404,6 +404,8 @@ namespace Stroika::Foundation::IO::Network {
 
         namespace _Protected {
             PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol);
+            tuple<PlatformNativeHandle, PlatformNativeHandle> mkLowLevelSocketPair_ (SocketAddress::FamilyType family, Socket::Type socketKind,
+                                                                                     const optional<IPPROTO>& protocol);
         }
     };
 

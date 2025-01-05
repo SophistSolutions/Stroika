@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/Activity.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 
 #include "Socket-Private_.h"
 
@@ -22,6 +23,8 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
+
+using Socket::PlatformNativeHandle;
 
 /*
  * Notes:
@@ -43,6 +46,31 @@ namespace {
  ******************************** Network::Socket *******************************
  ********************************************************************************
  */
+namespace {
+    PlatformNativeHandle AdjustNewlyCreatedPlatformSocket_ (PlatformNativeHandle sd, SocketAddress::FamilyType family) noexcept
+    {
+        if (family == SocketAddress::FamilyType::INET6) {
+            int useIPV6Only = not kUseDualStackSockets_;
+#if qStroika_Foundation_Common_Platform_Linux
+            // Linux follows the RFC, and uses dual-stack mode by default
+            constexpr bool kOSDefaultIPV6Only_{false};
+            bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
+#elif qPlatfom_Windows
+            // Windows defaults to NOT dual sockets, so nothing todo for windows
+            constexpr bool kOSDefaultIPV6Only_{true};
+            bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
+#else
+            bool mustSet = true;
+#endif
+            if (mustSet) {
+                if (::setsockopt (sd, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*> (&useIPV6Only), sizeof (useIPV6Only)) < 0) {
+                    AssertNotReached ();
+                }
+            }
+        }
+        return sd;
+    }
+}
 Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind,
                                                                     const optional<IPPROTO>& protocol)
 {
@@ -62,26 +90,52 @@ Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddres
 #else
     AssertNotImplemented ();
 #endif
-    if (family == SocketAddress::FamilyType::INET6) {
-        int useIPV6Only = not kUseDualStackSockets_;
-#if qStroika_Foundation_Common_Platform_Linux
-        // Linux follows the RFC, and uses dual-stack mode by default
-        constexpr bool kOSDefaultIPV6Only_{false};
-        bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
-#elif qPlatfom_Windows
-        // Windows defaults to NOT dual sockets, so nothing todo for windows
-        constexpr bool kOSDefaultIPV6Only_{true};
-        bool           mustSet = useIPV6Only != kOSDefaultIPV6Only_;
-#else
-        bool mustSet = true;
+    return AdjustNewlyCreatedPlatformSocket_ (sfd, family);
+}
+
+auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family, Socket::Type socketKind,
+                                                const optional<IPPROTO>& protocol) -> tuple<PlatformNativeHandle, PlatformNativeHandle>
+{
+#if qStroika_Foundation_Common_Platform_POSIX
+    // docs in https://man7.org/linux/man-pages/man2/socketpair.2.html suggest dont have ot worry about EINTR
+    int sds[2];
+    ThrowPOSIXErrNoIfNegative (::socketpair (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)), sds));
+    return make_tuple (AdjustNewlyCreatedPlatformSocket_ (sfd[0], family), AdjustNewlyCreatedPlatformSocket_ (sfd[1], family));
 #endif
-        if (mustSet) {
-            if (::setsockopt (sfd, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*> (&useIPV6Only), sizeof (useIPV6Only)) < 0) {
-                AssertNotReached ();
-            }
-        }
+#if qStroika_Foundation_Common_Platform_Windows
+    // auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
+    PlatformNativeHandle    masterSocket = mkLowLevelSocket_ (family, socketKind, protocol);
+    [[maybe_unused]] auto&& cleanup      = Execution::Finally ([&] () noexcept { ::closesocket (masterSocket); });
+
+    // connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
+    sockaddr_storage localhost = SocketAddress{LocalHost (family)}.As<sockaddr_storage> ();
+    ThrowWSASystemErrorIfSOCKET_ERROR (::bind (masterSocket, (sockaddr*)&localhost, static_cast<int> (sizeof (localhost))));
+
+    // connectionOrientedMaster.Listen (1);
+    ThrowWSASystemErrorIfSOCKET_ERROR (::listen (masterSocket, 1));
+
+    // fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
+    struct sockaddr masterSocketLocalAddress;
+    {
+        socklen_t len = sizeof (masterSocketLocalAddress);
+        Verify (::getsockname (static_cast<int> (masterSocket), &masterSocketLocalAddress, &len) != 0);
     }
-    return sfd;
+    PlatformNativeHandle    endOne    = mkLowLevelSocket_ (family, socketKind, protocol);
+    bool                    succeeded = false;
+    [[maybe_unused]] auto&& cleanup2  = Execution::Finally ([&] () noexcept {
+        if (not succeeded) {
+            ::closesocket (endOne);
+        }
+    });
+    ThrowWSASystemErrorIfSOCKET_ERROR (::connect (endOne, (sockaddr*)&masterSocketLocalAddress, static_cast<int> (sizeof (masterSocketLocalAddress))));
+
+    // fWriteSocket_ = connectionOrientedMaster.Accept ();
+    sockaddr_storage peer{};
+    socklen_t        sz     = sizeof (peer);
+    auto             endTwo = ThrowWSASystemErrorIfSOCKET_ERROR (::accept (masterSocket, reinterpret_cast<sockaddr*> (&peer), &sz));
+    succeeded               = true;
+    return make_tuple (AdjustNewlyCreatedPlatformSocket_ (endOne, family), AdjustNewlyCreatedPlatformSocket_ (endTwo, family));
+#endif
 }
 
 /*
