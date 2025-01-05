@@ -277,17 +277,19 @@ namespace Stroika::Foundation::IO::Network {
          * 
          *  \see https://man7.org/linux/man-pages/man2/socketpair.2.html
          * 
-         *  note could be implemented with SocketPair, or equivalent to
-                // Create a Listening master socket, bind it, and get it listening
-                // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
-                auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
-                connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
-                connectionOrientedMaster.Listen (1);
-
-                // now make a NEW socket, with the bound address and connect;
-                fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
-                fWriteSocket_ = connectionOrientedMaster.Accept ();
-                return two sockets (allowing master socket to be destroyed);
+         *  note could be implemented with ::socketpair() API, or equivalent to
+         *      \code
+         *          // Create a Listening master socket, bind it, and get it listening
+         *          // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
+         *          auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (family, socketKind, protocol);
+         *          connectionOrientedMaster.Bind (LocalHost(family));
+         *          connectionOrientedMaster.Listen (1);
+         *
+         *          // now make a NEW socket, with the bound address and connect;
+         *          sock1 = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
+         *          sock2 = connectionOrientedMaster.Accept ();
+         *          return make_tuple (sock1, sock2);   // (allowing master socket to be destroyed);
+         *      \endcode
          */
         tuple<Ptr, Ptr> NewPair (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
 

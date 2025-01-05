@@ -418,25 +418,27 @@ ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::Attach (Plat
     return Ptr{make_shared<Rep_> (sd)};
 }
 
-#include "ConnectionOrientedMasterSocket.h" //tmphack
+#include "ConnectionOrientedMasterSocket.h" //tmphack for kLowLevelSocketPairWorks_==false
 auto ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol) -> tuple<Ptr, Ptr>
 {
-#if 0
-    auto sp = _Protected::mkLowLevelSocketPair_ (family, socketKind, protocol);
-    return make_tuple (Attach (get<0> (sp)), Attach (get<1> (sp)));
-#else
-    /// Create a Listening master socket, bind it,
-    //   and get it listening
-    // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
-    auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (family, socketKind, protocol);
-    connectionOrientedMaster.Bind (SocketAddress{LocalHost (family)});
-    connectionOrientedMaster.Listen (1);
+    constexpr bool kLowLevelSocketPairWorks_{qStroika_Foundation_Common_Platform_Windows};  // for now only works on windows
+    if constexpr (kLowLevelSocketPairWorks_) {
+        auto sp = _Protected::mkLowLevelSocketPair_ (family, socketKind, protocol);
+        return make_tuple (Attach (get<0> (sp)), Attach (get<1> (sp)));
+    }
+    else {
+        /// Create a Listening master socket, bind it,
+        //   and get it listening
+        // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
+        auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (family, socketKind, protocol);
+        connectionOrientedMaster.Bind (SocketAddress{LocalHost (family)});
+        connectionOrientedMaster.Listen (1);
 
-    // now make a NEW socket, with the bound address and connect;
-    auto one = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
-    auto two = connectionOrientedMaster.Accept ();
-    return make_tuple (one, two);
-#endif
+        // now make a NEW socket, with the bound address and connect;
+        auto one = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
+        auto two = connectionOrientedMaster.Accept ();
+        return make_tuple (one, two);
+    }
 }
 
 /*
