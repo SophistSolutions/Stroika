@@ -499,6 +499,7 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 
 #if qStroika_Foundation_Common_Platform_POSIX
 namespace {
+    // @todo Good Candidate for REWRITE - this is a MESS!
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                 ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
                                 const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
@@ -565,12 +566,12 @@ namespace {
         const char*        thisEXEPath_cstr = nullptr;
         char**             thisEXECArgv     = nullptr;
         StackBuffer<char>  execDataArgsBuffer;
-        StackBuffer<char*> execArgsPtrBuffer;
+        StackBuffer<char*, 10*sizeof(void*)> execArgsPtrBuffer;     // avoid needless use of stackspace in most cases
         {
             Sequence<String> commandLine{cmdLine.GetArguments ()};
             Sequence<size_t> argsIdx;
             size_t           bufferIndex{};
-            execArgsPtrBuffer.GrowToSize_uninitialized (commandLine.size () + 1);
+            //execArgsPtrBuffer.GrowToSize_uninitialized (commandLine.size () + 1);
             for (const auto& i : commandLine) {
                 string tmp{i.AsNarrowSDKString ()};
                 for (char c : tmp) {
@@ -582,8 +583,9 @@ namespace {
             }
             execDataArgsBuffer.push_back ('\0');
             for (size_t i = 0; i < commandLine.size (); ++i) {
-                execArgsPtrBuffer[i] = execDataArgsBuffer.begin () + argsIdx[i];
+                execArgsPtrBuffer.push_back(execDataArgsBuffer.begin () + argsIdx[i]);
             }
+            execArgsPtrBuffer.push_back(nullptr);
             execArgsPtrBuffer[commandLine.size ()] = nullptr;
 
             // no longer change buffers, and just make pointers point to right place
@@ -759,19 +761,20 @@ namespace {
                 int skipedThisMany{};
 #endif
                 while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
+                    Assert (nBytesRead <= sizeof(buf));
                     if (stream != nullptr) {
                         stream.Write (span{buf, static_cast<size_t> (nBytesRead)});
                     }
                     if (write2StdErrCache) {
                         for (size_t i = 0; i < nBytesRead; ++i) {
+                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and trailingStderrBufNextByte2WriteAt < end(trailingStderrBuf));
                             *trailingStderrBufNextByte2WriteAt = buf[i];
                             ++trailingStderrBufNWritten;
-                            if (trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf)) {
-                                ++trailingStderrBufNextByte2WriteAt;
-                            }
-                            else {
+                            ++trailingStderrBufNextByte2WriteAt;
+                            if (trailingStderrBufNextByte2WriteAt == end (trailingStderrBuf)) {
                                 trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
                             }
+                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and trailingStderrBufNextByte2WriteAt < end(trailingStderrBuf));
                         }
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
