@@ -33,9 +33,11 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
+using namespace Stroika::Foundation::IO::Network;
 
 using std::byte;
 
+using Memory::BLOB;
 using Memory::StackBuffer;
 using Time::DurationSeconds;
 using Time::TimePointSeconds;
@@ -82,18 +84,17 @@ namespace {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct EventFD_Based_SocketPair_ : EventFD_Based_ {
-        static const inline Memory::BLOB sSingleEltDatum{Memory::BLOB ({1})};
+        static const inline BLOB sSingleEltDatum{BLOB ({1})};
 
         EventFD_Based_SocketPair_ ()
         {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("EventFD_Based_SocketPair_::CTOR")};
-            using namespace IO::Network;
             auto [r, w]   = ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
             fReadSocket_  = r;
             fWriteSocket_ = w;
         }
-        IO::Network::ConnectionOrientedStreamSocket::Ptr fReadSocket_{nullptr};
-        IO::Network::ConnectionOrientedStreamSocket::Ptr fWriteSocket_{nullptr};
+        ConnectionOrientedStreamSocket::Ptr fReadSocket_{nullptr};
+        ConnectionOrientedStreamSocket::Ptr fWriteSocket_{nullptr};
 
         virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () override
         {
@@ -183,7 +184,7 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
             timeLeft2Wait, 0s, DurationSeconds{qStroika_Foundation_Execution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0});
         int time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop.count () * 1000);
         if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), time2WaitMillisecondsThisLoop)) == SOCKET_ERROR) {
-            Execution::ThrowSystemErrNo (::WSAGetLastError ());
+            ThrowSystemErrNo (::WSAGetLastError ());
         }
         if (pollResult != 0 or Time::GetTickCount () >= timeoutAt) {
             break;
