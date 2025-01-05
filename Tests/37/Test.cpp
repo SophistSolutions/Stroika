@@ -15,6 +15,7 @@
 #endif
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -281,6 +282,35 @@ namespace {
     }
 }
 
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, MacOS_Mystery_Crasher_)
+    {
+        Debug::TraceContextBumper ctx{"MacOS_Mystery_Crasher_"};
+        try {
+            // @todo COULD add to PATH so we find the (our built) ThirdPartyComponents openssl (maybe - if we built it)
+            // and use that one preferentially... - then maybe dont need bash trick...
+            // --LGP 2025-01-04
+
+            // Use ProcessRunner and external openssl to create self-signed cert
+            // openssl req -new -x509 -days 365 -nodes -out cert.pem -keyout cert.pem
+            IO::FileSystem::ScopedTmpFile f{"cert.pem"};
+            using namespace Execution;
+            String commonName = "localhost"sv;
+            String company    = "MyCompany Inc."sv;
+            // use bash cuz openssl not in my path, but is installed in msys (windows)
+            // split path into dir/filename and only use filename cuz something getting confused about
+            // finding filenames with paths (from here, not directly on commandline but PITA to debug and not the point of this test)
+            ProcessRunner{CommandLine{CommandLine::WrapInShell::eBash,
+                                      "openssl req -new -x509 -days 365 -nodes -out {} -keyout {}"_f(
+                                          static_cast<filesystem::path> (f).filename (), static_cast<filesystem::path> (f).filename ())},
+                          {.fWorkingDirectory = static_cast<filesystem::path> (f).parent_path ()}}
+                .Run ("US\nMA\nSudbury\n{}\n\n{}\nlewis@sophists.com\n"_f(company, commonName));
+        }
+        catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue ("openssl commandline tool failure (installed?): {}"_f(current_exception ()));
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

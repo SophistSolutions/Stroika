@@ -709,7 +709,7 @@ namespace {
         // we got here, the spawn succeeded, or the fork succeeded, and we are the parent process
         Assert (childPID > 0);
         {
-            constexpr size_t                    kStackBufReadAtATimeSize_ = 4 * 1024;
+            constexpr size_t kStackBufReadAtATimeSize_ = 10 * 1024;
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("In Parent Fork: child process PID={}"_f, childPID);
@@ -1039,7 +1039,7 @@ namespace {
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-            constexpr size_t kStackBufReadAtATimeSize_ = 4 * 1024;
+            constexpr size_t kStackBufReadAtATimeSize_ = 10 * 1024;
 
             auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const OutputStream::Ptr<byte>& o) {
                 if (p == INVALID_HANDLE_VALUE) {
