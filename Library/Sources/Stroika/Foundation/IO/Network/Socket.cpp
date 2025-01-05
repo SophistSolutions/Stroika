@@ -98,17 +98,23 @@ auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family
 {
 #if qStroika_Foundation_Common_Platform_POSIX
     // docs in https://man7.org/linux/man-pages/man2/socketpair.2.html suggest dont have ot worry about EINTR
-    int sds[2];
-    ThrowPOSIXErrNoIfNegative (::socketpair (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)), sds));
+    int sfd[2];
+    ThrowPOSIXErrNoIfNegative (::socketpair (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)), sfd));
     return make_tuple (AdjustNewlyCreatedPlatformSocket_ (sfd[0], family), AdjustNewlyCreatedPlatformSocket_ (sfd[1], family));
-#endif
-#if qStroika_Foundation_Common_Platform_Windows
+#elif qStroika_Foundation_Common_Platform_Windows
     // auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
     PlatformNativeHandle    masterSocket = mkLowLevelSocket_ (family, socketKind, protocol);
     [[maybe_unused]] auto&& cleanup      = Execution::Finally ([&] () noexcept { ::closesocket (masterSocket); });
 
     // connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
     sockaddr_storage localhost = SocketAddress{LocalHost (family)}.As<sockaddr_storage> ();
+
+#if 0
+    {
+        int one = 1;
+        Verify (::setsockopt (masterSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*> (&one), sizeof (one)) == 0) ;
+    }
+#endif
     ThrowWSASystemErrorIfSOCKET_ERROR (::bind (masterSocket, (sockaddr*)&localhost, static_cast<int> (sizeof (localhost))));
 
     // connectionOrientedMaster.Listen (1);
@@ -118,7 +124,7 @@ auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family
     struct sockaddr masterSocketLocalAddress;
     {
         socklen_t len = sizeof (masterSocketLocalAddress);
-        Verify (::getsockname (static_cast<int> (masterSocket), &masterSocketLocalAddress, &len) != 0);
+        Verify (::getsockname (static_cast<int> (masterSocket), &masterSocketLocalAddress, &len) == 0);
     }
     PlatformNativeHandle    endOne    = mkLowLevelSocket_ (family, socketKind, protocol);
     bool                    succeeded = false;
