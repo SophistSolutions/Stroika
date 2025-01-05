@@ -88,8 +88,8 @@ namespace {
         {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("EventFD_Based_SocketPair_::CTOR")};
             using namespace IO::Network;
-#if 1
-            auto [r, w] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
+#if 0
+            auto [r, w]   = ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
             fReadSocket_  = r;
             fWriteSocket_ = w;
 #else
