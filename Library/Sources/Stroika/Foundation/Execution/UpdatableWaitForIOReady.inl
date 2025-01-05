@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Execution {
         // At some point, we need to clear the flags on the eventFD objects. We could do this before
         // or after starting the wait. If we do it before calling mkWaiter_ (), there is a window after the clear and before the mkWaiter
         // where if events happen, this will just return immediately (not a bug - good behavior).
-        // If we do it afterwards, not buggy exacltly either, but its much more likely we'll return too soon.
+        // If we do it afterwards, not buggy exactly either, but its much more likely we'll return too soon.
         fEventFD_->Clear ();
         return mkWaiter_ ().WaitQuietlyUntil (timeoutAt);
     }

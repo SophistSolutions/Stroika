@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Execution {
      *                  return t->GetSocket ().GetNativeSocket ();
      *              }
      *          };
-     *          Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fSockSetPoller_{};
+     *          UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fSockSetPoller_{};
      *          ...
      *
      *          loopWaitingForWorkTodo()
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \todo @todo DECIDE IF T is a KEY - that is - if allowed to appear more than once in the list.
      *        Update the logic for Add/Remove and constructors accordingly!!!
-     *        PROBABLY best definition is that its a KEY, but you can in construcotr/add pass in more than once, and tehy get merged togther like a set.
+     *        PROBABLY best definition is that its a KEY, but you can in constructor/add pass in more than once, and they get merged together like a set.
      *        (NOTE - NYI but easy). Then Remove functions need overloads letting you specify the POLL params too.
      *
      */
@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
+         *  Waits until the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
          *  \note   Throws TimeOutException () on timeout.
          *
@@ -185,9 +185,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual WaitForIOReady<T, TRAITS> mkWaiter_ ();
 
     private:
-        unique_ptr<WaitForIOReady_Support::EventFD>                                fEventFD_;
-        pair<SDKPollableType, TypeOfMonitorSet>                                    fPollable2Wakeup_;
-        Execution::Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fData_;
+        unique_ptr<WaitForIOReady_Support::EventFD>                     fEventFD_;
+        pair<SDKPollableType, TypeOfMonitorSet>                         fPollable2Wakeup_;
+        Synchronized<Containers::Collection<pair<T, TypeOfMonitorSet>>> fData_;
     };
 
 }
