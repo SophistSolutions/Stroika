@@ -86,7 +86,7 @@ namespace {
 
         EventFD_Based_SocketPair_ ()
         {
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"EventFD_Based_SocketPair_::CTOR")};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("EventFD_Based_SocketPair_::CTOR")};
             using namespace IO::Network;
 
             // Create a Listening master socket, bind it, and get it listening
