@@ -387,16 +387,16 @@ Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::To
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "Enabled: "sv << fEnabled << ","sv;
+    sb << "Enabled: "sv << fEnabled;
 #if qStroika_Foundation_Common_Platform_Linux or qStroika_Foundation_Common_Platform_Windows
     if (fMaxProbesSentBeforeDrop) {
-        sb << "Max-Probes-Sent-Before-Drop: "sv << fMaxProbesSentBeforeDrop << ","sv;
+        sb << ", Max-Probes-Sent-Before-Drop: "sv << fMaxProbesSentBeforeDrop;
     }
     if (fTimeIdleBeforeSendingKeepalives) {
-        sb << "Time-Idle-Before-Sending-Keepalives: "sv << fTimeIdleBeforeSendingKeepalives << ","sv;
+        sb << ", Time-Idle-Before-Sending-Keepalives: "sv << fTimeIdleBeforeSendingKeepalives;
     }
     if (fTimeBetweenIndividualKeepaliveProbes) {
-        sb << "Time-Between-Individual-Keepalive-Probes: "sv << fTimeBetweenIndividualKeepaliveProbes << ","sv;
+        sb << ", Time-Between-Individual-Keepalive-Probes: "sv << fTimeBetweenIndividualKeepaliveProbes;
     }
 #endif
     sb << "}"sv;
@@ -428,8 +428,8 @@ auto ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType family, 
     /// Create a Listening master socket, bind it,
     //   and get it listening
     // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
-    auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
-    connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
+    auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (family, socketKind, protocol);
+    connectionOrientedMaster.Bind (SocketAddress{LocalHost (family)});
     connectionOrientedMaster.Listen (1);
 
     // now make a NEW socket, with the bound address and connect;
