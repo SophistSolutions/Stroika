@@ -88,21 +88,9 @@ namespace {
         {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("EventFD_Based_SocketPair_::CTOR")};
             using namespace IO::Network;
-#if 0
             auto [r, w]   = ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
             fReadSocket_  = r;
             fWriteSocket_ = w;
-#else
-            // Create a Listening master socket, bind it, and get it listening
-            // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
-            auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
-            connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
-            connectionOrientedMaster.Listen (1);
-
-            // now make a NEW socket, with the bound address and connect;
-            fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
-            fWriteSocket_ = connectionOrientedMaster.Accept ();
-#endif
         }
         IO::Network::ConnectionOrientedStreamSocket::Ptr fReadSocket_{nullptr};
         IO::Network::ConnectionOrientedStreamSocket::Ptr fWriteSocket_{nullptr};
