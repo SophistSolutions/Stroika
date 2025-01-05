@@ -157,6 +157,11 @@ namespace Stroika::Foundation::IO::Network {
      */
     Traversal::Iterable<SocketAddress> SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, PortType portNumber);
 
+    /**
+     *  \brief return V4::kLocalhost or V6::kLocalhost depending on argument address family
+     */
+    constexpr InternetAddress LocalHost (SocketAddress::FamilyType fm);
+
 }
 
 /*

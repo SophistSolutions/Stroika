@@ -145,4 +145,22 @@ namespace Stroika::Foundation::IO::Network {
         return fSocketAddress_V6_;
     }
 
+
+    /*
+     ********************************************************************************
+     *************************** IO::Network::LocalHost *****************************
+     ********************************************************************************
+     */
+    constexpr InternetAddress LocalHost (SocketAddress::FamilyType fm)
+    {
+        Require (fm == SocketAddress::INET or fm == SocketAddress::INET6);
+        if (fm == SocketAddress::INET) {
+            return V4::kLocalhost;
+        }
+        if (fm == SocketAddress::INET6) {
+            return V6::kLocalhost;
+        }
+        return V4::kLocalhost;
+    }
+
 }
