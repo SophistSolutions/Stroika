@@ -145,7 +145,6 @@ namespace Stroika::Foundation::IO::Network {
         return fSocketAddress_V6_;
     }
 
-
     /*
      ********************************************************************************
      *************************** IO::Network::LocalHost *****************************
