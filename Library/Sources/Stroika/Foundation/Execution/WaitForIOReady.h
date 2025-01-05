@@ -278,7 +278,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
+         *  Waits until the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or pollable2Wakeup signaled (in which case may return empty set)..
          *
          *  \note   Throws TimeOutException () on timeout.
          *
