@@ -122,7 +122,7 @@ namespace {
 
 #if qStroika_Foundation_Common_Platform_POSIX
 namespace {
-    pid_t UseFork_ ()
+    pid_t DoFork_ ()
     {
         // we may want to use vfork or some such. But for AIX, it appears best to use f_fork
         //      https://www.ibm.com/support/knowledgecenter/ssw_aix_72/com.ibm.aix.basetrf1/fork.htm
@@ -630,7 +630,7 @@ namespace {
             }
         }
         else {
-            childPID = UseFork_ ();
+            childPID = DoFork_ ();
             ThrowPOSIXErrNoIfNegative (childPID);
             if (childPID == 0) {
                 if (umask) {
@@ -709,6 +709,8 @@ namespace {
         // we got here, the spawn succeeded, or the fork succeeded, and we are the parent process
         Assert (childPID > 0);
         {
+            constexpr size_t                    kStackBufReadAtATimeSize_ = 4 * 1024;
+
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("In Parent Fork: child process PID={}"_f, childPID);
 #endif
@@ -751,7 +753,7 @@ namespace {
                     }
                     return;
                 }
-                uint8_t buf[10 * 1024];
+                uint8_t buf[kStackBufReadAtATimeSize_];
                 int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 int skipedThisMany{};
@@ -822,7 +824,7 @@ namespace {
             };
 
             if (in != nullptr) {
-                byte stdinBuf[10 * 1024];
+                byte stdinBuf[kStackBufReadAtATimeSize_];
                 // read to 'in' til it reaches EOF (returns 0). But don't fully block, cuz we want to at least trickle in the stdout/stderr data
                 // even if no input is ready to send to child.
                 while (true) {
@@ -1037,6 +1039,8 @@ namespace {
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
+            constexpr size_t kStackBufReadAtATimeSize_ = 4 * 1024;
+
             auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const OutputStream::Ptr<byte>& o) {
                 if (p == INVALID_HANDLE_VALUE) {
                     return;
@@ -1086,7 +1090,7 @@ namespace {
                      *  Fill child-process' stdin with the source document.
                      */
                     if (in != nullptr) {
-                        byte stdinBuf[10 * 1024];
+                        byte stdinBuf[kStackBufReadAtATimeSize_];
                         // blocking read to 'in' til it reaches EOF (returns 0)
                         while (size_t nbytes = in.ReadBlocking (span{stdinBuf}).size ()) {
                             Assert (nbytes <= Memory::NEltsOf (stdinBuf));
