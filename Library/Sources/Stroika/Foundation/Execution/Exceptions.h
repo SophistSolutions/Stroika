@@ -347,9 +347,19 @@ namespace Stroika::Foundation::Execution {
      *          "That object’s category() member shall return std::system_category() for errors originating
      *          from the operating system, or a reference to an implementation"
      *
+     *  \par Example Usage
+     *      \code
+     *          #if qStroika_Foundation_Common_Platform_POSIX
+     *              ThrowSystemErrNo (errno);
+     *          #elif qStroika_Foundation_Common_Platform_Windows
+     *              ThrowSystemErrNo (::GetLastError ());      // works with this type of error # - GetLastError () is default if no arg provided
+     *              ThrowSystemErrNo (::WSAGetLastError ());   // or this
+     *          #endif
+     *      \endcode
+     *
      *  See:
      *      @see ThrowPOSIXErrNo ();
-     *
+     * 
      *  \note   zero arg versions only defined for POSIX and Windows platforms, and there the default is the obvious value for each
      *          platform - errno and GetLastError(). It is still an assertion (require) error to call these when errno / GetLastError () would return 0.
      */
