@@ -76,6 +76,9 @@ namespace Stroika::Foundation::IO::Network {
             case AF_INET6: {
                 return sizeof (fSocketAddress_V6_);
             }
+            /*case AF_UNIX:
+                @todo something like this - add to variant union - but didnt compile on windoze...
+                return sizeof (sockaddr_un);*/
             default: {
                 return sizeof (fSocketAddressStorage_);
             }
