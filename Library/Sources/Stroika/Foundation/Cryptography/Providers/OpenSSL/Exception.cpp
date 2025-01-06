@@ -90,7 +90,7 @@ Characters::String Exception::GetMessage (InternalErrorCodeType errorCode)
     return Characters::String::FromNarrowSDKString (buf);
 }
 
-void Exception::ThrowLastError ()
+[[noreturn]] void Exception::ThrowLastError ()
 {
     Execution::Throw (Exception{ERR_get_error ()});
 }

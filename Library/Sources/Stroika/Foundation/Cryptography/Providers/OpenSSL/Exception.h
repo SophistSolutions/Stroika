@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         /**
          * ThrowLastError () throws error in ERR_get_error
          */
-        static void ThrowLastError ();
+        [[noreturn]] static void ThrowLastError ();
 
     public:
         /**
