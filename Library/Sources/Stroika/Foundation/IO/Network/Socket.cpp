@@ -160,7 +160,7 @@ namespace {
 #elif qStroika_Foundation_Common_Platform_Windows
         auto endTwo = ThrowWSASystemErrorIfSOCKET_ERROR (::accept (masterSocket, reinterpret_cast<sockaddr*> (&peer), &sz));
 #endif
-        succeeded = true;   // so endOne not closed
+        succeeded = true; // so endOne not closed
         return make_tuple (endOne, endTwo);
     }
 }
