@@ -105,12 +105,10 @@ namespace {
                                          ? SocketAddress{LocalHost (family)}.As<sockaddr_storage> ()
                                          : sockaddr_storage{};
 
-#if 0
-    {
-        int one = 1;
-        Verify (::setsockopt (masterSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*> (&one), sizeof (one)) == 0) ;
-    }
-#endif
+        if (false) {
+            const int one = 1;
+            Verify (::setsockopt (masterSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*> (&one), sizeof (one)) == 0);
+        }
 #if qStroika_Foundation_Common_Platform_POSIX
         Handle_ErrNoResultInterruption (
             [masterSocket, &localhost] () -> int { return ::bind (masterSocket, (sockaddr*)&localhost, sizeof (localhost)); });
@@ -126,10 +124,10 @@ namespace {
 #endif
 
         // fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
-        struct sockaddr masterSocketLocalAddress;
+        sockaddr_storage masterSocketLocalAddress;
         {
             socklen_t len = sizeof (masterSocketLocalAddress);
-            Verify (::getsockname (static_cast<int> (masterSocket), &masterSocketLocalAddress, &len) == 0);
+            Verify (::getsockname (static_cast<int> (masterSocket), (sockaddr*)&masterSocketLocalAddress, &len) == 0);
         }
         PlatformNativeHandle    endOne    = Socket::_Protected::mkLowLevelSocket_ (family, socketKind, protocol);
         bool                    succeeded = false;
@@ -155,10 +153,10 @@ namespace {
         sockaddr_storage peer{};
         socklen_t        sz = sizeof (peer);
 #if qStroika_Foundation_Common_Platform_POSIX
-        auto endTwo =
+        PlatformNativeHandle endTwo =
             Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (masterSocket, reinterpret_cast<sockaddr*> (&peer), &sz); });
 #elif qStroika_Foundation_Common_Platform_Windows
-        auto endTwo = ThrowWSASystemErrorIfSOCKET_ERROR (::accept (masterSocket, reinterpret_cast<sockaddr*> (&peer), &sz));
+        PlatformNativeHandle endTwo = ThrowWSASystemErrorIfSOCKET_ERROR (::accept (masterSocket, reinterpret_cast<sockaddr*> (&peer), &sz));
 #endif
         succeeded = true; // so endOne not closed
         return make_tuple (endOne, endTwo);
@@ -172,10 +170,14 @@ auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family
     // docs in https://man7.org/linux/man-pages/man2/socketpair.2.html suggest dont have ot worry about EINTR
     int  sfd[2];
     auto r = ::socketpair (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)), sfd);
-    if (r == -1 and errno == EOPNOTSUPP) {
-        return mkLowLevelSocketPair_BackCompat_ (family, socketKind, protocol);
+    Assert (r == 0 or r == -1);
+    if (r == -1) {
+        if (errno == EOPNOTSUPP) {
+            return mkLowLevelSocketPair_BackCompat_ (family, socketKind, protocol);
+        }
+        Assert (errno != EINTR);
+        ThrowPOSIXErrNo ();
     }
-    ThrowPOSIXErrNo ();
     return make_tuple (sfd[0], sfd[1]);
 #elif qStroika_Foundation_Common_Platform_Windows
     return mkLowLevelSocketPair_BackCompat_ (family, socketKind, protocol);
