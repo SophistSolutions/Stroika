@@ -481,7 +481,6 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Cryptography, AllSSLEncryptionRoundtrip)
     {
-        return; //tmphack
         using namespace Cryptography::Encoding;
         using namespace Cryptography::Encoding::Algorithm;
         Debug::TraceContextBumper ctx{"...AllSSLEncryptionRoundtrip"};
@@ -919,35 +918,81 @@ namespace {
         auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
             .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
 
-        // both pairs equal - and can use EITHER as from and either as 'to'
-        auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+        // Test doesn't matter if we do the read/write stuff in the client to the server or server to the client (could do both)
+        bool writesInClient = false;
 
-        bool writesInClient = true;
+        // Test it doesn't matter which socket we treat as the 'client' and which we treat as the 'server'
+        bool swapSockets = false;
 
-        // wrap sockets in SSLStreams and see if still works! (similar to SocketStream regtest but with ssl stream wrapper)
-        // Note these must run in separate threads for the SSL negotiation to work
-        Thread::CleanupPtr clientThread{Thread::CleanupPtr::eDirectlyWait,
-                                        Thread::New (
-                                            [&] () {
-                                                ClientContext::Options clientOptions;
-                                                auto fromStrm = TextWriter::New (Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions));
-                                                // below still broken
-                                                if (writesInClient) {
-                                                    fromStrm.Write ("Hello");
-                                                    fromStrm.Flush ();
-                                                    fromStrm.Close (); // so readall gets ALL - debug why this crashes and move this regtest to IO::NETWORK regtets module..
-                                                }
-                                            },
-                                            Thread::eAutoStart, "client"sv)};
-        Thread::CleanupPtr serverThread{Thread::CleanupPtr::eDirectlyWait,
-                                        Thread::New (
-                                            [&] () {
-                                                ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
-                                                auto toStrm = TextReader::New (Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions));
-                                                auto readData = toStrm.ReadAll ();
-                                                EXPECT_EQ (readData, "Hello");
-                                            },
-                                            Thread::eAutoStart, "server"sv)};
+        auto runTest = [&] () {
+            // both pairs equal - and can use EITHER as from and either as 'to'
+            auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+
+            if (swapSockets) {
+                swap (fromRawSocket, toRawSocket);
+            }
+
+            auto doReaderSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
+                auto readingStream = TextReader::New (p);
+                auto readData      = readingStream.ReadAll (); // waits for writer side to close
+                EXPECT_EQ (readData, "Hello");
+            };
+            auto doWriterSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
+                auto writingStream = TextWriter::New (p);
+                writingStream.Write ("Hello");
+                writingStream.Flush ();
+                writingStream.Close (); // so ReadAll in doReaderSide doesn't block waiting for more data
+            };
+
+            // wrap sockets in SSL::SocketStream, and try basic reads/writes through SSL
+            // Note these must run in separate threads for the SSL negotiation to work
+            Thread::CleanupPtr clientThread{Thread::CleanupPtr::eDirectlyWait,
+                                            Thread::New (
+                                                [&] () {
+                                                    ClientContext::Options clientOptions;
+                                                    auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
+                                                    if (writesInClient) {
+                                                        doWriterSide (p);
+                                                    }
+                                                    else {
+                                                        doReaderSide (p);
+                                                    }
+                                                },
+                                                Thread::eAutoStart, "client"sv)};
+            Thread::CleanupPtr serverThread{Thread::CleanupPtr::eDirectlyWait,
+                                            Thread::New (
+                                                [&] () {
+                                                    ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
+                                                    auto p = Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions);
+                                                    if (writesInClient) {
+                                                        doReaderSide (p);
+                                                    }
+                                                    else {
+                                                        doWriterSide (p);
+                                                    }
+                                                },
+                                                Thread::eAutoStart, "server"sv)};
+
+            Thread::WaitForDone ({clientThread, serverThread});
+            DbgTrace ("Test run completed"_f);
+        };
+
+        // try all 4 combinations
+        writesInClient = false;
+        swapSockets    = false;
+        runTest ();
+
+        writesInClient = false;
+        swapSockets    = true;
+        runTest ();
+
+        writesInClient = true;
+        swapSockets    = false;
+        runTest ();
+
+        writesInClient = true;
+        swapSockets    = true;
+        runTest ();
     }
 }
 #endif
