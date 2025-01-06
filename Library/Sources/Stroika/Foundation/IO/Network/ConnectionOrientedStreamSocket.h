@@ -275,7 +275,20 @@ namespace Stroika::Foundation::IO::Network {
         /**
          * \brief Create a pair of sockets which talk locally, directly to one another (both endpoints on this machine)
          * 
+         * 
          *  \see https://man7.org/linux/man-pages/man2/socketpair.2.html
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          // both pairs equal - and can use EITHER as from and either as 'to'
+         *          auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+         *          auto fromStrm = TextWriter::New (SocketStream::New (fromRawSocket));
+         *          auto toStrm   = TextReader::New (SocketStream::New (toRawSocket));
+         *          fromStrm.Write ("Hello");
+         *          fromStrm.Flush ();
+         *          fromStrm.Close ();          // Close socket, so ReadAll gets ALL
+         *          auto readData = toStrm.ReadAll ();
+         *          EXPECT_EQ (readData, "Hello");
          * 
          *  note could be implemented with ::socketpair() API, or equivalent to
          *      \code
@@ -284,7 +297,6 @@ namespace Stroika::Foundation::IO::Network {
          *          auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (family, socketKind, protocol);
          *          connectionOrientedMaster.Bind (SocketAddress{LocalHost (family)});
          *          connectionOrientedMaster.Listen (1);
-         *
          *          // now make a NEW socket, with the bound address and connect;
          *          auto one = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
          *          auto two = connectionOrientedMaster.Accept ();
