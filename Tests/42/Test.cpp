@@ -594,19 +594,45 @@ namespace {
         using namespace Streams;
 
         // both pairs equal - and can use EITHER as from and either as 'to'
-        auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+        auto [writeRawSocket, readRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
 
-        auto fromStrm = TextWriter::New (SocketStream::New (fromRawSocket));
-        auto toStrm   = TextReader::New (SocketStream::New (toRawSocket));
+        auto writeStrm = SocketStream::New (writeRawSocket); // these are both input/output streams, but we only use one side for this test
+        auto readStrm  = SocketStream::New (readRawSocket);
 
-        fromStrm.Write ("Hello");
-        fromStrm.Flush ();
-        EXPECT_TRUE (fromRawSocket.IsOpen ());
-        fromStrm.Close (); // Close socket, so ReadAll gets ALL
-        EXPECT_TRUE (not fromRawSocket.IsOpen ());
-        EXPECT_TRUE (toRawSocket.IsOpen ());
-        auto readData = toStrm.ReadAll ();
+        // complete symmetric up til now, so pick which to write to and which to read from
+        auto textWriter = TextWriter::New (writeStrm);
+        auto textReader = TextReader::New (readStrm);
+
+        textWriter.Write ("Hello");
+        textWriter.Flush ();
+        EXPECT_TRUE (writeRawSocket.IsOpen () and readRawSocket.IsOpen ());
+
+        textWriter.Close (); // this only closes part of the source (enuf but not all) - sends socket shutdown (one sided)
+        EXPECT_TRUE (not textWriter.IsOpen ());
+        EXPECT_TRUE (not writeStrm.IsOpenWrite ());
+        EXPECT_TRUE (writeStrm.IsOpenRead ());
+        EXPECT_TRUE (writeRawSocket.IsOpen ()); // only closed when both ends of socketstream closed
+
+        // even though write socket is open, its send side is 'shutdown' so this read will complete
+        auto readData = textReader.ReadAll ();
         EXPECT_EQ (readData, "Hello");
+
+        // now CAN (no need) either close the writeStrm or writeRawSocket, in either order
+        writeRawSocket.Close ();
+        writeStrm.Close ();
+        EXPECT_TRUE (not textWriter.IsOpen ());
+        EXPECT_TRUE (not writeStrm.IsOpenWrite ());
+        EXPECT_TRUE (not writeStrm.IsOpenRead ());
+        EXPECT_TRUE (not writeRawSocket.IsOpen ());
+
+        // reading streams and sockets still wide open
+        // could close them, but no need (done automatically when we return and last reference goes out of scope)
+        EXPECT_TRUE (textReader.IsOpen ());
+        EXPECT_TRUE (readStrm.IsOpenWrite ());
+        EXPECT_TRUE (readStrm.IsOpenRead ());
+        EXPECT_TRUE (readRawSocket.IsOpen ());
+        auto moreData = textReader.ReadAll (); // fine, but will be empty
+        EXPECT_TRUE (moreData.empty ());
     }
 }
 
