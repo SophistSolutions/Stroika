@@ -27,12 +27,15 @@ namespace Stroika::Foundation::IO::Network::SocketStream {
      *  The only real connection is that they share a common socket, and if it is closed,
      *  then the whole SocketStream will stop working.
      *
-     *      \note   SocketStream aggregates its owned ConnectionOrientedStreamSocket, so that a Close () on SocketStream
+     *      \note   SocketStream adopts its owned ConnectionOrientedStreamSocket, so that a Close () on SocketStream
      *              will Close that socket as well.
      *
      *              But SocketStream is an InputOutputStream - so you can close the input and output sides separately.
      *              If you call close on only one side of the input stream, Shutdown () will be used to shutdown
      *              just that end of the stream.
+     * 
+     *              Closing both sides of the stream (calling Close on the InputOutputStream) closes both sides and
+     *              ShutDowns both sides of the socket.
      *
      *  \par Example Usage
      *      \code

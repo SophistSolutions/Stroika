@@ -40,7 +40,7 @@ namespace {
         {
             if (IsOpenWrite ()) {
                 fSD_.Shutdown (Socket::ShutdownTarget::eWrites);
-                if (not fOpenForRead_) {
+                if (not fOpenForRead_) { // if Both closed
                     fSD_.Close ();
                     fSD_.reset ();
                 }
@@ -56,7 +56,7 @@ namespace {
         {
             if (fOpenForRead_) {
                 fSD_.Shutdown (Socket::ShutdownTarget::eReads);
-                if (not fOpenForWrite_) {
+                if (not fOpenForWrite_) { // if Both closed
                     fSD_.Close ();
                     fSD_.reset ();
                 }
