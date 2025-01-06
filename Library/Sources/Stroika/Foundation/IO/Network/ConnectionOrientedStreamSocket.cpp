@@ -427,8 +427,7 @@ auto ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType family, 
         return make_tuple (Attach (get<0> (sp)), Attach (get<1> (sp)));
     }
     else {
-        /// Create a Listening master socket, bind it,
-        //   and get it listening
+        // Create a Listening master socket, bind it, and get it listening
         // Just needed temporarily to create the socketpair, then it can be closed when it goes out of scope
         auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (family, socketKind, protocol);
         connectionOrientedMaster.Bind (SocketAddress{LocalHost (family)});

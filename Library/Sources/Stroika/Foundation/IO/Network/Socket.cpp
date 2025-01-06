@@ -101,9 +101,8 @@ namespace {
 #endif
 
         // connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
-        SocketAddress localhost = (family == SocketAddress::INET or family == SocketAddress::INET6)
-                                         ? SocketAddress{LocalHost (family)}
-                                      : SocketAddress{};
+        SocketAddress localhost =
+            (family == SocketAddress::INET or family == SocketAddress::INET6) ? SocketAddress{LocalHost (family)} : SocketAddress{};
         sockaddr_storage localhost_ss = localhost.As<sockaddr_storage> ();
 
         if (false) {
@@ -126,7 +125,7 @@ namespace {
 #endif
 
         // fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
-        SocketAddress masterSocketLocalAddress;
+        SocketAddress    masterSocketLocalAddress;
         sockaddr_storage masterSocketLocalAddress_ss;
         {
             socklen_t len = sizeof (masterSocketLocalAddress_ss);
