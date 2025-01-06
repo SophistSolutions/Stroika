@@ -67,17 +67,18 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     class Ptr : public InputStream::Ptr<ELEMENT_TYPE>, public OutputStream::Ptr<ELEMENT_TYPE> {
     public:
         /**
-         *  defaults to null (aka empty ())
+         *  
+         *  Overloads:
+         *      Ptr/nullptr
+         *          defaults to null (aka empty ())
+         *      shared_ptr<IRep<ELEMENT_TYPE>>
+         *          rep is the underlying shared output Stream object.
+         *          \req rep != nullptr (use nullptr_t constructor)
          */
         Ptr () = default;
         Ptr (nullptr_t);
         Ptr (const Ptr&) = default;
         Ptr (Ptr&&)      = default;
-        /**
-         * _SharedIRep rep is the underlying shared output Stream object.
-         *
-         *  \req rep != nullptr (use nullptr_t constructor)
-         */
         Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep);
 
     public:
