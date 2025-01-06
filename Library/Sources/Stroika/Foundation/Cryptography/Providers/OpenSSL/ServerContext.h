@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ServerContext {
     };
 
     struct Options : SSL::ServerContext::Options {
-        const SSL_METHOD* fMethod{nullptr}; // e.g. TLS_1.3_method ()
+        const SSL_METHOD* fMethod{::TLS_server_method ()};
     };
 
     /**

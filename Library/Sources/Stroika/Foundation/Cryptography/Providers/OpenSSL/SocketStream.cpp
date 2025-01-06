@@ -3,10 +3,10 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qStroika_Foundation_Common_Platform_Windows
-#include <io.h>
-#elif qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_Foundation_Common_Platform_POSIX
 #include <unistd.h>
+#elif qStroika_Foundation_Common_Platform_Windows
+#include <io.h>
 #endif
 #include <cstdlib>
 
@@ -61,6 +61,7 @@ namespace {
                         OpenSSL::Exception::ThrowLastError ();
                     }
                     DbgTrace ("ar={}"_f, ar);
+                    AssertNotReached ();
                     break;
             }
         }
@@ -79,6 +80,7 @@ namespace {
                         OpenSSL::Exception::ThrowLastError ();
                     }
                     DbgTrace ("ar={}"_f, ar);
+                    AssertNotReached ();
                     break;
             }
         }
@@ -211,11 +213,6 @@ namespace {
         virtual void Write (span<const byte> elts) override
         {
             Require (IsOpenWrite ());
-            //static bool first = true;
-            //if (first) {
-            //    first = false;
-            //    ::SSL_accept (fSSLConnection_.get ());//hack - need another API somehow for this
-            //}
             int r = ::SSL_write (fSSLConnection_.get (), elts.data (), static_cast<int> (elts.size ()));
             if (r != elts.size ()) {
                 // https://linux.die.net/man/3/ssl_write appears to indicate anything other than full write success is an error
