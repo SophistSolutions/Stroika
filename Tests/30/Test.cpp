@@ -44,6 +44,9 @@
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/IO/Network/SocketStream.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -344,7 +347,6 @@ namespace {
 }
 
 namespace {
-
     template <typename DIGESTER>
     void DoCommonDigesterTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
@@ -908,8 +910,25 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"::BasicSSLStream"};
         using namespace Cryptography::PKI;
+        using namespace IO::Network;
+        using namespace Streams;
         auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
             .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+
+        // both pairs equal - and can use EITHER as from and either as 'to'
+        auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+
+        auto fromStrm = TextWriter::New (SocketStream::New (fromRawSocket));
+        auto toStrm  = TextReader::New (SocketStream::New (toRawSocket));
+
+        fromStrm.Write ("Hello");
+        fromStrm.Flush ();
+        fromRawSocket.Close ();
+      //  fromStrm.Close (); // so readall gets ALL
+        auto readData = toStrm.ReadAll ();
+
+        EXPECT_EQ (readData, "Hello");
+
 
         // @todo next
         // auto serverContext = Cryptography::SSL::ServerContext::Options serverOpts;
