@@ -12,6 +12,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 : _fSource{src}
                 , _fConverter{converter}
             {
+                RequireNotNull (src);
             }
 
         protected:
@@ -25,12 +26,11 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 if (IsOpenWrite ()) {
                     _fSource.Close ();
                 }
-                Assert (_fSource == nullptr);
                 Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {
-                return _fSource != nullptr;
+                return _fSource.IsOpen ();
             }
             virtual SeekOffsetType GetWriteOffset () const override
             {
@@ -76,6 +76,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 : _fSource{src}
                 , _fConverter{forward<CONVERTER> (converter)}
             {
+                RequireNotNull (src);
             }
             UnSeekable_UTFConverter_Rep_ (const OutputStream::Ptr<byte>& src)
                 : _fSource{src}
@@ -94,12 +95,11 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 if (IsOpenWrite ()) {
                     _fSource.Close ();
                 }
-                Assert (_fSource == nullptr);
                 Ensure (not IsOpenWrite ());
             }
             virtual bool IsOpenWrite () const override
             {
-                return _fSource != nullptr;
+                return _fSource.IsOpen ();
             }
             virtual SeekOffsetType GetWriteOffset () const override
             {
