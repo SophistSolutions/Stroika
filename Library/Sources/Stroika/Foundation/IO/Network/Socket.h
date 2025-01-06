@@ -92,9 +92,9 @@ namespace Stroika::Foundation::IO::Network {
             DGRAM  = SOCK_DGRAM,
             RAW    = SOCK_RAW,
         };
-        using Type::STREAM;
         using Type::DGRAM;
         using Type::RAW;
+        using Type::STREAM;
 
         /**
          */
