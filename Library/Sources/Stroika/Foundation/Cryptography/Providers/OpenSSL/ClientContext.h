@@ -65,6 +65,6 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL::ClientContext {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-//#include "ClientContext.inl"
+#include "ClientContext.inl"
 
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_ClientContext_h_*/

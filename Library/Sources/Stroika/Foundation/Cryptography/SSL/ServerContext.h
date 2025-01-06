@@ -19,14 +19,14 @@ namespace Stroika::Foundation::Cryptography::SSL::ServerContext {
      */
     class IRep {
     public:
-        virtual ~IRep () = 0;
+        virtual ~IRep () = default;
     };
 
     /**
      *  \note Design Note:
-     *      Could have had get/set properites on IRep, or passed in Options. The former a bit more flexible
-     *      but that flexability rarely (never) used, so go with simpler API, which may be easier to adapt to
-     *      diffderent backend ssl impls (and simpler threading implications).
+     *      Could have had get/set properties on IRep, or passed in Options. The former a bit more flexible
+     *      but that flexibility rarely (never) used, so go with simpler API, which may be easier to adapt to
+     *      different backend ssl implementations (and simpler threading implications).
      */
     struct Options {
         // @todo  typical args here are -METHOD : SSL-VERSION (TLS1.3, etc) - CERT, and PRIVATE KEY

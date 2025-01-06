@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Cryptography::SSL::ClientContext {
      */
     class IRep {
     public:
-        virtual ~IRep () = 0;
+        virtual ~IRep () = default;
     };
 
     /**
