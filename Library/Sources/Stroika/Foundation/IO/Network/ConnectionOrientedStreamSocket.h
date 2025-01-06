@@ -291,7 +291,8 @@ namespace Stroika::Foundation::IO::Network {
          *          return make_tuple (one, two);         
          *      \endcode
          */
-        tuple<Ptr, Ptr> NewPair (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
+        tuple<Ptr, Ptr> NewPair (SocketAddress::FamilyType family = SocketAddress::INET, Type socketKind = STREAM,
+                                 const optional<IPPROTO>& protocol = {});
 
         /**
          *  This function associates a Platform native socket handle with a Stroika wrapper object.
