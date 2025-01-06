@@ -118,33 +118,34 @@ namespace Stroika::Foundation::IO::Network {
             virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
-                Require (fSD_ != kINVALID_NATIVE_HANDLE_);
-                // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
-                switch (shutdownTarget) {
-                    case Socket::ShutdownTarget::eReads:
+                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
+                    // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
+                    switch (shutdownTarget) {
+                        case Socket::ShutdownTarget::eReads:
 #if qStroika_Foundation_Common_Platform_POSIX
-                        ::shutdown (fSD_, SHUT_RD);
+                            ::shutdown (fSD_, SHUT_RD);
 #elif qStroika_Foundation_Common_Platform_Windows
-                        ::shutdown (fSD_, SD_RECEIVE);
+                            ::shutdown (fSD_, SD_RECEIVE);
 #endif
-                        break;
-                    case Socket::ShutdownTarget::eWrites:
+                            break;
+                        case Socket::ShutdownTarget::eWrites:
 // I believe this triggers TCP FIN
 #if qStroika_Foundation_Common_Platform_POSIX
-                        ::shutdown (fSD_, SHUT_WR);
+                            ::shutdown (fSD_, SHUT_WR);
 #elif qStroika_Foundation_Common_Platform_Windows
-                        ::shutdown (fSD_, SD_SEND);
+                            ::shutdown (fSD_, SD_SEND);
 #endif
-                        break;
-                    case Socket::ShutdownTarget::eBoth:
+                            break;
+                        case Socket::ShutdownTarget::eBoth:
 #if qStroika_Foundation_Common_Platform_POSIX
-                        ::shutdown (fSD_, SHUT_RDWR);
+                            ::shutdown (fSD_, SHUT_RDWR);
 #elif qStroika_Foundation_Common_Platform_Windows
-                        ::shutdown (fSD_, SD_BOTH);
+                            ::shutdown (fSD_, SD_BOTH);
 #endif
-                        break;
-                    default:
-                        RequireNotReached ();
+                            break;
+                        default:
+                            RequireNotReached ();
+                    }
                 }
             }
             virtual void Close () override

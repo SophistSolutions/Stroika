@@ -284,6 +284,8 @@ namespace Stroika::Foundation::IO::Network {
              *
              *      If the how parameter is SD_SEND, subsequent calls to the send function are disallowed.
              *      For TCP sockets, a FIN will be sent after all data is sent and acknowledged by the receiver.
+             * 
+             *  \note this is ignored if the socket is already closed.
              */
             nonvirtual void Shutdown (ShutdownTarget shutdownTarget = ShutdownTarget::eDEFAULT);
 
@@ -293,7 +295,7 @@ namespace Stroika::Foundation::IO::Network {
              *  the same underlying platform socket. But this closes ALL of them. It does not
              *  remove the reference to the underlying shared socket rep however.
              *
-             *  \note this is safe and does nothing if *this == nullptr
+             *  \note this is safe and does nothing if *this == nullptr, or if the socket is already closed
              *
              *  @see Detach
              *  @see reset ()
