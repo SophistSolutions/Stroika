@@ -101,19 +101,21 @@ namespace {
 #endif
 
         // connectionOrientedMaster.Bind (SocketAddress{IO::Network::V4::kLocalhost});
-        sockaddr_storage localhost = (family == SocketAddress::INET or family == SocketAddress::INET6)
-                                         ? SocketAddress{LocalHost (family)}.As<sockaddr_storage> ()
-                                         : sockaddr_storage{};
+        SocketAddress localhost = (family == SocketAddress::INET or family == SocketAddress::INET6)
+                                         ? SocketAddress{LocalHost (family)}
+                                      : SocketAddress{};
+        sockaddr_storage localhost_ss = localhost.As<sockaddr_storage> ();
 
         if (false) {
             const int one = 1;
             Verify (::setsockopt (masterSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*> (&one), sizeof (one)) == 0);
         }
 #if qStroika_Foundation_Common_Platform_POSIX
-        Handle_ErrNoResultInterruption (
-            [masterSocket, &localhost] () -> int { return ::bind (masterSocket, (sockaddr*)&localhost, sizeof (localhost)); });
+        Handle_ErrNoResultInterruption ([masterSocket, &localhost, &localhost_ss] () -> int {
+            return ::bind (masterSocket, (sockaddr*)&localhost_ss, static_cast<int> (localhost.GetRequiredSize ()));
+        });
 #elif qStroika_Foundation_Common_Platform_Windows
-        ThrowWSASystemErrorIfSOCKET_ERROR (::bind (masterSocket, (sockaddr*)&localhost, static_cast<int> (sizeof (localhost))));
+        ThrowWSASystemErrorIfSOCKET_ERROR (::bind (masterSocket, (sockaddr*)&localhost_ss, static_cast<int> (localhost.GetRequiredSize ())));
 #endif
 
         // connectionOrientedMaster.Listen (1);
@@ -124,10 +126,12 @@ namespace {
 #endif
 
         // fReadSocket_  = ConnectionOrientedStreamSocket::NewConnection (*connectionOrientedMaster.GetLocalAddress ());
-        sockaddr_storage masterSocketLocalAddress;
+        SocketAddress masterSocketLocalAddress;
+        sockaddr_storage masterSocketLocalAddress_ss;
         {
-            socklen_t len = sizeof (masterSocketLocalAddress);
-            Verify (::getsockname (static_cast<int> (masterSocket), (sockaddr*)&masterSocketLocalAddress, &len) == 0);
+            socklen_t len = sizeof (masterSocketLocalAddress_ss);
+            Verify (::getsockname (static_cast<int> (masterSocket), (sockaddr*)&masterSocketLocalAddress_ss, &len) == 0);
+            masterSocketLocalAddress = masterSocketLocalAddress_ss;
         }
         PlatformNativeHandle    endOne    = Socket::_Protected::mkLowLevelSocket_ (family, socketKind, protocol);
         bool                    succeeded = false;
@@ -142,11 +146,11 @@ namespace {
         });
 #if qStroika_Foundation_Common_Platform_POSIX
         Handle_ErrNoResultInterruption ([&] () -> int {
-            return ::connect (endOne, (sockaddr*)&masterSocketLocalAddress, static_cast<int> (sizeof (masterSocketLocalAddress)));
+            return ::connect (endOne, (sockaddr*)&masterSocketLocalAddress_ss, static_cast<int> (masterSocketLocalAddress.GetRequiredSize ()));
         });
 #elif qStroika_Foundation_Common_Platform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (
-            ::connect (endOne, (sockaddr*)&masterSocketLocalAddress, static_cast<int> (sizeof (masterSocketLocalAddress))));
+            ::connect (endOne, (sockaddr*)&masterSocketLocalAddress_ss, static_cast<int> (masterSocketLocalAddress.GetRequiredSize ())));
 #endif
 
         // fWriteSocket_ = connectionOrientedMaster.Accept ();

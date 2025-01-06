@@ -421,7 +421,7 @@ ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::Attach (Plat
 #include "ConnectionOrientedMasterSocket.h" //tmphack for kLowLevelSocketPairWorks_==false
 auto ConnectionOrientedStreamSocket::NewPair (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol) -> tuple<Ptr, Ptr>
 {
-    constexpr bool kLowLevelSocketPairWorks_{qStroika_Foundation_Common_Platform_Windows}; // for now only works on windows
+    constexpr bool kLowLevelSocketPairWorks_{true}; // for now only works on windows
     if constexpr (kLowLevelSocketPairWorks_) {
         auto sp = _Protected::mkLowLevelSocketPair_ (family, socketKind, protocol);
         return make_tuple (Attach (get<0> (sp)), Attach (get<1> (sp)));
