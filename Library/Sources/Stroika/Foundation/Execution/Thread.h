@@ -778,8 +778,8 @@ namespace Stroika::Foundation::Execution {
                 eAbortBeforeWaiting,
                 eDirectlyWait
             };
-            static constexpr AbortFlag eAbortBeforeWaiting = AbortFlag::eAbortBeforeWaiting;
-            static constexpr AbortFlag eDirectlyWait       = AbortFlag::eDirectlyWait;
+            using AbortFlag::eAbortBeforeWaiting;
+            using AbortFlag::eDirectlyWait;
 
         public:
             /**
