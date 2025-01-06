@@ -34,7 +34,7 @@ namespace {
         OpenSSL::ServerContext::LibRepType fCtx_;
 
         Rep_ (const Options& o)
-            : fCtx_{SSL_CTX_new (o.fMethod)}
+            : fCtx_{::SSL_CTX_new (o.fMethod ? o.fMethod : TLS_server_method ())}
         {
             RequireNotNull (get<Cryptography::PKI::Certificate::Ptr> (o.fCertificate));
             OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_CTX_use_certificate (

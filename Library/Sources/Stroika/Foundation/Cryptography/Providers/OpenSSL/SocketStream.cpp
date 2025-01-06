@@ -16,12 +16,14 @@
 #endif
 
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Exception.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedInputOutputStream.h"
 
 #include "SocketStream.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Providers;
 using namespace Stroika::Foundation::Streams;
@@ -34,11 +36,11 @@ using std::byte;
 namespace {
     class Rep_ : public OpenSSL::SocketStream::IRep {
     public:
-        bool                                                              fOpenForRead_{true};
-        bool                                                              fOpenForWrite_{true};
-        SeekOffsetType                                                    fReadSeekOffset_{};
-        variant<OpenSSL::ClientContext::Ptr, OpenSSL::ServerContext::Ptr> fContext_;
-        unique_ptr<::SSL, decltype (&::SSL_free)> fSSLConnection_; // cache actual ptr - for slight temporary brevity
+        bool           fOpenForRead_{true};
+        bool           fOpenForWrite_{true};
+        SeekOffsetType fReadSeekOffset_{};
+        variant<OpenSSL::ClientContext::Ptr, OpenSSL::ServerContext::Ptr> fContext_; // dont access really, but keep cuz fSSLConnection_ object may retain pointer to context inside here
+        OpenSSL::SocketStream::LibRepType fSSLConnection_;
 
         Rep_ (OpenSSL::SocketStream::LibRepType&& r)
             : fSSLConnection_{move (r)}
@@ -46,15 +48,39 @@ namespace {
         }
         Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd, const OpenSSL::ClientContext::Options& o)
             : fContext_{OpenSSL::ClientContext::New (o)}
-            , fSSLConnection_{::SSL_new (get<OpenSSL::ClientContext::Ptr> (fContext_)->Get_SSL_CTX ()), ::SSL_free}
+            , fSSLConnection_{::SSL_new (get<OpenSSL::ClientContext::Ptr> (fContext_)->Get_SSL_CTX ())}
         {
             OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_set_fd (fSSLConnection_.get (), static_cast<int> (sd.GetNativeSocket ())));
+            switch (int ar = ::SSL_connect (fSSLConnection_.get ())) {
+                case 1:
+                    break; // all is well
+                case 2:
+                    OpenSSL::Exception::ThrowLastError ();
+                default:
+                    if (ar < 0) {
+                        OpenSSL::Exception::ThrowLastError ();
+                    }
+                    DbgTrace ("ar={}"_f, ar);
+                    break;
+            }
         }
         Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd, const OpenSSL::ServerContext::Options& o)
             : fContext_{OpenSSL::ServerContext::New (o)}
-            , fSSLConnection_{::SSL_new (get<OpenSSL::ServerContext::Ptr> (fContext_)->Get_SSL_CTX ()), ::SSL_free}
+            , fSSLConnection_{::SSL_new (get<OpenSSL::ServerContext::Ptr> (fContext_)->Get_SSL_CTX ())}
         {
             OpenSSL::Exception::ThrowLastErrorIfFailed (::SSL_set_fd (fSSLConnection_.get (), static_cast<int> (sd.GetNativeSocket ())));
+            switch (int ar = ::SSL_accept (fSSLConnection_.get ())) {
+                case 1:
+                    break; // all is well
+                case 2:
+                    OpenSSL::Exception::ThrowLastError ();
+                default:
+                    if (ar < 0) {
+                        OpenSSL::Exception::ThrowLastError ();
+                    }
+                    DbgTrace ("ar={}"_f, ar);
+                    break;
+            }
         }
         ~Rep_ ()
         {
@@ -185,6 +211,11 @@ namespace {
         virtual void Write (span<const byte> elts) override
         {
             Require (IsOpenWrite ());
+            //static bool first = true;
+            //if (first) {
+            //    first = false;
+            //    ::SSL_accept (fSSLConnection_.get ());//hack - need another API somehow for this
+            //}
             int r = ::SSL_write (fSSLConnection_.get (), elts.data (), static_cast<int> (elts.size ()));
             if (r != elts.size ()) {
                 // https://linux.die.net/man/3/ssl_write appears to indicate anything other than full write success is an error
