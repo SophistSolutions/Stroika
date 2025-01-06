@@ -23,9 +23,7 @@ endif
 libxml2_VERSION_:=2.13.5
 #libxml2_VERSION_:=2.13.4
 #libxml2_VERSION_:=2.13.3
-#libxml2_VERSION_:=2.13.2
-#libxml2_VERSION_:=2.13.1
-#libxml2_VERSION_:=2.12.7
+
 
 ZIPPED_SOURCES_FILE_:=../Origs-Cache/libxml2-${libxml2_VERSION_}.tar.gz
 
