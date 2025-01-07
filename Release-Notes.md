@@ -20,6 +20,10 @@ INCOMPAT CHANGE - INPUT_STREAM::
         Refactor (not backward compatible) - Cryptography::OpenSSL code down to Cryptography::Providers::OpenSSL
 
 
+HTMLUI sample changes - summary
+  https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/commit/5b203432ccec4e2fc049e80a753db5f39d459a99
+  OR
+  git diff 3.0d13...3.0d14 -- Samples/HTMLUI/
 
 
 ### 3.0d13 {2024-12-20} {[diff](../../compare/3.0d12...3.0d13)}
