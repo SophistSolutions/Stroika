@@ -926,18 +926,18 @@ namespace {
 
 #if qCompilerAndStdLib_nestedLambdaBindings_Buggy
         ConnectionOrientedStreamSocket::Ptr fromRawSocketBWA = nullptr;
-        ConnectionOrientedStreamSocket::Ptr toRawSocketBWA= nullptr;
-        auto pkBWA = pk;
-        auto certBWA= cert;
+        ConnectionOrientedStreamSocket::Ptr toRawSocketBWA   = nullptr;
+        auto                                pkBWA            = pk;
+        auto                                certBWA          = cert;
 #endif
 
         auto runTest = [&] () {
             // both pairs equal - and can use EITHER as from and either as 'to'
             auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
-            
+
 #if qCompilerAndStdLib_nestedLambdaBindings_Buggy
             fromRawSocketBWA = fromRawSocket;
-            toRawSocketBWA = toRawSocket;
+            toRawSocketBWA   = toRawSocket;
 #endif
 
             if (swapSockets) {
