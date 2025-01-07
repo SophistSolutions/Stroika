@@ -1430,6 +1430,111 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 
 #endif
 
+
+/**
+ * Test.cpp:953:100: error: reference to local binding 'fromRawSocket' declared in enclosing lambda expression
+                                                    auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
+                                                                                                   ^
+Test.cpp:929:19: note: 'fromRawSocket' declared here
+            auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+                  ^
+Test.cpp:965:118: error: reference to local binding 'pk' declared in enclosing function '(anonymous namespace)::Foundation_Cryptography_BasicSSLStream_Test::TestBody'
+                                                    ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
+                                                                                                                     ^
+Test.cpp:918:15: note: 'pk' declared here
+        auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
+              ^
+Test.cpp:965:122: error: reference to local binding 'cert' declared in enclosing function '(anonymous namespace)::Foundation_Cryptography_BasicSSLStream_Test::TestBody'
+                                                    ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
+                                                                                                                         ^
+Test.cpp:918:19: note: 'cert' declared here
+        auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
+                  ^
+Test.cpp:966:100: error: reference to local binding 'toRawSocket' declared in enclosing lambda expression
+                                                    auto p = Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions);
+                                                                                                   ^
+Test.cpp:929:34: note: 'toRawSocket' declared here
+            auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+                                 ^
+4 errors generated.
+make[3]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:31: /Sandbox/Stroika-Dev/IntermediateFiles/clang++-15-debug-libc++/Tests/30/Test.o] Error 1
+make[2]: *** [Makefile:179: 30] Error 2
+make[1]: *** [Makefile:164: tests] Error 2
+make: *** [Makefile:273: tests] Error 2
+lewis@Stroika-Dev-2204:/Sandbox/Stroika-Dev$ make CONFIGURATION=clang++-15-debug-libc++ all 
+Stroika ThirdPartyComponents Build {clang++-15-debug-libc++}:
+   Stroika/ThirdPartyComponents/zlib Build 1.3.1 {clang++-15-debug-libc++}:
+      zlib 1.3.1 - Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Stroika/ThirdPartyComponents/boost Build 1_87_0 {clang++-15-debug-libc++}:
+      boost 1_87_0 - Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Stroika/ThirdPartyComponents/OpenSSL Build 3.4.0 {clang++-15-debug-libc++}:
+      openssl 3.4.0 - Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Stroika/ThirdPartyComponents/libcurl 8.11.1 Build {clang++-15-debug-libc++}:
+      curl 8.11.1 - Checking ...  Stroika/ThirdPartyComponents/curl -    [Succeeded]
+   Stroika/ThirdPartyComponents/fmtlib Build 10.2.1 {clang++-15-debug-libc++}:
+      fmtlib 10.2.1 - Configure (see IntermediateFiles/clang++-15-debug-libc++/ThirdPartyComponents/fmtlib/CONFIGURE-OUT.txt) ...
+      fmtlib 10.2.1 - Build (see IntermediateFiles/clang++-15-debug-libc++/ThirdPartyComponents/fmtlib/BUILD-OUT.txt) ...
+      fmtlib 10.2.1 - Build (see IntermediateFiles/clang++-15-debug-libc++/ThirdPartyComponents/fmtlib/INSTALL-OUT.txt) ...
+      fmtlib 10.2.1 - Checking ...  Stroika/ThirdPartyComponents/fmtlib -  [Succeeded]
+   Stroika/ThirdPartyComponents/GoogleTest Build 1.15.2 {clang++-15-debug-libc++}:
+      GoogleTest 1.15.2 - Checking ...  Stroika/ThirdPartyComponents/GoogleTest -    [Succeeded]
+   Stroika/ThirdPartyComponents/lzma Build 1604 {clang++-15-debug-libc++}:
+      lzma 1604 - Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Stroika/ThirdPartyComponents/sqlite Build 3470200 {clang++-15-debug-libc++}:
+      sqlite 3470200 - Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Stroika/ThirdPartyComponents/libxml2 Build 2.13.5 {clang++-15-debug-libc++}:
+      libxml2 2.13.5 - Checking ...  Stroika/ThirdPartyComponents/libxml2 -    [Succeeded]
+Building Stroika Library {clang++-15-debug-libc++}:
+   Building Stroika Foundation Objs {clang++-15-debug-libc++}:
+   Building Stroika Frameworks Objs {clang++-15-debug-libc++}:
+Building Stroika Tools {clang++-15-debug-libc++}:
+Building Stroika Samples {clang++-15-debug-libc++}:
+   Building Samples/AppSettings:
+   Building Samples/ArchiveUtility:
+   Building Samples/Containers:
+   Building Samples/HTMLUI:
+      Building Samples/HTMLUI/Backend:
+      Building Samples-HTMLUI/HTML:
+   Samples/HTMLUI: Building Installers:
+   Building Samples/Serialization:
+   Building Samples/Service:
+      Building Samples/Service Installers:
+   Building Samples/SQL:
+   Building Samples/SSDPClient:
+   Building Samples/SSDPServer:
+   Building Samples/SystemPerformanceClient:
+   Building Samples/Traceroute:
+   Building Samples/WebServer:
+   Building Samples/WebService:
+Building Stroika Tests {clang++-15-debug-libc++}:
+   Compiling Tests/30/Test.cpp ... 
+Test.cpp:928:45: error: call to deleted constructor of 'ConnectionOrientedStreamSocket::Ptr'
+        ConnectionOrientedStreamSocket::Ptr fromRawSocketBWA;
+                                            ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h:85:13: note: 'Ptr' has been explicitly marked deleted here
+            Ptr () = delete;
+            ^
+Test.cpp:929:45: error: call to deleted constructor of 'ConnectionOrientedStreamSocket::Ptr'
+        ConnectionOrientedStreamSocket::Ptr toRawSocketBWA;
+                                            ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h:85:13: note: 'Ptr' has been explicitly marked deleted here
+            Ptr () = delete;
+            ^
+Test.cpp:977:118: error: reference to local binding 'pk' declared in enclosing function '(anonymous namespace)::Foundation_Cryptography_BasicSSLStream_Test::TestBody'
+                                                    ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
+                                                          
+ */
+#ifndef qCompilerAndStdLib_nestedLambdaBindings_Buggy
+
+#if defined(__clang__)
+#define qCompilerAndStdLib_nestedLambdaBindings_Buggy                                                        \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 15)
+#else
+#define qCompilerAndStdLib_nestedLambdaBindings_Buggy 0
+#endif
+
+#endif
+
 /*
       Compiling Library/Sources/Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.cpp ... 
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.

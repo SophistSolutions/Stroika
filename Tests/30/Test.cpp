@@ -924,9 +924,21 @@ namespace {
         // Test it doesn't matter which socket we treat as the 'client' and which we treat as the 'server'
         bool swapSockets = false;
 
+#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+        ConnectionOrientedStreamSocket::Ptr fromRawSocketBWA = nullptr;
+        ConnectionOrientedStreamSocket::Ptr toRawSocketBWA= nullptr;
+        auto pkBWA = pk;
+        auto certBWA= cert;
+#endif
+
         auto runTest = [&] () {
             // both pairs equal - and can use EITHER as from and either as 'to'
             auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+            
+#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+            fromRawSocketBWA = fromRawSocket;
+            toRawSocketBWA = toRawSocket;
+#endif
 
             if (swapSockets) {
                 swap (fromRawSocket, toRawSocket);
@@ -935,11 +947,11 @@ namespace {
             auto doReaderSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
                 auto readingStream = TextReader::New (p);
                 auto readData      = readingStream.ReadAll (); // waits for writer side to close
-                EXPECT_EQ (readData, "Hello");
+                EXPECT_EQ (readData, "Hello"sv);
             };
             auto doWriterSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
                 auto writingStream = TextWriter::New (p);
-                writingStream.Write ("Hello");
+                writingStream.Write ("Hello"sv);
                 writingStream.Flush ();
                 writingStream.Close (); // so ReadAll in doReaderSide doesn't block waiting for more data
             };
@@ -950,7 +962,11 @@ namespace {
                                             Thread::New (
                                                 [&] () {
                                                     ClientContext::Options clientOptions;
+#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+                                                    auto p = Cryptography::SSL::SocketStream::New (fromRawSocketBWA, clientOptions);
+#else
                                                     auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
+#endif
                                                     if (writesInClient) {
                                                         doWriterSide (p);
                                                     }
@@ -962,8 +978,13 @@ namespace {
             Thread::CleanupPtr serverThread{Thread::CleanupPtr::eDirectlyWait,
                                             Thread::New (
                                                 [&] () {
+#if qCompilerAndStdLib_nestedLambdaBindings_Buggy
+                                                    ServerContext::Options serverOptions{.fCertificate = make_tuple (pkBWA, certBWA)};
+                                                    auto p = Cryptography::SSL::SocketStream::New (toRawSocketBWA, serverOptions);
+#else
                                                     ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
                                                     auto p = Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions);
+#endif
                                                     if (writesInClient) {
                                                         doReaderSide (p);
                                                     }
