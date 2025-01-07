@@ -524,7 +524,7 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
     }
     constexpr auto CATEGORY_Normal = 0x00000001L;
     WORD           eventCategoryID = CATEGORY_Normal;
-    // See SPR#565 for wierdness - where I cannot really get these paid attention to
+    // See SPR#565 for weirdness - where I cannot really get these paid attention to
     // by the Windows EventLog. So had to use the .Net eventlogger. It SEEMS
     constexpr auto EVENT_Message = 0x00000064L;
     const DWORD    kEventID      = EVENT_Message;
@@ -536,7 +536,12 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
     constexpr PSID             kUserSid_     = nullptr;
     constexpr bool             kWriteOldWay_ = true;
     if constexpr (kWriteOldWay_) {
-        Verify (::ReportEvent (hEventSource, eventType, eventCategoryID, kEventID, kUserSid_, (WORD)1, 0, &msg, nullptr));
+        auto rslt = ::ReportEvent (hEventSource, eventType, eventCategoryID, kEventID, kUserSid_, (WORD)1, 0, &msg, nullptr);
+        if (rslt == 0) {
+            DbgTrace ("lasterr={}"_f, ::GetLastError ());
+            WeakAssertNotReached (); // shouldn't happen, but I saw on 2025-01-07 in WTF, so now logging more details - but fundamentally no real
+                                     // change here
+        }
     }
     else {
         // Doing something like this appears to require using the message compiler, which is crazy; maybe a better way...
@@ -554,7 +559,7 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
 Logger::Activator::Activator (const Options& options)
 {
     Debug::TraceContextBumper ctx{"Logger::Activator::Activator"};
-    Assert (sThe.fRep_ == nullptr); // only one acivator object at a time
+    Assert (sThe.fRep_ == nullptr); // only one activator object at a time
     sThe.fRep_ = make_shared<Rep_> ();
     sThe.SetSuppressDuplicates (options.fSuppressDuplicatesThreshold);
     if (options.fLogBufferingEnabled) {
