@@ -17,12 +17,6 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-# Hopefully address occasional:
-#		Cannot create output directory : errno=17 : File exists : /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2410_x86_64/IntermediateFiles/Debug/ThirdPartyComponents/lzma/
-#		SADLY - this didn't help the problem - so probably lose it - but intead added || (echo) in 7z line - see if / when that triggers - rare - like 1/10 builds (so far always on Ubuntu 24.04)
-#			--LGP 2025-01-06
-.NOTPARALLEL:
-
 .PHONY:	all clean clobber check doBuilds_
 
 
@@ -199,9 +193,15 @@ endif
 
 
 
+# Hopefully address occasional:
+#		Cannot create output directory : errno=17 : File exists : /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2410_x86_64/IntermediateFiles/Debug/ThirdPartyComponents/lzma/
+#		SADLY - this didn't help the problem - so probably lose it - but intead added || (echo) in 7z line - see if / when that triggers - rare - like 1/10 builds (so far always on Ubuntu 24.04)
+#			--LGP 2025-01-06
+# .NOTPARALLEL:
+
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
-	@(7za x -o$@ $(ZIPPEDFILE) > /dev/null) || echo "WARNING FAILURE in 7z rare, and testing - ignoring it..."
+	@(7za x -o$@ $(ZIPPEDFILE) > /dev/null) || (echo "WARNING: FAILURE in 7z rare, and testing - try again..."; rm -rf $@ ; 7za x -o$@ $(ZIPPEDFILE))
 	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)" ] ; then \
 		cp Subdir-Makefile $@/Makefile;\
 	fi
