@@ -177,19 +177,18 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
   Thread::Ptr clientThread{Thread::New (
         [&] () {
-            ClientContext::Options clientOptions;
-            auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
+            auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, ClientContext::Options{});
             auto writingStream = TextWriter::New (p); // treat byte stream as Character stream
                                                       // could select characterset/mapping here
             writingStream.Write ("Hello"sv);
-            writingStream.Close (); // so ReadAll in doReaderSide doesn't block waiting for more data
+            writingStream.Close (); // so ReadAll in serverThread knows we are done
         },
         Thread::eAutoStart, "client"sv)};
   Thread::Ptr serverThread{Thread::New (
         [&] () {
             ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
             auto p = Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions);
-            auto readData      = TextReader::New (p).ReadAll (); // ReadAll () waits for writer side to close
+            auto readData  = TextReader::New (p).ReadAll (); // ReadAll () waits for writer side to close
             EXPECT_EQ (readData, "Hello"sv);
         },
         Thread::eAutoStart, "server"sv)};
