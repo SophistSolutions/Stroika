@@ -2,11 +2,17 @@
 
 Stroika is a modern, portable, C++ application framework. It makes writing C++ applications easier by providing safe, flexible, building blocks, as well as wrappers on other useful libraries that help them to all work together more seemlessly. 
 
-<details style="margin-bottom:1em">
+<style>
+details > details > * {
+  margin-left: 2em;
+}
+</style>
+
+<details style="margin-bottom:1em; ">
  <summary>Code snippets / examples</summary>
 
   <details>
-    <summary>Easier String class UNICODE, more convenient methods</summary>
+    <summary>String class UNICODE interoperability, more convenient methods</summary>
 
   ~~~c++
   extern void CallFunction (String);
@@ -40,9 +46,11 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   </details>
 
   <details>
-  <summary>Iterable - easy to use functional APIs on all iterables, similar to C# LINQ</summary>
-  Similar to c++20 ranges API, but much easier to use (like C# Linq) - methods of iterable (std::ranges)
-  objects.
+  <summary>Iterable&lt;T> - easy to use functional APIs on all iterables, similar to C# LINQ</summary>
+
+
+  Similar to c++20 ranges API, but much easier to use (like C# Linq): methods of iterable objects easier
+  to select with smart (e.g. vscode) editor than (std::ranges).
 
   ~~~c++
   // nb: String is an Iterable<Character>, 
@@ -58,13 +66,13 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   // Map iterates over 'c' and produces the template argument container
   // automatically by appending the result of each lambda application
   Iterable<int> c { 3, 4, 7 };
-  EXPECT_EQ (c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), 
-            (vector<String>{"3", "4", "7"}));
+  vector<String> vv = c.Map<vector<String>> ([] (int i) { return "{}"_f (i); });
+  EXPECT_EQ (vv, (vector<String>{"3", "4", "7"}));
 
   // Use Map<> to transform, select subobjects, and filter, and pipe into algorithms like Median
   DateTime now = DateTime::Now ();
   auto medianDurationOfOpenConnections =
-      connections.Map<Iterable<Duration>> ([&] (const auto& c) { return now - c.fCreatedAt; }).Median ();
+    connections.Map<Iterable<Duration>> ([&] (auto c) { return now - c.fCreatedAt; }).Median ();
   auto medianDurationOfActiveConnections = 
     connections
       .Map<Iterable<Duration>> ([&] (const auto& c) -> optional<Duration> {
@@ -81,8 +89,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   <summary>Containers (are Iterable&lt;something>)</summary>
 
 - COW (copy-on-write) often signifcantly improves performance for most common cases
-- APIs defined by access pattern, (e.g. Stack s; s.Push(n);s.Pop(); Sequence s; s[3]; Mapping<k,v> m; m.Add(k,v); auto r = m.Lookup(k);) etc
-- Representational transparency (e.g. Sequence might be implemented as array, linked list, or memory mapped file)
+- APIs organized by access pattern: representational transparency (e.g. Sequence might be implemented as array, linked list, or memory mapped file)
   
   ~~~c++
   extern void f(Set<int>);  // define API in terms of ArchType 'Set<int>'
@@ -90,7 +97,8 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   // use the default Set<> representation - the best for type 'int'
   Set<int> s{1, 2, 3};
 
-  // as if copy-by-value, but data not actually copied - Stroika containers use 'copy-on-write (COW)'
+  // as if copy-by-value, but data not actually copied -
+  // Stroika containers use 'copy-on-write (COW)'
   f(s);
 
   s = Concrete::SortedSet_SkipList<int>{s}; // Use a skiplist to represent the set
@@ -99,6 +107,17 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   
   // set equality not order dependent (regardless of data structure)
   Assert (s == {2,3,1});  
+
+  Mapping<int, int> m;
+  m.Add (3, -3);
+  m.Add (19, -19);
+  if (m.Lookup (5)) {
+      AssertNotReached (); // better not find it
+  }
+
+  Stack<String> stack;  // automatically picks data represenation
+  stack.Push ("hello");
+  auto r = stack.Pop ();
   ~~~
 
   See [Containers Sample](./Samples/Containers/ReadMe.md) for more details;
@@ -110,13 +129,14 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   
   - formatting not intrinsic, but uses std::format / _f strings
   - simple abstractions so easy to implement your own stream classes (InputStream::IRep\<T>,OutputStream::IRep\<T>)
+  - designed for synchronous case, but async APIs available for when needed (e.g. ReadIfAvailable() returns optional - no modes)
 
   ~~~c++
   MemoryStream::Ptr<byte> tmpStream = MemoryStream::New<byte> ();
   tmpStream.Write (BLOB{...});  // just write binary data to the stream
-  TextReader::Ptr r = TextReader::New (tmpStream);  // takes optional args for character code interpretation
-  // read that data back as strings
-  String asStr = r.ReadAll ();
+  
+  TextReader::Ptr r = TextReader::New (tmpStream);  // optional args for character codes
+  String asStr = r.ReadAll ();  // read that data back as strings
 
   // persist these to file
   using namespace IO::FileSystem;
@@ -158,8 +178,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
               .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
   auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
-  Thread::CleanupPtr clientThread{Thread::CleanupPtr::eDirectlyWait,
-    Thread::New (
+  Thread::Ptr clientThread{Thread::New (
         [&] () {
             ClientContext::Options clientOptions;
             auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
@@ -169,8 +188,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
             writingStream.Close (); // so ReadAll in doReaderSide doesn't block waiting for more data
         },
         Thread::eAutoStart, "client"sv)};
-  Thread::CleanupPtr serverThread{Thread::CleanupPtr::eDirectlyWait,
-    Thread::New (
+  Thread::Ptr serverThread{Thread::New (
         [&] () {
             ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
             auto p = Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions);
