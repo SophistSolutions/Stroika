@@ -155,7 +155,7 @@ String About::APIServerInfo::WebServer::ToString () const
     sb << ", threads: " << fThreadPool.fThreads;
     sb << ", tasksStillQueued: " << fThreadPool.fTasksStillQueued;
     sb << ", averageTaskRunTime: " << fThreadPool.fAverageTaskRunTime;
-    sb << "}"sv;
+    sb << "}}"sv;
     return sb.str ();
 }
 

@@ -1430,7 +1430,6 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 
 #endif
 
-
 /**
  * Test.cpp:953:100: error: reference to local binding 'fromRawSocket' declared in enclosing lambda expression
                                                     auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
@@ -1527,8 +1526,7 @@ Test.cpp:977:118: error: reference to local binding 'pk' declared in enclosing f
 #ifndef qCompilerAndStdLib_nestedLambdaBindings_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_nestedLambdaBindings_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 15)
+#define qCompilerAndStdLib_nestedLambdaBindings_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 15)
 #else
 #define qCompilerAndStdLib_nestedLambdaBindings_Buggy 0
 #endif
