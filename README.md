@@ -2,16 +2,11 @@
 
 Stroika is a modern, portable, C++ application framework. It makes writing C++ applications easier by providing safe, flexible, building blocks, as well as wrappers on other useful libraries that help them to all work together more seemlessly. 
 
-<style>
-details > details > * {
-  margin-left: 2em;
-}
-</style>
-
 <details style="margin-bottom:1em; ">
  <summary>Code snippets / examples</summary>
 
-  <details>
+
+  <details style="margin-left: 1.4em;">
     <summary>String class UNICODE interoperability, more convenient methods</summary>
 
   ~~~c++
@@ -35,7 +30,7 @@ details > details > * {
   </details>
 
 
-  <details>
+  <details style="margin-left: 1.4em;">
   <summary>_f strings, c++20 format, works with stroika types</summary>
 
   ~~~c++
@@ -45,7 +40,8 @@ details > details > * {
   ~~~
   </details>
 
-  <details>
+
+  <details style="margin-left: 1.4em;">
   <summary>Iterable&lt;T> - easy to use functional APIs on all iterables, similar to C# LINQ</summary>
 
 
@@ -85,7 +81,7 @@ details > details > * {
  </details>
 
 
-<details>
+<details style="margin-left: 1.4em;">
   <summary>Containers (are Iterable&lt;something>)</summary>
 
 - COW (copy-on-write) often signifcantly improves performance for most common cases
@@ -124,7 +120,8 @@ details > details > * {
   Stroika provides a rich set of container [archtypes, and data structure implmentations](./Library/Sources/Stroika/Foundation/Containers/ReadMe.md).
   </details>
 
-  <details>
+
+  <details style="margin-left: 1.4em;">
   <summary>Streams vs std::iostream</summary>
   
   - formatting not intrinsic, but uses std::format / _f strings
@@ -148,7 +145,8 @@ details > details > * {
   ~~~
   </details>
 
-  <details>
+
+  <details style="margin-left: 1.4em;">
   <summary>Streams and ObjectVariantMapper</summary>
 
   ~~~c++
@@ -169,9 +167,8 @@ details > details > * {
   See [Serialization Sample](./Samples/Serialization/ReadMe.txt) for more details
   </details>
 
-
   
-  <details>
+  <details style="margin-left: 1.4em;">
   <summary>Streams and networking (SSL)</summary>
 
   ~~~c++
@@ -202,7 +199,7 @@ details > details > * {
   </details>
 
 
-  <details>
+  <details style="margin-left: 1.4em;">
   <summary>Build WebServies into your application</summary>
 
   ~~~c++
