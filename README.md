@@ -6,14 +6,14 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
  <summary>Code snippets / examples</summary>
 
   <details>
-    <summary>String class makes UNICODE easier</summary>
+    <summary>Easier String class UNICODE, more convenient methods</summary>
 
   ~~~c++
   extern void CallFunction (String);
 
   String a = u8"£50";
 
-  // note regardless of which way constructed, 
+  // regardless of which way constructed, 
   // stored internally compactly (in this case 5 bytes for data)
   String b = u32" abc ";
 
@@ -30,7 +30,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
 
 
   <details>
-    <summary>_f strings, c++20 format, works with stroika types, and easier to use</summary>
+  <summary>_f strings, c++20 format, works with stroika types</summary>
 
   ~~~c++
   // most Stroika types automatically support formattable<>
@@ -39,40 +39,41 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   ~~~
   </details>
 
- <details>
- <summary>Iterable - easy to use funcational APIs on all iterables, similar to C# LINQ</summary>
-  
-~~~c++
-// nb: String is an Iterable<Character>, 
-// despite internally representing the characters very differently
-bool IsAllWhitespace (String s) const
-{
-  return not s.Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
-}
+  <details>
+  <summary>Iterable - easy to use functional APIs on all iterables, similar to C# LINQ</summary>
+  Similar to c++20 ranges API, but much easier to use (like C# Linq) - methods of iterable (std::ranges)
+  objects.
 
-Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
-EXPECT_TRUE (c.Distinct ().SetEquals ({ 1, 2, 4, 5, 6, 9 }));
+  ~~~c++
+  // nb: String is an Iterable<Character>, 
+  // despite internally representing the characters very differently
+  bool IsAllWhitespace (String s) const
+  {
+    return not s.Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
+  }
 
-// Map iterates over 'c' and produces the template argument container
-// automatically by appending the result of each lambda application
-Iterable<int> c { 3, 4, 7 };
-EXPECT_EQ (c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), 
-           (vector<String>{"3", "4", "7"}));
+  Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
+  EXPECT_TRUE (c.Distinct ().SetEquals ({ 1, 2, 4, 5, 6, 9 }));
 
-// Use Map<> to transform, select subobjects, and filter, and pipe into algorithms like Median
-DateTime now = DateTime::Now ();
-auto medianDurationOfOpenConnections =
-    connections.Map<Iterable<Duration>> ([&] (const auto& c) { return now - c.fCreatedAt; }).Median ();
-auto medianDurationOfActiveConnections = 
-  connections
-    .Map<Iterable<Duration>> ([&] (const auto& c) -> optional<Duration> {
-        if (c.fActive == false)
-            return nullopt;
-        return now - c.fCreatedAt;
-    })
-    .Median ();
-~~~
+  // Map iterates over 'c' and produces the template argument container
+  // automatically by appending the result of each lambda application
+  Iterable<int> c { 3, 4, 7 };
+  EXPECT_EQ (c.Map<vector<String>> ([] (int i) { return "{}"_f (i); }), 
+            (vector<String>{"3", "4", "7"}));
 
+  // Use Map<> to transform, select subobjects, and filter, and pipe into algorithms like Median
+  DateTime now = DateTime::Now ();
+  auto medianDurationOfOpenConnections =
+      connections.Map<Iterable<Duration>> ([&] (const auto& c) { return now - c.fCreatedAt; }).Median ();
+  auto medianDurationOfActiveConnections = 
+    connections
+      .Map<Iterable<Duration>> ([&] (const auto& c) -> optional<Duration> {
+          if (c.fActive == false)
+              return nullopt;
+          return now - c.fCreatedAt;
+      })
+      .Median ();
+  ~~~
  </details>
 
 
@@ -80,8 +81,8 @@ auto medianDurationOfActiveConnections =
   <summary>Containers (are Iterable&lt;something>)</summary>
 
 - COW (copy-on-write) often signifcantly improves performance for most common cases
-- APIs defined by access pattern, like Stack=Push/Pop, Sequence= array-like access, Map={a->b, b->c,} etc
-- Representational transparency (e.g. Sequence might be implemented as array, or linked list)
+- APIs defined by access pattern, (e.g. Stack s; s.Push(n);s.Pop(); Sequence s; s[3]; Mapping<k,v> m; m.Add(k,v); auto r = m.Lookup(k);) etc
+- Representational transparency (e.g. Sequence might be implemented as array, linked list, or memory mapped file)
   
   ~~~c++
   extern void f(Set<int>);  // define API in terms of ArchType 'Set<int>'
@@ -102,14 +103,34 @@ auto medianDurationOfActiveConnections =
 
   See [Containers Sample](./Samples/Containers/ReadMe.md) for more details;
   Stroika provides a rich set of container [archtypes, and data structure implmentations](./Library/Sources/Stroika/Foundation/Containers/ReadMe.md).
+  </details>
+
+  <details>
+  <summary>Streams vs std::iostream</summary>
   
+  - formatting not intrinsic, but uses std::format / _f strings
+  - simple abstractions so easy to implement your own stream classes (InputStream::IRep\<T>,OutputStream::IRep\<T>)
 
+  ~~~c++
+  MemoryStream::Ptr<byte> tmpStream = MemoryStream::New<byte> ();
+  tmpStream.Write (BLOB{...});  // just write binary data to the stream
+  TextReader::Ptr r = TextReader::New (tmpStream);  // takes optional args for character code interpretation
+  // read that data back as strings
+  String asStr = r.ReadAll ();
 
-</details>
+  // persist these to file
+  using namespace IO::FileSystem;
+  FileOutputStream::Ptr tmpFileStream =
+      FileOutputStream::New (WellKnownLocations::GetTemporary () / "t.txt");
+  tmpFileStream.Write (BLOB{});
+  // or write text
+  TextWriter::New (tmpFileStream/*,optionally specify codepage/conversions*/).Write (asStr);
+  ~~~
+  </details>
 
-<details>
+  <details>
   <summary>Streams and ObjectVariantMapper</summary>
-   
+
   ~~~c++
   MyClass someObject = ...;
   VariantValue v = mapper.FromObject (someObject);   // Map object to a VariantValue
@@ -120,19 +141,50 @@ auto medianDurationOfActiveConnections =
   Variant::JSON::Writer{}.Write (v, tmpStream);
 
   // You can persist these to file if you wish
-  {
-      using namespace IO::FileSystem;
-      FileOutputStream::Ptr tmpFileStream =
-          FileOutputStream::New (WellKnownLocations::GetTemporary () / "t.txt");
-      Variant::JSON::Writer{}.Write (v, tmpFileStream);
-  }
+  using namespace IO::FileSystem;
+  FileOutputStream::Ptr tmpFileStream =
+      FileOutputStream::New (WellKnownLocations::GetTemporary () / "t.txt");
+  Variant::JSON::Writer{}.Write (v, tmpFileStream);
   ~~~
-
   See [Serialization Sample](./Samples/Serialization/ReadMe.txt) for more details
+  </details>
 
-</details>
 
-<details>
+  
+  <details>
+  <summary>Streams and networking (SSL)</summary>
+
+  ~~~c++
+  auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
+              .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+  auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
+  Thread::CleanupPtr clientThread{Thread::CleanupPtr::eDirectlyWait,
+    Thread::New (
+        [&] () {
+            ClientContext::Options clientOptions;
+            auto p = Cryptography::SSL::SocketStream::New (fromRawSocket, clientOptions);
+            auto writingStream = TextWriter::New (p);
+            writingStream.Write ("Hello"sv);
+            writingStream.Flush ();
+            writingStream.Close (); // so ReadAll in doReaderSide doesn't block waiting for more data
+        },
+        Thread::eAutoStart, "client"sv)};
+  Thread::CleanupPtr serverThread{Thread::CleanupPtr::eDirectlyWait,
+    Thread::New (
+        [&] () {
+            ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
+            auto p = Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions);
+            auto readingStream = TextReader::New (p);
+            auto readData      = readingStream.ReadAll (); // waits for writer side to close
+            EXPECT_EQ (readData, "Hello"sv);
+        },
+        Thread::eAutoStart, "server"sv)};
+  Thread::WaitForDone ({clientThread, serverThread});
+  ~~~
+  </details>
+
+
+  <details>
   <summary>Build WebServies into your application</summary>
 
   ~~~c++
@@ -149,27 +201,10 @@ auto medianDurationOfActiveConnections =
       [this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }}},
   ~~~
   See [WebServices sample](Samples/WebService/ReadMe.md) for more details.
-</details>
-
-<details>
-  <summary>Streams abstraction</summary>
-
-  &nbsp;&nbsp;Makes compression, encryption, IO, networking, data processing, all fit together seemlessly:
-
-  ~~~c++
-  // @todo INCOMPLETE - BAD EXAMPLE---
-  const OpenSSL::DerivedKey kDerivedKey =
-       OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};
-  const Memory::BLOB srcText =
-    Memory::BLOB::FromHex ("2d ...");//...
-  // EncodeAES takes a stream, and produces a stream
-  // which can be chained with the gzip Transformer, which takes a stream, and produces a
-  Compression::GZip::Compress::New ().Transform (
-    EncodeAES (kDerivedKey, srcText.As<Streams::InputStream::Ptr<byte>> (), AESOptions::e256_CBC));
-  ~~~
-</details>
+  </details>
 
 </details>
+
 
 Stroika provides a layer on top of the Standard C++ Library, with simpler to use (higher level) classes, more safety checking guarantees (in debug builds), and addressing areas not standardized (such as networking). But those Stroika classes seamlessly integrate with standard C++ classes, and your code can easily use as much of either library as preferences dictate.
 

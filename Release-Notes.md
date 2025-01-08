@@ -10,6 +10,10 @@ especially those they need to be aware of when upgrading.
 
 ### 3.0d14 PRENOTES
 
+
+- Improved Header Documentation, and ReadMe documentation
+
+
 UPGRADE
 
 INCOMPAT CHANGE - INPUT_STREAM::
@@ -44,12 +48,6 @@ Date:   Mon Jan 6 22:28:49 2025 -0500
 
     qCompilerAndStdLib_nestedLambdaBindings_Buggy new bug define and BWA for clang++15
 
-commit 7ec519a40a0d065233f3a859253797d7704af566
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 15:35:18 2025 -0500
-
-    cosmetic
-
 commit 81856bc376ee668d9243ed8d10aa69babdae1cd5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 6 15:24:21 2025 -0500
@@ -68,23 +66,11 @@ Date:   Mon Jan 6 14:44:42 2025 -0500
 
     Added SSL_accept/SSL_connect calls so now initial SSLStream regtests pass
 
-commit 8cb7fd200563d8995870723fef226c676c917b76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 14:44:00 2025 -0500
-
-    cosmetic
-
 commit ae7b69dcb9eb7541a4684320ddb446f15e0d5a5a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 6 14:43:33 2025 -0500
 
     OpenSSL ThrowLastError marked noreturn
-
-commit add3ce56808c2c812bbe7e5d006dba2b64523840
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 11:16:00 2025 -0500
-
-    fixed back checkin
 
 commit b1c3f7ff11c3427d55838548190efa46cb10a5f2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -122,41 +108,11 @@ Date:   Mon Jan 6 08:44:04 2025 -0500
 
     fixed bugs with openwrite/closedwrite/openread/closedread logic in TextWriter
 
-commit 6191a978e172eb5ec065d195c60a5d8bb9fc595b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 08:43:27 2025 -0500
-
-    docs
-
-commit f248db12b75aa9d3888e53133ee5dd150f0f0e80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 08:43:11 2025 -0500
-
-    docs
-
-commit a57a4a7b4f944534cb02a4d979af7017dbc77ec7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 08:42:49 2025 -0500
-
-    cosmetic
-
-commit 46f58651389556afcca434ff803d88c464dd72b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 08:42:32 2025 -0500
-
-    docs
-
 commit f0d62b866920ae632c1470e6ce054ba8b743b53d
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 5 21:02:14 2025 -0500
 
     progress on BasicSSLStream regtest
-
-commit 17af01643b552c0dc3b896bdf098733c1568043d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 21:01:30 2025 -0500
-
-    mostly cosemtic
 
 commit c6fb4d29ed0c29cde2c48ea720711e335135a4d1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -188,35 +144,11 @@ Date:   Sun Jan 5 19:47:15 2025 -0500
 
     Small cleanups to mkLowLevelSocketPair_BackCompat_
 
-commit 099764a3032c3d0b9fa705d218e2b681a01bd54a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 19:31:03 2025 -0500
-
-    Cosmetic
-
 commit dfd9caf0782ddf0ca33cb730a4447086a0f665f2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 5 19:27:12 2025 -0500
 
     MAYBE fixed _Protected::mkLowLevelSocketPair_() so handles errno == EOPNOTSUPP and does (now common) mkLowLevelSocketPair_BackCompat_ algorithm
-
-commit f6bb72ae981fc37b29b6d21fa15485279dd82710
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 14:23:18 2025 -0500
-
-    cosmetic
-
-commit 613290bb706aac9a6ee9cc8b3480e7d0e9d779a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 14:23:03 2025 -0500
-
-    mostly cosmetic
-
-commit d7bec38dd6515c26a381822ee906749c6ea18409
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 14:22:30 2025 -0500
-
-    docs
 
 commit d0c2c421eff1c6ec97f008e9f5bbb903d9e706bc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -254,23 +186,11 @@ Date:   Sun Jan 5 12:30:21 2025 -0500
 
     use new ConnectionOrientedStreamSocket::NewPair instead of explicit ConnectionOrientedMasterSocket::New ... in WaitForIOReady (really sb effectively no change on windoze, but switch to socketpair from explicit gorp in setup - probably no real difference once really running - I hope
 
-commit 6dc027ed12d729bcaaf7c0f869c0042ec5a40257
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 12:29:09 2025 -0500
-
-    Cosmetic
-
 commit c4c736e2be105e2dd326d8273403ca642b8c97b7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 5 12:28:23 2025 -0500
 
     new ConnectionOrientedStreamSocket::NewPair () - so far unused - socketpair
-
-commit 6ab9e26240b3f5dbcd8dc53ed77cc6f63ff6aae2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 12:27:45 2025 -0500
-
-    Cosmetic
 
 commit 688493b7da28f19897414f19d048db93bf48a9ae
 Author: Lewis Pringle <lewis@sophists.com>
@@ -289,12 +209,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 5 11:54:28 2025 -0500
 
     Comments/cosmetics on networing socketaddress code
-
-commit c3c5607879a65875324f9514422a0b9d45a1dd34
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 11:53:58 2025 -0500
-
-    Cosmetic
 
 commit 003991bd293ac9b302defd8b2bf5d88910875cda
 Author: Lewis Pringle <lewis@sophists.com>
@@ -326,35 +240,17 @@ Date:   Sat Jan 4 19:49:53 2025 -0500
 
     minor tweaks to ProcessRunner, including adding named constant kStackBufReadAtATimeSize_ and set to 4K instead of 10K in hopes of maybe addressing spoardic weird issue on macos
 
-commit 93aa50cdb863c872c95bb5880144b2658c3438d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 19:43:44 2025 -0500
-
-    Cosmetic
-
 commit dafd90639c11b836af26d55632ae4b1b6080b009
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 4 17:56:20 2025 -0500
 
     cleanups to recent Cryptography OpenSSL code changes
 
-commit 9ed70dec30c237ee1dec26165982377a17b381ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 14:15:26 2025 -0500
-
-    cosmetic
-
 commit 2dd6a582522171279c10bd1da49ff90adc074af8
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 4 17:53:55 2025 -0500
 
     pretty print name for SIGTRAP signal
-
-commit 33fee9e27684aedd6ec77c300d982ab08e1225cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 12:22:48 2025 -0500
-
-    cosmetic
 
 commit fcdba929108f2b301d2a6e5b8a16cabcae0791ab
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -403,12 +299,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jan 3 20:08:51 2025 -0500
 
     Refactor (not backward compatible) - OpenSSL code down to Cryptography::Providers::OpenSSL; related regtest cleanups; related docs and code cleanups
-
-commit 3429aa96f9d39e400e922962c4806fdcd9b09785
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 3 08:48:17 2025 -0500
-
-    cosmetic
 
 commit 65dc05277e3345c871c85d4de4da0b0da4b4b5b2
 Author: Lewis Pringle <lewis@sophists.com>
@@ -470,12 +360,6 @@ Date:   Wed Jan 1 18:17:05 2025 -0500
 
     Fixed missing file
 
-commit 4ea7bcd59525dfb008412ff394e58584c64366e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 17:28:12 2025 -0500
-
-    cosmetic
-
 commit 1d94b04627f06da45c46cac27e34fd2f9770b8ba
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 1 17:26:35 2025 -0500
@@ -487,12 +371,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 1 16:25:09 2025 -0500
 
     SSL progress: PEMFile object, construct PrivateKey/Cert from PEMFile, Client/Server Context objects now use key/cert objects fully, and StreamObject now uses contexts properly - all untested - just todo read/wrtie to stream and then testing/debugging
-
-commit 48b781dfc1f33f2c2df33596a824c817dc66d449
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 13:31:06 2025 -0500
-
-    cosmetic
 
 commit 267062d0469308f7dd00244b6dd6edbe2d7dd1a9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -524,12 +402,6 @@ Date:   Tue Dec 31 16:51:51 2024 -0500
 
     Cosmetic SocketStream cleanups
 
-commit f1f5ca8ca83087143b4487fa966da061d274555f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 16:39:33 2024 -0500
-
-    docs
-
 commit fb3fdeb5f6107e1e21e73715058ec440631b36f8
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 31 16:33:15 2024 -0500
@@ -541,12 +413,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 31 16:19:45 2024 -0500
 
     cleanup some deprecated usages
-
-commit fb2ce4a86a5c797b561c0fb4deb283b4db119fde
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 14:05:04 2024 -0500
-
-    Cosmetic
 
 commit c78fcf7af749a839690359fd03501c61503c5000
 Author: Lewis Pringle <lewis@sophists.com>
@@ -560,29 +426,11 @@ Date:   Tue Dec 31 13:33:07 2024 -0500
 
     String Literal _k and FromStringConstant code now fully work with ALL kinds of IUNICODECanUnambiguouslyConvertFrom characters (though not all cases optimized); and improved regtests to reflect this; and these no longer both with the NUL-termination requirement (was obsoleted a while back); and a few related cleanups/fixes
 
-commit df2a7b2680b1a782dcd9828be4ebd89d971a606b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 11:23:25 2024 -0500
-
-    cosmetic
-
 commit a4b4bbbb15da7b45c08aad6fe5e907217a15b6c1
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Tue Dec 31 11:38:33 2024 -0500
 
     bogus ODR warning BWA for GCC 12 and earlier
-
-commit ae06a5acd8a4d09c54012deac6b410106f41adf7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 10:20:47 2024 -0500
-
-    cosmetic
-
-commit 4203deeba5aa5509da0ce8ac40a2db4fb9f53dca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 10:09:23 2024 -0500
-
-    Comments
 
 commit c18a1d928b9acdbfc198433bb083ad1769e6b5de
 Author: Lewis Pringle <lewis@sophists.com>
@@ -608,12 +456,6 @@ Date:   Mon Dec 30 21:15:17 2024 -0500
 
     fixed Ranges::impls (traits) for DurationSeconds etc
 
-commit 7c69be785d7d0b6f39d44bc52e0d596afa662586
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 17:31:48 2024 -0500
-
-    cosmetic
-
 commit 05f3788da012bdb0dbaa55292db45cc56c5d658c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 30 15:38:51 2024 -0500
@@ -625,18 +467,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 30 15:03:23 2024 -0500
 
     fixed missing traits on Traversal::RangeTraits specializations for DurationSeconds, TimePointSeconds, and chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>
-
-commit 2731de2fde03ae61e458b5abb0dc2c97e8484ad8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 14:47:09 2024 -0500
-
-    cosmetic
-
-commit 01800d19aec129e44e3c86c38e61b9e0003ab715
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 14:46:21 2024 -0500
-
-    Cosmetic
 
 commit 0207a32f03eae94daedfafb5886f9578a91e3a90
 Author: Lewis Pringle <lewis@sophists.com>
@@ -655,54 +485,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 30 09:35:46 2024 -0500
 
     more HMTLUI sample improvemnts (showing helathcehck results)
-
-commit 89b871aee467d64e6b4422132b4bbd7d5b0d972d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 09:35:01 2024 -0500
-
-    mostly cosmetic
-
-commit e9db974c16aae18564053f1d813e7ad4da09bfe1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 09:34:41 2024 -0500
-
-    cosmetic
-
-commit 6c77ad748a8ffbc63892dbad79611a6754c61f71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 09:34:09 2024 -0500
-
-    mostly cosmetic
-
-commit 2d90fe5d5d8f80b342a7477c1343872e7d3c09f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 09:33:34 2024 -0500
-
-    fixed name typo
-
-commit fbae72fe8427c06a5918e93b766e8b6d18a0e55d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 08:56:30 2024 -0500
-
-    cosmetic
-
-commit 1b5fe791ccc295129178489b67d7483a365bf4cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 08:56:02 2024 -0500
-
-    cosmetic
-
-commit 69658812b137d67befabb532ab42329879c3f58c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 08:55:45 2024 -0500
-
-    cosmetic
-
-commit 5f997fe8005cd68b1834fb0cfb06cc460a1cefe2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 08:55:31 2024 -0500
-
-    cosmetic
 
 commit 2b66ec8319269884e1ac2f72ec9f218f78d08dba
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -740,12 +522,6 @@ Date:   Sun Dec 29 21:34:39 2024 -0500
 
     small fixes to ComputeCommonStatistics
 
-commit 8ec55a18b9f73f32de6e80a1e9d1f5b5a11c8e67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 16:40:44 2024 -0500
-
-    mostly cosmetic
-
 commit 3ef8e40d48da1f1c100ba48c131b4560fd52373a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 29 13:38:41 2024 -0500
@@ -757,12 +533,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 29 13:15:48 2024 -0500
 
     HTMLUI sample - slight restructure of how to talk to WSImpl::WithWebServerCallbackType; and capture way more stats now - and report more in about from ConnectionManager
-
-commit 40ae7f88098722ced848b6630dade91799aebedc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 13:02:35 2024 -0500
-
-    docs
 
 commit f27ce0799d1d21ebb800296fe1b9e895c714837f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -788,12 +558,6 @@ Date:   Sun Dec 29 09:50:21 2024 -0500
 
     not totally backward compatable change to WebServer::ConnectionManager: lose activeConnections property; rename a few things in statistics produced, and mostly greatly enhance it to include useful connection stats; and updated docs and samples accordingly (mostly); and draft healthCheck endpoint on some samples
 
-commit b71c218c20426c2bace3eb819331a7324f103830
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 09:48:33 2024 -0500
-
-    cosmetic
-
 commit 3e21f6354e5b20d6dccbc3528c6455118bb4ac94
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 29 09:48:04 2024 -0500
@@ -817,18 +581,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 28 19:02:14 2024 -0500
 
     DateTime::Format() and Format(eCurrentLocale_WithZerosStripped) fixes, and regression tests; and many other fixes to regtest for datetime code
-
-commit c30a00871dfb33424fc61efb645b4c8468e2dd63
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 17:27:36 2024 -0500
-
-    Cosmetic
-
-commit 23fee6dbd7c6efa25394912c11faf91a55d5f453
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 17:08:18 2024 -0500
-
-    Cosmetic
 
 commit 92ff049ead2f7bd9d795999d646a5de2290f1308
 Author: Lewis Pringle <lewis@sophists.com>
@@ -878,35 +630,17 @@ Date:   Sat Dec 28 08:30:54 2024 -0500
 
     early draft of Connection::Stats and Connection::stats() property, along with (slightly incompatable) change to ConnectionManager: connections and activeConnections now return Collection of Connection::Stats instead of shared_ptr<Connection>
 
-commit 6ea5fdf536aeb8519b7a785404c014e7f22c8903
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 07:36:53 2024 -0500
-
-    cosmetic
-
 commit 73c5588c8fd7653efaa50e9ebebc1c0b0aa5ad8b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Dec 28 07:28:51 2024 -0500
 
     Mostly cosmetic cleanups to WebServer Connection code - using const for data members, and restructured ReadAndProcessMessage () - mostly compatibly
 
-commit d99ed760e87dccbd95f49edcc4ed7c70e7b11ac8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 07:00:09 2024 -0500
-
-    cosmetic
-
 commit cb729de3e3fb3b98997463be7465bf52742e4558
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 27 19:57:34 2024 -0500
 
     Minor tweaks to WebServer sample
-
-commit d74beae3177c5b708fe835b5693230bb11939aa7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 19:57:25 2024 -0500
-
-    Comments
 
 commit 1e6758bc53c8b78eb599998795d0d7cf4723102f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -974,12 +708,6 @@ Date:   Fri Dec 27 15:07:43 2024 -0500
 
     BufferedInputStream minor fix and cleanups
 
-commit 4353aea38c9e514ae1554439a2218f18d0869d60
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 11:27:48 2024 -0500
-
-    fixed typo
-
 commit e4be86629abff657f93a6d6108fdcc46195b7e4f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 27 11:07:12 2024 -0500
@@ -1028,24 +756,6 @@ Date:   Wed Dec 25 22:28:51 2024 -0500
 
     StreamReader<>: tweaks to const methods on Peek(),and overload of FillCacheWith_; and added new untested RemainingLength/AvailableToRead methods to bettter mimic InputStream API
 
-commit 0b1e333e937f1438951863debab1875b083f8f07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 22:01:43 2024 -0500
-
-    comments
-
-commit 410855991c78a6ad32f846815990bc0f33993951
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 22:01:16 2024 -0500
-
-    Comments
-
-commit d2cdcddac532c8d7733842e4a0f816d30bc778a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 20:21:46 2024 -0500
-
-    Minor
-
 commit a040058858faddeccb9f17fe34dc46b119055017
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 25 19:06:59 2024 -0500
@@ -1076,12 +786,6 @@ Date:   Wed Dec 25 08:47:58 2024 -0500
 
     Minor cleanups to InlineBuffer (comments and use of CopySpanData)
 
-commit ddbfa1ba3b6650533f0bab4cba6e360250697ac6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 08:22:30 2024 -0500
-
-    comment
-
 commit b1dddf20ec33302ff1ef3cb0aea9307547c42157
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 25 08:08:41 2024 -0500
@@ -1106,12 +810,6 @@ Date:   Wed Dec 25 07:31:51 2024 -0500
 
     use Memory::eUninitializedIfTrivial in Streams Copy cleanup (and other cleanups)
 
-commit 31fba1e8675f2d75d482fab9df2e1ce005f3259b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 07:30:27 2024 -0500
-
-    cosmetic
-
 commit fe817ba52951a6022ac17b65db5ecde380232a4b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 24 19:18:06 2024 -0500
@@ -1124,47 +822,11 @@ Date:   Tue Dec 24 17:59:35 2024 -0500
 
     fixed accidentally missing (unimportant) BufferedOutputStream::PTr Get/SetBufferSize methods
 
-commit 2af5975fd7bea7084b8d2c5b1f83223f64ba38fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 24 17:57:20 2024 -0500
-
-    cosmetic
-
-commit 762d1a4159a3efddebf1a92a4cc6ebe3cd660e2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 18:09:15 2024 -0500
-
-    cosmetic
-
-commit 4b03fa79d3c038ee9f731061c389e5539fffd123
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 17:51:09 2024 -0500
-
-    fixed typo
-
-commit a650c036f0a5ef0a9ece2cb003bee1f192e88d73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 17:13:44 2024 -0500
-
-    Minor and fixed typo
-
-commit 2f44b54f30222d51c3da8128c73d0880b24e9245
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 16:15:43 2024 -0500
-
-    COmments
-
 commit 8871b9e0289871b2794ea72887bad5ce8dada759
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 23 16:15:23 2024 -0500
 
     Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
-
-commit 5719bb68e9ac6f7fcbb41ddcfeec1ab67238b618
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 14:11:46 2024 -0500
-
-    cosmetic
 
 commit 4c228037f657d06819d458a0c39f7cf5ced84bb3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1175,12 +837,6 @@ Date:   Mon Dec 23 14:08:47 2024 -0500
 commit 4bf6a4617c6a16f7f104258cc908097f5e9a700f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 23 14:05:30 2024 -0500
-
-commit b9d9b6cbe5325142dc3d9e04a43f0aa455c7c203
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 20 16:08:41 2024 -0500
-
-    readme
 
 commit 3eaca78ae31254d67e2e8f1d5ccbadae0ae2cdd4
 Author: Lewis Pringle <lewis@sophists.com>
