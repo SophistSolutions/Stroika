@@ -51,11 +51,11 @@ namespace {
      *  get the best web-server performance.
      */
     const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
-        Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_{
-            {RegularExpression{".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
+        Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings{
+            {RegularExpression{".*\\.gif", eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
         return FileSystemRequestHandler::Options{.fURLPrefix2Strip       = "/Files/"_k,
                                                  .fDefaultIndexFileNames = Sequence<String>{"index.html"_k},
-                                                 .fCacheControlSettings  = cacheControlSettings_};
+                                                 .fCacheControlSettings  = cacheControlSettings};
     }};
 
     /**

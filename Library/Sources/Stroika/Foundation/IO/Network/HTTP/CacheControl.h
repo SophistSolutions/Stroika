@@ -83,7 +83,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<Cacheability> fCacheability;
 
         /**
-         *  The number of seconds a resource is considered fresh (**very common**)
+         *  The number of seconds a resource is considered fresh (**very commonly used**)
          *  \note req fMaxAge <= kMaximumAgeValue
          */
         optional<uint32_t> fMaxAge;

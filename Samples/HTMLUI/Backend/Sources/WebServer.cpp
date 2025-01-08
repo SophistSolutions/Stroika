@@ -62,10 +62,8 @@ namespace {
 namespace {
     const ConstantProperty<FileSystemRequestHandler::Options> kStaticSiteHandlerOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_{
-            pair<RegularExpression, CacheControl>{RegularExpression{".*[0-9a-fA-F]+\\.(js|css|js\\.map)"sv, CompareOptions::eCaseInsensitive},
-                                                  CacheControl::kImmutable},
-            pair<RegularExpression, CacheControl>{RegularExpression::kAny,
-                                                  CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{24h}.As<int32_t> ()}},
+            {RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)"sv, eCaseInsensitive}, CacheControl::kImmutable},
+            {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{24h}.As<int32_t> ()}},
         };
         return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<String>{"index.html"_k},
                                                  .fCacheControlSettings  = kFSCacheControlSettings_};
@@ -255,7 +253,6 @@ const WebServiceMethodDescription WebServer::Rep_::kAbout_{
     },
     Sequence<String>{"Fetch the component versions, web server connections, thread pool etc, etc."sv},
 };
-
 const WebServiceMethodDescription WebServer::Rep_::kConnections_{
     "api/connections"sv,
     Set<String>{HTTP::Methods::kGet},
@@ -266,7 +263,6 @@ const WebServiceMethodDescription WebServer::Rep_::kConnections_{
     },
     Sequence<String>{"Fetch the webservers connections list."sv},
 };
-
 const WebServiceMethodDescription WebServer::Rep_::kHeathCheck_{
     "api/healthcheck"sv,
     Set<String>{HTTP::Methods::kGet},
