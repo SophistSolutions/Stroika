@@ -67,14 +67,14 @@ namespace {
                 if (not label.empty ()) {
                     da.fRawHeaders.Add (label, value);
                 }
-                constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+                constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
                 if (kLabelComparer_ (label, "ST"sv) == 0) {
                     da.fTarget = value;
                 }
             }
 
             bool matches          = false;
-            auto targetEqComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+            auto targetEqComparer = String::EqualsComparer{eCaseInsensitive};
             if (targetEqComparer (da.fTarget, kTarget_UPNPRootDevice)) {
                 matches = true;
             }

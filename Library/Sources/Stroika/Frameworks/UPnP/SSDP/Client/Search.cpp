@@ -181,16 +181,16 @@ public:
                 if (optional<size_t> n = line.Find (':')) {
                     String label = line.SubString (0, *n);
                     String value = line.SubString (*n + 1).Trim ();
-                    if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "Location"sv) == 0) {
+                    if (String::ThreeWayComparer{eCaseInsensitive}(label, "Location"sv) == 0) {
                         d.fLocation = IO::Network::URI{value};
                     }
-                    else if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "ST"sv) == 0) {
+                    else if (String::ThreeWayComparer{eCaseInsensitive}(label, "ST"sv) == 0) {
                         d.fTarget = value;
                     }
-                    else if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "USN"sv) == 0) {
+                    else if (String::ThreeWayComparer{eCaseInsensitive}(label, "USN"sv) == 0) {
                         d.fUSN = value;
                     }
-                    else if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "Server"sv) == 0) {
+                    else if (String::ThreeWayComparer{eCaseInsensitive}(label, "Server"sv) == 0) {
                         d.fServer = value;
                     }
                 }

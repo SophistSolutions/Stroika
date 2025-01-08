@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Execution;
  */
 bool Impl_en::AppliesToThisLocale (const locale& l) const
 {
-    return String::FromNarrowSDKString (locale{}.name ()).StartsWith (String::FromNarrowSDKString (l.name ()), CompareOptions::eCaseInsensitive);
+    return String::FromNarrowSDKString (locale{}.name ()).StartsWith (String::FromNarrowSDKString (l.name ()), eCaseInsensitive);
     //return l.name ().find ("en") == 0;
 }
 

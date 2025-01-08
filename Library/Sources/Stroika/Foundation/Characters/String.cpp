@@ -805,14 +805,14 @@ String String::RemoveAt (size_t from, size_t to) const
 String String::RemoveFirstIf (Character c) const
 {
     String tmp = {*this};
-    if (auto o = tmp.Find (c, CompareOptions::eWithCase)) {
+    if (auto o = tmp.Find (c, eWithCase)) {
         return tmp.RemoveAt (*o);
     }
     return tmp;
 }
 String String::RemoveFirstIf (const String& subString) const
 {
-    if (auto o = this->Find (subString, CompareOptions::eWithCase)) {
+    if (auto o = this->Find (subString, eWithCase)) {
         return this->SubString (0, *o) + this->SubString (*o + subString.length ());
     }
     return *this;
@@ -823,7 +823,7 @@ String String::RemoveAll (Character c) const
     // @todo REIMPL WITH STRINGBUILDER
     // quick and dirty inefficient implementation
     String tmp = {*this};
-    while (auto o = tmp.Find (c, CompareOptions::eWithCase)) {
+    while (auto o = tmp.Find (c, eWithCase)) {
         tmp = tmp.RemoveAt (*o);
     }
     return tmp;
@@ -833,7 +833,7 @@ String String::RemoveAll (const String& subString) const
     // @todo REIMPL WITH STRINGBUILDER
     // quick and dirty inefficient implementation
     String tmp = {*this};
-    while (auto o = tmp.Find (subString, CompareOptions::eWithCase)) {
+    while (auto o = tmp.Find (subString, eWithCase)) {
         tmp = tmp.SubString (0, *o) + tmp.SubString (*o + subString.length ());
     }
     return tmp;
@@ -846,7 +846,7 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
     if (pds.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
         if (c.IsASCII ()) {
             span<const char> examineSpan = pds.fAscii.subspan (startAt);
-            if (co == CompareOptions::eWithCase) {
+            if (co == eWithCase) {
                 if (auto i = std::find (examineSpan.begin (), examineSpan.end (), c.GetAsciiCode ()); i != examineSpan.end ()) {
                     return i - examineSpan.begin () + startAt;
                 }
@@ -877,7 +877,7 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
     Require (startAt <= charSpan.size ());
     span<const Character> examineSpan = charSpan.subspan (startAt);
     switch (co) {
-        case CompareOptions::eCaseInsensitive: {
+        case eCaseInsensitive: {
             Character lcc = c.ToLowerCase ();
             for (auto i = examineSpan.begin (); i != examineSpan.end (); ++i) {
                 if (i->ToLowerCase () == lcc) {
@@ -885,7 +885,7 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
                 }
             }
         } break;
-        case CompareOptions::eWithCase: {
+        case eWithCase: {
             if (auto i = std::find (examineSpan.begin (), examineSpan.end (), c); i != examineSpan.end ()) {
                 return startAt + i - examineSpan.begin ();
             }
@@ -910,7 +910,7 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
 
     size_t limit = accessor._ConstGetRep ().size () - subStrLen;
     switch (co) {
-        case CompareOptions::eCaseInsensitive: {
+        case eCaseInsensitive: {
             for (size_t i = startAt; i <= limit; ++i) {
                 for (size_t j = 0; j < subStrLen; ++j) {
                     if (accessor._ConstGetRep ().GetAt (i + j).ToLowerCase () != subString[j].ToLowerCase ()) {
@@ -921,7 +921,7 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
             nogood1:;
             }
         } break;
-        case CompareOptions::eWithCase: {
+        case eWithCase: {
             for (size_t i = startAt; i <= limit; ++i) {
                 for (size_t j = 0; j < subStrLen; ++j) {
                     if (accessor._ConstGetRep ().GetAt (i + j) != subString[j]) {

@@ -142,7 +142,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         if (not label.empty ()) {
             advertisement->fRawHeaders.Add (label, value);
         }
-        constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+        constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
         if (kLabelComparer_ (label, "Location"sv) == 0) {
             advertisement->fLocation = IO::Network::URI{value};
         }
@@ -156,7 +156,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
             advertisement->fServer = value;
         }
         else if (kLabelComparer_ (label, "NTS"sv) == 0) {
-            constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+            constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
             if (kValueComparer_ (value, "ssdp:alive"sv) == 0) {
                 advertisement->fAlive = true;
             }

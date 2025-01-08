@@ -1020,11 +1020,11 @@ namespace Stroika::Foundation::Characters {
     }
     inline size_t String::find (Character c, size_t startAt) const
     {
-        return Find (c, startAt, CompareOptions::eWithCase).value_or (npos);
+        return Find (c, startAt, eWithCase).value_or (npos);
     }
     inline size_t String::find (const String& s, size_t startAt) const
     {
-        return Find (s, startAt, CompareOptions::eWithCase).value_or (npos);
+        return Find (s, startAt, eWithCase).value_or (npos);
     }
     inline size_t String::rfind (Character c) const
     {
@@ -1121,7 +1121,7 @@ namespace Stroika::Foundation::Characters {
         if constexpr (same_as<remove_cvref_t<LT>, String> and same_as<remove_cvref_t<RT>, String>) {
             if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
                 if (auto rhsAsciiSpan = rhs.template PeekData<ASCII> ()) {
-                    if (fCompareOptions == CompareOptions::eWithCase) {
+                    if (fCompareOptions == eWithCase) {
                         if (lhsAsciiSpan->size () != rhsAsciiSpan->size ()) {
                             return false;
                         }
@@ -1138,7 +1138,7 @@ namespace Stroika::Foundation::Characters {
             if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
                 auto rhsAsciiSpan = span<const ASCII>{rhs};
                 Require (Character::IsASCII (rhsAsciiSpan)); // in debug builds double check sv only used on ASCII strings with Stroika string library
-                if (fCompareOptions == CompareOptions::eWithCase) {
+                if (fCompareOptions == eWithCase) {
                     if (lhsAsciiSpan->size () != rhsAsciiSpan.size ()) {
                         return false;
                     }

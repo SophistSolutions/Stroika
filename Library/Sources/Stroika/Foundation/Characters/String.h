@@ -631,14 +631,14 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see Match
          */
-        nonvirtual bool Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual bool Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual bool Contains (Character c, CompareOptions co = eWithCase) const;
+        nonvirtual bool Contains (const String& subString, CompareOptions co = eWithCase) const;
 
     public:
         /**
          * 
          */
-        nonvirtual bool ContainsAny (Iterable<Character> cs, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual bool ContainsAny (Iterable<Character> cs, CompareOptions co = eWithCase) const;
 
     public:
         /**
@@ -653,8 +653,8 @@ namespace Stroika::Foundation::Characters {
          *  @see Match
          *  @see EndsWith
          */
-        nonvirtual bool StartsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual bool StartsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual bool StartsWith (const Character& c, CompareOptions co = eWithCase) const;
+        nonvirtual bool StartsWith (const String& subString, CompareOptions co = eWithCase) const;
 
     public:
         /**
@@ -669,8 +669,8 @@ namespace Stroika::Foundation::Characters {
          *  @see Match
          *  @see StartsWith
          */
-        nonvirtual bool EndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual bool EndsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual bool EndsWith (const Character& c, CompareOptions co = eWithCase) const;
+        nonvirtual bool EndsWith (const String& subString, CompareOptions co = eWithCase) const;
 
     public:
         /**
@@ -678,7 +678,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note this is to specific-purpose to be a very sensible API, but I find it pretty often pretty useful. So what-the-heck.
          */
-        nonvirtual String AssureEndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual String AssureEndsWith (const Character& c, CompareOptions co = eWithCase) const;
 
     public:
         /**
@@ -770,10 +770,10 @@ namespace Stroika::Foundation::Characters {
          *  @see FindEachString ()
          *  @see Tokenize
          */
-        nonvirtual optional<size_t> Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual optional<size_t> Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual optional<size_t> Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-        nonvirtual optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual optional<size_t> Find (Character c, CompareOptions co = eWithCase) const;
+        nonvirtual optional<size_t> Find (Character c, size_t startAt, CompareOptions co = eWithCase) const;
+        nonvirtual optional<size_t> Find (const String& subString, CompareOptions co = eWithCase) const;
+        nonvirtual optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = eWithCase) const;
         nonvirtual optional<pair<size_t, size_t>> Find (const RegularExpression& regEx, size_t startAt = 0) const;
         nonvirtual Traversal::Iterator<Character> Find (const function<bool (Character item)>& that) const;
 
@@ -801,7 +801,7 @@ namespace Stroika::Foundation::Characters {
          *  @see Matches ()
          */
         nonvirtual vector<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
-        nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = eWithCase) const;
 
     public:
         /**
@@ -885,7 +885,7 @@ namespace Stroika::Foundation::Characters {
          *  \note ReplaceAll could have been called 'SafeString' or 'FilteredString' (was at one point - replaces that functionality)
          */
         nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with) const;
-        nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+        nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = eWithCase) const;
         nonvirtual String ReplaceAll (const function<bool (Character)>& replaceCharP, const String& with) const;
         nonvirtual String ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const;
 
@@ -1802,7 +1802,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  optional CompareOptions to CTOR allows for case insensitive compares
          */
-        constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
+        constexpr ThreeWayComparer (CompareOptions co = eWithCase);
 
         /**
          * Extra overloads a slight performance improvement
@@ -1823,7 +1823,7 @@ namespace Stroika::Foundation::Characters {
      *  \brief very similar to ThreeWayComparer but returns true if less
      */
     struct String::LessComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
-        constexpr LessComparer (CompareOptions co = CompareOptions::eWithCase);
+        constexpr LessComparer (CompareOptions co = eWithCase);
 
         template <typename T1, typename T2>
         nonvirtual bool operator() (T1 lhs, T2 rhs) const;

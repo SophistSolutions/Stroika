@@ -534,11 +534,11 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T, size_t E1, size_t E2>
     constexpr strong_ordering Character::Compare (span<const CHAR_T, E1> lhs, span<const CHAR_T, E2> rhs, CompareOptions co) noexcept
     {
-        Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
+        Require (co == eWithCase or co == eCaseInsensitive);
         switch (co) {
-            case CompareOptions::eWithCase:
+            case eWithCase:
                 return Private_::Compare_CS_ (lhs, rhs);
-            case CompareOptions::eCaseInsensitive:
+            case eCaseInsensitive:
                 return Private_::Compare_CI_ (lhs, rhs);
             default:
                 AssertNotReached ();

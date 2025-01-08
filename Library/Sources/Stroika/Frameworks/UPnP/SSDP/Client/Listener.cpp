@@ -137,7 +137,7 @@ public:
                 if (not label.empty ()) {
                     d.fRawHeaders.Add (label, value);
                 }
-                constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+                constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
                 if (kLabelComparer_ (label, "Location"sv) == 0) {
                     try {
                         d.fLocation = IO::Network::URI{value};
@@ -159,7 +159,7 @@ public:
                     d.fServer = value;
                 }
                 else if (kLabelComparer_ (label, "NTS"sv) == 0) {
-                    constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
+                    constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::eCaseInsensitive};
                     if (kValueComparer_ (value, "ssdp:alive"sv) == 0) {
                         d.fAlive = true;
                     }

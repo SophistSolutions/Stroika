@@ -51,10 +51,10 @@ string Charset::AsNarrowSDKString () const
 
 strong_ordering Charset::operator<=> (const Charset& rhs) const
 {
-    return String ::ThreeWayComparer{CompareOptions::eCaseInsensitive}(fRep_->fValue, rhs.fRep_->fValue);
+    return String ::ThreeWayComparer{eCaseInsensitive}(fRep_->fValue, rhs.fRep_->fValue);
 }
 
 bool Charset::operator== (const Charset& rhs) const
 {
-    return String::EqualsComparer{CompareOptions::eCaseInsensitive}(fRep_->fValue, rhs.fRep_->fValue);
+    return String::EqualsComparer{eCaseInsensitive}(fRep_->fValue, rhs.fRep_->fValue);
 }
