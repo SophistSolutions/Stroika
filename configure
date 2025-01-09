@@ -3221,7 +3221,7 @@ if ($onlyGenerateIfCompilerExists) {
 	if ($generate && $ubuntuVersion != 0) {
 		# needed for example of HOST OS is Ubuntu 24.04 (not necessarily OS in container)
 		if(IsTargettingSanitizer_ ('thread')) {
-			my $randBits = `sudo cat /proc/sys/vm/mmap_rnd_bits < /dev/null`;
+			my $randBits = `sudo -S cat /proc/sys/vm/mmap_rnd_bits < /dev/null`;
 			if ($randBits eq '') {
 				$generate = false;
 				$generateBecause = "Cannot read mmap_rnd_bits and https://stackoverflow.com/questions/77850769/fatal-threadsanitizer-unexpected-memory-mapping-when-running-on-linux-kernels";
