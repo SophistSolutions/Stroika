@@ -188,7 +188,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
         [&] () {
             ServerContext::Options serverOptions{.fCertificate = make_tuple (pk, cert)};
             auto p = Cryptography::SSL::SocketStream::New (toRawSocket, serverOptions);
-            auto readData  = TextReader::New (p).ReadAll (); // ReadAll () waits for writer side to close
+            auto readData  = TextReader::New (p).ReadAll (); // waits for writer side to close
             EXPECT_EQ (readData, "Hello"sv);
         },
         Thread::eAutoStart, "server"sv)};
