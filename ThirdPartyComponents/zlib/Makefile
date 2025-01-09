@@ -148,7 +148,9 @@ endif
 
 
 check-prerequisite-tools:
-	@#nothing
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Xerces ${VERSION} - Checking Prerequisite tools ... "
+	@{ type cmake > /dev/null 2>&1; } || { $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool cmake && exit 1; }
+	@$(ECHO) "done";
 
 
 check:
