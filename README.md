@@ -173,7 +173,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
 
   ~~~c++
   auto [pk, cert] = Certificate::New (Certificate::SelfSignedCertParams{
-        .fSubject = {.fCountry = "US"sv, .fOrganization = "MyCompany Inc."sv, .fCommonName = "localhost"sv}});
+        .fSubject = {.fCountry = "US"sv, .fOrganization = "ACME Inc"sv, .fCommonName = "localhost"sv}});
   auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
   Thread::Ptr clientThread{Thread::New (
         [&] () {
