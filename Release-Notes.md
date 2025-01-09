@@ -474,12 +474,6 @@ Date:   Mon Dec 30 11:24:11 2024 -0500
 
     HTMLUI sample app - added debuging/testing connections WSAPI
 
-commit 929e5811b24c58f7d71895f1345e156ae25048e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 09:36:06 2024 -0500
-
-    mostly cosmetic
-
 commit 4801a45c8cd82ed513cc5d61fda5d280c5076c57
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 30 09:35:46 2024 -0500

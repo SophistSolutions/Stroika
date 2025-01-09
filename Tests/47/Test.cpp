@@ -610,7 +610,7 @@ namespace {
         Debug::TraceContextBumper ctx{"InlineBufferZeroPreDefined_"};
         InlineBuffer<int, 0>      x{};
         x.push_back (3);
-        EXPECT_EQ (x.size (), 1);
+        EXPECT_EQ (x.size (), 1u);
     }
 }
 #endif

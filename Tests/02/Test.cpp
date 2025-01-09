@@ -567,7 +567,7 @@ namespace {
             EXPECT_EQ (s.size (), 3u);
             EXPECT_EQ (s, "fre");
             s += "x";
-            EXPECT_EQ (s.size (), 4);
+            EXPECT_EQ (s.size (), 4u);
             EXPECT_EQ (s[3], 'x');
             EXPECT_EQ (s, "frex");
             s.InsertAt ('x', 2);

@@ -214,7 +214,7 @@ namespace {
         {
             Require (IsOpenWrite ());
             int r = ::SSL_write (fSSLConnection_.get (), elts.data (), static_cast<int> (elts.size ()));
-            if (r != elts.size ()) {
+            if (r != static_cast<int> (elts.size ())) {
                 // https://linux.die.net/man/3/ssl_write appears to indicate anything other than full write success is an error
                 // and probably unrecoverable (unlike socket writes which can write incompletely).
                 OpenSSL::Exception::ThrowLastError ();
