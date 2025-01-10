@@ -114,12 +114,6 @@ Date:   Sun Jan 5 21:02:14 2025 -0500
 
     progress on BasicSSLStream regtest
 
-commit c6fb4d29ed0c29cde2c48ea720711e335135a4d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 21:01:13 2025 -0500
-
-    default params to NewPair
-
 commit 9d958d408b49b0448769cad89204b99d98ab2763
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 5 20:34:28 2025 -0500
@@ -324,12 +318,6 @@ Date:   Thu Jan 2 21:17:32 2025 -0500
 
     lots more progress on Certificate code - reading back data and passing in params to MakeSelfSignedCert;
 
-commit 5cf3897a1f716b389f71153dd87c013f0381fcad
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jan 2 19:05:08 2025 -0500
-
-    fix minor linking issue
-
 commit b74f6126fceecb235533d914e1e9bca7afd0947c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 2 13:36:10 2025 -0500
@@ -353,12 +341,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 1 19:27:31 2025 -0500
 
     SSL - new Certificate::NewSelfSigned () api
-
-commit d7e86b9007b84c22e638511fae8fd6de5996611a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 18:17:05 2025 -0500
-
-    Fixed missing file
 
 commit 1d94b04627f06da45c46cac27e34fd2f9770b8ba
 Author: Lewis Pringle <lewis@sophists.com>
@@ -407,12 +389,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 31 16:33:15 2024 -0500
 
     NOTPARALLEL in lzma makefile to hopefully address rare build error
-
-commit 701615c65fdfe094b5b3019d915a3d4e6960c672
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 16:19:45 2024 -0500
-
-    cleanup some deprecated usages
 
 commit c78fcf7af749a839690359fd03501c61503c5000
 Author: Lewis Pringle <lewis@sophists.com>
@@ -510,12 +486,6 @@ Date:   Sun Dec 29 21:35:00 2024 -0500
 
     ToString (const Math::CommonStatistics<T>& t)
 
-commit 6c7c28429799af51ee08fe8c8e8af1fa5e7595e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 21:34:39 2024 -0500
-
-    small fixes to ComputeCommonStatistics
-
 commit 3ef8e40d48da1f1c100ba48c131b4560fd52373a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 29 13:38:41 2024 -0500
@@ -539,12 +509,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 29 13:00:51 2024 -0500
 
     Added Range::ReplaceStart, and Range::ReplaceEnd() methods
-
-commit 1aaf2f02ad7bd00858b46130d1add6f7a4cbfac7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 09:52:18 2024 -0500
-
-    hopefully silence warning
 
 commit aea68f48c975353653b30a02374d98faeb68f9f8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -582,29 +546,11 @@ Date:   Sat Dec 28 16:17:56 2024 -0500
 
     Allow TimeOfDay{hr,mi} CTOR - default seconds to 0
 
-commit 9ca27d57e91b9187c7b4e9252a98c277ce8a7b3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 16:04:45 2024 -0500
-
-    cosmetic
-
 commit 627f10e97bc240c22bf3ec946df3e418dd4278ef
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Sat Dec 28 17:13:16 2024 -0500
 
     tmphack workaround for lack of std::atomic support for std::optional and std::time_point
-
-commit b9ff75fc91de11a49adf34a05aec2b4148118684
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Dec 28 17:12:38 2024 -0500
-
-    react to deprecation
-
-commit 34357e139adb023336246e8a32efebadd2ef0b8e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 16:02:06 2024 -0500
-
-    New String::NormalizeSpace () utility
 
 commit 19c61a154ac8d1372181df9ae2642a94d16f2ec6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -654,12 +600,6 @@ Date:   Fri Dec 27 18:42:28 2024 -0500
 
     ToString support: shared_ptr and unique_ptr tostrings print using *t if known how, else print address, and added regtests for this and a bunch of related ToString cases/tests
 
-commit a3450d378a66aaf89d05958698a41acf9b136cda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 18:24:21 2024 -0500
-
-    fixed docs
-
 commit 77b700ae42565a079847ce4421d690aac8805ca7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 27 17:37:28 2024 -0500
@@ -707,12 +647,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Dec 27 11:07:12 2024 -0500
 
     finsihed (draft - not well tested) BufferedInputStream - good enuf for now
-
-commit 856c4890cad5eb130a694183fdbcc6eddf24d42d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 09:01:00 2024 -0500
-
-    fix typo in recent changes
 
 commit 74d4036ee2223bd3605caa19ecf2a484dd6436e9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -768,76 +702,34 @@ Date:   Wed Dec 25 17:32:32 2024 -0500
 
     regtest Foundation_Memory_, InlineBufferZeroPreDefined_; and various regtest cleanups; and fixed Memory/InlineBuffer to support BUF_SIZE=0
 
-commit 4c0895a62d5224070caa6777abee6ed9087ef725
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 17:02:16 2024 -0500
-
-    added require/assertion
-
-commit 1c9b9eab76b1f7a3a8f6dea415f8bf21018a43a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 08:47:58 2024 -0500
-
-    Minor cleanups to InlineBuffer (comments and use of CopySpanData)
-
-commit b1dddf20ec33302ff1ef3cb0aea9307547c42157
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 08:08:41 2024 -0500
-
-    Mark CopyOverlapingBytes as noexcept
-
-commit 3f6ac3d78415e05b6e1b39d8934e51ed5602a591
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 08:07:22 2024 -0500
-
-    Mark CopyBytes as noexcept
-
-commit e464f2d5b2fde9c0ebe364aeaf9b69a7ddd82f64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 08:06:59 2024 -0500
-
-    new InlineBuffer::insert/Insert methods
-
-commit 71c39b0b744293b4e3948f692046a4123f513dbd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 07:31:51 2024 -0500
-
-    use Memory::eUninitializedIfTrivial in Streams Copy cleanup (and other cleanups)
-
-commit fe817ba52951a6022ac17b65db5ecde380232a4b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 24 19:18:06 2024 -0500
-
-    new UninitializedConstructorFlag::eUninitializedIfTrivial and used in InlineBuffer CTOR
-
-commit 03bd77e068ff2e2d8986fd5e9f188b0c9875818f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 24 17:59:35 2024 -0500
-
-    fixed accidentally missing (unimportant) BufferedOutputStream::PTr Get/SetBufferSize methods
-
-commit 8871b9e0289871b2794ea72887bad5ce8dada759
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 16:15:23 2024 -0500
-
-    Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
-
-commit 4c228037f657d06819d458a0c39f7cf5ced84bb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 14:08:47 2024 -0500
-
-    new NestedException
-
-commit 4bf6a4617c6a16f7f104258cc908097f5e9a700f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 23 14:05:30 2024 -0500
-
-commit 3eaca78ae31254d67e2e8f1d5ccbadae0ae2cdd4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 20 15:47:36 2024 -0500
-
-    start 3.0d14x; and more tweaks to docs
 #endif
+
+- Foundation
+  - Characters
+    - String
+      -  New String::NormalizeSpace () method
+  - Execution
+    - Exceptions
+      - new NestedException
+    - ProcessRunner
+      - Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
+  - Memory
+    - Common
+        Mark CopyOverlapingBytes, CopyBytes as noexcept
+    - InlineBuffer
+      - new UninitializedConstructorFlag::eUninitializedIfTrivial and used in InlineBuffer CTOR
+      - new InlineBuffer::insert/Insert methods
+      - cleanups to InlineBuffer (comments and use of CopySpanData)
+
+  - Streams
+    - Copy
+      - various cleanups
+
+
+
+
+
+
 
 
 ### 3.0d13 {2024-12-20} {[diff](../../compare/3.0d12...3.0d13)}
