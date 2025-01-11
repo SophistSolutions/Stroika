@@ -36,12 +36,6 @@ Date:   Tue Jan 7 13:52:47 2025 -0500
 
     changed one assert to WeakAssert with logging - cuz saw error in WTF - in the Windows Logger/LogEvent code
 
-commit 2a560f2e90b677e9bcbcd642ea911cec8b03ece4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 6 22:36:08 2025 -0500
-
-    no third-party-components builds fixes
-
 commit 0eeda778671316e8a0ff1721e74c649dba4bc006
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Jan 6 22:28:49 2025 -0500
@@ -378,18 +372,6 @@ Date:   Tue Dec 31 23:30:27 2024 -0500
 
     draft of Cryptography/OpenSSL/SocketStream Cryptography/SSL/SocketStream
 
-commit 788f400f6fcf7b39ea3876345eedeae55fce00bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 16:51:51 2024 -0500
-
-    Cosmetic SocketStream cleanups
-
-commit fb3fdeb5f6107e1e21e73715058ec440631b36f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 16:33:15 2024 -0500
-
-    NOTPARALLEL in lzma makefile to hopefully address rare build error
-
 commit c78fcf7af749a839690359fd03501c61503c5000
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 31 13:59:25 2024 -0500
@@ -570,149 +552,41 @@ Date:   Sat Dec 28 08:30:54 2024 -0500
 
     early draft of Connection::Stats and Connection::stats() property, along with (slightly incompatable) change to ConnectionManager: connections and activeConnections now return Collection of Connection::Stats instead of shared_ptr<Connection>
 
-commit 73c5588c8fd7653efaa50e9ebebc1c0b0aa5ad8b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 07:28:51 2024 -0500
-
-    Mostly cosmetic cleanups to WebServer Connection code - using const for data members, and restructured ReadAndProcessMessage () - mostly compatibly
-
-commit cb729de3e3fb3b98997463be7465bf52742e4558
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 19:57:34 2024 -0500
-
-    Minor tweaks to WebServer sample
-
-commit 1e6758bc53c8b78eb599998795d0d7cf4723102f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 19:32:47 2024 -0500
-
-    InternetMediaTypeRegistry::GetAssociatedFileSuffixes () - returns suffix (also) built into the ct itself
-
-commit 304b8e18c93f3f82a76dc2eed9c3a54b023e18e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 19:03:54 2024 -0500
-
-    minor namespace cleanups - Whence enums pushed into enclosing (Streams) namespace and a few related cleanups
-
-commit 76460306da4d4ba20f77f62be9df26186751515e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 18:42:28 2024 -0500
-
-    ToString support: shared_ptr and unique_ptr tostrings print using *t if known how, else print address, and added regtests for this and a bunch of related ToString cases/tests
-
-commit 77b700ae42565a079847ce4421d690aac8805ca7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 17:37:28 2024 -0500
-
-    MakeVersionViaAwkPipe regtest cleanups - and fixed reporting and documented issue with awk under cygwin
-
-commit a4299aa000d0a2d55a19fd7d701f7f98d970d953
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 16:54:35 2024 -0500
-
-    ReplaceAllRegExp_ regtests
-
-commit ca6af83c0cdd2a8fd88529d01d444edf792b0fca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 16:53:34 2024 -0500
-
-    fixed use of RegExp in ProcessRunner (based on recent examples/regtests)
-
-commit 7fe102f1d97cf8f1ae01d3338ef0763035a6c88d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 16:51:43 2024 -0500
-
-    String {}.ReplaceAlL(RegExp) examples
-
-commit 05c1da382b44f35c129fe7aaf52ef8aeba5a279b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 16:50:54 2024 -0500
-
-    RegularExpression docs/examples
-
-commit 22e895f0a2565645d1b3829fb3f1c482fe925491
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 16:05:29 2024 -0500
-
-    deprecated (reversed some params) for RegularExpression CTOR; and improved docs on regular expression syntaxes (pointers to where to find details of that syntax); and fixed example :blank: to be eBasic syntax
-
-commit 7eea9d9ef44fd5bcbce9398091d23e09a8a9e4cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 15:07:43 2024 -0500
-
-    BufferedInputStream minor fix and cleanups
-
-commit e4be86629abff657f93a6d6108fdcc46195b7e4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 27 11:07:12 2024 -0500
-
-    finsihed (draft - not well tested) BufferedInputStream - good enuf for now
-
-commit 74d4036ee2223bd3605caa19ecf2a484dd6436e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 26 22:39:14 2024 -0500
-
-    deprecated InputStream::ReadCharacter
-
-commit f703d548d69ea0b0dd16d9dc840173d0717c12eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 26 22:13:35 2024 -0500
-
-    More qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA
-
-commit 7543af5be726ed59b50c38fd69923dd7b1f9326e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 26 22:04:31 2024 -0500
-
-    BufferedInputStream draft implementation, for a few cases
-
-commit 2ec4db73ac85ba84e707dc9e7b320db93acb410e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 26 21:30:46 2024 -0500
-
-    InputStream::Ptr - new methods ReadBlocking, ReadNonBlocking, and incompatible change to Read() overloads and several deprecations
-
-commit 89597e1c5414ac37cf8b6ec0d0aae0d25befce82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 26 10:48:48 2024 -0500
-
-    StreamReader use more span-style code
-
-commit 8ec9b9d75a6c1e984daaf66d7f52298bec34547a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 22:28:51 2024 -0500
-
-    StreamReader<>: tweaks to const methods on Peek(),and overload of FillCacheWith_; and added new untested RemainingLength/AvailableToRead methods to bettter mimic InputStream API
-
-commit a040058858faddeccb9f17fe34dc46b119055017
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 19:06:59 2024 -0500
-
-    FileInputStream kBufferFlag_DEFAULT = eUnbuffered now
-
-commit 2141975b1e363c55d98c4f7a36313fb0e4c3b4c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 18:39:04 2024 -0500
-
-    Streams/BufferedOutputStream - support argument bufferSize - and templated INLINE_BUF_SIZE using InlineBuffer; and related cleanups
-
-commit 0b08fbffe2c750291d6930f732c993910a5ce349
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 25 17:32:32 2024 -0500
-
-    regtest Foundation_Memory_, InlineBufferZeroPreDefined_; and various regtest cleanups; and fixed Memory/InlineBuffer to support BUF_SIZE=0
 
 #endif
 
+
+- COMPILER BUG DEFINES
+ -     More qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA
+
 - Foundation
+  - MANY PLACES
+    -  minor namespace cleanups - enums names pushed into enclosing (Streams) namespace and a few related cleanups (using xxx:yyy instead of constexpr xxx yyy = xxx:yyy;)
+
   - Characters
+    - RegularExpression
+      - docs/examples
+      - deprecated (reversed some params) for RegularExpression CTOR; 
+        and improved docs on regular expression syntaxes (pointers to where to find details of that syntax); and fixed example :blank: to be eBasic syntax
     - String
-      -  New String::NormalizeSpace () method
+      - New String::NormalizeSpace () method
+      - String {}.ReplaceAlL(RegExp) examples and regtests
+    - ToString
+      - ToString support: shared_ptr and unique_ptr tostrings print using *t if known how, else print address, and added regtests for this and a bunch of related ToString cases/tests
+  - DataExchange
+    - InternetMediaTypeRegistry::GetAssociatedFileSuffixes () - returns suffix (also) built into the ct itself
   - Execution
     - Exceptions
       - new NestedException
     - ProcessRunner
       - Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
+      - fixed use of RegExp in ProcessRunner (based on recent examples/regtests)
+      - MakeVersionViaAwkPipe regtest cleanups - and fixed reporting and documented issue with awk under cygwin
+
+  - IO
+    - Filesystem
+      - FileInputStream
+        - kBufferFlag_DEFAULT = eUnbuffered now (because StreamReader works better for buffering)
   - Memory
     - Common
         Mark CopyOverlapingBytes, CopyBytes as noexcept
@@ -720,12 +594,32 @@ Date:   Wed Dec 25 17:32:32 2024 -0500
       - new UninitializedConstructorFlag::eUninitializedIfTrivial and used in InlineBuffer CTOR
       - new InlineBuffer::insert/Insert methods
       - cleanups to InlineBuffer (comments and use of CopySpanData)
+      - regression tests
 
   - Streams
+    - BufferedInputStream
+      - First actually buffering implementation
+    - BufferedOutputStream
+      - support argument bufferSize - and templated INLINE_BUF_SIZE using InlineBuffer; and related cleanups
     - Copy
       - various cleanups
+    - InputStream
+      - InputStream::Ptr - new methods ReadBlocking, ReadNonBlocking, and incompatible change to Read() overloads and several deprecations
+      - deprecated InputStream::ReadCharacter
+    - StreamReader
+      - tweaks to const methods on Peek(), and overload of FillCacheWith_
+      - and added new untested RemainingLength/AvailableToRead methods to bettter mimic InputStream API
+      - StreamReader use more span-style code
 
 
+- Frameworks
+  - WebServer
+    - Mostly cosmetic cleanups to WebServer Connection code - using const for data members, and restructured ReadAndProcessMessage () - mostly compatibly
+
+
+- Samples
+  - WebServer
+    - Minor tweaks
 
 
 
