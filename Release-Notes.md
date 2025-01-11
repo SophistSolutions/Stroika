@@ -377,183 +377,11 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 31 13:59:25 2024 -0500
 
     Minor cleanup to HTTP Status utilities (and use)
-
-commit 5652eb60778816954c6de41b739e10c04353e65e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 13:33:07 2024 -0500
-
-    String Literal _k and FromStringConstant code now fully work with ALL kinds of IUNICODECanUnambiguouslyConvertFrom characters (though not all cases optimized); and improved regtests to reflect this; and these no longer both with the NUL-termination requirement (was obsoleted a while back); and a few related cleanups/fixes
-
-commit a4b4bbbb15da7b45c08aad6fe5e907217a15b6c1
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 31 11:38:33 2024 -0500
-
-    bogus ODR warning BWA for GCC 12 and earlier
-
-commit c18a1d928b9acdbfc198433bb083ad1769e6b5de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 09:44:16 2024 -0500
-
-    fixed slight issue with sentinal/atomic issue on Frameworks/WebServer/Connection
-
-commit f5d29c92cdd87b6078baf04658f844a5279a2294
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 21:27:44 2024 -0500
-
-    tweak names in HTMLUI sample
-
-commit c0208ca7f1d838f0e1355986ad54b46599cb486f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 21:20:15 2024 -0500
-
-    WebServer::Connection - use TimePointSeconds instead of DateTime - for precision; and use CommonStatistics<T> and in HTMLUI sample (including HTML)
-
-commit 57e97ffb9c664138de7851053db5adf773a16664
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 21:15:17 2024 -0500
-
-    fixed Ranges::impls (traits) for DurationSeconds etc
-
-commit 05f3788da012bdb0dbaa55292db45cc56c5d658c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 15:38:51 2024 -0500
-
-    experiment using StackBuffer in place of vector
-
-commit 139f3dae227395f4f01678ae64732f8077cde91f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 15:03:23 2024 -0500
-
-    fixed missing traits on Traversal::RangeTraits specializations for DurationSeconds, TimePointSeconds, and chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>
-
-commit 0207a32f03eae94daedfafb5886f9578a91e3a90
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 11:24:11 2024 -0500
-
-    HTMLUI sample app - added debuging/testing connections WSAPI
-
-commit 4801a45c8cd82ed513cc5d61fda5d280c5076c57
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 30 09:35:46 2024 -0500
-
-    more HMTLUI sample improvemnts (showing helathcehck results)
-
-commit 2b66ec8319269884e1ac2f72ec9f218f78d08dba
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Dec 30 08:53:55 2024 -0500
-
-    Minor cleanups - to Connection code (webserver) - mostly DbgTrace
-
-commit a5eb1382a0312aa1dcb9f8400a2195ef2a9f6937
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Dec 30 08:53:25 2024 -0500
-
-    lose ConnectionManager forward declaration and apparently unneeded friend (caused some trouble on old gcc)
-
-commit 3d6422c4fc45ca62c32db13a6b4bcb1201a719c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 23:46:42 2024 -0500
-
-    ConnectionManager and HTMLUI sample uses CommonStatistics<Duration> for a bunch of measurements/stats
-
-commit 974bddf595cb14ce916586e2cb881d33d960dbfa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 22:48:39 2024 -0500
-
-    ObjectVariantMapper CommonSerializer support for Math::CommonStatistics<>
-
-commit a7da9049a9a1374eb41d1102065f1575a460e768
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 21:35:00 2024 -0500
-
-    ToString (const Math::CommonStatistics<T>& t)
-
-commit 3ef8e40d48da1f1c100ba48c131b4560fd52373a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 13:38:41 2024 -0500
-
-    new Math::ComputeCommonStatistics
-
-commit a62d9d5b618296ee63a41bcaee421ce18238608d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 13:15:48 2024 -0500
-
-    HTMLUI sample - slight restructure of how to talk to WSImpl::WithWebServerCallbackType; and capture way more stats now - and report more in about from ConnectionManager
-
-commit f27ce0799d1d21ebb800296fe1b9e895c714837f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 13:01:49 2024 -0500
-
-    Minor code cleanups using new Ranges::ReplaceEnd utility and other docs (WebServer)
-
-commit 91713bd4dde238f2d9b71ae7222484d3635088a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 13:00:51 2024 -0500
-
-    Added Range::ReplaceStart, and Range::ReplaceEnd() methods
-
-commit aea68f48c975353653b30a02374d98faeb68f9f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 09:50:21 2024 -0500
-
-    not totally backward compatable change to WebServer::ConnectionManager: lose activeConnections property; rename a few things in statistics produced, and mostly greatly enhance it to include useful connection stats; and updated docs and samples accordingly (mostly); and draft healthCheck endpoint on some samples
-
-commit 3e21f6354e5b20d6dccbc3528c6455118bb4ac94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 29 09:48:04 2024 -0500
-
-    more ITERABLE LINQ readme docs
-
-commit 55f36d0de9f4bfdf7aaae7b9591fee04fd28b816
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 19:49:45 2024 -0500
-
-    Range::ToString()... with lb=kLowerBound or ub == kUpperBound shown as '' in ... range display - so appears more open-ended, and other Range print cleanups
-
-commit 693a105f8ac60e5ce63df77f8396ff2aab6157b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 19:02:46 2024 -0500
-
-    cleanup recent Connection atomic/BWA code
-
-commit 66d8972b2b85602ed441170d119ebf6395049d4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 19:02:14 2024 -0500
-
-    DateTime::Format() and Format(eCurrentLocale_WithZerosStripped) fixes, and regression tests; and many other fixes to regtest for datetime code
-
-commit 92ff049ead2f7bd9d795999d646a5de2290f1308
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 16:17:56 2024 -0500
-
-    Allow TimeOfDay{hr,mi} CTOR - default seconds to 0
-
-commit 627f10e97bc240c22bf3ec946df3e418dd4278ef
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Dec 28 17:13:16 2024 -0500
-
-    tmphack workaround for lack of std::atomic support for std::optional and std::time_point
-
-commit 19c61a154ac8d1372181df9ae2642a94d16f2ec6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 14:26:13 2024 -0500
-
-    Improved support for WebServer::Connection::Stats collection
-
-commit a2e9692a86278795ef84d5f6cc69852c9a763c63
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 10:35:29 2024 -0500
-
-    more progress on webervice Stats facility - print some beginning almost useful data; added /stats endpoint to WebServer example and used Containers::KeyedCollection for stats returned
-
-commit 29be5766ca3ae7ee024388c3118c86e0e61a911b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 28 08:30:54 2024 -0500
-
-    early draft of Connection::Stats and Connection::stats() property, along with (slightly incompatable) change to ConnectionManager: connections and activeConnections now return Collection of Connection::Stats instead of shared_ptr<Connection>
-
-
+    
 #endif
+
+- README
+  -     more ITERABLE LINQ readme docs
 
 
 - COMPILER BUG DEFINES
@@ -571,6 +399,8 @@ Date:   Sat Dec 28 08:30:54 2024 -0500
     - String
       - New String::NormalizeSpace () method
       - String {}.ReplaceAlL(RegExp) examples and regtests
+      - String Literal _k and FromStringConstant code now fully work with ALL kinds of IUNICODECanUnambiguouslyConvertFrom characters (though not all cases optimized); and improved regtests to reflect this; and these no longer both with the NUL-termination requirement (was obsoleted a while back); and a few related cleanups/fixes
+
     - ToString
       - ToString support: shared_ptr and unique_ptr tostrings print using *t if known how, else print address, and added regtests for this and a bunch of related ToString cases/tests
   - DataExchange
@@ -582,11 +412,17 @@ Date:   Sat Dec 28 08:30:54 2024 -0500
       - Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
       - fixed use of RegExp in ProcessRunner (based on recent examples/regtests)
       - MakeVersionViaAwkPipe regtest cleanups - and fixed reporting and documented issue with awk under cygwin
-
   - IO
     - Filesystem
       - FileInputStream
         - kBufferFlag_DEFAULT = eUnbuffered now (because StreamReader works better for buffering)
+    - Networking
+      - InternetAddress
+        - experiment using StackBuffer in place of vector
+
+  - Math
+    - new Math::ComputeCommonStatistics (including ToString support) and  ObjectVariantMapper CommonSerializer support
+
   - Memory
     - Common
         Mark CopyOverlapingBytes, CopyBytes as noexcept
@@ -610,14 +446,32 @@ Date:   Sat Dec 28 08:30:54 2024 -0500
       - tweaks to const methods on Peek(), and overload of FillCacheWith_
       - and added new untested RemainingLength/AvailableToRead methods to bettter mimic InputStream API
       - StreamReader use more span-style code
+    - Time
+      - DateTime
+        - DateTime::Format() and Format(eCurrentLocale_WithZerosStripped) fixes, and regression tests; and many other fixes to regtest for datetime code
+
+      - TimeOfDay
+        - Allow TimeOfDay{hr,mi} CTOR - default seconds to 0
+    - Traversal
+      - Range
+        - Range::ToString()... with lb=kLowerBound or ub == kUpperBound shown as '' in ... range display - so appears more open-ended, and other Range print cleanups
+        - Added Range::ReplaceStart, and Range::ReplaceEnd() methods
+        - fixed missing traits on Traversal::RangeTraits specializations for DurationSeconds, TimePointSeconds, and chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>
 
 
 - Frameworks
   - WebServer
     - Mostly cosmetic cleanups to WebServer Connection code - using const for data members, and restructured ReadAndProcessMessage () - mostly compatibly
-
+    - **new** Connection::Stats and Connection::stats() property, along with (slightly incompatable) change to ConnectionManager: connections and activeConnections now return Collection of Connection::Stats instead of shared_ptr<Connection>
+    - not totally backward compatable change to WebServer::ConnectionManager: lose activeConnections property; rename a few things in statistics produced, and mostly greatly enhance it to include useful connection stats; and updated docs and samples accordingly (mostly); and draft healthCheck endpoint on some samples
+    - WebServer::Connection - use TimePointSeconds instead of DateTime - for precision; and use CommonStatistics<T> and in HTMLUI sample (including HTML)
 
 - Samples
+  - HTMLUI
+    - HTMLUI sample - slight restructure of how to talk to WSImpl::WithWebServerCallbackType; and capture way more stats now - and report more in about from ConnectionManager
+    - ConnectionManager and HTMLUI sample uses CommonStatistics<Duration> for a bunch of measurements/stats
+    - HTMLUI sample app - added debuging/testing connections WSAPI
+    - more HMTLUI sample improvemnts (showing helathcehck results)
   - WebServer
     - Minor tweaks
 
