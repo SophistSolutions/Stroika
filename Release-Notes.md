@@ -102,282 +102,6 @@ Date:   Mon Jan 6 08:44:04 2025 -0500
 
     fixed bugs with openwrite/closedwrite/openread/closedread logic in TextWriter
 
-commit f0d62b866920ae632c1470e6ce054ba8b743b53d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 21:02:14 2025 -0500
-
-    progress on BasicSSLStream regtest
-
-commit 9d958d408b49b0448769cad89204b99d98ab2763
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 20:34:28 2025 -0500
-
-    draft of AF_UNIX support in SocketAddress - but incomplete
-
-commit f5f871a1b4f5c4abd4f95b5a8461f5fe590a5865
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 20:27:57 2025 -0500
-
-    fixed _Protected::mkLowLevelSocketPair_ so should work on UNIX now - testing
-
-commit b39f62bf23960ed1e9e838ab2de90555d2cc5abb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 20:19:36 2025 -0500
-
-    maybe fixed _Protected::mkLowLevelSocketPair_ so works OK on UNIX too
-
-commit 30ee41946e662a61e2ff8de4dc133c2da6bca4f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 19:47:15 2025 -0500
-
-    Small cleanups to mkLowLevelSocketPair_BackCompat_
-
-commit dfd9caf0782ddf0ca33cb730a4447086a0f665f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 19:27:12 2025 -0500
-
-    MAYBE fixed _Protected::mkLowLevelSocketPair_() so handles errno == EOPNOTSUPP and does (now common) mkLowLevelSocketPair_BackCompat_ algorithm
-
-commit d0c2c421eff1c6ec97f008e9f5bbb903d9e706bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 14:11:57 2025 -0500
-
-    progress on ConnectionOrientedStreamSocket::NewPair
-
-commit 178e8ee93b7e6200ac752c3f0cd4bc37843c4ab9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 14:02:04 2025 -0500
-
-    Minor progress on ConnectionOrientedStreamSocket::NewPair
-
-commit fc08f35627707f0bd352a77679eb7c8a28d79e55
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 13:42:33 2025 -0500
-
-    progress on ConnectionOrientedStreamSocket::NewPair - tmphack so API continues to work
-
-commit 6e7056fc17d0badb6c5738c0ea002bd980b6de7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 13:02:16 2025 -0500
-
-    Minor progress on new socketpair code
-
-commit 5e611f85d0f57a7aaf6eecf739cc0e67c63d3562
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 13:01:14 2025 -0500
-
-    revert change to WaitForIOReady - ConnectionOrientedStreamSocket::NewPair () not working right yet
-
-commit 54cc655e65861c4a90be1edc66ad4625cfc3428a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 12:30:21 2025 -0500
-
-    use new ConnectionOrientedStreamSocket::NewPair instead of explicit ConnectionOrientedMasterSocket::New ... in WaitForIOReady (really sb effectively no change on windoze, but switch to socketpair from explicit gorp in setup - probably no real difference once really running - I hope
-
-commit c4c736e2be105e2dd326d8273403ca642b8c97b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 12:28:23 2025 -0500
-
-    new ConnectionOrientedStreamSocket::NewPair () - so far unused - socketpair
-
-commit 688493b7da28f19897414f19d048db93bf48a9ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 12:27:28 2025 -0500
-
-    new Socket::_Protected::mkLowLevelSocketPair_ - so far unused
-
-commit 7360f5dea988520d04d18b6c5ed0a6608f9464e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 12:10:33 2025 -0500
-
-    Added InternetAddress LocalHost (SocketAddress::FamilyType fm) utility
-
-commit a9c43bc3cc0c857ee675218119dbcad5c0ebf8e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 11:54:28 2025 -0500
-
-    Comments/cosmetics on networing socketaddress code
-
-commit 003991bd293ac9b302defd8b2bf5d88910875cda
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 10:37:49 2025 -0500
-
-    updated copyright notice (2025)
-
-commit 1caad8a5ec05f8d29d566155f4a4e3835fae2d11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 5 10:28:04 2025 -0500
-
-    Minor - mostly cosmetic
-
-commit 6ab037636f4f26672ae58234d7001cc4d29a57bf
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Jan 5 10:19:13 2025 -0500
-
-    A few minor cleanups to Process_Runner_POSIX_ (code is a mess); and one memory bug fix! - caused Foundation_Execution_ProcessRunner.MacOS_Mystery_Crasher_
-
-commit 58b85085bd04244fb841c073f9ffacba8b1dddc7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 21:51:44 2025 -0500
-
-    MacOS_Mystery_Crasher_
-
-commit ac8fc9ba62eb2b9b2863a59c5c4c0be16a772545
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 19:49:53 2025 -0500
-
-    minor tweaks to ProcessRunner, including adding named constant kStackBufReadAtATimeSize_ and set to 4K instead of 10K in hopes of maybe addressing spoardic weird issue on macos
-
-commit dafd90639c11b836af26d55632ae4b1b6080b009
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 17:56:20 2025 -0500
-
-    cleanups to recent Cryptography OpenSSL code changes
-
-commit 2dd6a582522171279c10bd1da49ff90adc074af8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 17:53:55 2025 -0500
-
-    pretty print name for SIGTRAP signal
-
-commit fcdba929108f2b301d2a6e5b8a16cabcae0791ab
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Jan 4 12:12:36 2025 -0500
-
-    fixed builds (recent openssl stuff) for no-third-party-compoennts configs
-
-commit 5df5f45015d94dcf3a5ef9209931926dfe108e9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 11:59:54 2025 -0500
-
-    More progress on PEM/OpenSSL code, and error checking with Exception::ThrowLastErrorIfFailed; Fixed downcast Ptr (cert and privatkey) CTORs; implemented constructing PEMFile from list of 'entries'; Other related cleanups; and regression test improvements testing all this new stuff
-
-commit 10f2be0138dbd7e0a834fe64f0c7e586cddad767
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 10:20:53 2025 -0500
-
-    Added regtest for creating self-signed cert with openssl ProcessRunner EXE version and then reading with PEMFile code, and verifying get right answer back(so PEMFile reader working fine)
-
-commit 7dd5dfc409a0474170c9a0ba463e5cdfac6e5fb2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 10:18:17 2025 -0500
-
-    fixed openssl PEMFile reader to handle PrivateKey properly
-
-commit 842d6bbd24cde19adc974d71c9c98ec6257a1a11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 10:17:32 2025 -0500
-
-    Cert/PrivateKey Ptr ToString methods handle nullptr case
-
-commit ab3f220207d3880e723ab3c4da003b57055d3153
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 09:21:45 2025 -0500
-
-    PKI code: added PEMFile::Ptr::GetByType () and docs
-
-commit dc3f7bef594a90106ed71a696b8afc7bd4bd186f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 4 09:18:58 2025 -0500
-
-    Minor tweaks to docs and error reporting in ProcessRunner
-
-commit 2aaa492eca849f76811db9b125f7db4bd04fa98f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 3 20:08:51 2025 -0500
-
-    Refactor (not backward compatible) - OpenSSL code down to Cryptography::Providers::OpenSSL; related regtest cleanups; related docs and code cleanups
-
-commit 65dc05277e3345c871c85d4de4da0b0da4b4b5b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 3 08:42:23 2025 -0500
-
-    Comments and fixed typo
-
-commit 53ca2538b43bbc78a65482bbd7aa609fdfb006df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 3 08:35:58 2025 -0500
-
-    Minor Crypto/PKI cleanups
-
-commit 20a89ee158caf40b2ff87818e7da7e027d526fc4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 3 08:22:00 2025 -0500
-
-    refactored new PKI related Cryto code to be under PKI folder/namespace
-
-commit 8df3521202fdf620640c0df8ff7a33b054508a86
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 2 21:17:32 2025 -0500
-
-    lots more progress on Certificate code - reading back data and passing in params to MakeSelfSignedCert;
-
-commit b74f6126fceecb235533d914e1e9bca7afd0947c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 2 13:36:10 2025 -0500
-
-    Progress on extracting details from cert
-
-commit 2d92e4c531b91a4496b17ed63d4cfb59578a309e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 2 10:05:43 2025 -0500
-
-    Improed PEMFIle support and draft test for self-signed cert
-
-commit 98e177aecdd54e70be51f38534c08f864796c089
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 19:57:59 2025 -0500
-
-    cleanup some use of openssl deprecated apis
-
-commit 32a97cae4707c3e10aaac7b1b355e88c080a8492
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 19:27:31 2025 -0500
-
-    SSL - new Certificate::NewSelfSigned () api
-
-commit 1d94b04627f06da45c46cac27e34fd2f9770b8ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 17:26:35 2025 -0500
-
-    Completed first draft of OpenSSL SocketStream code - ready to write tests
-
-commit ce36360ad9b3d8b6c0182aece9f297c44860fa44
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 16:25:09 2025 -0500
-
-    SSL progress: PEMFile object, construct PrivateKey/Cert from PEMFile, Client/Server Context objects now use key/cert objects fully, and StreamObject now uses contexts properly - all untested - just todo read/wrtie to stream and then testing/debugging
-
-commit 267062d0469308f7dd00244b6dd6edbe2d7dd1a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 13:20:22 2025 -0500
-
-    More progress on SSL support
-
-commit 86fb966a492d09a2826f5e9466ffae75f50e3882
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 11:29:49 2025 -0500
-
-    More progress on SSL Contexts, and Ceritificate objects
-
-commit 183fef398aedc194a092635eb177eb33dec51a9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 1 10:06:08 2025 -0500
-
-    Modest progress on OpenSSL/SSL Client/Server context for SSL
-
-commit 9662c1d0427c75cd2ddf5070b959af1a56eb2ea8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 23:30:27 2024 -0500
-
-    draft of Cryptography/OpenSSL/SocketStream Cryptography/SSL/SocketStream
-
-commit c78fcf7af749a839690359fd03501c61503c5000
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 31 13:59:25 2024 -0500
-
-    Minor cleanup to HTTP Status utilities (and use)
-    
 #endif
 
 - README
@@ -390,6 +114,7 @@ Date:   Tue Dec 31 13:59:25 2024 -0500
 - Foundation
   - MANY PLACES
     -  minor namespace cleanups - enums names pushed into enclosing (Streams) namespace and a few related cleanups (using xxx:yyy instead of constexpr xxx yyy = xxx:yyy;)
+    - updated copyright notice (2025)
 
   - Characters
     - RegularExpression
@@ -403,6 +128,16 @@ Date:   Tue Dec 31 13:59:25 2024 -0500
 
     - ToString
       - ToString support: shared_ptr and unique_ptr tostrings print using *t if known how, else print address, and added regtests for this and a bunch of related ToString cases/tests
+
+  - Cryptography
+    - Refactored OpenSSL specific code (mostly) to Providers/OpenSSL
+    - **new** PKI folder with **new** Certificate, PrivateKey and PEMFile modules
+      - new Certificate::NewSelfSigned () api
+
+    - **new** SSL folder with
+      - working (but still early) version of Cryptography/OpenSSL/SocketStream Cryptography/SSL/SocketStream
+      - working regtest with socketpair, and creating two paired SSL streams and reading and writing
+
   - DataExchange
     - InternetMediaTypeRegistry::GetAssociatedFileSuffixes () - returns suffix (also) built into the ct itself
   - Execution
@@ -412,13 +147,24 @@ Date:   Tue Dec 31 13:59:25 2024 -0500
       - Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
       - fixed use of RegExp in ProcessRunner (based on recent examples/regtests)
       - MakeVersionViaAwkPipe regtest cleanups - and fixed reporting and documented issue with awk under cygwin
+      - Minor tweaks to docs and error reporting in ProcessRunner
+      - regtest MacOS_Mystery_Crasher_; A few minor cleanups to Process_Runner_POSIX_ (code is a mess); and one memory bug fix! - caused Foundation_Execution_ProcessRunner.MacOS_Mystery_Crasher_
+    - WaitForIOReady
+      -  use new ConnectionOrientedStreamSocket::NewPair instead of explicit ConnectionOrientedMasterSocket::New ... in WaitForIOReady (really sb effectively no change on windoze, but switch to socketpair from explicit gorp in setup - probably no real difference once really running - I hope
+
+
   - IO
     - Filesystem
       - FileInputStream
         - kBufferFlag_DEFAULT = eUnbuffered now (because StreamReader works better for buffering)
     - Networking
+      - HTTP
+        -  Minor cleanup to HTTP Status utilities (and use)
       - InternetAddress
         - experiment using StackBuffer in place of vector
+        - Added InternetAddress LocalHost (SocketAddress::FamilyType fm) utility
+      - ConnectionOrientedStreamSocket
+        - new ConnectionOrientedStreamSocket::New (SocketPair{}) - so far unused - socketpair
 
   - Math
     - new Math::ComputeCommonStatistics (including ToString support) and  ObjectVariantMapper CommonSerializer support
