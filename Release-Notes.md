@@ -8,210 +8,121 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d14 PRENOTES
+### 3.0d14 {2025-01-11} {[diff](../../compare/3.0d13...3.0d14)}  DRAFT
 
+#### TLDR
+ - Enhancements to Cryptography code - Providers, PKI, SSL (including basic support for ssl streams)
+
+#### Upgrade Notes (3.0d13 to 3.0d14)
+  - InputStream::Ptr&lt;T>::REad _NOW RETURNS OPTIONAL INSTED OF THROWING - CALL ReadOrThrow to get older behavior
+  - Refactor (not backward compatible) - Cryptography::OpenSSL code down to Cryptography::Providers::OpenSSL
+  - HTMLUI-based samples
+    - git diff 3.0d13...3.0d14 -- Samples/HTMLUI/
+
+#### Change Details
 
 - Improved Header Documentation, and ReadMe documentation
 
-
-UPGRADE
-
-INCOMPAT CHANGE - INPUT_STREAM::
-  REad _NOW RETURNS OPTIONAL INSTED OF THROWING - CALL ReadOrThrow to get older behavior ")]] span<ElementType>
-        Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
-
-
-        Refactor (not backward compatible) - Cryptography::OpenSSL code down to Cryptography::Providers::OpenSSL
-
-
-HTMLUI sample changes - summary
-  https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/commit/5b203432ccec4e2fc049e80a753db5f39d459a99
-  OR
-  git diff 3.0d13...3.0d14 -- Samples/HTMLUI/
-
-  #if 0
-commit 8cdc7d7d85f37961a7f8b8a6f4e538fb5a324206
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 7 13:52:47 2025 -0500
-
-    changed one assert to WeakAssert with logging - cuz saw error in WTF - in the Windows Logger/LogEvent code
-
-commit 0eeda778671316e8a0ff1721e74c649dba4bc006
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 6 22:28:49 2025 -0500
-
-    qCompilerAndStdLib_nestedLambdaBindings_Buggy new bug define and BWA for clang++15
-
-commit 81856bc376ee668d9243ed8d10aa69babdae1cd5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 15:24:21 2025 -0500
-
-    enhanced regtest for openssl Stream test
-
-commit 5830d096a018d809d3a33d72186cb4275beb1182
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 15:23:46 2025 -0500
-
-    Minor cleanups to new SSL SocketStream code (working)
-
-commit 59eb1ee3583b0846cba27964e0a529dfefbcbde8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 14:44:42 2025 -0500
-
-    Added SSL_accept/SSL_connect calls so now initial SSLStream regtests pass
-
-commit ae7b69dcb9eb7541a4684320ddb446f15e0d5a5a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 14:43:33 2025 -0500
-
-    OpenSSL ThrowLastError marked noreturn
-
-commit b1c3f7ff11c3427d55838548190efa46cb10a5f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 11:15:35 2025 -0500
-
-    progress on SSL SocketStream regtest - but still not working
-
-commit 105c6c83dc7b3147aafef7723c4276d87a9f63ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 11:07:34 2025 -0500
-
-    fixed regtest Foundation_IO_Network, SocketStream
-
-commit f63ee1d63b349de2434f3a9d92dc687518cef866
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 11:05:25 2025 -0500
-
-    document and enforce that Socket::Shutdown ignored if socket already closed(/shutdown)
-
-commit b3e63c3c708161a528f5da4888330e3d16368e6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 11:02:55 2025 -0500
-
-    echo debug message - to try and workaround issue with 7z lzma extract makefile issue in third party components - see if it triggers
-
-commit 087bef3066c8252e6be2c3962658c47a1639e4a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 08:44:46 2025 -0500
-
-    new regtest for SocketPair/SocketStream code - Foundation_IO_Network, SocketStream
-
-commit fb2976a4247d06e3c2325c0ff722e2b485f9ee87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 6 08:44:04 2025 -0500
-
-    fixed bugs with openwrite/closedwrite/openread/closedread logic in TextWriter
-
-#endif
-
-- README
-  -     more ITERABLE LINQ readme docs
-
-
 - COMPILER BUG DEFINES
  -     More qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA
-
-- Foundation
-  - MANY PLACES
-    -  minor namespace cleanups - enums names pushed into enclosing (Streams) namespace and a few related cleanups (using xxx:yyy instead of constexpr xxx yyy = xxx:yyy;)
-    - updated copyright notice (2025)
-
-  - Characters
-    - RegularExpression
-      - docs/examples
-      - deprecated (reversed some params) for RegularExpression CTOR; 
-        and improved docs on regular expression syntaxes (pointers to where to find details of that syntax); and fixed example :blank: to be eBasic syntax
-    - String
-      - New String::NormalizeSpace () method
-      - String {}.ReplaceAlL(RegExp) examples and regtests
-      - String Literal _k and FromStringConstant code now fully work with ALL kinds of IUNICODECanUnambiguouslyConvertFrom characters (though not all cases optimized); and improved regtests to reflect this; and these no longer both with the NUL-termination requirement (was obsoleted a while back); and a few related cleanups/fixes
-
-    - ToString
-      - ToString support: shared_ptr and unique_ptr tostrings print using *t if known how, else print address, and added regtests for this and a bunch of related ToString cases/tests
-
-  - Cryptography
-    - Refactored OpenSSL specific code (mostly) to Providers/OpenSSL
-    - **new** PKI folder with **new** Certificate, PrivateKey and PEMFile modules
+-  qCompilerAndStdLib_nestedLambdaBindings_Buggy new bug define and BWA for clang++15
+- Library
+  - Foundation
+    - MANY PLACES
+      -  minor namespace cleanups - enums names pushed into enclosing (Streams) namespace and a few related cleanups (using xxx:yyy instead of constexpr xxx yyy = xxx:yyy;)
+      - updated copyright notice (2025)
+    - Characters
+      - RegularExpression
+        - docs/examples
+        - deprecated (reversed some params) for RegularExpression CTOR; 
+          and improved docs on regular expression syntaxes (pointers to where to find details of that syntax); and fixed example :blank: to be eBasic syntax
+      - String
+        - New String::NormalizeSpace () method
+        - String {}.ReplaceAlL(RegExp) examples and regtests
+        - String Literal _k and FromStringConstant code now fully work with ALL kinds of IUNICODECanUnambiguouslyConvertFrom characters (though not all cases optimized); and improved regtests to reflect this; and these no longer both with the NUL-termination requirement (was obsoleted a while back); and a few related cleanups/fixes
+      - ToString
+        - ToString support: shared_ptr and unique_ptr tostrings print using *t if known how, else print address, and added regtests for this and a bunch of related ToString cases/tests
+    - Cryptography
+      - Refactored OpenSSL specific code (mostly) to Providers/OpenSSL
+        - OpenSSL ThrowLastError marked noreturn
+        - a bunch of new classes for PEMFiles, SSLStreams etc...
+      - **new** PKI folder with **new** Certificate, PrivateKey and PEMFile modules
       - new Certificate::NewSelfSigned () api
+      - **new** SSL folder with
+        - working (but still early) version of Cryptography/OpenSSL/SocketStream Cryptography/SSL/SocketStream
+        - working regtest with socketpair, and creating two paired SSL streams and reading and writing
+    - DataExchange
+      - InternetMediaTypeRegistry::GetAssociatedFileSuffixes () - returns suffix (also) built into the ct itself
+    - Execution
+      - Exceptions
+        - new NestedException
+      - Logger
+        -  changed one assert to WeakAssert with logging - cuz saw error in WTF - in the Windows Logger/LogEvent code
+      - ProcessRunner
+        - Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
+        - fixed use of RegExp in ProcessRunner (based on recent examples/regtests)
+        - MakeVersionViaAwkPipe regtest cleanups - and fixed reporting and documented issue with awk under cygwin
+        - Minor tweaks to docs and error reporting in ProcessRunner
+        - regtest MacOS_Mystery_Crasher_; A few minor cleanups to Process_Runner_POSIX_ (code is a mess); and one memory bug fix! - caused Foundation_Execution_ProcessRunner.MacOS_Mystery_Crasher_
+      - WaitForIOReady
+        -  use new ConnectionOrientedStreamSocket::NewPair instead of explicit ConnectionOrientedMasterSocket::New ... in WaitForIOReady (really sb effectively no change on windoze, but switch to socketpair from explicit gorp in setup - probably no real difference once really running - I hope
+    - IO
+      - Filesystem
+        - FileInputStream
+          - kBufferFlag_DEFAULT = eUnbuffered now (because StreamReader works better for buffering)
+      - Networking
+        - HTTP
+          -  Minor cleanup to HTTP Status utilities (and use)
+        - InternetAddress
+          - experiment using StackBuffer in place of vector
+          - Added InternetAddress LocalHost (SocketAddress::FamilyType fm) utility
+        - ConnectionOrientedStreamSocket
+          - new ConnectionOrientedStreamSocket::New (SocketPair{}) ; and regtests of communications over these socketpairs
+        - Socket
+          - document and enforce that Socket::Shutdown ignored if socket already closed(/shutdown)
+    - Math
+      - new Math::ComputeCommonStatistics (including ToString support) and  ObjectVariantMapper CommonSerializer support
+    - Memory
+      - Common
+          Mark CopyOverlapingBytes, CopyBytes as noexcept
+      - InlineBuffer
+        - new UninitializedConstructorFlag::eUninitializedIfTrivial and used in InlineBuffer CTOR
+        - new InlineBuffer::insert/Insert methods
+        - cleanups to InlineBuffer (comments and use of CopySpanData)
+        - regression tests
+    - Streams
+      - BufferedInputStream
+        - First actually buffering implementation
+      - BufferedOutputStream
+        - support argument bufferSize - and templated INLINE_BUF_SIZE using InlineBuffer; and related cleanups
+      - Copy
+        - various cleanups
+      - InputStream
+        - InputStream::Ptr - new methods ReadBlocking, ReadNonBlocking, and incompatible change to Read() overloads and several deprecations
+        - deprecated InputStream::ReadCharacter
+      - StreamReader
+        - tweaks to const methods on Peek(), and overload of FillCacheWith_
+        - and added new untested RemainingLength/AvailableToRead methods to bettter mimic InputStream API
+        - StreamReader use more span-style code
+      - TextWriter
+        - fixed bugs with openwrite/closedwrite/openread/closedread logic in TextWriter
+      - Time
+        - DateTime
+          - DateTime::Format() and Format(eCurrentLocale_WithZerosStripped) fixes, and regression tests; and many other fixes to regtest for datetime code
 
-    - **new** SSL folder with
-      - working (but still early) version of Cryptography/OpenSSL/SocketStream Cryptography/SSL/SocketStream
-      - working regtest with socketpair, and creating two paired SSL streams and reading and writing
-
-  - DataExchange
-    - InternetMediaTypeRegistry::GetAssociatedFileSuffixes () - returns suffix (also) built into the ct itself
-  - Execution
-    - Exceptions
-      - new NestedException
-    - ProcessRunner
-      - Big cleanup to ProcessRunner::Exception handling - capture - now does much better job capturing stderr and including it in the message, and in a way that it can easily be removed if desired. And changed Run()/0 overload to act like Run(), and so handle embedding stderr messages in exption
-      - fixed use of RegExp in ProcessRunner (based on recent examples/regtests)
-      - MakeVersionViaAwkPipe regtest cleanups - and fixed reporting and documented issue with awk under cygwin
-      - Minor tweaks to docs and error reporting in ProcessRunner
-      - regtest MacOS_Mystery_Crasher_; A few minor cleanups to Process_Runner_POSIX_ (code is a mess); and one memory bug fix! - caused Foundation_Execution_ProcessRunner.MacOS_Mystery_Crasher_
-    - WaitForIOReady
-      -  use new ConnectionOrientedStreamSocket::NewPair instead of explicit ConnectionOrientedMasterSocket::New ... in WaitForIOReady (really sb effectively no change on windoze, but switch to socketpair from explicit gorp in setup - probably no real difference once really running - I hope
-
-
-  - IO
-    - Filesystem
-      - FileInputStream
-        - kBufferFlag_DEFAULT = eUnbuffered now (because StreamReader works better for buffering)
-    - Networking
-      - HTTP
-        -  Minor cleanup to HTTP Status utilities (and use)
-      - InternetAddress
-        - experiment using StackBuffer in place of vector
-        - Added InternetAddress LocalHost (SocketAddress::FamilyType fm) utility
-      - ConnectionOrientedStreamSocket
-        - new ConnectionOrientedStreamSocket::New (SocketPair{}) - so far unused - socketpair
-
-  - Math
-    - new Math::ComputeCommonStatistics (including ToString support) and  ObjectVariantMapper CommonSerializer support
-
-  - Memory
-    - Common
-        Mark CopyOverlapingBytes, CopyBytes as noexcept
-    - InlineBuffer
-      - new UninitializedConstructorFlag::eUninitializedIfTrivial and used in InlineBuffer CTOR
-      - new InlineBuffer::insert/Insert methods
-      - cleanups to InlineBuffer (comments and use of CopySpanData)
-      - regression tests
-
-  - Streams
-    - BufferedInputStream
-      - First actually buffering implementation
-    - BufferedOutputStream
-      - support argument bufferSize - and templated INLINE_BUF_SIZE using InlineBuffer; and related cleanups
-    - Copy
-      - various cleanups
-    - InputStream
-      - InputStream::Ptr - new methods ReadBlocking, ReadNonBlocking, and incompatible change to Read() overloads and several deprecations
-      - deprecated InputStream::ReadCharacter
-    - StreamReader
-      - tweaks to const methods on Peek(), and overload of FillCacheWith_
-      - and added new untested RemainingLength/AvailableToRead methods to bettter mimic InputStream API
-      - StreamReader use more span-style code
-    - Time
-      - DateTime
-        - DateTime::Format() and Format(eCurrentLocale_WithZerosStripped) fixes, and regression tests; and many other fixes to regtest for datetime code
-
-      - TimeOfDay
-        - Allow TimeOfDay{hr,mi} CTOR - default seconds to 0
-    - Traversal
-      - Range
-        - Range::ToString()... with lb=kLowerBound or ub == kUpperBound shown as '' in ... range display - so appears more open-ended, and other Range print cleanups
-        - Added Range::ReplaceStart, and Range::ReplaceEnd() methods
-        - fixed missing traits on Traversal::RangeTraits specializations for DurationSeconds, TimePointSeconds, and chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>
-
-
-- Frameworks
-  - WebServer
-    - Mostly cosmetic cleanups to WebServer Connection code - using const for data members, and restructured ReadAndProcessMessage () - mostly compatibly
-    - **new** Connection::Stats and Connection::stats() property, along with (slightly incompatable) change to ConnectionManager: connections and activeConnections now return Collection of Connection::Stats instead of shared_ptr<Connection>
-    - not totally backward compatable change to WebServer::ConnectionManager: lose activeConnections property; rename a few things in statistics produced, and mostly greatly enhance it to include useful connection stats; and updated docs and samples accordingly (mostly); and draft healthCheck endpoint on some samples
-    - WebServer::Connection - use TimePointSeconds instead of DateTime - for precision; and use CommonStatistics<T> and in HTMLUI sample (including HTML)
-
+        - TimeOfDay
+          - Allow TimeOfDay{hr,mi} CTOR - default seconds to 0
+      - Traversal
+        - Range
+          - Range::ToString()... with lb=kLowerBound or ub == kUpperBound shown as '' in ... range display - so appears more open-ended, and other Range print cleanups
+          - Added Range::ReplaceStart, and Range::ReplaceEnd() methods
+          - fixed missing traits on Traversal::RangeTraits specializations for DurationSeconds, TimePointSeconds, and chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>
+  - Frameworks
+    - WebServer
+      - Mostly cosmetic cleanups to WebServer Connection code - using const for data members, and restructured ReadAndProcessMessage () - mostly compatibly
+      - **new** Connection::Stats and Connection::stats() property, along with (slightly incompatable) change to ConnectionManager: connections and activeConnections now return Collection of Connection::Stats instead of shared_ptr<Connection>
+      - not totally backward compatable change to WebServer::ConnectionManager: lose activeConnections property; rename a few things in statistics produced, and mostly greatly enhance it to include useful connection stats; and updated docs and samples accordingly (mostly); and draft healthCheck endpoint on some samples
+      - WebServer::Connection - use TimePointSeconds instead of DateTime - for precision; and use CommonStatistics<T> and in HTMLUI sample (including HTML)
 - Samples
   - HTMLUI
     - HTMLUI sample - slight restructure of how to talk to WSImpl::WithWebServerCallbackType; and capture way more stats now - and report more in about from ConnectionManager
@@ -220,11 +131,41 @@ Date:   Mon Jan 6 08:44:04 2025 -0500
     - more HMTLUI sample improvemnts (showing helathcehck results)
   - WebServer
     - Minor tweaks
+- ThirdPartyComponents
+  - lzma
+    - echo debug message - to try and workaround issue with 7z lzma extract makefile issue in third party components - see if it triggers
 
+#### Release-Validation
 
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
+  - MSVC: { 17.12.3 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-
-
+---
 
 ### 3.0d13 {2024-12-20} {[diff](../../compare/3.0d12...3.0d13)}
 
