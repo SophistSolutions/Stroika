@@ -7,31 +7,34 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-### 3.0d14 {2025-01-11} {[diff](../../compare/3.0d13...3.0d14)}  DRAFT
+### 3.0d14 {2025-01-11} {[diff](../../compare/3.0d13...3.0d14)}
 
 #### TLDR
  - Enhancements to Cryptography code - Providers, PKI, SSL (including basic support for ssl streams)
+ - Improved Frameworks::WebServer ConnectionManager stats production/reporting (designed to find dead/hung/deadlocked threads/connections)
 
 #### Upgrade Notes (3.0d13 to 3.0d14)
-  - InputStream::Ptr&lt;T>::REad _NOW RETURNS OPTIONAL INSTED OF THROWING - CALL ReadOrThrow to get older behavior
+  - InputStream::Ptr&lt;T>::Read now returns optional instead of throwing; call ReadOrThrow to get old behavior
   - Refactor (not backward compatible) - Cryptography::OpenSSL code down to Cryptography::Providers::OpenSSL
   - HTMLUI-based samples
     - git diff 3.0d13...3.0d14 -- Samples/HTMLUI/
 
 #### Change Details
 
-- Improved Header Documentation, and ReadMe documentation
-
-- COMPILER BUG DEFINES
- -     More qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA
--  qCompilerAndStdLib_nestedLambdaBindings_Buggy new bug define and BWA for clang++15
-- Library
+- Documention
+  - top level README.md
+  - Improved Header Documentation, and ReadMe documentation
+- Stroika Library
+  - Across Library
+    - header include cleanups
+    - minor namespace cleanups - enums names pushed into enclosing (Streams) namespace and a few related cleanups (using xxx:yyy instead of constexpr xxx yyy = xxx:yyy;)
+    - updated copyright notice (2025)
   - Foundation
-    - MANY PLACES
-      -  minor namespace cleanups - enums names pushed into enclosing (Streams) namespace and a few related cleanups (using xxx:yyy instead of constexpr xxx yyy = xxx:yyy;)
-      - updated copyright notice (2025)
-    - Characters
+    - Common
+      - Compiler Bug Defines
+        - More qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA
+        -  qCompilerAndStdLib_nestedLambdaBindings_Buggy new bug define and BWA for clang++15
+   - Characters
       - RegularExpression
         - docs/examples
         - deprecated (reversed some params) for RegularExpression CTOR; 
@@ -72,7 +75,7 @@ especially those they need to be aware of when upgrading.
           - kBufferFlag_DEFAULT = eUnbuffered now (because StreamReader works better for buffering)
       - Networking
         - HTTP
-          -  Minor cleanup to HTTP Status utilities (and use)
+          - Minor cleanup to HTTP Status utilities (and use)
         - InternetAddress
           - experiment using StackBuffer in place of vector
           - Added InternetAddress LocalHost (SocketAddress::FamilyType fm) utility
@@ -109,7 +112,6 @@ especially those they need to be aware of when upgrading.
       - Time
         - DateTime
           - DateTime::Format() and Format(eCurrentLocale_WithZerosStripped) fixes, and regression tests; and many other fixes to regtest for datetime code
-
         - TimeOfDay
           - Allow TimeOfDay{hr,mi} CTOR - default seconds to 0
       - Traversal
