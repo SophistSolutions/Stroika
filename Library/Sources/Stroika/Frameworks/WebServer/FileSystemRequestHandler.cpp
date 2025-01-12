@@ -20,6 +20,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO::FileSystem;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
@@ -37,12 +38,14 @@ namespace {
         String                                        fURLPrefix2Strip_;
         Sequence<String>                              fDefaultIndexFileNames;
         vector<pair<RegularExpression, CacheControl>> fCacheControlSettings;
+        optional<filesystem::path>                    fFallbackFile_;
 
         FSRouterRep_ (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames,
-                      const optional<Sequence<pair<RegularExpression, CacheControl>>>& cacheControlSettings)
+                      const optional<Sequence<pair<RegularExpression, CacheControl>>>& cacheControlSettings, const optional<filesystem::path>& fallbackFile)
             : fFSRoot_{filesystem::canonical (filesystemRoot)}
             , fURLPrefix2Strip_{urlPrefix2Strip.value_or ("/"sv)}
             , fDefaultIndexFileNames{defaultIndexFileNames}
+            , fFallbackFile_{fallbackFile}
         {
             if (cacheControlSettings) {
                 for (const auto& i : *cacheControlSettings) {
@@ -60,34 +63,38 @@ namespace {
              * @todo rewrite to incrementally copy file from stream, not read all into RAM
              */
             using DataExchange::InternetMediaTypeRegistry;
-            // super primitive draft
-            String           urlHostRelPath{ExtractURLHostRelPath_ (m)};
-            filesystem::path fn{fFSRoot_ / filesystem::path{urlHostRelPath.As<wstring> ()}};
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{
-                Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}...FileSystemRequestHandler...HandleMessage", "relURL={}, serving fn={}"_f,
-                                                               m->request ().url ().GetAuthorityRelativeResource (), fn)};
-#endif
-            try {
-                Response&              response = m.rwResponse ();
-                InputStream::Ptr<byte> in{FileInputStream::New (fn)};
-                if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::sThe->GetAssociatedContentType (fn.extension ())) {
-                    response.contentType = *oMediaType;
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("content-type: {}"_f, oMediaType->ToString ());
-#endif
+            if (optional<String> urlHostRelPath = ExtractURLHostRelPath_ (m)) {
+                filesystem::path fn{fFSRoot_ / urlHostRelPath->As<filesystem::path> ()};
+                if (fFallbackFile_ and not filesystem::exists (fn)) {
+                    fn = fFSRoot_ / *fFallbackFile_;
                 }
-                ApplyCacheControl_ (response, urlHostRelPath);
-                response.write (in.ReadAll ());
-                handled = true;
-            }
-            catch (const system_error& e) {
-                if (e.code () == errc::no_such_file_or_directory) {
-                    Assert (not handled);
-                    handled = false; // Router itself will issue Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
+
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{
+                    Stroika_Foundation_Debug_OptionalizeTraceArgs ("...FileSystemRequestHandler...HandleMessage", "relURL={}, serving fn={}"_f,
+                                                                   m.request ().url ().GetAuthorityRelativeResource (), fn)};
+#endif
+                try {
+                    Response&              response = m.rwResponse ();
+                    InputStream::Ptr<byte> in{FileInputStream::New (fn)};
+                    if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::sThe->GetAssociatedContentType (fn.extension ())) {
+                        response.contentType = *oMediaType;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace ("content-type: {}"_f, *oMediaType);
+#endif
+                    }
+                    ApplyCacheControl_ (response, *urlHostRelPath);
+                    response.write (in.ReadAll ());
+                    handled = true;
                 }
-                else {
-                    Execution::ReThrow ();
+                catch (const system_error& e) {
+                    if (e.code () == errc::no_such_file_or_directory) {
+                        Assert (not handled);
+                        handled = false; // Router itself will issue Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
+                    }
+                    else {
+                        ReThrow ();
+                    }
                 }
             }
         }
@@ -100,7 +107,7 @@ namespace {
                 }
             }
         }
-        String ExtractURLHostRelPath_ (const Message& m) const
+        optional<String> ExtractURLHostRelPath_ (const Message& m) const
         {
             const Request& request        = m.request ();
             String         urlHostRelPath = request.url ().Normalize (URI::NormalizationStyle::eAggressive).GetAbsPath<String> ();
@@ -113,7 +120,7 @@ namespace {
                     }
                 }
                 else {
-                    Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
+                    return nullopt;
                 }
             }
             if ((urlHostRelPath.empty () or urlHostRelPath.EndsWith ('/')) and not fDefaultIndexFileNames.empty ()) {
@@ -127,12 +134,13 @@ namespace {
 
 /*
  ********************************************************************************
- ************************* WebServer::FileSystemRequestHandler ******************
+ *********************** WebServer::FileSystemRequestHandler ********************
  ********************************************************************************
  */
 FileSystemRequestHandler::FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options)
-    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip,
-                                                       Memory::NullCoalesce (options.fDefaultIndexFileNames), options.fCacheControlSettings)] (
+    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip, Memory::NullCoalesce (options.fDefaultIndexFileNames),
+                                                       options.fCacheControlSettings, options.fFallbackFile)] (
                          Message& m, const Sequence<String>&, bool& handled) -> void { rep->HandleMessage (m, handled); }}
 {
+    DbgTrace ("fDefaultIndexFileNames={}"_f, options.fDefaultIndexFileNames);
 }

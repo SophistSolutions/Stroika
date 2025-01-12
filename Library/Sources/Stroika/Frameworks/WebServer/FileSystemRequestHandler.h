@@ -33,7 +33,7 @@ namespace Stroika::Frameworks::WebServer {
     class Router;
 
     /**
-     *  @todo unclear if this should BE a Router or RequestHandler, but I htink Handler, and so rename!
+     *  @todo unclear if this should BE a Router or RequestHandler, but I think Handler, and so rename!
      */
     class FileSystemRequestHandler : public RequestHandler {
     public:
@@ -109,6 +109,14 @@ namespace Stroika::Frameworks::WebServer {
          *      \endcode      
          */
         optional<Sequence<pair<RegularExpression, CacheControl>>> fCacheControlSettings;
+
+        /**
+         *  This is not needed in general. If the FileSystemRequestHandler doesn't find a match, it will just return
+         *  'not handled' - and the next route can match and handle it. But for some situations, its helpful to just
+         *  have return a special magical page as if it matched. For example, this is helpful with 
+         *  https://router.vuejs.org/guide/essentials/history-mode.html HTML5Mode.
+         */
+        optional<filesystem::path> fFallbackFile;
     };
     inline const FileSystemRequestHandler::Options FileSystemRequestHandler::kDefaultOptions;
 
