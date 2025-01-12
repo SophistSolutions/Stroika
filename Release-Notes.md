@@ -11,7 +11,7 @@ especially those they need to be aware of when upgrading.
 UPGRADE NOTES:
  = HTMLUI Sample
    - changed from createWebHashHistory to createWebHistory - to allow working with oauth
-   - see git commit X 
+   - see git commit b6b06567ea
 
 -----
 
