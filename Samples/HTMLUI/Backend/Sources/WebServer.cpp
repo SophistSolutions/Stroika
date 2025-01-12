@@ -66,7 +66,9 @@ namespace {
             {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{24h}.As<int32_t> ()}},
         };
         return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<String>{"index.html"_k},
-                                                 .fCacheControlSettings  = kFSCacheControlSettings_};
+                                                 .fCacheControlSettings  = kFSCacheControlSettings_,
+                                                 //fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect
+                                                 .fFallbackFile = "index.html"};
     }};
 }
 

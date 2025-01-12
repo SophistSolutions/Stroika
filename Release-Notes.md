@@ -7,6 +7,16 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+#### 3.0d15x
+UPGRADE NOTES:
+ = HTMLUI Sample
+   - changed from createWebHashHistory to createWebHistory - to allow working with oauth
+   - see git commit X 
+
+-----
+
+
+
 ### 3.0d14 {2025-01-11} {[diff](../../compare/3.0d13...3.0d14)}
 
 #### TLDR

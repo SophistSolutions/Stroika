@@ -17,13 +17,13 @@ const linksList = [
     title: 'Home',
     caption: 'Overview',
     icon: 'home',
-    link: '/#/',
+    link: '/',
   },
   {
     title: 'About',
     caption: 'Component versions, and server stats',
     icon: 'api',
-    link: '/#/about',
+    link: '/about',
   },
 ];
 

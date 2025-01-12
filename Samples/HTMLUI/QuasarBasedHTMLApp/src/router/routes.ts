@@ -21,7 +21,7 @@ const routes: RouteRecordRaw[] = [
     ],
     meta: {
       breadcrumbs: [
-        { text: 'Home', href: '/#/' },
+        { text: 'Home', href: '/' },
         { text: 'About', disabled: true },
       ],
       showInDotDotDotMenu: true,
