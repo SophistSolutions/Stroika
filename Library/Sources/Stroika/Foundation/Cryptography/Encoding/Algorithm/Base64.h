@@ -25,7 +25,7 @@
  *              we can construct a SUBTYPE of String that takes advantage of it.
  *
  *      @todo   DecodeBase64() should have an overload taking BinaryInputStream, and EncodeBase64()
- *              should have an overload with BinaryOutputStream (keeping exsting overloads).
+ *              should have an overload with BinaryOutputStream (keeping existing overloads).
  *
  *      @todo   Tons todo optimizing this implementation (to not use temporary objects and
  *              avoiding copying).
