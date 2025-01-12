@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/DataExchange/Atom.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
+#include "Stroika/Foundation/DataExchange/JSON/JWT.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -31,9 +32,9 @@ using Traversal::Iterable;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    GTEST_TEST (Foundation_DataExchange_Other, Test1_Atom_)
+    GTEST_TEST (Foundation_DataExchange_Other, Atom_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test1_Atom_"};
+        Debug::TraceContextBumper ctx{"{}::Atom_"};
         {
             Atom<> a = L"d";
             Atom<> b = "d";
@@ -58,9 +59,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_DataExchange_Other, Test2_OptionsFile_)
+    GTEST_TEST (Foundation_DataExchange_Other, OptionsFile_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test2_OptionsFile_"};
+        Debug::TraceContextBumper ctx{"{}::OptionsFile_"};
         struct MyData_ {
             bool               fEnabled = false;
             optional<DateTime> fLastSynchronizedAt;
@@ -136,9 +137,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_DataExchange_Other, Test4_VariantValue_)
+    GTEST_TEST (Foundation_DataExchange_Other, VariantValue_)
     {
-        Debug::TraceContextBumper ctx{"{}::Test4_VariantValue_"};
+        Debug::TraceContextBumper ctx{"{}::VariantValue_"};
 
         using namespace Containers;
         using namespace Characters;
@@ -178,9 +179,30 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_DataExchange_Other, Test5_InternetMediaType_)
+    GTEST_TEST (Foundation_DataExchange_Other, JWT)
     {
-        Debug::TraceContextBumper ctx{"{}::Test5_InternetMediaType_"};
+        Debug::TraceContextBumper ctx{"{}::JTW"};
+        using namespace DataExchange::JSON;
+        auto encodedJWT =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCIsInNhbXBsZSI6InRlc3QifQ.lQm3N2bVlqt2-1L-FsOjtR6uE-L4E9zJutMWKIe1v1M";
+        JWT jwt{encodedJWT};
+        for (auto& claim : jwt.GetHeaderClaims ()) {
+            DbgTrace ("header claim: {}"_f, claim);
+        }
+        for (auto& claim : jwt.GetPayloadClaims ()) {
+            DbgTrace ("payload claim: {}"_f, claim);
+        }
+        if (auto audience = jwt.GetAudience ()) {
+            DbgTrace ("Audience is {}"_f, *audience);
+        }
+        DbgTrace ("ValidFor={}"_f, jwt.GetValidFor ());
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_DataExchange_Other, InternetMediaType_)
+    {
+        Debug::TraceContextBumper ctx{"{}::InternetMediaType_"};
         {
             InternetMediaType ct0{"text/plain"};
             EXPECT_EQ (ct0.GetType (), "text");

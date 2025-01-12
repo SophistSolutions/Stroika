@@ -16,6 +16,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	:=	\
+	$(ObjDir)JWT${OBJ_SUFFIX}\
 	$(ObjDir)Patch${OBJ_SUFFIX}\
 	$(ObjDir)Pointer${OBJ_SUFFIX}\
 

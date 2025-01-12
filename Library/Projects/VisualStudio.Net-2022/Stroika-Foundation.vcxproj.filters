@@ -900,6 +900,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.cpp">
       <Filter>Sources\Cryptography\SSL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.cpp">
+      <Filter>Sources\DataExchange\JSON</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2308,6 +2311,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.h">
       <Filter>Sources\Cryptography\SSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.h">
+      <Filter>Sources\DataExchange\JSON</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3815,6 +3821,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Providers\OpenSSL\PrivateKey.inl">
       <Filter>Sources\Cryptography\Providers\OpenSSL</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.inl">
+      <Filter>Sources\DataExchange\JSON</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
