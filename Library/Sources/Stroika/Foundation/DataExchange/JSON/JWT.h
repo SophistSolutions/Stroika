@@ -78,6 +78,9 @@ namespace Stroika::Foundation::DataExchange::JSON {
      *          if (auto audience = jwt.GetPayloadClaims ().Lookup (JWTRegisteredClaims::kAudience)) {
      *              cout << "Audience is {}"_f (*audience) << endl;
      *          }
+     *          if (auto validFor = jwt.GetValidFor ()) {
+     *              cout << "Valid-For is {}"_f (*validFor) << endl;
+     *          }
      *          for (auto& claim : jwt.GetPayloadClaims ()) {
      *              DbgTrace ("claim: {}"_f, claim);
      *          }
@@ -90,6 +93,7 @@ namespace Stroika::Foundation::DataExchange::JSON {
         /**
          *  \brief construct a JWT from an encoded string. If fullyValidate true, also validate the signature (NYI)
          */
+        JWT (const JWT&) = default;
         JWT (const String& encodedString, bool fullyValidate = true);
 
     public:

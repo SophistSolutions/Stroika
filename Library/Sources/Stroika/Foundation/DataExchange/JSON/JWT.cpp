@@ -44,10 +44,9 @@ JWT::JWT (const String& encodedString, bool fullyValidate)
     VariantValue headerObj  = DataExchange::Variant::JSON ::Reader{}.Read (joseHeader);
     VariantValue payloadObj = DataExchange::Variant::JSON ::Reader{}.Read (payload);
     fHeaderClaims_          = headerObj.As<Mapping<String, VariantValue>> ().Map<Mapping<String, String>> (
-        [] (auto kvp) { return KeyValuePair<String, String>{kvp.fKey, kvp.fValue.As<String> ()}; });
+        [] (auto kvp) { return KeyValuePair<String, String>{kvp.fKey, kvp.fValue.template As<String> ()}; });
     fPayloadClaims_ = payloadObj.As<Mapping<String, VariantValue>> ().Map<Mapping<String, String>> (
-        [] (auto kvp) { return KeyValuePair<String, String>{kvp.fKey, kvp.fValue.As<String> ()}; });
-
+        [] (auto kvp) { return KeyValuePair<String, String>{kvp.fKey, kvp.fValue.template As<String> ()}; });
     if (fullyValidate) {
         // sadly NYI - appears a bit of work - maybe use https://github.com/Thalhammer/jwt-cpp
     }
