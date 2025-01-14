@@ -65,6 +65,16 @@ Headers::Headers ()
                 AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                 thisObj->SetExtras_ (HeaderName::kAllow, allowed ? String::Join (*allowed) : optional<String>{});
             }}
+    , authorization{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
+                        const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::authorization);
+                        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                        return thisObj->fAuthorization_;
+                    },
+                    [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newAuth) {
+                        Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::authorization);
+                        AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                        thisObj->fAuthorization_ = newAuth;
+                    }}
     , cacheControl{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<CacheControl> {
                        const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::cacheControl);
                        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
@@ -281,6 +291,7 @@ Headers::Headers (const Headers& src)
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficient way to avoid duplicative code
     fExtraHeaders_     = src.fExtraHeaders_;
     fAcceptEncodings_  = src.fAcceptEncodings_;
+    fAuthorization_    = src.fAuthorization_;
     fCacheControl_     = src.fCacheControl_;
     fContentEncoding_  = src.fContentEncoding_;
     fContentType_      = src.fContentType_;
@@ -304,6 +315,7 @@ Headers::Headers (Headers&& src)
     // However, cannot mix initialize with calling delegated CTOR, so do the slightly more inefficent way to avoid duplicative code
     fExtraHeaders_     = move (src.fExtraHeaders_);
     fAcceptEncodings_  = move (src.fAcceptEncodings_);
+    fAuthorization_    = move (src.fAuthorization_);
     fCacheControl_     = move (src.fCacheControl_);
     fContentEncoding_  = move (src.fContentEncoding_);
     fContentType_      = move (src.fContentType_);
@@ -342,6 +354,7 @@ Headers& Headers::operator= (const Headers& rhs)
     if (this != &rhs) {
         fExtraHeaders_     = rhs.fExtraHeaders_;
         fAcceptEncodings_  = rhs.fAcceptEncodings_;
+        fAuthorization_    = rhs.fAuthorization_;
         fCacheControl_     = rhs.fCacheControl_;
         fContentLength_    = rhs.fContentLength_;
         fContentEncoding_  = rhs.fContentEncoding_;
@@ -365,6 +378,7 @@ Headers& Headers::operator= (Headers&& rhs) noexcept
     if (this != &rhs) {
         fExtraHeaders_     = move (rhs.fExtraHeaders_);
         fAcceptEncodings_  = move (rhs.fAcceptEncodings_);
+        fAuthorization_    = move (rhs.fAuthorization_);
         fCacheControl_     = move (rhs.fCacheControl_);
         fContentLength_    = move (rhs.fContentLength_);
         fContentEncoding_  = move (rhs.fContentEncoding_);
@@ -393,6 +407,9 @@ optional<String> Headers::LookupOne (const String& name) const
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (kHeaderNameEqualsComparer (name, HeaderName::kAcceptEncoding)) {
         return fAcceptEncodings_ ? fAcceptEncodings_->As<String> () : optional<String>{};
+    }
+    else if (kHeaderNameEqualsComparer (name, HeaderName::kAuthorization)) {
+        return fAuthorization_;
     }
     else if (kHeaderNameEqualsComparer (name, HeaderName::kCacheControl)) {
         return fCacheControl_ ? fCacheControl_->As<String> () : optional<String>{};
@@ -576,6 +593,13 @@ bool Headers::UpdateBuiltin_ (AddOrSet flag, const String& headerName, const opt
         fAcceptEncodings_ = value ? ContentEncodings::Parse (*value) : optional<ContentEncodings>{};
         return true;
     }
+    else if (kHeaderNameEqualsComparer (headerName, HeaderName::kAuthorization)) {
+        if (nRemovals != nullptr) {
+            *nRemovals = (value == nullopt and fAuthorization_ != nullopt) ? 1 : 0;
+        }
+        fAuthorization_ = value;
+        return true;
+    }
     else if (kHeaderNameEqualsComparer (headerName, HeaderName::kCacheControl)) {
         if (nRemovals != nullptr) {
             *nRemovals = (value == nullopt and fCacheControl_ != nullopt) ? 1 : 0;
@@ -734,6 +758,9 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     Collection<KeyValuePair<String, String>>       results = fExtraHeaders_;
     if (fAcceptEncodings_) {
         results.Add ({HeaderName::kAcceptEncoding, fAcceptEncodings_->As<String> ()});
+    }
+    if (fAuthorization_) {
+        results.Add ({HeaderName::kAuthorization, *fAuthorization_});
     }
     if (fCacheControl_) {
         results.Add ({HeaderName::kCacheControl, fCacheControl_->As<String> ()});

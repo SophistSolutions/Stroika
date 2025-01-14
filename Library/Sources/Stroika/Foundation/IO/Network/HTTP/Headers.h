@@ -229,6 +229,14 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         * \brief typically, the value will be missing, or "Bearer xxx"
+         *  \see https://datatracker.ietf.org/doc/html/rfc7235 (not great reference)
+         *  \note confusing name authorization due to HTTP authorization name - really refers to mix of authentication/authorization (AUTH)
+         */
+        Common::Property<optional<String>> authorization;
+
+    public:
+        /**
          *  \brief HTTP Response header controlling how clients will cache this response.
          * 
          *  Property with the optional<CacheControl> value of the Cache-Control header.
@@ -453,6 +461,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // them dynamically lookup in fExtraHeaders_. Just put the ones here in special variables
         // that are very commonly checked for, so their check/update will be a bit quicker.
         Collection<KeyValuePair<String, String>> fExtraHeaders_;
+        optional<String>                         fAuthorization_;
         optional<ContentEncodings>               fAcceptEncodings_; // request header only
         optional<CacheControl>                   fCacheControl_;
         optional<ContentEncodings>               fContentEncoding_;
