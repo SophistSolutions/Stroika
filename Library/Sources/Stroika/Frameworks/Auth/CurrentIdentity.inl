@@ -11,19 +11,19 @@ namespace Stroika::Frameworks::Auth {
      ************************* Auth::CurrentIdentityManager *************************
      ********************************************************************************
      */
-    template <convertible_to<bool> ID_OBJ>
+    template <IIdenityManagerCompatibleID ID_OBJ>
     inline CurrentIdentityManager<ID_OBJ>::Establish::Establish (const ID_OBJ& id)
     {
         Require (sCurrent_ == false);
         sCurrent_ = id;
     }
-    template <convertible_to<bool> ID_OBJ>
+    template <IIdenityManagerCompatibleID ID_OBJ>
     inline CurrentIdentityManager<ID_OBJ>::Establish::~Establish ()
     {
         sCurrent_ = ID_OBJ{};
         Ensure (sCurrent_ == false);
     }
-    template <convertible_to<bool> ID_OBJ>
+    template <IIdenityManagerCompatibleID ID_OBJ>
     inline ID_OBJ CurrentIdentityManager<ID_OBJ>::Get ()
     {
         return sCurrent_;

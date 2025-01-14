@@ -37,9 +37,12 @@ namespace Stroika::Frameworks::Auth {
      *          ...
      *      }
      */
-    template <convertible_to<bool> ID_OBJ>
+    template <typename T>
+    concept IIdenityManagerCompatibleID = true;     // default_constructible, convertible_to<bool>, static_assert (ID_OBJ{} == false);
+
+    // want this to be close to convertible_to<bool> - but must refine the concept - not right
+    template <IIdenityManagerCompatibleID ID_OBJ>
     struct CurrentIdentityManager {
-        static_assert (ID_OBJ{} == false);
 
         /**
           * \brief sets the current ID to argument value -
