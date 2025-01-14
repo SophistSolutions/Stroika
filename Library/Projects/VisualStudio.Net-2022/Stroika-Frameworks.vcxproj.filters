@@ -271,6 +271,21 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectRequestHandler.inl">
       <Filter>WebService\Server</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\Makefile">
+      <Filter>Auth</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\ReadMe.md">
+      <Filter>Auth</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.inl">
+      <Filter>Auth\OAuth</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Makefile">
+      <Filter>Auth\OAuth</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\ReadMe.md">
+      <Filter>Auth\OAuth</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -478,6 +493,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectRequestHandler.h">
       <Filter>WebService\Server</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.h">
+      <Filter>Auth\OAuth</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Led">
@@ -536,6 +554,12 @@
     </Filter>
     <Filter Include="WebService\OpenAPI">
       <UniqueIdentifier>{b6e24fce-eec6-4695-91eb-d771d3e27737}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auth">
+      <UniqueIdentifier>{4dbb9d62-532a-4e60-a4a8-e7b20ac9d817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auth\OAuth">
+      <UniqueIdentifier>{6ecd2c0e-435d-4ffe-8437-287a7b70b5a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -748,6 +772,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Server\ObjectRequestHandler.cpp">
       <Filter>WebService\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.cpp">
+      <Filter>Auth\OAuth</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

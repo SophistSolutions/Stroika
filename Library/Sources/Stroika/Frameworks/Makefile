@@ -26,6 +26,7 @@ VPATH		=	$(SrcDir) $(StroikaLibDir)
 
 
 SubDirs:=	\
+		Auth\
 		Led\
 		Modbus\
 		NetworkMonitor\

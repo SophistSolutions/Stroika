@@ -65,6 +65,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Command.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\Command.h" />
@@ -134,6 +136,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_MIMETextEnriched.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\Command.inl" />
