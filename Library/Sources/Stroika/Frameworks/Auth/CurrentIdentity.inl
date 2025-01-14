@@ -14,14 +14,14 @@ namespace Stroika::Frameworks::Auth {
     template <IIdenityManagerCompatibleID ID_OBJ>
     inline CurrentIdentityManager<ID_OBJ>::Establish::Establish (const ID_OBJ& id)
     {
-        Require (sCurrent_ == false);
+        Require (!sCurrent_);
         sCurrent_ = id;
     }
     template <IIdenityManagerCompatibleID ID_OBJ>
     inline CurrentIdentityManager<ID_OBJ>::Establish::~Establish ()
     {
         sCurrent_ = ID_OBJ{};
-        Ensure (sCurrent_ == false);
+        Ensure (!sCurrent_);
     }
     template <IIdenityManagerCompatibleID ID_OBJ>
     inline ID_OBJ CurrentIdentityManager<ID_OBJ>::Get ()
