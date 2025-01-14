@@ -53,7 +53,11 @@ namespace Stroika::Foundation::Common {
      *  \see http://stroika-bugs.sophists.com/browse/STK-939 - probably LOSE This define and REQUIRE its always zero, so can COPY properties safely.
      */
 #ifndef qStroika_Foundation_Common_Property_EmbedThisInProperties
+#if qCompilerAndStdLib_function_dependency_too_complex_Buggy
+#define qStroika_Foundation_Common_Property_EmbedThisInProperties 1
+#else
 #define qStroika_Foundation_Common_Property_EmbedThisInProperties 0
+#endif
 #endif
 
 #if qStroika_Foundation_Common_Property_EmbedThisInProperties

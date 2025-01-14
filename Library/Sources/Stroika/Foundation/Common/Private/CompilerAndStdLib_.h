@@ -1313,6 +1313,26 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 
 #endif
 
+/**
+ 2>   Compiling Library/Sources/Stroika/Frameworks/WebServer/Message.cpp ...
+2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\Message.cpp(89): fatal error C1202: recursive type or function dependency context too complex
+2>Creating Builds/Debug/Stroika-Frameworks.lib ...
+
+        APPEARS (not clear) to be something todo with too many calls to GetObjectOwningField getting MSVC confused.
+*/
+#ifndef qCompilerAndStdLib_function_dependency_too_complex_Buggy
+
+#if defined(_MSC_VER)
+
+// first seen broken in _MSC_VER_2k22_17Pt12_
+#define qCompilerAndStdLib_function_dependency_too_complex_Buggy                                                                           \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+#else
+#define qCompilerAndStdLib_function_dependency_too_complex_Buggy 0
+#endif
+
+#endif
+
 /*
  file included from /usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_nothrow_destructible.h:14:
 /usr/lib/llvm-18/bin/../include/c++/v1/__type_traits/is_destructible.h:28:61: error: ambiguous partial specializations of 'formatter<int, wchar_t>'

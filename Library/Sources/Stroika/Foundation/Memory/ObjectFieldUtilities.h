@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Memory {
      *              }};
      *      \endcode
      * 
-     *  \note - for this to work - OUTER_OBJECT (in the above example: Header) must be of stanard_layout type according
+     *  \note - for this to work - OUTER_OBJECT (in the above example: Header) must be of standard_layout type according
      *        to c++ standard, but I'm not sure what todo otherwise, it it seems to work otherwise.
      *        Posted to stackoverflow to find a better, more portable way: https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
      * 

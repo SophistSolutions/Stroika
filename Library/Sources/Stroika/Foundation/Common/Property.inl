@@ -4,6 +4,7 @@
 #if !qStroika_Foundation_Common_Property_EmbedThisInProperties
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 #endif
+#include "Stroika/Foundation/Debug/Assertions.h"
 
 namespace Stroika::Foundation::Common {
 
