@@ -33,10 +33,10 @@ namespace Stroika::Foundation::DataExchange::XML {
         Characters::StringBuilder sb;
         sb << "{"sv;
         if (fDefaultNamespace_) {
-            sb << "defaultNS: "sv << *fDefaultNamespace_ << ", "sv;
+            sb << "defaultNS: "sv << *fDefaultNamespace_;
         }
-        if (fDefaultNamespace_) {
-            sb << "prefixedNamespaces: "sv << fPrefixedNS_;
+        if (fPrefixedNS_) {
+            sb << ", prefixedNamespaces: "sv << fPrefixedNS_;
         }
         sb << "}"sv;
         return sb;

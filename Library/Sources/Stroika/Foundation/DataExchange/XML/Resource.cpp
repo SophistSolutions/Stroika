@@ -22,13 +22,13 @@ String Name::ToString () const
     StringBuilder sb;
     sb << "{";
     if (fNamespace) {
-        sb << "namespace: "sv << *fNamespace << ", "sv;
+        sb << "namespace: "sv << *fNamespace;
     }
     if (fPublicID) {
-        sb << "fPublicID: "sv << *fPublicID << ", "sv;
+        sb << ", PublicID: "sv << *fPublicID;
     }
     if (fSystemID) {
-        sb << "systemID: "sv << *fSystemID << ", "sv;
+        sb << ", systemID: "sv << *fSystemID;
     }
     if (sb.size () > 3) {             // so a comma there
         sb.ShrinkTo (sb.size () - 2); // lose comma

@@ -101,18 +101,18 @@ String Interface::WirelessInfo::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "SSID: "sv << fSSID << ", "sv;
-    sb << "State: "sv << fState << ", "sv;
-    sb << "ConnectionMode: "sv << fConnectionMode << ", "sv;
-    sb << "ProfileName: "sv << fProfileName << ", "sv;
-    sb << "BSSType: "sv << fBSSType << ", "sv;
-    sb << "MACAddress: "sv << fMACAddress << ", "sv;
-    sb << "PhysicalConnectionType: "sv << fPhysicalConnectionType << ", "sv;
-    sb << "SignalQuality: "sv << fSignalQuality << ", "sv;
-    sb << "SecurityEnabled: "sv << fSecurityEnabled << ", "sv;
-    sb << "8021XEnabled: "sv << f8021XEnabled << ", "sv;
-    sb << "AuthAlgorithm: "sv << fAuthAlgorithm << ", "sv;
-    sb << "Cipher: "sv << fCipher;
+    sb << "SSID: "sv << fSSID;
+    sb << ", State: "sv << fState;
+    sb << ", ConnectionMode: "sv << fConnectionMode;
+    sb << ", ProfileName: "sv << fProfileName;
+    sb << ", BSSType: "sv << fBSSType;
+    sb << ", MACAddress: "sv << fMACAddress;
+    sb << ", PhysicalConnectionType: "sv << fPhysicalConnectionType;
+    sb << ", SignalQuality: "sv << fSignalQuality;
+    sb << ", SecurityEnabled: "sv << fSecurityEnabled;
+    sb << ", 8021XEnabled: "sv << f8021XEnabled;
+    sb << ", AuthAlgorithm: "sv << fAuthAlgorithm;
+    sb << ", Cipher: "sv << fCipher;
     sb << "}"sv;
     return sb;
 }
@@ -126,8 +126,8 @@ String Interface::Bindings::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "BoundAddressRanges: "sv << fAddressRanges << ", "sv;
-    sb << "BoundAddresses: "sv << fAddresses;
+    sb << "BoundAddressRanges: "sv << fAddressRanges;
+    sb << ", BoundAddresses: "sv << fAddresses;
     sb << "}"sv;
     return sb;
 }
@@ -140,38 +140,38 @@ String Interface::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Internal-Interface-ID: "sv << fInternalInterfaceID << ", "sv;
+    sb << "Internal-Interface-ID: "sv << fInternalInterfaceID;
 #if qStroika_Foundation_Common_Platform_POSIX
-    sb << "InterfaceName: "sv << GetInterfaceName () << ", "sv;
+    sb << ", InterfaceName: "sv << GetInterfaceName ();
 #endif
-    sb << "Friendly-Name: "sv << fFriendlyName << ", "sv;
+    sb << ", Friendly-Name: "sv << fFriendlyName;
     if (fDescription) {
-        sb << "Description: "sv << *fDescription << ", "sv;
+        sb << ", Description: "sv << *fDescription;
     }
     if (fNetworkGUID) {
-        sb << "Network-GUID: "sv << *fNetworkGUID << ", "sv;
+        sb << ", Network-GUID: "sv << *fNetworkGUID;
     }
     if (fType) {
-        sb << "Type: "sv << *fType << ", "sv;
+        sb << ", Type: "sv << *fType;
     }
     if (fHardwareAddress) {
-        sb << "Hardware-Address: "sv << *fHardwareAddress << ", "sv;
+        sb << ", Hardware-Address: "sv << *fHardwareAddress;
     }
     if (fTransmitSpeedBaud) {
-        sb << "Transmit-Speed-Baud: "sv << *fTransmitSpeedBaud << ", "sv;
+        sb << ", Transmit-Speed-Baud: "sv << *fTransmitSpeedBaud;
     }
     if (fReceiveLinkSpeedBaud) {
-        sb << "Receive-Link-Speed-Baud: "sv << *fReceiveLinkSpeedBaud << ", "sv;
+        sb << ", Receive-Link-Speed-Baud: "sv << *fReceiveLinkSpeedBaud;
     }
     if (fWirelessInfo) {
-        sb << "Wireless-Info: "sv << fWirelessInfo << ", "sv;
+        sb << ", Wireless-Info: "sv << fWirelessInfo;
     }
-    sb << "Bindings: "sv << fBindings << ", "sv;
+    sb << ", Bindings: "sv << fBindings;
 
-    sb << "Gateways: "sv << fGateways << ", "sv;
-    sb << "DNS-Servers: "sv << fDNSServers << ", "sv;
+    sb << ", Gateways: "sv << fGateways;
+    sb << ", DNS-Servers: "sv << fDNSServers;
     if (fStatus) {
-        sb << "Status: "sv << *fStatus;
+        sb << ", Status: "sv << *fStatus;
     }
     sb << "}"sv;
     return sb;

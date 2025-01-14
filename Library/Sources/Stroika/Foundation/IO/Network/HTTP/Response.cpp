@@ -103,8 +103,8 @@ String Response::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized};
     StringBuilder                                  sb;
     sb << "{"sv;
-    sb << "Status-And-Override-Reason: "sv << fStatusAndOverrideReason_ << ", "sv;
-    sb << "Headers: "sv << this->headers ();
+    sb << "Status-And-Override-Reason: "sv << fStatusAndOverrideReason_;
+    sb << ", Headers: "sv << this->headers ();
     sb << "}"sv;
     return sb;
 }

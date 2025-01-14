@@ -124,10 +124,10 @@ String Request::ToString () const
     Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized};
     StringBuilder                                         sb;
     sb << "{"sv;
-    sb << "HTTPVersion: "sv << fHTTPVersion_ << ", "sv;
-    sb << "Method: "sv << fMethod_ << ", "sv;
-    sb << "URL: "sv << fURL_ << ", "sv;
-    sb << "Headers: "sv << fHeaders_;
+    sb << "HTTPVersion: "sv << fHTTPVersion_;
+    sb << ", Method: "sv << fMethod_;
+    sb << ", URL: "sv << fURL_;
+    sb << ", Headers: "sv << fHeaders_;
     sb << "}"sv;
     return sb;
 }

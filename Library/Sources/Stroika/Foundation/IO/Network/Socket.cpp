@@ -272,9 +272,9 @@ String Socket::Ptr::ToString () const
     else {
         sb << "{"sv;
         sb << "Native-Socket: "sv
-           << ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED"sv : Characters::ToString (fRep_->GetNativeSocket ())) << ", "sv;
+           << ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED"sv : Characters::ToString (fRep_->GetNativeSocket ()));
         if (auto ola = GetLocalAddress ()) {
-            sb << "Local-Address: "sv << *ola;
+            sb << ", Local-Address: "sv << *ola;
         }
         sb << "}"sv;
     }

@@ -30,12 +30,12 @@ namespace Stroika::Foundation::Cache {
     {
         Characters::StringBuilder sb;
         sb << "{"sv;
-        sb << "HashFunctions: "sv << fHashFunctions << ", "sv;
-        sb << "BitCount: "sv << fBitCount << ", "sv;
-        sb << "BitsSet: "sv << fBitsSet << ", "sv;
-        sb << "ActualAddCalls: "sv << fActualAddCalls << ", "sv;
-        sb << "ApparentlyDistinctAddCalls: "sv << fApparentlyDistinctAddCalls << ", "sv;
-        sb << "ProbabilityOfFalsePositive: "sv << ProbabilityOfFalsePositive ();
+        sb << "HashFunctions: "sv << fHashFunctions;
+        sb << ", BitCount: "sv << fBitCount;
+        sb << ", BitsSet: "sv << fBitsSet;
+        sb << ", ActualAddCalls: "sv << fActualAddCalls;
+        sb << ", ApparentlyDistinctAddCalls: "sv << fApparentlyDistinctAddCalls;
+        sb << ", ProbabilityOfFalsePositive: "sv << ProbabilityOfFalsePositive ();
         sb << "}"sv;
         return sb;
     }

@@ -48,15 +48,15 @@ using Memory::StackBuffer;
 #if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
- ********************** Cryptography::Providers::OpenSSL::DerivedKey ***********************
+ **************** Cryptography::Providers::OpenSSL::DerivedKey ******************
  ********************************************************************************
  */
 String DerivedKey::ToString () const
 {
     Characters::StringBuilder result;
     result << "{"sv;
-    result << "key: "sv << fKey << ", "sv;
-    result << "IV: "sv << fIV;
+    result << "key: "sv << fKey;
+    result << ", IV: "sv << fIV;
     result << "}"sv;
     return result.str ();
 }
@@ -64,7 +64,7 @@ String DerivedKey::ToString () const
 
 /*
  ********************************************************************************
- **************** Cryptography::Providers::OpenSSL::WinCryptDeriveKey **********************
+ ************ Cryptography::Providers::OpenSSL::WinCryptDeriveKey ***************
  ********************************************************************************
  */
 #if qStroika_HasComponent_OpenSSL
@@ -159,7 +159,7 @@ WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherA
 #if qStroika_HasComponent_OpenSSL
 /*
  ********************************************************************************
- ******************* Cryptography::Providers::OpenSSL::EVP_BytesToKey **********************
+ ************** Cryptography::Providers::OpenSSL::EVP_BytesToKey ****************
  ********************************************************************************
  */
 namespace {
@@ -194,7 +194,7 @@ EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm
 
 /*
  ********************************************************************************
- ****************** Cryptography::Providers::OpenSSL::PKCS5_PBKDF2_HMAC ********************
+ ************ Cryptography::Providers::OpenSSL::PKCS5_PBKDF2_HMAC ***************
  ********************************************************************************
  */
 namespace {

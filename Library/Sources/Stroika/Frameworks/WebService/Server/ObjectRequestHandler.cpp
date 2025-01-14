@@ -44,12 +44,12 @@ String ObjectRequestHandler::Options::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    //sb << "ObjectMapper: "sv << fObjectMapper << ", "sv;
-    sb << "DefaultResultMediaType: "sv << fDefaultResultMediaType << ", "sv;
-    sb << "AllowedMethods: "sv << fAllowedMethods << ", "sv;
-    // sb << "ExtractVariantValueFromRequest: "sv << fExtractVariantValueFromRequest << ", "sv;
-    sb << "TreatBodyAsListOfArguments: "sv << fTreatBodyAsListOfArguments << ", "sv;
-    //sb << "JSONWriterOptions: "sv << fJSONWriterOptions;
+    //sb << "ObjectMapper: "sv << fObjectMapper ;
+    sb << "DefaultResultMediaType: "sv << fDefaultResultMediaType;
+    sb << ", AllowedMethods: "sv << fAllowedMethods;
+    // sb << ", ExtractVariantValueFromRequest: "sv << fExtractVariantValueFromRequest ;
+    sb << ", TreatBodyAsListOfArguments: "sv << fTreatBodyAsListOfArguments;
+    //sb << ", JSONWriterOptions: "sv << fJSONWriterOptions;
     sb << "}"sv;
     return sb;
 }

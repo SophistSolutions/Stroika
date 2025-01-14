@@ -68,10 +68,10 @@ String KeepAlive::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMessages) {
-        sb << "Messages: "sv << *fMessages << ", "sv;
+        sb << "Messages: "sv << *fMessages;
     }
     if (fTimeout) {
-        sb << "Timeout: "sv << *fTimeout;
+        sb << ", Timeout: "sv << *fTimeout;
     }
     sb << "}"sv;
     return sb;

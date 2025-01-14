@@ -46,8 +46,8 @@ String Statement::ParameterDescription::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "name: "sv << fName << ", "sv;
-    sb << "value: "sv << fValue;
+    sb << "name: "sv << fName;
+    sb << ", value: "sv << fValue;
     sb << "}"sv;
     return sb;
 }
@@ -178,9 +178,9 @@ String Statement::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
     StringBuilder                                  sb;
     sb << "{"sv;
-    sb << "Parameter-Bindings: "sv << GetParameters () << ", "sv;
-    sb << "Column-Descriptions: "sv << GetColumns () << ", "sv;
-    sb << "Original-SQL: "sv << GetSQL ();
+    sb << "Parameter-Bindings: "sv << GetParameters ();
+    sb << ", Column-Descriptions: "sv << GetColumns ();
+    sb << ", Original-SQL: "sv << GetSQL ();
     sb << "}"sv;
     return sb;
 }

@@ -103,7 +103,7 @@ namespace {
                                      Headers* thisObj         = Memory::GetObjectOwningField (property, &Headers::contentLength2);
                                      thisObj->fContentLength_ = contentLength;
                                  }}
-                , contentLength3{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]]const auto* property) {
+                , contentLength3{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                                      const Headers* headerObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
                                      return headerObj->fContentLength_;
                                  },

@@ -44,8 +44,8 @@ Characters::String Traceroute::Options::SampleInfo::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Interval: "sv << fInterval << ", "sv;
-    sb << "Count: "sv << fSampleCount;
+    sb << "Interval: "sv << fInterval;
+    sb << ", Count: "sv << fSampleCount;
     sb << "}"sv;
     return sb;
 }
@@ -60,16 +60,16 @@ String Traceroute::Options::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMaxHops) {
-        sb << "Max-Hops: "sv << *fMaxHops << ", "sv;
+        sb << "Max-Hops: "sv << *fMaxHops;
     }
     if (fTimeout) {
-        sb << "Timeout: "sv << *fTimeout << ", "sv;
+        sb << ", Timeout: "sv << *fTimeout;
     }
     if (fPacketPayloadSize) {
-        sb << "Packet-Payload-Size: "sv << *fPacketPayloadSize << ", "sv;
+        sb << ", Packet-Payload-Size: "sv << *fPacketPayloadSize;
     }
     if (fSampleInfo) {
-        sb << "Sample: "sv << *fSampleInfo;
+        sb << ", Sample: "sv << *fSampleInfo;
     }
     sb << "}"sv;
     return sb;

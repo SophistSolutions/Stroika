@@ -45,13 +45,13 @@ String InternetMediaTypeRegistry::OverrideRecord::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fTypePrintName) {
-        sb << "TypePrintName: " << fTypePrintName << ", "sv;
+        sb << "TypePrintName: " << fTypePrintName;
     }
     if (fFileSuffixes) {
-        sb << "FileSuffixes: " << fFileSuffixes << ", "sv;
+        sb << ", FileSuffixes: " << fFileSuffixes;
     }
     if (fPreferredSuffix) {
-        sb << "PreferredSuffix: " << fPreferredSuffix;
+        sb << ", PreferredSuffix: " << fPreferredSuffix;
     }
     sb << "}"sv;
     return sb;

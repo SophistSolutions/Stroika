@@ -305,28 +305,28 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD Characters::String Thread:
     sb << "{"sv;
     if (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) {
         // If fRefCountBumpedInsideThreadMainEvent_ not yet SET, then this info is bogus
-        sb << "id: "sv << GetID () << ", "sv;
+        sb << "id: "sv << GetID ();
         if constexpr (qStroika_Foundation_Debug_ShowThreadIndex) {
-            sb << "index: " << IndexRegistrar::sThe.GetIndex (GetID ()) << ", "sv;
+            sb << ", index: " << IndexRegistrar::sThe.GetIndex (GetID ());
         }
     }
     if (not fThreadName_.empty ()) {
-        sb << "name: "sv << fThreadName_ << ", "sv;
+        sb << ", name: "sv << fThreadName_;
     }
-    sb << "status: "sv << PeekStatusForToString_ () << ", "sv;
+    sb << ", status: "sv << PeekStatusForToString_ ();
     //sb << "runnable: "sv << fRunnable_ << ", "sv;     // doesn't yet print anything useful
-    sb << "abortRequested: "sv << fAbortRequested_.load () << ", "sv;
-    sb << "refCountBumpedEvent: "sv << fRefCountBumpedInsideThreadMainEvent_.PeekIsSet () << ", "sv;
-    sb << "startReadyToTransitionToRunningEvent_: "sv << fStartReadyToTransitionToRunningEvent_.PeekIsSet () << ", "sv;
-    sb << "threadDoneAndCanJoin: "sv << fThreadDoneAndCanJoin_.PeekIsSet () << ", "sv;
+    sb << ", abortRequested: "sv << fAbortRequested_.load ();
+    sb << ", refCountBumpedEvent: "sv << fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ();
+    sb << ", startReadyToTransitionToRunningEvent_: "sv << fStartReadyToTransitionToRunningEvent_.PeekIsSet ();
+    sb << ", threadDoneAndCanJoin: "sv << fThreadDoneAndCanJoin_.PeekIsSet ();
     if (fSavedException_.load () != nullptr) [[unlikely]] {
-        sb << "savedException: "sv << fSavedException_.load () << ", "sv;
+        sb << ", savedException: "sv << fSavedException_.load ();
     }
     if (fInitialPriority_.load () != nullopt) [[unlikely]] {
-        sb << "initialPriority: "sv << fInitialPriority_.load () << ", "sv;
+        sb << ", initialPriority: "sv << fInitialPriority_.load ();
     }
 #if qStroika_Foundation_Common_Platform_Windows
-    sb << "throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_;
+    sb << ", throwInterruptExceptionInsideUserAPC: "sv << fThrowInterruptExceptionInsideUserAPC_;
 #endif
     sb << "}"sv;
     return sb;

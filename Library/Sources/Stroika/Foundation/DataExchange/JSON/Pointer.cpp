@@ -26,8 +26,8 @@ String JSON::PointerType::Context::MapElt::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "orig: " << fOrigValue << ", "sv;
-    sb << "eltName: " << fEltName;
+    sb << "orig: " << fOrigValue;
+    sb << ", eltName: " << fEltName;
     sb << "}"sv;
     return sb;
 }
@@ -41,8 +41,8 @@ String JSON::PointerType::Context::SeqElt::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "orig: " << fOrigValue << ", "sv;
-    sb << "index: " << this->fIndex;
+    sb << "orig: " << fOrigValue;
+    sb << ", index: " << this->fIndex;
     sb << "}"sv;
     return sb;
 }

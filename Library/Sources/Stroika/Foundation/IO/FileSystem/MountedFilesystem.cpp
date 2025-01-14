@@ -296,15 +296,15 @@ String MountedFilesystemType::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Mounted-On: "sv << fMountedOn << ", "sv;
+    sb << "Mounted-On: "sv << fMountedOn;
     if (fDevicePaths) {
-        sb << "Device-Paths: "sv << *fDevicePaths << ", "sv;
+        sb << ", Device-Paths: "sv << *fDevicePaths;
     }
     if (fFileSystemType) {
-        sb << "FileSystem-Type: '"sv << *fFileSystemType << "', "sv;
+        sb << ", FileSystem-Type: '"sv << *fFileSystemType << "'"sv;
     }
     if (fVolumeID) {
-        sb << "Volume-ID: '"sv << *fVolumeID;
+        sb << ", Volume-ID: '"sv << *fVolumeID;
     }
     sb << "}"sv;
     return sb;

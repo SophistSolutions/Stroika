@@ -115,9 +115,9 @@ Characters::String ThreadPool::Statistics::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "NumberOfTasksAdded: "sv << fNumberOfTasksAdded << ", "sv;
-    sb << "NumberOfTasksCompleted: "sv << fNumberOfTasksCompleted << ", "sv;
-    sb << "TotalTimeConsumed: "sv << fTotalTimeConsumed;
+    sb << "NumberOfTasksAdded: "sv << fNumberOfTasksAdded;
+    sb << ", NumberOfTasksCompleted: "sv << fNumberOfTasksCompleted;
+    sb << ", TotalTimeConsumed: "sv << fTotalTimeConsumed;
     sb << "}"sv;
     return sb;
 }
@@ -494,14 +494,14 @@ String ThreadPool::ToString () const
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         if (fThreadPoolName_) {
-            sb << "pool-name: '{}'"_f(*fThreadPoolName_) << ", "sv;
+            sb << "pool-name: '{}'"_f(*fThreadPoolName_);
         }
     }
-    sb << "pending-task-count: {}"_f(GetPendingTasksCount ()) << ", "sv;
-    sb << "running-task-count: {}"_f(GetRunningTasks ().size ()) << ", "sv;
+    sb << ", pending-task-count: {}"_f(GetPendingTasksCount ());
+    sb << ", running-task-count: {}"_f(GetRunningTasks ().size ());
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
-        sb << "pool-thread-count: {}"_f(fThreads_.size ());
+        sb << ", pool-thread-count: {}"_f(fThreads_.size ());
     }
     sb << "}"sv;
     return sb;

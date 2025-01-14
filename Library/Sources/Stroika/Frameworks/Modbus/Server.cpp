@@ -133,11 +133,11 @@ namespace Stroika::Foundation::Characters {
     {
         StringBuilder sb;
         sb << "{"sv;
-        sb << "TransactionID: "sv << mh.fTransactionID << ", "sv;
-        sb << "ProtocolID: "sv << mh.fProtocolID << ", "sv;
-        sb << "Length: "sv << mh.fLength << ", "sv;
-        sb << "UnitID: "sv << mh.fUnitID << ", "sv;
-        sb << "FunctionCode: "sv << mh.fFunctionCode;
+        sb << "TransactionID: "sv << mh.fTransactionID;
+        sb << ", ProtocolID: "sv << mh.fProtocolID;
+        sb << ", Length: "sv << mh.fLength;
+        sb << ", UnitID: "sv << mh.fUnitID;
+        sb << ", FunctionCode: "sv << mh.fFunctionCode;
         sb << "}"sv;
         return sb;
     }

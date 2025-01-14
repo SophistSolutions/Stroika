@@ -218,8 +218,8 @@ Characters::String SampleOptions::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Interval: "sv << fInterval << ", "sv;
-    sb << "Count: "sv << fSampleCount;
+    sb << "Interval: "sv << fInterval;
+    sb << ", Count: "sv << fSampleCount;
     sb << "}"sv;
     return sb;
 }
@@ -234,13 +234,13 @@ String SampleResults::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMedianPingTime) {
-        sb << "Median-Ping-Time: "sv << *fMedianPingTime << ", "sv;
+        sb << "Median-Ping-Time: "sv << *fMedianPingTime;
     }
     if (fMedianHopCount) {
-        sb << "Median-Hop-Count: "sv << fMedianHopCount << ", "sv;
+        sb << ", Median-Hop-Count: "sv << fMedianHopCount;
     }
     if (fExceptionCount != 0) {
-        sb << "Exception-Count: "sv << fExceptionCount << ", "sv; // to see exceptions - run with sample-count = 1
+        sb << ", Exception-Count: "sv << fExceptionCount; // to see exceptions - run with sample-count = 1
     }
     sb << "}"sv;
     return sb;

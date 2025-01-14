@@ -35,11 +35,11 @@ String DeviceDescription::Icon::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "MimeType: "sv << fMimeType << ", "sv;
-    sb << "HorizontalPixels: "sv << fHorizontalPixels << ", "sv;
-    sb << "VerticalPixels: "sv << fVerticalPixels << ", "sv;
-    sb << "ColorDepth : "sv << fColorDepth << ", "sv;
-    sb << "URL: "sv << fURL;
+    sb << "MimeType: "sv << fMimeType;
+    sb << ", HorizontalPixels: "sv << fHorizontalPixels;
+    sb << ", VerticalPixels: "sv << fVerticalPixels;
+    sb << ", ColorDepth : "sv << fColorDepth;
+    sb << ", URL: "sv << fURL;
     sb << "}"sv;
     return sb;
 }
@@ -53,10 +53,10 @@ String DeviceDescription::Service::ToString () const
 {
     Characters::StringBuilder sb;
     sb << "{"sv;
-    sb << "Service-ID: "sv << fServiceID << ", "sv;
-    sb << "SCPD-URL: "sv << fSCPDURL << ", "sv;
-    sb << "Control-URL: "sv << fControlURL << ", "sv;
-    sb << "Event-Sub-URL: "sv << fEventSubURL;
+    sb << "Service-ID: "sv << fServiceID;
+    sb << ", SCPD-URL: "sv << fSCPDURL;
+    sb << ", Control-URL: "sv << fControlURL;
+    sb << ", Event-Sub-URL: "sv << fEventSubURL;
     sb << "}"sv;
     return sb;
 }
@@ -71,36 +71,36 @@ String DeviceDescription::ToString () const
     Characters::StringBuilder sb;
     sb << "{"sv;
     if (fPresentationURL) {
-        sb << "Presentation-URL: "sv << fPresentationURL << ", "sv;
+        sb << "Presentation-URL: "sv << fPresentationURL;
     }
-    sb << "Device-Type: "sv << fDeviceType << ", "sv;
-    sb << "Manufacture-Name: "sv << fManufactureName << ", "sv;
-    sb << "Friendly-Name: "sv << fFriendlyName << ", "sv;
+    sb << ", Device-Type: "sv << fDeviceType;
+    sb << ", Manufacture-Name: "sv << fManufactureName;
+    sb << ", Friendly-Name: "sv << fFriendlyName;
     if (fManufacturingURL) {
-        sb << "Manufacturing-URL: "sv << fManufacturingURL << ", "sv;
+        sb << ", Manufacturing-URL: "sv << fManufacturingURL;
     }
     if (fModelDescription) {
-        sb << "Model-Description: "sv << fModelDescription << ", "sv;
+        sb << ", Model-Description: "sv << fModelDescription;
     }
-    sb << "Model-Name: "sv << fModelName << ", "sv;
+    sb << ", Model-Name: "sv << fModelName;
     if (fModelNumber) {
-        sb << "Model-Number: "sv << fModelNumber << ", "sv;
+        sb << ", Model-Number: "sv << fModelNumber;
     }
     if (fModelURL) {
-        sb << "Model-URL: "sv << *fModelURL << ", "sv;
+        sb << ", Model-URL: "sv << *fModelURL;
     }
     if (fSerialNumber) {
-        sb << "Serial-Number: "sv << fSerialNumber << ", "sv;
+        sb << ", Serial-Number: "sv << fSerialNumber;
     }
-    sb << "UDN: "sv << fUDN << ", "sv;
+    sb << ", UDN: "sv << fUDN;
     if (fUPC) {
-        sb << "UPC: "sv << fUPC << ", "sv;
+        sb << ", UPC: "sv << fUPC;
     }
     if (fIcons) {
-        sb << "Icons: "sv << fIcons << ", "sv;
+        sb << ", Icons: "sv << fIcons;
     }
     if (fServices) {
-        sb << "Services: "sv << fServices;
+        sb << ", Services: "sv << fServices;
     }
     sb << "}"sv;
     return sb;
