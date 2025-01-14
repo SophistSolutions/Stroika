@@ -36,8 +36,9 @@ namespace Stroika::Foundation::Characters {
      *  \note charset names are intrinsically compared case insensitively (@todo find reference for this but empirically its clear).
      */
     class Charset {
-
     public:
+        /**
+         */
         Charset (const Charset&) = default;
         Charset (const std::string& charsetName);
         Charset (const std::string_view& charsetName);

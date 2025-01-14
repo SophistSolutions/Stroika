@@ -95,27 +95,27 @@ namespace {
                                  [this] ([[maybe_unused]] auto* property, const auto& contentLength) { fContentLength_ = contentLength; }}
                 // Can implement getter/setters with Memory::GetObjectOwningField - to save space, but counts on exact
                 // storage layout and not totally legal with non- is_standard_layout<> - see Memory::GetObjectOwningField
-                , contentLength2{[] (const auto* property) {
+                , contentLength2{[] ([[maybe_unused]] const auto* property) {
                                      const Headers* thisObj = Memory::GetObjectOwningField (property, &Headers::contentLength2);
                                      return thisObj->fContentLength_;
                                  },
-                                 [] (auto* property, auto contentLength) {
+                                 [] ([[maybe_unused]] auto* property, auto contentLength) {
                                      Headers* thisObj         = Memory::GetObjectOwningField (property, &Headers::contentLength2);
                                      thisObj->fContentLength_ = contentLength;
                                  }}
-                , contentLength3{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) {
+                , contentLength3{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]]const auto* property) {
                                      const Headers* headerObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
                                      return headerObj->fContentLength_;
                                  },
-                                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, auto contentLength) {
+                                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto contentLength) {
                                      Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength3);
                                      thisObj->fContentLength_ = contentLength;
                                  }}
-                , contentLength4{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] (const auto* property) {
+                , contentLength4{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                                      const Headers* headerObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength4);
                                      return headerObj->fContentLength_;
                                  },
-                                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] (auto* property, auto contentLength) {
+                                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto contentLength) {
                                      Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentLength4);
                                      thisObj->fContentLength_ = contentLength;
                                  }}
