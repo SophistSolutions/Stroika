@@ -20,13 +20,13 @@ namespace Stroika::Frameworks::Auth {
     template <convertible_to<bool> ID_OBJ>
     inline CurrentIdentityManager<ID_OBJ>::Establish::~Establish ()
     {
-        Require (sCurrent_ == false);
-        sCurrent_ = id;
+        sCurrent_ = ID_OBJ{};
+        Ensure (sCurrent_ == false);
     }
     template <convertible_to<bool> ID_OBJ>
     inline ID_OBJ CurrentIdentityManager<ID_OBJ>::Get ()
     {
         return sCurrent_;
     }
-    
+
 }
