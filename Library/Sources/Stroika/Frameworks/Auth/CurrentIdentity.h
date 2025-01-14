@@ -20,6 +20,10 @@ namespace Stroika::Frameworks::Auth {
 
     using namespace Stroika::Foundation;
 
+
+    // @todo IMPORTANT TODO - MUST BE INTEGRATED INTO WEBSERVER ROUTER automatically, so interceptor sets, not each route handler!!!
+
+
     // struct AuthenticatedIdentity {
     //     String fEMail;  // for now - lets assume that's our identity - what we extract from JWT
     // };
@@ -66,7 +70,7 @@ namespace Stroika::Frameworks::Auth {
         static ID_OBJ Get ();
 
     private:
-        static thread_local ID_OBJ sCurrent_;
+        static inline thread_local ID_OBJ sCurrent_;
     };
 
 }
