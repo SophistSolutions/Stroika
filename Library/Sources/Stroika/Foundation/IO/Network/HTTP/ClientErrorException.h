@@ -36,6 +36,16 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  If given an 'inner exception' to be based on, this takes that exception to form a message, and automatically
          *  generates a status (unless provided explicitly).
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Throw (ClientErrorException{StatusCodes::kUnauthorized});
+         *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Throw (ClientErrorException{StatusCodes::kBadRequest});
+         *      \endcode
          *
          *  \req 400 <= status and status < 500
          */
