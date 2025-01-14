@@ -24,7 +24,6 @@ namespace Stroika::Frameworks::Auth::OAuth {
     // DOCUMENT - GIVE EXAMPLES - WHERE TO FIND IN GOOGLE CLOUD UI TO CONFIGURE - ETC... AND WHAT I CAN REMEMBER OF AZURE LIKEWISE
     // see these (IMPERFECT ) docs for example - https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow
 
-
     /**
      *  \brief sometimes called ClientID, and sometimes called applicationID
      */
@@ -49,6 +48,24 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
         String ToString () const;
     };
+
+/// DRAFT OF MORE STUFF TO ADD - see javascript frameworks - for doing auth2 - convert token to access token etc...
+// Provide predefined ones for google, facebook, etc
+// stuff to fetch 'keys' like I vaguely remember from openid... to validate jwts...
+#if 0
+    struct ConfigurationProviderType {
+        IO::Network::URI forThisOp;
+        IO::Network::URI forTahtOp;
+        String name;
+    };
+
+    using ConfigurationProvidersType = Sequence<ConfigurationProviderType>;
+
+
+    using M = Mapping<IDOFCONFIGPROVIDER (like google, apple, twitter), ClientConfiguration);
+    // this is often what we need in configuration - maybe not mapping but array of key pairs cuz order matters - first
+    // is default
+#endif
 
 }
 
