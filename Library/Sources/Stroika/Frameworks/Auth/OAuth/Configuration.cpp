@@ -23,7 +23,8 @@ String ClientConfiguration::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "applicationID: " << fApplicationID;
+    sb << "provider: " << fProvider;
+    sb << ", applicationID: " << fApplicationID;
     sb << ", redirectURLs: " << fRedirectURLs;
     sb << "}"sv;
     return sb;

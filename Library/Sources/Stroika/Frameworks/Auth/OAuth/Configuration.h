@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/GUID.h"
+#include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
@@ -21,6 +22,12 @@
 namespace Stroika::Frameworks::Auth::OAuth {
 
     using namespace Stroika::Foundation;
+
+    using Characters::String;
+    using Containers::Sequence;
+
+    using DataExchange::ObjectVariantMapper;
+
     // DOCUMENT - GIVE EXAMPLES - WHERE TO FIND IN GOOGLE CLOUD UI TO CONFIGURE - ETC... AND WHAT I CAN REMEMBER OF AZURE LIKEWISE
     // see these (IMPERFECT ) docs for example - https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow
 
@@ -28,44 +35,69 @@ namespace Stroika::Frameworks::Auth::OAuth {
      *  \brief sometimes called ClientID, and sometimes called applicationID
      */
     using ApplicationIDType = Common::GUID;
-    using Characters::String;
-    using Containers::Sequence;
-
-    using DataExchange::ObjectVariantMapper;
 
     /**
     * often require things like no #/fragments
      */
     using RedirectURLType = IO::Network::URI;
 
+    /**
+     *  \brief Track configuration data about stuff that differentiates different
+     *         OAuth providers - what URLs to use, base url, relative off that urls for login/upgrade token/refresh etc.
+     *         ALL very prelim at this stage.
+     *
+     *      see javascript frameworks - for doing auth2 - convert token to access token etc...
+     *      stuff to fetch 'keys' like I vaguely remember from openid... to validate jwts...\
+     */
+    class ProviderConfiguration {
+    public:
+        /* IO::Network::URI forThisOp;
+        IO::Network::URI forTahtOp;*/
+        String name;
+    };
+
+    namespace Private_ {
+        using My_Extractor_ = decltype ([] (const ProviderConfiguration& t) -> String { return t.name; });
+        using My_Traits_    = Containers::KeyedCollection_DefaultTraits<ProviderConfiguration, String, My_Extractor_>;
+    }
+    /**
+     *  A list of definitions for configurations.
+     * 
+     *  @todo provide predefined one inside this framework, and allow it to be updated/revised in applications.
+     *  REFERENED IMPLICITLY in ClientConfiguration
+     */
+    using ProvidersConfigurations = Containers::KeyedCollection<ProviderConfiguration, String, Private_::My_Traits_>;
+
+    /**
+     *  a predefined set of configurations, but you may need to update/roll your own, as this could get out of date.
+     */
+    extern const ProvidersConfigurations kDefaultProviderConfigurations;
+
+    /**
+     *  \note logically, we want to aggregate ProviderConfiguration inside ClientConfiguration, but
+            since it can generally be static and unchanged, we keep it separate, and just link up/reference by 'name'
+     */
     struct ClientConfiguration {
+        String                    fProvider; // refers to some element of ProvidersConfigurationType
         ApplicationIDType         fApplicationID;
         Sequence<RedirectURLType> fRedirectURLs;
 
-        // maybe add 'scopes'
+        // @todo maybe add 'scopes'
 
         static const ObjectVariantMapper kMapper;
 
         String ToString () const;
     };
 
-/// DRAFT OF MORE STUFF TO ADD - see javascript frameworks - for doing auth2 - convert token to access token etc...
-// Provide predefined ones for google, facebook, etc
-// stuff to fetch 'keys' like I vaguely remember from openid... to validate jwts...
-#if 0
-    struct ConfigurationProviderType {
-        IO::Network::URI forThisOp;
-        IO::Network::URI forTahtOp;
-        String name;
-    };
-
-    using ConfigurationProvidersType = Sequence<ConfigurationProviderType>;
-
-
-    using M = Mapping<IDOFCONFIGPROVIDER (like google, apple, twitter), ClientConfiguration);
-    // this is often what we need in configuration - maybe not mapping but array of key pairs cuz order matters - first
-    // is default
-#endif
+    /**
+     *    {
+     *       { "google", "003...", [] },
+     *       { "apple", "003...", [] },
+     *       { "twitter", "003...", [] },
+     *       { "facebook", "003...", [] },
+     *  }
+     */
+    using ClientConfigurations = Containers::Sequence<ClientConfiguration>;
 
 }
 
