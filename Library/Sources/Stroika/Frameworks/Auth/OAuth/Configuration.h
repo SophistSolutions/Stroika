@@ -33,8 +33,10 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
     /**
      *  \brief sometimes called ClientID, and sometimes called applicationID
+     *  
+     *  \note though this is often a GUID, it cannot be assumed to be a GUID (google for example, doesn't use GUIDs).
      */
-    using ApplicationIDType = Common::GUID;
+    using ApplicationIDType = String;
 
     /**
     * often require things like no #/fragments
