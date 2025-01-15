@@ -53,9 +53,10 @@ namespace Stroika::Frameworks::Auth::OAuth {
      */
     class ProviderConfiguration {
     public:
-        /* IO::Network::URI forThisOp;
-        IO::Network::URI forTahtOp;*/
-        String name;
+        String           name;
+        IO::Network::URI auth_uri;
+        IO::Network::URI token_uri;
+        IO::Network::URI auth_provider_x509_cert_url;
     };
 
     namespace Private_ {

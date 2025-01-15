@@ -21,7 +21,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         return mapper;
     }();
 
-/*
+    /*
      ********************************************************************************
      ******************** Auth::OAuth::kDefaultProviderConfigurations ***************
      ********************************************************************************
@@ -30,14 +30,20 @@ namespace Stroika::Frameworks::Auth::OAuth {
     // @todo debug why initializer list not working???
     inline const ProvidersConfigurations kDefaultProviderConfigurations = [] () {
         ProvidersConfigurations r;
-        r += ProviderConfiguration{.name = "google"sv};
+        r += ProviderConfiguration{.name                        = "google"sv,
+                                   .auth_uri                    = "https://accounts.google.com/o/oauth2/auth"sv,
+                                   .token_uri                   = "https://oauth2.googleapis.com/token"sv,
+                                   .auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"sv};
         r += ProviderConfiguration{.name = "twitter"sv};
         r += ProviderConfiguration{.name = "facebook"sv};
         return r;
     }();
 #else
     inline const ProvidersConfigurations kDefaultProviderConfigurations{
-        ProviderConfiguration{.name = "google"sv},
+        ProviderConfiguration{.name                        = "google"sv,
+                              .auth_uri                    = "https://accounts.google.com/o/oauth2/auth"sv,
+                              .token_uri                   = "https://oauth2.googleapis.com/token"sv,
+                              .auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"sv},
         ProviderConfiguration{.name = "twitter"sv},
         ProviderConfiguration{.name = "facebook"sv},
     };
