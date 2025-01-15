@@ -21,14 +21,14 @@ namespace Stroika::Frameworks::Auth::OAuth {
         return mapper;
     }();
 
-    /*
+/*
      ********************************************************************************
      ******************** Auth::OAuth::kDefaultProviderConfigurations ***************
      ********************************************************************************
      */
-    #if 1
+#if 1
     // @todo debug why initializer list not working???
-    inline const ProvidersConfigurations kDefaultProviderConfigurations = []() {
+    inline const ProvidersConfigurations kDefaultProviderConfigurations = [] () {
         ProvidersConfigurations r;
         r += ProviderConfiguration{.name = "google"sv};
         r += ProviderConfiguration{.name = "twitter"sv};
@@ -36,11 +36,11 @@ namespace Stroika::Frameworks::Auth::OAuth {
         return r;
     }();
 #else
-    inline const ProvidersConfigurations kDefaultProviderConfigurations {
+    inline const ProvidersConfigurations kDefaultProviderConfigurations{
         ProviderConfiguration{.name = "google"sv},
         ProviderConfiguration{.name = "twitter"sv},
         ProviderConfiguration{.name = "facebook"sv},
     };
-    #endif
+#endif
 
 }
