@@ -19,15 +19,27 @@ namespace Stroika::Frameworks::Auth {
 
     using namespace Stroika::Foundation;
 
-
-    // @todo IMPORTANT TODO - MUST BE INTEGRATED INTO WEBSERVER ROUTER automatically, so interceptor sets, not each route handler!!!
-
-
     // struct AuthenticatedIdentity {
     //     String fEMail;  // for now - lets assume that's our identity - what we extract from JWT
     // };
+    // then use optional<AuthenticatedIdentity> as arg to IIdenityManagerCompatibleID/CurrentIdentityManager
+    template <typename T>
+    concept IIdenityManagerCompatibleID = 
+        default_initializable<T> and 
+        requires (T t) {
+            { static_cast<bool> (t) } -> Common::Boolean_testable;
+            static_cast<bool> (T{}) == false;
+        };
+    static_assert (IIdenityManagerCompatibleID<optional<std::string>>);
+
 
     /**
+     *  \brief static/thread_local storage of the some notion of identity, which can be used to 'pass data' to functions
+     *         without explicit parameters.
+     * 
+     *  Intended use is in webserver capturing info from auth headers in interceptors, and storing for use in actual
+     *  Route callbacks.
+     * 
      *  \brief manage a 'thread_local' 'current-id' - typically for use in threaded applications where IDs might come from
      *         outside, like web-services
      * 
@@ -40,11 +52,7 @@ namespace Stroika::Frameworks::Auth {
      *          ...
      *      }
      */
-    template <typename T>
-    concept IIdenityManagerCompatibleID =
-        Common::Boolean_testable<T> and constructible_from<T>; // default_constructible, convertible_to<bool>, @todo!!! static_assert (ID_OBJ{} == false);
-
-    // want this to be close to convertible_to<bool> - but must refine the concept - not right
+    * /
     template <IIdenityManagerCompatibleID ID_OBJ>
     struct CurrentIdentityManager {
 
