@@ -11,27 +11,26 @@
 
 /**
  *  \file
-*  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Frameworks::Auth {
 
     using namespace Stroika::Foundation;
 
-    // struct AuthenticatedIdentity {
-    //     String fEMail;  // for now - lets assume that's our identity - what we extract from JWT
-    // };
-    // then use optional<AuthenticatedIdentity> as arg to IIdenityManagerCompatibleID/CurrentIdentityManager
+    /**
+     * struct AuthenticatedIdentity {
+     *     String fEMail;  // for now - lets assume that's our identity - what we extract from JWT
+     * };
+     * then use optional<AuthenticatedIdentity> as arg to IIdentityManagerCompatibleID/CurrentIdentityManager
+     */
     template <typename T>
-    concept IIdenityManagerCompatibleID = 
-        default_initializable<T> and 
-        requires (T t) {
-            { static_cast<bool> (t) } -> Common::Boolean_testable;
-            static_cast<bool> (T{}) == false;
-        };
-    static_assert (IIdenityManagerCompatibleID<optional<std::string>>);
-
+    concept IIdentityManagerCompatibleID = default_initializable<T> and requires (T t) {
+        { static_cast<bool> (t) } -> Common::Boolean_testable;
+        static_cast<bool> (T{}) == false;
+    };
+    static_assert (IIdentityManagerCompatibleID<optional<std::string>>);
 
     /**
      *  \brief static/thread_local storage of the some notion of identity, which can be used to 'pass data' to functions
@@ -52,8 +51,7 @@ namespace Stroika::Frameworks::Auth {
      *          ...
      *      }
      */
-    * /
-    template <IIdenityManagerCompatibleID ID_OBJ>
+    template <IIdentityManagerCompatibleID ID_OBJ>
     struct CurrentIdentityManager {
 
         /**
