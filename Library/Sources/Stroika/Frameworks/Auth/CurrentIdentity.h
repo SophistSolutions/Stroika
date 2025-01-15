@@ -6,9 +6,8 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <type_traits>
-
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 
 /**
  *  \file
@@ -42,7 +41,8 @@ namespace Stroika::Frameworks::Auth {
      *      }
      */
     template <typename T>
-    concept IIdenityManagerCompatibleID = true;     // default_constructible, convertible_to<bool>, static_assert (ID_OBJ{} == false);
+    concept IIdenityManagerCompatibleID =
+        Common::Boolean_testable<T> and constructible_from<T>; // default_constructible, convertible_to<bool>, @todo!!! static_assert (ID_OBJ{} == false);
 
     // want this to be close to convertible_to<bool> - but must refine the concept - not right
     template <IIdenityManagerCompatibleID ID_OBJ>
