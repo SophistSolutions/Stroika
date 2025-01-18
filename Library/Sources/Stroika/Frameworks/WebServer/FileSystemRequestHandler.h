@@ -61,9 +61,11 @@ namespace Stroika::Frameworks::WebServer {
         optional<String> fURLPrefix2Strip;
 
         /**
-         *  @todo DOCS
+         *  When a Lookup is requested of a top-level directory, the argument filenames will also match
+         *  that directory lookup. This is - for example, so that home.asp, or home.html can be matched by
+         *  a lookup of '/'.
          */
-        optional<Sequence<String>> fDefaultIndexFileNames;
+        optional<Sequence<filesystem::path>> fDefaultIndexFileNames;
 
         /**
          *  NYI - see http://stroika-bugs.sophists.com/browse/STK-732
@@ -102,7 +104,7 @@ namespace Stroika::Frameworks::WebServer {
          *      \code
          *          Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_ {
          *              // webpack generates js/css files with a hex/hash prefix, so those are immutable
-         *              pair<RegularExpression, CacheControl>{RegularExpression{".*[0-9a-fA-F]+\\.(js|css|js\\.map)", eCaseInsensitive}, CacheControl::kImmutable},
+         *              pair<RegularExpression, CacheControl>{RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)", eCaseInsensitive}, CacheControl::kImmutable},
          *              // treat everything else as valid to be cached for a day (very arbitrary)
          *              pair<RegularExpression, CacheControl>{RegularExpression::kAny, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}},
          *          };
