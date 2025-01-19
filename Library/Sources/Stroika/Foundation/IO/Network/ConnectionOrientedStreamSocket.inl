@@ -37,20 +37,23 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().Connect (sockAddr, timeout);
     }
-    inline size_t ConnectionOrientedStreamSocket::Ptr::Read (byte* intoStart, byte* intoEnd) const
+    inline span<byte> ConnectionOrientedStreamSocket::Ptr::Read (span<byte> into) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        return _ref ().Read (intoStart, intoEnd);
+        return into.subspan (0, _ref ().Read (into.data (), into.data () + into.size ()));
     }
-    inline optional<size_t> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (byte* intoStart, byte* intoEnd) const
+    inline optional<size_t> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (span<byte> into) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        return _ref ().ReadNonBlocking (intoStart, intoEnd);
+        if (auto o = _ref ().ReadNonBlocking (into.data (), into.data () + into.size ())) {
+            return *o;
+        }
+        return nullopt;
     }
-    inline void ConnectionOrientedStreamSocket::Ptr::Write (const byte* start, const byte* end) const
+    inline void ConnectionOrientedStreamSocket::Ptr::Write (span<const byte> data) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        _ref ().Write (start, end);
+        _ref ().Write (data.data (), data.data () + data.size ());
     }
     inline optional<IO::Network::SocketAddress> ConnectionOrientedStreamSocket::Ptr::GetPeerAddress () const
     {

@@ -460,8 +460,3 @@ void ConnectionOrientedStreamSocket::Ptr::SetLinger (const optional<int>& linger
     }
     setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
 }
-
-void ConnectionOrientedStreamSocket::Ptr::Write (const Memory::BLOB& b) const
-{
-    Write (b.begin (), b.end ());
-}

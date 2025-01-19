@@ -106,7 +106,7 @@ namespace {
         {
             // thread safety OK cuz only reading from Ptr (nobody writes) and socket rep internally synchronized
             byte buf[1024];
-            while (fReadSocket_.ReadNonBlocking (begin (buf), end (buf)))
+            while (fReadSocket_.ReadNonBlocking (buf))
                 ;
         }
         virtual void _WriteOne () override

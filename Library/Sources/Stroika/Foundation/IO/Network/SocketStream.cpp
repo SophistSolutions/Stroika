@@ -76,7 +76,7 @@ namespace {
         virtual optional<size_t> AvailableToRead () override
         {
             Require (IsOpenRead ());
-            return fSD_.ReadNonBlocking (nullptr, nullptr);
+            return fSD_.ReadNonBlocking (span<byte>{});
         }
         virtual optional<SeekOffsetType> RemainingLength () override
         {
@@ -89,10 +89,10 @@ namespace {
             optional<span<byte>> result;
             switch (blockFlag) {
                 case NoDataAvailableHandling::eBlockIfNoDataAvailable:
-                    result = intoBuffer.subspan (0, fSD_.Read (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ()));
+                    result = fSD_.Read (intoBuffer);
                     break;
                 case NoDataAvailableHandling::eDontBlock: {
-                    auto o = fSD_.ReadNonBlocking (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ());
+                    auto o = fSD_.ReadNonBlocking (intoBuffer);
                     if (o == nullopt) {
                         Execution::Throw (EWouldBlock::kThe);
                     }

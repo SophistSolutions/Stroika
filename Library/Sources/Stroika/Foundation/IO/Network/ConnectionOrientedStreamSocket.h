@@ -128,26 +128,25 @@ namespace Stroika::Foundation::IO::Network {
              *
              *  \note ***Cancelation Point***
              */
-            nonvirtual size_t Read (byte* intoStart, byte* intoEnd) const;
+            nonvirtual span<byte> Read (span<byte> into) const;
 
         public:
             /**
-             *  \brief Non-blocking read: return {} if no data available, 0 on EOF.
+             *  \brief Non-blocking read: return nullopt if no data available, 0 on EOF, or number of bytes known available
              *
-             *  \note Though Read () is a const method, can be done concurrently with most other const ConnectionOrientedStreamSocket methods,
+             *  \note Though ReadNonBlocking () is a const method, can be done concurrently with most other const ConnectionOrientedStreamSocket methods,
              *        It is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
              *        done simultaneously, from different threads.
              *
-             *  \note if intoStart == nullptr, then don't actually read, but return the number of bytes available.
+             *  \note if into.empty (), then don't actually read, but return the number of bytes available.
              */
-            nonvirtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const;
+            nonvirtual optional<size_t> ReadNonBlocking (span<byte> into) const;
 
         public:
             /**
              *  @todo   Need timeout on this API? Or global (for instance) timeout?
              */
-            nonvirtual void Write (const byte* start, const byte* end) const;
-            nonvirtual void Write (const Memory::BLOB& b) const;
+            nonvirtual void Write (span<const byte> data) const;
 
         public:
             /**
@@ -239,6 +238,23 @@ namespace Stroika::Foundation::IO::Network {
              * \req fRep_ != nullptr
              */
             nonvirtual const _IRep& _cref () const;
+
+        public:
+            [[deprecated ("Since Stroika v3.0d15 use span{} overload")]] size_t Read (byte* intoStart, byte* intoEnd) const
+            {
+                return Read (span{intoStart, intoEnd}).size ();
+            }
+            [[deprecated ("Since Stroika v3.0d15 - use span overload")]] void Write (const byte* start, const byte* end) const
+            {
+                Write (span{start, end});
+            }
+            [[deprecated ("Since Stroika v3.0d15 - use span overload")]] optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const
+            {
+                if (auto o = ReadNonBlocking (span{intoStart, intoEnd})) {
+                    return *o;
+                }
+                return nullopt;
+            }
         };
 
         /**
