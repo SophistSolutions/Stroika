@@ -191,7 +191,7 @@ namespace {
                 Connect_Sync_ (sockAddr);
             }
         }
-        virtual size_t Read (byte* intoStart, byte* intoEnd) const override
+        virtual span<byte> Read (span<byte> into) const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
 
@@ -201,17 +201,26 @@ namespace {
 #endif
 
 #if qStroika_Foundation_Common_Platform_POSIX
-            return Handle_ErrNoResultInterruption (
-                [this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
+            return into.subspan (0, Handle_ErrNoResultInterruption (
+                                        [this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, into.data (), into.size ()); }));
 #elif qStroika_Foundation_Common_Platform_Windows
             int flags        = 0;
-            int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
-            return static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
+            int nBytesToRead = static_cast<int> (min<size_t> (into.size (), numeric_limits<int>::max ()));
+            return into.subspan (0, static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (
+                                        ::recv (fSD_, reinterpret_cast<char*> (into.data ()), nBytesToRead, flags))));
 #else
             AssertNotImplemented ();
 #endif
         }
-        virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const override
+        virtual optional<span<byte>> ReadNonBlocking (span<byte> into) const override
+        {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
+            if (AvailableToRead ()) {
+                return Read (into);
+            }
+            return nullopt;
+        }
+        virtual optional<size_t> AvailableToRead () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -225,24 +234,17 @@ namespace {
                 FD_SET (fSD_, &input);
                 struct timeval timeout {};
                 if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
-                    if (intoStart == nullptr) {
-                        // don't know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
-                        // But MUST check if is EOF or real data available
-                        char buf[1024];
+                    // don't know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
+                    // But MUST check if is EOF or real data available
+                    char buf[1024];
 #if qStroika_Foundation_Common_Platform_POSIX
-                        int tmp = Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); });
+                    int tmp = Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); });
 #elif qStroika_Foundation_Common_Platform_Windows
-                        int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
+                    int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
 #else
-                        AssertNotImplemented ();
+                    AssertNotImplemented ();
 #endif
-                        return tmp;
-                    }
-#if qStroika_Foundation_Debug_AssertionsChecked
-                    --fCurrentPendingReadsCount; // reverse for inherited Read ()
-                    [[maybe_unused]] auto&& cleanup2 = Finally ([this] () noexcept { ++fCurrentPendingReadsCount; });
-#endif
-                    return Read (intoStart, intoEnd);
+                    return tmp;
                 }
                 else {
                     return {};

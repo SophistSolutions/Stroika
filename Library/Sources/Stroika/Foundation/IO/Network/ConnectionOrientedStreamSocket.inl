@@ -40,21 +40,18 @@ namespace Stroika::Foundation::IO::Network {
     inline span<byte> ConnectionOrientedStreamSocket::Ptr::Read (span<byte> into) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        return into.subspan (0, _ref ().Read (into.data (), into.data () + into.size ()));
+        return _ref ().Read (into);
     }
     inline optional<span<byte>> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (span<byte> into) const
     {
         Require (not into.empty ());
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        if (auto o = _ref ().ReadNonBlocking (into.data (), into.data () + into.size ())) {
-            return into.subspan (0, *o);
-        }
-        return nullopt;
+        return _ref ().ReadNonBlocking (into);
     }
     inline optional<size_t> ConnectionOrientedStreamSocket::Ptr::AvailableToRead () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        return _ref ().ReadNonBlocking (nullptr, nullptr);
+        return _ref ().AvailableToRead ();
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Write (span<const byte> data) const
     {

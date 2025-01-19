@@ -272,17 +272,18 @@ namespace Stroika::Foundation::IO::Network {
         public:
             virtual ~_IRep () = default;
             // return true on success, and false on failure (if e != nullptr) - if e == nullptr - just throws as normal
-            virtual void             Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const = 0;
-            virtual size_t           Read (byte* intoStart, byte* intoEnd) const                                            = 0;
-            virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                 = 0;
-            virtual void             Write (span<const byte> data) const                                                    = 0;
-            virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                            = 0;
-            virtual optional<Time::DurationSeconds>      GetAutomaticTCPDisconnectOnClose () const                          = 0;
-            virtual void             SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor)      = 0;
-            virtual KeepAliveOptions GetKeepAlives () const                                                                 = 0;
-            virtual void             SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                               = 0;
-            virtual bool             GetTCPNoDelay () const                                                                 = 0;
-            virtual void             SetTCPNoDelay (bool noDelay)                                                           = 0;
+            virtual void                 Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const = 0;
+            virtual span<byte>           Read (span<byte> into) const                                                           = 0;
+            virtual optional<span<byte>> ReadNonBlocking (span<byte> into) const                                                = 0;
+            virtual optional<size_t>     AvailableToRead () const                                                               = 0;
+            virtual void                 Write (span<const byte> data) const                                                    = 0;
+            virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                                = 0;
+            virtual optional<Time::DurationSeconds>      GetAutomaticTCPDisconnectOnClose () const                              = 0;
+            virtual void             SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor)          = 0;
+            virtual KeepAliveOptions GetKeepAlives () const                                                                     = 0;
+            virtual void             SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                                   = 0;
+            virtual bool             GetTCPNoDelay () const                                                                     = 0;
+            virtual void             SetTCPNoDelay (bool noDelay)                                                               = 0;
         };
 
         /**
