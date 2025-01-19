@@ -67,9 +67,8 @@ namespace Stroika::Foundation::Streams::OutputStream {
     inline void Ptr<ELEMENT_TYPE>::Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
         requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
                   (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)) or
-                  (same_as<ELEMENT_TYPE, Characters::Character> and (Characters::IUNICODECanUnambiguouslyConvertFrom<remove_cvref_t<ELEMENT_TYPE2>>)))
+                  (same_as<ELEMENT_TYPE, Character> and (Characters::IUNICODECanUnambiguouslyConvertFrom<remove_cvref_t<ELEMENT_TYPE2>>)))
     {
-        using Characters::Character;
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         if (not elts.empty ()) [[likely]] {
@@ -103,29 +102,29 @@ namespace Stroika::Foundation::Streams::OutputStream {
     }
     template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::Write (const Characters::String& s) const
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Character>)
     {
-        Memory::StackBuffer<Characters::Character> ignored;
-        this->Write (s.GetData<Characters::Character> (&ignored));
+        Memory::StackBuffer<Character> ignored;
+        this->Write (s.GetData<Character> (&ignored));
     }
     template <typename ELEMENT_TYPE>
     template <Characters::IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline void Ptr<ELEMENT_TYPE>::Write (const CHAR_T* cStr) const
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Character>)
     {
         this->Write (span{cStr, Characters::CString::Length (cStr)});
     }
     template <typename ELEMENT_TYPE>
     template <typename ELT_2_WRITE>
     inline void Ptr<ELEMENT_TYPE>::WriteLn (ELT_2_WRITE&& arg) const
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Character>)
     {
         this->Write (forward<ELT_2_WRITE> (arg));
-        this->Write (Characters::kEOL<Characters::Character>);
+        this->Write (Characters::kEOL<Character>);
     }
     template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::PrintF (const wchar_t* format, ...)
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Character>)
     {
         RequireNotNull (format);
         va_list argsList;

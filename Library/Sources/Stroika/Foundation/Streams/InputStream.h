@@ -38,6 +38,10 @@ namespace Stroika::Foundation::Memory {
 
 namespace Stroika::Foundation::Streams::InputStream {
 
+    using Characters::Character;
+    using Characters::String;
+    using Traversal::Iterable;
+
     template <typename ELEMENT_TYPE>
     class IRep;
 
@@ -408,8 +412,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  This API is always blocking.
          */
-        nonvirtual Characters::String ReadLine () const
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+        nonvirtual String ReadLine () const
+            requires (same_as<ELEMENT_TYPE, Character>);
 
     public:
         /**
@@ -424,8 +428,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  This API is always blocking.
          */
-        nonvirtual Traversal::Iterable<Characters::String> ReadLines () const
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+        nonvirtual Iterable<String> ReadLines () const
+            requires (same_as<ELEMENT_TYPE, Character>);
 
     public:
         /**
@@ -467,8 +471,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *        cannot get working with require() since to be in CPP file, need to use template
          *        specialization, and cannot specify requires with template specialization (or I cannot figure out how)
          */
-        nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+        nonvirtual String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
+            requires (same_as<ELEMENT_TYPE, Character>);
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
 #if 0
             requires (same_as<ELEMENT_TYPE, byte>)  // get compile error on vis studio when we specailize - not sure if LGP bug or compiler bug...--LGP 2023-12-28

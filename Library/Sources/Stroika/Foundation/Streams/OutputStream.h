@@ -51,6 +51,9 @@ namespace Stroika::Foundation::Memory {
 
 namespace Stroika::Foundation::Streams::OutputStream {
 
+    using Characters::Character;
+    using Characters::String;
+
     template <typename ELEMENT_TYPE>
     class IRep;
 
@@ -152,16 +155,15 @@ namespace Stroika::Foundation::Streams::OutputStream {
         nonvirtual void Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
             requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
                       (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)) or
-                      (same_as<ELEMENT_TYPE, Characters::Character> and
-                       (Characters::IUNICODECanUnambiguouslyConvertFrom<remove_cvref_t<ELEMENT_TYPE2>>)));
+                      (same_as<ELEMENT_TYPE, Character> and (Characters::IUNICODECanUnambiguouslyConvertFrom<remove_cvref_t<ELEMENT_TYPE2>>)));
         nonvirtual void Write (const ELEMENT_TYPE& e) const;
         nonvirtual void Write (const Memory::BLOB& blob) const
             requires (same_as<ELEMENT_TYPE, byte>);
-        nonvirtual void Write (const Characters::String& s) const
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+        nonvirtual void Write (const String& s) const
+            requires (same_as<ELEMENT_TYPE, Character>);
         template <Characters::IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Write (const CHAR_T* cStr) const
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Character>);
 
     public:
         /**
@@ -169,14 +171,14 @@ namespace Stroika::Foundation::Streams::OutputStream {
          */
         template <typename ELT_2_WRITE>
         nonvirtual void WriteLn (ELT_2_WRITE&& arg) const
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Character>);
 
     public:
         /**
          *  \req IsOpen ()
          */
         nonvirtual void PrintF (const wchar_t* format, ...)
-            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Character>);
 
     public:
         /**
@@ -184,7 +186,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *  If argument 'reset' is true, this also clears the smart pointer (calls Stream<>::reset()).
          *
          *  It is generally unneeded to ever call Close () - as streams are closed automatically when the final
-         *  reference to them is released (smartptr).
+         *  reference to them is released (shared_ptr).
          *
          *  But - this can be handy - in that it allows for exception handling. Exceptions closing out an output stream - doing
          *  final writes - cannot be reported if done by destroying objects (cannot throw from dtor) - so Close () assures

@@ -14,9 +14,6 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
- *      @todo   Need InputOutputStream<ELEMENT_TYPE>::Synchronized() like InpoutStream<>::Synconbized.
- *
  */
 
 namespace Stroika::Foundation::Streams::InputOutputStream {

@@ -293,10 +293,10 @@ namespace Stroika::Foundation::Streams::InputStream {
         }
     }
     template <typename ELEMENT_TYPE>
-    Characters::String InputStream::Ptr<ELEMENT_TYPE>::ReadLine () const
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
+    String InputStream::Ptr<ELEMENT_TYPE>::ReadLine () const
+        requires (same_as<ELEMENT_TYPE, Character>)
     {
-        using namespace Characters;
+        using Characters::StringBuilder;
         Require (this->IsSeekable ());
         StringBuilder result;
         while (true) {
@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             }
             else if (c == '\r') {
                 c = this->ReadBlocking ().value_or (Character{});
-                // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
+                // if CR is followed by LF, append that to result too before returning. Otherwise, put the character back
                 if (c == '\n') {
                     result.push_back (c);
                 }
@@ -323,14 +323,13 @@ namespace Stroika::Foundation::Streams::InputStream {
         }
     }
     template <typename ELEMENT_TYPE>
-    Traversal::Iterable<Characters::String> InputStream::Ptr<ELEMENT_TYPE>::ReadLines () const
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
+    Iterable<String> InputStream::Ptr<ELEMENT_TYPE>::ReadLines () const
+        requires (same_as<ELEMENT_TYPE, Character>)
     {
-        using namespace Characters;
-        using namespace Traversal;
+        using Characters::StringBuilder;
         InputStream::Ptr<Character> copyOfStream = *this;
         if (this->IsSeekable ()) [[likely]] {
-            return CreateGenerator<String> ([copyOfStream] () -> optional<String> {
+            return Traversal::CreateGenerator<String> ([copyOfStream] () -> optional<String> {
                 String line = copyOfStream.ReadLine ();
                 if (line.empty ()) {
                     return nullopt;
@@ -373,7 +372,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                 };
             };
             optional<Character> prefixLineChar; // magic so optional<Character> in mutable lambda
-            return CreateGenerator<String> ([readLine, copyOfStream, prefixLineChar] () mutable -> optional<String> {
+            return Traversal::CreateGenerator<String> ([readLine, copyOfStream, prefixLineChar] () mutable -> optional<String> {
                 tuple<String, optional<Character>> lineEtc = readLine (copyOfStream, prefixLineChar);
                 if (get<String> (lineEtc).empty ()) {
                     return nullopt;
@@ -387,16 +386,15 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     template <typename ELEMENT_TYPE>
-    Characters::String InputStream::Ptr<ELEMENT_TYPE>::ReadAll (size_t upTo) const
-        requires (same_as<ELEMENT_TYPE, Characters::Character>)
+    String InputStream::Ptr<ELEMENT_TYPE>::ReadAll (size_t upTo) const
+        requires (same_as<ELEMENT_TYPE, Character>)
     {
-        using namespace Characters;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"InputStream::Ptr<Character>::ReadAll", "upTo: {}"_f, upTo};
 #endif
         Require (upTo >= 1);
-        StringBuilder result;
-        size_t        nEltsLeft = upTo;
+        Characters::StringBuilder result;
+        size_t                    nEltsLeft = upTo;
         while (nEltsLeft > 0) {
             Character  buf[16 * 1024];
             Character* s = std::begin (buf);
@@ -417,9 +415,9 @@ namespace Stroika::Foundation::Streams::InputStream {
             }
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Returning %llu characters", static_cast<unsigned long long> (result.size ()));
+        DbgTrace (L"Returning {} characters"_f, result.size ());
 #endif
-        return result.str ();
+        return result;
     }
     DISABLE_COMPILER_MSC_WARNING_END (6262)
     template <typename ELEMENT_TYPE>

@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
         };
     }
     namespace Private_ {
-        Characters::String MemStream2StringHelper_ (const span<const byte>& s); // helper to avoid needless #include of ToString code
+        String MemStream2StringHelper_ (const span<const byte>& s); // helper to avoid needless #include of ToString code
     }
 
     /*
@@ -284,12 +284,9 @@ namespace Stroika::Foundation::Streams::MemoryStream {
     template <typename ELEMENT_TYPE>
     template <typename T>
     inline T Ptr<ELEMENT_TYPE>::As () const
-        requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and (same_as<T, Memory::BLOB> or same_as<T, string>)) or
-                  (same_as<ELEMENT_TYPE, Characters::Character> and (same_as<T, Characters::String>)))
+        requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and (same_as<T, BLOB> or same_as<T, string>)) or
+                  (same_as<ELEMENT_TYPE, Character> and (same_as<T, String>)))
     {
-        using Characters::Character;
-        using Characters::String;
-        using Memory::BLOB;
         if constexpr (same_as<T, vector<ELEMENT_TYPE>>) {
             return GetRepConstRef_ ().AsVector ();
         }
@@ -305,7 +302,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
         }
     }
     template <typename ELEMENT_TYPE>
-    inline Characters::String Ptr<ELEMENT_TYPE>::ToString () const
+    inline String Ptr<ELEMENT_TYPE>::ToString () const
     {
         return Private_::MemStream2StringHelper_ (GetRepConstRef_ ().AsVector ());
     }

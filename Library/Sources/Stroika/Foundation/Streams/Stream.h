@@ -33,9 +33,9 @@ namespace Stroika::Foundation::Streams {
         Stroika_Define_Enum_Bounds (eFromStart, eFromEnd)
     };
 
-    constexpr Whence eFromStart   = Whence::eFromStart;
-    constexpr Whence eFromCurrent = Whence::eFromCurrent;
-    constexpr Whence eFromEnd     = Whence::eFromEnd;
+    using Whence::eFromCurrent;
+    using Whence::eFromEnd;
+    using Whence::eFromStart;
 
     /**
      *  SeekOffsetType is unsigned, normally, because for most purposes its zero based.
@@ -91,8 +91,8 @@ namespace Stroika::Foundation::Streams {
          */
         eDEFAULT = eBlockIfNoDataAvailable
     };
-    constexpr NoDataAvailableHandling eDontBlock              = NoDataAvailableHandling::eDontBlock;
-    constexpr NoDataAvailableHandling eBlockIfNoDataAvailable = NoDataAvailableHandling::eBlockIfNoDataAvailable;
+    using NoDataAvailableHandling::eBlockIfNoDataAvailable;
+    using NoDataAvailableHandling::eDontBlock;
 
     /**
      *  \em Design Overview

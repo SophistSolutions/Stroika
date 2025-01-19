@@ -36,11 +36,11 @@ namespace {
     struct FSRouterRep_ {
         filesystem::path                              fFSRoot_;
         String                                        fURLPrefix2Strip_;
-        Sequence<String>                              fDefaultIndexFileNames;
+        Sequence<filesystem::path>                    fDefaultIndexFileNames;
         vector<pair<RegularExpression, CacheControl>> fCacheControlSettings;
         optional<filesystem::path>                    fFallbackFile_;
 
-        FSRouterRep_ (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames,
+        FSRouterRep_ (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<filesystem::path>& defaultIndexFileNames,
                       const optional<Sequence<pair<RegularExpression, CacheControl>>>& cacheControlSettings, const optional<filesystem::path>& fallbackFile)
             : fFSRoot_{filesystem::canonical (filesystemRoot)}
             , fURLPrefix2Strip_{urlPrefix2Strip.value_or ("/"sv)}
@@ -125,7 +125,7 @@ namespace {
             }
             if ((urlHostRelPath.empty () or urlHostRelPath.EndsWith ('/')) and not fDefaultIndexFileNames.empty ()) {
                 //@todo tmphack - need to try a bunch and look for 'access'
-                urlHostRelPath = urlHostRelPath + fDefaultIndexFileNames[0];
+                urlHostRelPath = urlHostRelPath + String{fDefaultIndexFileNames[0]};
             }
             return urlHostRelPath;
         }

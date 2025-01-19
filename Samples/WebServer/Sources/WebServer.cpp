@@ -54,7 +54,7 @@ namespace {
         Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings{
             {RegularExpression{".*\\.gif", eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
         return FileSystemRequestHandler::Options{.fURLPrefix2Strip       = "/Files/"_k,
-                                                 .fDefaultIndexFileNames = Sequence<String>{"index.html"_k},
+                                                 .fDefaultIndexFileNames = Sequence<filesystem::path>{"index.html"sv},
                                                  .fCacheControlSettings  = cacheControlSettings};
     }};
 

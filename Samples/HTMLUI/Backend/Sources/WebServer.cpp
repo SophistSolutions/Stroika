@@ -65,7 +65,7 @@ namespace {
             {RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)"sv, eCaseInsensitive}, CacheControl::kImmutable},
             {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{24h}.As<int32_t> ()}},
         };
-        return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<String>{"index.html"_k},
+        return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<filesystem::path>{"index.html"sv},
                                                  .fCacheControlSettings  = kFSCacheControlSettings_,
                                                  //fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect
                                                  .fFallbackFile = "index.html"};
