@@ -107,7 +107,7 @@ namespace {
 
                     if (includeThisAdvertisement) {
                         Memory::BLOB data = SSDP::Serialize ("HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a);
-                        useSocket.SendTo (data.begin (), data.end (), sendTo);
+                        useSocket.SendTo (data, sendTo);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         String msg;
                         msg += "location=" sz + a.fLocation + ", "sv;
@@ -185,7 +185,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                     for (ConnectionlessSocket::Ptr s : Execution::WaitForIOReady{inUseSockets}.WaitQuietly ()) {
                         SocketAddress from;
                         byte          buf[4 * 1024]; // not sure of max packet size
-                        size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
+                        size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                         Assert (nBytesRead <= Memory::NEltsOf (buf));
                         using namespace Streams;
                         ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})),

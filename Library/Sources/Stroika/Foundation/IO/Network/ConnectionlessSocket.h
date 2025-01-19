@@ -24,8 +24,6 @@ namespace Stroika::Foundation::IO::Network {
          *  \par Example Usage
          *      \code
          *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
-         *          Sequence<ConnectionlessSocket::Ptr> l;  // cannot do Sequence<ConnectionlessSocket> cuz not copyable
-         *          l.push_back (cs);
          *      \endcode
          *
          *  \note Since ConnectionlessSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
@@ -95,7 +93,7 @@ namespace Stroika::Foundation::IO::Network {
              *
              *  @see https://linux.die.net/man/2/sendto
              */
-            nonvirtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) const;
+            nonvirtual void SendTo (span<const byte> data, const SocketAddress& sockAddr) const;
 
         public:
             /**
@@ -104,11 +102,14 @@ namespace Stroika::Foundation::IO::Network {
              *  @see https://linux.die.net/man/2/recvfrom
              *
              *  if fromAddress != nullptr (legal to pass nullptr) - then it it is filled in with the source address the packet came from.
+             * 
+             *  returns a subspan (initial segment) of into, of length number of bytes read in packet.
+             * 
+             *  @todo DOCUMENT WHAT HAPPENS IF PACKET DOESNT FIT IN BUF!????
              *
              *  \note ***Cancelation Point***
              */
-            nonvirtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
-                                           Time::DurationSeconds timeout = Time::kInfinity) const;
+            nonvirtual span<byte> ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout = Time::kInfinity) const;
 
         protected:
             /**
@@ -126,6 +127,18 @@ namespace Stroika::Foundation::IO::Network {
              * \req fRep_ != nullptr
              */
             nonvirtual const _IRep& _cref () const;
+
+        public:
+            [[deprecated ("Since Stroika 3.0d15 use span{} overload")]] size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag,
+                                                                                            SocketAddress* fromAddress,
+                                                                                            Time::DurationSeconds timeout = Time::kInfinity) const
+            {
+                return ReceiveFrom (span{intoStart, intoEnd}, flag, fromAddress, timeout).size ();
+            }
+            [[deprecated ("Since Stroika v3.0d15 use span overload")]] void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) const
+            {
+                SendTo (span<const byte>{start, end}, sockAddr);
+            }
         };
 
         /**

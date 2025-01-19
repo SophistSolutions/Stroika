@@ -83,7 +83,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
                 a.fAlive          = true; // periodic notifier must announce alive (we don't support 'going down' yet)
                 Memory::BLOB data = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a);
                 for (pair<ConnectionlessSocket::Ptr, SocketAddress> s : sockets) {
-                    s.first.SendTo (data.begin (), data.end (), s.second);
+                    s.first.SendTo (data, s.second);
                 }
             }
         }

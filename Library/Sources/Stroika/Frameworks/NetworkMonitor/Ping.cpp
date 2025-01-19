@@ -118,7 +118,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     (void)::memcpy (fSendPacket_.begin (), &pingRequest, sizeof (pingRequest));
     reinterpret_cast<ICMP::V4::PacketHeader*> (fSendPacket_.begin ())->checksum =
         IP::ip_checksum (fSendPacket_.begin (), fSendPacket_.begin () + fICMPPacketSize_);
-    fSocket_.SendTo (fSendPacket_.begin (), fSendPacket_.end (), SocketAddress{fDestination_, 0});
+    fSocket_.SendTo (fSendPacket_, SocketAddress{fDestination_, 0});
 
     // Find first packet responding (some packets could be bogus/ignored)
     Time::TimePointSeconds pingTimeoutAfter = Time::GetTickCount () + fPingTimeout_;
@@ -128,7 +128,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         constexpr size_t kExtraSluff_{100}; // Leave a little extra room in case some packets return extra
         StackBuffer<byte> recv_buf{Memory::eUninitialized, fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) +
                                                                kExtraSluff_}; // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
-        size_t n = fSocket_.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, fPingTimeout_);
+        size_t n = fSocket_.ReceiveFrom (recv_buf, 0, &fromAddress, fPingTimeout_).size ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("got back packet from {}"_f, fromAddress);
 #endif

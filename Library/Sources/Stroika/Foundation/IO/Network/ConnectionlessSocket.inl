@@ -52,16 +52,16 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().LeaveMulticastGroup (iaddr, onInterface);
     }
-    inline void ConnectionlessSocket::Ptr::SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) const
+    inline void ConnectionlessSocket::Ptr::SendTo (span<const byte> data, const SocketAddress& sockAddr) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        _ref ().SendTo (start, end, sockAddr);
+        _ref ().SendTo (data.data (), data.data () + data.size (), sockAddr);
     }
-    inline size_t ConnectionlessSocket::Ptr::ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
-                                                          Time::DurationSeconds timeout) const
+    inline span<byte> ConnectionlessSocket::Ptr::ReceiveFrom (span<byte> into, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        return _ref ().ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);
+        size_t r = _ref ().ReceiveFrom (into.data (), into.data () + into.size (), flag, fromAddress, timeout);
+        return into.subspan (0, r);
     }
     inline shared_ptr<ConnectionlessSocket::_IRep> ConnectionlessSocket::Ptr::_GetSharedRep () const
     {

@@ -126,8 +126,7 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DETAILS: {}"_f, request);
 #endif
-            s.SendTo (reinterpret_cast<const byte*> (request.c_str ()),
-                      reinterpret_cast<const byte*> (request.c_str () + request.length ()), useSocketAddress);
+            s.SendTo (span{reinterpret_cast<const byte*> (request.c_str ()), request.length ()}, useSocketAddress);
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
@@ -137,7 +136,7 @@ public:
                 try {
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
-                    size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
+                    size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                     Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
                     ReadPacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));

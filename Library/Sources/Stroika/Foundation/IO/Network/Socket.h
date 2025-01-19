@@ -63,8 +63,8 @@ namespace Stroika::Foundation::IO::Network {
      * TODO:
      *      @todo   In socket class, set CLOSE_ON_EXEC?
      *
-     *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
-     *              and acutally handle all the nullptr cases...
+     *      @todo   Document (or define new exception) thrown when operation done on CLOSED socket.
+     *              and actually handle all the nullptr cases...
      *
      *      @todo   See about socket 'connected' state, and the 'connect' operation.
      *              And see about send/recv() API - and document about only working when
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::IO::Network {
         public:
             /**
              *  reset () doesn't clear the data in the socket, or close the socket, but un-references the socket
-             *  smart pointer. Only if this socket smartpointer is the last reference to the underlying stream
+             *  smart pointer. Only if this socket shared_ptr is the last reference to the underlying stream
              *  data does this reset () close the underlying socket.
              *
              *  @see Close ()
