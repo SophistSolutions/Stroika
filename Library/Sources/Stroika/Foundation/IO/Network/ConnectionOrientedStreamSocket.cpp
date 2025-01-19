@@ -253,12 +253,12 @@ namespace {
             return {};
 #endif
         }
-        virtual void Write (const byte* start, const byte* end) const override
+        virtual void Write (span<const byte> data) const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld",
-                                                                                         static_cast<long long> (end - start))};
+            Debug::TraceContextBumper ctx{
+                Stroika_Foundation_Debug_OptionalizeTraceArgs ("IO::Network::Socket...rep...::Write", "lwn={}"_f, data.size ())};
 #endif
 #if qStroika_Foundation_Common_Platform_POSIX
             /*
@@ -266,11 +266,12 @@ namespace {
              *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
              *  docs aren't fully clear, so play it safe --LGP 2017-04-13
              */
-            BreakWriteIntoParts_<byte> (start, end, numeric_limits<int>::max (), [this] (const byte* start, const byte* end) -> size_t {
-                Assert ((end - start) < numeric_limits<int>::max ());
-                ssize_t n = Handle_ErrNoResultInterruption ([this, &start, &end] () -> ssize_t { return ::write (fSD_, start, end - start); });
+            BreakWriteIntoParts_<byte> (data, numeric_limits<int>::max (), [this] (span<const byte> data) -> size_t {
+                Assert (data.size () < numeric_limits<int>::max ());
+                ssize_t n =
+                    Handle_ErrNoResultInterruption ([this, &data] () -> ssize_t { return ::write (fSD_, data.data (), data.size ()); });
                 ThrowPOSIXErrNoIfNegative (n);
-                Assert (0 <= n and n <= (end - start));
+                Assert (0 <= n and n <= data.size ());
                 return static_cast<size_t> (n);
             });
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -281,13 +282,13 @@ namespace {
              *          int       n   =   ::_write (fSD_, start, end - start);
              */
             size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
-            BreakWriteIntoParts_<byte> (start, end, maxSendAtATime, [this, maxSendAtATime] (const byte* start, const byte* end) -> size_t {
-                Require (static_cast<size_t> (end - start) <= maxSendAtATime);
-                Assert ((end - start) < numeric_limits<int>::max ());
-                int len   = static_cast<int> (end - start);
+            BreakWriteIntoParts_<byte> (data, maxSendAtATime, [this, maxSendAtATime] (span<const byte> data) -> size_t {
+                Require (data.size () <= maxSendAtATime);
+                Assert (data.size () < numeric_limits<int>::max ());
+                int len   = static_cast<int> (data.size ());
                 int flags = 0;
-                int n     = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
-                Assert (0 <= n and n <= (end - start));
+                int n     = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (data.data ()), len, flags));
+                Assert (0 <= n and n <= data.size ());
                 return static_cast<size_t> (n);
             });
 #else

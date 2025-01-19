@@ -76,7 +76,7 @@ namespace {
         virtual optional<size_t> AvailableToRead () override
         {
             Require (IsOpenRead ());
-            return fSD_.ReadNonBlocking (span<byte>{});
+            return fSD_.AvailableToRead ();
         }
         virtual optional<SeekOffsetType> RemainingLength () override
         {
@@ -96,7 +96,7 @@ namespace {
                     if (o == nullopt) {
                         Execution::Throw (EWouldBlock::kThe);
                     }
-                    result = intoBuffer.subspan (0, *o);
+                    result = *o;
                 } break;
                 default:
                     RequireNotReached ();

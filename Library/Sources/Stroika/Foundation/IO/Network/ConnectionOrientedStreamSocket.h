@@ -60,7 +60,7 @@ namespace Stroika::Foundation::IO::Network {
          *      \code
          *          ConnectionOrientedStreamSocket::Ptr      s  = ConnectionOrientedStreamSocket::New (SocketAddress::INET, Socket::STREAM);
          *          s.Connect (someSocketAddress);
-         *          Sequence<ConnectionOrientedStreamSocket::Ptr> l;  // cannot do Sequence<ConnectionOrientedStreamSocket> cuz not copyable
+         *          Sequence<ConnectionOrientedStreamSocket::Ptr> l;
          *          l.push_back (s);
          *      \endcode
          *
@@ -132,15 +132,21 @@ namespace Stroika::Foundation::IO::Network {
 
         public:
             /**
-             *  \brief Non-blocking read: return nullopt if no data available, 0 on EOF, or number of bytes known available
+             *  \brief Non-blocking read: cross between AvailableToRead () and Read(): read as many bytes into 'into' bytes as will fit and are available
              *
              *  \note Though ReadNonBlocking () is a const method, can be done concurrently with most other const ConnectionOrientedStreamSocket methods,
-             *        It is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
+             *        it is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
              *        done simultaneously, from different threads.
              *
-             *  \note if into.empty (), then don't actually read, but return the number of bytes available.
+             *  \req into.size () >= 1
              */
-            nonvirtual optional<size_t> ReadNonBlocking (span<byte> into) const;
+            nonvirtual optional<span<byte>> ReadNonBlocking (span<byte> into) const;
+
+        public:
+            /**
+             *  \brief Non-blocking: return nullopt if no data available, 0 on known EOF, or number of bytes known available
+             */
+            nonvirtual optional<size_t> AvailableToRead () const;
 
         public:
             /**
@@ -250,8 +256,11 @@ namespace Stroika::Foundation::IO::Network {
             }
             [[deprecated ("Since Stroika v3.0d15 - use span overload")]] optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const
             {
+                if (intoStart == nullptr) {
+                    return this->AvailableToRead ();
+                }
                 if (auto o = ReadNonBlocking (span{intoStart, intoEnd})) {
-                    return *o;
+                    return o->size ();
                 }
                 return nullopt;
             }
@@ -266,7 +275,7 @@ namespace Stroika::Foundation::IO::Network {
             virtual void             Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const = 0;
             virtual size_t           Read (byte* intoStart, byte* intoEnd) const                                            = 0;
             virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                 = 0;
-            virtual void             Write (const byte* start, const byte* end) const                                       = 0;
+            virtual void             Write (span<const byte> data) const                                                    = 0;
             virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                            = 0;
             virtual optional<Time::DurationSeconds>      GetAutomaticTCPDisconnectOnClose () const                          = 0;
             virtual void             SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor)      = 0;
@@ -276,7 +285,9 @@ namespace Stroika::Foundation::IO::Network {
             virtual void             SetTCPNoDelay (bool noDelay)                                                           = 0;
         };
 
-        Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
+        /**
+         */
+        Ptr New (SocketAddress::FamilyType family, Type socketKind = Type::STREAM, const optional<IPPROTO>& protocol = {});
 
         /**
          *  \brief create a ConnectionOrientedStreamSocket::Ptr, and connect to the given address.

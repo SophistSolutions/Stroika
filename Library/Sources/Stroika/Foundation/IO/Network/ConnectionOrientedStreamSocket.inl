@@ -42,18 +42,24 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return into.subspan (0, _ref ().Read (into.data (), into.data () + into.size ()));
     }
-    inline optional<size_t> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (span<byte> into) const
+    inline optional<span<byte>> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (span<byte> into) const
     {
+        Require (not into.empty ());
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         if (auto o = _ref ().ReadNonBlocking (into.data (), into.data () + into.size ())) {
-            return *o;
+            return into.subspan (0, *o);
         }
         return nullopt;
+    }
+    inline optional<size_t> ConnectionOrientedStreamSocket::Ptr::AvailableToRead () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        return _ref ().ReadNonBlocking (nullptr, nullptr);
     }
     inline void ConnectionOrientedStreamSocket::Ptr::Write (span<const byte> data) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        _ref ().Write (data.data (), data.data () + data.size ());
+        _ref ().Write (data);
     }
     inline optional<IO::Network::SocketAddress> ConnectionOrientedStreamSocket::Ptr::GetPeerAddress () const
     {

@@ -68,18 +68,17 @@ namespace Stroika::Foundation::IO::Network {
 #endif
 
         template <typename T>
-        void BreakWriteIntoParts_ (const T* start, const T* end, size_t maxSendAtATime, const function<size_t (const T*, const T*)>& writeFunc)
+        void BreakWriteIntoParts_ (span<const T> data, size_t maxSendAtATime, const function<size_t (span<const T>)>& writeFunc)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::BreakWriteIntoParts_", L"end-start=%lld",
-                                                                                         static_cast<long long> (end - start))};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("{}::BreakWriteIntoParts_", "n={}"_f, data.size ())};
 #endif
-            ptrdiff_t amountToSend          = end - start;
+            ptrdiff_t amountToSend          = data.size ();
             ptrdiff_t amountRemainingToSend = amountToSend;
-            const T*  remainingSendFrom     = start;
+            const T*  remainingSendFrom     = data.data ();
             while (amountRemainingToSend > 0) {
                 size_t amountToSendThisIteration = min<size_t> (maxSendAtATime, amountRemainingToSend);
-                size_t amountSent                = writeFunc (remainingSendFrom, remainingSendFrom + amountToSendThisIteration);
+                size_t amountSent                = writeFunc (span{remainingSendFrom, amountToSendThisIteration});
                 Assert (amountSent <= amountToSendThisIteration);
                 Assert (static_cast<size_t> (amountRemainingToSend) >= amountSent);
                 amountRemainingToSend -= amountSent;
