@@ -201,8 +201,7 @@ namespace {
 #endif
 
 #if qStroika_Foundation_Common_Platform_POSIX
-            return into.subspan (0, Handle_ErrNoResultInterruption (
-                                        [this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, into.data (), into.size ()); }));
+            return into.subspan (0, Handle_ErrNoResultInterruption ([this, &into] () -> int { return ::read (fSD_, into.data (), into.size ()); }));
 #elif qStroika_Foundation_Common_Platform_Windows
             int flags        = 0;
             int nBytesToRead = static_cast<int> (min<size_t> (into.size (), numeric_limits<int>::max ()));
