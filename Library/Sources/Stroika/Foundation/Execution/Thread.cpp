@@ -843,8 +843,8 @@ void Thread::Ptr::Abort () const
 
 void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil", "*this={}, timeoutAt={}"_f,
-                                                                                 ToString (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil",
+                                                                                 "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
     RequireNotNull (*this);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
