@@ -19,7 +19,7 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  \brief run all the argument functions asynchronously, and wait until they all complete.
+     *  \brief Run all the argument functions (logically/potentially) in parallel, and wait until they all complete.
      *
      *  Could be implemented with std::async, or ThreadPool.
      * 
