@@ -20,23 +20,23 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   AddTask () implmentation is HORRIBLE (for case where fAddBlockTimeout != 0) and needs to be rewritten with condition variables.
+ *      @todo   AddTask () implementation is HORRIBLE (for case where fAddBlockTimeout != 0) and needs to be rewritten with condition variables.
  * 
  *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
  *
- *      @todo   CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
+ *      @todo   CONSIDER USE OF blocking q - I think it will help. Or figure out
  *              how these tie together. Or rewrite using condition_variable.
  *
  *      @todo   Current approach to aborting a running task is to abort the thread. But the current
  *              thread code doesn't support restarting a thread once its been aborted. We PROBABLY
  *              should correct that at some point - and allow a thread to undo its abort-in-progress.
  *              However - no need immediately. Instead - the current ThreadPool implementation simply
- *              drops that thread and builds a new one. Performacne overhead yes - but only for the
+ *              drops that thread and builds a new one. Performance overhead yes - but only for the
  *              likely rare case of aborting a running task.
  *
  *      @todo   Consider adding the idea of TaskGroups - which are properties shared by all tasks (or some tasks)
  *              added to a threadpool. If multiple tasks are added to the threadpool with the same
- *              TaskGroup, then they respect that taskgroup's contraints. One example constraint would be
+ *              TaskGroup, then they respect that task-group's constraints. One example constraint would be
  *              mutual run exclusion. This would allow you to create lockless threaded procedures, because
  *              they would be guaranteed to not be run all at the same time, and yet could STILL leverage
  *              the benefits of thread pooling.
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  ThreadPool mainly useful for servicing lost-cost calls/threads, where the overhead
      *  of constructing the thread is significant compared to the cost of performing the action,
-     *  and where the priority & stacksize can all be predeterimed and 'shared'.
+     *  and where the priority & stacksize can all be predetermined and 'shared'.
      *  Also - where you want to CONTROL the level of thread creation (possibly to avoid
      *  DOS attacks or just accidental overloading).
      *
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Execution {
          *  \note - often only provide QMax::fLength, since the default to not blocking - just throwing cuz Q full - is quite reasonable.
          */
         struct QMax {
-            size_t fLength;
+            size_t fLength{0};
 
             /**
              *  Zero timeout means never wait (AddTask either adds or throws but doesn't wait for Q to empty enuf).
@@ -138,26 +138,26 @@ namespace Stroika::Foundation::Execution {
          *  Destroying a threadpool implicitly calls AbortAndWaitForDone () and eats any errors (cannot rethrow).
          *
          *  \note - ThreadPool used to have explicit abort methods, but there was no point. When aborting, you must wait for them all to
-         *          shut down to destroy the object. And since you cannot restart the object, there is no point in ever aborting without destorying.
-         *          so KISS - just destory the ThreadPool object.
+         *          shut down to destroy the object. And since you cannot restart the object, there is no point in ever aborting without destroying.
+         *          so KISS - just destroy the ThreadPool object.
          */
         ~ThreadPool ();
 
     public:
         /**
-         *  \note   It is imporant (required) that all tasks added to a ThreadPool respond in a timely manner to Thread Abort.
+         *  \note   It is important (required) that all tasks added to a ThreadPool respond in a timely manner to Thread Abort.
          *          ThreadPool counts on that for clean shutdown.
          * 
          *          This means periodically calling CheckForInterruption () and that any waits respect thread cancelation (stop_token).
          * 
-         *          Tasks may exit via exception, but nothing will be done with that exception (beyond DbgTrace loggging). So generally
+         *          Tasks may exit via exception, but nothing will be done with that exception (beyond DbgTrace logging). So generally
          *          not a good idea, except for ThreadAbort handling.
          */
         using TaskType = Function<void ()>;
 
     public:
         /**
-         *  These options have have been modified by various APIs, and reflect the current state of options, not neceessarily those that the
+         *  These options have have been modified by various APIs, and reflect the current state of options, not necessarily those that the
          *  ThreadPool  was created with.
          */
         nonvirtual Options GetOptions () const;
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Execution {
          *  running on all threads, the number of threads in the pool cannot be decreased.
          *
          *  @todo - WE CAN do better than this - at least marking the thread as to be removed when the
-         *      task finsihes - but NYI
+         *      task finishes - but NYI
          */
         nonvirtual void SetPoolSize (unsigned int poolSize);
 
@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Execution {
          *  if qmax is provided, it takes precedence over any default value associated with the ThreadPool (constructor). If neither
          *  provided (as an argument or associated with the pool, this is treated as no max, and the addition just proceeds.
          * 
-         *  If qMax provided (even indirectly), assure task q lengtth doesn't exceed argument by waiting up to the qMax
+         *  If qMax provided (even indirectly), assure task q length doesn't exceed argument by waiting up to the qMax
          *  duration, and either timing out, or successfully add the task. 
          * 
          *  \note   Design Note:
@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  return all tasks which are currently running (assigned to some thread  in the thread pool).
          *  \note - this is a snapshot in time of something which is often rapidly changing, so by the time
-         *  you look at it, it may have changed (but since we use shared_ptr's, its always safe to look at).
+         *  you look at it, it may have changed (but since we use shared_ptrs, its always safe to look at).
          */
         nonvirtual Containers::Collection<TaskType> GetRunningTasks () const;
 
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Execution {
         /**
         *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
         *
-        *   When called with a specific set of tasks, this proceedure waits for exactly those tasks. When called with no task
+        *   When called with a specific set of tasks, this procedure waits for exactly those tasks. When called with no task
         *   argument, it waits until GetTaskCount () == 0.
         *
         *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.
@@ -317,7 +317,7 @@ namespace Stroika::Foundation::Execution {
         /**
         *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
         *
-        *   When called with a specific set of tasks, this proceedure waits for exactly those tasks. When called with no task
+        *   When called with a specific set of tasks, this procedure waits for exactly those tasks. When called with no task
         *   argument, it waits until GetTaskCount () == 0.
         *
         *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.

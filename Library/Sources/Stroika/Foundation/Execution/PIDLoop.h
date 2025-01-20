@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  For more about the PID parameters to provide (tuning) see https://en.wikipedia.org/wiki/PID_controller
          *
-         *  For updatePeriod, this depends alot on the system you are using. THis is a measure of how much time beween updates to the 
+         *  For updatePeriod, this depends alot on the system you are using. THis is a measure of how much time between updates to the 
          *  control variable.
          */
         PIDLoop ()               = delete;
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Typically this is what you would do, and recieve the Thread object, to cancel (Abort)
+         *  Typically this is what you would do, and receive the Thread object, to cancel (Abort)
          *
          *  \req only called once.
          *
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Run this function - in the body of your thread. Interupt with a thread abort.
+         *  Run this function - in the body of your thread. Interrupt with a thread abort.
          *
          *  Use this if you want to control thread usage yourself. Otherwise, try @see RunInThread
          */

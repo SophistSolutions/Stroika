@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief SIMD, no locks allowed
          * 
-         *  Equivalent to std::unseq  , std::execution::unsequenced_policy   
+         *  Equivalent to std::unseq, std::execution::unsequenced_policy   
          * 
          *  ..."a parallel algorithm's execution may be parallelized, vectorized, 
          *  or migrated across threads (such as by a parent-stealing scheduler). The invocations of 
