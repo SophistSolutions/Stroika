@@ -7,9 +7,9 @@
 
 namespace Stroika::Foundation::Execution {
 
-	template <invocable<>... I>
-	void InvokeAsync(I... f)
-	{
+    template <invocable<>... I>
+    void InvokeAsync (I... f)
+    {
         std::vector<std::future<void>> futures;
 
         for (auto fi : f) {
@@ -20,6 +20,6 @@ namespace Stroika::Foundation::Execution {
         for (auto& future : futures) {
             future.wait ();
         }
-	}
+    }
 
 }

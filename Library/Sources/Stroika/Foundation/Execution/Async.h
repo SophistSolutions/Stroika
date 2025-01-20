@@ -16,17 +16,17 @@
 
 namespace Stroika::Foundation::Execution {
 
-	/**
-	 *	\brief run all the argument functions asynchronously, and wait until they all complete.
-	 *
-	 *	Could be implemented with std::async, or ThreadPool.
-	 * 
-	 *	@todo describe if any of the functions throw...
-	 *	@todo could enhance this to also return tuple of return results of each function;
-	 */
-	template <invocable<>... I>
-   void InvokeAsync (I ... f);
-   
+    /**
+     *  \brief run all the argument functions asynchronously, and wait until they all complete.
+     *
+     *  Could be implemented with std::async, or ThreadPool.
+     * 
+     *  @todo describe if any of the functions throw...
+     *  @todo could enhance this to also return tuple of return results of each function;
+     */
+    template <invocable<>... I>
+    void InvokeAsync (I... f);
+
 }
 
 /*
