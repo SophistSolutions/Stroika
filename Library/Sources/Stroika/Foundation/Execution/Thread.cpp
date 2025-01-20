@@ -592,6 +592,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
 {
     Require (not IsDone_ ()); // NOTE - SAW FAIL ONCE - 2024-09-27 - MacOS - github - https://github.com/SophistSolutions/Stroika/actions/runs/11062067662/job/30735869523
         // and https://github.com/SophistSolutions/Stroika/actions/runs/11230328605/job/31217486475 MACOS ONLY - 2024-10-08
+        // and https://github.com/SophistSolutions/Stroika/actions/runs/12872068258/job/35888537430 MACOS ONLY - 2025-01-20
     Require (fAbortRequested_);
     //TraceContextBumper ctx{"Thread::Rep_::NotifyOfAbortFromAnyThread_"};
 
@@ -634,7 +635,7 @@ void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
     //TraceContextBumper ctx{"Thread::Ptr::Rep_::InterruptionSignalHandler_"};
     //#endif
     // This doesn't REALLY need to get called. Its enough to have the side-effect of the EINTR from system calls.
-    // the TLS variable gets set through the rep poitner in NotifyOfInterruptionFromAnyThread_
+    // the TLS variable gets set through the rep pointer in NotifyOfInterruptionFromAnyThread_
     //
     // Note - using SIG_IGN doesn't work, because then the signal doesn't get delivered, and the EINTR doesn't happen
     //
@@ -783,14 +784,14 @@ void Thread::Ptr::Start () const
     if (optional<Priority> p = fRep_->fInitialPriority_.load ()) {
         fRep_->ApplyPriority (*p);
     }
-    DbgTrace (L"Requesting transition to running for {}"_f, ToString ());
+    DbgTrace ("Requesting transition to running for {}"_f, ToString ());
     fRep_->fStartReadyToTransitionToRunningEvent_.Set ();
 }
 void Thread::Ptr::Start (WaitUntilStarted) const
 {
     Start ();
     for (auto s = GetStatus (); s != Status::eNotYetRunning; s = GetStatus ()) {
-        // @todo fix this logic - set expliclt when we do the SET EVENT above (before). But then need to change the threadmain logic to accomodate;
+        // @todo fix this logic - set explicit when we do the SET EVENT above (before). But then need to change the threadmain logic to accommodate;
         // low priority since this overload probably not used...
         // --LGP 2023-11-30
         this_thread::yield ();
@@ -826,7 +827,7 @@ void Thread::Ptr::Abort () const
         /*
          *  Then mark the thread as completed.
          * 
-         *  If we have not yet called start (or gotten to the point where fStartEverInitiated_ gets set), then set tje CanJoin event.
+         *  If we have not yet called start (or gotten to the point where fStartEverInitiated_ gets set), then set the CanJoin event.
          *  sb safe.
          */
         fRep_->fThreadDoneAndCanJoin_.Set ();
@@ -836,14 +837,14 @@ void Thread::Ptr::Abort () const
         fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"leaving *this = {}"_f, *this);
+    DbgTrace ("leaving *this = {}"_f, *this);
 #endif
 }
 
 void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::AbortAndWaitForDoneUntil", "*this={}, timeoutAt={}"_f,
-                                                                                 ToString (), Characters::ToString (timeoutAt))};
+                                                                                 ToString (), timeoutAt)};
     RequireNotNull (*this);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
