@@ -13,10 +13,6 @@
 
 /**
  *  \file
- *
- * Description:
- *      o   See http://cpprocks.com/wp-content/uploads/c++11-regex-cheatsheet.pdf for examples
- *
  */
 
 namespace Stroika::Foundation::Characters {
@@ -136,10 +132,10 @@ namespace Stroika::Foundation::Characters {
         RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches);
 
     public:
-        String GetFullMatch () const;
+        nonvirtual String GetFullMatch () const;
 
     public:
-        Containers::Sequence<String> GetSubMatches () const;
+        nonvirtual Containers::Sequence<String> GetSubMatches () const;
 
     private:
         String                       fFullMatch_;
