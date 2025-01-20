@@ -8,12 +8,13 @@
 namespace Stroika::Foundation::Execution {
 
     template <invocable<>... I>
-    void InvokeAsync (I... f)
+    void RunAll (I... functions)
     {
-        std::vector<std::future<void>> futures;
+        vector<future<void>> futures;
 
-        for (auto fi : f) {
-            futures.push_back (std::async (std::launch::async, fi));
+        // @todo is simple way to iterate without converting to function<>
+        for (auto fi : initializer_list<function<void ()>>{forward<I> (functions)...}) {
+            futures.push_back (async (launch::async, fi));
         }
 
         // Wait for all tasks to complete

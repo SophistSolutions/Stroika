@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Execution {
      *  @todo could enhance this to also return tuple of return results of each function;
      */
     template <invocable<>... I>
-    void InvokeAsync (I... f);
+    void RunAll (I... functions);
 
 }
 
