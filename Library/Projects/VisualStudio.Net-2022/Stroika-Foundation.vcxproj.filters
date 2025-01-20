@@ -2315,6 +2315,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.h">
       <Filter>Sources\DataExchange\JSON</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Async.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3824,6 +3827,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.inl">
       <Filter>Sources\DataExchange\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Async.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
