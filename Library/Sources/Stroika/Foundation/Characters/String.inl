@@ -1414,3 +1414,23 @@ namespace Stroika::Foundation::Characters::Concrete {
         }
     };
 }
+
+namespace Stroika::Foundation::Characters {
+
+    template <>
+    String StringCombiner<String>::operator() (const String& lhs, const String& rhs, bool isLast) const;
+
+    template <typename STRING>
+    STRING StringCombiner<STRING>::operator() (const STRING& lhs, const STRING& rhs, bool isLast) const
+    {
+        STRING sb{lhs};
+        if (isLast and fSpecialSeparatorForLastPair) [[unlikely]] {
+            sb = sb + *fSpecialSeparatorForLastPair;
+        }
+        else {
+            sb = sb + fSeparator;
+        }
+        sb = sb + rhs;
+        return sb;
+    }
+}

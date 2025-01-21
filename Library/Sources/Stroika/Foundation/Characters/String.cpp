@@ -1770,7 +1770,8 @@ std::filesystem::path String::As<std::filesystem::path> () const
  ****************************** StringCombiner **********************************
  ********************************************************************************
  */
-String StringCombiner::operator() (const String& lhs, const String& rhs, bool isLast) const
+template <>
+String StringCombiner<String>::operator() (const String& lhs, const String& rhs, bool isLast) const
 {
     StringBuilder sb{lhs};
     if (isLast and fSpecialSeparatorForLastPair) [[unlikely]] {

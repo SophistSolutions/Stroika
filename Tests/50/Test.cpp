@@ -1070,7 +1070,7 @@ namespace {
             EXPECT_EQ (kT2_.Join (", ", " and "), "a, b and c");
 #endif
             EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }), "A, B, C");
-            EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }, "; "sv, " and "sv), "A; B and C");
+            EXPECT_EQ (kT2_.Join<String> ([] (auto i) { return i.ToUpperCase (); }, "; "sv, " and "sv), "A; B and C");
         }
     }
 }

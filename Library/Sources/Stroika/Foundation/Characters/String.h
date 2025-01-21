@@ -1024,6 +1024,8 @@ namespace Stroika::Foundation::Characters {
          *  \note .Net version - https://docs.microsoft.com/en-us/dotnet/api/system.string.join?redirectedfrom=MSDN&view=net-6.0#System_String_Join_System_String_System_String___
          *  \note Java version - https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#join-java.lang.CharSequence-java.lang.CharSequence...-
          *  \note Javascript   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
+         * 
+         *  \note - CONSIDER LOSING this as 'Iterable<>::Join' just appears to work better -- LGP 2025-01-21
          */
         static String Join (const Iterable<String>& list, const String& separator = ", "sv);
 
@@ -1894,10 +1896,11 @@ namespace Stroika::Foundation::Characters {
      *  \note the functional api - is to be given two strings, and a flag saying if the combination is the last one in the list,
      *        since in English, this is frequently rendered somewhat differently than the rest.
      */
+    template <typename STRING = String>
     struct StringCombiner {
-        String           fSeparator{", "sv};
-        optional<String> fSpecialSeparatorForLastPair;
-        String           operator() (const String& lhs, const String& rhs, bool isLast) const;
+        STRING           fSeparator{", "sv};
+        optional<STRING> fSpecialSeparatorForLastPair;
+        STRING           operator() (const STRING& lhs, const STRING& rhs, bool isLast) const;
     };
 
     /**

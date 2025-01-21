@@ -948,17 +948,15 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Characters::String Join (const Characters::String& separator) const;
         nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const;
         template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT>
-        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const Characters::String& separator) const
+        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator) const
             requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>);
         template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT>
-        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const Characters::String& separator,
-                                  const optional<Characters::String>& finalSeparator) const
+        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator, const optional<RESULT_T>& finalSeparator) const
             requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>);
 #else
         nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
         template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT>
-        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const Characters::String& separator,
-                                  const optional<Characters::String>& finalSeparator = {}) const
+        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator, const optional<RESULT_T>& finalSeparator = {}) const
             requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>);
 #endif
 
