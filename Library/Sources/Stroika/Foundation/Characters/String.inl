@@ -622,7 +622,7 @@ namespace Stroika::Foundation::Characters {
         template <Common::IAnyOf<optional<String>*, String*, nullptr_t> SUBMATCH, typename... OPTIONAL_STRINGS>
         void ExtractMatches_ (const wsmatch& base_match, size_t currentUnpackIndex, SUBMATCH subMatchI, OPTIONAL_STRINGS&&... remainingSubmatches)
         {
-            if (currentUnpackIndex < base_match.size ()) {
+            if (currentUnpackIndex < base_match.size ()) [[likely]] {
                 if constexpr (not same_as<SUBMATCH, nullptr_t>) {
                     if (subMatchI != nullptr) {
                         *subMatchI = base_match[currentUnpackIndex].str ();
@@ -637,9 +637,9 @@ namespace Stroika::Foundation::Characters {
     bool String::Matches (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const
     {
         wstring tmp{As<wstring> ()};
-        wsmatch base_match;
-        if (::regex_match (tmp, base_match, Private_::RegularExpression_GetCompiled (regEx))) {
-            Private_::ExtractMatches_ (base_match, 1, forward<OPTIONAL_STRINGS> (subMatches)...);
+        wsmatch baseMatch;
+        if (regex_match (tmp, baseMatch, Private_::RegularExpression_GetCompiled (regEx))) {
+            Private_::ExtractMatches_ (baseMatch, 1, forward<OPTIONAL_STRINGS> (subMatches)...);
             return true;
         }
         return false;
