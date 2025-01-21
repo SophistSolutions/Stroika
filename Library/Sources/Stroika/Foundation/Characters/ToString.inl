@@ -518,7 +518,7 @@ namespace Stroika::Foundation::Traversal {
         else {
             cvt = Characters::UnoverloadedToString<T>;
         }
-        return this->Join (cvt, Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+        return this->Join (cvt, Characters::StringCombiner<Characters::String>{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
 #else
         return this->Join (kDefaultToStringConverter<Characters::String>,
                            Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
