@@ -53,6 +53,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
+using namespace Stroika::Foundation::Traversal;
 
 using Debug::TraceContextBumper;
 using Memory::StackBuffer;
@@ -200,6 +201,35 @@ namespace {
     }
 }
 #endif
+
+namespace {
+    template <Common::IAnyOf<char, wchar_t> CHAR_T>
+    struct String2ContigArrayCStrs_ {
+        StackBuffer<CHAR_T>                       fBytesBuffer;
+        StackBuffer<CHAR_T*, 10 * sizeof (void*)> fPtrsBuffer;
+        String2ContigArrayCStrs_ (const Iterable<basic_string<CHAR_T>>& data)
+        {
+            StackBuffer<size_t> argsIdx;
+            size_t              bufferIndex = 0;
+            for (const basic_string<CHAR_T>& i : data) {
+                for (CHAR_T c : i) {
+                    fBytesBuffer.push_back (c);
+                }
+                fBytesBuffer.push_back ('\0');
+                argsIdx.push_back (bufferIndex);
+                bufferIndex = fBytesBuffer.GetSize ();
+            }
+            fBytesBuffer.push_back ('\0'); // not sure - maybe not needed
+            auto freeze = fBytesBuffer.begin ();
+            for (size_t i : argsIdx) {
+                fPtrsBuffer.push_back (freeze + i);
+            }
+            fPtrsBuffer.push_back (nullptr);
+        }
+        String2ContigArrayCStrs_ ()                                = delete;
+        String2ContigArrayCStrs_ (const String2ContigArrayCStrs_&) = delete;
+    };
+}
 
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {
@@ -594,49 +624,27 @@ namespace {
          *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
          *  fork, we are VERY limited as to what we can safely do.
          */
-        const char*                             thisEXEPath_cstr = nullptr;
-        char**                                  thisEXECArgv     = nullptr;
-        StackBuffer<char>                       execDataArgsBuffer;
-        StackBuffer<char*, 10 * sizeof (void*)> execArgsPtrBuffer; // avoid needless use of stack-space in most cases
-        {
-            Sequence<String> commandLine{cmdLine.GetArguments ()};
-            Sequence<size_t> argsIdx;
-            size_t           bufferIndex{};
-            //execArgsPtrBuffer.GrowToSize_uninitialized (commandLine.size () + 1);
-            for (const auto& i : commandLine) {
-                string tmp{i.AsNarrowSDKString ()};
-                for (char c : tmp) {
-                    execDataArgsBuffer.push_back (c);
-                }
-                execDataArgsBuffer.push_back ('\0');
-                argsIdx.push_back (bufferIndex);
-                bufferIndex = execDataArgsBuffer.GetSize ();
-            }
-            execDataArgsBuffer.push_back ('\0');
-            for (size_t i = 0; i < commandLine.size (); ++i) {
-                execArgsPtrBuffer.push_back (execDataArgsBuffer.begin () + argsIdx[i]);
-            }
-            execArgsPtrBuffer.push_back (nullptr);
-            execArgsPtrBuffer[commandLine.size ()] = nullptr;
+        const char* thisEXEPath_cstr = nullptr;
+        char**      thisEXECArgv     = nullptr;
 
-            // no longer change buffers, and just make pointers point to right place
-            thisEXEPath_cstr = execDataArgsBuffer.data ();
-            thisEXECArgv     = execArgsPtrBuffer.data ();
+        String2ContigArrayCStrs_<char> execDataArgs{
+            cmdLine.GetArguments ().Map<Iterable<string>> ([] (auto si) { return si.AsNarrowSDKString (); })};
+        thisEXEPath_cstr = execDataArgs.fBytesBuffer.data ();
+        thisEXECArgv     = execDataArgs.fPtrsBuffer.data ();
 
-            /*
+        /*
              *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp,
              *  and then there wont be a good way to propagate the error back to the caller.
              *
              *  @todo for now - this code only checks access for absolute/full path, and we should also check using
              *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
              */
-            if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
-                errno_t e = errno; // save in case overwritten
+        if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
+            errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("failed to access exe path so throwing: exe path='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
+            DbgTrace ("failed to access exe path so throwing: exe path='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
 #endif
-                ThrowPOSIXErrNo (e);
-            }
+            ThrowPOSIXErrNo (e);
         }
 
         pid_t childPID{};
