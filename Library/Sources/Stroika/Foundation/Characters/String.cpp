@@ -30,6 +30,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Common;
 
 using Memory::StackBuffer;
@@ -985,8 +986,8 @@ vector<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& r
     for (wsregex_iterator i = wsregex_iterator{tmp.begin (), tmp.end (), regEx.GetCompiled ()}; i != wsregex_iterator (); ++i) {
         wsmatch match{*i};
         Assert (match.size () != 0);
-        size_t                       n = match.size ();
-        Containers::Sequence<String> s;
+        size_t           n = match.size ();
+        Sequence<String> s;
         for (size_t j = 1; j < n; ++j) {
             s.Append (match.str (j));
         }
@@ -1133,7 +1134,7 @@ bool String::Matches (const RegularExpression& regEx) const
     return regex_match (tmp.begin (), tmp.end (), regEx.GetCompiled ());
 }
 
-bool String::Matches (const RegularExpression& regEx, Containers::Sequence<String>* matches) const
+bool String::Matches (const RegularExpression& regEx, Sequence<String>* matches) const
 {
     RequireNotNull (matches);
     //tmphack
@@ -1181,7 +1182,7 @@ String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const
     return sb;
 }
 
-String String::ReplaceAll (const Containers::Set<Character>& charSet, const String& with) const
+String String::ReplaceAll (const Set<Character>& charSet, const String& with) const
 {
     StringBuilder sb;
     for (Character i : *this) {
@@ -1228,12 +1229,12 @@ String String::NormalizeSpace (Character useSpaceCharacter) const
     return ReplaceAll ("\\s+"_RegEx, String{useSpaceCharacter});
 }
 
-Containers::Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
+Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
 {
-    Containers::Sequence<String> r;
-    bool                         inToken = false;
-    StringBuilder                curToken;
-    size_t                       len = size ();
+    Sequence<String> r;
+    bool             inToken = false;
+    StringBuilder    curToken;
+    size_t           len = size ();
     for (size_t i = 0; i != len; ++i) {
         Character c          = GetCharAt (i);
         bool      newInToken = not isTokenSeperator (c);
@@ -1265,12 +1266,71 @@ Containers::Sequence<String> String::Tokenize (const function<bool (Character)>&
     return r;
 }
 
-Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>& delimiters, bool trim) const
+Sequence<String> String::Tokenize (const Set<Character>& delimiters, bool trim) const
 {
     /*
      *  @todo Inefficient impl, to encourage code saving. Do more efficiently.
      */
     return Tokenize ([delimiters] (Character c) -> bool { return delimiters.Contains (c); }, trim);
+}
+
+Sequence<String> String::AsLines () const
+{
+    Sequence<String> r;
+    StringBuilder    curLineSB;
+    for (auto i = this->MakeIterator (); i; ++i) {
+        Character c = *i;
+        // look for \r, \r\n, or \n
+        switch (c.GetCharacterCode ()) {
+            case '\r': {
+                auto ii = i;
+                ++ii;
+                if (ii and *ii == '\n') {
+                    i = ii;
+                }
+                r += curLineSB.str ();
+                curLineSB.clear ();
+                break;
+            }
+            case '\n': {
+                r += curLineSB.str ();
+                curLineSB.clear ();
+                break;
+            }
+            default: {
+                curLineSB.push_back (c);
+                break;
+            }
+        }
+    }
+    if (not curLineSB.empty ()) { // non-terminated lines included
+        r += curLineSB.str ();
+    }
+    return r;
+}
+
+Sequence<String> String::Grep (const String& fgrepArg) const
+{
+    Sequence<String> r1 = AsLines ();
+    Sequence<String> r;
+    for (auto i : r1) {
+        if (i.Contains (fgrepArg)) {
+            r += i;
+        }
+    }
+    return r;
+}
+
+Sequence<String> String::Grep (const RegularExpression& egrepArg) const
+{
+    Sequence<String> r1 = AsLines ();
+    Sequence<String> r;
+    for (auto i : r1) {
+        if (i.Matches (egrepArg)) {
+            r += i;
+        }
+    }
+    return r;
 }
 
 String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const

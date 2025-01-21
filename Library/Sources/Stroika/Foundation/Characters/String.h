@@ -965,6 +965,23 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief break the String into a series of lines;
+         * 
+         *  \note could almost be done with Tokenize(), except for the one-sided nl-specific trimming.
+         * 
+         *  \note removes line-endings (\r\n, or \n, or \r).
+         */
+        nonvirtual Containers::Sequence<String> AsLines () const;
+
+    public:
+        /**
+         *  \brief Breaks this string into Lines, with AsLines (), and applies the argument filter (as if with .Map<>) producing a subset of the lines which match
+         */
+        nonvirtual Containers::Sequence<String> Grep (const String& fgrepArg) const;
+        nonvirtual Containers::Sequence<String> Grep (const RegularExpression& egrepArg) const;
+
+    public:
+        /**
          * String LTrim () scans the characters form the left to right, and applies the given
          * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
          * and the resulting string is returned. This does not modify the current string its

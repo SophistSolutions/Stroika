@@ -2054,6 +2054,41 @@ namespace {
         }
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Characters, AsLines)
+    {
+        using Containers::Sequence;
+        Debug::TraceContextBumper ctx{"AsLines"};
+        EXPECT_TRUE (String{}.AsLines ().empty ());
+        EXPECT_EQ (String{"abc"}.AsLines (), Sequence<String>{"abc"});
+        EXPECT_EQ (String{"abc\r"}.AsLines (), Sequence<String>{"abc"});
+        EXPECT_EQ (String{"abc\n"}.AsLines (), Sequence<String>{"abc"});
+        EXPECT_EQ (String{"abc\r\n"}.AsLines (), Sequence<String>{"abc"});
+        EXPECT_EQ (String{"\nabc\r\n"}.AsLines (), (Sequence<String>{"", "abc"}));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Characters, Grep)
+    {
+        Debug::TraceContextBumper ctx{"Grep"};
+        EXPECT_EQ (
+            String{
+                "ffmpeg version 7.1 Copyright (c) 2000 - 2024 the FFmpeg developers\nbuilt with gcc 14.2.0(Rev1, Built by MSYS2 project)\n"}
+                .Grep ("ffmpeg version")
+                .size (),
+            1u);
+        EXPECT_EQ (
+            String{
+                "ffmpeg version 7.1 Copyright (c) 2000 - 2024 the FFmpeg developers\nbuilt with gcc 14.2.0(Rev1, Built by MSYS2 project)\n"}
+                .Grep ("ffmpeg version")
+                .NthValue (0)
+                .Tokenize ()
+                .NthValue (2),
+            "7.1");
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
