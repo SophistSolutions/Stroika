@@ -1797,7 +1797,7 @@ namespace Stroika::Foundation::Traversal {
         using namespace Characters;
 #if qStroika_Foundation_Debug_AssertionsChecked
         String referenceResult = this->Join (Iterable<String>::kDefaultToStringConverter<String>,
-                                             Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+                        Characters::StringCombiner<String>{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
 #endif
         StringBuilder sb;
         size_t        cnt = this->size ();

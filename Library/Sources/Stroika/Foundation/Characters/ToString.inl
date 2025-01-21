@@ -510,18 +510,19 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
     {
+        using namespace Characters;
 #if qCompilerAndStdLib_kDefaultToStringConverter_Buggy
-        function<Characters::String (T)> cvt;
-        if constexpr (same_as<T, Characters::String>) {
+        function<String (T)> cvt;
+        if constexpr (same_as<T, String>) {
             cvt = Common::Identity{};
         }
         else {
-            cvt = Characters::UnoverloadedToString<T>;
+            cvt = UnoverloadedToString<T>;
         }
-        return this->Join (cvt, Characters::StringCombiner<Characters::String>{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+        return this->Join (cvt, StringCombiner<String>{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
 #else
-        return this->Join (kDefaultToStringConverter<Characters::String>,
-                           Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+        return this->Join (kDefaultToStringConverter<String>,
+                           StringCombiner<String>{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
 #endif
     }
     template <typename T>
@@ -529,7 +530,8 @@ namespace Stroika::Foundation::Traversal {
     inline RESULT_T Iterable<T>::Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator, const optional<RESULT_T>& finalSeparator) const
         requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>)
     {
-        return this->Join<RESULT_T> (convertToResult, Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+        return this->Join<RESULT_T> (
+            convertToResult, Characters::StringCombiner<RESULT_T>{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
     }
 
 }
