@@ -619,24 +619,26 @@ namespace Stroika::Foundation::Characters {
         inline void ExtractMatches_ ([[maybe_unused]] const wsmatch& base_match, [[maybe_unused]] size_t currentUnpackIndex)
         {
         }
-        template <typename... OPTIONAL_STRINGS>
-        void ExtractMatches_ (const wsmatch& base_match, size_t currentUnpackIndex, optional<String>* subMatchI, OPTIONAL_STRINGS&&... remainingSubmatches)
+        template <Common::IAnyOf<optional<String>*, String*, nullptr_t> SUBMATCH, typename... OPTIONAL_STRINGS>
+        void ExtractMatches_ (const wsmatch& base_match, size_t currentUnpackIndex, SUBMATCH subMatchI, OPTIONAL_STRINGS&&... remainingSubmatches)
         {
             if (currentUnpackIndex < base_match.size ()) {
-                if (subMatchI != nullptr) {
-                    *subMatchI = base_match[currentUnpackIndex].str ();
+                if constexpr (not same_as<SUBMATCH, nullptr_t>) {
+                    if (subMatchI != nullptr) {
+                        *subMatchI = base_match[currentUnpackIndex].str ();
+                    }
                 }
                 ExtractMatches_ (base_match, currentUnpackIndex + 1, forward<OPTIONAL_STRINGS> (remainingSubmatches)...);
             }
         }
         const wregex& RegularExpression_GetCompiled (const RegularExpression& regExp);
     }
-    template <typename... OPTIONAL_STRINGS>
+    template <Common::IAnyOf<optional<String>*, String*, nullptr_t>... OPTIONAL_STRINGS>
     bool String::Matches (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const
     {
         wstring tmp{As<wstring> ()};
         wsmatch base_match;
-        if (regex_match (tmp, base_match, Private_::RegularExpression_GetCompiled (regEx))) {
+        if (::regex_match (tmp, base_match, Private_::RegularExpression_GetCompiled (regEx))) {
             Private_::ExtractMatches_ (base_match, 1, forward<OPTIONAL_STRINGS> (subMatches)...);
             return true;
         }

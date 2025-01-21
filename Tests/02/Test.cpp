@@ -729,6 +729,17 @@ namespace {
                 optional<String> match2;
                 EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
             }
+            {
+                String processRunnerOutput = "Praat 6.4.23 (October 27 2024)"sv;
+                String version;
+                EXPECT_EQ ((processRunnerOutput.Matches ("(\\w+)\\s([\\w\\.]+).*"_RegEx, nullptr, &version) ? version : "???"sv), "6.4.23");
+            }
+            {
+                String           processRunnerOutput = "Praat 6.4.23 (October 27 2024)";
+                optional<String> version;
+                EXPECT_EQ ((processRunnerOutput.Matches ("(\\w+)\\s([\\w\\.]+).*"_RegEx, nullptr, &version) ? *version : "???"sv),
+                           "6.4.23");
+            }
         }
         void Test17_RegExp_Search_ ()
         {

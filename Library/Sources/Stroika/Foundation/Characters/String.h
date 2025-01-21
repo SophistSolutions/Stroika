@@ -720,11 +720,19 @@ namespace Stroika::Foundation::Characters {
          *              DbgTrace ("***good - fragment={}"_f, fragment);
          *          }
          *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          // Praat 6.4.23 (October 27 2024)
+         *          String processRunnerOutput = "Praat 6.4.23 (October 27 2024)";
+         *          String version;
+         *          return processRunnerOutput.Matches ("(\\w+)\\s([\\w\\.]+).*"_RegEx, nullptr, &version)? version: "???"sv;
+         *      \endcode
          *
          *  Details on the regular expression language/format can be found at:
          *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
          *
-         *  \note If any 'submatch' arguments are passed to Match, they MUST be of type optional<String>* or nullptr.
+         *  \note If any 'sub-match' arguments are passed to Match, they MUST be of type optional<String>* or nullptr.
          *        Passing nullptr allows matched parameters to not be returned, but still identified positionally (by index).
          *
          *  @see Contains
@@ -735,7 +743,7 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual bool Matches (const RegularExpression& regEx) const;
         nonvirtual bool Matches (const RegularExpression& regEx, Containers::Sequence<String>* matches) const;
-        template <typename... OPTIONAL_STRINGS>
+        template <Common::IAnyOf<optional<String>*, String*, nullptr_t>... OPTIONAL_STRINGS>
         nonvirtual bool Matches (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const;
 
     public:
