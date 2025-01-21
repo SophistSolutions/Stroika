@@ -179,10 +179,13 @@ Common::ConstantProperty<Sequence<filesystem::path>> Execution::kPathEXT{[] () -
 Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{[] () -> Mapping<SDKString, SDKString> {
     Mapping<SDKString, SDKString> r;
     const SDKChar* const*         envHead = nullptr;
+#if qStroika_Foundation_Common_Platform_Windows
     if constexpr (same_as<SDKChar, wchar_t>) {
         envHead = _wenviron;
     }
-    else {
+    else 
+#endif
+    {
         envHead = environ;
     }
     // NULL-terminated array of NUL-terminated strings
