@@ -448,7 +448,7 @@ String CommandLine::As<String> (optional<CommandLine::StringShellQuoting> shellS
     // UNCLEAR how to handle quoting of elements inside string - so for now, do (less) harm? DOnt try to
     // quote the quotes (but still wrap items in quotes).
     //  --LGP 2024-12-07
-    return fArgs_.Join (
+    return fArgs_.Join<String> (
         [&] (const String& i) {
             // default in Stroika is wrap in double-quotes, and \-quote double-quote characters, and rest leave alone
             if (shellStyle == nullopt) {

@@ -371,6 +371,37 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
+
+namespace {
+    Mapping<SDKString, SDKString> getEnv_ ()
+    {
+        return kRawEnvironment ();
+    }
+    Mapping<SDKString, SDKString> getEnv_ (const Mapping<SDKString, SDKString>& r)
+    {
+        return r;
+    }
+    Mapping<SDKString, SDKString> getEnv_ (const Mapping<String, String>& env)
+    {
+        Mapping<SDKString, SDKString> r;
+        for (auto i : env) {
+            r.Add (i.fKey.AsSDKString (), i.fValue.AsSDKString ());
+        }
+        return r;
+    }
+    Mapping<SDKString, SDKString> getEnv_ (const Sequence<filesystem::path>& replacePath)
+    {
+        Mapping<SDKString, SDKString> r = getEnv_ ();
+#if qStroika_Foundation_Common_Platform_POSIX
+        SDKString path = replacePath.Join<SDKString> ([] (const filesystem::path& p) -> SDKString { return p; }, SDKString{":"sv});
+#elif qStroika_Foundation_Common_Platform_Windows
+        SDKString path = replacePath.Join<SDKString> ([] (const filesystem::path& p) -> SDKString { return p; }, SDKString{L";"sv});
+#endif
+        r.Add (SDKSTR ("PATH"), path);
+        return r;
+    }
+}
+
 ProcessRunner::ProcessRunner (const String& commandLine, const Options& o)
     : ProcessRunner{commandLine.ContainsAny ({'\'', '\"', '<', '>', '|', '$', '{', '}'}) ? CommandLine{kDefaultShell, commandLine} : CommandLine{commandLine}, o}
 {
@@ -566,7 +597,7 @@ namespace {
         const char*                             thisEXEPath_cstr = nullptr;
         char**                                  thisEXECArgv     = nullptr;
         StackBuffer<char>                       execDataArgsBuffer;
-        StackBuffer<char*, 10 * sizeof (void*)> execArgsPtrBuffer; // avoid needless use of stackspace in most cases
+        StackBuffer<char*, 10 * sizeof (void*)> execArgsPtrBuffer; // avoid needless use of stack-space in most cases
         {
             Sequence<String> commandLine{cmdLine.GetArguments ()};
             Sequence<size_t> argsIdx;

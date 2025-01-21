@@ -12,8 +12,10 @@
 #include <unistd.h>
 #endif
 
+#include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 
 #if !defined(qHas_pid_t)
@@ -64,6 +66,14 @@ namespace Stroika::Foundation::Execution {
      */
     extern Common::ConstantProperty<Containers::Sequence<filesystem::path>> kPathEXT;
 #endif
+
+    /**
+     */
+    extern Common::ConstantProperty<Containers::Mapping<Characters::SDKString, Characters::SDKString>> kRawEnvironment;
+
+    /**
+     */
+    extern Common::ConstantProperty<Containers::Mapping<Characters::String, Characters::String>> kEnvironment;
 
     /**
      *  \brief If fn refers to an executable - return it (using kPATH, and kPathEXT as appropriate)

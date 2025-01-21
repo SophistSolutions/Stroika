@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
@@ -92,6 +93,8 @@
 namespace Stroika::Foundation::Execution {
 
     using Characters::String;
+    using Containers::Mapping;
+    using Containers::Sequence;
 
     /**
      *  \brief Run the given command, and optionally support stdin/stdout/stderr as streams (either sync with Run, RunInBackground)
@@ -161,6 +164,12 @@ namespace Stroika::Foundation::Execution {
              *      used (since this is a generally safe place to run an executable); use filesystem::current_path () if that is the intention.
              */
             optional<filesystem::path> fWorkingDirectory;
+
+            /**
+             *  If provided, child executed with this replacing its 'environment'; Variant 'Sequence<path>' means just the PATH part replaced.
+             *  If Mapping<String,...> converted to SDKString codepage, and if SDKString provided, used as-is.
+             */
+            optional<variant<Sequence<filesystem::path>, Mapping<String, String>, Mapping<Characters::SDKString, Characters::SDKString>>> fEnvironment;
 
             /**
              *  If true, then any nullptr input / output pipes are replaced with /dev/null (or equivalent)

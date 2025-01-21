@@ -16,7 +16,9 @@
 #include <windows.h>
 #endif
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -168,6 +170,49 @@ Common::ConstantProperty<Sequence<filesystem::path>> Execution::kPathEXT{[] () -
     return {};
 }};
 #endif
+
+/*
+ ********************************************************************************
+ ************************ Execution::kRawEnvironment ****************************
+ ********************************************************************************
+ */
+Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{[] () -> Mapping<SDKString, SDKString> {
+    Mapping<SDKString, SDKString> r;
+    const SDKChar* const*         envHead = nullptr;
+    if constexpr (same_as<SDKChar, wchar_t>) {
+        envHead = _wenviron;
+    }
+    else {
+        envHead = environ;
+    }
+    // NULL-terminated array of NUL-terminated strings
+    for (auto p = envHead; *p;) {
+        SDKString eltStr = *p;
+        p += eltStr.length () + 1;
+        size_t i = eltStr.find ('=');
+        if (i == SDKString::npos) {
+            DbgTrace ("bad env elt: {}"_f, String::FromSDKString (eltStr));
+            WeakAssertNotReached ();
+        }
+        else {
+            r.Add (eltStr.substr (0, i), eltStr.substr (i + 1));
+        }
+    }
+    return r;
+}};
+
+/*
+ ********************************************************************************
+ *************************** Execution::kEnvironment ****************************
+ ********************************************************************************
+ */
+Common::ConstantProperty<Mapping<String, String>> Execution::kEnvironment{[] () -> Mapping<String, String> {
+    Mapping<String, String> r;
+    for (auto i : kRawEnvironment ()) {
+        r.Add (String::FromSDKString (i.fKey), String::FromSDKString (i.fValue));
+    }
+    return r;
+}};
 
 /*
  ********************************************************************************
