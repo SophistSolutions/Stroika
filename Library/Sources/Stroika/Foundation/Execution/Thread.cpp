@@ -452,7 +452,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
                 newPThreadPriority = (priorityMax - priorityMin) * .5 + priorityMin;
         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Setting os thread priority for thread %{} to %{}"_f, (long long int)(nh), newPThreadPriority);
+        DbgTrace ("Setting os thread priority for thread %{} to %{}"_f, (long long int)(nh), newPThreadPriority);
 #endif
         /*
          *  \note Slightly simpler to use POSIX pthread_setschedprio - http://pubs.opengroup.org/onlinepubs/9699919799/functions/pthread_setschedprio.html
@@ -471,7 +471,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
 void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep); // NOTE - since shared_ptr<> is NOT a const reference, this holds the bumped reference count til the end of ThreadMain_ scope
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Execution::Thread::Ptr::Rep_::ThreadMain_", "thisThreadRep={}"_f,
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("Thread::Ptr::Rep_::ThreadMain_", "thisThreadRep={}"_f,
                                                                           Characters::ToString (thisThreadRep))};
 #if qStroika_Foundation_Debug_AssertionsChecked
     Require (Debug::AppearsDuringMainLifetime ());
@@ -531,7 +531,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                 (void)sigaddset (&mySet, SignalUsedForThreadInterrupt ()); // ""
                 Verify (::pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Just set SIG_UNBLOCK for signal {} in this thread"_f, SignalToName (SignalUsedForThreadInterrupt ()));
+                DbgTrace ("Just set SIG_UNBLOCK for signal {} in this thread"_f, SignalToName (SignalUsedForThreadInterrupt ()));
 #endif
             }
 #endif
@@ -561,9 +561,9 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                                        }};
 #endif
             if (doRun) {
-                DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
+                DbgTrace ("In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
                 thisThreadRep->Run_ ();
-                DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
+                DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
             }
         }
         catch (const AbortException&) {
@@ -619,7 +619,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
                 sHandlerInstalled_ = true;
             }
         }
-        (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
+        (void)SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
 #elif qStroika_Foundation_Common_Platform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
@@ -708,7 +708,7 @@ void Thread::Ptr::SetThreadName (const String& threadName) const
     RequireNotNull (fRep_);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"Execution::Thread::SetThreadName", "thisThreadID={}, threadName = '{}'"_f, GetID (), threadName};
+    TraceContextBumper ctx{"Thread::SetThreadName", "thisThreadID={}, threadName = '{}'"_f, GetID (), threadName};
 #endif
     if (fRep_->fThreadName_ != threadName) {
         fRep_->fThreadName_ = threadName.As<wstring> ();
@@ -762,7 +762,7 @@ void Thread::Ptr::Start () const
 
         fRep_->fStartEverInitiated_ = true; //atomic/publish
         if (fRep_->fAbortRequested_) [[unlikely]] {
-            Execution::Throw (Execution::RuntimeErrorException{"Thread aborted during start"}); // check and if aborting now, don't go further
+            Throw (RuntimeErrorException{"Thread aborted during start"sv}); // check and if aborting now, don't go further
         }
 
 #if __cpp_lib_jthread >= 201911
@@ -1042,15 +1042,15 @@ SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
 
 /*
  ********************************************************************************
- ******************** Execution::Thread::FormatThreadID *************************
+ **************************** Thread::FormatThreadID ****************************
  ********************************************************************************
  */
-wstring Execution::Thread::FormatThreadID (Thread::IDType threadID, const FormatThreadInfo& formatThreadInfo)
+wstring Thread::FormatThreadID (Thread::IDType threadID, const FormatThreadInfo& formatThreadInfo)
 {
     return String::FromNarrowSDKString (FormatThreadID_A (threadID, formatThreadInfo)).As<wstring> ();
 }
 
-string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatThreadInfo)
+string Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo& formatThreadInfo)
 {
     Thread::SuppressInterruptionInContext suppressAborts;
 
@@ -1133,14 +1133,14 @@ bool Thread::IsCurrentThreadInterruptible ()
 
 /*
  ********************************************************************************
- ********************** Execution::Thread::CheckForInterruption *****************
+ *************************** Thread::CheckForInterruption ***********************
  ********************************************************************************
  */
-void Execution::Thread::CheckForInterruption ()
+void Thread::CheckForInterruption ()
 {
     /*
      *  NOTE: subtle but important that we use static Thread::InterruptException::kThe so we avoid
-     *  re-throw with string operations. Otheriwse we would have to use SuppressInterruptionInContext
+     *  re-throw with string operations. Otherwise we would have to use SuppressInterruptionInContext
      *  just before the actual throw.
      */
     if (shared_ptr<Ptr::Rep_> thisRunningThreadRep = Ptr::sCurrentThreadRep_.lock ()) {
@@ -1164,14 +1164,14 @@ void Execution::Thread::CheckForInterruption ()
 
 /*
  ********************************************************************************
- **************************** Execution::Thread::Yield **************************
+ ********************************** Thread::Yield *******************************
  ********************************************************************************
  */
-void Execution::Thread::Yield ()
+void Thread::Yield ()
 {
     /*
      *  Check before so we abort more quickly, and after since while we were sleeping we could be interrupted.
-     *  And this (yeild) happens at a non-time critical point, so though checking before and after is redudnant,
+     *  And this (yield) happens at a non-time critical point, so though checking before and after is redundant,
      *  not importantly
      */
     CheckForInterruption ();
