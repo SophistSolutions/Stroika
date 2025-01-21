@@ -1272,7 +1272,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    inline const function<String (String, String, bool)> kDefaultStringCombiner = StringCombiner{.fSeparator = ", "_k};
+    inline const function<String (String, String, bool)> kDefaultStringCombiner = StringCombiner<String>{.fSeparator = ", "_k};
 
 #if qStroika_HasComponent_googletest
     inline void PrintTo (const String& s, std::ostream* os)
