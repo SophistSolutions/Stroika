@@ -457,13 +457,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief - PREFER USING StringBuilder if you are using this. This is very slow;
-         *  \todo Consider losing this method...
-         */
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder::SetAt")]] void SetCharAt (Character c, size_t i);
-
-    public:
-        /**
          *  \brief return (read-only) Character object
          *
          *  Alias for GetCharAt (size_t i) const;
@@ -1396,9 +1389,6 @@ namespace Stroika::Foundation::Characters {
          *        that is costly. Sure you can just use the original string length. BUT THAT WOULD BE A BUG once I support
          *        surrogates properly (at least on windows where wchar_t isn't char32_t).
          */
-        [[deprecated ("Since Stroika v3.0d13 - if you must use c_str() - use the overload taking StackBuffer arg), or use As<wstring> "
-                      "().c_str ()")]] const wchar_t*
-                   c_str ();
         nonvirtual tuple<const wchar_t*, wstring_view> c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const;
 
     public:
@@ -1453,18 +1443,20 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
-        /**
-         *  mimic (much of - need more overloads) STL variant
-         */
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from = 0);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void erase (size_t from, size_t count);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (wchar_t c);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void push_back (Character c);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (Character c);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const String& s);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* s);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const wchar_t* from, const wchar_t* to);
-        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (const Character* from, const Character* to);
+        ///////////////// DEPRECATED FUNCTIONS /////////////////
+        [[deprecated ("Since Stroika v3.0d13 - if you must use c_str() - use the overload taking StackBuffer arg), or use As<wstring> "
+                      "().c_str ()")]] const wchar_t*
+                                                                               c_str ();
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder::SetAt")]] void SetCharAt (Character c, size_t i);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        erase (size_t from = 0);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        erase (size_t from, size_t count);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        push_back (wchar_t c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        push_back (Character c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        Append (Character c);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        Append (const String& s);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        Append (const wchar_t* s);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        Append (const wchar_t* from, const wchar_t* to);
+        [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void        Append (const Character* from, const Character* to);
         template <typename CHAR_T>
         [[deprecated ("Since Stroika v3.0d12 use StringBuilder")]] void Append (span<const CHAR_T> s)
             requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>);
