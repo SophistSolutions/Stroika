@@ -183,7 +183,7 @@ Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironme
     if constexpr (same_as<SDKChar, wchar_t>) {
         envHead = _wenviron;
     }
-    else 
+    else
 #endif
     {
         envHead = environ;
