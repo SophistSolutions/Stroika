@@ -34,6 +34,12 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const initializer_list<value_type>& src)
+        : KeyedCollection{}
+    {
+        AddAll (src);
+    }
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>

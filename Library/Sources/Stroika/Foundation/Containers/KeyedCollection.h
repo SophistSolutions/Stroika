@@ -244,6 +244,7 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (const KeyedCollection&) noexcept = default;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+        KeyedCollection (const initializer_list<value_type>& src);
         template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERABLE_OF_ADDABLE&& src)
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
