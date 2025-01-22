@@ -207,6 +207,12 @@ namespace {
     struct String2ContigArrayCStrs_ {
         StackBuffer<CHAR_T>                       fBytesBuffer;
         StackBuffer<CHAR_T*, 10 * sizeof (void*)> fPtrsBuffer;
+        String2ContigArrayCStrs_ (const Iterable<Mapping<basic_string<CHAR_T>, basic_string<CHAR_T>>>& data)
+            : String2ContigArrayCStrs_{data.Map < Iterable<basic_string<CHAR_T>>{[] (auto kvp) -> basic_string<CHAR_T> {
+                                           return kvp.fKey + SDKSTR ("=") + kvp.fValue;
+                                       }}}
+        {
+        }
         String2ContigArrayCStrs_ (const Iterable<basic_string<CHAR_T>>& data)
         {
             StackBuffer<size_t> argsIdx;
@@ -228,6 +234,7 @@ namespace {
         }
         String2ContigArrayCStrs_ ()                                = delete;
         String2ContigArrayCStrs_ (const String2ContigArrayCStrs_&) = delete;
+        String2ContigArrayCStrs_ ( String2ContigArrayCStrs_&&) = delete;
     };
 }
 
@@ -633,12 +640,12 @@ namespace {
         thisEXECArgv     = execDataArgs.fPtrsBuffer.data ();
 
         /*
-             *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp,
-             *  and then there wont be a good way to propagate the error back to the caller.
-             *
-             *  @todo for now - this code only checks access for absolute/full path, and we should also check using
-             *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
-             */
+         *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp,
+         *  and then there wont be a good way to propagate the error back to the caller.
+         *
+         *  @todo for now - this code only checks access for absolute/full path, and we should also check using
+         *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
+         */
         if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
             errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -1055,12 +1062,23 @@ namespace {
                     }
                 }
 #endif
+
+                LPVOID                                      lpEnvironment = nullptr;
+                optional<String2ContigArrayCStrs_<SDKChar>> envBuffer;
+                if (options.fEnvironment) {
+                    if (auto op = get_if<Sequence<filesystem::path>> (&options.fEnvironment.value ())) {
+                        Mapping<SDKString, SDKString> aa = getEnv_ (*op);
+                      /*  String2ContigArrayCStrs_<SDKChar> mm{getEnv_ (*op)};
+                        envBuffer.emplace (move (mm));*/
+                    }
+                }
+
                 // see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa
                 // for complex rules for interpreting nullptr in appname (first) arg, and cmdLineBuf... But mostly - the idea - is
                 // it runs the search path algorithm and tries to do the right thing
                 Execution::Platform::Windows::ThrowIfZeroGetLastError (
                     ::CreateProcess (useEXEPath == nullopt ? nullptr : useEXEPath->c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
-                                     createProcFlags, nullptr, useCWD.c_str (), &startInfo, &processInfo));
+                                     createProcFlags, lpEnvironment, useCWD.c_str (), &startInfo, &processInfo));
             }
 
             if (runningPID != nullptr) {
