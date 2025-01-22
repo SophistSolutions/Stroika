@@ -208,7 +208,7 @@ namespace {
         StackBuffer<CHAR_T>                       fBytesBuffer;
         StackBuffer<CHAR_T*, 10 * sizeof (void*)> fPtrsBuffer;
         String2ContigArrayCStrs_ (const Mapping<basic_string<CHAR_T>, basic_string<CHAR_T>>& data)
-            : String2ContigArrayCStrs_{data.Map<Iterable<basic_string<CHAR_T>>> (
+            : String2ContigArrayCStrs_{data.template Map<Iterable<basic_string<CHAR_T>>> (
                   [] (auto kvp) -> basic_string<CHAR_T> { return kvp.fKey + SDKSTR ("=") + kvp.fValue; })}
         {
         }
