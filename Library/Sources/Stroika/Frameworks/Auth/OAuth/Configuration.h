@@ -16,7 +16,6 @@
 
 /**
  *  \file
- *
  */
 
 namespace Stroika::Frameworks::Auth::OAuth {
@@ -24,7 +23,9 @@ namespace Stroika::Frameworks::Auth::OAuth {
     using namespace Stroika::Foundation;
 
     using Characters::String;
+    using Containers::KeyedCollection;
     using Containers::Sequence;
+    using IO::Network::URI;
 
     using DataExchange::ObjectVariantMapper;
 
@@ -39,24 +40,29 @@ namespace Stroika::Frameworks::Auth::OAuth {
     using ApplicationIDType = String;
 
     /**
-    * often require things like no #/fragments
+     * often require things like no #/fragments
      */
-    using RedirectURLType = IO::Network::URI;
+    using RedirectURLType = URI;
 
     /**
      *  \brief Track configuration data about stuff that differentiates different
-     *         OAuth providers - what URLs to use, base url, relative off that urls for login/upgrade token/refresh etc.
+     *         OAuth providers - what URLs to use, base url, relative off that URLs for login/upgrade token/refresh etc.
      *         ALL very prelim at this stage.
      *
      *      see javascript frameworks - for doing auth2 - convert token to access token etc...
-     *      stuff to fetch 'keys' like I vaguely remember from openid... to validate jwts...\
+     *      stuff to fetch 'keys' like I vaguely remember from openid... to validate JWTs...\
      */
     class ProviderConfiguration {
     public:
-        String           name;
-        IO::Network::URI auth_uri;
-        IO::Network::URI token_uri;
-        IO::Network::URI auth_provider_x509_cert_url;
+        String name;
+        URI    openid_configuration_uri;
+        URI    auth_uri;
+        URI    token_uri;
+        URI    auth_provider_x509_cert_url;
+
+        static const ObjectVariantMapper kMapper;
+
+        nonvirtual String ToString () const;
     };
 
     namespace Private_ {
@@ -69,7 +75,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
      *  @todo provide predefined one inside this framework, and allow it to be updated/revised in applications.
      *  REFERENED IMPLICITLY in ClientConfiguration
      */
-    using ProvidersConfigurations = Containers::KeyedCollection<ProviderConfiguration, String, Private_::My_Traits_>;
+    using ProvidersConfigurations = KeyedCollection<ProviderConfiguration, String, Private_::My_Traits_>;
 
     /**
      *  a predefined set of configurations, but you may need to update/roll your own, as this could get out of date.
@@ -78,7 +84,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
     /**
      *  \note logically, we want to aggregate ProviderConfiguration inside ClientConfiguration, but
-            since it can generally be static and unchanged, we keep it separate, and just link up/reference by 'name'
+     *        since it can generally be static and unchanged, we keep it separate, and just link up/reference by 'name'
      */
     struct ClientConfiguration {
         String                    fProvider; // refers to some element of ProvidersConfigurationType
@@ -89,7 +95,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
         static const ObjectVariantMapper kMapper;
 
-        String ToString () const;
+        nonvirtual String ToString () const;
     };
 
     /**
@@ -100,7 +106,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
      *       { "facebook", "003...", [] },
      *  }
      */
-    using ClientConfigurations = Containers::Sequence<ClientConfiguration>;
+    using ClientConfigurations = Sequence<ClientConfiguration>;
 
 }
 
