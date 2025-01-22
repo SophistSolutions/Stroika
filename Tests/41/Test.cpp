@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
 #include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -44,7 +45,7 @@ namespace {
 }
 
 namespace {
-    void Test1_Function_ ()
+    GTEST_TEST (Foundation_Execution, Test1_Function_)
     {
         // Make sure Function<> works as well as std::function
         {
@@ -77,8 +78,9 @@ namespace {
 }
 
 namespace {
-    void Test2_CommandLine_ ()
+    GTEST_TEST (Foundation_Execution, Test2_CommandLine_)
     {
+        Debug::TraceContextBumper ctx{"Test2_CommandLine_"};
         {
             String           cmdLine = "/bin/sh -c \"a b c\"";
             Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
@@ -113,17 +115,16 @@ namespace {
 }
 
 namespace {
-    namespace Test3_ {
-        void DoAll ()
+    GTEST_TEST (Foundation_Execution, Finally)
+    {
+        Debug::TraceContextBumper ctx{"Finally"};
         {
+            unsigned int cnt = 0;
             {
-                unsigned int cnt = 0;
-                {
-                    [[maybe_unused]] auto&& c = Finally ([&cnt] () noexcept { cnt--; });
-                    ++cnt;
-                }
-                EXPECT_TRUE (cnt == 0);
+                [[maybe_unused]] auto&& c = Finally ([&cnt] () noexcept { cnt--; });
+                ++cnt;
             }
+            EXPECT_EQ (cnt, 0u);
         }
     }
 }
@@ -165,12 +166,14 @@ namespace {
                 }
             }
         }
-        void DoAll ()
-        {
-            Private_::T1_::DoIt ();
-            Private_::T2_::DoIt ();
-            Private_::T3_::DoIt ();
-        }
+
+    }
+    GTEST_TEST (Foundation_Execution, Test4_ConstantProperty_)
+    {
+        using namespace Test4_ConstantProperty_;
+        Private_::T1_::DoIt ();
+        Private_::T2_::DoIt ();
+        Private_::T3_::DoIt ();
     }
 }
 
@@ -251,24 +254,24 @@ namespace {
                 }
             }
         }
-        void DoAll ()
-        {
-            PRIVATE_::TestUse1_ ();
-            PRIVATE_::TestUse2_ ();
-            PRIVATE_::TestUse3_ ();
-        }
+    }
+    GTEST_TEST (Foundation_Execution, ModuleGetterSetter_)
+    {
+        using namespace Test5_ModuleGetterSetter_;
+        Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
+        PRIVATE_::TestUse1_ ();
+        PRIVATE_::TestUse2_ ();
+        PRIVATE_::TestUse3_ ();
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution, all)
+    GTEST_TEST (Foundation_Execution, Environment)
     {
-        Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
-        Test1_Function_ ();
-        Test2_CommandLine_ ();
-        Test3_::DoAll ();
-        Test4_ConstantProperty_::DoAll ();
-        Test5_ModuleGetterSetter_::DoAll ();
+        Debug::TraceContextBumper ctx{"Environment"};
+        Mapping<String, String>   env = Execution::kEnvironment;
+        EXPECT_TRUE (env.ContainsKey ("PATH"));
+        DbgTrace ("env={}"_f, env);
     }
 }
 
@@ -306,7 +309,6 @@ namespace {
         }
     }
 }
-
 #endif
 
 int main (int argc, const char* argv[])
