@@ -504,7 +504,7 @@ namespace Stroika::Foundation::Traversal {
     inline RESULT_T Iterable<T>::Join (const CONVERT_TO_RESULT& convertToResult, const RESULT_T& separator) const
         requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>)
     {
-        return Join (convertToResult, separator, nullopt);
+        return Join<RESULT_T> (convertToResult, separator, nullopt);
     }
 #endif
     template <typename T>
