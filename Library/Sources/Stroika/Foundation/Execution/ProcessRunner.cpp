@@ -207,10 +207,9 @@ namespace {
     struct String2ContigArrayCStrs_ {
         StackBuffer<CHAR_T>                       fBytesBuffer;
         StackBuffer<CHAR_T*, 10 * sizeof (void*)> fPtrsBuffer;
-        String2ContigArrayCStrs_ (const Iterable<Mapping<basic_string<CHAR_T>, basic_string<CHAR_T>>>& data)
-            : String2ContigArrayCStrs_{data.Map < Iterable<basic_string<CHAR_T>>{[] (auto kvp) -> basic_string<CHAR_T> {
-                                           return kvp.fKey + SDKSTR ("=") + kvp.fValue;
-                                       }}}
+        String2ContigArrayCStrs_ (const Mapping<basic_string<CHAR_T>, basic_string<CHAR_T>>& data)
+            : String2ContigArrayCStrs_{data.Map<Iterable<basic_string<CHAR_T>>> (
+                  [] (auto kvp) -> basic_string<CHAR_T> { return kvp.fKey + SDKSTR ("=") + kvp.fValue; })}
         {
         }
         String2ContigArrayCStrs_ (const Iterable<basic_string<CHAR_T>>& data)
@@ -234,7 +233,7 @@ namespace {
         }
         String2ContigArrayCStrs_ ()                                = delete;
         String2ContigArrayCStrs_ (const String2ContigArrayCStrs_&) = delete;
-        String2ContigArrayCStrs_ ( String2ContigArrayCStrs_&&) = delete;
+        String2ContigArrayCStrs_ (String2ContigArrayCStrs_&&)      = delete;
     };
 }
 
@@ -1063,14 +1062,20 @@ namespace {
                 }
 #endif
 
-                LPVOID                                      lpEnvironment = nullptr;
-                optional<String2ContigArrayCStrs_<SDKChar>> envBuffer;
+                LPVOID                                        lpEnvironment = nullptr;
+                unique_ptr<String2ContigArrayCStrs_<SDKChar>> envBuffer;
                 if (options.fEnvironment) {
                     if (auto op = get_if<Sequence<filesystem::path>> (&options.fEnvironment.value ())) {
-                        Mapping<SDKString, SDKString> aa = getEnv_ (*op);
-                      /*  String2ContigArrayCStrs_<SDKChar> mm{getEnv_ (*op)};
-                        envBuffer.emplace (move (mm));*/
+                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*op));
                     }
+                    else if (auto op = get_if<Mapping<String, String>> (&options.fEnvironment.value ())) {
+                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*op));
+                    }
+                    else if (auto op = get_if<Mapping<SDKString, SDKString>> (&options.fEnvironment.value ())) {
+                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*op));
+                    }
+                    AssertNotNull (envBuffer);
+                    // lpEnvironment = envBuffer->fPtrsBuffer;   // need to adjust createProcFlags for type used...
                 }
 
                 // see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa
