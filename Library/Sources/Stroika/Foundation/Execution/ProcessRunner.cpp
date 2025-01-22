@@ -1062,20 +1062,23 @@ namespace {
                 }
 #endif
 
-                LPVOID                                        lpEnvironment = nullptr;
                 unique_ptr<String2ContigArrayCStrs_<SDKChar>> envBuffer;
+                LPVOID                                        lpEnvironment = nullptr;
                 if (options.fEnvironment) {
-                    if (auto op = get_if<Sequence<filesystem::path>> (&options.fEnvironment.value ())) {
-                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*op));
+                    if (auto oep = get_if<Sequence<filesystem::path>> (&options.fEnvironment.value ())) {
+                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*oep));
                     }
-                    else if (auto op = get_if<Mapping<String, String>> (&options.fEnvironment.value ())) {
-                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*op));
+                    else if (auto om = get_if<Mapping<String, String>> (&options.fEnvironment.value ())) {
+                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*om));
                     }
-                    else if (auto op = get_if<Mapping<SDKString, SDKString>> (&options.fEnvironment.value ())) {
-                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*op));
+                    else if (auto oms = get_if<Mapping<SDKString, SDKString>> (&options.fEnvironment.value ())) {
+                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*oms));
                     }
                     AssertNotNull (envBuffer);
-                    // lpEnvironment = envBuffer->fPtrsBuffer;   // need to adjust createProcFlags for type used...
+                    lpEnvironment = envBuffer->fPtrsBuffer.data (); // need to adjust createProcFlags for type used...
+                    if constexpr (same_as<SDKChar, wchar_t>) {
+                        createProcFlags |= CREATE_UNICODE_ENVIRONMENT;
+                    }
                 }
 
                 // see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa

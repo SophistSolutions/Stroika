@@ -6,9 +6,9 @@
 #include <cstdio>
 
 #if qStroika_Foundation_Common_Platform_MacOS
+#include <crt_externs.h>
 #include <libproc.h>
 #include <mach-o/dyld.h>
-#include <crt_externs.h>
 #endif
 #if qStroika_Foundation_Common_Platform_POSIX && qSupport_Proc_Filesystem
 #include <unistd.h>
