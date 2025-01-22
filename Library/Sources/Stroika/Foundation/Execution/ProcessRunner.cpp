@@ -217,14 +217,12 @@ namespace {
             StackBuffer<size_t> argsIdx;
             size_t              bufferIndex = 0;
             for (const basic_string<CHAR_T>& i : data) {
-                for (CHAR_T c : i) {
-                    fBytesBuffer.push_back (c);
-                }
+                fBytesBuffer.push_back (span{i});
                 fBytesBuffer.push_back ('\0');
                 argsIdx.push_back (bufferIndex);
                 bufferIndex = fBytesBuffer.GetSize ();
             }
-            fBytesBuffer.push_back ('\0'); // not sure - maybe not needed
+            fBytesBuffer.push_back ('\0'); // not sure - maybe not needed for UNIX, but needed on windows (cuz not using double fPtrsBuffer)
             auto freeze = fBytesBuffer.begin ();
             for (size_t i : argsIdx) {
                 fPtrsBuffer.push_back (freeze + i);
@@ -1075,7 +1073,7 @@ namespace {
                         envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*oms));
                     }
                     AssertNotNull (envBuffer);
-                    lpEnvironment = envBuffer->fPtrsBuffer.data (); // need to adjust createProcFlags for type used...
+                    lpEnvironment = envBuffer->fBytesBuffer.data (); // need to adjust createProcFlags for type used...
                     if constexpr (same_as<SDKChar, wchar_t>) {
                         createProcFlags |= CREATE_UNICODE_ENVIRONMENT;
                     }
