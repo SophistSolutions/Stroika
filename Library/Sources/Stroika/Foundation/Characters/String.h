@@ -987,7 +987,7 @@ namespace Stroika::Foundation::Characters {
          * and the resulting string is returned. This does not modify the current string its
          * applied to - just returns the trimmed string.
          */
-        nonvirtual String LTrim (bool (*shouldBeTrimmmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
+        nonvirtual String LTrim (bool (*shouldBeTrimmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
 
     public:
         /**
@@ -1001,13 +1001,13 @@ namespace Stroika::Foundation::Characters {
          *          String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
          *      \endcode
          */
-        nonvirtual String RTrim (bool (*shouldBeTrimmmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
+        nonvirtual String RTrim (bool (*shouldBeTrimmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
 
     public:
         /**
          * String Trim () is locally equivalent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
          */
-        nonvirtual String Trim (bool (*shouldBeTrimmmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
+        nonvirtual String Trim (bool (*shouldBeTrimmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;
 
     public:
         /**

@@ -1401,13 +1401,13 @@ String String::Repeat (unsigned int count) const
     }
 }
 
-String String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
+String String::LTrim (bool (*shouldBeTrimmed) (Character)) const
 {
-    RequireNotNull (shouldBeTrimmmed);
+    RequireNotNull (shouldBeTrimmed);
     _SafeReadRepAccessor accessor{this};
     size_t               length = accessor._ConstGetRep ().size ();
     for (size_t i = 0; i < length; ++i) {
-        if (not(*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (i))) {
+        if (not(*shouldBeTrimmed) (accessor._ConstGetRep ().GetAt (i))) {
             if (i == 0) {
                 // no change in string
                 return *this;
@@ -1421,14 +1421,14 @@ String String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
     return String{};
 }
 
-String String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
+String String::RTrim (bool (*shouldBeTrimmed) (Character)) const
 {
-    RequireNotNull (shouldBeTrimmmed);
+    RequireNotNull (shouldBeTrimmed);
     _SafeReadRepAccessor accessor{this};
     ptrdiff_t            length         = accessor._ConstGetRep ().size ();
     ptrdiff_t            endOfFirstTrim = length;
     for (; endOfFirstTrim != 0; --endOfFirstTrim) {
-        if ((*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (endOfFirstTrim - 1))) {
+        if ((*shouldBeTrimmed) (accessor._ConstGetRep ().GetAt (endOfFirstTrim - 1))) {
             // keep going backwards
         }
         else {
@@ -1446,25 +1446,24 @@ String String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     }
 }
 
-String String::Trim (bool (*shouldBeTrimmmed) (Character)) const
+String String::Trim (bool (*shouldBeTrimmed) (Character)) const
 {
-    RequireNotNull (shouldBeTrimmmed);
+    RequireNotNull (shouldBeTrimmed);
     /*
      * This could be implemented more efficiently, but this is simpler for now...
      */
-    return LTrim (shouldBeTrimmmed).RTrim (shouldBeTrimmmed);
+    return LTrim (shouldBeTrimmed).RTrim (shouldBeTrimmed);
 }
 
 String String::StripAll (bool (*removeCharIf) (Character)) const
 {
-    //@todo - fix - horribly impl..
     RequireNotNull (removeCharIf);
 
-    // TODO: optimize special case where removeCharIf is always false
+    // NB: optimize special case where removeCharIf is always false
     //
     // Walk string and find first character we need to remove
-    StringBuilder result{*this};
-    size_t        n = result.size ();
+    StringBuilder<StringBuilder_Options<char32_t>> result{*this}; // StringBuilder_Options<char32_t> so operator[] is fast
+    size_t                                         n = result.size ();
     for (size_t i = 0; i < n; ++i) {
         Character c = result[i];
         if (removeCharIf (c)) {
