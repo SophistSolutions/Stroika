@@ -8,6 +8,7 @@
 #if qStroika_Foundation_Common_Platform_MacOS
 #include <libproc.h>
 #include <mach-o/dyld.h>
+#include <crt_externs.h>
 #endif
 #if qStroika_Foundation_Common_Platform_POSIX && qSupport_Proc_Filesystem
 #include <unistd.h>
@@ -186,7 +187,11 @@ Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironme
     else
 #endif
     {
+#if qStroika_Foundation_Common_Platform_MacOS
+        envHead = (*_NSGetEnviron ());
+#else
         envHead = environ;
+#endif
     }
     // NULL-terminated array of NUL-terminated strings
     for (auto p = envHead; *p;) {
