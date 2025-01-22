@@ -196,7 +196,7 @@ Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironme
     // NULL-terminated array of NUL-terminated strings
     for (const SDKChar* const* p = envHead; *p; ++p) {
         SDKString eltStr = *p;
-        size_t i = eltStr.find ('=');
+        size_t    i      = eltStr.find ('=');
         if (i == SDKString::npos) {
             DbgTrace ("bad env elt: {}"_f, String::FromSDKString (eltStr));
             WeakAssertNotReached ();

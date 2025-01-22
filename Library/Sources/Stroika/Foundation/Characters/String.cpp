@@ -1311,9 +1311,8 @@ Sequence<String> String::AsLines () const
 
 Sequence<String> String::Grep (const String& fgrepArg) const
 {
-    Sequence<String> r1 = AsLines ();
     Sequence<String> r;
-    for (auto i : r1) {
+    for (auto i : AsLines ()) {
         if (i.Contains (fgrepArg)) {
             r += i;
         }
@@ -1323,9 +1322,8 @@ Sequence<String> String::Grep (const String& fgrepArg) const
 
 Sequence<String> String::Grep (const RegularExpression& egrepArg) const
 {
-    Sequence<String> r1 = AsLines ();
     Sequence<String> r;
-    for (auto i : r1) {
+    for (auto i : AsLines ()) {
         if (i.Matches (egrepArg)) {
             r += i;
         }
