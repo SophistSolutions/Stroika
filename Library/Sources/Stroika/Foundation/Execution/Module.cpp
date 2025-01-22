@@ -194,9 +194,8 @@ Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironme
 #endif
     }
     // NULL-terminated array of NUL-terminated strings
-    for (auto p = envHead; *p;) {
+    for (const SDKChar* const* p = envHead; *p; ++p) {
         SDKString eltStr = *p;
-        p += eltStr.length () + 1;
         size_t i = eltStr.find ('=');
         if (i == SDKString::npos) {
             DbgTrace ("bad env elt: {}"_f, String::FromSDKString (eltStr));
