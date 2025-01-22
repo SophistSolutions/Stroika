@@ -200,13 +200,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \note - this can be very slow if OPTIONS::BufferElementType != char32_t
+         *  \note - this can be very slow if OPTIONS::BufferElementType != char32_t (but if StringBuilder_Options<char32_t> its fast)
          */
         nonvirtual Character GetAt (size_t index) const noexcept;
 
     public:
         /**
-         *  \note - this can be very slow if OPTIONS::BufferElementType != char32_t
+         *  \note - this can be very slow if OPTIONS::BufferElementType != char32_t (but if StringBuilder_Options<char32_t> its fast)
          */
         nonvirtual void SetAt (Character item, size_t index) noexcept;
 
@@ -215,6 +215,8 @@ namespace Stroika::Foundation::Characters {
          *  \brief return (read-only) Character object
          *
          *  Alias for GetAt (size_t i) const;
+         * 
+         *  \note this is very inefficient, unless using StringBuilder_Options<char32_t> - in which case its quite fast
          */
         nonvirtual const Character operator[] (size_t i) const noexcept;
 
