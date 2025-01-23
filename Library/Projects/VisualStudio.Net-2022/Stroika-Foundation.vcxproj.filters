@@ -465,9 +465,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
@@ -765,9 +762,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
@@ -902,6 +896,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.cpp">
       <Filter>Sources\DataExchange\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\ToText.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\FromText.cpp">
+      <Filter>Sources\Streams</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2318,6 +2318,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Async.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ToText.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\FromText.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -2844,12 +2850,6 @@
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl">
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.inl">
@@ -3572,9 +3572,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\HashBase.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.inl">
       <Filter>Sources\Characters</Filter>
     </None>
@@ -3830,6 +3827,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Async.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToText.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\FromText.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

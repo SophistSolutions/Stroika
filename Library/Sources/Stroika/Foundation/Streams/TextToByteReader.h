@@ -6,35 +6,21 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/InputStream.h"
-#include "Stroika/Foundation/Traversal/Iterable.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 
 /**
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+ * 
+ * 
+ *  *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::FromText
+
  */
 
 namespace Stroika::Foundation::Streams::TextToByteReader {
 
-    using Characters::Character;
-
-    /**
-     *  \brief Stream wrapper that takes an InputStream<Character> and transforms it into an
-     *         InputStream<byte> (like TextWriter does, but pull rather than push based).
-     * 
-     *  Draft implementation (not very performant, but doesn't seem used much and easy to tweak)
-     * 
-     * DOC CONNECTION TO TextWriter and maybe share output/format flags?
-     * 
-     * @todo NOTE - this CURRENTLY HARDWIRES converting to UTF-8
-     * 
-     * @todo take optional CodeCvt argument, or things you would pass to CodeCvt (character coing) for what binary rep to create!
-     * 
-     *  WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
-     */
-    InputStream::Ptr<byte> New (const InputStream::Ptr<Character>& srcStream);
-    InputStream::Ptr<byte> New (const Traversal::Iterable<Character>& srcText);
+    using namespace FromText::Reader;
 
 }
 
@@ -43,6 +29,5 @@ namespace Stroika::Foundation::Streams::TextToByteReader {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "TextToByteReader.inl"
 
 #endif /*_Stroika_Foundation_Streams_TextToByteReader_h_*/

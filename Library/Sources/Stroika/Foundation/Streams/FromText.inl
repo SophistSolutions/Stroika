@@ -1,12 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "InternallySynchronizedOutputStream.h" // no need to include once we remove deprecated references to this
+#include "InternallySynchronizedOutputStream.h"
 
-namespace Stroika::Foundation::Streams::TextWriter {
+namespace Stroika::Foundation::Streams::FromText {
 
     namespace Private_ {
-        class UnSeekable_CodeCvt_Rep_ : public OutputStream::IRep<Character> {
+        class UnSeekable_CodeCvt_Rep_ final : public OutputStream::IRep<Character> {
         public:
             UnSeekable_CodeCvt_Rep_ (const OutputStream::Ptr<byte>& src, const Characters::CodeCvt<Character>& converter)
                 : _fSource{src}
@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
         };
 
         template <Characters ::IUNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
-        class UnSeekable_UTFConverter_Rep_ : public OutputStream::IRep<Character> {
+        class UnSeekable_UTFConverter_Rep_ final : public OutputStream::IRep<Character> {
         public:
             template <typename CONVERTER>
             UnSeekable_UTFConverter_Rep_ (const OutputStream::Ptr<byte>& src, CONVERTER&& converter)
@@ -143,41 +143,44 @@ namespace Stroika::Foundation::Streams::TextWriter {
      ****************************** TextWriter::New *********************************
      ********************************************************************************
      */
-    inline auto New (const OutputStream::Ptr<Character>& src) -> Ptr
-    {
-        return src;
-    }
-    inline Ptr New (const OutputStream::Ptr<byte>& src, const Characters::CodeCvt<>& char2OutputConverter)
-    {
-        return Ptr{make_shared<Private_::UnSeekable_CodeCvt_Rep_> (src, char2OutputConverter)};
-    }
-    inline Ptr New (const OutputStream::Ptr<byte>& src, Characters::UnicodeExternalEncodings e, Characters::ByteOrderMark bom)
-    {
-        if (bom == Characters::ByteOrderMark::eInclude) {
-            src.Write (Characters::GetByteOrderMark (e));
+    namespace Writer {
+        inline auto New (const OutputStream::Ptr<Character>& src) -> OutputStream::Ptr<Character>
+        {
+            return src;
         }
-        // handle a few common cases more efficiently, without vectoring through CodeCvt<> (which has an extra level of indirection)
-        switch (e) {
-            case Characters::UnicodeExternalEncodings::eUTF8:
-                return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char8_t>> (src)};
-            case Characters::UnicodeExternalEncodings::eUTF16:
-                return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char16_t>> (src)};
-            case Characters::UnicodeExternalEncodings::eUTF32:
-                return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char32_t>> (src)};
-            default:
-                // but default to using the CodeCvt writer
-                return New (src, Characters::CodeCvt<Character> (e));
+        inline OutputStream::Ptr<Character> New (const OutputStream::Ptr<byte>& src, const Characters::CodeCvt<>& char2OutputConverter)
+        {
+            return OutputStream::Ptr<Character>{make_shared<Private_::UnSeekable_CodeCvt_Rep_> (src, char2OutputConverter)};
         }
-    }
-    template <typename... ARGS>
-    inline Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args)
-    {
-        switch (internallySynchronized) {
-            case Execution::eNotKnownInternallySynchronized:
-                return New (forward<ARGS...> (args...));
-            case Execution::eInternallySynchronized:
-                // @todo could explicitly specialize more cases and handle more efficiently, but using the REP overload of InternallySynchronizedInputStream
-                return InternallySynchronizedOutputStream::New ({}, New (forward<ARGS...> (args...)));
+        inline OutputStream::Ptr<Character> New (const OutputStream::Ptr<byte>& src, Characters::UnicodeExternalEncodings e, Characters::ByteOrderMark bom)
+        {
+            using Ptr = OutputStream::Ptr<Character>;
+            if (bom == Characters::ByteOrderMark::eInclude) {
+                src.Write (Characters::GetByteOrderMark (e));
+            }
+            // handle a few common cases more efficiently, without vectoring through CodeCvt<> (which has an extra level of indirection)
+            switch (e) {
+                case Characters::UnicodeExternalEncodings::eUTF8:
+                    return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char8_t>> (src)};
+                case Characters::UnicodeExternalEncodings::eUTF16:
+                    return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char16_t>> (src)};
+                case Characters::UnicodeExternalEncodings::eUTF32:
+                    return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char32_t>> (src)};
+                default:
+                    // but default to using the CodeCvt writer
+                    return New (src, Characters::CodeCvt<Character> (e));
+            }
+        }
+        template <typename... ARGS>
+        inline OutputStream::Ptr<Character> New (Execution::InternallySynchronized internallySynchronized, ARGS... args)
+        {
+            switch (internallySynchronized) {
+                case Execution::eNotKnownInternallySynchronized:
+                    return New (forward<ARGS...> (args...));
+                case Execution::eInternallySynchronized:
+                    // @todo could explicitly specialize more cases and handle more efficiently, but using the REP overload of InternallySynchronizedInputStream
+                    return InternallySynchronizedOutputStream::New ({}, New (forward<ARGS...> (args...)));
+            }
         }
     }
 

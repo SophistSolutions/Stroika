@@ -3,25 +3,25 @@
  */
 #include "InternallySynchronizedInputStream.h"
 
-namespace Stroika::Foundation::Streams::TextReader {
+namespace Stroika::Foundation::Streams::ToText::Reader {
 
     /*
      ********************************************************************************
-     ***************************** TextReader::New **********************************
+     ********************************* ToText::New **********************************
      ********************************************************************************
      */
-    inline auto New (const InputStream::Ptr<Character>& src) -> Ptr
+    inline auto New (const InputStream::Ptr<Character>& src) -> InputStream::Ptr<Character>
     {
         return src;
     }
     template <typename... ARGS>
-    inline Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args)
+    inline InputStream::Ptr<Character> New (Execution::InternallySynchronized internallySynchronized, ARGS... args)
     {
         switch (internallySynchronized) {
             case Execution::InternallySynchronized::eNotKnownInternallySynchronized:
                 return New (forward<ARGS...> (args...));
             case Execution::eInternallySynchronized:
-                // @todo could explicitly specialize more cases and handle more efficiently, but using the REP loverload of InternallySynchronizedInputStream
+                // @todo could explicitly specialize more cases and handle more efficiently, but using the REP overload of InternallySynchronizedInputStream
                 return InternallySynchronizedInputStream::New ({}, New (forward<ARGS...> (args...)));
         }
     }

@@ -277,13 +277,13 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\FromText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\ToText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />
@@ -716,6 +716,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\EWouldBlock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedSpanInputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\FromText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStreamDelegationHelper.h" />
@@ -741,6 +742,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ToText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Clock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Common.h" />
@@ -1218,6 +1220,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\EWouldBlock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedSpanInputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\FromText.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStreamDelegationHelper.inl" />
@@ -1241,9 +1244,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Stream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToText.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Clock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />

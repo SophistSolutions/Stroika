@@ -14,13 +14,13 @@
 
 #include "IterableToInputStream.h"
 
-#include "TextReader.h"
+#include "ToText.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
-using namespace Stroika::Foundation::Streams::TextReader;
+using namespace Stroika::Foundation::Streams::ToText;
 
 using Characters::String;
 using Debug::AssertExternallySynchronizedMutex;
@@ -46,7 +46,7 @@ namespace {
          *  we must somehow backup binary read amount for next time - save 'multibyte' state
          *
          *  Two strategies: 
-         *      o   SEEK source back: quick/easiy buy maybe impossible (if source not seekable)
+         *      o   SEEK source back: quick/easily buy maybe impossible (if source not seekable)
          *      o   OR track 'extra stuff to prepend to next read' - and use that on next read.
          * 
          *  We COULD use the 'seek' approach by creating a wrapper class that introduced seekability so
@@ -289,9 +289,9 @@ namespace {
         using inherited = FromBinaryStreamBaseRep_;
 
     public:
-        CachingSeekableBinaryStreamRep_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<char32_t>& charConverter, ReadAhead readAhead)
+        CachingSeekableBinaryStreamRep_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<char32_t>& charConverter, Reader::ReadAhead readAhead)
             : FromBinaryStreamBaseRep_{src, charConverter}
-            , fReadAheadAllowed_{readAhead == ReadAhead::eReadAheadAllowed}
+            , fReadAheadAllowed_{readAhead == Reader::ReadAhead::eReadAheadAllowed}
         {
         }
 
@@ -450,13 +450,14 @@ namespace {
 
 /*
  ********************************************************************************
- ************************** Streams::TextReader::New ****************************
+ ********************** Streams::ToText::Reader::New ****************************
  ********************************************************************************
  */
 namespace {
-    auto New_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> TextReader::Ptr
+    auto New_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable,
+               Reader::ReadAhead readAhead) -> InputStream::Ptr<Character>
     {
-        using TextReader::Ptr;
+        using Ptr = InputStream::Ptr<Character>;
         Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
                                                       : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
         Ensure (p.IsSeekable () == (seekable == SeekableFlag::eSeekable));
@@ -464,8 +465,8 @@ namespace {
     }
 }
 
-auto TextReader::New (const InputStream::Ptr<byte>& src, const optional<AutomaticCodeCvtFlags> codeCvtFlags,
-                      optional<SeekableFlag> seekable, ReadAhead readAhead) -> Ptr
+auto ToText::Reader::New (const InputStream::Ptr<byte>& src, const optional<AutomaticCodeCvtFlags> codeCvtFlags,
+                          optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
 {
     if (seekable == nullopt) {
         seekable = src.IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
@@ -501,8 +502,8 @@ auto TextReader::New (const InputStream::Ptr<byte>& src, const optional<Automati
     return New_ (src, codeConverter, *seekable, readAhead);
 }
 
-auto TextReader::New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, optional<SeekableFlag> seekable,
-                      ReadAhead readAhead) -> Ptr
+auto ToText::Reader::New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, optional<SeekableFlag> seekable,
+                          ReadAhead readAhead) -> InputStream::Ptr<Character>
 {
     if (seekable == nullopt) {
         seekable = src.IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
@@ -510,9 +511,9 @@ auto TextReader::New (const InputStream::Ptr<byte>& src, const Characters::CodeC
     return New_ (src, codeConverter, *seekable, readAhead);
 }
 
-auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
+auto ToText::Reader::New (const Traversal::Iterable<Character>& src) -> InputStream::Ptr<Character>
 {
-    Ptr p = IterableToInputStream::New<Character> (src);
+    InputStream::Ptr<Character> p = IterableToInputStream::New<Character> (src);
     Ensure (p.IsSeekable ());
     return p;
 }

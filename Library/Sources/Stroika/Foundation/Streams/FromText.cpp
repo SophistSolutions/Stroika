@@ -3,24 +3,28 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/TextConvert.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "IterableToInputStream.h"
-#include "MemoryStream.h"
 
-#include "TextToByteReader.h"
-
-using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Streams;
+#include "FromText.h"
 
 using std::byte;
 
-using Characters::Character;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Streams;
+using namespace Stroika::Foundation::Streams::FromText;
+
 using Characters::String;
 using Debug::AssertExternallySynchronizedMutex;
+using Memory::InlineBuffer;
 using Memory::StackBuffer;
 
 namespace {
@@ -114,15 +118,15 @@ namespace {
 
 /*
  ********************************************************************************
- *********************** Streams::TextToByteReader::New *************************
+ *********************** Streams::FromText::Reader::New *************************
  ********************************************************************************
  */
-auto TextToByteReader::New (const InputStream::Ptr<Character>& srcStream) -> InputStream::Ptr<byte>
+auto FromText::Reader::New (const InputStream::Ptr<Character>& srcStream) -> InputStream::Ptr<byte>
 {
     return InputStream::Ptr<byte>{make_shared<Rep_> (srcStream)};
 }
 
-auto TextToByteReader::New (const Traversal::Iterable<Character>& srcText) -> InputStream::Ptr<byte>
+auto FromText::Reader::New (const Traversal::Iterable<Character>& srcText) -> InputStream::Ptr<byte>
 {
     // @todo - Could make this more efficient (by combining into one object) - but for now KISS
     return New (IterableToInputStream::New<Character> (srcText));

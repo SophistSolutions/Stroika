@@ -14,7 +14,7 @@
 /**
  *  \file
  *      Wrappers and extensions to the CodeCvt/std::codecvt<> logic. Often when reading/writing files (or a series of bytes)
- *      you have no, or limited knowlege of the code page. This contains logic to help with that case.
+ *      you have no, or limited knowledge of the code page. This contains logic to help with that case.
  * 
  *  @todo - this will replace the (probably to be deprecated) CodePage module - at least much/most of it.
  */
