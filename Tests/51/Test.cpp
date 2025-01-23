@@ -1056,7 +1056,7 @@ namespace {
             using namespace DataExchange;
             Streams::MemoryStream::Ptr<byte> out      = Streams::MemoryStream::New<byte> ();
             static const ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
-            Variant::JSON::Writer ().Write (kMapper_.FromObject (scan), out);
+            Variant::JSON::Writer{}.Write (kMapper_.FromObject (scan), out);
             return out.As<Memory::BLOB> ();
         }
         void DoRunPerfTest ()

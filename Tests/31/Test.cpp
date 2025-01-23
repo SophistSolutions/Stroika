@@ -175,15 +175,16 @@ namespace {
             0x00, 0x10, 0x00, 0x00, 0x0c, 0x81, 0x9b, 0x0a, 0x01, 0xa0, 0xee, 0xa0, 0x06, 0x00, 0x00};
         Assert (sizeof (ksample_zip_7z_) == 2157);
 #if qStroika_HasComponent_LZMA
-        Archive::_7z::Reader reader (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_7z_}));
+        Archive::_7z::Reader reader (
+            Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_7z_})));
         EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
                                                                              L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
         {
-            EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
-            EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
-            EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
-            EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+            EXPECT_EQ (reader.GetData ("sample_zip/TODO.txt").size (), 243u);
+            EXPECT_EQ (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size (), 4296u);
+            EXPECT_EQ (reader.GetData ("sample_zip/Common-Valgrind.supp").size (), 1661u);
+            EXPECT_EQ (reader.GetData ("sample_zip/Tests-Description.txt").size (), 1934u);
             EXPECT_TRUE (
                 TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
                     .ReadAll ()
@@ -351,15 +352,15 @@ namespace {
             0x00, 0x00, 0x4f, 0x09, 0x00, 0x00, 0x00, 0x00};
         Assert (sizeof (ksample_zip_) == 2948);
 #if qStroika_HasComponent_zlib
-        Archive::Zip::Reader reader{Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_})};
+        Archive::Zip::Reader reader{Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_}))};
 
         EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
                                                                              "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
         {
-            EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
-            EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
-            EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
-            EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+            EXPECT_EQ (reader.GetData ("sample_zip/TODO.txt").size (), 243u);
+            EXPECT_EQ (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size (), 4296u);
+            EXPECT_EQ (reader.GetData ("sample_zip/Common-Valgrind.supp").size (), 1661u);
+            EXPECT_EQ (reader.GetData ("sample_zip/Tests-Description.txt").size (), 1934u);
             EXPECT_TRUE (
                 TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
                     .ReadAll ()
@@ -765,32 +766,33 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_1_::DoAll_"};
         {
-            const char kJSONExample_[] = "{"
-                                         "    \"Automated Backups\" : {"
-                                         "        \"From\" : {"
-                                         "            \"CurrentHRWildcard\" : true,"
-                                         "            \"PrintName\" : \"{Current HR}\""
-                                         "        },"
-                                         "        \"LastRanAt\" : {"
-                                         "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
-                                         "        },"
-                                         "        \"Operation\" : 0,"
-                                         "        \"Output\" : {"
-                                         "            \"AttachmentPolicy\" : 2,"
-                                         "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
-                                         "            \"MaxFiles\" : 0,"
-                                         "            \"NamePolicy\" : 1,"
-                                         "            \"Password\" : \"\""
-                                         "        },"
-                                         "        \"PolicyName\" : \"Automated Backups\","
-                                         "        \"Schedule\" : 2,"
-                                         "        \"To\" : {"
-                                         "            \"DefaultBackupDirectory\" : true,"
-                                         "            \"PrintName\" : \"{Default Backup Directory}\""
-                                         "        }"
-                                         "    }"
-                                         "}";
-            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
+            const char   kJSONExample_[] = "{"
+                                           "    \"Automated Backups\" : {"
+                                           "        \"From\" : {"
+                                           "            \"CurrentHRWildcard\" : true,"
+                                           "            \"PrintName\" : \"{Current HR}\""
+                                           "        },"
+                                           "        \"LastRanAt\" : {"
+                                           "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
+                                           "        },"
+                                           "        \"Operation\" : 0,"
+                                           "        \"Output\" : {"
+                                           "            \"AttachmentPolicy\" : 2,"
+                                           "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
+                                           "            \"MaxFiles\" : 0,"
+                                           "            \"NamePolicy\" : 1,"
+                                           "            \"Password\" : \"\""
+                                           "        },"
+                                           "        \"PolicyName\" : \"Automated Backups\","
+                                           "        \"Schedule\" : 2,"
+                                           "        \"To\" : {"
+                                           "            \"DefaultBackupDirectory\" : true,"
+                                           "            \"PrintName\" : \"{Default Backup Directory}\""
+                                           "        }"
+                                           "    }"
+                                           "}";
+            VariantValue v               = DataExchange::Variant::JSON::Reader{}.Read (
+                Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{kJSONExample_})));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
             EXPECT_EQ (mv[L"Automated Backups"].GetType (), VariantValue::eMap);
             map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();

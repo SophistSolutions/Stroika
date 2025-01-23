@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 #include "InputStream.h"
 
@@ -20,11 +21,6 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *      @todo   ADD TO DOCUMENTATION AND IMPLEMNENTATION - when Ptr
- *              goes out of scope - AUTO-CLOSE the stream (so any future reads just return
- *              EOF, or special 'CLOSED'? Or ASSERT ERROR? DECIDE AND DOCUMENT AND DO.
- * 
- *              But - then must be very careful about MOVES of Ptr instead of copies, so not sure a good idea.
  */
 
 namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
@@ -59,21 +55,19 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
      *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedSpanInputStream::New<byte> (span{buf})
      *      \endcode
      * 
-     *  \note Though generally for these constructors, the pointer types of the arguments must match ELEMENT_TYPE, we have a
-     *        few exceptions allowed, for common C++ backward compatibility.
-     * 
-     *          if ELEMENT_TYPE==byte:
-     *              allow iterator/pointer of uint8_t
-     *              allow iterator/pointer of char
+     *  \par Example Usage
+     *      \code
+     *          const char kJSONExample_[] = "{"...;
+     *          // JSON Reader takes InputStream::Ptr<byte> argument
+     *          auto reader = DataExchange::Variant::JSON::Reader{};
+     *          VariantValue v1 = reader.Read (Streams::ExternallyOwnedSpanInputStream::New (span{kJSONExample_}));
+     *          VariantValue vSameAs = reader.Read (Streams::ExternallyOwnedSpanInputStream::New (Memory::SpanBytesCast<span<const byte>>(span{kJSONExample_})));
+     *      \endcode
      */
-    template <typename ELEMENT_TYPE, typename ELEMENT_TYPE2, size_t EXTENT2>
-    Ptr<ELEMENT_TYPE> New (span<ELEMENT_TYPE2, EXTENT2> s)
-        requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
-                  (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, char> or same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)));
-    template <typename ELEMENT_TYPE, typename ELEMENT_TYPE2, size_t EXTENT2>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, span<ELEMENT_TYPE2, EXTENT2> s)
-        requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
-                  (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, char> or same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)));
+    template <typename ELEMENT_TYPE, Memory::ISpanBytesCastable<span<const ELEMENT_TYPE>> FROM_SPAN>
+    Ptr<ELEMENT_TYPE> New (FROM_SPAN s);
+    template <typename ELEMENT_TYPE, Memory::ISpanBytesCastable<span<const ELEMENT_TYPE>> FROM_SPAN>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, FROM_SPAN s);
 
 }
 

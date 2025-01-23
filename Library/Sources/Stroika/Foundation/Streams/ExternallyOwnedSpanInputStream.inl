@@ -17,15 +17,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             Rep_ (const Rep_&) = delete;
             template <size_t EXTENT_T>
             Rep_ (span<const ELEMENT_TYPE, EXTENT_T> s)
-                : fStart_{Traversal::Iterator2Pointer (s.begin ())}
-                , fEnd_{fStart_ + s.size ()}
-                , fCursor_{fStart_}
-            {
-            }
-            template <typename ELEMENT_TYPE2, size_t EXTENT_T>
-            Rep_ (span<const ELEMENT_TYPE2, EXTENT_T> s)
-                requires (same_as<ELEMENT_TYPE, byte> and (same_as<ELEMENT_TYPE2, char> or same_as<ELEMENT_TYPE2, uint8_t>))
-                : fStart_{reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (s.begin ()))}
+                : fStart_{s.data ()}
                 , fEnd_{fStart_ + s.size ()}
                 , fCursor_{fStart_}
             {
@@ -138,21 +130,17 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
      ************ Streams::ExternallyOwnedSpanInputStream<ELEMENT_TYPE> *************
      ********************************************************************************
      */
-    template <typename ELEMENT_TYPE, typename ELEMENT_TYPE2, size_t EXTENT2>
-    inline Ptr<ELEMENT_TYPE> New (span<ELEMENT_TYPE2, EXTENT2> s)
-        requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
-                  (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, char> or same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)))
+    template <typename ELEMENT_TYPE, Memory::ISpanBytesCastable<span<const ELEMENT_TYPE>> FROM_SPAN>
+    Ptr<ELEMENT_TYPE> New (FROM_SPAN s)
     {
-        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE>> (Memory::ConstSpan (s))};
+        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE>> (Memory::SpanBytesCast<span<const ELEMENT_TYPE>> (s))};
     }
-    template <typename ELEMENT_TYPE, typename ELEMENT_TYPE2, size_t EXTENT2>
-    inline Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, span<const ELEMENT_TYPE2, EXTENT2> s)
-        requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
-                  (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, char> or same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)))
+    template <typename ELEMENT_TYPE, Memory::ISpanBytesCastable<span<const ELEMENT_TYPE>> FROM_SPAN>
+    inline Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, FROM_SPAN s)
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternallySynchronizedInputStream::New<Private_::Rep_<ELEMENT_TYPE>> ({}, Memory::ConstSpan (s));
+                return InternallySynchronizedInputStream::New<Private_::Rep_<ELEMENT_TYPE>> ({}, Memory::SpanBytesCast<span<const ELEMENT_TYPE>> (s));
             case Execution::eNotKnownInternallySynchronized:
                 return New<ELEMENT_TYPE> (s);
             default:
