@@ -1555,10 +1555,73 @@ String String::RTrim (bool (*shouldBeTrimmed) (Character)) const
 String String::Trim (bool (*shouldBeTrimmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmed);
-    /*
-     * This could be implemented more efficiently, but this is simpler for now...
-     */
-    return LTrim (shouldBeTrimmed).RTrim (shouldBeTrimmed);
+
+    auto referenceImpl = [&] () { return LTrim (shouldBeTrimmed).RTrim (shouldBeTrimmed); };
+
+    // declared here to encourage inlining the common case of Character::IsWhitespace
+    auto useCharTrimmedFunc = [&] (Character c) {
+        if (shouldBeTrimmed == (bool (*) (Character))Character::IsWhitespace) [[likely]] {
+            return Character::IsWhitespace (c);
+        }
+        else {
+            return shouldBeTrimmed (c);
+        }
+    };
+
+    auto commonAlgorithm = [&]<typename T> (span<const T> lowLevelCharSpan) -> String {
+        size_t length       = lowLevelCharSpan.size ();
+        size_t firstKeptIdx = 0;
+        for (; firstKeptIdx < length; ++firstKeptIdx) {
+            static_assert (Common::IAnyOf<T, ASCII, Latin1, char32_t>); // this works for ASCII, Latin1, char32_t, but for char16_t - not so much - trickier
+            Character c{lowLevelCharSpan[firstKeptIdx]};
+            if (not useCharTrimmedFunc (c)) {
+                break;
+            }
+        }
+        ptrdiff_t endOfFirstTrim = length;
+        for (; static_cast<size_t> (endOfFirstTrim) != firstKeptIdx; --endOfFirstTrim) {
+            static_assert (Common::IAnyOf<T, ASCII, Latin1, char32_t>); // this works for ASCII, Latin1, char32_t, but for char16_t - not so much - trickier
+            Character c{lowLevelCharSpan[endOfFirstTrim - 1]};
+            if (useCharTrimmedFunc (c)) {
+                // keep going backwards
+            }
+            else {
+                break;
+            }
+        }
+        if (firstKeptIdx == 0 and static_cast<size_t> (endOfFirstTrim) == length) {
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (*this == referenceImpl ());
+#endif
+            return *this; // nothing changed, just bump reference count on shared_ptr
+        }
+        if (firstKeptIdx == length) {
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (String{} == referenceImpl ());
+#endif
+            return String{}; // trimmed everything way
+        }
+        Assert (static_cast<ptrdiff_t> (firstKeptIdx) < endOfFirstTrim);
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Assert (mk_ (lowLevelCharSpan.subspan (firstKeptIdx, endOfFirstTrim - firstKeptIdx)) == referenceImpl ());
+#endif
+        return mk_ (lowLevelCharSpan.subspan (firstKeptIdx, endOfFirstTrim - firstKeptIdx));
+    };
+
+    _SafeReadRepAccessor accessor{this};
+    PeekSpanData         psd = accessor._ConstGetRep ().PeekData (nullopt);
+    switch (psd.fInCP) {
+        case PeekSpanData::eAscii: {
+            return commonAlgorithm (psd.fAscii);
+        }
+        case PeekSpanData::eSingleByteLatin1: {
+            return commonAlgorithm (psd.fSingleByteLatin1);
+        }
+        case PeekSpanData::eChar32: {
+            return commonAlgorithm (psd.fChar32);
+        }
+    }
+    return referenceImpl (); // due to tricks with surrogates, and rarity, not worth worrying about char16_t case
 }
 
 String String::StripAll (bool (*removeCharIf) (Character)) const
