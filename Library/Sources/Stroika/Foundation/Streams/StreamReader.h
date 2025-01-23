@@ -27,6 +27,8 @@ namespace Stroika::Foundation::Streams {
      *
      *  StreamReader is an unnecessary class for using the Streams library, but it is easy to use, similar to InputStream<T>::Ptr, and significantly more performant
      * 
+     *  \note Similar to BufferedInputStream - but that provides an actual Stream object, and is slightly less performant for direct use.
+     * 
      *  TODO:
      *      \todo consider if should take templated parameter indicating buffer size (really template parameter StreamReaderDefaultOptions - with various settings
      */

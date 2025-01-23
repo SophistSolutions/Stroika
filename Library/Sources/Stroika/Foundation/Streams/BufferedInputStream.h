@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
      *        memory to buffer the ENTIRE contents of the stream (other cases just buffer a bit so require more
      *        modest amounts of memory).
      * 
+     *  \note See Also StreamReader, as for consumers, this will often work the same as BufferedInputStream, but be
+     *        somewhat more performant.
+     * 
      *  \par Example Usage
      *      \code
      *          InputStream::Ptr<byte> in = BufferedInputStream::New<byte> (fromStream);
