@@ -611,13 +611,13 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Trim_"};
         const String              kT1 = "  abc";
-        EXPECT_TRUE (kT1.RTrim () == kT1);
-        EXPECT_TRUE (kT1.LTrim () == kT1.Trim ());
-        EXPECT_TRUE (kT1.Trim () == "abc");
-        EXPECT_TRUE (String{" abc "}.Trim () == "abc");
+        EXPECT_EQ (kT1.RTrim (), kT1);
+        EXPECT_EQ (kT1.LTrim (), kT1.Trim ());
+        EXPECT_EQ (kT1.Trim (), "abc");
+        EXPECT_EQ (String{" abc "}.Trim (), "abc");
 
-        EXPECT_TRUE (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
-        EXPECT_TRUE (String{"/\n"}.Trim () == "/");
+        EXPECT_EQ (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }), "  ");
+        EXPECT_EQ (String{"/\n"}.Trim (), "/");
     }
 }
 

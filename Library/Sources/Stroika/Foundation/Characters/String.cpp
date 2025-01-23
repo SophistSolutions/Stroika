@@ -1406,46 +1406,150 @@ String String::Repeat (unsigned int count) const
 String String::LTrim (bool (*shouldBeTrimmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmed);
-    _SafeReadRepAccessor accessor{this};
-    size_t               length = accessor._ConstGetRep ().size ();
-    for (size_t i = 0; i < length; ++i) {
-        if (not(*shouldBeTrimmed) (accessor._ConstGetRep ().GetAt (i))) {
-            if (i == 0) {
-                // no change in string
-                return *this;
-            }
-            else {
-                return SubString (i, length);
+    auto referenceImpl = [&] () {
+        _SafeReadRepAccessor accessor{this};
+        size_t               length = accessor._ConstGetRep ().size ();
+        for (size_t i = 0; i < length; ++i) {
+            if (not(*shouldBeTrimmed) (accessor._ConstGetRep ().GetAt (i))) {
+                if (i == 0) {
+                    return *this; // no change in string
+                }
+                else {
+                    return SubString (i, length);
+                }
             }
         }
+        return String{}; // all trimmed
+    };
+    auto commonAlgorithm = [&]<typename T> (span<const T> lowLevelCharSpan) -> String {
+        size_t length = lowLevelCharSpan.size ();
+        for (size_t i = 0; i < length; ++i) {
+            static_assert (Common::IAnyOf<T, ASCII, Latin1, char32_t>); // this works for ASCII, Latin1, char32_t, but for char16_t - not so much - trickier
+            Character c{lowLevelCharSpan[i]};
+            // drop not-so-subtle hint to optimizer this is likely the function, and can be called, and hopefully hoisted outside the loop, and inlined
+            bool thisCharacterTrimmed = [&] () {
+                if (shouldBeTrimmed == (bool (*) (Character))Character::IsWhitespace) [[likely]] {
+                    return Character::IsWhitespace (c);
+                }
+                else {
+                    return shouldBeTrimmed (c);
+                }
+            }();
+            if (not thisCharacterTrimmed) {
+                if (i == 0) {
+#if qStroika_Foundation_Debug_AssertionsChecked
+                    Assert (*this == referenceImpl ());
+#endif
+                    return *this; // no change in string
+                }
+                else {
+#if qStroika_Foundation_Debug_AssertionsChecked
+                    Assert (mk_ (lowLevelCharSpan.subspan (i)) == referenceImpl ());
+#endif
+                    return mk_ (lowLevelCharSpan.subspan (i));
+                }
+            }
+        }
+        return String{}; // all trimmed
+    };
+    _SafeReadRepAccessor accessor{this};
+    PeekSpanData         psd = accessor._ConstGetRep ().PeekData (nullopt);
+    switch (psd.fInCP) {
+        case PeekSpanData::eAscii: {
+            return commonAlgorithm (psd.fAscii);
+        }
+        case PeekSpanData::eSingleByteLatin1: {
+            return commonAlgorithm (psd.fSingleByteLatin1);
+        }
+        case PeekSpanData::eChar32: {
+            return commonAlgorithm (psd.fChar32);
+        }
     }
-    // all trimmed
-    return String{};
+    return referenceImpl (); // due to tricks with surrogates, and rarity, not worth worrying about char16_t case
 }
 
 String String::RTrim (bool (*shouldBeTrimmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmed);
-    _SafeReadRepAccessor accessor{this};
-    ptrdiff_t            length         = accessor._ConstGetRep ().size ();
-    ptrdiff_t            endOfFirstTrim = length;
-    for (; endOfFirstTrim != 0; --endOfFirstTrim) {
-        if ((*shouldBeTrimmed) (accessor._ConstGetRep ().GetAt (endOfFirstTrim - 1))) {
-            // keep going backwards
+    auto referenceImpl = [&] () {
+        _SafeReadRepAccessor accessor{this};
+        ptrdiff_t            length         = accessor._ConstGetRep ().size ();
+        ptrdiff_t            endOfFirstTrim = length;
+        for (; endOfFirstTrim != 0; --endOfFirstTrim) {
+            if ((*shouldBeTrimmed) (accessor._ConstGetRep ().GetAt (endOfFirstTrim - 1))) {
+                // keep going backwards
+            }
+            else {
+                break;
+            }
+        }
+        if (endOfFirstTrim == 0) {
+            return String{}; // all trimmed
+        }
+        else if (endOfFirstTrim == length) {
+            return *this; // nothing trimmed
         }
         else {
-            break;
+            return SubString (0, endOfFirstTrim);
+        }
+    };
+
+    auto commonAlgorithm = [&]<typename T> (span<const T> lowLevelCharSpan) -> String {
+        size_t    length         = lowLevelCharSpan.size ();
+        ptrdiff_t endOfFirstTrim = length;
+        for (; endOfFirstTrim != 0; --endOfFirstTrim) {
+            static_assert (Common::IAnyOf<T, ASCII, Latin1, char32_t>); // this works for ASCII, Latin1, char32_t, but for char16_t - not so much - trickier
+            Character c{lowLevelCharSpan[endOfFirstTrim - 1]};
+            // drop not-so-subtle hint to optimizer this is likely the function, and can be called, and hopefully hoisted outside the loop, and inlined
+            bool thisCharacterTrimmed = [&] () {
+                if (shouldBeTrimmed == (bool (*) (Character))Character::IsWhitespace) [[likely]] {
+                    return Character::IsWhitespace (c);
+                }
+                else {
+                    return shouldBeTrimmed (c);
+                }
+            }();
+            if (thisCharacterTrimmed) {
+                // keep going backwards
+            }
+            else {
+                break;
+            }
+        }
+        if (endOfFirstTrim == 0) {
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (String{} == referenceImpl ());
+#endif
+            return String{}; // all trimmed
+        }
+        else if (static_cast<size_t> (endOfFirstTrim) == length) {
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (*this == referenceImpl ());
+#endif
+            return *this; // nothing trimmed
+        }
+        else {
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (mk_ (lowLevelCharSpan.subspan (0, endOfFirstTrim)) == referenceImpl ());
+#endif
+            return mk_ (lowLevelCharSpan.subspan (0, endOfFirstTrim)); //return SubString (0, endOfFirstTrim);
+        }
+    };
+
+    _SafeReadRepAccessor accessor{this};
+    PeekSpanData         psd = accessor._ConstGetRep ().PeekData (nullopt);
+    switch (psd.fInCP) {
+        case PeekSpanData::eAscii: {
+            return commonAlgorithm (psd.fAscii);
+        }
+        case PeekSpanData::eSingleByteLatin1: {
+            return commonAlgorithm (psd.fSingleByteLatin1);
+        }
+        case PeekSpanData::eChar32: {
+            return commonAlgorithm (psd.fChar32);
         }
     }
-    if (endOfFirstTrim == 0) {
-        return String{}; // all trimmed
-    }
-    else if (endOfFirstTrim == length) {
-        return *this; // nothing trimmed
-    }
-    else {
-        return SubString (0, endOfFirstTrim);
-    }
+    return referenceImpl (); // due to tricks with surrogates, and rarity, not worth worrying about char16_t case
 }
 
 String String::Trim (bool (*shouldBeTrimmed) (Character)) const
