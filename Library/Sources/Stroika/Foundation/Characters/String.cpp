@@ -1229,6 +1229,10 @@ String String::NormalizeSpace (Character useSpaceCharacter) const
     return ReplaceAll ("\\s+"_RegEx, String{useSpaceCharacter});
 }
 
+Containers::Sequence<String> String::Tokenize () const
+{
+    return Tokenize ((bool (*) (Character))Character::IsWhitespace);
+}
 Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
 {
     Sequence<String> r;
@@ -1265,7 +1269,6 @@ Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSepe
     }
     return r;
 }
-
 Sequence<String> String::Tokenize (const Set<Character>& delimiters, bool trim) const
 {
     /*
@@ -1319,7 +1322,6 @@ Sequence<String> String::Grep (const String& fgrepArg) const
     }
     return r;
 }
-
 Sequence<String> String::Grep (const RegularExpression& egrepArg) const
 {
     Sequence<String> r;
