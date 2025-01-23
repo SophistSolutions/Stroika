@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             }
             virtual optional<SeekOffsetType> RemainingLength () override
             {
-                auto baseRemaining = this->fRealIn.AvailableToRead ();
+                auto baseRemaining = this->fRealIn.RemainingLength ();
                 if (baseRemaining) {
                     SeekOffsetType cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                     Assert (fOffset_ <= cacheEnd);
