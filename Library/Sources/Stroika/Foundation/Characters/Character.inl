@@ -426,6 +426,10 @@ namespace Stroika::Foundation::Characters {
         DISABLE_COMPILER_MSC_WARNING_END (5063)
         return result;
     }
+    constexpr bool Character::IsWhitespace (Character c) noexcept
+    {
+        return c.IsWhitespace ();
+    }
     inline bool Character::IsDigit () const noexcept
     {
         // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t

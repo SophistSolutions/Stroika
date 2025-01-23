@@ -368,7 +368,8 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note before Stroika v3.0d1, this just used iswspace()
          */
-        constexpr bool IsWhitespace () const noexcept;
+        constexpr bool        IsWhitespace () const noexcept;
+        static constexpr bool IsWhitespace (Character c) noexcept;
 
     public:
         nonvirtual bool IsDigit () const noexcept;
