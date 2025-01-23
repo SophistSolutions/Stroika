@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
@@ -94,7 +94,7 @@ public:
                     size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                     Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
-                    ParsePacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
+                    ParsePacketAndNotifyCallbacks_ (ToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

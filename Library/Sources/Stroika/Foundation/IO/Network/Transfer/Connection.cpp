@@ -11,7 +11,6 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
 
 #include "Connection.h"
 

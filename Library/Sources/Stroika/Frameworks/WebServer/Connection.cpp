@@ -266,9 +266,9 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
             fSocketStream_,
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}-input-trace.txt"_f(socketName)),
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}output-trace.txt"_f(socketName)));
-        fLogConnectionState_ = Streams::TextWriter::New (
+        fLogConnectionState_ = Streams::FromText::Writer::New (
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + "socket-{}-highlevel-trace.txt"_f(socketName)),
-            Streams::TextWriter::Format::eUTF8WithoutBOM);
+            Streams::FromText::Writer::Format::eUTF8WithoutBOM);
     }
 #endif
 }

@@ -25,44 +25,44 @@ namespace Stroika::Foundation::Streams::FromText {
      *  Obviously todo this, there may be some character set mapping/conversion needed. The object
      *  takes constructor arguments to decide how this will he handled.
      *
-     *  TextWriter is not seekable. It's possible to implement, but complicated, and performance costly. Very unlikely
+     *  FromText::Writer is not seekable. It's possible to implement, but complicated, and performance costly. Very unlikely
      *  to ever be useful.
      *
      *  \note   This API was called TextOutputStreamAdapter
      *
-     *  \note   TextWriter aggregates its owned sub-stream, so that a Close () on TextWriter
+     *  \note   FromText::Writer aggregates its owned sub-stream, so that a Close () on TextWriter
      *          will Close that sub-stream.
      *
-     *  Ptr is a copyable smart pointer to a TextWriter stream.
+     *  Ptr is a copyable smart pointer to a FromText::Writer stream.
      *
      *  \par Example Usage
      *      \code
-     *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDoneInclude);
+     *          Streams::FromText::Writer::Ptr         textOut = Streams::FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDoneInclude);
      *          textOut.Write ("{}\r\n"_f (headLine));
      *          ...
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
+     *          Streams::FromText::Writer::Ptr         textOut = Streams::FromText::Writer::New (binOut);
      *          textOut.Write ("Hello World\n");
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      *
-     * If TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
+     * If FromText::Writer given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
      * If handled an OutputStream<Character> - it just passes through characters.
      *
      *  \par Example Usage
      *      \code
-     *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude);
+     *          Streams::FromText::Writer::Ptr         textOut = Streams::FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude);
      *          textOut.Write ("{}\r\n"_f (headLine));
      *          ...
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
+     *          Streams::FromText::Writer::Ptr         textOut = Streams::FromText::Writer::New (binOut);
      *          textOut.Write ("Hello World\n");
      *      \endcode
      */
@@ -89,11 +89,11 @@ namespace Stroika::Foundation::Streams::FromText {
 
         /**
          *  \brief Stream wrapper that takes an InputStream<Character> and transforms it into an
-         *         InputStream<byte> (like TextWriter does, but pull rather than push based).
+         *         InputStream<byte> (like FromText::Writer does, but pull rather than push based).
          * 
          *  Draft implementation (not very performant, but doesn't seem used much and easy to tweak)
          * 
-         * DOC CONNECTION TO TextWriter and maybe share output/format flags?
+         * DOC CONNECTION TO FromText::Writer and maybe share output/format flags?
          * 
          * @todo NOTE - this CURRENTLY HARDWIRES converting to UTF-8
          * 

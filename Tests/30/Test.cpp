@@ -45,8 +45,8 @@
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
 #include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -945,7 +945,7 @@ namespace {
             }
 
             auto doReaderSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
-                auto readingStream = TextReader::New (p);
+                auto readingStream = ToText::Reader::New (p);
                 auto readData      = readingStream.ReadAll (); // waits for writer side to close
                 EXPECT_EQ (readData, "Hello"sv);
             };

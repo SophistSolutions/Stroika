@@ -12,7 +12,7 @@
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Neighbors.h"
 
@@ -58,7 +58,7 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
         String curInterface;
 #endif
-        Streams::TextReader::Ptr stdOut = Streams::TextReader::New (useStdOut);
+        Streams::ToText::Reader::Ptr stdOut = Streams::ToText::Reader::New (useStdOut);
         for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
 #if qStroika_Foundation_Common_Platform_POSIX
             Sequence<String> s = i.Tokenize ();

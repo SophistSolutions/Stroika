@@ -22,7 +22,6 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
 #include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
 #include "CPU.h"

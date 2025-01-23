@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
 
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
 #endif
     {
         if constexpr (same_as<AS_T, String>) {
-            return Streams::TextReader::New (fRep_->GetData ()).ReadAll ();
+            return Streams::ToText::Reader::New (fRep_->GetData ()).ReadAll ();
         }
         else if constexpr (same_as<AS_T, Memory::BLOB>) {
             return fRep_->GetData ();

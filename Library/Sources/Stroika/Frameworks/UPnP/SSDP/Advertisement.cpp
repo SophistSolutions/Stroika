@@ -7,9 +7,9 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 
@@ -73,8 +73,8 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     Require (not headLine.Contains ("\n"));
     Require (not headLine.Contains ("\r"));
     Require (headLine.StartsWith ("NOTIFY") or (headLine == "HTTP/1.1 200 OK"));
-    Streams::MemoryStream::Ptr<byte> out     = Streams::MemoryStream::New<byte> ();
-    Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
+    Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+    Streams::FromText::Writer::Ptr textOut = Streams::FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
 
     //// SUPER ROUGH FIRST DRAFT
     textOut.Write ("{}\r\n"_f(headLine));
@@ -120,9 +120,9 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
     *advertisement = Advertisement{};
 
 #if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
-    TextReader::Ptr in = TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span<const byte>{b}));
+    ToText::Reader::Ptr in = ToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span<const byte>{b}));
 #else
-    TextReader::Ptr in = TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{b}));
+    ToText::Reader::Ptr in = ToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{b}));
 #endif
 
     *headLine = in.ReadLine ().Trim ();

@@ -86,7 +86,7 @@ are typically 'Bytes' - or 'Characters' - but can be any copyable type.
 
   - Seekability handed similarly
 
-  - Stroika Streams do have APIs to read/write asyncronously (though not primary) and ability to check 'CanRead' - effectively (though should consider using that dotnet name???)
+  - Stroika Streams do have APIs to read/write asynchronously (though not primary) and ability to check 'CanRead' - effectively (though should consider using that dotnet name???)
 
   - more???
 
@@ -95,7 +95,7 @@ are typically 'Bytes' - or 'Characters' - but can be any copyable type.
   - These were inspirational. But Java Streams package is much more complex, with tons of tie
     ins to threaded processing, map reduce etc.
 
-  - I currently have stuff like 'fiter' builtin to Iterable. But maybe here would be sensible, and possibly
+  - I currently have stuff like 'filter' built-in to Iterable. But maybe here would be sensible, and possibly
     better?
 
   - As I have more time to consider this, I may move to more of an approach like Java8 Streams.

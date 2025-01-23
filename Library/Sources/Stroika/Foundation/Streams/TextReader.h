@@ -11,6 +11,7 @@
 /**
  *  FILE DEPRECATED - USE Streams/ToText.h
  */
+_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::ToText::Reader");
 
 namespace Stroika::Foundation::Streams::TextReader {
 

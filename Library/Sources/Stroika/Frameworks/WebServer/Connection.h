@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/KeepAlive.h"
 #include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Stroika/Frameworks/WebServer/InterceptorChain.h"
@@ -274,7 +274,7 @@ namespace Stroika::Frameworks::WebServer {
         atomic<thread::id>      fHandlingThread_; // thread::id{} sentinel
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-        Streams::TextWriter::Ptr fLogConnectionState_;
+        Streams::FromText::Writer::Ptr fLogConnectionState_;
 #endif
     };
 

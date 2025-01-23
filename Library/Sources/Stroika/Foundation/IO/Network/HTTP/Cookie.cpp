@@ -6,7 +6,7 @@
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Cookie.h"
 
@@ -184,7 +184,7 @@ Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
 
 Cookie Cookie::Parse (const String& src)
 {
-    return Parse (TextReader::New (src));
+    return Parse (ToText::Reader::New (src));
 }
 
 /*

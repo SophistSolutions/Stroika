@@ -36,9 +36,9 @@
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Sleep.h"
 #include "Thread.h"
@@ -501,12 +501,13 @@ auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& strin
     MemoryStream::Ptr<byte>                         useStdErr = MemoryStream::New<byte> ();
 
     auto mkReadStream = [&] (const InputStream::Ptr<byte>& readFromBinStrm) {
-        return stringOpts.fInputCodeCvt ? TextReader::New (readFromBinStrm, *stringOpts.fInputCodeCvt) : TextReader::New (readFromBinStrm);
+        return stringOpts.fInputCodeCvt ? ToText::Reader::New (readFromBinStrm, *stringOpts.fInputCodeCvt) : ToText::Reader::New (readFromBinStrm);
     };
     try {
         // Prefill stream
         if (not cmdStdInValue.empty ()) {
-            auto outStream = stringOpts.fOutputCodeCvt ? TextWriter::New (useStdIn, *stringOpts.fOutputCodeCvt) : TextWriter::New (useStdIn);
+            auto outStream =
+                stringOpts.fOutputCodeCvt ? FromText::Writer::New (useStdIn, *stringOpts.fOutputCodeCvt) : FromText::Writer::New (useStdIn);
             outStream.Write (cmdStdInValue);
         }
         Assert (useStdIn.GetReadOffset () == 0);

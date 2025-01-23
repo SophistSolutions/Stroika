@@ -39,7 +39,7 @@
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -186,10 +186,10 @@ namespace {
             EXPECT_EQ (reader.GetData ("sample_zip/Common-Valgrind.supp").size (), 1661u);
             EXPECT_EQ (reader.GetData ("sample_zip/Tests-Description.txt").size (), 1934u);
             EXPECT_TRUE (
-                TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
+                ToText::Reader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
                     .ReadAll ()
                     .Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-            EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
+            EXPECT_TRUE (ToText::Reader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
             try {
                 auto i = reader.GetData ("file-not-found");
                 EXPECT_TRUE (false);
@@ -362,10 +362,10 @@ namespace {
             EXPECT_EQ (reader.GetData ("sample_zip/Common-Valgrind.supp").size (), 1661u);
             EXPECT_EQ (reader.GetData ("sample_zip/Tests-Description.txt").size (), 1934u);
             EXPECT_TRUE (
-                TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
+                ToText::Reader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ())
                     .ReadAll ()
                     .Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-            EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
+            EXPECT_TRUE (ToText::Reader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
             try {
                 auto i = reader.GetData ("file-not-found");
                 EXPECT_TRUE (false);

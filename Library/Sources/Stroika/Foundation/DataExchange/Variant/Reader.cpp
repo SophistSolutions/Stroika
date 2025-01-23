@@ -4,14 +4,17 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 #include "Reader.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
-using namespace Streams::iostream;
+using namespace Stroika::Foundation::Streams;
+using namespace Stroika::Foundation::Streams::iostream;
+using namespace Stroika::Foundation::Traversal;
 
 using std::byte;
 
@@ -20,17 +23,17 @@ using std::byte;
  ******************************* Variant::Reader ********************************
  ********************************************************************************
  */
-Streams::InputStream::Ptr<byte> Variant::Reader::_ToByteReader (istream& in)
+InputStream::Ptr<byte> Variant::Reader::_ToByteReader (istream& in)
 {
     return InputStreamFromStdIStream::New<byte> (in);
 }
 
-Streams::InputStream::Ptr<Characters::Character> Variant::Reader::_ToCharacterReader (const Traversal::Iterable<Characters::Character>& in)
+InputStream::Ptr<Character> Variant::Reader::_ToCharacterReader (const Iterable<Character>& in)
 {
-    return Streams::TextReader::New (in);
+    return Streams::ToText::Reader::New (in);
 }
 
-Streams::InputStream::Ptr<Characters::Character> Variant::Reader::_ToCharacterReader (wistream& in)
+InputStream::Ptr<Character> Variant::Reader::_ToCharacterReader (wistream& in)
 {
-    return InputStreamFromStdIStream::New<Characters::Character> (in);
+    return InputStreamFromStdIStream::New<Character> (in);
 }

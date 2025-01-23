@@ -38,7 +38,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
@@ -408,7 +408,7 @@ namespace {
                 if (optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName)) {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
-                        o = String2Int<uint32_t> (TextReader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable))
+                        o = String2Int<uint32_t> (ToText::Reader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable))
                                                       .ReadAll ()
                                                       .Trim ());
                         _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
@@ -436,9 +436,9 @@ namespace {
             catch (...) {
                 runException = current_exception ();
             }
-            String                   out;
-            Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
-            bool                     skippedHeader = false;
+            String                       out;
+            Streams::ToText::Reader::Ptr stdOut        = Streams::ToText::Reader::New (useStdOut);
+            bool                         skippedHeader = false;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
@@ -497,9 +497,9 @@ namespace {
             catch (...) {
                 runException = current_exception ();
             }
-            String                   out;
-            Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
-            bool                     skippedHeader = false;
+            String                       out;
+            Streams::ToText::Reader::Ptr stdOut        = Streams::ToText::Reader::New (useStdOut);
+            bool                         skippedHeader = false;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;

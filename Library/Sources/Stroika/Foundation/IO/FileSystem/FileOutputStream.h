@@ -105,7 +105,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *
      *  \par Example Usage
      *      \code
-     *          TextWriter tw { IO::FileSystem::FileOutputStream::New ("/tmp/fred.txt") };
+     *          FromText::Writer::Ptr tw { FromText::Writer::New (IO::FileSystem::FileOutputStream::New ("/tmp/fred.txt")) };
      *          tw.PrintF (L"Hello %s\n", L"World");
      *      \endcode
      *

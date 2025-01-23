@@ -39,7 +39,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "SystemConfiguration.h"
 
@@ -217,7 +217,7 @@ SystemConfiguration::BootInformation Common::GetSystemConfiguration_BootInformat
              */
                 using Characters::String2Int;
                 for (const String& line :
-                     TextReader::New (IO::FileSystem::FileInputStream::New (kProcUptimeFileName_, IO::FileSystem::FileInputStream::eNotSeekable))
+                     ToText::Reader::New (IO::FileSystem::FileInputStream::New (kProcUptimeFileName_, IO::FileSystem::FileInputStream::eNotSeekable))
                          .ReadLines ()) {
                     Sequence<String> t = line.Tokenize ();
                     if (t.size () >= 2) {
@@ -364,7 +364,8 @@ SystemConfiguration::CPU Common::GetSystemConfiguration_CPU ()
         optional<String>       currentModelName;
         optional<unsigned int> currentSocketID;
         for (const String& line :
-             TextReader::New (IO::FileSystem::FileInputStream::New (kProcCPUInfoFileName_, IO::FileSystem::FileInputStream::eNotSeekable)).ReadLines ()) {
+             ToText::Reader::New (IO::FileSystem::FileInputStream::New (kProcCPUInfoFileName_, IO::FileSystem::FileInputStream::eNotSeekable))
+                 .ReadLines ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("in Configuration::GetSystemConfiguration_CPU capture_ line={}"_f, line);
 #endif
@@ -571,7 +572,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/centos-release"sv)).ReadAll ().Trim ();
+                String n = Streams::ToText::Reader::New (IO::FileSystem::FileInputStream::New ("/etc/centos-release"sv)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = "Centos"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -585,7 +586,7 @@ SystemConfiguration::OperatingSystem Common::GetSystemConfiguration_ActualOperat
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/redhat-release"sv)).ReadAll ().Trim ();
+                String n = Streams::ToText::Reader::New (IO::FileSystem::FileInputStream::New ("/etc/redhat-release"sv)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = "RedHat"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();

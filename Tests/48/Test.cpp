@@ -166,7 +166,7 @@ namespace {
         using Characters::String;
         {
             Traversal::Iterable<Character> s  = String{"This"};
-            TextReader::Ptr                tr = TextReader::New (s);
+            ToText::Reader::Ptr            tr = ToText::Reader::New (s);
             EXPECT_TRUE (tr.ReadAll () == "This");
         }
         {
@@ -181,8 +181,8 @@ namespace {
         using Characters::Character;
         using Characters::String;
         {
-            Memory::BLOB    s  = Memory::BLOB::FromRaw (u8"Testing 1, 2, 3");
-            TextReader::Ptr tr = TextReader::New (s);
+            Memory::BLOB        s  = Memory::BLOB::FromRaw (u8"Testing 1, 2, 3");
+            ToText::Reader::Ptr tr = ToText::Reader::New (s);
             EXPECT_EQ (tr.ReadAll (), "Testing 1, 2, 3");
         }
     }
@@ -247,7 +247,7 @@ namespace {
             stringstream tmp;
             tmp << "3";
             auto inb = Streams::iostream::InputStreamFromStdIStream::New<byte> (tmp);
-            auto in  = TextReader::New (inb, nullopt, SeekableFlag::eSeekable);
+            auto in  = ToText::Reader::New (inb, nullopt, SeekableFlag::eSeekable);
             auto r   = in.ReadAll ();
             EXPECT_EQ (r.size (), 1u);
         }
@@ -264,7 +264,7 @@ namespace {
                                                        0x28, 0x00, 0x4f, 0x00, 0x63, 0x00, 0x74, 0x00, 0x6f, 0x00, 0x62, 0x00, 0x65,
                                                        0x00, 0x72, 0x00, 0x20, 0x00, 0x32, 0x00, 0x37, 0x00, 0x20, 0x00, 0x32, 0x00,
                                                        0x30, 0x00, 0x32, 0x00, 0x34, 0x00, 0x29, 0x00, 0x0d, 0x00, 0x0a, 0x00};
-            auto tr = Streams::TextReader::New (Memory::BLOB{span{TESTOUT_UTF16}}, Characters::UnicodeExternalEncodings::eUTF16_LE);
+            auto tr = Streams::ToText::Reader::New (Memory::BLOB{span{TESTOUT_UTF16}}, Characters::UnicodeExternalEncodings::eUTF16_LE);
             auto s  = tr.ReadAll ();
             // Triggered TWO bugs - the CodeCvt.inl - r.fSourceConsumed * sizeof (SERIALIZED_CHAR_T) issue, and
             // a Bug with BLOB stream code (BLOB :: As<binarystream> () needs to hold onto shared_ptr refcnt of BLOB

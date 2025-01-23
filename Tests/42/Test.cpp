@@ -601,7 +601,7 @@ namespace {
 
         // complete symmetric up til now, so pick which to write to and which to read from
         auto textWriter = TextWriter::New (writeStrm);
-        auto textReader = TextReader::New (readStrm);
+        auto textReader = ToText::Reader::New (readStrm);
 
         textWriter.Write ("Hello");
         textWriter.Flush ();
@@ -611,7 +611,7 @@ namespace {
         EXPECT_TRUE (not textWriter.IsOpen ());
         EXPECT_TRUE (not writeStrm.IsOpenWrite ());
         EXPECT_TRUE (writeStrm.IsOpenRead ());
-        EXPECT_TRUE (writeRawSocket.IsOpen ()); // only closed when both ends of socketstream closed
+        EXPECT_TRUE (writeRawSocket.IsOpen ()); // only closed when both ends of socket-stream closed
 
         // even though write socket is open, its send side is 'shutdown' so this read will complete
         auto readData = textReader.ReadAll ();

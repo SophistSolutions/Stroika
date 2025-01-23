@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 
 #include "SpellCheckEngine_Basic.h"
 
@@ -1090,7 +1090,7 @@ void SpellCheckEngine_Basic_Simple::SetUserDictionary (const filesystem::path& u
     fUD = NULL;
 
     if (not noUD) {
-        fUD = new EditableDictionary ();
+        fUD = new EditableDictionary{};
         ReadFromUD ();
     }
     SetMainDictionary (fMainDictionary); // hack to force call to SetDictionaries ()
@@ -1119,5 +1119,5 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     Execution::ThrowIfNull (fUD);
     vector<Led_tChar>                     data   = fUD->SaveToBuffer ();
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));
-    Streams::TextWriter::New (writer, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude).Write (span{data});
+    Streams::FromText::Writer::New (writer, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude).Write (span{data});
 }

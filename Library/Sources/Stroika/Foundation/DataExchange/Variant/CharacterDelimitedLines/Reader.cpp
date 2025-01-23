@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Reader.h"
 
@@ -15,6 +15,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Variant;
 using namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines;
+using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
 using Characters::String;
@@ -45,11 +46,11 @@ public:
     {
         return ".txt"sv;
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
     {
-        return Read (Streams::TextReader::New (in));
+        return Read (Streams::ToText::Reader::New (in));
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
     {
         // @todo consider if this functional style is more clear than a nested for-loop. Was harder for me to
         // write this way, but that could be my inexpereince... --LGP 2022-12-04
@@ -57,7 +58,7 @@ public:
             return VariantValue{line.Map<Iterable<VariantValue>> ([] (const String& i) { return VariantValue{i}; })};
         })};
     }
-    nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream::Ptr<Character>& in) const
+    nonvirtual Iterable<Sequence<String>> ReadMatrix (const InputStream::Ptr<Character>& in) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix"};
@@ -81,12 +82,12 @@ CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
 {
 }
 
-Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream::Ptr<byte>& in) const
+Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const InputStream::Ptr<byte>& in) const
 {
-    return ReadMatrix (Streams::TextReader::New (in));
+    return ReadMatrix (ToText::Reader::New (in));
 }
 
-Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream::Ptr<Character>& in) const
+Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const InputStream::Ptr<Character>& in) const
 {
     return Debug::UncheckedDynamicCast<const Rep_&> (_GetRep ()).ReadMatrix (in);
 }

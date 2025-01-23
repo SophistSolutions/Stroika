@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 
 #include "Writer.h"
 
@@ -269,7 +269,7 @@ public:
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out) const override
     {
-        TextWriter::Ptr textOut = TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
+        FromText::Writer::Ptr textOut = FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
         PrettyPrint_ (fOptions_, v, textOut, 0);
         if (fOptions_.fJSONPrettyPrint) {
             textOut.Write (fOptions_.fLineTermination); // a single elt not LF terminated, but the entire doc should be.

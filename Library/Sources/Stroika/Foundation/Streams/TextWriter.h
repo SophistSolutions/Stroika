@@ -11,6 +11,7 @@
 /**
  *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::FromText
  */
+_DeprecatedFile_ ("DEPRECATED v3.0d15 - instead of TextWriter - use FromText::Writer");
 
 namespace Stroika::Foundation::Streams::TextWriter {
 

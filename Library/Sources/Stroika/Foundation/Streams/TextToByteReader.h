@@ -9,25 +9,12 @@
 #include "Stroika/Foundation/Streams/FromText.h"
 
 /**
- *  \file
- *
- *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- * 
- * 
  *  *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::FromText
-
  */
+_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::FromText::Reader");
 
 namespace Stroika::Foundation::Streams::TextToByteReader {
-
     using namespace FromText::Reader;
-
 }
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 #endif /*_Stroika_Foundation_Streams_TextToByteReader_h_*/

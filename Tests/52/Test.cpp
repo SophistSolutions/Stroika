@@ -23,7 +23,7 @@
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -150,7 +150,7 @@ namespace {
                 message.rwResponse ().rwHeaders ().transferEncoding = *fUseTransferEncoding_;
             }
             message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
-            String argsAsString               = Streams::TextReader::New (message.rwRequest ().GetBody ()).ReadAll ();
+            String argsAsString               = Streams::ToText::Reader::New (message.rwRequest ().GetBody ()).ReadAll ();
             message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
         }
         void SetAppState2_ (Message& message)

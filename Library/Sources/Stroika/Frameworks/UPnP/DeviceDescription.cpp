@@ -10,7 +10,7 @@
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 #include "DeviceDescription.h"
@@ -297,7 +297,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
 
     DeviceDescription deviceDescription;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"xml data: %s", Streams::TextReader::New (b).ReadAll ().c_str ());
+    DbgTrace (L"xml data: %s", Streams::ToText::Reader::New (b).ReadAll ().c_str ());
 #endif
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
     {

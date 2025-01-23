@@ -13,6 +13,14 @@ UPGRADE NOTES:
    - changed from createWebHashHistory to createWebHistory - to allow working with oauth
    - see git commit b6b06567ea
 
+- Streams refactoring:
+  - Streams/TextReader.h -> Streams/ToText.h
+  - Streams/TextWriter.h -> Streams/FromText.h
+  - Streams/TextToByteReader.h -> Streams/FromText.h
+  - Streams::TextReader -> Streams::ToText::Reader
+  - Streams::TextWriter -> Streams::FromText::Writer
+  - Streams::TextToByteReader -> Streams::FromText::Reader
+
 -----
 
 

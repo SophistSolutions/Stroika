@@ -24,7 +24,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
 #include "Logger.h"
@@ -423,7 +423,7 @@ struct Logger::StreamAppender::Rep_ {
 public:
     template <typename T>
     Rep_ (const T& out)
-        : fWriter_ (Streams::TextWriter::New (out))
+        : fWriter_ (Streams::FromText::Writer::New (out))
     {
     }
     void Log (Priority logLevel, const String& message)

@@ -29,7 +29,7 @@ using Memory::StackBuffer;
 
 namespace {
     const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
-        Execution::RuntimeErrorException{"TextReader read partial character at end of binary input stream"sv};
+        Execution::RuntimeErrorException{"ToText::Reader read partial character at end of binary input stream"sv};
 
     class FromBinaryStreamBaseRep_ : public InputStream::IRep<Character> {
     public:

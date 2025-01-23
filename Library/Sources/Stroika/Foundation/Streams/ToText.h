@@ -18,14 +18,7 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-588 - ToText should be seekable (maybe just optionally)
- *              INCOMPLETE IMPLEMENTATION - API probably OK.
- *
- *      @todo   DOCUMENT why we put ReadLine etc in InputStream::Ptr, instead of here. Gist of why - though more
- *              logical here - requires no state - and so more flexible there. May reconsider.
- *              -- LGP 2015-07-06
- *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on TextReader and TextWriter
+ *      @todo   http://stroika-bugs.sophists.com/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on ToText::Reader and FromText::Writer
  */
 
 namespace Stroika::Foundation::Memory {
@@ -49,7 +42,7 @@ namespace Stroika::Foundation::Streams::ToText {
     using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
 
     /**
-     *  \brief TextReader is an InputStream of Character, usually constructed wrapping some binary object or binary stream
+     *  \brief ToText::Reader is an InputStream of Character, usually constructed wrapping some binary object or binary stream
      *
      *  \note   This was called TextInputStreamBinaryAdapter
      *  \note   This was called TextReader
@@ -57,20 +50,20 @@ namespace Stroika::Foundation::Streams::ToText {
      *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
      *          much of the 'reading' API is baked into InputStream::Ptr<Character>.
      *
-     *  \note   TextReader's are smart about not reading more than they need to from the source Stream (unless you make that stream buffered, in
+     *  \note   ToText::Reader's are smart about not reading more than they need to from the source Stream (unless you make that stream buffered, in
      *          which case the buffering can cause it to read ahead)
      *
-     *          But TextReader itself doesn't read ahead more than it needs to to complete requested methods.
+     *          But ToText::Reader itself doesn't read ahead more than it needs to to complete requested methods.
      *
      *  \par Example Usage
      *      \code
-     *          for (String line : TextReader::New (FileInputStream::New ("/tmp/foo")).ReadLines ()) {
+     *          for (String line : ToText::Reader::New (FileInputStream::New ("/tmp/foo")).ReadLines ()) {
      *          }
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          Assert (TextReader::New (String{"hello world"}).ReadAll () == "hello world");
+     *          Assert (ToText::Reader::New (String{"hello world"}).ReadAll () == "hello world");
      *      \endcode
      *
      *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
@@ -88,7 +81,7 @@ namespace Stroika::Foundation::Streams::ToText {
      *
      *  \par Example Usage
      *      \code
-     *          for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+     *          for (String line : ToText::Reader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
      *              DbgTrace ("***in Common::GetSystemConfiguration_CPU capture_ line={}"_f, line);
      *          }
      *      \endcode

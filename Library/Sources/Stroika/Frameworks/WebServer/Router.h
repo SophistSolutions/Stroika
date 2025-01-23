@@ -88,14 +88,14 @@ namespace Stroika::Frameworks::WebServer {
          *  \par Example Usage (GET with explicit method regexp)
          *      \code
          *          Route{HTTP::MethodsRegEx::kGet, "session(/?)"_RegEx, [this] (Message& m) {
-         *              WriteResponse (&m.rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
+         *              WriteResponse (m.rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
          *          }},
          *      \endcode
          *
          *  \par Example Usage (GET with defaulted GET method spec, and no arguments)
          *      \code
          *          Route{"session(/?)"_RegEx, [this] (Message& m) {
-         *              WriteResponse (&m.rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
+         *              WriteResponse (m.rwResponse (), kSession_, kMapper.FromObject (fWSImpl_->Session_GET ()));
          *          }},
          *      \endcode
          * 
@@ -112,7 +112,7 @@ namespace Stroika::Frameworks::WebServer {
          *      \code
          *          Route{HTTP::MethodsRegEx::kPost, "HR(/?)"_RegEx, [this] (Message& m) {
          *              if (optional<InternetMediaType> ct = m->request ().contentType()) {
-         *                  WriteResponse (&m.rwResponse (), kHR_, kMapper.FromObject (fWSImpl_->HR_POST (*ct, m->rwRequest().GetBody ())));
+         *                  WriteResponse (m.rwResponse (), kHR_, kMapper.FromObject (fWSImpl_->HR_POST (*ct, m->rwRequest().GetBody ())));
          *              }
          *              else {
          *                  Execution::Throw (Execution::RuntimeErrorException{"expected Content-Type HTTP Request header"});

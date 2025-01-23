@@ -101,9 +101,9 @@ namespace Stroika::Foundation::Common {
      *          switch (fSourceData_.index ()) {
      *              case VariantIndex_<filesystem::path>:
      *              case VariantIndex_<BLOB>:
-     *                  return Streams::TextReader::New (NewReadStream<byte> ());
+     *                  return Streams::ToText::Reader::New (NewReadStream<byte> ());
      *              case VariantIndex_<String>:
-     *                  return Streams::TextReader::New (get<String> (fSourceData_));
+     *                  return Streams::ToText::Reader::New (get<String> (fSourceData_));
      *              default:
      *                  AssertNotReached ();
      *                  return {};
