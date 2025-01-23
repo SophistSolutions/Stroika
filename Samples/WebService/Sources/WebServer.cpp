@@ -13,7 +13,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/Router.h"

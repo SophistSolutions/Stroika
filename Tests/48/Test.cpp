@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
 
@@ -170,7 +170,7 @@ namespace {
             EXPECT_TRUE (tr.ReadAll () == "This");
         }
         {
-            EXPECT_TRUE ((TextReader::New (String{"hello world"}).ReadAll () == "hello world"));
+            EXPECT_TRUE ((ToText::Reader::New (String{"hello world"}).ReadAll () == "hello world"));
         }
     }
 }

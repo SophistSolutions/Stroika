@@ -18,8 +18,8 @@
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -599,8 +599,8 @@ namespace {
         auto writeStrm = SocketStream::New (writeRawSocket); // these are both input/output streams, but we only use one side for this test
         auto readStrm  = SocketStream::New (readRawSocket);
 
-        // complete symmetric up til now, so pick which to write to and which to read from
-        auto textWriter = TextWriter::New (writeStrm);
+        // completely symmetric up til now, so pick which to write to and which to read from
+        auto textWriter = FromText::Writer::New (writeStrm);
         auto textReader = ToText::Reader::New (readStrm);
 
         textWriter.Write ("Hello");

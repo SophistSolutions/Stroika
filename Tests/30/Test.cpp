@@ -45,7 +45,7 @@
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "Stroika/Foundation/Streams/TextWriter.h"
+#include "Stroika/Foundation/Streams/FromText.h"
 #include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
 
@@ -950,7 +950,7 @@ namespace {
                 EXPECT_EQ (readData, "Hello"sv);
             };
             auto doWriterSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
-                auto writingStream = TextWriter::New (p);
+                auto writingStream = FromText::Writer::New (p);
                 writingStream.Write ("Hello"sv);
                 writingStream.Flush ();
                 writingStream.Close (); // so ReadAll in doReaderSide doesn't block waiting for more data

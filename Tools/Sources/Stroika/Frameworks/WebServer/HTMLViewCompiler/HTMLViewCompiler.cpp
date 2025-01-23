@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 using namespace Stroika::Foundation;

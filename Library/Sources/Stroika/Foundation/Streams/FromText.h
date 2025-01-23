@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Streams::FromText {
      *
      *  \note   This API was called TextOutputStreamAdapter
      *
-     *  \note   FromText::Writer aggregates its owned sub-stream, so that a Close () on TextWriter
+     *  \note   FromText::Writer aggregates its owned sub-stream, so that a Close () on FromText::Writer
      *          will Close that sub-stream.
      *
      *  Ptr is a copyable smart pointer to a FromText::Writer stream.
