@@ -134,6 +134,28 @@ namespace Stroika::Foundation::Memory {
     constexpr bool Intersects (span<T1, E1> lhs, span<T2, E2> rhs);
 
     /**
+     *  \brief Can safely cast span<FROM_T,FROM_EXTENT> to a TO_SPAN (where the underlying types are POD - plain old data - types - roughly)
+     *
+     *  \note - this requires the two spans to have the same number of bytes (cannot always be fully determined at compile time).
+     *          But this returns true if its possible.
+     * 
+     *  \note its perfectly reasonable to span cast from span<uint32_t> to span<byte> - so long as the two spans have the same size_bytes()
+     * 
+     *  \note this also requires trivially_copyable on the types. Nothing REALLY requires that. But its more likely a bug than
+     *        a feature if you are using types for which that is not true, so fail here. And force a more careful exam with explicit
+     *        reinterpret_casts...
+     * 
+     *  \note Since Stroika v3.0d15 - this doesn't allow casting away constness of the underlying value_type (though it ignores the
+     *        constness of the span itself).
+     */
+    template <typename TO_SPAN, typename FROM_SPAN>
+    concept ISpanBytesCastable = (ISpan<TO_SPAN> and Common::trivially_copyable<typename TO_SPAN::value_type>) and
+                                 (ISpan<FROM_SPAN> and Common::trivially_copyable<typename FROM_SPAN::value_type>) and
+                                 (is_const_v<typename TO_SPAN::value_type> or not is_const_v<typename FROM_SPAN::value_type>) and
+                                 (sizeof (typename FROM_SPAN::value_type) % sizeof (typename TO_SPAN::value_type) == 0 or
+                                  sizeof (typename TO_SPAN::value_type) % sizeof (typename FROM_SPAN::value_type) == 0);
+
+    /**
      *  \brief 'cast' a span of one thing to another, as if as_bytes, from_bytes; require span<T1...> and span<T2...> such that one T size is a multiple of the other
      * 
      *  \req ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ());    - so this doesn't change size in bytes of span
@@ -148,11 +170,13 @@ namespace Stroika::Foundation::Memory {
      *  \note Though this CAN be used with fixed-extent spans, the caller must then specify the fixed extent,
      *        which must be correct. Probably works most simply if the EXTENT in the TO_SPAN is dynamic_extent (or omitted).
      * 
-     *  \note until Stroika v3.0d12 this was called SpanReInterpretCast (but does more than re_interpret_cast, cuz can change constness too).
+     *  \note until Stroika v3.0d12 this was called SpanReInterpretCast
+     * 
+     *  \note this allows compiling SpanBytesCast<span<uint32_t>> (span<byte>{}) - which may work fine, or may assert out if size of argument
+     *        not divisible by 4 (EXAMPLE).
      */
-    template <ISpan TO_SPAN, typename FROM_T, size_t FROM_EXTENT>
-    constexpr TO_SPAN SpanBytesCast (span<FROM_T, FROM_EXTENT> src)
-        requires (sizeof (FROM_T) % sizeof (typename TO_SPAN::value_type) == 0 or sizeof (typename TO_SPAN::value_type) % sizeof (FROM_T) == 0);
+    template <ISpan TO_SPAN, ISpanBytesCastable<TO_SPAN> FROM_SPAN>
+    constexpr TO_SPAN SpanBytesCast (FROM_SPAN src);
 
     /**
      *  \brief Span-flavored memcpy/std::copy (copies from, to) - requires argument spans not overlap, requires src.size <= to.size()

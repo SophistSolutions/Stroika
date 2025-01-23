@@ -123,9 +123,8 @@ namespace Stroika::Foundation::Memory {
      ***************************** Memory::SpanBytesCast ****************************
      ********************************************************************************
      */
-    template <ISpan TO_SPAN, typename FROM_T, size_t FROM_EXTENT>
-    constexpr TO_SPAN SpanBytesCast (span<FROM_T, FROM_EXTENT> src)
-        requires (sizeof (FROM_T) % sizeof (typename TO_SPAN::value_type) == 0 or sizeof (typename TO_SPAN::value_type) % sizeof (FROM_T) == 0)
+    template <ISpan TO_SPAN, ISpanBytesCastable<TO_SPAN> FROM_SPAN>
+    constexpr TO_SPAN SpanBytesCast (FROM_SPAN src)
     {
         using TO_T = typename TO_SPAN::value_type;
         Require ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ()); // else cannot map evenly
