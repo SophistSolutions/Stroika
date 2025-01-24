@@ -6,17 +6,17 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 /**
- *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::FromText
+ *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::TextToBinary
  */
-_DeprecatedFile_ ("DEPRECATED v3.0d15 - instead of TextWriter - use FromText::Writer");
+_DeprecatedFile_ ("DEPRECATED v3.0d15 - instead of TextWriter - use TextToBinary::Writer");
 
 namespace Stroika::Foundation::Streams::TextWriter {
 
-    using namespace Streams::FromText;
-    using namespace Streams::FromText::Writer;
+    using namespace Streams::TextToBinary;
+    using namespace Streams::TextToBinary::Writer;
 
     using Ptr = OutputStream::Ptr<Character>;
 

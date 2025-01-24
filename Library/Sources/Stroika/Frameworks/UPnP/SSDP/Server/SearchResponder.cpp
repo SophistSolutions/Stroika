@@ -8,9 +8,9 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
@@ -24,6 +24,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
@@ -127,9 +128,9 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
     // Construction of search responder will fail if we cannot bind - instead of failing quietly inside the loop
     Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
     {
-        static constexpr Execution::Activity kActivity_{"SSDP Binding in SearchResponder"sv};
-        Execution::DeclareActivity           da{&kActivity_};
-        constexpr unsigned int               kMaxHops_ = 4;
+        static constexpr Activity kActivity_{"SSDP Binding in SearchResponder"sv};
+        DeclareActivity           da{&kActivity_};
+        constexpr unsigned int    kMaxHops_ = 4;
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, Socket::BindFlags{.fSO_REUSEADDR = true});
@@ -148,7 +149,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
 
     // Use a thread to wait on a set of sockets we are listening for requests on
     static const String kThreadName_{"SSDP Search Responder"sv};
-    fListenThread_ = Execution::Thread::New (
+    fListenThread_ = Thread::New (
         [advertisements, sockets] () {
             Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};
             {
@@ -165,11 +166,11 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                     if (e.code () == errc::no_such_device) {
                         // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
                         DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again"_f);
-                        Execution::Sleep (1s);
+                        Sleep (1s);
                         goto Again;
                     }
                     else {
-                        Execution::ReThrow ();
+                        ReThrow ();
                     }
                 }
             }
@@ -178,25 +179,25 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
             auto inUseSockets = sockets.Map<Iterable<ConnectionlessSocket::Ptr>> ([] (auto i) { return i.first; });
             while (true) {
                 try {
-                    for (ConnectionlessSocket::Ptr s : Execution::WaitForIOReady{inUseSockets}.WaitQuietly ()) {
+                    for (ConnectionlessSocket::Ptr s : WaitForIOReady{inUseSockets}.WaitQuietly ()) {
                         SocketAddress from;
                         byte          buf[4 * 1024]; // not sure of max packet size
                         size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
                         Assert (nBytesRead <= Memory::NEltsOf (buf));
                         using namespace Streams;
-                        ParsePacketAndRespond_ (ToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})),
+                        ParsePacketAndRespond_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})),
                                                 advertisements, s, from);
                     }
                 }
-                catch (const Execution::Thread::AbortException&) {
-                    Execution::ReThrow ();
+                catch (const Thread::AbortException&) {
+                    ReThrow ();
                 }
                 catch (...) {
                     // ignore errors - and keep on trucking
                     // but avoid wasting too much time if we get into an error storm
-                    Execution::Sleep (1.0s);
+                    Sleep (1.0s);
                 }
             }
         },
-        Execution::Thread::eAutoStart, kThreadName_);
+        Thread::eAutoStart, kThreadName_);
 }

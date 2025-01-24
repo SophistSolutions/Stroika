@@ -20,7 +20,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "DateTime.h"
 
@@ -216,7 +216,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     TimeZoneInformationType result;
 #if qStroika_Foundation_Common_Platform_POSIX
     try {
-        result.fID = Streams::ToText::Reader::New (IO::FileSystem::FileInputStream::New ("/etc/timezone"sv)).ReadAll ().Trim ();
+        result.fID = Streams::BinaryToText::Reader::New (IO::FileSystem::FileInputStream::New ("/etc/timezone"sv)).ReadAll ().Trim ();
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone"_f);

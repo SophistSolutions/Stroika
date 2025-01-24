@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 #include "Reader.h"
@@ -30,7 +30,7 @@ InputStream::Ptr<byte> Variant::Reader::_ToByteReader (istream& in)
 
 InputStream::Ptr<Character> Variant::Reader::_ToCharacterReader (const Iterable<Character>& in)
 {
-    return Streams::ToText::Reader::New (in);
+    return Streams::BinaryToText::Reader::New (in);
 }
 
 InputStream::Ptr<Character> Variant::Reader::_ToCharacterReader (wistream& in)

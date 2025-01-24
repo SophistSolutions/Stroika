@@ -44,9 +44,9 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
-#include "Stroika/Foundation/Streams/FromText.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 #include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -945,12 +945,12 @@ namespace {
             }
 
             auto doReaderSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
-                auto readingStream = ToText::Reader::New (p);
+                auto readingStream = BinaryToText::Reader::New (p);
                 auto readData      = readingStream.ReadAll (); // waits for writer side to close
                 EXPECT_EQ (readData, "Hello"sv);
             };
             auto doWriterSide = [] (Cryptography::SSL::SocketStream::Ptr p) {
-                auto writingStream = FromText::Writer::New (p);
+                auto writingStream = TextToBinary::Writer::New (p);
                 writingStream.Write ("Hello"sv);
                 writingStream.Flush ();
                 writingStream.Close (); // so ReadAll in doReaderSide doesn't block waiting for more data

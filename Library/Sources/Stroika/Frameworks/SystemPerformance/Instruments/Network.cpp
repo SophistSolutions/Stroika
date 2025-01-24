@@ -22,9 +22,9 @@
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
 #if qStroika_Foundation_Common_Platform_Windows

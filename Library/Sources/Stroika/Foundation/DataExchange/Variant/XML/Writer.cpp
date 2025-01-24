@@ -4,7 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
-#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Writer.h"
 
@@ -157,12 +157,12 @@ public:
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);
-            PrettyPrint_ (v, FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude), 0);
+            PrettyPrint_ (v, TextToBinary::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude), 0);
         }
         else {
             Containers::Mapping<String, VariantValue> v2;
             v2.Add (fDocumentElementName_, v);
-            PrettyPrint_ (VariantValue{v2}, FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude), 0);
+            PrettyPrint_ (VariantValue{v2}, TextToBinary::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude), 0);
         }
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Character>& out) const override

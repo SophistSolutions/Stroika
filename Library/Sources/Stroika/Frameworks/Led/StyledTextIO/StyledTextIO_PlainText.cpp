@@ -7,8 +7,8 @@
 #include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-#include "Stroika/Foundation/Streams/FromText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "StyledTextIO_PlainText.h"
 
@@ -86,7 +86,7 @@ void StyledTextIOWriter_PlainText::Write ()
 #endif
         bytesRead                                  = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
         Streams::MemoryStream::Ptr<byte> memStream = Streams::MemoryStream::New<byte> ();
-        Streams::FromText::Writer::New (memStream, Characters::CodeCvt<>{locale{}}).Write (span{buf2, bytesRead});
+        Streams::TextToBinary::Writer::New (memStream, Characters::CodeCvt<>{locale{}}).Write (span{buf2, bytesRead});
         auto b = memStream.As<Memory::BLOB> ();
         write (b.data (), b.size ());
     }

@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 using namespace Stroika::Foundation;
@@ -120,7 +120,8 @@ private:
 private:
     nonvirtual void ProcessFile_ (istream& in, ostream& out)
     {
-        wstring orig = Streams::ToText::Reader::New (Streams::iostream::InputStreamFromStdIStream::New<std::byte> (in)).ReadAll ().As<wstring> ();
+        wstring orig =
+            Streams::BinaryToText::Reader::New (Streams::iostream::InputStreamFromStdIStream::New<std::byte> (in)).ReadAll ().As<wstring> ();
 
         out << "/*Auto-Generated C++ file from the Source HTML file '" << String::FromSDKString (fInputFile).AsNarrowSDKString () << "'*/" << endl;
         out << "void    " << String::FromSDKString (fFormGeneratorName).AsNarrowSDKString () << " ()" << endl;

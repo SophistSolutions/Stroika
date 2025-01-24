@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Stroika/Frameworks/Led/FlavorPackage.h"
 
@@ -402,10 +402,10 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 using Characters::String;
                 Memory::BLOB rawBytesBLOB{span{reinterpret_cast<const byte*> (rawBytes), nRawBytes}};
 
-                String x              = suggestedCodePage ? ToText::Reader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
-                                                          : ToText::Reader::New (rawBytesBLOB).ReadAll ();
-                x                     = x.NormalizeTextToNL ();
-                Led_tString tx        = x.As<Led_tString> ();
+                String x       = suggestedCodePage ? BinaryToText::Reader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
+                                                   : BinaryToText::Reader::New (rawBytesBLOB).ReadAll ();
+                x              = x.NormalizeTextToNL ();
+                Led_tString tx = x.As<Led_tString> ();
                 size_t      charsRead = tx.length ();
                 const auto  fileData2 = span{tx};
                 {

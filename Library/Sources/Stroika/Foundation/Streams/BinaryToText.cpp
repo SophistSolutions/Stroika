@@ -14,13 +14,14 @@
 
 #include "IterableToInputStream.h"
 
-#include "ToText.h"
+#include "BinaryToText.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
-using namespace Stroika::Foundation::Streams::ToText;
+using namespace Stroika::Foundation::Streams::BinaryToText;
 
 using Characters::String;
 using Debug::AssertExternallySynchronizedMutex;
@@ -29,7 +30,7 @@ using Memory::StackBuffer;
 
 namespace {
     const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
-        Execution::RuntimeErrorException{"ToText::Reader read partial character at end of binary input stream"sv};
+        RuntimeErrorException{"BinaryToText::Reader read partial character at end of binary input stream"sv};
 
     class FromBinaryStreamBaseRep_ : public InputStream::IRep<Character> {
     public:
@@ -340,12 +341,12 @@ namespace {
             if (intoBuffer.size () >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
                 auto result = inherited::Read (intoBuffer, blockFlag);
                 if (result == nullopt) {
-                    Execution::Throw (EWouldBlock::kThe);
+                    Throw (EWouldBlock::kThe);
                 }
                 if (result->size () != 0) {
                     if (origOffset + result->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                        Execution::Throw (range_error{"seek past max size for size_t"});
+                        Throw (range_error{"seek past max size for size_t"});
                     }
                     pushIntoCacheBuf (intoBuffer.data (), intoBuffer.data () + result->size ());
                 }
@@ -358,12 +359,12 @@ namespace {
                 auto             result =
                     inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))}, blockFlag);
                 if (result == nullopt) {
-                    Execution::Throw (EWouldBlock::kThe);
+                    Throw (EWouldBlock::kThe);
                 }
                 if (result->size () != 0) {
                     if (origOffset + result->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                        Execution::Throw (range_error{"seek past max size for size_t"});
+                        Throw (range_error{"seek past max size for size_t"});
                     }
                     pushIntoCacheBuf (std::begin (buf), std::begin (buf) + result->size ());
                     result = result->subspan (0, intoBuffer.size ());
@@ -383,7 +384,7 @@ namespace {
             switch (whence) {
                 case eFromStart: {
                     if (offset < 0) [[unlikely]] {
-                        Execution::Throw (kException_);
+                        Throw (kException_);
                     }
                     SeekTo_ (static_cast<SeekOffsetType> (offset));
                 } break;
@@ -391,7 +392,7 @@ namespace {
                     Streams::SeekOffsetType       curOffset = _fOffset;
                     Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                     if (newOffset < 0) [[unlikely]] {
-                        Execution::Throw (kException_);
+                        Throw (kException_);
                     }
                     SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                     SeekTo_ (static_cast<size_t> (uNewOffset));
@@ -420,7 +421,7 @@ namespace {
                 // @todo Seek may require NoDataAvailableHandling flag!!!
                 // @todo fix data missing logic... - need datanotavailhandling flag arg
                 if (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eDEFAULT); o && o->size () == 0) [[unlikely]] {
-                    Execution::Throw (kException_);
+                    Throw (kException_);
                 }
             }
             Ensure (_fOffset == offset);
@@ -450,7 +451,7 @@ namespace {
 
 /*
  ********************************************************************************
- ********************** Streams::ToText::Reader::New ****************************
+ ********************** Streams::BinaryToText::Reader::New ****************************
  ********************************************************************************
  */
 namespace {
@@ -465,8 +466,8 @@ namespace {
     }
 }
 
-auto ToText::Reader::New (const InputStream::Ptr<byte>& src, const optional<AutomaticCodeCvtFlags> codeCvtFlags,
-                          optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
+auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const optional<AutomaticCodeCvtFlags> codeCvtFlags,
+                                optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
 {
     if (seekable == nullopt) {
         seekable = src.IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
@@ -502,8 +503,8 @@ auto ToText::Reader::New (const InputStream::Ptr<byte>& src, const optional<Auto
     return New_ (src, codeConverter, *seekable, readAhead);
 }
 
-auto ToText::Reader::New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, optional<SeekableFlag> seekable,
-                          ReadAhead readAhead) -> InputStream::Ptr<Character>
+auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter,
+                                optional<SeekableFlag> seekable, ReadAhead readAhead) -> InputStream::Ptr<Character>
 {
     if (seekable == nullopt) {
         seekable = src.IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
@@ -511,7 +512,7 @@ auto ToText::Reader::New (const InputStream::Ptr<byte>& src, const Characters::C
     return New_ (src, codeConverter, *seekable, readAhead);
 }
 
-auto ToText::Reader::New (const Traversal::Iterable<Character>& src) -> InputStream::Ptr<Character>
+auto BinaryToText::Reader::New (const Traversal::Iterable<Character>& src) -> InputStream::Ptr<Character>
 {
     InputStream::Ptr<Character> p = IterableToInputStream::New<Character> (src);
     Ensure (p.IsSeekable ());

@@ -34,8 +34,8 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -437,7 +437,7 @@ namespace {
                             (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
                             processDetails.fProcessName =
                                 OptionallyReadIfFileExists_<String> (dir / "comm"sv, [] (const Streams::InputStream::Ptr<byte>& in) {
-                                    return ToText::Reader::New (in).ReadAll ().Trim ();
+                                    return BinaryToText::Reader::New (in).ReadAll ().Trim ();
                                 });
                         }
 
@@ -1007,7 +1007,7 @@ namespace {
             ProcessType::TCPStats stats;
             bool                  didSkip = false;
             for (const String& i :
-                 ToText::Reader::New (IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
+                 BinaryToText::Reader::New (IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
                 if (not didSkip) {
                     didSkip = true;
                     continue;
@@ -1129,10 +1129,10 @@ namespace {
             ProcessRunner                    pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
             Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
             pr.Run (nullptr, useStdOut);
-            String                       out;
-            Streams::ToText::Reader::Ptr stdOut        = Streams::ToText::Reader::New (useStdOut);
-            bool                         skippedHeader = false;
-            size_t                       headerLen     = 0;
+            String                             out;
+            Streams::BinaryToText::Reader::Ptr stdOut        = Streams::BinaryToText::Reader::New (useStdOut);
+            bool                               skippedHeader = false;
+            size_t                             headerLen     = 0;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;

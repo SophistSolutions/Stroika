@@ -18,8 +18,8 @@
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Streams/FromText.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -600,8 +600,8 @@ namespace {
         auto readStrm  = SocketStream::New (readRawSocket);
 
         // completely symmetric up til now, so pick which to write to and which to read from
-        auto textWriter = FromText::Writer::New (writeStrm);
-        auto textReader = ToText::Reader::New (readStrm);
+        auto textWriter = TextToBinary::Writer::New (writeStrm);
+        auto textReader = BinaryToText::Reader::New (readStrm);
 
         textWriter.Write ("Hello");
         textWriter.Flush ();

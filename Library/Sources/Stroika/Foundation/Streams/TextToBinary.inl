@@ -3,7 +3,7 @@
  */
 #include "InternallySynchronizedOutputStream.h"
 
-namespace Stroika::Foundation::Streams::FromText {
+namespace Stroika::Foundation::Streams::TextToBinary {
 
     namespace Private_ {
         class UnSeekable_CodeCvt_Rep_ final : public OutputStream::IRep<Character> {
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Streams::FromText {
 
     /*
      ********************************************************************************
-     ************************** FromText::Writer::New *******************************
+     ************************** TextToBinary::Writer::New *******************************
      ********************************************************************************
      */
     namespace Writer {

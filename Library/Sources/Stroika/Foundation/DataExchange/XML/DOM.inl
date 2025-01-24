@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
@@ -378,7 +378,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         // @todo need a better Streams DESIGN here - were we can write and produce the string directly...
         Streams::MemoryStream::Ptr<byte> bufferedOutput = Streams::MemoryStream::New<byte> ();
         GetRep ()->Write (bufferedOutput, options);
-        return Streams::ToText::Reader::New (bufferedOutput).ReadAll ();
+        return Streams::BinaryToText::Reader::New (bufferedOutput).ReadAll ();
     }
     inline Iterable<Node::Ptr> Document::Ptr::GetChildren () const
     {

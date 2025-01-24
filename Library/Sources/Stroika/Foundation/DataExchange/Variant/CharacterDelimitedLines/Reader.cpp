@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Reader.h"
 
@@ -48,7 +48,7 @@ public:
     }
     virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
     {
-        return Read (Streams::ToText::Reader::New (in));
+        return Read (Streams::BinaryToText::Reader::New (in));
     }
     virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
     {
@@ -84,7 +84,7 @@ CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
 
 Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const InputStream::Ptr<byte>& in) const
 {
-    return ReadMatrix (ToText::Reader::New (in));
+    return ReadMatrix (BinaryToText::Reader::New (in));
 }
 
 Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const InputStream::Ptr<Character>& in) const

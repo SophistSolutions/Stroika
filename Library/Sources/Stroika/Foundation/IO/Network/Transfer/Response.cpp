@@ -11,7 +11,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Response.h"
 
@@ -99,8 +99,8 @@ InputStream::Ptr<byte> Response::GetDataBinaryInputStream () const
 InputStream::Ptr<Character> Response::GetDataTextInputStream () const
 {
     if (not fDataTextInputStream_.has_value ()) {
-        fDataTextInputStream_ = Streams::ToText::Reader::New (GetDataBinaryInputStream (),
-                                                              GetCharset () ? Characters::CodeCvt<>{*GetCharset ()} : Characters::CodeCvt<>{});
+        fDataTextInputStream_ = Streams::BinaryToText::Reader::New (
+            GetDataBinaryInputStream (), GetCharset () ? Characters::CodeCvt<>{*GetCharset ()} : Characters::CodeCvt<>{});
     }
     return *fDataTextInputStream_;
 }

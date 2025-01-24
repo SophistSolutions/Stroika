@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Reader.h"
 
@@ -39,7 +39,7 @@ public:
     virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
-        return Read (Streams::ToText::Reader::New (in));
+        return Read (Streams::BinaryToText::Reader::New (in));
     }
     virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream::Ptr<Character>& in) override
     {

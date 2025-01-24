@@ -310,8 +310,8 @@ namespace Stroika::Foundation::IO::Network {
          *      \code
          *          // both pairs equal - and can use EITHER as from and either as 'to'
          *          auto [fromRawSocket, toRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
-         *          auto fromStrm = FromText::Writer::New (SocketStream::New (fromRawSocket));
-         *          auto toStrm   = ToText::Reader::New (SocketStream::New (toRawSocket));
+         *          auto fromStrm = TextToBinary::Writer::New (SocketStream::New (fromRawSocket));
+         *          auto toStrm   = BinaryToText::Reader::New (SocketStream::New (toRawSocket));
          *          fromStrm.Write ("Hello");
          *          fromStrm.Flush ();
          *          fromStrm.Close ();          // Close socket, so ReadAll gets ALL

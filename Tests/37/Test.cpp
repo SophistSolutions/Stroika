@@ -16,9 +16,9 @@
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -243,7 +243,7 @@ namespace {
             Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
             ProcessRunner                    pr{kCmdLine_}; // automatically translated to cmd /c or bash -c
             pr.Run (nullptr, processStdOut);
-            EXPECT_EQ (Streams::ToText::Reader::New (processStdOut).ReadAll ().Trim (), "a");
+            EXPECT_EQ (Streams::BinaryToText::Reader::New (processStdOut).ReadAll ().Trim (), "a");
         }
         {
             ProcessRunner pr{kCmdLine_};

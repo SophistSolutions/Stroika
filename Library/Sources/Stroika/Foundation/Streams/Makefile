@@ -25,9 +25,9 @@ SubDirs	:=	\
 Objs	:=	\
 	$(ObjDir)EOFException${OBJ_SUFFIX}\
 	$(ObjDir)InputStream${OBJ_SUFFIX}\
-	$(ObjDir)FromText${OBJ_SUFFIX}\
+	$(ObjDir)TextToBinary${OBJ_SUFFIX}\
 	$(ObjDir)MemoryStream${OBJ_SUFFIX}\
-	$(ObjDir)ToText${OBJ_SUFFIX}\
+	$(ObjDir)BinaryToText${OBJ_SUFFIX}\
 
 all:	$(Objs)  $(SubDirs)
 

@@ -152,7 +152,7 @@ namespace {
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
         DbgTrace ("Starting Modbus connection {}"_f, thisModbusConnectionNumber);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally (
+        [[maybe_unused]] auto&& cleanup = Finally (
             [thisModbusConnectionNumber] () { DbgTrace ("Finishing Modbus connection {}"_f, thisModbusConnectionNumber); });
 #endif
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
@@ -240,7 +240,7 @@ namespace {
                             }
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"results bitmask bytes={}", Memory::BLOB{reinterpret_cast<const byte*> (results.begin ()),
+                        DbgTrace ("results bitmask bytes={}", Memory::BLOB{reinterpret_cast<const byte*> (results.begin ()),
                                                                             reinterpret_cast<const byte*> (results.end ())});
 #endif
                         {
@@ -311,7 +311,7 @@ namespace {
                         uint16_t              endInclusiveAddress = startingAddress + quantity - 1u;
                         StackBuffer<uint16_t> results{quantity}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadHoldingResisters_ (starting0Address: {}, quantity: {}) message with request-header={}"_f,
+                        DbgTrace ("Processing kReadHoldingResisters_ (starting0Address: {}, quantity: {}) message with request-header={}"_f,
                                   startingAddress, quantity, requestHeader);
 #endif
                         for (const auto& i : serviceHandler->ReadHoldingRegisters (
@@ -414,11 +414,11 @@ namespace {
                 out.Flush (); // since buffering output, be sure to flush after each response!
             }
         }
-        catch (const Execution::Thread::AbortException&) {
+        catch (const Thread::AbortException&) {
             ReThrow (); // no warning needed
         }
         catch (...) {
-            // Anytime we leave the loop due to an exception, thats worth a log note
+            // Anytime we leave the loop due to an exception, that's worth a log note
             if (options.fLogger) {
                 options.fLogger.value ()->Log (Logger::eWarning, "ModbusTCP connection ended abnormally: {}"_f, current_exception ());
             }
@@ -432,11 +432,11 @@ namespace {
  *********** Frameworks::Modbus::MakeModbusTCPServerThread **********************
  ********************************************************************************
  */
-Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
+Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
 {
-    shared_ptr<Execution::ThreadPool> usingThreadPool = options.fThreadPool;
+    shared_ptr<ThreadPool> usingThreadPool = options.fThreadPool;
     if (usingThreadPool == nullptr) {
-        usingThreadPool = make_shared<Execution::ThreadPool> (ThreadPool::Options{.fThreadCount = 1});
+        usingThreadPool = make_shared<ThreadPool> (ThreadPool::Options{.fThreadCount = 1});
     }
 
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately

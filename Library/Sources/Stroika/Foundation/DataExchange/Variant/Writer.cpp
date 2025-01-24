@@ -4,8 +4,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
 
 #include "Writer.h"

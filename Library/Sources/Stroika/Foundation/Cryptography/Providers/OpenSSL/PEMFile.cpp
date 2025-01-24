@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Certificate.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "PEMFile.h"
 

@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Writer.h"
 
@@ -39,7 +39,7 @@ public:
     }
     virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) const override
     {
-        Write (v, FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
+        Write (v, TextToBinary::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
     virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) const override
     {
@@ -75,7 +75,7 @@ INI::Writer::Writer ()
 
 void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<byte>& out)
 {
-    return Write (profile, Streams::FromText::Writer::New (out));
+    return Write (profile, Streams::TextToBinary::Writer::New (out));
 }
 
 void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<Characters::Character>& out)

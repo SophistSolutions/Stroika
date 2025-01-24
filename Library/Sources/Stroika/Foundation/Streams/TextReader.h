@@ -6,19 +6,19 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 /**
- *  FILE DEPRECATED - USE Streams/ToText.h
+ *  FILE DEPRECATED - USE Streams/BinaryToText.h
  */
-_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::ToText::Reader");
+_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::BinaryToText::Reader");
 
 namespace Stroika::Foundation::Streams::TextReader {
 
-    using namespace Streams::ToText;
-    using namespace Streams::ToText::Reader;
+    using namespace Streams::BinaryToText;
+    using namespace Streams::BinaryToText::Reader;
 
-    using Ptr = InputStream::Ptr<Character>; //not replicated in ToText
+    using Ptr = InputStream::Ptr<Character>; //not replicated in BinaryToText
 
 }
 

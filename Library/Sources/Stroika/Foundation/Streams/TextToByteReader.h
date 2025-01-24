@@ -6,15 +6,15 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 /**
- *  *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::FromText
+ *  *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::TextToBinary
  */
-_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::FromText::Reader");
+_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::TextToBinary::Reader");
 
 namespace Stroika::Foundation::Streams::TextToByteReader {
-    using namespace FromText::Reader;
+    using namespace TextToBinary::Reader;
 }
 
 #endif /*_Stroika_Foundation_Streams_TextToByteReader_h_*/

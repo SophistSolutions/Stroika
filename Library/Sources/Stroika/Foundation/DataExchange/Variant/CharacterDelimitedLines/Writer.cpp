@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Writer.h"
 
@@ -38,7 +38,7 @@ public:
     }
     virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) const override
     {
-        Write (v, FromText::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
+        Write (v, TextToBinary::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
     virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) const override
     {
@@ -87,7 +87,7 @@ CharacterDelimitedLines::Writer::Writer (const Options& options)
 
 void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<byte>& out)
 {
-    return Write (m, Streams::FromText::Writer::New (out));
+    return Write (m, Streams::TextToBinary::Writer::New (out));
 }
 
 void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<Characters::Character>& out)

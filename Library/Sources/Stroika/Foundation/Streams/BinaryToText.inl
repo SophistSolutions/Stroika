@@ -3,11 +3,11 @@
  */
 #include "InternallySynchronizedInputStream.h"
 
-namespace Stroika::Foundation::Streams::ToText::Reader {
+namespace Stroika::Foundation::Streams::BinaryToText::Reader {
 
     /*
      ********************************************************************************
-     **************************** ToText::Reader::New *******************************
+     **************************** BinaryToText::Reader::New *******************************
      ********************************************************************************
      */
     inline auto New (const InputStream::Ptr<Character>& src) -> InputStream::Ptr<Character>

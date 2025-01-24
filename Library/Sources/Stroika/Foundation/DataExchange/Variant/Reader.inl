@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 namespace Stroika::Foundation::DataExchange::Variant {
 
@@ -69,7 +69,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     }
     inline Streams::InputStream::Ptr<byte> Reader::_ToByteReader (const Streams::InputStream::Ptr<Characters::Character>& in)
     {
-        return Streams::FromText::Reader::New (in);
+        return Streams::TextToBinary::Reader::New (in);
     }
     inline Streams::InputStream::Ptr<Characters::Character> Reader::_ToCharacterReader (const Streams::InputStream::Ptr<Characters::Character>& in)
     {

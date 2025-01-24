@@ -18,7 +18,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
@@ -182,7 +182,7 @@ namespace {
         static void SetAppState_ (Message& message)
         {
             message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
-            String argsAsString               = Streams::ToText::Reader::New (message.rwRequest ().GetBody ()).ReadAll ();
+            String argsAsString               = Streams::BinaryToText::Reader::New (message.rwRequest ().GetBody ()).ReadAll ();
             message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
         }
     };

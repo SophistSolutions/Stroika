@@ -7,10 +7,10 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/Common.h"
-#include "Stroika/Foundation/Streams/FromText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Providers/IProvider.h"
 #include "Schema.h"
@@ -128,7 +128,7 @@ String Node::Ptr::ToString () const
     }
     Streams::MemoryStream::Ptr m = Streams::MemoryStream::New<byte> ();
     GetRep ()->Write (m, DOM::SerializationOptions{});
-    return Streams::ToText::Reader::New (m).ReadAll ();
+    return Streams::BinaryToText::Reader::New (m).ReadAll ();
 }
 
 auto Element::Ptr::GetChild (const NameWithNamespace& eltName) const -> Ptr
@@ -160,7 +160,7 @@ String Document::Ptr::ToString () const
     }
     Streams::MemoryStream::Ptr m = Streams::MemoryStream::New<byte> ();
     fRep_->Write (m, DOM::SerializationOptions{});
-    return Streams::ToText::Reader::New (m).ReadAll ();
+    return Streams::BinaryToText::Reader::New (m).ReadAll ();
 }
 
 /*
@@ -192,12 +192,12 @@ Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::In
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& in)
 {
-    return New (p, Streams::FromText::Reader::New (in), nullptr);
+    return New (p, Streams::TextToBinary::Reader::New (in), nullptr);
 }
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading)
 {
-    return New (p, Streams::FromText::Reader::New (in), schemaToValidateAgainstWhileReading);
+    return New (p, Streams::TextToBinary::Reader::New (in), schemaToValidateAgainstWhileReading);
 }
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const Ptr& clone)
@@ -234,12 +234,12 @@ Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in, const Sc
 
 Document::Ptr Document::New (const String& in)
 {
-    return New (Streams::FromText::Reader::New (in), nullptr);
+    return New (Streams::TextToBinary::Reader::New (in), nullptr);
 }
 
 Document::Ptr Document::New (const String& in, const Schema::Ptr& schema)
 {
-    return New (Streams::FromText::Reader::New (in), schema);
+    return New (Streams::TextToBinary::Reader::New (in), schema);
 }
 
 Document::Ptr Document::New (const Ptr& clone)

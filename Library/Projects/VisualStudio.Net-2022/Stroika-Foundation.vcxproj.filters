@@ -897,10 +897,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\JWT.cpp">
       <Filter>Sources\DataExchange\JSON</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\ToText.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryToText.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\FromText.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToBinary.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
   </ItemGroup>
@@ -2318,10 +2318,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Async.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ToText.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryToText.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\FromText.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextToBinary.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3828,10 +3828,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Async.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToText.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryToText.inl">
       <Filter>Sources\Streams</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\FromText.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextToBinary.inl">
       <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>

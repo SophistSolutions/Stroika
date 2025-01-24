@@ -19,8 +19,8 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 
 using namespace std;
 

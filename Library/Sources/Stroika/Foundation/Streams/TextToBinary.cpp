@@ -14,13 +14,13 @@
 
 #include "IterableToInputStream.h"
 
-#include "FromText.h"
+#include "TextToBinary.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
-using namespace Stroika::Foundation::Streams::FromText;
+using namespace Stroika::Foundation::Streams::TextToBinary;
 
 using Characters::String;
 using Debug::AssertExternallySynchronizedMutex;
@@ -118,15 +118,15 @@ namespace {
 
 /*
  ********************************************************************************
- *********************** Streams::FromText::Reader::New *************************
+ *********************** Streams::TextToBinary::Reader::New *************************
  ********************************************************************************
  */
-auto FromText::Reader::New (const InputStream::Ptr<Character>& srcStream) -> InputStream::Ptr<byte>
+auto TextToBinary::Reader::New (const InputStream::Ptr<Character>& srcStream) -> InputStream::Ptr<byte>
 {
     return InputStream::Ptr<byte>{make_shared<Rep_> (srcStream)};
 }
 
-auto FromText::Reader::New (const Traversal::Iterable<Character>& srcText) -> InputStream::Ptr<byte>
+auto TextToBinary::Reader::New (const Traversal::Iterable<Character>& srcText) -> InputStream::Ptr<byte>
 {
     // @todo - Could make this more efficient (by combining into one object) - but for now KISS
     return New (IterableToInputStream::New<Character> (srcText));

@@ -37,8 +37,8 @@
 #include "Stroika/Foundation/IO/FileSystem/Disk.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 
 #include "Stroika/Frameworks/SystemPerformance/Support/InstrumentHelpers.h"
 
@@ -408,9 +408,10 @@ namespace {
                 if (optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName)) {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
-                        o = String2Int<uint32_t> (ToText::Reader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable))
-                                                      .ReadAll ()
-                                                      .Trim ());
+                        o = String2Int<uint32_t> (
+                            BinaryToText::Reader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable))
+                                .ReadAll ()
+                                .Trim ());
                         _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
@@ -436,9 +437,9 @@ namespace {
             catch (...) {
                 runException = current_exception ();
             }
-            String                       out;
-            Streams::ToText::Reader::Ptr stdOut        = Streams::ToText::Reader::New (useStdOut);
-            bool                         skippedHeader = false;
+            String                             out;
+            Streams::BinaryToText::Reader::Ptr stdOut        = Streams::BinaryToText::Reader::New (useStdOut);
+            bool                               skippedHeader = false;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
@@ -497,9 +498,9 @@ namespace {
             catch (...) {
                 runException = current_exception ();
             }
-            String                       out;
-            Streams::ToText::Reader::Ptr stdOut        = Streams::ToText::Reader::New (useStdOut);
-            bool                         skippedHeader = false;
+            String                             out;
+            Streams::BinaryToText::Reader::Ptr stdOut        = Streams::BinaryToText::Reader::New (useStdOut);
+            bool                               skippedHeader = false;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;

@@ -78,7 +78,7 @@ String Message::ToString () const
     StringBuilder                                  sb;
     sb << "{"sv;
     sb << "PeerAddress: "sv << fPeerAddress_;
-    sb << ", Request: "sv << fRequest_ ;
+    sb << ", Request: "sv << fRequest_;
     sb << ", Response: "sv << fResponse_;
     sb << "}"sv;
     return sb;

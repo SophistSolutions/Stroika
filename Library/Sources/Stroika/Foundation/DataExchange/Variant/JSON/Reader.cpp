@@ -19,8 +19,8 @@
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
-#include "Stroika/Foundation/Streams/ToText.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
 #include "Reader.h"
@@ -477,7 +477,7 @@ public:
     virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {
         using namespace Streams;
-        return Read (ToText::Reader::New (in, nullopt, SeekableFlag::eSeekable));
+        return Read (BinaryToText::Reader::New (in, nullopt, SeekableFlag::eSeekable));
     }
     virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
     {

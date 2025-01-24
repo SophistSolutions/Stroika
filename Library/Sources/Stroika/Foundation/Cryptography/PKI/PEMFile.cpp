@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
-#include "Stroika/Foundation/Streams/ToText.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "PEMFile.h"
 
@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Streams;
  */
 Characters::String PEMFile::Ptr::ToString () const
 {
-    return ToText::Reader::New (get ()->GetData ()).ReadAll ();
+    return BinaryToText::Reader::New (get ()->GetData ()).ReadAll ();
 }
 
 /*

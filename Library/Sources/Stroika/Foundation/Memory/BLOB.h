@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \note this displays the BLOB as hex bytes. To interpret as a string, try 
          *      \code
-         *          Assert (ToText::Reader::New (blob).ReadAll () == "hello world");
+         *          Assert (BinaryToText::Reader::New (blob).ReadAll () == "hello world");
          *      \endcode
          */
         nonvirtual Characters::String ToString (size_t maxBytesToShow = 80) const;

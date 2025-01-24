@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_ToText_h_
-#define _Stroika_Foundation_Streams_ToText_h_ 1
+#ifndef _Stroika_Foundation_Streams_BinaryToText_h_
+#define _Stroika_Foundation_Streams_BinaryToText_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Streams {
     using Characters::Character;
 }
 
-namespace Stroika::Foundation::Streams::ToText {
+namespace Stroika::Foundation::Streams::BinaryToText {
 
     /**
      */
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Streams::ToText {
     using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
 
     /**
-     *  \brief ToText::Reader::Ptr is an InputStream::Ptr<Character>, usually constructed wrapping some binary object or binary stream
+     *  \brief BinaryToText::Reader::Ptr is an InputStream::Ptr<Character>, usually constructed wrapping some binary object or binary stream
      *
      *  \note   This was called TextInputStreamBinaryAdapter
      *  \note   This was called TextReader
@@ -48,20 +48,20 @@ namespace Stroika::Foundation::Streams::ToText {
      *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
      *          much of the 'reading' API is baked into InputStream::Ptr<Character>.
      *
-     *  \note   ToText::Reader's are smart about not reading more than they need to from the source Stream (unless you make that stream buffered, in
+     *  \note   BinaryToText::Reader's are smart about not reading more than they need to from the source Stream (unless you make that stream buffered, in
      *          which case the buffering can cause it to read ahead)
      *
-     *          But ToText::Reader itself doesn't read ahead more than it needs to to complete requested methods.
+     *          But BinaryToText::Reader itself doesn't read ahead more than it needs to to complete requested methods.
      *
      *  \par Example Usage
      *      \code
-     *          for (String line : ToText::Reader::New (FileInputStream::New ("/tmp/foo")).ReadLines ()) {
+     *          for (String line : BinaryToText::Reader::New (FileInputStream::New ("/tmp/foo")).ReadLines ()) {
      *          }
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          Assert (ToText::Reader::New (String{"hello world"}).ReadAll () == "hello world");
+     *          Assert (BinaryToText::Reader::New (String{"hello world"}).ReadAll () == "hello world");
      *      \endcode
      *
      *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Streams::ToText {
     namespace Reader {
 
         /**
-         *  \brief ToText::Readers produce text in the form of an InputStream of 'Character' objects (so you might get the text with ReadAll()).
+         *  \brief BinaryToText::Readers produce text in the form of an InputStream of 'Character' objects (so you might get the text with ReadAll()).
          */
         using Ptr = InputStream::Ptr<Character>;
 
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Streams::ToText {
          *
          *  \par Example Usage
          *      \code
-         *          for (String line : ToText::Reader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+         *          for (String line : BinaryToText::Reader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
          *              DbgTrace ("***in Common::GetSystemConfiguration_CPU capture_ line={}"_f, line);
          *          }
          *      \endcode
@@ -139,6 +139,6 @@ namespace Stroika::Foundation::Streams::ToText {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "ToText.inl"
+#include "BinaryToText.inl"
 
-#endif /*_Stroika_Foundation_Streams_ToText_h_*/
+#endif /*_Stroika_Foundation_Streams_BinaryToText_h_*/
