@@ -113,6 +113,28 @@ namespace Stroika::Foundation::Common {
     //template <typename VARIANT_VALUE, typename T> // CANNOT figure out how to declare here and define in INL file...
     //constexpr size_t VariantIndex;
 
+    namespace Private_ {
+        // from https://stackoverflow.com/questions/66254907/parameterize-of-tuple-with-repeated-type
+        template <typename T, typename Seq>
+        struct expander;
+        template <typename T, size_t... Is>
+        struct expander<T, index_sequence<Is...>> {
+            template <typename E, size_t>
+            using elem = E;
+            using type = tuple<elem<T, Is>...>;
+        };
+        template <size_t N, class Type>
+        struct my_tuple {
+            using type = typename expander<Type, make_index_sequence<N>>::type;
+        };
+    }
+
+    /**
+     *  \brief same_as<RepeatedTuple_t<3,int>,tuple<int,int,int>>
+     */
+    template <size_t N, class Type>
+    using RepeatedTuple_t = typename Private_::my_tuple<N, Type>::type;
+
 }
 
 /*
