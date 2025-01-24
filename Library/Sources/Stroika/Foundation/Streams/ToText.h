@@ -76,24 +76,9 @@ namespace Stroika::Foundation::Streams::ToText {
      *
      *  \note Depending on the underlying source (e.g. binary stream) - maintaining seekability may be expensive in terms
      *        of memory usage.
-     *
-     *  \par Example Usage
-     *      \code
-     *          for (String line : ToText::Reader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
-     *              DbgTrace ("***in Common::GetSystemConfiguration_CPU capture_ line={}"_f, line);
-     *          }
-     *      \endcode
-     *  
-     *  \note New (const InputStream::Ptr<byte>& src,... overloads)
-     *      o   Seekability
-     *              if not specified, its copied from the src binary stream.
-     *      o   CodeCvt flags 
-     *          either as specified, or, if src.IsSeekable () - defaults to AutomaticCodeCvtFlags::eDEFAULT (which looks at the BOM)
-     *          and if not seekable and not specified, use CodeCvt<>{locale{}}.
-     * 
-     *      o   These defaults changed in Stroika v3.0d5 (mostly before 3.0d5 - defaults for seekability changed and code page sometimes defaulted to UTF8).
      */
     namespace Reader {
+
         /**
          *  \brief ToText::Readers produce text in the form of an InputStream of 'Character' objects (so you might get the text with ReadAll()).
          */
@@ -114,6 +99,23 @@ namespace Stroika::Foundation::Streams::ToText {
         using ReadAhead::eReadAheadNever;
 
         /**
+         *  \brief Create an InputStream::Ptr<Character> from the arguments (usually binary source) - which can be used to Read out the text as a string
+         *
+         *  \par Example Usage
+         *      \code
+         *          for (String line : ToText::Reader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+         *              DbgTrace ("***in Common::GetSystemConfiguration_CPU capture_ line={}"_f, line);
+         *          }
+         *      \endcode
+         *  
+         *  \note New (const InputStream::Ptr<byte>& src,... overloads)
+         *      o   Seekability
+         *              if not specified, its copied from the src binary stream.
+         *      o   CodeCvt flags 
+         *          either as specified, or, if src.IsSeekable () - defaults to AutomaticCodeCvtFlags::eDEFAULT (which looks at the BOM)
+         *          and if not seekable and not specified, use CodeCvt<>{locale{}}.
+         * 
+         *      o   These defaults changed in Stroika v3.0d5 (mostly before 3.0d5 - defaults for seekability changed and code page sometimes defaulted to UTF8).
          */
         Ptr New (const InputStream::Ptr<byte>& src, optional<AutomaticCodeCvtFlags> codeCvtFlags = {}, optional<SeekableFlag> seekable = {},
                  ReadAhead readAhead = eReadAheadAllowed);
@@ -123,6 +125,7 @@ namespace Stroika::Foundation::Streams::ToText {
         Ptr New (const Traversal::Iterable<Character>& src);
         template <typename... ARGS>
         Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args);
+
     }
 
     // note - @todo COULD do this as an OutStream::Ptr/Writer - but never found a need/use
