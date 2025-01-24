@@ -24,10 +24,10 @@ String JSON::Patch::OperationItemType::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "op: "sv << op << ", "sv;
-    sb << "path: "sv << path << ", "sv;
+    sb << "op: "sv << op;
+    sb << ", path: "sv << path;
     if (value) {
-        sb << "value: "sv << value;
+        sb << ", value: "sv << value;
     }
     sb << "}"sv;
     return sb;

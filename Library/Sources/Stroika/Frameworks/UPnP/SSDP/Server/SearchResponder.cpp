@@ -109,11 +109,7 @@ namespace {
                         Memory::BLOB data = SSDP::Serialize ("HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a);
                         useSocket.SendTo (data, sendTo);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        String msg;
-                        msg += "location=" sz + a.fLocation + ", "sv;
-                        msg += "TARGET(ST/NT)=" sz + a.fTarget + ", "sv;
-                        msg += "USN=" sz + a.fUSN;
-                        DbgTrace (L"(%s)", msg.c_str ());
+                        DbgTrace ("(location={},TARGET(ST/NT)={},USN={})"_f, a.fLocation, a.fTarget, a.fUSN);
 #endif
                     }
                 }

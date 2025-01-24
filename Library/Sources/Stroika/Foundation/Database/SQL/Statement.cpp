@@ -31,8 +31,8 @@ String Statement::ColumnDescription::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "name: "sv << fName << ", "sv;
-    sb << "type: "sv << fType;
+    sb << "name: "sv << fName;
+    sb << ", type: "sv << fType;
     sb << "}"sv;
     return sb;
 }

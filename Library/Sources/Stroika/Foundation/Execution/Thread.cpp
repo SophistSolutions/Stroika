@@ -314,7 +314,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD Characters::String Thread:
         sb << ", name: "sv << fThreadName_;
     }
     sb << ", status: "sv << PeekStatusForToString_ ();
-    //sb << "runnable: "sv << fRunnable_ << ", "sv;     // doesn't yet print anything useful
+    //sb << ", runnable: "sv << fRunnable_;     // doesn't yet print anything useful
     sb << ", abortRequested: "sv << fAbortRequested_.load ();
     sb << ", refCountBumpedEvent: "sv << fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ();
     sb << ", startReadyToTransitionToRunningEvent_: "sv << fStartReadyToTransitionToRunningEvent_.PeekIsSet ();

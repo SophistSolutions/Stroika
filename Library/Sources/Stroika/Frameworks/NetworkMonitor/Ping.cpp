@@ -45,13 +45,13 @@ String Ping::Options::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (fMaxHops) {
-        sb << "Max-Hops: "sv << *fMaxHops << ", "sv;
+        sb << "Max-Hops: "sv << *fMaxHops;
     }
     if (fTimeout) {
-        sb << "Timeout: "sv << *fTimeout << ", "sv;
+        sb << ", Timeout: "sv << *fTimeout;
     }
     if (fPacketPayloadSize) {
-        sb << "Packet-Payload-Size: "sv << *fPacketPayloadSize;
+        sb << ", Packet-Payload-Size: "sv << *fPacketPayloadSize;
     }
     sb << "}"sv;
     return sb;
@@ -66,8 +66,8 @@ String Pinger::ResultType::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Ping-Time: "sv << fPingTime << ", "sv;
-    sb << "Hop-Count: "sv << fHopCount;
+    sb << "Ping-Time: "sv << fPingTime;
+    sb << ", Hop-Count: "sv << fHopCount;
     sb << "}"sv;
     return sb;
 }

@@ -77,9 +77,9 @@ String Message::ToString () const
     AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
     StringBuilder                                  sb;
     sb << "{"sv;
-    sb << "PeerAddress: "sv << fPeerAddress_ << ", "sv;
-    sb << "Request: "sv << fRequest_ << ", "sv;
-    sb << "Response: "sv << fResponse_;
+    sb << "PeerAddress: "sv << fPeerAddress_;
+    sb << ", Request: "sv << fRequest_ ;
+    sb << ", Response: "sv << fResponse_;
     sb << "}"sv;
     return sb;
 }

@@ -84,8 +84,8 @@ String Hop::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Time: "sv << fTime << ", "sv;
-    sb << "Address: "sv << fAddress;
+    sb << "Time: "sv << fTime;
+    sb << ", Address: "sv << fAddress;
     sb << "}"sv;
     return sb;
 }
