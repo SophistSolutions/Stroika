@@ -726,6 +726,7 @@ namespace {
                 EXPECT_TRUE (kTestStr_.Matches (kSonosRE_));
                 optional<String> match1;
                 EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1) and match1 == "192.168.244.104");
+                EXPECT_EQ (kTestStr_.Matches<1> (kSonosRE_), make_tuple ("192.168.244.104"_k));
                 optional<String> match2;
                 EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
             }
@@ -980,11 +981,11 @@ namespace {
             EXPECT_EQ (CString::String2Int<int> ("     "), 0);
         }
         {
-            EXPECT_EQ (CString::HexString2Int (""), 0);
-            EXPECT_EQ (CString::HexString2Int (L""), 0);
-            EXPECT_EQ (CString::HexString2Int (wstring{L""}), 0);
-            EXPECT_EQ (HexString2Int (String{}), 0);
-            EXPECT_EQ (CString::HexString2Int ("     "), 0);
+            EXPECT_EQ (CString::HexString2Int (""), 0u);
+            EXPECT_EQ (CString::HexString2Int (L""), 0u);
+            EXPECT_EQ (CString::HexString2Int (wstring{L""}), 0u);
+            EXPECT_EQ (HexString2Int (String{}), 0u);
+            EXPECT_EQ (CString::HexString2Int ("     "), 0u);
         }
         {
             // http://stroika-bugs.sophists.com/browse/STK-966
@@ -1465,7 +1466,7 @@ namespace {
         Debug::TraceContextBumper ctx{"SubString_"};
         {
             String tmp{"This is good"};
-            EXPECT_EQ (tmp.SubString (5) , "is good");
+            EXPECT_EQ (tmp.SubString (5), "is good");
         }
         {
             const String kTest_{"a=b"_k};
