@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Streams::FromText {
      *      \endcode
      */
     namespace Writer {
-        
+
         /**
          *  \brief FromText::Writer wrap some sink (typically a binary stream), and produce a text sink you can Write() text to
          */
