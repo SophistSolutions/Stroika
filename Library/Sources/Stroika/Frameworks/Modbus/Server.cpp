@@ -152,8 +152,8 @@ namespace {
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
         DbgTrace ("Starting Modbus connection {}"_f, thisModbusConnectionNumber);
-        [[maybe_unused]] auto&& cleanup = Finally (
-            [thisModbusConnectionNumber] () { DbgTrace ("Finishing Modbus connection {}"_f, thisModbusConnectionNumber); });
+        [[maybe_unused]] auto&& cleanup =
+            Finally ([thisModbusConnectionNumber] () { DbgTrace ("Finishing Modbus connection {}"_f, thisModbusConnectionNumber); });
 #endif
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
             if (auto p = connectionSocket.GetPeerAddress ()) {
@@ -241,7 +241,7 @@ namespace {
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace ("results bitmask bytes={}", Memory::BLOB{reinterpret_cast<const byte*> (results.begin ()),
-                                                                            reinterpret_cast<const byte*> (results.end ())});
+                                                                           reinterpret_cast<const byte*> (results.end ())});
 #endif
                         {
                             // Response ready - format, toNetwork, and write

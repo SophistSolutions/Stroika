@@ -447,13 +447,13 @@ namespace {
 #if qStroika_HasComponent_OpenSSL
         Debug::TraceContextBumper ctx{"...EnumerateOpenSSLAlgorithmsInContexts_"};
         Set<String>               defaultContextAvailableCipherAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
+            OpenSSL::LibraryContext::sDefault.availableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); });
         Set<String> defaultContextStandardCipherAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
+            OpenSSL::LibraryContext::sDefault.standardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); });
         Set<String> defaultContextAvailableDigestAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
+            OpenSSL::LibraryContext::sDefault.availableDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); });
         Set<String> defaultContextStandardDigestAlgorithms =
-            OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
+            OpenSSL::LibraryContext::sDefault.standardDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); });
 
         DbgTrace ("defaultContextAvailableCipherAlgorithms = #{} {}"_f, defaultContextAvailableCipherAlgorithms.size (),
                   Characters::ToString (defaultContextAvailableCipherAlgorithms));
@@ -573,8 +573,8 @@ namespace {
             unsigned int                  nCipherTests{};
             unsigned int                  nFailures{};
             MultiSet<String>              failingCiphers;
-            [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().size ();
-            for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
+            [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.availableDigestAlgorithms ().size ();
+            for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.availableCipherAlgorithms ()) {
                 // No idea why, but we get a hard fail (uncatchable exception from ASAN) - if we test these on raspi with ASAN (maybe rethrow of execpt caught to print it?) -- LGP 2023-11-07
 #ifdef __arm__
                 constexpr bool kArm_ = true;
@@ -584,20 +584,20 @@ namespace {
                 if (kArm_ and Debug::kBuiltWithAddressSanitizer and
                     (
                         // clang-format off
-                        ci.pName () == "id-aes128-GCM" or ci.pName () == "id-aes192-GCM" or ci.pName () == "id-aes256-GCM"
-                        or ci.pName () == "AES-128-XTS" or  ci.pName () == "AES-256-XTS"
-                        or ci.pName () == "id-aes128-CCM" or ci.pName () == "id-aes192-CCM" or ci.pName () == "id-aes256-CCM" 
-                        or ci.pName () == "id-aes128-wrap" or ci.pName () == "id-aes192-wrap" or ci.pName () == "id-aes256-wrap" 
-                        or ci.pName () == "AES-128-OCB" or  ci.pName () == "AES-192-OCB" or ci.pName () == "AES-256-OCB"
-                        or ci.pName () == "ARIA-128-GCM" or ci.pName () == "ARIA-192-GCM" or ci.pName () == "ARIA-256-GCM"
-                        or ci.pName () == "ARIA-128-CCM" or ci.pName () == "ARIA-192-CCM" or ci.pName () == "ARIA-256-CCM"
-                        or ci.pName () == "id-smime-alg-CMS3DESwrap"
+                        ci.name () == "id-aes128-GCM" or ci.name () == "id-aes192-GCM" or ci.name () == "id-aes256-GCM"
+                        or ci.name () == "AES-128-XTS" or  ci.name () == "AES-256-XTS"
+                        or ci.name () == "id-aes128-CCM" or ci.name () == "id-aes192-CCM" or ci.name () == "id-aes256-CCM" 
+                        or ci.name () == "id-aes128-wrap" or ci.name () == "id-aes192-wrap" or ci.name () == "id-aes256-wrap" 
+                        or ci.name () == "AES-128-OCB" or  ci.name () == "AES-192-OCB" or ci.name () == "AES-256-OCB"
+                        or ci.name () == "ARIA-128-GCM" or ci.name () == "ARIA-192-GCM" or ci.name () == "ARIA-256-GCM"
+                        or ci.name () == "ARIA-128-CCM" or ci.name () == "ARIA-192-CCM" or ci.name () == "ARIA-256-CCM"
+                        or ci.name () == "id-smime-alg-CMS3DESwrap"
                         // clang-format on
                         )) {
-                    DbgTrace ("Skipping ci='{}' on raspi/asan"_f, ci.pName ());
+                    DbgTrace ("Skipping ci='{}' on raspi/asan"_f, ci.name ());
                     continue;
                 }
-                for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
+                for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.availableDigestAlgorithms ()) {
                     DbgTrace ("Testing ci={}, di={}"_f, ci, di);
                     size_t nFailsForThisCipherDigestCombo{};
                     for (BLOB passphrase : kPassphrases_) {
@@ -612,15 +612,15 @@ namespace {
                                 roundTripTester_ (cryptoParams, inputMessage);
                             }
                             catch (...) {
-                                if (di.pName () == "SHAKE128" or di.pName () == "SHAKE256") {
-                                    // Since openssl 3.4.0 - these appear to fail in the digest itself - not sure we care - so ingore at least in this regression test...
+                                if (di.name () == "SHAKE128" or di.name () == "SHAKE256") {
+                                    // Since openssl 3.4.0 - these appear to fail in the digest itself - not sure we care - so ignore at least in this regression test...
                                     // ignore --LGP 2024-11-18
                                     continue;
                                 }
                                 nFailures++;
                                 failingCiphers.Add (Characters::ToString (ci));
                                 DbgTrace ("For Test ({}, {}): Ignoring exception: {}"_f, ci, di, current_exception ());
-                                if (not kLastSeenAllFailingCiphers_.Contains (ci.pName ())) {
+                                if (not kLastSeenAllFailingCiphers_.Contains (ci.name ())) {
                                     DbgTrace ("***new failure"_f);
                                 }
                             }
@@ -642,7 +642,7 @@ namespace {
              */
             if (nFailures != 0) {
                 Set<String> allCiphers{
-                    OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
+                    OpenSSL::LibraryContext::sDefault.availableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); })};
                 Set<String> passingCiphers = allCiphers - failingCiphers.Elements ();
                 if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
                     // Look at why each failed - but if innocuous, then add to list of known failures. This generally comes up only
@@ -654,7 +654,7 @@ namespace {
                             kLastSeenAllFailingCiphers_ - failingCiphers.Elements (), failingCiphers, passingCiphers));
                 }
                 static const Set<String> kStandardCipherAlgorithmNames{
-                    OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
+                    OpenSSL::LibraryContext::sDefault.standardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.name (); })};
                 if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
                     Stroika::Frameworks::Test::WarnTestIssue ("For provider={}, some standard ciphers failed: {}"_f(
                         provider, failingCiphers.Elements () ^ kStandardCipherAlgorithmNames));
@@ -737,7 +737,7 @@ namespace {
 
         auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src,
                                const BLOB& expected) {
-            if (OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Contains (cipherAlgorithm)) {
+            if (OpenSSL::LibraryContext::sDefault.availableCipherAlgorithms ().Contains (cipherAlgorithm)) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                 DbgTrace ("dk={}"_f, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds});

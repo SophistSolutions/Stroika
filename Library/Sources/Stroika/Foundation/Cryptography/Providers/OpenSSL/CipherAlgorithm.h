@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
     public:
         /**
          */
-        Common::ReadOnlyProperty<String> pName;
+        Common::ReadOnlyProperty<String> name;
 
     public:
         nonvirtual auto operator<=> (const CipherAlgorithm& rhs) const;

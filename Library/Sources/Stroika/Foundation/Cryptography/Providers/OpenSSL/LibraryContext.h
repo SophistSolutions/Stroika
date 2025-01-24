@@ -98,25 +98,25 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         /**
          * @brief Return all the cipher algorithms provided by (the linked copy of) openssl.
          */
-        Common::ReadOnlyProperty<Set<CipherAlgorithm>> pAvailableCipherAlgorithms;
+        Common::ReadOnlyProperty<Set<CipherAlgorithm>> availableCipherAlgorithms;
 
     public:
         /**
          * @brief Return all the standard/safe (tbd) cipher algorithms provided by (the linked copy of) openssl.
          */
-        Common::ReadOnlyProperty<Set<CipherAlgorithm>> pStandardCipherAlgorithms;
+        Common::ReadOnlyProperty<Set<CipherAlgorithm>> standardCipherAlgorithms;
 
     public:
         /**
          * @brief Return all the digest algorithms provided by (the linked copy of) openssl.
          */
-        Common::ReadOnlyProperty<Set<DigestAlgorithm>> pAvailableDigestAlgorithms;
+        Common::ReadOnlyProperty<Set<DigestAlgorithm>> availableDigestAlgorithms;
 
     public:
         /**
          * @brief Return all the standard/safe (tbd) digest algorithms provided by (the linked copy of) openssl.
          */
-        Common::ReadOnlyProperty<Set<DigestAlgorithm>> pStandardDigestAlgorithms;
+        Common::ReadOnlyProperty<Set<DigestAlgorithm>> standardDigestAlgorithms;
 
     private:
         struct LibraryInit_ {

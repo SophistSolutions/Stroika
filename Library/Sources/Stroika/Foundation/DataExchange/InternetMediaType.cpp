@@ -18,7 +18,7 @@ using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- ************************** InternetMediaType ***********************************
+ **************************** InternetMediaType *********************************
  ********************************************************************************
  */
 InternetMediaType::InternetMediaType (const String& ct)
@@ -67,7 +67,7 @@ InternetMediaType::InternetMediaType (const String& ct)
         }
     }
     else {
-        static const auto kException_ = DataExchange::BadFormatException{"Badly formatted InternetMediaType"sv};
+        static const auto kException_ = BadFormatException{"Badly formatted InternetMediaType"sv};
         Execution::Throw (kException_);
     }
 }
@@ -131,7 +131,7 @@ strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rh
  */
 size_t std::hash<Stroika::Foundation::DataExchange::InternetMediaType>::operator() (const Stroika::Foundation::DataExchange::InternetMediaType& arg) const
 {
-    return hash<wstring> () (arg.As<wstring> ());
+    return hash<wstring>{}(arg.As<wstring> ());
 }
 
 /*

@@ -47,15 +47,15 @@ namespace {
         if (ciph != nullptr) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace ("cipher: {} (name: {}), provider: {} (name {})"_f, ciph, CipherAlgorithm{ciph}.pName (), ::EVP_CIPHER_get0_provider (ciph),
+            DbgTrace ("cipher: {} (name: {}), provider: {} (name {})"_f, ciph, CipherAlgorithm{ciph}.name (), ::EVP_CIPHER_get0_provider (ciph),
                       (::EVP_CIPHER_get0_provider (ciph) == nullptr
                            ? L"null"
                            : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_CIPHER_get0_provider (ciph)))));
 #else
-            DbgTrace ("cipher: {} (name: {})"_f, ciph, CipherAlgorithm{ciph}.pName ());
+            DbgTrace ("cipher: {} (name: {})"_f, ciph, CipherAlgorithm{ciph}.name ());
 #endif
 #endif
-            ciphers->Add (CipherAlgorithm{ciph}.pName ());
+            ciphers->Add (CipherAlgorithm{ciph}.name ());
         }
     };
     void AccumulateIntoSetOfDigestNames_ (const ::EVP_MD* digest, Set<String>* digestNames)
@@ -64,15 +64,15 @@ namespace {
         if (digest != nullptr) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace ("digest: {} (name: {}), provider: {} (name {})"_f, digest, DigestAlgorithm{digest}.pName (), ::EVP_MD_get0_provider (digest),
+            DbgTrace ("digest: {} (name: {}), provider: {} (name {})"_f, digest, DigestAlgorithm{digest}.name (), ::EVP_MD_get0_provider (digest),
                       (::EVP_MD_get0_provider (digest) == nullptr
                            ? "null"_k
                            : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_MD_get0_provider (digest)))));
 #else
-            DbgTrace ("digest: {} (name: {})"_f, digest, DigestAlgorithm{digest}.pName ());
+            DbgTrace ("digest: {} (name: {})"_f, digest, DigestAlgorithm{digest}.name ());
 #endif
 #endif
-            digestNames->Add (DigestAlgorithm{digest}.pName ());
+            digestNames->Add (DigestAlgorithm{digest}.name ());
         }
     };
 }
@@ -94,8 +94,8 @@ LibraryContext::LibraryInit_::LibraryInit_ ()
  ********************************************************************************
  */
 LibraryContext::LibraryContext ()
-    : pAvailableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
-        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
+    : availableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::availableCipherAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         Set<String>                                    cipherNames;
 #if OPENSSL_VERSION_MAJOR >= 3
@@ -107,18 +107,18 @@ LibraryContext::LibraryContext ()
                                     &cipherNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Found pAvailableCipherAlgorithms-FIRST-PASS (cnt={}): {}"_f, cipherNames.size (), cipherNames);
+        DbgTrace ("Found availableCipherAlgorithms-FIRST-PASS (cnt={}): {}"_f, cipherNames.size (), cipherNames);
 #endif
 
         Set<CipherAlgorithm> results{cipherNames.Map<Set<CipherAlgorithm>> (
             [] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Found pAvailableCipherAlgorithms (cnt={}): {}"_f, results.size (), results);
+        DbgTrace ("Found availableCipherAlgorithms (cnt={}): {}"_f, results.size (), results);
 #endif
         return results;
     }}
-    , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
-        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
+    , standardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::standardCipherAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         Set<CipherAlgorithm>                           results;
 
@@ -164,8 +164,8 @@ LibraryContext::LibraryContext ()
 
         return results;
     }}
-    , pAvailableDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
-        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
+    , availableDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::availableDigestAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
 
         Set<String> digestNames;
@@ -178,18 +178,18 @@ LibraryContext::LibraryContext ()
                                 &digestNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Found pAvailableDigestAlgorithms-FIRST-PASS (cnt={}): {}"_f, digestNames.size (), digestNames);
+        DbgTrace ("Found availableDigestAlgorithms-FIRST-PASS (cnt={}): {}"_f, digestNames.size (), digestNames);
 #endif
 
         Set<DigestAlgorithm> results{digestNames.Map<Set<DigestAlgorithm>> (
             [] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Found pAvailableDigestAlgorithms (cnt={}): {}"_f, results.size (), results);
+        DbgTrace ("Found availableDigestAlgorithms (cnt={}): {}"_f, results.size (), results);
 #endif
         return results;
     }}
-    , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
-        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
+    , standardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::standardDigestAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         Set<DigestAlgorithm>                           results;
         results += DigestAlgorithms::kMD5;

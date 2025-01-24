@@ -41,8 +41,8 @@ using namespace Stroika::Foundation::Memory;
  ********************************************************************************
  */
 DigestAlgorithm::DigestAlgorithm (const ::EVP_MD* digester)
-    : pName{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
-        const DigestAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &DigestAlgorithm::pName);
+    : name{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
+        const DigestAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &DigestAlgorithm::name);
         AssertNotNull (EVP_MD_name (thisObj->fDigester_));
         return String{EVP_MD_name (thisObj->fDigester_)};
     }}

@@ -118,7 +118,7 @@ namespace {
 
 /*
  ********************************************************************************
- *********************** Streams::TextToBinary::Reader::New *************************
+ *********************** Streams::TextToBinary::Reader::New *********************
  ********************************************************************************
  */
 auto TextToBinary::Reader::New (const InputStream::Ptr<Character>& srcStream) -> InputStream::Ptr<byte>
