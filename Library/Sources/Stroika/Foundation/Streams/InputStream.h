@@ -279,7 +279,6 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         * experimental API (added in 3.0d7)
          * return nullopt if nothing available
          * else do Read() of all elements available and return that buffer
          */

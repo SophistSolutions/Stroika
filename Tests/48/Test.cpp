@@ -234,7 +234,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Streams, IOStreamSeekBug)
     {
-        // short input stream caused issue with TextReader reading BOM, setting EOF/Fail flag which seek back didn't clear
+        // short input stream caused issue with ToText::Reader reading BOM, setting EOF/Fail flag which seek back didn't clear
         {
             stringstream tmp;
             tmp << "3";

@@ -110,7 +110,7 @@ public:
                                  // read if content-type is text (not json)
                                  if (m.request ().contentType () and
                                      InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kText_PLAIN, *m.request ().contentType ())) {
-                                     String argsAsString = Streams::TextReader::New (m.rwRequest ().GetBody ()).ReadAll ();
+                                     String argsAsString = Streams::ToText::Reader::New (m.rwRequest ().GetBody ()).ReadAll ();
                                      number              = kMapper.ToObject<Number> (DataExchange::VariantValue{argsAsString});
                                  }
                              }
@@ -189,7 +189,7 @@ public:
     }
     static void SetAppState_ (Message& message)
     {
-        String argsAsString = Streams::TextReader::New (message.rwRequest ().GetBody ()).ReadAll ();
+        String argsAsString = Streams::ToText::Reader::New (message.rwRequest ().GetBody ()).ReadAll ();
         message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>"sv);
         message.rwResponse ().contentType = InternetMediaTypes::kHTML;
     }

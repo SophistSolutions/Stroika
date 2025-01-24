@@ -182,7 +182,7 @@ namespace {
         static void SetAppState_ (Message& message)
         {
             message.rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
-            String argsAsString               = Streams::TextReader::New (message.rwRequest ().GetBody ()).ReadAll ();
+            String argsAsString               = Streams::ToText::Reader::New (message.rwRequest ().GetBody ()).ReadAll ();
             message.rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
         }
     };

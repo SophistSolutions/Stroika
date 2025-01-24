@@ -489,7 +489,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  This is a function that takes a span of bytes, and an OPTIONAL mbstate_t (TBD), and targetBuffer, translates into targetBuffer, and returns the changes.
      *  This utility wrapper funciton is meant to capture what you can easily put together from a (configured or default) UTFConvert,
-     *  but in a form more easily used/consumed by a the TextReader code.
+     *  but in a form more easily used/consumed by a the ToText::Reader code.
      * 
      *  @todo NEED EXAMPLE OR TO LOSE THIS... -- LGP 2023-09-12
      */

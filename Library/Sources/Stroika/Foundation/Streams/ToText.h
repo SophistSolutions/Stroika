@@ -17,8 +17,6 @@
  *  \file
  *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- *
- *      @todo   http://stroika-bugs.sophists.com/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on ToText::Reader and FromText::Writer
  */
 
 namespace Stroika::Foundation::Memory {
@@ -42,7 +40,7 @@ namespace Stroika::Foundation::Streams::ToText {
     using AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
 
     /**
-     *  \brief ToText::Reader is an InputStream of Character, usually constructed wrapping some binary object or binary stream
+     *  \brief ToText::Reader::Ptr is an InputStream::Ptr<Character>, usually constructed wrapping some binary object or binary stream
      *
      *  \note   This was called TextInputStreamBinaryAdapter
      *  \note   This was called TextReader
@@ -115,6 +113,8 @@ namespace Stroika::Foundation::Streams::ToText {
         using ReadAhead::eReadAheadAllowed;
         using ReadAhead::eReadAheadNever;
 
+        /**
+         */
         Ptr New (const InputStream::Ptr<byte>& src, optional<AutomaticCodeCvtFlags> codeCvtFlags = {}, optional<SeekableFlag> seekable = {},
                  ReadAhead readAhead = eReadAheadAllowed);
         Ptr New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, optional<SeekableFlag> seekable = {},

@@ -67,17 +67,21 @@ namespace Stroika::Foundation::Streams::FromText {
      *      \endcode
      */
     namespace Writer {
+        
         /**
          *  \brief FromText::Writer wrap some sink (typically a binary stream), and produce a text sink you can Write() text to
          */
         using Ptr = Streams::OutputStream::Ptr<Character>;
 
+        /**
+         */
         Ptr New (const Streams::OutputStream::Ptr<byte>& src, const Characters::CodeCvt<>& char2OutputConverter);
         Ptr New (const Streams::OutputStream::Ptr<byte>& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDEFAULT,
                  ByteOrderMark bom = ByteOrderMark::eDontInclude);
         Ptr New (const Streams::OutputStream::Ptr<Character>& src);
         template <typename... ARGS>
         Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args);
+
     }
 
     namespace Reader {

@@ -402,8 +402,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 using Characters::String;
                 Memory::BLOB rawBytesBLOB{span{reinterpret_cast<const byte*> (rawBytes), nRawBytes}};
 
-                String x              = suggestedCodePage ? TextReader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
-                                                          : TextReader::New (rawBytesBLOB).ReadAll ();
+                String x              = suggestedCodePage ? ToText::Reader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
+                                                          : ToText::Reader::New (rawBytesBLOB).ReadAll ();
                 x                     = x.NormalizeTextToNL ();
                 Led_tString tx        = x.As<Led_tString> ();
                 size_t      charsRead = tx.length ();
