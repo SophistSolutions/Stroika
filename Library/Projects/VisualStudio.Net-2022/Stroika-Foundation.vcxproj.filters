@@ -2241,8 +2241,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Platform\Windows\Registry.h">
       <Filter>Sources\Common\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_BlockAllocated_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\Defaults_Memory_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Private\CompilerAndStdLib_.h">
       <Filter>Sources\Common\Private</Filter>
     </ClInclude>
