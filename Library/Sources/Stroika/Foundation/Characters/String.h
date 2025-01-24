@@ -738,6 +738,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual bool Matches (const RegularExpression& regEx, Containers::Sequence<String>* matches) const;
         template <Common::IAnyOf<optional<String>*, String*, nullptr_t>... OPTIONAL_STRINGS>
         nonvirtual bool Matches (const RegularExpression& regEx, OPTIONAL_STRINGS&&... subMatches) const;
+        template <size_t I>
+        nonvirtual optional<Common::RepeatedTuple_t<I, String>> Matches (const RegularExpression& regEx) const;
 
     public:
         /**
@@ -748,7 +750,7 @@ namespace Stroika::Foundation::Characters {
          *  Find () can optionally be provided a 'startAt' offset to begin the search at.
          *
          *  And the overload taking a RegularExpression - returns BOTH the location where the match
-         *  is found, but the length of the match.
+         *  is found, as well as the end of the match.
          *
          *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
          *  is non-empty, and nullopt if this string was empty.
@@ -960,8 +962,9 @@ namespace Stroika::Foundation::Characters {
          *              Add something like the above to the String String demo app (when it exists)
          */
         nonvirtual Containers::Sequence<String> Tokenize () const;
-        nonvirtual Containers::Sequence<String> Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim = true) const;
-        nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
+        nonvirtual Containers::Sequence<String> Tokenize (const function<bool (Character)>& isTokenSeperator) const;
+        nonvirtual Containers::Sequence<String> Tokenize (const RegularExpression& isSeparator) const;
+        nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters) const;
 
     public:
         /**
@@ -976,9 +979,38 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  \brief Breaks this string into Lines, with AsLines (), and applies the argument filter (as if with .Map<>) producing a subset of the lines which match
+         *
+         *  note this is useful to replace 'shell script' logic where you might run some command and grep through its output for all
+         *  matching lines.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          String firstALineOrEmpty = String{"...e.g. from output of ProcessRunner..."}.Grep ("a:").NthValue (0);
+         *      \endcode         
          */
         nonvirtual Containers::Sequence<String> Grep (const String& fgrepArg) const;
         nonvirtual Containers::Sequence<String> Grep (const RegularExpression& egrepArg) const;
+
+    public:
+        /**
+         *  \brief Useful to replace 'awk print $3' - replace with Col(2) - zero based
+         * 
+         *  default separator =  = "\\s+"_RegEx;
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Assert (String{"ffmpeg version 7.1"}.Col (2) == "7.1");
+         *      \endcode         
+         * 
+         */
+        nonvirtual optional<String> Col (size_t i) const;
+        nonvirtual optional<String> Col (size_t i, const RegularExpression& separator) const;
+
+    public:
+        /**
+         *  \brief see Col(i) - but with default value of empty string
+         */
+        nonvirtual String ColValue (size_t i, const String& valueIfMissing = {}) const;
 
     public:
         /**

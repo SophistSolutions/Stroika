@@ -946,7 +946,8 @@ optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, siz
     wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     if (res.size () >= 1) {
-        return pair<size_t, size_t>{startAt + res.position (), startAt + res.position () + res.length ()};
+        size_t startOfMatch = startAt + res.position ();
+        return pair<size_t, size_t>{startOfMatch, startOfMatch + res.length ()};
     }
     return {};
 }
@@ -1233,7 +1234,7 @@ Containers::Sequence<String> String::Tokenize () const
 {
     return Tokenize ((bool (*) (Character))Character::IsWhitespace);
 }
-Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
+Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeparator) const
 {
     Sequence<String> r;
     bool             inToken = false;
@@ -1241,13 +1242,11 @@ Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSepe
     size_t           len = size ();
     for (size_t i = 0; i != len; ++i) {
         Character c          = GetCharAt (i);
-        bool      newInToken = not isTokenSeperator (c);
+        bool      newInToken = not isTokenSeparator (c);
         if (inToken != newInToken) {
             if (inToken) {
                 String s{curToken.str ()};
-                if (trim) {
-                    s = s.Trim ();
-                }
+                s = s.Trim ();
                 r += s;
                 curToken.clear ();
                 inToken = false;
@@ -1262,19 +1261,47 @@ Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSepe
     }
     if (inToken) {
         String s{curToken.str ()};
-        if (trim) {
-            s = s.Trim ();
-        }
+        s = s.Trim ();
         r += s;
     }
     return r;
 }
-Sequence<String> String::Tokenize (const Set<Character>& delimiters, bool trim) const
+
+Sequence<String> String::Tokenize (const RegularExpression& isSeparator) const
+{
+    Sequence<String> r;
+    size_t           len = this->length ();
+    for (size_t startAt = 0; startAt < len;) {
+        if (optional<pair<size_t, size_t>> ofi = Find (isSeparator, startAt)) {
+            Assert (ofi->first >= startAt);
+            Assert (ofi->first <= ofi->second);
+            if (ofi->first == ofi->second) [[unlikely]] {
+                static const auto kException_ =
+                    Execution::RuntimeErrorException{"separator regular expression argument to Tokenize must be non-empty or not match"sv};
+                Execution::Throw (kException_);
+            }
+            if (ofi->first > startAt) {
+                r += SubString (startAt, ofi->first);
+            }
+            else {
+                Assert (startAt == 0); // special case - start of string
+            }
+            startAt = ofi->second;
+            Assert (startAt < len);
+        }
+        else {
+            r += SubString (startAt); // if no match, the rest of the string is a non-separator
+            break;
+        }
+    }
+    return r;
+}
+Sequence<String> String::Tokenize (const Set<Character>& delimiters) const
 {
     /*
      *  @todo Inefficient impl, to encourage code saving. Do more efficiently.
      */
-    return Tokenize ([delimiters] (Character c) -> bool { return delimiters.Contains (c); }, trim);
+    return Tokenize ([delimiters] (Character c) -> bool { return delimiters.Contains (c); });
 }
 
 Sequence<String> String::AsLines () const
@@ -1331,6 +1358,17 @@ Sequence<String> String::Grep (const RegularExpression& egrepArg) const
         }
     }
     return r;
+}
+
+optional<String> String::Col (size_t i) const
+{
+    static const RegularExpression kWS_ = "\\s+"_RegEx;
+    return Col (i, kWS_);
+}
+
+optional<String> String::Col (size_t i, const RegularExpression& separator) const
+{
+    return Tokenize (separator).Nth (i);
 }
 
 String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const

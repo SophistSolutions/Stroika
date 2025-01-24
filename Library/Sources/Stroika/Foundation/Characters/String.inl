@@ -644,6 +644,40 @@ namespace Stroika::Foundation::Characters {
         }
         return false;
     }
+    template <size_t I>
+    optional<Common::RepeatedTuple_t<I, String>> String::Matches (const RegularExpression& regEx) const
+    {
+        wstring tmp{As<wstring> ()};
+        wsmatch baseMatch;
+        if (regex_match (tmp, baseMatch, Private_::RegularExpression_GetCompiled (regEx))) {
+            //tmphack impl - cuz my template skills suck --LGP 2025-01-24
+            if constexpr (I == 0) {
+                return make_tuple ();
+            }
+            else if constexpr (I == 1) {
+                return make_tuple (String{baseMatch[0].str ()});
+            }
+            else if constexpr (I == 2) {
+                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()});
+            }
+            else if constexpr (I == 3) {
+                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()}, String{baseMatch[2].str ()});
+            }
+            else if constexpr (I == 4) {
+                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()}, String{baseMatch[2].str ()},
+                                   String{baseMatch[3].str ()});
+            }
+            else if constexpr (I == 5) {
+                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()}, String{baseMatch[2].str ()},
+                                   String{baseMatch[3].str ()}, String{baseMatch[4].str ()});
+            }
+            else {
+                AssertNotImplemented ();
+                return nullopt;
+            }
+        }
+        return nullopt;
+    }
     inline optional<size_t> String::Find (Character c, CompareOptions co) const
     {
         return Find (c, 0, co);
@@ -673,6 +707,10 @@ namespace Stroika::Foundation::Characters {
     inline String String::Replace (pair<size_t, size_t> fromTo, const String& replacement) const
     {
         return Replace (fromTo.first, fromTo.second, replacement);
+    }
+    inline String String::ColValue (size_t i, const String& valueIfMissing) const
+    {
+        return Col (i).value_or (valueIfMissing);
     }
     inline String String::InsertAt (Character c, size_t at) const
     {

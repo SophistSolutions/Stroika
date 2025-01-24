@@ -967,24 +967,24 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"StringNumericConversions_"};
         {
-            EXPECT_TRUE (CString::String2Int<int> ("-3") == -3);
-            EXPECT_TRUE (CString::String2Int<int> ("3") == 3);
-            EXPECT_TRUE (CString::String2Int<int> (wstring{L"3"}) == 3);
-            EXPECT_TRUE (String2Int<int> (String{"3"}) == 3);
+            EXPECT_EQ (CString::String2Int<int> ("-3"), -3);
+            EXPECT_EQ (CString::String2Int<int> ("3"), 3);
+            EXPECT_EQ (CString::String2Int<int> (wstring{L"3"}), 3);
+            EXPECT_EQ (String2Int<int> (String{"3"}), 3);
         }
         {
-            EXPECT_TRUE (CString::String2Int<int> ("") == 0);
-            EXPECT_TRUE (String2Int<int> ("") == 0);
-            EXPECT_TRUE (CString::String2Int<int> (wstring{L""}) == 0);
-            EXPECT_TRUE (String2Int<int> (String{}) == 0);
-            EXPECT_TRUE (CString::String2Int<int> ("     ") == 0);
+            EXPECT_EQ (CString::String2Int<int> (""), 0);
+            EXPECT_EQ (String2Int<int> (""), 0);
+            EXPECT_EQ (CString::String2Int<int> (wstring{L""}), 0);
+            EXPECT_EQ (String2Int<int> (String{}), 0);
+            EXPECT_EQ (CString::String2Int<int> ("     "), 0);
         }
         {
-            EXPECT_TRUE (CString::HexString2Int ("") == 0);
-            EXPECT_TRUE (CString::HexString2Int (L"") == 0);
-            EXPECT_TRUE (CString::HexString2Int (wstring{L""}) == 0);
-            EXPECT_TRUE (HexString2Int (String{}) == 0);
-            EXPECT_TRUE (CString::HexString2Int ("     ") == 0);
+            EXPECT_EQ (CString::HexString2Int (""), 0);
+            EXPECT_EQ (CString::HexString2Int (L""), 0);
+            EXPECT_EQ (CString::HexString2Int (wstring{L""}), 0);
+            EXPECT_EQ (HexString2Int (String{}), 0);
+            EXPECT_EQ (CString::HexString2Int ("     "), 0);
         }
         {
             // http://stroika-bugs.sophists.com/browse/STK-966
@@ -1015,7 +1015,7 @@ namespace {
             {
                 String remainder;
                 EXPECT_TRUE (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
-                EXPECT_TRUE (remainder == L"  f");
+                EXPECT_EQ (remainder, L"  f");
             }
             {
                 // leading/trailing space (or other bad trailing characters) produces NAN for no &remainder overload
@@ -1287,9 +1287,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"ReplacementForStripTrailingCharIfAny_"};
         auto StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String { return s.EndsWith (c) ? s.SubString (0, -1) : s; };
-        EXPECT_TRUE (StripTrailingCharIfAny ("xxx", '.') == "xxx");
-        EXPECT_TRUE (StripTrailingCharIfAny ("xxx.", '.') == "xxx");
-        EXPECT_TRUE (StripTrailingCharIfAny ("xxx..", '.') == "xxx.");
+        EXPECT_EQ (StripTrailingCharIfAny ("xxx", '.'), "xxx");
+        EXPECT_EQ (StripTrailingCharIfAny ("xxx.", '.'), "xxx");
+        EXPECT_EQ (StripTrailingCharIfAny ("xxx..", '.'), "xxx.");
     }
 }
 
@@ -1311,12 +1311,12 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"LimitLength_"};
         if constexpr (qCompiler_vswprintf_on_elispisStr_Buggy) {
-            EXPECT_TRUE (String{"12345"}.LimitLength (3) == "...");
+            EXPECT_EQ (String{"12345"}.LimitLength (3), "...");
         }
         else {
-            EXPECT_TRUE (String{"12345"}.LimitLength (3) == L"12\u2026");
+            EXPECT_EQ (String{"12345"}.LimitLength (3), L"12\u2026");
         }
-        EXPECT_TRUE (String{"12345"}.LimitLength (5) == "12345");
+        EXPECT_EQ (String{"12345"}.LimitLength (5), "12345");
     }
 }
 
@@ -1326,7 +1326,7 @@ namespace {
         Debug::TraceContextBumper ctx{"OperatorINSERT_ostream_"};
         wstringstream             out;
         out << String{"abc"};
-        EXPECT_TRUE (out.str () == L"abc");
+        EXPECT_EQ (out.str (), L"abc");
     }
 }
 
@@ -1337,11 +1337,11 @@ namespace {
         {
             StringBuilder out;
             out << L"hi mom";
-            EXPECT_TRUE (out.str () == "hi mom");
+            EXPECT_EQ (out.str (), "hi mom");
             out += ".";
-            EXPECT_TRUE (out.str () == "hi mom.");
-            EXPECT_TRUE (out.As<String> () == "hi mom.");
-            EXPECT_TRUE (out.As<wstring> () == L"hi mom.");
+            EXPECT_EQ (out.str (), "hi mom.");
+            EXPECT_EQ (out.As<String> (), "hi mom.");
+            EXPECT_EQ (out.As<wstring> (), L"hi mom.");
         }
         {
             StringBuilder out{"x"};
@@ -1407,29 +1407,37 @@ namespace {
         {
             String           t{"ABC DEF G"};
             Sequence<String> tt{t.Tokenize ()};
-            EXPECT_TRUE (tt.size () == 3);
-            EXPECT_TRUE (tt[1] == "DEF");
+            EXPECT_EQ (tt.size (), 3u);
+            EXPECT_EQ (tt[1], "DEF");
         }
         {
             String t{"foo=   7"};
             auto   tt = t.Tokenize (Containers::Set<Character>{'='});
-            EXPECT_TRUE (tt.length () == 2);
-            EXPECT_TRUE (tt[0] == "foo");
-            EXPECT_TRUE (tt[1] == "7");
+            EXPECT_EQ (tt.length (), 2u);
+            EXPECT_EQ (tt[0], "foo");
+            EXPECT_EQ (tt[1], "7");
         }
         {
             String t{"           \n foo=   7"};
             auto   tt = t.Tokenize ({'='});
-            EXPECT_TRUE (tt.length () == 2);
-            EXPECT_TRUE (tt[1] == "7");
+            EXPECT_EQ (tt.length (), 2u);
+            EXPECT_EQ (tt[1], "7");
         }
         {
             String t{"MemTotal:        3082000 kB"};
             auto   tt = t.Tokenize ({':', ' ', '\t'});
-            EXPECT_TRUE (tt.length () == 3);
-            EXPECT_TRUE (tt[0] == "MemTotal");
-            EXPECT_TRUE (tt[1] == "3082000");
-            EXPECT_TRUE (tt[2] == "kB");
+            EXPECT_EQ (tt.length (), 3u);
+            EXPECT_EQ (tt[0], "MemTotal");
+            EXPECT_EQ (tt[1], "3082000");
+            EXPECT_EQ (tt[2], "kB");
+        }
+        {
+            String t{"a|b| c"};
+            auto   tt = t.Tokenize ("\\|"_RegEx);
+            EXPECT_EQ (tt.length (), 3u);
+            EXPECT_EQ (tt[0], "a");
+            EXPECT_EQ (tt[1], "b");
+            EXPECT_EQ (tt[2], " c");
         }
     }
 }
@@ -1457,7 +1465,7 @@ namespace {
         Debug::TraceContextBumper ctx{"SubString_"};
         {
             String tmp{"This is good"};
-            EXPECT_TRUE (tmp.SubString (5) == "is good");
+            EXPECT_EQ (tmp.SubString (5) , "is good");
         }
         {
             const String kTest_{"a=b"_k};
@@ -2070,9 +2078,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, Grep)
+    GTEST_TEST (Foundation_Characters, GrepAndCol)
     {
-        Debug::TraceContextBumper ctx{"Grep"};
+        Debug::TraceContextBumper ctx{"GrepAndCol"};
         EXPECT_EQ (
             String{
                 "ffmpeg version 7.1 Copyright (c) 2000 - 2024 the FFmpeg developers\nbuilt with gcc 14.2.0(Rev1, Built by MSYS2 project)\n"}
@@ -2086,6 +2094,13 @@ namespace {
                 .NthValue (0)
                 .Tokenize ()
                 .NthValue (2),
+            "7.1");
+        EXPECT_EQ (
+            String{
+                "ffmpeg version 7.1 Copyright (c) 2000 - 2024 the FFmpeg developers\nbuilt with gcc 14.2.0(Rev1, Built by MSYS2 project)\n"}
+                .Grep ("ffmpeg version")
+                .NthValue (0)
+                .ColValue (2),
             "7.1");
     }
 }
