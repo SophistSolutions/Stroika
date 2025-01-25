@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Characters {
         String ToString (const tuple<T1>& t)
         {
             StringBuilder sb;
-            sb << "{"sv << Characters::ToString (t) << "}"sv;
+            sb << "{"sv << Characters::ToString (get<0> (t)) << "}"sv;
             return sb;
         }
         template <typename T1, typename T2>
