@@ -1285,7 +1285,7 @@ Sequence<String> String::Tokenize (const RegularExpression& isSeparator) const
                 Assert (startAt == 0); // special case - start of string
             }
             startAt = ofi->second;
-            Assert (startAt < len);
+            Assert (startAt <= len);
         }
         else {
             r += SubString (startAt); // if no match, the rest of the string is a non-separator
