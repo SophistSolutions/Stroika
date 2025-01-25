@@ -499,9 +499,9 @@ namespace {
                 auto serialized =
                     Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = true}}.WriteAsString (kCase1_spaceSep_.data);
                 String aaa = String{kCase1_spaceSep_.dataAsFile};
-                EXPECT_TRUE (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
+                EXPECT_EQ (serialized.AsASCII (), kCase1_spaceSep_.dataAsFile);
                 stringstream tmp{kCase1_spaceSep_.dataAsFile};
-                EXPECT_TRUE ((kCase1_spaceSep_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
+                EXPECT_EQ (kCase1_spaceSep_.data, (Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
             }
             {
                 auto serialized =

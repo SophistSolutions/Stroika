@@ -61,7 +61,7 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         class Rep_;
 
     public:
-        Reader (const Set<Character>& columnDelimiters);
+        Reader (const Set<Character>& columnDelimiters, bool trimTokens = true);
 
     public:
         /**

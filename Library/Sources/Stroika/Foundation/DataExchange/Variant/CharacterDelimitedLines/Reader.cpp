@@ -34,13 +34,15 @@ using Traversal::Iterable;
 class CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_IRep {
 public:
     Set<Character> fDelimiters_;
-    Rep_ (const Set<Character>& columnDelimiters)
+    bool           fTrimTokens_{false};
+    Rep_ (const Set<Character>& columnDelimiters, bool trimTokens)
         : fDelimiters_{columnDelimiters}
+        , fTrimTokens_{trimTokens}
     {
     }
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (fDelimiters_);
+        return make_shared<Rep_> (fDelimiters_, fTrimTokens_);
     }
     virtual String GetDefaultFileSuffix () const override
     {
@@ -53,7 +55,7 @@ public:
     virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
     {
         // @todo consider if this functional style is more clear than a nested for-loop. Was harder for me to
-        // write this way, but that could be my inexpereince... --LGP 2022-12-04
+        // write this way, but that could be my inexperience... --LGP 2022-12-04
         return VariantValue{ReadMatrix (in).Map<Sequence<VariantValue>> ([] (const Sequence<String>& line) -> VariantValue {
             return VariantValue{line.Map<Iterable<VariantValue>> ([] (const String& i) { return VariantValue{i}; })};
         })};
@@ -66,6 +68,9 @@ public:
         Sequence<Sequence<String>> result;
         for (const String& line : in.ReadLines ()) {
             Sequence<String> tokens{line.Tokenize (fDelimiters_)};
+            if (fTrimTokens_) {
+                tokens = tokens.Map<Sequence<String>> ([] (auto i) { return i.Trim (); });
+            }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DataExchange::Variant::CharacterDelimitedLines::Reader::ReadMatrix: line={}, tokenCount={}"_f, line, tokens.size ());
             for ([[maybe_unused]] const auto& i : tokens) {
@@ -74,11 +79,11 @@ public:
 #endif
             result.Append (tokens);
         }
-        return move (result);
+        return result;
     }
 };
-CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
-    : inherited{make_shared<Rep_> (columnDelimiters)}
+CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters, bool trimTokens)
+    : inherited{make_shared<Rep_> (columnDelimiters, trimTokens)}
 {
 }
 

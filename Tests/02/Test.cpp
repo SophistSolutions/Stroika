@@ -750,7 +750,7 @@ namespace {
             {
                 RegularExpression regExp{"abc"};
                 String            testStr2Search = String{"abc"};
-                EXPECT_EQ (testStr2Search.FindEach (regExp).size () , 1u);
+                EXPECT_EQ (testStr2Search.FindEach (regExp).size (), 1u);
                 EXPECT_TRUE ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
             }
             {
