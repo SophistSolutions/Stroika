@@ -29,21 +29,6 @@
  *
  * TODO:
  *
- *      @todo   Compare
- *          template    <typename TCHAR>
- *              basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
- *                  {
- *                      std::locale loc1;   // default locale
- *                      const ctype<TCHAR>& ct = use_facet<ctype<TCHAR>>(loc1);
- *                      typename basic_string<TCHAR>::const_iterator i = text.end ();
- *                      for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i-1)); --i)
- *                          ;
- *                      return basic_string<TCHAR> (text.begin (), i);
- *                  }
- *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the locale stuff? Maybe?
- *          i think locale stuff needed for std::string cuz not unicode but not needed wti stk impl cuz using unicode
- *          add this to DOCS for class, but not needed in impl...
- *
  *      @todo   Cleanup SubString (), and String::SubString_ use of SharedByValue<TRAITS>::ReadOnlyReference for
  *              performance. At some level - in String::SubString_ - we have a (hidden) sharedPtr and it would
  *              be safe and performant in that case to re-use that shared_ptr to make a new String envelope.
@@ -68,8 +53,6 @@
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implementation and make sure
  *              it is all correct for each (especially SetStorage () stuff looks questionable)
  *
- *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operator+) API. See/maybe use new
- *              Stroika Range type?
  */
 
 namespace Stroika::Foundation::Containers {
@@ -694,6 +677,8 @@ namespace Stroika::Foundation::Characters {
          *          optional<String> match1;
          *          optional<String> match2;
          *          EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
+         *          EXPECT_EQ (kTestStr_.Matches<1> (kSonosRE_), make_tuple ("192.168.244.104"_k));
+         *          EXPECT_EQ (kTestStr_.Matches<2> (kSonosRE_), make_tuple ("192.168.244.104"_k, "Sonos Play:5"_k));
          *      \endcode
          *
          *  \par Example Usage
@@ -815,7 +800,7 @@ namespace Stroika::Foundation::Characters {
          *          Sequence<String>                    tmp1{ kTest_.FindEachString (kRE_) };
          *          Assert (tmp1.size () == 1 and tmp1[0] == "a=b,");
          *          Sequence<RegularExpressionMatch>    tmp2 { kTest_.FindEachMatch (kRE_) };
-         *          Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String> {"b"});
+         *          Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b"});
          *      \endcode
          *
          *  @see Find ()
@@ -932,13 +917,14 @@ namespace Stroika::Foundation::Characters {
          *          String  t { "foo=   7" };
          *          auto    tt = t.Tokenize ({ '=' });
          *          Assert (t.length () == 2);
-         *          Assert (t[1] == "7");
+         *          Assert (t[1] == "   7");
+         *          Assert (t[1].Trim () == "7");
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          String  t { "foo=   7" };
-         *          auto    tt = t.Tokenize ({ '=' });
+         *          auto    tt = t.Tokenize ({ '=', ' ' });
          *          Assert (t.length () == 2);
          *          Assert (t[1] == "7");
          *      \endcode
@@ -946,10 +932,6 @@ namespace Stroika::Foundation::Characters {
          *  @see Find
          *
          *  TODO:
-         *      @todo   Consider adding overload that uses RegularExpression to define tokens.
-         *
-         *      @todo   Consider adding overload where trim is replaced with lambda saying 'isTrimmedCharacter')
-         *
          *      @todo   Review:
          *                  http://qt-project.org/doc/qt-5.0/qtcore/qstring.html#split
          *              especially:

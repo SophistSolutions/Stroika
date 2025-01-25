@@ -709,7 +709,7 @@ namespace {
         }
         void Test17_Replace_ ()
         {
-            EXPECT_TRUE (String{u8"abc"}.Replace (1, 2, "B") == "aBc");
+            EXPECT_EQ (String{u8"abc"}.Replace (1, 2, "B"), "aBc");
         }
         void Test17_RegExpMatch_ ()
         {
@@ -726,7 +726,10 @@ namespace {
                 EXPECT_TRUE (kTestStr_.Matches (kSonosRE_));
                 optional<String> match1;
                 EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1) and match1 == "192.168.244.104");
+                DbgTrace ("1={}"_f, kTestStr_.Matches<1> (kSonosRE_));
+                DbgTrace ("2={}"_f, kTestStr_.Matches<2> (kSonosRE_));
                 EXPECT_EQ (kTestStr_.Matches<1> (kSonosRE_), make_tuple ("192.168.244.104"_k));
+                EXPECT_EQ (kTestStr_.Matches<2> (kSonosRE_), make_tuple ("192.168.244.104"_k, " - Sonos Play:5"_k));
                 optional<String> match2;
                 EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
             }
@@ -747,7 +750,7 @@ namespace {
             {
                 RegularExpression regExp{"abc"};
                 String            testStr2Search = String{"abc"};
-                EXPECT_TRUE (testStr2Search.FindEach (regExp).size () == 1);
+                EXPECT_EQ (testStr2Search.FindEach (regExp).size () , 1u);
                 EXPECT_TRUE ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
             }
             {
@@ -1413,16 +1416,25 @@ namespace {
         }
         {
             String t{"foo=   7"};
-            auto   tt = t.Tokenize (Containers::Set<Character>{'='});
+            auto   tt = t.Tokenize (Containers::Set<Character>{'=', ' '});
             EXPECT_EQ (tt.length (), 2u);
             EXPECT_EQ (tt[0], "foo");
             EXPECT_EQ (tt[1], "7");
         }
         {
+            String t{"foo=   7"};
+            auto   tt = t.Tokenize (Containers::Set<Character>{'='});
+            EXPECT_EQ (tt.length (), 2u);
+            EXPECT_EQ (tt[0], "foo");
+            EXPECT_EQ (tt[1], "   7");
+        }
+        {
             String t{"           \n foo=   7"};
             auto   tt = t.Tokenize ({'='});
             EXPECT_EQ (tt.length (), 2u);
-            EXPECT_EQ (tt[1], "7");
+            EXPECT_EQ (tt[0].Trim (), "foo");
+            EXPECT_EQ (tt[1], "   7");
+            EXPECT_EQ (tt[1].Trim (), "7");
         }
         {
             String t{"MemTotal:        3082000 kB"};

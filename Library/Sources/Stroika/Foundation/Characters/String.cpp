@@ -1246,7 +1246,6 @@ Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSepa
         if (inToken != newInToken) {
             if (inToken) {
                 String s{curToken.str ()};
-                s = s.Trim ();
                 r += s;
                 curToken.clear ();
                 inToken = false;
@@ -1261,7 +1260,6 @@ Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSepa
     }
     if (inToken) {
         String s{curToken.str ()};
-        s = s.Trim ();
         r += s;
     }
     return r;

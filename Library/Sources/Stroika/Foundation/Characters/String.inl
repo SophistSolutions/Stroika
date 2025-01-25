@@ -655,21 +655,21 @@ namespace Stroika::Foundation::Characters {
                 return make_tuple ();
             }
             else if constexpr (I == 1) {
-                return make_tuple (String{baseMatch[0].str ()});
+                return make_tuple (String{baseMatch[1].str ()});
             }
             else if constexpr (I == 2) {
-                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()});
+                return make_tuple (String{baseMatch[1].str ()}, String{baseMatch[2].str ()});
             }
             else if constexpr (I == 3) {
-                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()}, String{baseMatch[2].str ()});
+                return make_tuple (String{baseMatch[1].str ()}, String{baseMatch[2].str ()}, String{baseMatch[3].str ()});
             }
             else if constexpr (I == 4) {
-                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()}, String{baseMatch[2].str ()},
-                                   String{baseMatch[3].str ()});
+                return make_tuple (String{baseMatch[1].str ()}, String{baseMatch[2].str ()}, String{baseMatch[3].str ()},
+                                   String{baseMatch[4].str ()});
             }
             else if constexpr (I == 5) {
-                return make_tuple (String{baseMatch[0].str ()}, String{baseMatch[1].str ()}, String{baseMatch[2].str ()},
-                                   String{baseMatch[3].str ()}, String{baseMatch[4].str ()});
+                return make_tuple (String{baseMatch[1].str ()}, String{baseMatch[2].str ()}, String{baseMatch[3].str ()},
+                                   String{baseMatch[4].str ()}, String{baseMatch[5].str ()});
             }
             else {
                 AssertNotImplemented ();
