@@ -11,6 +11,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
@@ -93,7 +94,7 @@ void Capturer::Runner_ ()
     //
     // really only need one thread - and just wait right amount of time to wakeup to service next captureset.
     //
-    // Compute an list of the 'next runs' (sorted by next first). Then WaitUnil () on that.
+    // Compute a list of the 'next runs' (sorted by next first). Then WaitUntil () on that.
     // and then RunOnce_(thatCaptureSet); this doesn't exactly guarantee they run at the right time but close enuf and with just one thread
     //
 
@@ -134,7 +135,7 @@ void Capturer::Runner_ ()
         auto iterator = runQueue.begin ();
         Assert (iterator != runQueue.end ());
         KeyValuePair<TimePointSeconds, CaptureSet> runNext = *iterator;
-        Execution::SleepUntil (runNext.fKey);
+        SleepUntil (runNext.fKey);
         RunnerOnce_ (runNext.fValue);
         runQueue.erase (iterator);
         runQueue.Add (runNext.fKey + runNext.fValue.runPeriod (), runNext.fValue); // interpret time offset as wrt leading edge
@@ -148,8 +149,8 @@ void Capturer::RunnerOnce_ (const CaptureSet& cs)
         try {
             measurements.MergeAdditions (i.Capture ());
         }
-        catch (const Execution::Thread::AbortException&) {
-            Execution::ReThrow ();
+        catch (const Thread::AbortException&) {
+            ReThrow ();
         }
         catch (...) {
             using namespace Characters::Literals;
@@ -161,7 +162,7 @@ void Capturer::RunnerOnce_ (const CaptureSet& cs)
 
 void Capturer::UpdateMeasurementSet_ (const MeasurementSet& ms)
 {
-    fCurrentMeasurementSet_.rwget ()->MergeAdditions (ms);
+    fCurrentMeasurementSet_.rwget ().rwref ().MergeAdditions (ms);
     for (const auto& cb : fCallbacks_.load ()) {
         cb (ms);
     }

@@ -351,9 +351,15 @@ namespace Stroika::Foundation::Execution {
          *
          *  This is roughly equivalent (if using a recursive mutex) to (COUNTER_EXAMPLE):
          *      \code
-         *          lock_guard<Synchronized<T,TRAITS>>  critSec (fConfig_);
+         *          lock_guard<Synchronized<T,TRAITS>>  critSec{fConfig_};
          *          fCurrentCell_ = fConfig_->fCell.Value (Cell::Short);
          *          fCurrentPressure_ = fConfig_->fPressure.Value (Pressure::Low);
+         *      \endcode
+         *
+         *  NOTE - THIS EXAMPLE USAGE IS UNSAFE - DONT DO!
+         *      \code
+         *          auto    danglingCRef = fConfig_.cget ().cref(); // the cref() is reference is only valid til the end of the full expression
+         *          use (danglingCRef); // BAD cref dangles after end of previous expression;
          *      \endcode
          *
          *  Except that this works whether using a shared_mutex or regular mutex. Also - this provides only read-only access
