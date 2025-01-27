@@ -705,6 +705,7 @@ namespace Stroika::Foundation::Characters {
          *          String processRunnerOutput = "Praat 6.4.23 (October 27 2024)";
          *          String version;
          *          return processRunnerOutput.Matches ("(\\w+)\\s([\\w\\.]+).*"_RegEx, nullptr, &version)? version: "???"sv;
+         *          return get<1> (processRunnerOutput.Matches<1> ("\\w+\\s([\\w\\.]+).*"_RegEx).value_or(make_tuple("???"_k)));       // Or better
          *      \endcode
          *
          *  Details on the regular expression language/format can be found at:
