@@ -49,7 +49,7 @@ namespace {
         }
         {
             Atom<> a = L"d";
-            Atom<> b = L"e";
+            Atom<> b = "e";
             EXPECT_TRUE (a != b);
             EXPECT_TRUE (not a.empty ());
             Atom<> c = a;
@@ -186,13 +186,13 @@ namespace {
         auto encodedJWT =
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCIsInNhbXBsZSI6InRlc3QifQ.lQm3N2bVlqt2-1L-FsOjtR6uE-L4E9zJutMWKIe1v1M";
         JWT jwt{encodedJWT};
-        for (auto& claim : jwt.GetHeaderClaims ()) {
+        for ([[maybe_unused]] auto& claim : jwt.GetHeaderClaims ()) {
             DbgTrace ("header claim: {}"_f, claim);
         }
-        for (auto& claim : jwt.GetPayloadClaims ()) {
+        for ([[maybe_unused]] auto& claim : jwt.GetPayloadClaims ()) {
             DbgTrace ("payload claim: {}"_f, claim);
         }
-        if (auto audience = jwt.GetAudience ()) {
+        if ([[maybe_unused]] auto audience = jwt.GetAudience ()) {
             DbgTrace ("Audience is {}"_f, *audience);
         }
         DbgTrace ("ValidFor={}"_f, jwt.GetValidFor ());
