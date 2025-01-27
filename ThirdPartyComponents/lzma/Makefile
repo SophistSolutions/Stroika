@@ -197,11 +197,13 @@ endif
 #		Cannot create output directory : errno=17 : File exists : /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2410_x86_64/IntermediateFiles/Debug/ThirdPartyComponents/lzma/
 #		SADLY - this didn't help the problem - so probably lose it - but intead added || (echo) in 7z line - see if / when that triggers - rare - like 1/10 builds (so far always on Ubuntu 24.04)
 #			--LGP 2025-01-06
+#		Luckily, the WARNING: FAILURE in 7z rare does workaround the problem, so trying now to make it less noisy
+#			--LGP 2025-01-27
 # .NOTPARALLEL:
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
-	@(7za x -o$@ $(ZIPPEDFILE) > /dev/null) || (echo "WARNING: FAILURE in 7z rare, and testing - try again..."; rm -rf $@ ; 7za x -o$@ $(ZIPPEDFILE))
+	@(7za x -o$@ $(ZIPPEDFILE) > /dev/null 2> /dev/null) || (echo "WARNING: FAILURE in 7z rare, and testing - try again..."; rm -rf $@ ; 7za x -o$@ $(ZIPPEDFILE))
 	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)" ] ; then \
 		cp Subdir-Makefile $@/Makefile;\
 	fi
