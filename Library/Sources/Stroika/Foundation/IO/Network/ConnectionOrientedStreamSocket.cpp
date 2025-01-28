@@ -286,11 +286,11 @@ namespace {
             size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
             BreakWriteIntoParts_<byte> (data, maxSendAtATime, [this, maxSendAtATime] (span<const byte> data) -> size_t {
                 Require (data.size () <= maxSendAtATime);
-                Assert (data.size () < numeric_limits<int>::max ());
+                Assert (data.size () < static_cast<size_t> (numeric_limits<int>::max ()));
                 int len   = static_cast<int> (data.size ());
                 int flags = 0;
                 int n     = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (data.data ()), len, flags));
-                Assert (0 <= n and n <= data.size ());
+                Assert (0 <= n and static_cast<size_t> (n) <= data.size ());
                 return static_cast<size_t> (n);
             });
 #else
