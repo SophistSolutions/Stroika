@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) [[likely]] {
-                    return fBufferOfAllReadDataSoFar_.size () - fSeekOffset_; // don't include what we might get upstream cuz more costly to compute
+                    return fBufferOfAllReadDataSoFar_.size () - static_cast<size_t> (fSeekOffset_); // don't include what we might get upstream cuz more costly to compute
                 }
                 return fRealIn_.AvailableToRead ();
             }
