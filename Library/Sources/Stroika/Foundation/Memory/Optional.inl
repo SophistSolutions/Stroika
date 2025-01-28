@@ -173,6 +173,29 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
+     ******************************** OptionallyCopy ********************************
+     ********************************************************************************
+     */
+    template <typename OUT_T, convertible_to<OUT_T> IN_T>
+    inline optional<OUT_T> OptionallyCopy (const optional<IN_T>& in)
+    {
+        if (in) {
+            return OUT_T{*in};
+        }
+        return nullopt;
+    }
+    template <typename OUT_T, typename IN_T, invocable<IN_T> IN_TO_OUT_CONVERTER>
+    inline optional<OUT_T> OptionallyCopy (const optional<IN_T>& in, IN_TO_OUT_CONVERTER&& cvt)
+        requires (convertible_to<invoke_result_t<IN_TO_OUT_CONVERTER, IN_T>, OUT_T>)
+    {
+        if (in) {
+            return forward<IN_TO_OUT_CONVERTER> (cvt) (*in);
+        }
+        return nullopt;
+    }
+
+    /*
+     ********************************************************************************
      ************************************ operator+ *********************************
      ********************************************************************************
      */

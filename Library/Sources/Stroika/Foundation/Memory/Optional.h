@@ -182,6 +182,24 @@ namespace Stroika::Foundation::Memory {
     const T& ValueOfOrThrow (const optional<T>& t, const EXCEPT& throwIfNull = {});
 
     /**
+     * \brief if you can copy an IN_T to an OUT_T, you should be able to copy an optional<IN_T> to an optional<OUT_T>
+     * 
+     *  Actually, sometimes you can. But due to C++ one-step conversion operator rule, some cases where you would want this to work it doesn't.
+     *  More likely though, you need to specify some other lambda todo the conversion of T like below:
+     * 
+     *  \par Example Usage
+     *      \code
+     *          optional<URI> ShowAsExternalURL;
+     *          optional<String> s = OptionallyCopy<String>(ShowAsExternalURL,[](URI u) {return u.As<String>();})
+     *      \endcode
+     */
+    template <typename OUT_T, convertible_to<OUT_T> IN_T>
+    optional<OUT_T> OptionallyCopy (const optional<IN_T>& in);
+    template <typename OUT_T, typename IN_T, invocable<IN_T> IN_TO_OUT_CONVERTER>
+    optional<OUT_T> OptionallyCopy (const optional<IN_T>& in, IN_TO_OUT_CONVERTER&& cvt)
+        requires (convertible_to<invoke_result_t<IN_TO_OUT_CONVERTER, IN_T>, OUT_T>);
+
+    /**
      *  wrappers on std c++23 monadic optional support, til we can assume c++23
      */
     template <typename T, class F>
