@@ -30,7 +30,7 @@ public:
     {
         return make_shared<Rep_> (); // no instance data
     }
-    virtual String GetDefaultFileSuffix () const override
+    virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".ini"sv;
     }

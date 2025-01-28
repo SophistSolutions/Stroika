@@ -134,17 +134,32 @@ const Variant::Writer OptionsFile::kDefaultWriter = Variant::JSON::Writer{};
 OptionsFile::OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader,
                           ModuleNameToFileNameMapperType moduleNameToFileNameMapper, ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
                           LoggerType logger, Variant::Reader reader, Variant::Writer writer)
-    : OptionsFile{modName, mapper, moduleUpgrader, moduleNameToFileNameMapper,    moduleNameToFileNameMapper, moduleNameToReadFileVersion,
-                  logger,  reader, writer,         reader.GetDefaultFileSuffix ()}
+    : OptionsFile{modName,
+                  mapper,
+                  moduleUpgrader,
+                  moduleNameToFileNameMapper,
+                  moduleNameToFileNameMapper,
+                  moduleNameToReadFileVersion,
+                  logger,
+                  reader,
+                  writer,
+                  String{reader.GetDefaultFileSuffix ().value_or (""sv)}}
 {
 }
 
 OptionsFile::OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader,
                           ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper, ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
                           ModuleNameToFileVersionMapperType moduleNameToReadFileVersion, LoggerType logger, Variant::Reader reader, Variant::Writer writer)
-    : OptionsFile{
-          modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion,
-          logger,  reader, writer,         reader.GetDefaultFileSuffix ()}
+    : OptionsFile{modName,
+                  mapper,
+                  moduleUpgrader,
+                  moduleNameToReadFileNameMapper,
+                  moduleNameToWriteFileNameMapper,
+                  moduleNameToReadFileVersion,
+                  logger,
+                  reader,
+                  writer,
+                  String{reader.GetDefaultFileSuffix ().value_or (""sv)}}
 {
 }
 

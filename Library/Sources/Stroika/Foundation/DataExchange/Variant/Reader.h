@@ -55,7 +55,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     public:
         /**
          */
-        nonvirtual String GetDefaultFileSuffix () const;
+        nonvirtual optional<filesystem::path> GetDefaultFileSuffix () const;
 
     public:
         /**
@@ -102,11 +102,11 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     class Reader::_IRep {
     public:
-        virtual ~_IRep ()                                                                        = default;
-        virtual _SharedPtrIRep Clone () const                                                    = 0;
-        virtual String         GetDefaultFileSuffix () const                                     = 0;
-        virtual VariantValue   Read (const Streams::InputStream::Ptr<byte>& in)                  = 0;
-        virtual VariantValue   Read (const Streams::InputStream::Ptr<Characters::Character>& in) = 0;
+        virtual ~_IRep ()                                                                                    = default;
+        virtual _SharedPtrIRep             Clone () const                                                    = 0;
+        virtual optional<filesystem::path> GetDefaultFileSuffix () const                                     = 0;
+        virtual VariantValue               Read (const Streams::InputStream::Ptr<byte>& in)                  = 0;
+        virtual VariantValue               Read (const Streams::InputStream::Ptr<Characters::Character>& in) = 0;
     };
 
 }

@@ -32,7 +32,7 @@ public:
     {
         return make_shared<Rep_> (fOptions_); // no instance data
     }
-    virtual String GetDefaultFileSuffix () const override
+    virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".txt"sv;
     }

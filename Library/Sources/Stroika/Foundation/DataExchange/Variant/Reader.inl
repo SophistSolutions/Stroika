@@ -25,7 +25,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         RequireNotNull (rep);
     }
-    inline String Reader::GetDefaultFileSuffix () const
+    inline optional<filesystem::path> Reader::GetDefaultFileSuffix () const
     {
         AssertNotNull (fRep_);
         return fRep_->GetDefaultFileSuffix ();

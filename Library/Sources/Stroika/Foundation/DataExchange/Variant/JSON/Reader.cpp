@@ -469,10 +469,9 @@ public:
     {
         return make_shared<NativeRep_> (); // no instance data
     }
-    virtual String GetDefaultFileSuffix () const override
+    virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
-        static const String kResult_ = ".json"sv;
-        return kResult_;
+        return ".json"sv;
     }
     virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {
@@ -769,10 +768,9 @@ public:
     {
         return make_shared<BoostRep_> (); // no instance data
     }
-    virtual String GetDefaultFileSuffix () const override
+    virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
-        static const String kResult_ = ".json"sv;
-        return kResult_;
+        return ".json"sv;
     }
     virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {

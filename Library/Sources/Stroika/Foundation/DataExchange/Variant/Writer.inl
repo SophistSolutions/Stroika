@@ -23,7 +23,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         : fRep_{rep}
     {
     }
-    inline String Writer::GetDefaultFileSuffix () const
+    inline optional<filesystem::path> Writer::GetDefaultFileSuffix () const
     {
         return fRep_->GetDefaultFileSuffix ();
     }
