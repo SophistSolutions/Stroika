@@ -62,7 +62,7 @@ namespace {
         [[nodiscard]] inline char32_t NextChar ()
         {
             Require (not IsAtEOF ());
-            return Read ()->As<char32_t> ();
+            return ReadBlocking ()->As<char32_t> ();
         }
         inline void AdvanceOne ()
         {
@@ -221,7 +221,7 @@ namespace {
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         StringBuilder tmp;
-        for (char32_t c = initialChar; c != '\0'; c = in.Read ().value_or ('\0').As<char32_t> ()) {
+        for (char32_t c = initialChar; c != '\0'; c = in.ReadBlocking ().value_or ('\0').As<char32_t> ()) {
             if (IsJSONDigit_ (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') [[likely]] {
                 tmp += c;
                 if (c == '.') [[unlikely]] {
@@ -412,7 +412,7 @@ namespace {
         //      true
         //      false
         //      null
-        for (optional<Character> oc = in.Read (); oc; oc = in.Read ()) {
+        for (optional<Character> oc = in.ReadBlocking (); oc; oc = in.ReadBlocking ()) {
             switch (oc->As<char32_t> ()) {
                 case '\"':
                     in.BackupOne ();

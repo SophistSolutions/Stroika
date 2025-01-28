@@ -120,23 +120,47 @@ namespace Stroika::Foundation::Streams {
         IgnoreExceptionsForCall (this->SynchronizeToUnderlyingStream ())
     }
     template <typename ELEMENT_TYPE>
-    inline auto StreamReader<ELEMENT_TYPE>::Read (NoDataAvailableHandling blockFlag) -> optional<ElementType>
+    inline optional<span<ELEMENT_TYPE>> StreamReader<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag)
     {
-        if (auto p = Read1FromCache_ ()) [[likely]] { // usually will get hit - else default to standard algorithm
-            return p;
-        }
-        ElementType b; // intentionally not initialized, since will be filled in by Read_Slow_Case_ or unused
-        return (Read_Slow_Case_ (span{&b, 1}, blockFlag) == 0) ? optional<ElementType>{} : b;
-    }
-    template <typename ELEMENT_TYPE>
-    inline span<ELEMENT_TYPE> StreamReader<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag)
-    {
-        // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
+        Require (not intoBuffer.empty ());
+        // if already cached, return from cache. Note - even if only one element is in the Cache, that's enough to return
         // and not say 'eof'
         if (optional<size_t> o = ReadFromCache_ (intoBuffer)) {
             return intoBuffer.subspan (0, *o);
         }
-        return intoBuffer.subspan (0, Read_Slow_Case_ (intoBuffer, blockFlag));
+        if (auto osz = Read_Slow_Case_ (intoBuffer, blockFlag)) {
+            return intoBuffer.subspan (0, *osz);
+        }
+        Assert (blockFlag == NoDataAvailableHandling::eDontBlock); // Read_Slow_Case_ only returns nullopt in this case - if no data available
+        return nullopt;                                            //
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto StreamReader<ELEMENT_TYPE>::ReadBlocking () -> optional<ElementType>
+    {
+        ElementType       e{};
+        span<ElementType> r = ReadBlocking (span{&e, 1});
+        return r.empty () ? optional<ElementType>{} : e;
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto StreamReader<ELEMENT_TYPE>::ReadBlocking (span<ElementType> intoBuffer) -> span<ElementType>
+    {
+        return Memory::ValueOf (Read (intoBuffer, NoDataAvailableHandling::eBlockIfNoDataAvailable));
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto StreamReader<ELEMENT_TYPE>::ReadNonBlocking (span<ElementType> intoBuffer) -> optional<span<ElementType>>
+    {
+        // Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        //        Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
+        Require (not intoBuffer.empty ());
+        return Read (intoBuffer, NoDataAvailableHandling::eDontBlock);
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto StreamReader<ELEMENT_TYPE>::ReadOrThrow (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) -> span<ElementType>
+    {
+        if (auto o = Read (intoBuffer, blockFlag)) [[likely]] {
+            return *o;
+        }
+        Execution::Throw (EWouldBlock::kThe);
     }
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Peek () -> optional<ElementType>
@@ -145,7 +169,7 @@ namespace Stroika::Foundation::Streams {
             return p;
         }
         SeekOffsetType saved  = fOffset_;
-        auto           result = this->Read ();
+        auto           result = this->ReadBlocking ();
         fOffset_              = saved;
         return result;
     }
@@ -191,7 +215,7 @@ namespace Stroika::Foundation::Streams {
     {
         size_t elementsRead{};
         for (ElementType* readCursor = intoStart; readCursor < intoEnd;) {
-            size_t eltsReadThisTime = Read (span{readCursor, intoEnd}).size ();
+            size_t eltsReadThisTime = ReadBlocking (span{readCursor, intoEnd}).size ();
             Assert (eltsReadThisTime <= static_cast<size_t> (intoEnd - readCursor));
             if (eltsReadThisTime == 0) {
                 // irrevocable EOF
@@ -302,18 +326,23 @@ namespace Stroika::Foundation::Streams {
         fCacheBlocks_[fCacheBlockLastFilled_].FillCacheWith (s, into);
     }
     template <typename ELEMENT_TYPE>
-    size_t StreamReader<ELEMENT_TYPE>::Read_Slow_Case_ (span<ElementType> into, NoDataAvailableHandling blockFlag)
+    optional<size_t> StreamReader<ELEMENT_TYPE>::Read_Slow_Case_ (span<ElementType> into, NoDataAvailableHandling blockFlag)
     {
         ElementType buf[kDefaultReadBufferSize_];
         fStrm_.Seek (fOffset_); // check if get_offset not same in case not seekable) - or handle not seekable case
-        size_t nRecordsRead = fStrm_.ReadOrThrow (span{buf}, blockFlag).size ();
-        if (nRecordsRead == 0) {
-            // not much point in caching - at eof
-            return 0;
+        if (optional<span<ElementType>> o = fStrm_.Read (buf, blockFlag)) {
+            size_t nRecordsRead = o->size ();
+            if (nRecordsRead == 0) {
+                // not much point in caching - at eof
+                return 0;
+            }
+            fFarthestReadInUnderlyingStream_ = max (fFarthestReadInUnderlyingStream_, fStrm_.GetOffset ());
+            FillCacheWith_ (fOffset_, Memory::SpanBytesCast<span<InlineBufferElementType_>> (span{buf, nRecordsRead}));
+            return Memory::ValueOf (ReadFromCache_ (into)); // we just cached bytes a the right offset so this must succeed
         }
-        fFarthestReadInUnderlyingStream_ = max (fFarthestReadInUnderlyingStream_, fStrm_.GetOffset ());
-        FillCacheWith_ (fOffset_, Memory::SpanBytesCast<span<InlineBufferElementType_>> (span{buf, nRecordsRead}));
-        return Memory::ValueOf (ReadFromCache_ (into)); // we just cached bytes a the right offset so this must succeed
+        // if upstream read returned nullopt, implies would-block
+        Assert (blockFlag == NoDataAvailableHandling::eDontBlock);
+        return nullopt;
     }
 
 }

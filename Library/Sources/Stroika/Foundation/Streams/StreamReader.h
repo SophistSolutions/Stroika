@@ -60,10 +60,69 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Read () but reading cached data
+         * \brief Read into data referenced by span argument - and using argument blocking strategy (default blocking)
+         * 
+         *  returns nullopt ONLY if blockFlag = eNonBlocking AND there is NO data available without blocking.
+         * 
+         *  a return of NOT missing, but an empty span implies EOF.
+         * 
+         * BLOCKING until data is available, but can return with fewer elements than argument span-size
+         * without prejudice about how much more is available.
+         *
+         *  \note It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
+         *
+         *  \req not intoBuffer.empty ()
+         *
+         *  @see ReadAll () to read all the data from the stream at once.
+         *
+         *  @see ReadBlocking ()    - often simplest to use API
+         *  @see ReadOrThrow ()
+         *  @see ReadNonBlocking ()
+         * 
+         *   \see also InputStream::Ptr::Read () - identical API (except non-const)
          */
-        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT);
-        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT);
+        nonvirtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag);
+
+    public:
+        /**
+         *  \brief ReadBlocking () reads either a single element, or fills in argument intoBuffer - but never blocks (nor throws EWouldBlock)
+         * 
+         *  ReadBlocking ():
+         *      Reads a single element (blocking as long as needed) - or nullopt when at EOF.
+         * 
+         *  ReadBlocking(span<ElementType> intoBuffer) 
+         *      fills in subspan with at least one element (or zero if at EOF)
+         * 
+         *  \see also InputStream::Ptr::ReadBlocking () - identical API (except non-const)
+         */
+        nonvirtual optional<ElementType> ReadBlocking ();
+        nonvirtual span<ElementType> ReadBlocking (span<ElementType> intoBuffer);
+
+    public:
+        /**
+         * \brief read into intoBuffer - returning nullopt if would block, and else returning subspan of input with read data present
+         * 
+         *  same as Read (intoBuffer, NoDataAvailableHandling::eDontBlock)
+         * 
+         *     \see also InputStream::Ptr::ReadBlocking () - identical API(except non-const)
+         */
+        nonvirtual optional<span<ElementType>> ReadNonBlocking (span<ElementType> intoBuffer);
+
+    public:
+        /**
+         * \brief Read (either one or into argument span) and taking NoDataAvailableHandling blockFlag), and throw if would block
+         *
+         * same as Read() APIs, but instead of returning optional, for cases where nullopt would be returned, throw EWouldBlock
+         * 
+         * \note if blockFlag == eBlockIfNoDataAvailable, this amounts to *Read(...args), since it will never generate an
+         *       eWouldBlock exception;
+         * 
+         *  when to use this variant? If implementing API where you are handed a blockFlag, but want to KISS, and
+         *  just throw if EWouldBlock ..
+         * 
+         *     \see also InputStream::Ptr::ReadOrThrow () - identical API(except non-const)
+         */
+        nonvirtual span<ElementType> ReadOrThrow (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag);
 
     public:
         /**
@@ -88,6 +147,8 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::ReadAll ()
+         * 
+         *      @todo add other overloads from InputStream::Ptr::ReadAll() - ...
          */
         nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd);
 
@@ -180,7 +241,7 @@ namespace Stroika::Foundation::Streams {
         nonvirtual optional<ElementType> Read1FromCache_ ();
         nonvirtual optional<size_t> ReadFromCache_ (span<ElementType> into);
         nonvirtual void             FillCacheWith_ (SeekOffsetType s, span<InlineBufferElementType_> into);
-        nonvirtual size_t           Read_Slow_Case_ (span<ElementType> into, NoDataAvailableHandling blockFlag);
+        nonvirtual optional<size_t> Read_Slow_Case_ (span<ElementType> into, NoDataAvailableHandling blockFlag);
     };
 
 }
