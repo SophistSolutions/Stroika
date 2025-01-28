@@ -181,6 +181,21 @@ Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironme
     Mapping<SDKString, SDKString> r;
     const SDKChar* const*         envHead = nullptr;
 #if qStroika_Foundation_Common_Platform_Windows
+    // documented in https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/getenv-wgetenv?view=msvc-170 can happen, and how to workaround
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    if constexpr (same_as<SDKChar, wchar_t>) {
+        if (_wenviron == nullptr) {
+            [[maybe_unused]] auto ignored = ::_wgetenv (L"PATH");
+        }
+    }
+    else {
+        if (environ == nullptr) {
+            [[maybe_unused]] auto ignored = ::getenv ("PATH");
+        }
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+#endif
+#if qStroika_Foundation_Common_Platform_Windows
     if constexpr (same_as<SDKChar, wchar_t>) {
         envHead = _wenviron;
     }
@@ -194,6 +209,7 @@ Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironme
 #endif
     }
     // NULL-terminated array of NUL-terminated strings
+    AssertNotNull (envHead);
     for (const SDKChar* const* p = envHead; *p; ++p) {
         SDKString eltStr = *p;
         size_t    i      = eltStr.find ('=');
