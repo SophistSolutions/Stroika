@@ -317,8 +317,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  @see ReadOrThrow ()
          *  @see ReadNonBlocking ()
          */
-        nonvirtual optional<span<ElementType>> Read (span<ElementType>       intoBuffer,
-                                                     NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
+        nonvirtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const;
 
     public:
         /**
@@ -353,7 +352,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  when to use this variant? If implementing API where you are handed a blockFlag, but want to KISS, and
          *  just throw if EWouldBlock ..
          */
-        nonvirtual span<ElementType> ReadOrThrow (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
+        nonvirtual span<ElementType> ReadOrThrow (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const;
 
     public:
         /**
