@@ -31,10 +31,12 @@ namespace Stroika::Frameworks::Auth::OAuth {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<RedirectURLType> ();
         mapper.AddCommonType<Sequence<RedirectURLType>> ();
+        mapper.AddCommonType<Set<String>> ();
         mapper.AddClass<ClientConfiguration> ({
             {"provider"sv, &ClientConfiguration::fProvider},
             {"applicationID"sv, &ClientConfiguration::fApplicationID},
             {"redirectURLs"sv, &ClientConfiguration::fRedirectURLs},
+            {"scopes"sv, &ClientConfiguration::fScopes},
         });
         return mapper;
     }();

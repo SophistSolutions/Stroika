@@ -25,12 +25,23 @@ namespace Stroika::Frameworks::Auth::OAuth {
     using Characters::String;
     using Containers::KeyedCollection;
     using Containers::Sequence;
+    using Containers::Set;
     using IO::Network::URI;
 
     using DataExchange::ObjectVariantMapper;
 
-    // DOCUMENT - GIVE EXAMPLES - WHERE TO FIND IN GOOGLE CLOUD UI TO CONFIGURE - ETC... AND WHAT I CAN REMEMBER OF AZURE LIKEWISE
-    // see these (IMPERFECT ) docs for example - https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow
+    /**
+     *  Documentation about these concepts:
+     *      google  - https://developers.google.com/identity/protocols/oauth2/web-server#httprest
+     *              - https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow
+     */
+
+    /**
+     *  Documentation where to get/register application IDs
+     *      google  - https://console.cloud.google.com/apis/credentials
+     *      azure   - https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+     *              - https://learn.microsoft.com/en-us/azure/active-directory-b2c/client-credentials-grant-flow?pivots=b2c-user-flow#app-registration-overview
+     */
 
     /**
      *  \brief sometimes called ClientID, and sometimes called applicationID
@@ -87,11 +98,23 @@ namespace Stroika::Frameworks::Auth::OAuth {
      *        since it can generally be static and unchanged, we keep it separate, and just link up/reference by 'name'
      */
     struct ClientConfiguration {
-        String                    fProvider; // refers to some element of ProvidersConfigurationType
-        ApplicationIDType         fApplicationID;
+        String fProvider; // refers to some element of ProvidersConfigurationType
+
+        /**
+         *  This value is sometimes referred to in OAUTH as ClientID
+         */
+        ApplicationIDType fApplicationID;
+
+        /**
+         *  List of acceptable redirect URLs allowed in (which flows) authorization_code acquisition; only one will be actually used
+         *  in the authentication_code request.
+         */
         Sequence<RedirectURLType> fRedirectURLs;
 
-        // @todo maybe add 'scopes'
+        /**
+         *  List of acceptable scopes requested. Some subset (often all) will be requested at in the authentication_code request.
+         */
+        Set<String> fScopes;
 
         static const ObjectVariantMapper kMapper;
 
@@ -99,12 +122,15 @@ namespace Stroika::Frameworks::Auth::OAuth {
     };
 
     /**
-     *    {
-     *       { "google", "003...", [] },
-     *       { "apple", "003...", [] },
-     *       { "twitter", "003...", [] },
-     *       { "facebook", "003...", [] },
-     *  }
+     *  \par Example Usage
+     *      \code
+     *          {
+     *              { .fProvider = "google", .fApplicationID = "003...", .fRedirectURLs = ["http://localhost"], .fScopes = ["openid"] },
+     *              { .fProvider = "apple", .fApplicationID = "003...", .fRedirectURLs = ["http://localhost"], .fScopes = ["openid"] },
+     *              { .fProvider = "twitter", .fApplicationID = "003...", .fRedirectURLs = ["http://localhost"], .fScopes = ["openid"] },
+     *              { .fProvider = "facebook", .fApplicationID = "003...", .fRedirectURLs = ["http://localhost"], .fScopes = ["openid"] },
+     *          }
+     *      \endcode
      */
     using ClientConfigurations = Sequence<ClientConfiguration>;
 
