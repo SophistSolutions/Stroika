@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Streams/EWouldBlock.h"
 #include "Stroika/Foundation/Streams/Stream.h"
 #include "Stroika/Foundation/Traversal/Iterable.h"
@@ -328,9 +329,13 @@ namespace Stroika::Foundation::Streams::InputStream {
          * 
          *  ReadBlocking(span<ElementType> intoBuffer) 
          *      fills in subspan with at least one element (or zero if at EOF)
+         * 
+         *  ReadBlocking(...ElementType upToSentinel) - reads one element at a time into intoBuffer, including copying the sentinel
+         *  and returns the span of elements read (NOT including the sentinel). Could be the building block of something like ReadLine()...
          */
         nonvirtual optional<ElementType> ReadBlocking () const;
         nonvirtual span<ElementType> ReadBlocking (span<ElementType> intoBuffer) const;
+        nonvirtual span<ElementType> ReadBlocking (Memory::InlineBuffer<ElementType>* intoBuffer, ElementType upToSentinel) const;
 
     public:
         /**

@@ -147,6 +147,18 @@ namespace Stroika::Foundation::Streams {
         return Memory::ValueOf (Read (intoBuffer, NoDataAvailableHandling::eBlockIfNoDataAvailable));
     }
     template <typename ELEMENT_TYPE>
+    auto StreamReader<ELEMENT_TYPE>::ReadBlocking (Memory::InlineBuffer<ElementType>* intoBuffer, ElementType upToSentinel)  -> span<ElementType>
+    {
+        Require (intoBuffer->size () == 0);
+        while (auto oe = ReadBlocking ()) {
+            intoBuffer->push_back (*oe); // include the sentinel
+            if (*oe == upToSentinel) {
+                return span{intoBuffer->data (), intoBuffer->size () - 1}; // dont include the sentinel
+            }
+        }
+        return span{intoBuffer->data (), intoBuffer->size ()};
+    }
+    template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::ReadNonBlocking (span<ElementType> intoBuffer) -> optional<span<ElementType>>
     {
         // Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};

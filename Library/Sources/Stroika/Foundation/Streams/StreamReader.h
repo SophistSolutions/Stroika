@@ -97,6 +97,7 @@ namespace Stroika::Foundation::Streams {
          */
         nonvirtual optional<ElementType> ReadBlocking ();
         nonvirtual span<ElementType> ReadBlocking (span<ElementType> intoBuffer);
+        nonvirtual span<ElementType> ReadBlocking (Memory::InlineBuffer<ElementType>* intoBuffer, ElementType upToSentinel) ;
 
     public:
         /**
