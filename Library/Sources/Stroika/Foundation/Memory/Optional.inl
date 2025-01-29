@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Memory {
      ******************************** OptionallyCopy ********************************
      ********************************************************************************
      */
-    template <typename OUT_T, convertible_to<OUT_T> IN_T>
+    template <typename OUT_T, Common::explicitly_convertible_to<OUT_T> IN_T>
     inline optional<OUT_T> OptionallyCopy (const optional<IN_T>& in)
     {
         if (in) {

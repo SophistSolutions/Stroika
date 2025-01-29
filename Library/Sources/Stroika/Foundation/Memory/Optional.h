@@ -12,6 +12,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Containers/Adapters/Adder.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
@@ -193,7 +194,7 @@ namespace Stroika::Foundation::Memory {
      *          optional<String> s = OptionallyCopy<String>(ShowAsExternalURL,[](URI u) {return u.As<String>();})
      *      \endcode
      */
-    template <typename OUT_T, convertible_to<OUT_T> IN_T>
+    template <typename OUT_T, Common::explicitly_convertible_to<OUT_T> IN_T>
     optional<OUT_T> OptionallyCopy (const optional<IN_T>& in);
     template <typename OUT_T, typename IN_T, invocable<IN_T> IN_TO_OUT_CONVERTER>
     optional<OUT_T> OptionallyCopy (const optional<IN_T>& in, IN_TO_OUT_CONVERTER&& cvt)
