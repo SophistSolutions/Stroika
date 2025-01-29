@@ -75,6 +75,15 @@ namespace Stroika::Frameworks::Auth {
          */
         static ID_OBJ Get ();
 
+        /**
+         *  \brief if no identity set with Establish, and maybe even if it has been set, Get() == false
+         */
+        static void Set (ID_OBJ id);
+
+        /**
+         */
+        static void clear ();
+
     private:
         static inline thread_local ID_OBJ sCurrent_;
     };

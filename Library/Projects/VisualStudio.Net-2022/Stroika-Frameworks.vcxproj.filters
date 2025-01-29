@@ -289,6 +289,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\CurrentIdentity.inl">
       <Filter>Auth</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.inl">
+      <Filter>Auth</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -500,6 +503,9 @@
       <Filter>Auth\OAuth</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\CurrentIdentity.h">
+      <Filter>Auth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.h">
       <Filter>Auth</Filter>
     </ClInclude>
   </ItemGroup>

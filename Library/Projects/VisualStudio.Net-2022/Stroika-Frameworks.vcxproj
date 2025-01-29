@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\CurrentIdentity.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h" />
@@ -138,6 +139,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\CurrentIdentity.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Makefile" />

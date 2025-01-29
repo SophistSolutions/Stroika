@@ -28,5 +28,15 @@ namespace Stroika::Frameworks::Auth {
     {
         return sCurrent_;
     }
+    template <IIdentityManagerCompatibleID ID_OBJ>
+    inline void CurrentIdentityManager<ID_OBJ>::Set (ID_OBJ id)
+    {
+        sCurrent_ = id;
+    }
+    template <IIdentityManagerCompatibleID ID_OBJ>
+    inline void CurrentIdentityManager<ID_OBJ>::clear ()
+    {
+        sCurrent_ = ID_OBJ{};
+    }
 
 }
