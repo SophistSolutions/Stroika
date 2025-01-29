@@ -27,6 +27,8 @@ namespace Stroika::Foundation::DataExchange::Variant::FormURLEncoded {
     /**
      *  \brief Association (or VariantValue) to the output stream - following https://url.spec.whatwg.org/#application/x-www-form-urlencoded
      * 
+     *  \see InternetMediaTypes::kWWWFormURLEncoded
+     * 
      *  \par Example Usage
      *      \code
      *         

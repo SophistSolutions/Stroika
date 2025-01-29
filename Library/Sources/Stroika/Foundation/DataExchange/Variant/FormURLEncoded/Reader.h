@@ -30,6 +30,8 @@ namespace Stroika::Foundation::DataExchange::Variant::FormURLEncoded {
     /**
      *  \brief Read a stream into an Association (or VariantValue) - following https://url.spec.whatwg.org/#application/x-www-form-urlencoded
      * 
+     *  \see InternetMediaTypes::kWWWFormURLEncoded
+     * 
      *  \par Example Usage
      *      \code
      *         

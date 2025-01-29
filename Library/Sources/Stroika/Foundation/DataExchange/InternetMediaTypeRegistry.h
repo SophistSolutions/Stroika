@@ -508,6 +508,13 @@ namespace Stroika::Foundation::DataExchange {
         inline const InternetMediaType kJSONPatch{Types::kApplication, "json-patch"sv, "json"sv};
 
         /**
+         *  \brief application/x-www-form-urlencoded
+         *  \see https://www.ietf.org/rfc/rfc1867.txt
+         *  \see https://www.ietf.org/rfc/rfc7578.txt
+         */
+        inline const InternetMediaType kWWWFormURLEncoded{Types::kApplication, "x-www-form-urlencoded"sv};
+
+        /**
          *  \brief application/pdf
          */
         inline const InternetMediaType kPDF{Types::kApplication, "pdf"sv};
