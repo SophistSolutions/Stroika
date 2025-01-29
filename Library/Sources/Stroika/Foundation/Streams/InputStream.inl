@@ -198,9 +198,9 @@ namespace Stroika::Foundation::Streams::InputStream {
     {
         Require (intoBuffer->size () == 0);
         while (auto oe = ReadBlocking ()) {
-            intoBuffer->push_back (*oe);    // include the sentinel
+            intoBuffer->push_back (*oe); // include the sentinel
             if (*oe == upToSentinel) {
-                return span{intoBuffer->data (), intoBuffer->size () - 1};  // dont include the sentinel
+                return span{intoBuffer->data (), intoBuffer->size () - 1}; // dont include the sentinel
             }
         }
         return span{intoBuffer->data (), intoBuffer->size ()};

@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Streams {
         return Memory::ValueOf (Read (intoBuffer, NoDataAvailableHandling::eBlockIfNoDataAvailable));
     }
     template <typename ELEMENT_TYPE>
-    auto StreamReader<ELEMENT_TYPE>::ReadBlocking (Memory::InlineBuffer<ElementType>* intoBuffer, ElementType upToSentinel)  -> span<ElementType>
+    auto StreamReader<ELEMENT_TYPE>::ReadBlocking (Memory::InlineBuffer<ElementType>* intoBuffer, ElementType upToSentinel) -> span<ElementType>
     {
         Require (intoBuffer->size () == 0);
         while (auto oe = ReadBlocking ()) {

@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  OccurrencesOf() returns the number of occurences of 'item' in the association.
+         *  OccurrencesOf() returns the number of occurrences of 'item' in the association.
          */
         nonvirtual size_t OccurrencesOf (ArgByValueType<key_type> item) const;
 
