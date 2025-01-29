@@ -1,14 +1,15 @@
-StroikaRoot:=$(abspath ../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Variant/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/Variant/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Variant/FormURLEncoded/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/Variant/FormURLEncoded/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -21,20 +22,8 @@ Objs	:=	\
 	$(ObjDir)Reader${OBJ_SUFFIX}\
 	$(ObjDir)Writer${OBJ_SUFFIX}\
 
-SubDirs	:=	\
-	CharacterDelimitedLines \
-	FormURLEncoded \
-	INI \
-	JSON \
-	XML \
+
+all:	$(Objs)
 
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
-
-all:	$(Objs) $(SubDirs)
-
-
-.PHONY:				$(SubDirs)
-$(SubDirs):
-	@$(MAKE) --directory $@ -s

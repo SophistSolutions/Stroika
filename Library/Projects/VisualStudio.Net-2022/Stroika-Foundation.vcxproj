@@ -143,6 +143,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Reader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Profile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Writer.cpp" />
@@ -524,6 +526,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Profile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Writer.h" />
@@ -1019,6 +1023,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Reader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\CharacterDelimitedLines\Writer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Reader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Profile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\INI\Reader.inl" />

@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Common/Locale.h"
+#include "Stroika/Foundation/Containers/Association.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
@@ -27,6 +28,8 @@
 #include "Stroika/Foundation/DataExchange/JSON/Pointer.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Writer.h"
+#include "Stroika/Foundation/DataExchange/Variant/FormURLEncoded/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/FormURLEncoded/Writer.h"
 #include "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/INI/Writer.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
@@ -46,6 +49,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
@@ -514,6 +518,29 @@ namespace {
 
         DoBasicReader1_ ();
         DoBasicWriterAndReader1_ ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Foundation_DataExchange_Reader_Writers, FormURLEncoded)
+    {
+        using namespace Memory;
+        using Memory::BLOB;
+        Debug::TraceContextBumper ctx{"FormURLEncoded"};
+
+        auto t1 = [] () {
+            BLOB                        encoded_data = "name=John+Doe&age=30&city=New%20York"_blob;
+            Association<String, String> a            = Variant::FormURLEncoded::Reader{}.ReadAssociation (encoded_data);
+            DbgTrace ("a={}"_f, a);
+            EXPECT_EQ (a.LookupOneValue ("name"), "John Doe");
+            EXPECT_EQ (a.LookupOneValue ("age"), "30");
+            EXPECT_EQ (a.LookupOneValue ("city"), "New York");
+            BLOB roundTripped = Variant::FormURLEncoded::Writer{}.WriteAsBLOB (a);
+            DbgTrace ("roundTripped={}"_f, roundTripped);
+            EXPECT_EQ (a, Variant::FormURLEncoded::Reader{}.ReadAssociation (roundTripped));
+        };
+
+        t1 ();
     }
 }
 
