@@ -135,7 +135,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
 
     public:
         /*
-         *  This returns a response object, which possibly contains an http error.
+         *  \brief Send the argument request, and return a Response object (which possibly contains an http error)
          *
          *  Call this->SetSchemeAndAuthority() first, or use a wrapper let GET/POST that does this automatically.
          *
@@ -144,7 +144,35 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *          if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
          *              SetSchemeAndAuthority (schemeAndAuthority);
          *          }
-         *          Response r = conn.Send (Request (...));
+         *          Response r = conn.Send (Request{...});
+         *          if (not response.GetSucceeded ()) [[unlikely]] {
+         *              Throw (Exception{response});
+         *          }
+         *          ...
+         *      \endcode
+         *
+         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+         *          at e.GetResponse ()
+         *
+         *  \note   We considered having 1xx and 3xx responses not throw. However, they are generally fairly rare, and mostly
+         *          need to be treated like errors anyhow (cannot just read response) - so best to have this as the behavior, and catch
+         *          if you want to handle 300. The ONLY exception to this might be in caching, when you get a NOT-MODIFIED. We MAY
+         *          want to somehow reconsider that. But its simpler - at least for now - to treat these all uniformly.
+         *
+         *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
+         */
+        nonvirtual Response Send (const Request& r);
+
+    public:
+        /*
+         *  \brief Send the argument request, and return a Response object if it was successful, and throw an HTTP exception if it failed.
+         *
+         *  \par Example Usage
+         *      \code
+         *          if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
+         *              SetSchemeAndAuthority (schemeAndAuthority);
+         *          }
+         *          Response r = conn.Send (Request{...});
          *          ...
          *      \endcode
          *
@@ -160,7 +188,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *
          *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
          */
-        nonvirtual Response Send (const Request& r);
+        nonvirtual Response SendAndThrowOnFailure (const Request& r);
 
     public:
         /*
@@ -173,7 +201,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ().
+         *          at e.GetResponse (), or call Send() directly.
          *
          *  \see    Use Send () if you dont want exceptions on HTTP-response-code failures
          *
@@ -192,7 +220,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
+         *          at e.GetResponse (), or call Send() directly.
          *
          *  \ensure (r.GetSucceeded());
          */
@@ -209,7 +237,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
+         *          at e.GetResponse (), or call Send() directly.
          *
          *  \ensure (r.GetSucceeded());
          *
@@ -228,7 +256,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
+         *          at e.GetResponse (), or call Send() directly.
          *
          *  \ensure (r.GetSucceeded());
          */
@@ -245,7 +273,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
+         *          at e.GetResponse (), or call Send() directly.
          *
          *  \ensure (r.GetSucceeded());
          */
@@ -261,7 +289,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
+         *          at e.GetResponse (), or call Send() directly.
          *
          *  \ensure (r.GetSucceeded());
          */

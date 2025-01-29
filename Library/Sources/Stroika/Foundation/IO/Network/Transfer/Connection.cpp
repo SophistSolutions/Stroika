@@ -80,7 +80,7 @@ Response Connection::Ptr::GET (const URI& l, const Mapping<String, String>& extr
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kGet;
     r.fOverrideHeaders      = extraHeaders;
-    return Send (r);
+    return SendAndThrowOnFailure (r);
 }
 
 Response Connection::Ptr::PATCH (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders)
@@ -92,9 +92,8 @@ Response Connection::Ptr::PATCH (const URI& l, const TypedBLOB& body, const Mapp
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kPatch;
     r.fOverrideHeaders      = extraHeaders;
-    r.fData                 = body.fData;
-    r.SetContentType (body.fType);
-    return Send (r);
+    r.SetTypedBLOB (body);
+    return SendAndThrowOnFailure (r);
 }
 
 Response Connection::Ptr::POST (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders)
@@ -106,9 +105,8 @@ Response Connection::Ptr::POST (const URI& l, const TypedBLOB& body, const Mappi
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kPost;
     r.fOverrideHeaders      = extraHeaders;
-    r.fData                 = body.fData;
-    r.SetContentType (body.fType);
-    return Send (r);
+    r.SetTypedBLOB (body);
+    return SendAndThrowOnFailure (r);
 }
 
 Response Connection::Ptr::DELETE (const URI& l, const Mapping<String, String>& extraHeaders)
@@ -120,7 +118,7 @@ Response Connection::Ptr::DELETE (const URI& l, const Mapping<String, String>& e
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kDelete;
     r.fOverrideHeaders      = extraHeaders;
-    return Send (r);
+    return SendAndThrowOnFailure (r);
 }
 
 Response Connection::Ptr::PUT (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders)
@@ -132,9 +130,8 @@ Response Connection::Ptr::PUT (const URI& l, const TypedBLOB& body, const Mappin
     r.fMethod               = HTTP::Methods::kPut;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fOverrideHeaders      = extraHeaders;
-    r.fData                 = body.fData;
-    r.SetContentType (body.fType);
-    return Send (r);
+    r.SetTypedBLOB (body);
+    return SendAndThrowOnFailure (r);
 }
 
 Response Connection::Ptr::OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders)
@@ -146,7 +143,7 @@ Response Connection::Ptr::OPTIONS (const URI& l, const Mapping<String, String>& 
     r.fMethod               = HTTP::Methods::kOptions;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fOverrideHeaders      = extraHeaders;
-    return Send (r);
+    return SendAndThrowOnFailure (r);
 }
 
 namespace {
@@ -154,6 +151,15 @@ namespace {
 }
 
 Response Connection::Ptr::Send (const Request& r)
+{
+    const LazyEvalActivity activity{[&] () {
+        return "sending '"sv + r.fMethod + "' request to "sv + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL));
+    }};
+    DeclareActivity declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
+    return fRep_->Send (r);
+}
+
+Response Connection::Ptr::SendAndThrowOnFailure (const Request& r)
 {
     const LazyEvalActivity activity{[&] () {
         return "sending '"sv + r.fMethod + "' request to "sv + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL));
