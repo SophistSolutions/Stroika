@@ -43,7 +43,7 @@ public:
         Debug::TraceContextBumper ctx{"DataExchange::Variant::FormURLEncoded::Reader::Rep_::Write"};
 #endif
         Association<String, String> assoc = v.As<Mapping<String, VariantValue>> ().Map<Association<String, String>> (
-            [] (auto i) { return KeyValuePair<String, String>{i.fKey, i.fValue.As<String> ()}; });
+            [] (auto i) { return KeyValuePair<String, String>{i.fKey, i.fValue.template As<String> ()}; });
         Write (assoc, out);
     }
     virtual void Write ([[maybe_unused]] const VariantValue& v, [[maybe_unused]] const OutputStream::Ptr<Character>& out) const override
