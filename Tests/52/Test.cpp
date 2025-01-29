@@ -236,7 +236,7 @@ namespace {
             auto                            arg    = VariantValue{Mapping<String, VariantValue>{{"AppState", "Start"}}};
             auto                            toJson = [] (const VariantValue& v) { return Variant::JSON::Writer{}.WriteAsBLOB (v); };
             IO::Network::Transfer::Response r = c.POST (URI{"http", URI::Authority{URI::Host{"localhost"}, portNumber}, "/SetAppState2"sv},
-                                                        toJson (arg), DataExchange::InternetMediaTypes::kJSON);
+                                                        TypedBLOB{toJson (arg), DataExchange::InternetMediaTypes::kJSON});
             EXPECT_TRUE (r.GetSucceeded ());
             EXPECT_GT (r.GetData ().size (), 1u);
             String response = r.GetDataTextInputStream ().ReadAll ();

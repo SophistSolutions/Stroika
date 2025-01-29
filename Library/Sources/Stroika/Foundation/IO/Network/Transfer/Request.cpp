@@ -6,11 +6,13 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Request.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 
@@ -19,17 +21,31 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
  ******************************* Transfer::Request ******************************
  ********************************************************************************
  */
-InternetMediaType Request::GetContentType () const
+optional<InternetMediaType> Request::GetContentType () const
 {
-    if (optional<String> i = fOverrideHeaders.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType)); i) {
-        return InternetMediaType (*i);
-    }
-    return InternetMediaType{};
+    // static_assert (convertible_to<Stroika::Foundation::Characters::String, Stroika::Foundation::DataExchange::InternetMediaType>);
+    return OptionallyCopy<InternetMediaType> (fOverrideHeaders.Lookup (HTTP::HeaderName::kContentType));
 }
 
-void Request::SetContentType (const InternetMediaType& ct)
+void Request::SetContentType (const optional<InternetMediaType>& ct)
 {
-    fOverrideHeaders.Add (String::FromStringConstant (HTTP::HeaderName::kContentType), ct.As<String> ());
+    if (ct) {
+        fOverrideHeaders.Add (HTTP::HeaderName::kContentType, ct->As<String> ());
+    }
+    else {
+        fOverrideHeaders.Remove (HTTP::HeaderName::kContentType);
+    }
+}
+
+TypedBLOB Request::GetTypedBLOB () const
+{
+    return TypedBLOB{.fData = fData, .fType = GetContentType ()};
+}
+
+void Request::SetTypedBLOB (const TypedBLOB& tb)
+{
+    fData = tb.fData;
+    SetContentType (tb.fType);
 }
 
 String Request::ToString () const

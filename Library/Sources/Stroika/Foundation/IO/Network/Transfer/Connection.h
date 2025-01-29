@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/IO/Network//HTTP/Status.h"
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Cache.h"
@@ -31,13 +32,13 @@
  *
  *      @todo   Probably should redo Request so it can optionally use a BLOB or
  *              Stream (like Response). DO NOW the header / class changes - making
- *              CTOR/accessors, so easiser to change functionality later!!!
+ *              CTOR/accessors, so easier to change functionality later!!!
  *
  *      @todo   Add thread safety (locks/semaphores)
  *
  *                  Decide on and DOCUMENT threading policy. For example - do we need
  *                  locks internally in the connection object or DEFINE that its
- *                  the callers resposabiltiy. PROBABLY best to do in the Connection object itself?
+ *                  the callers responsibility. PROBABLY best to do in the Connection object itself?
  *
  *                  ADD CRITICAL SECTIONS!!! - or DOCUMENT CALLERS REPSONABILTY
  *
@@ -53,11 +54,11 @@
  *      @todo   Add Client side certs
  *
  *      @todo   Refine server-side-cert checking mechanism (review LIBCURL to see what makes sense)
- *              PROBABLY just a callback mechanism - with a few default callabcks you can plugin (like reject bad certs)
+ *              PROBABLY just a callback mechanism - with a few default callbacks you can plugin (like reject bad certs)
  *              MAYBE just add FLAG saying whether to VALIDATE_HOST? Maybe callback API"?
  *
  *                        //  This COULD be expanded to include either a BOOL to CHECK remote SSL info, or a callback (which can throw)
- *                        //  if invalid SSL INFO from server side. Thats probably best. callback whcih throws, and set it to such a callback by default!
+ *                        //  if invalid SSL INFO from server side. That's probably best. callback which throws, and set it to such a callback by default!
  *                        //      -- LGP 2012-06-26
  */
 
@@ -71,6 +72,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
+    using DataExchange::TypedBLOB;
 
     class IRep;
     struct Options;
@@ -173,7 +175,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse ().
          *
-         *  \see    Use Send () if you dont want exptions on HTTP-layer failures
+         *  \see    Use Send () if you dont want exceptions on HTTP-response-code failures
          *
          *  \ensure (r.GetSucceeded());
          */
@@ -194,8 +196,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *
          *  \ensure (r.GetSucceeded());
          */
-        nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType,
-                                  const Mapping<String, String>& extraHeaders = {});
+        nonvirtual Response POST (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders = {});
 
     public:
         /*
@@ -214,8 +215,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *
          *  \note see https://tools.ietf.org/html/rfc5789 for docs on Patch
          */
-        nonvirtual Response PATCH (const URI& l, const BLOB& data, const InternetMediaType& contentType,
-                                   const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response PATCH (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders = {});
 
     public:
         /*
@@ -232,7 +232,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *
          *  \ensure (r.GetSucceeded());
          */
-        nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = {});
 
     public:
         /*
@@ -249,8 +249,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *
          *  \ensure (r.GetSucceeded());
          */
-        nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType,
-                                 const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response PUT (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders = {});
 
     public:
         /*
@@ -266,7 +265,25 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *
          *  \ensure (r.GetSucceeded());
          */
-        nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = {});
+
+    public:
+        //DEPRECATED
+        [[deprecated ("Since Stroika v3.0d15 use TypedBLOB")]] Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                                                              const Mapping<String, String>& extraHeaders = {})
+        {
+            return POST (l, TypedBLOB{data, contentType}, extraHeaders);
+        }
+        [[deprecated ("Since Stroika v3.0d15 use TypedBLOB")]] Response PATCH (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                                                               const Mapping<String, String>& extraHeaders = Mapping<String, String> ())
+        {
+            return PATCH (l, TypedBLOB{data, contentType}, extraHeaders);
+        }
+        [[deprecated ("Since Stroika v3.0d15 use TypedBLOB")]] Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                                                             const Mapping<String, String>& extraHeaders = {})
+        {
+            return PUT (l, TypedBLOB{data, contentType}, extraHeaders);
+        }
 
     private:
         shared_ptr<IRep> fRep_;

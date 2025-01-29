@@ -136,6 +136,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     public:
         /**
+         *  \see GetTypedData ()
          */
         nonvirtual BLOB GetData () const;
 
@@ -145,6 +146,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  the body/GetData as a VariantValue.
          */
         nonvirtual DataExchange::VariantValue GetBodyVariantValue ();
+
+    public:
+        /**
+         *  \brief combine the 'body' data with a content-type indicator into a combined structure.
+         */
+        nonvirtual TypedBLOB GetTypedData () const;
 
     public:
         /**

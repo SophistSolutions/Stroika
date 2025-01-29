@@ -88,6 +88,11 @@ DataExchange::VariantValue Response::GetBodyVariantValue ()
     Execution::Throw (kExcept_);
 }
 
+TypedBLOB Response::GetTypedData () const
+{
+    return TypedBLOB{.fData = GetData (), .fType = GetContentType ()};
+}
+
 InputStream::Ptr<byte> Response::GetDataBinaryInputStream () const
 {
     if (not fDataBinaryInputStream_.has_value ()) {

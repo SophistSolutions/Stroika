@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -25,6 +26,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
+    using DataExchange::TypedBLOB;
     using Memory::BLOB;
 
     /**
@@ -54,12 +56,20 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /**
          *  Scans fOverrideHeaders
          */
-        nonvirtual InternetMediaType GetContentType () const;
+        nonvirtual optional<InternetMediaType> GetContentType () const;
 
         /**
          * updates fOverrideHeaders
          */
-        nonvirtual void SetContentType (const InternetMediaType& ct);
+        nonvirtual void SetContentType (const optional<InternetMediaType>& ct);
+
+        /**
+         */
+        nonvirtual TypedBLOB GetTypedBLOB () const;
+
+        /**
+         */
+        nonvirtual void SetTypedBLOB (const TypedBLOB& tb);
 
         /**
          *  @see Characters::ToString ();

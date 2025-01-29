@@ -202,7 +202,7 @@ namespace {
             again:
 #endif
                 try {
-                    optResp = c.POST (URI{"/post"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
+                    optResp = c.POST (URI{"/post"}, TypedBLOB{roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream});
                 }
 #if qStroika_HasComponent_libcurl
                 catch (const system_error& lce) {
@@ -271,7 +271,7 @@ namespace {
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
-                Response r = c.PUT (URI{"http://httpbin.org/put"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
+                Response r = c.PUT (URI{"http://httpbin.org/put"}, TypedBLOB{roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream});
                 EXPECT_TRUE (r.GetSucceeded ()); // because throws on failure
                 {
                     VariantValue                  v  = Variant::JSON::Reader{}.Read (r.GetDataBinaryInputStream ());

@@ -83,7 +83,7 @@ Response Connection::Ptr::GET (const URI& l, const Mapping<String, String>& extr
     return Send (r);
 }
 
-Response Connection::Ptr::PATCH (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::PATCH (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -92,12 +92,12 @@ Response Connection::Ptr::PATCH (const URI& l, const Memory::BLOB& data, const I
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kPatch;
     r.fOverrideHeaders      = extraHeaders;
-    r.fData                 = data;
-    r.SetContentType (contentType);
+    r.fData                 = body.fData;
+    r.SetContentType (body.fType);
     return Send (r);
 }
 
-Response Connection::Ptr::POST (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::POST (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -106,8 +106,8 @@ Response Connection::Ptr::POST (const URI& l, const Memory::BLOB& data, const In
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fMethod               = HTTP::Methods::kPost;
     r.fOverrideHeaders      = extraHeaders;
-    r.fData                 = data;
-    r.SetContentType (contentType);
+    r.fData                 = body.fData;
+    r.SetContentType (body.fType);
     return Send (r);
 }
 
@@ -123,7 +123,7 @@ Response Connection::Ptr::DELETE (const URI& l, const Mapping<String, String>& e
     return Send (r);
 }
 
-Response Connection::Ptr::PUT (const URI& l, const Memory::BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
+Response Connection::Ptr::PUT (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders)
 {
     if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
         SetSchemeAndAuthority (schemeAndAuthority);
@@ -132,8 +132,8 @@ Response Connection::Ptr::PUT (const URI& l, const Memory::BLOB& data, const Int
     r.fMethod               = HTTP::Methods::kPut;
     r.fAuthorityRelativeURL = l.GetAuthorityRelativeResource<URI> ();
     r.fOverrideHeaders      = extraHeaders;
-    r.fData                 = data;
-    r.SetContentType (contentType);
+    r.fData                 = body.fData;
+    r.SetContentType (body.fType);
     return Send (r);
 }
 
