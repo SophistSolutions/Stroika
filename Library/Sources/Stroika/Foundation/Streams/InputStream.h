@@ -505,7 +505,7 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         [[deprecated ("Since Stroika v3.0d14 use ReadBlocking().value_or(0) typically")]] Characters::Character
-        ReadCharacter (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+        ReadCharacter (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eBlockIfNoDataAvailable) const
             requires (same_as<ELEMENT_TYPE, Characters::Character>)
         {
             Characters::Character c;
@@ -516,13 +516,13 @@ namespace Stroika::Foundation::Streams::InputStream {
         }
         [[deprecated ("Since Stroika v3.0d14 Instead call ReadBlocking()to get nullopt result for EOF - or ReadOrThrow() if ever called "
                       "with eNonBlocking")]] optional<ElementType>
-        Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+        Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eBlockIfNoDataAvailable) const
         {
             ELEMENT_TYPE b; // intentionally uninitialized in case POD-type, filled in by Read or not used
             return this->ReadOrThrow (span{&b, 1}, blockFlag).size () == 0 ? optional<ElementType>{} : b;
         }
         [[deprecated ("Since Stroika v3.0d14 Consider PeekBlocking")]] optional<ElementType>
-        Peek (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+        Peek (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eBlockIfNoDataAvailable) const
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
             Require (this->IsSeekable ());
@@ -532,8 +532,8 @@ namespace Stroika::Foundation::Streams::InputStream {
             this->Seek (saved);
             return result;
         }
-        [[deprecated ("Since Stroika v3.0d14 maybe")]] span<ElementType> Peek (span<ElementType> intoBuffer,
-                                                                               NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
+        [[deprecated ("Since Stroika v3.0d14 maybe")]] span<ElementType>
+        Peek (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eBlockIfNoDataAvailable) const
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
             Require (this->IsSeekable ());

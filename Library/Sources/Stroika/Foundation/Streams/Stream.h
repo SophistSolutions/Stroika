@@ -72,7 +72,20 @@ namespace Stroika::Foundation::Streams {
     class IRep;
 
     /**
-     *  If eDontBlock passed to most Stream APIs, then when the code would do a blocking read/write, instead it will throw EWouldBlock
+     *  \brief If eDontBlock passed to most Stream APIs, then when the code would do a blocking read, instead it will return nullopt or throw EWouldBlock
+     * 
+     *  \note the idea of 'blocking' is somewhat vague. In the context of streams, it simply refers to behavior of reading at least one element (or writing all requested elements).
+     * 
+     *  For reading, the low level Read () API (that everything is built off of) - will take a span<Element> and not return until it has at least one read. Failure to read
+     *  more is nearly meaningless, and is fine. If it is KNOWN you are at EOF - end of stream - then and only then can the Read return 0 elements read.
+     * 
+     *  But if you cannot read at least one (say reading from a socket and no data is avaiable), then Read () can return the special value nullopt.
+     * 
+     *  For Writing - the Stream Write API (for simplicity sake) doesn't allow for incomplete writes. It blocks until all elements are written.
+     * 
+     *  \note - currently OutputStream classes don't use NoDataAvailableHandling (as of Stroika v3.0d15). Future versions may allow for non-blocking writes, but
+     *          pretty unclear how to handle that (ie do we allow partial writes and if so, how to track - PITA). For now - simpler to just always block on writes.
+     *          -- LGP 2025-01-29
      */
     enum class NoDataAvailableHandling {
         /**
@@ -89,7 +102,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  By far safest, simplest approach, but sometimes unacceptable for various reasons, typically involving multiprocessing, and I/O.
          */
-        eDEFAULT = eBlockIfNoDataAvailable
+        eDEFAULT [[deprecated ("Since Stroika v3.0d15 - this value deprecated - use eBlockIfNoDataAvailable or another API")]] = eBlockIfNoDataAvailable
     };
     using NoDataAvailableHandling::eBlockIfNoDataAvailable;
     using NoDataAvailableHandling::eDontBlock;

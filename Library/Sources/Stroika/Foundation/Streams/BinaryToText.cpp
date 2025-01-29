@@ -401,8 +401,8 @@ namespace {
                     // @todo DECIDE IF SeekRead needs blockFlag???
                     // and fix/simplify code here!!! for blockflag
                     Character c;
-                    for (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eDEFAULT); o && o->size () == 1;
-                         o      = Read (span{&c, 1}, NoDataAvailableHandling::eDEFAULT)) {
+                    for (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eBlockIfNoDataAvailable); o && o->size () == 1;
+                         o      = Read (span{&c, 1}, NoDataAvailableHandling::eBlockIfNoDataAvailable)) {
                         break; // read til EOF
                     }
                     SeekTo_ (_fOffset + offset);
@@ -420,7 +420,7 @@ namespace {
                 Character c;
                 // @todo Seek may require NoDataAvailableHandling flag!!!
                 // @todo fix data missing logic... - need datanotavailhandling flag arg
-                if (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eDEFAULT); o && o->size () == 0) [[unlikely]] {
+                if (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eBlockIfNoDataAvailable); o && o->size () == 0) [[unlikely]] {
                     Throw (kException_);
                 }
             }
