@@ -363,11 +363,11 @@ namespace {
                 }
                 if (result->size () != 0) {
                     if (origOffset + result->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
-                        // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                        // size_t can be less bits than SeekOffsetType, in which case we cannot cache all in RAM
                         Throw (range_error{"seek past max size for size_t"});
                     }
                     pushIntoCacheBuf (std::begin (buf), std::begin (buf) + result->size ());
-                    result = result->subspan (0, intoBuffer.size ());
+                    result = result->subspan (0, min (intoBuffer.size (), result->size()));
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
                     (void)::memcpy (intoBuffer.data (), std::begin (buf), result->size () * sizeof (Character));
                     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
