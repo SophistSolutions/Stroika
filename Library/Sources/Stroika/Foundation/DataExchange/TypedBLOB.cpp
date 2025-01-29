@@ -15,12 +15,19 @@ using namespace Stroika::Foundation::DataExchange;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+/*
+ ********************************************************************************
+ *************************** DataExchange::TypedBLOB ****************************
+ ********************************************************************************
+ */
 String TypedBLOB::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Type: " << fType << ","sv;
     sb << "Data: " << fData;
+    if (fType) {
+        sb << ", Type: " << fType;
+    }
     sb << "}"sv;
     return sb;
 }

@@ -19,14 +19,13 @@
 namespace Stroika::Foundation::DataExchange {
 
     /**
-     *  \brief TypedBLOB is a named tuple<InternetMediaType, Memory::BLOB> - with friendlier names, and
+     *  \brief TypedBLOB is a named tuple<Memory::BLOB, optional<InternetMediaType>> - with friendlier names, and
      *         serialization properties.
-     * 
      */
     class [[nodiscard]] TypedBLOB {
     public:
-        InternetMediaType fType;
-        Memory::BLOB      fData;
+        Memory::BLOB                fData;
+        optional<InternetMediaType> fType;
 
     public:
         nonvirtual String ToString () const;

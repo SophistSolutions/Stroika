@@ -220,8 +220,9 @@ TypedBLOB WSImpl::resource_GET (const String& name) const
 {
     using namespace IO::Network::HTTP;
     if (name == "api.json"sv) {
-        return TypedBLOB{.fType = Frameworks::WebService::OpenAPI::kMediaType,
-                         .fData = GetOpenAPISpecification ().As (Frameworks::WebService::OpenAPI::kMediaType)};
+        return TypedBLOB{.fData = GetOpenAPISpecification ().As (Frameworks::WebService::OpenAPI::kMediaType),
+            .fType = Frameworks::WebService::OpenAPI::kMediaType,
+        };
     }
     Execution::Throw (ClientErrorException{StatusCodes::kNotFound});
 }
