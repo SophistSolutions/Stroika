@@ -732,6 +732,37 @@ namespace {
         }
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_IO_Network_Transfer, ErrTest)
+    {
+        Debug::TraceContextBumper     ctx{"{}::ErrTest"};
+        constexpr Execution::Activity kActivity_{"running ErrTest"sv};
+        Execution::DeclareActivity    declareActivity{&kActivity_};
+
+        try {
+            using namespace Memory;
+            Connection::Ptr       conn = Connection::New ();
+            [[maybe_unused]] auto r =
+                conn.POST (URI{"https://oauth2.googleapis.com/token"}, TypedBLOB{"aaa=bbb"_blob, InternetMediaTypes::kWWWFormURLEncoded});
+        }
+        catch (const IO::Network::HTTP::Exception& e) {
+            DbgTrace ("e={}"_f, e);
+        }
+        catch (const Execution::TimeOutException& e) {
+            Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
+        }
+        catch (const Execution::RequiredComponentMissingException&) {
+#if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
+            // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+            // This is more like the absence of a feature beacuse of the missing component.
+            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
+#else
+            Execution::ReThrow ();
+#endif
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
