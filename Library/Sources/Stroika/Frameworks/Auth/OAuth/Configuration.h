@@ -116,6 +116,11 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         Set<String> fScopes;
 
+        /**
+         *  This is used in some places, and must be hidden in others (so optional).
+         */
+        optional<String> fClientSecret;
+
         static const ObjectVariantMapper kMapper;
 
         nonvirtual String ToString () const;

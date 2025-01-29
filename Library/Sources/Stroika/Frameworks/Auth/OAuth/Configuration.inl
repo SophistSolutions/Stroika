@@ -29,6 +29,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
      */
     inline const ObjectVariantMapper ClientConfiguration::kMapper = [] () {
         ObjectVariantMapper mapper;
+        mapper.AddCommonType<optional<String>> ();
         mapper.AddCommonType<RedirectURLType> ();
         mapper.AddCommonType<Sequence<RedirectURLType>> ();
         mapper.AddCommonType<Set<String>> ();
@@ -37,6 +38,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
             {"applicationID"sv, &ClientConfiguration::fApplicationID},
             {"redirectURLs"sv, &ClientConfiguration::fRedirectURLs},
             {"scopes"sv, &ClientConfiguration::fScopes},
+            {"clientSecret"sv, &ClientConfiguration::fClientSecret},
         });
         return mapper;
     }();

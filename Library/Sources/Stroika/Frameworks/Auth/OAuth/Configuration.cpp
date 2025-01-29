@@ -44,6 +44,8 @@ String ClientConfiguration::ToString () const
     sb << "provider: " << fProvider;
     sb << ", applicationID: " << fApplicationID;
     sb << ", redirectURLs: " << fRedirectURLs;
+    sb << ", scopes: " << fScopes;
+    sb << ", clientSecret: " << fClientSecret;
     sb << "}"sv;
     return sb;
 }
