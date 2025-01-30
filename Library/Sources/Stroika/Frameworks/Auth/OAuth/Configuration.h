@@ -64,6 +64,13 @@ namespace Stroika::Frameworks::Auth::OAuth {
      *
      *      see javascript frameworks - for doing auth2 - convert token to access token etc...
      *      stuff to fetch 'keys' like I vaguely remember from openid... to validate JWTs...\
+     * 
+     * 
+     * 
+     *      @todo - create API structure so can fill in details on this via fetch of https://accounts.google.com/.well-known/openid-configuration
+     *          read docs on that - and meaning of various parts - and list here etc...
+     * 
+     *          probably use more optional<URI> on these....
      */
     class ProviderConfiguration {
     public:

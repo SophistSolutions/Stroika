@@ -27,6 +27,9 @@ String ProviderConfiguration::ToString () const
     sb << ", openid_configuration_uri: " << openid_configuration_uri;
     sb << ", auth_uri: " << auth_uri;
     sb << ", token_uri: " << token_uri;
+    if (userinfo_endpoint) {
+        sb << ", userinfo_endpoint: " << userinfo_endpoint;
+    }
     sb << ", auth_provider_x509_cert_url: " << auth_provider_x509_cert_url;
     sb << "}"sv;
     return sb;

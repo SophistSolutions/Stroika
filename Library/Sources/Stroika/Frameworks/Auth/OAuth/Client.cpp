@@ -11,8 +11,8 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
-#include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Client.h"
 
@@ -187,16 +187,6 @@ TokenResponse TokenResponse::FromWireFormat (const TypedBLOB& src)
     return kMapper.ToObject<TokenResponse> (Variant::JSON::Reader{}.Read (src.fData));
 }
 
-
-
-
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ****************************** Auth::OAuth::UserInfo ***************************
@@ -251,7 +241,6 @@ UserInfo UserInfo::FromWireFormat (const TypedBLOB& src)
     return kMapper.ToObject<UserInfo> (Variant::JSON::Reader{}.Read (src.fData));
 }
 
-
 /*
  ********************************************************************************
  ***************************** Auth::OAuth::Fetcher *****************************
@@ -280,9 +269,9 @@ TokenResponse Fetcher::Token (const TokenRequest& tr) const
 
 Auth::OAuth::UserInfo Fetcher::UserInfo (const String& accessToken) const
 {
-    URI  userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
+    URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
     auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{accessToken};
-    auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication=authInfo});
+    auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = authInfo});
     try {
         IO::Network::Transfer::Response r = connection.GET (userInfoRequestURI);
         //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
