@@ -117,30 +117,30 @@ namespace Stroika::Frameworks::Auth::OAuth {
      */
     struct UserInfo {
 
-         /**
+        /**
           */
         optional<String> name;
 
-         /**
+        /**
           */
         optional<String> given_name;
 
-         /**
+        /**
           */
         optional<String> family_name;
 
-         /**
+        /**
           */
         optional<String> email;
 
-         /**
+        /**
          * image of user (thumbnail)
           */
         optional<URI> picture;
 
         nonvirtual String ToString () const;
 
-         static UserInfo FromWireFormat (const TypedBLOB& src);
+        static UserInfo FromWireFormat (const TypedBLOB& src);
 
         static const ObjectVariantMapper kMapper;
     };

@@ -75,17 +75,17 @@ namespace Stroika::Frameworks::Auth::OAuth {
         /**
          *  EG https://accounts.google.com/.well-known/openid-configuration
          */
-        URI    openid_configuration_uri;
+        URI openid_configuration_uri;
 
         /**
          *  Same as authorization_endpoint from openid_configuration_uri
          */
-        URI    auth_uri;
+        URI auth_uri;
 
         /**
          *  Same as token_endpoint from openid_configuration_uri
          */
-        URI    token_uri;
+        URI token_uri;
 
         /**
          *  if missing, check userinfo_endpoint inside data from openid_configuration_uri
@@ -95,7 +95,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         /**
          *  Same as jwks_uri from openid_configuration_uri
          */
-        URI    auth_provider_x509_cert_url;
+        URI auth_provider_x509_cert_url;
 
         static const ObjectVariantMapper kMapper;
 
