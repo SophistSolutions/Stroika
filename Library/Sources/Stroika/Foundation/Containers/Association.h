@@ -298,6 +298,14 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note Alias LookupOrException
          */
+        nonvirtual optional<mapped_type> LookupOne (ArgByValueType<key_type> key) const;
+
+    public:
+        /**
+         *  \brief Lookup and return the first (maybe arbitrarily chosen which is first) value with this key, and throw if there are none.
+         * 
+         *  \note Alias LookupOrException
+         */
         template <typename THROW_IF_MISSING>
         nonvirtual mapped_type LookupOneChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const;
 
