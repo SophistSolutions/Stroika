@@ -33,17 +33,24 @@ namespace {
                     //      {   "error": "unsupported_grant_type",   "error_description": "Invalid grant_type: "
                     // Try to just grab the first few 'words', and hope it makes some sense in an error message
                     Character                      buf[512];
-                    String                         roughText = Streams::BinaryToText::Reader::New (response.GetData ()).ReadBlocking (buf);
+                    auto                           textStream    = Streams::BinaryToText::Reader::New (response.GetData ());
+                    String                         roughText  = textStream.ReadBlocking (buf);
                     static const RegularExpression kBunchaWords_{"([\\w]+)"};
                     StringBuilder                  sb;
                     auto                           words = roughText.FindEachMatch (kBunchaWords_);
-                    if (words.size () > 2) {
-                        words.erase (words.end () - 1); // last word cut-off, so don't include
+                    if (not textStream.IsAtEOF ()) {
+                        if (words.size () > 2) {
+                            words.erase (words.end () - 1); // last word cut-off, so don't include
+                        }
                     }
                     for (auto i : words) {
                         sb << i.GetFullMatch () << " ";
                     }
-                    return sb.str ().RTrim ();
+                    String t = sb.str ().RTrim ();
+                    if (not textStream.IsAtEOF ()) {
+                        t += "...";
+                    }
+                    return t;
                 }
             }
         }
