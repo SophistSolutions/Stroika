@@ -51,7 +51,8 @@ String TokenRequest::ToString () const
 const ObjectVariantMapper TokenRequest::kMapper = [] () {
     ObjectVariantMapper mapper;
     mapper.AddCommonType<String> ();
-    mapper.AddCommonType<URI> ();
+    mapper.AddCommonType<optional<String>> ();
+    mapper.AddCommonType<optional<URI>> ();
     mapper.AddClass<TokenRequest> ({
         {"client_id"sv, &TokenRequest::client_id},
         {"code"sv, &TokenRequest::code},
@@ -99,17 +100,15 @@ TokenRequest TokenRequest::FromWireFormat (const TypedBLOB& src)
         static const auto kExcept_ = RuntimeErrorException{"Expected {}"_f(InternetMediaTypes::kWWWFormURLEncoded)};
         Throw (kExcept_);
     }
-    Association<String, String> params = Variant::FormURLEncoded::Reader{}.ReadAssociation (src.fData);
-    static const auto           kExcept_clientid_ = RuntimeErrorException{"Missing client_id"sv};
-    static const auto           kExcept_authCode_ = RuntimeErrorException{"Missing authentication code"sv};
+    Association<String, String> params              = Variant::FormURLEncoded::Reader{}.ReadAssociation (src.fData);
+    static const auto           kExcept_clientid_   = RuntimeErrorException{"Missing client_id"sv};
+    static const auto           kExcept_authCode_   = RuntimeErrorException{"Missing authentication code"sv};
     static const auto           kExcept_grant_type_ = RuntimeErrorException{"Missing grant_type"sv};
-    return TokenRequest{
-        .client_id     = params.LookupOneChecked ("client_id"sv, kExcept_clientid_),
+    return TokenRequest{.client_id     = params.LookupOneChecked ("client_id"sv, kExcept_clientid_),
                         .code          = params.LookupOneChecked ("code"sv, kExcept_authCode_),
                         .grant_type    = params.LookupOneChecked ("grant_type"sv, kExcept_grant_type_),
                         .client_secret = params.LookupOne ("client_secret"sv),
-        .redirect_uri  = params.LookupOne ("redirect_uri"sv)
-    };
+                        .redirect_uri  = params.LookupOne ("redirect_uri"sv)};
 }
 
 /*
@@ -138,12 +137,32 @@ String TokenResponse::ToString () const
 }
 const ObjectVariantMapper TokenResponse::kMapper = [] () {
     ObjectVariantMapper mapper;
+    using TypeMappingDetails = ObjectVariantMapper::TypeMappingDetails;
     mapper.AddCommonType<String> ();
-    mapper.AddCommonType<URI> ();
+    mapper.AddCommonType<optional<String>> ();
+    mapper.AddCommonType<DateTime> ();
+    mapper.AddCommonType<Set<String>> ();
     mapper.AddClass<TokenResponse> ({
         {"access_token"sv, &TokenResponse::access_token},
-        {"expires_at"sv, &TokenResponse::expires_at},
-        {"scope"sv, &TokenResponse::scope},
+        // expires_at in wire-format is expires_in seconds into future
+        {"expires_in"sv, &TokenResponse::expires_at,
+         TypeMappingDetails{ObjectVariantMapper::FromObjectMapperType<DateTime> (
+                                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const DateTime* objOfType) -> VariantValue {
+                                    return VariantValue{(*objOfType - DateTime::Now ()).As<int> ()};
+                                }),
+                            ObjectVariantMapper::ToObjectMapperType<DateTime> (
+                                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, DateTime* into) -> void {
+                                    *into = DateTime::Now ().AddSeconds (d.As<int> ());
+                                })}},
+        // scope in wire-format is space separated
+        {"scope"sv, &TokenResponse::scope,
+         TypeMappingDetails{ObjectVariantMapper::FromObjectMapperType<Set<String>> (
+                                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const Set<String>* objOfType) -> VariantValue {
+                                    return objOfType->Join (" "sv);
+                                }),
+                            ObjectVariantMapper::ToObjectMapperType<Set<String>> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, Set<String>* into) -> void {
+                                    *into = Set<String>{d.As<String> ().Tokenize ()};
+                                })}},
         {"refresh_token"sv, &TokenResponse::refresh_token},
         {"id_token"sv, &TokenResponse::id_token},
         {"token_type"sv, &TokenResponse::token_type},
@@ -179,8 +198,8 @@ Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration, const Clie
 
 TokenResponse Fetcher::Token (const TokenRequest& tr) const
 {
-    URI tokenRequestURI = fProviderConfiguration_.token_uri;
-    auto connection = IO::Network::Transfer::Connection::New ();
+    URI  tokenRequestURI = fProviderConfiguration_.token_uri;
+    auto connection      = IO::Network::Transfer::Connection::New ();
 
     try {
         //DbgTrace ("sedning={}"_f, Streams::BinaryToText::Reader::New (reqBody).ReadAll ());
