@@ -160,7 +160,8 @@ const ObjectVariantMapper TokenResponse::kMapper = [] () {
                                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const Set<String>* objOfType) -> VariantValue {
                                     return objOfType->Join (" "sv);
                                 }),
-                            ObjectVariantMapper::ToObjectMapperType<Set<String>> ([] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, Set<String>* into) -> void {
+                            ObjectVariantMapper::ToObjectMapperType<Set<String>> (
+                                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, Set<String>* into) -> void {
                                     *into = Set<String>{d.As<String> ().Tokenize ()};
                                 })}},
         {"refresh_token"sv, &TokenResponse::refresh_token},
