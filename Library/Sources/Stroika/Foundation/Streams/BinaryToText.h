@@ -132,6 +132,17 @@ namespace Stroika::Foundation::Streams::BinaryToText {
     namespace Writer {
     }
 
+    /**
+     *  \brief convert BLOB (using optional encoding parameter) to a String
+     * 
+     *  \note shorthand for BinaryToText::Reader::New (src, codeCvtFlags).ReadAll ())
+     * 
+     *  \note could have done with stream, but the API names suggest side-effect free, and that wouldn't be,
+     *        since it seeks the src input stream.
+     */
+    Characters::String Convert (const Memory::BLOB& src, optional<AutomaticCodeCvtFlags> codeCvtFlags = {});
+    Characters::String Convert (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
+
 }
 
 /*

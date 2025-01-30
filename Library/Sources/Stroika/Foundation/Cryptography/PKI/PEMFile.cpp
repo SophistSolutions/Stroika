@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Streams;
  */
 Characters::String PEMFile::Ptr::ToString () const
 {
-    return BinaryToText::Reader::New (get ()->GetData ()).ReadAll ();
+    return BinaryToText::Convert (get ()->GetData ());
 }
 
 /*

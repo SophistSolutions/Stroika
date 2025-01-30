@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
@@ -19,11 +20,11 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::BinaryToText;
 
-using Characters::String;
 using Debug::AssertExternallySynchronizedMutex;
 using Memory::InlineBuffer;
 using Memory::StackBuffer;
@@ -517,4 +518,18 @@ auto BinaryToText::Reader::New (const Traversal::Iterable<Character>& src) -> In
     InputStream::Ptr<Character> p = IterableToInputStream::New<Character> (src);
     Ensure (p.IsSeekable ());
     return p;
+}
+
+/*
+ ********************************************************************************
+ ************************* Streams::BinaryToText::Convert ***********************
+ ********************************************************************************
+ */
+String BinaryToText::Convert (const Memory::BLOB& src, optional<AutomaticCodeCvtFlags> codeCvtFlags)
+{
+    return BinaryToText::Reader::New (src, codeCvtFlags).ReadAll ();
+}
+String BinaryToText::Convert (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter)
+{
+    return BinaryToText::Reader::New (src, codeConverter).ReadAll ();
 }
