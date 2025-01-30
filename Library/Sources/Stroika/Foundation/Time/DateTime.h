@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Time {
                                                 size_t* consumedCharacters = nullptr);
 
     private:
-        // this rquires rep!= ""
+        // this requires rep!= ""
         static optional<DateTime> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharacters);
 
     public:
@@ -289,6 +289,14 @@ namespace Stroika::Foundation::Time {
          *  Return the current DateTime (in LocalTime)
          */
         static DateTime Now () noexcept;
+
+    public:
+        /**
+         *  Return the current DateTime in UTC
+         * 
+         *  \brief equivilent to Now().AsUTC ()
+         */
+        static DateTime NowUTC () noexcept;
 
     public:
         /**

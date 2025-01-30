@@ -641,6 +641,12 @@ DateTime DateTime::Now () noexcept
 #endif
 }
 
+DateTime DateTime ::NowUTC () noexcept
+{
+    // @todo COULD be more efficient, but KISS for now
+    return Now ().AsUTC ();
+}
+
 optional<bool> DateTime::IsDaylightSavingsTime () const
 {
     if (optional<Timezone> otz = GetTimezone ()) {
