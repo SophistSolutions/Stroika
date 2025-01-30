@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Client.h"
 
@@ -135,6 +136,7 @@ String TokenResponse::ToString () const
     sb << "}"sv;
     return sb;
 }
+
 const ObjectVariantMapper TokenResponse::kMapper = [] () {
     ObjectVariantMapper mapper;
     using TypeMappingDetails = ObjectVariantMapper::TypeMappingDetails;
@@ -185,6 +187,71 @@ TokenResponse TokenResponse::FromWireFormat (const TypedBLOB& src)
     return kMapper.ToObject<TokenResponse> (Variant::JSON::Reader{}.Read (src.fData));
 }
 
+
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************************** Auth::OAuth::UserInfo ***************************
+ ********************************************************************************
+ */
+String UserInfo::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    if (name) {
+        sb << ", name: "sv << name;
+    }
+    if (given_name) {
+        sb << ", given_name: "sv << given_name;
+    }
+    if (family_name) {
+        sb << ", family_name: "sv << family_name;
+    }
+    if (email) {
+        sb << ", email: "sv << email;
+    }
+    if (picture) {
+        sb << ", picture: "sv << picture;
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+const ObjectVariantMapper UserInfo::kMapper = [] () {
+    ObjectVariantMapper mapper;
+    using TypeMappingDetails = ObjectVariantMapper::TypeMappingDetails;
+    mapper.AddCommonType<String> ();
+    mapper.AddCommonType<optional<String>> ();
+    mapper.AddCommonType<URI> ();
+    mapper.AddCommonType<optional<URI>> ();
+    mapper.AddClass<UserInfo> ({
+        {"name"sv, &UserInfo::name},
+        {"given_name"sv, &UserInfo::given_name},
+        {"family_name"sv, &UserInfo::family_name},
+        {"email"sv, &UserInfo::email},
+        {"picture"sv, &UserInfo::picture},
+    });
+    return mapper;
+}();
+
+UserInfo UserInfo::FromWireFormat (const TypedBLOB& src)
+{
+    if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
+        static const auto kExcept_ = RuntimeErrorException{"Expected JSON"sv};
+        Throw (kExcept_);
+    }
+    return kMapper.ToObject<UserInfo> (Variant::JSON::Reader{}.Read (src.fData));
+}
+
+
 /*
  ********************************************************************************
  ***************************** Auth::OAuth::Fetcher *****************************
@@ -207,6 +274,22 @@ TokenResponse Fetcher::Token (const TokenRequest& tr) const
     }
     catch (...) {
         DbgTrace ("Fetcher::Token: exception={}"_f, current_exception ());
+        Execution::ReThrow ();
+    }
+}
+
+Auth::OAuth::UserInfo Fetcher::UserInfo (const String& accessToken) const
+{
+    URI  userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
+    auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{accessToken};
+    auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication=authInfo});
+    try {
+        IO::Network::Transfer::Response r = connection.GET (userInfoRequestURI);
+        //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
+        return Auth::OAuth::UserInfo::FromWireFormat (r.GetTypedData ());
+    }
+    catch (...) {
+        DbgTrace ("Fetcher::UserInfo: exception={}"_f, current_exception ());
         Execution::ReThrow ();
     }
 }

@@ -114,6 +114,38 @@ namespace Stroika::Frameworks::Auth::OAuth {
     };
 
     /**
+     */
+    struct UserInfo {
+
+         /**
+          */
+        optional<String> name;
+
+         /**
+          */
+        optional<String> given_name;
+
+         /**
+          */
+        optional<String> family_name;
+
+         /**
+          */
+        optional<String> email;
+
+         /**
+         * image of user (thumbnail)
+          */
+        optional<URI> picture;
+
+        nonvirtual String ToString () const;
+
+         static UserInfo FromWireFormat (const TypedBLOB& src);
+
+        static const ObjectVariantMapper kMapper;
+    };
+
+    /**
      *  \brief simple wrapper on IO::Network::Transfer to do fetching (more configurability to do)
      */
     class Fetcher {
@@ -127,6 +159,14 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *  https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
          */
         nonvirtual TokenResponse Token (const TokenRequest& tr) const;
+
+    public:
+        /**
+        * curl -v -H "Authorization: Bearer ddd" https://www.googleapis.com/oauth2/v3/userinfo
+        * 
+        * @todo FIND DOCS FOR THIS - try docs on https://accounts.google.com/.well-known/openid-configuration
+         */
+        nonvirtual UserInfo UserInfo (const String& accessToken) const;
 
     private:
         const ProviderConfiguration fProviderConfiguration_;

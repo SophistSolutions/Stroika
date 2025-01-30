@@ -53,6 +53,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
                               .openid_configuration_uri    = "https://accounts.google.com/.well-known/openid-configuration"sv,
                               .auth_uri                    = "https://accounts.google.com/o/oauth2/auth"sv,
                               .token_uri                   = "https://oauth2.googleapis.com/token"sv,
+                              .userinfo_endpoint = "https://openidconnect.googleapis.com/v1/userinfo"sv,
                               .auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"sv},
         ProviderConfiguration{.name = "twitter"sv, .auth_uri = "https://api.twitter.com/oauth/authorize"sv, .token_uri = "https://api.twitter.com/oauth/request_token"sv},
         ProviderConfiguration{.name = "facebook"sv, .openid_configuration_uri = "https://www.facebook.com/.well-known/openid-configuration"sv},
