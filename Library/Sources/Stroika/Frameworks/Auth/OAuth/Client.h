@@ -41,11 +41,30 @@ namespace Stroika::Frameworks::Auth::OAuth {
      *  https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
      */
     struct TokenRequest {
-
+        /**
+         * The client ID obtained from the Cloud Console Clients page (https://console.cloud.google.com/auth/clients).
+         */
         String           client_id;
+
+        /**
+         * The authorization code returned from the request (https://developers.google.com/identity/protocols/oauth2/web-server#httprest_1)
+         */
         String           code;
-        String           grant_type;
+
+        /**
+         * \brief set to 'authorization_code' when exhanging authorization code for access token
+         */
+        String           grant_type{"authorization_code"sv};
+
+        /**
+         * The client secret obtained from the Cloud Console Clients page (https://console.cloud.google.com/auth/clients).
+         */
         optional<String> client_secret;
+
+        /**
+         * One of the redirect URIs listed for your project in the Cloud Console Clients page (https://console.cloud.google.com/auth/clients) for the given client_id.
+         * Needed for most flows, but not all.
+         */
         optional<URI>    redirect_uri;
 
         nonvirtual String ToString () const;
@@ -59,7 +78,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
     /**
      *   MEANT to be provider independent, but best docs I've found so far...
      * 
-     *  https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
+     *  https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
      */
     struct TokenResponse {
         /**
@@ -93,6 +112,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
     public:
         /**
+         *  https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
          */
         nonvirtual TokenResponse Token (const TokenRequest& tr) const;
 
