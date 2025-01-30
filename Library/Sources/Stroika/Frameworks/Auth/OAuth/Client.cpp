@@ -191,9 +191,8 @@ TokenResponse TokenResponse::FromWireFormat (const TypedBLOB& src)
  ***************************** Auth::OAuth::Fetcher *****************************
  ********************************************************************************
  */
-Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration, const ClientConfiguration& clientConfig)
+Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration)
     : fProviderConfiguration_{providerConfiguration}
-    , fClientConfig_{clientConfig}
 {
 }
 
@@ -203,10 +202,10 @@ TokenResponse Fetcher::Token (const TokenRequest& tr) const
     auto connection      = IO::Network::Transfer::Connection::New ();
 
     try {
-        //DbgTrace ("sedning={}"_f, Streams::BinaryToText::Reader::New (reqBody).ReadAll ());
+        //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (reqBody));
         IO::Network::Transfer::Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());
         Assert (r.GetSucceeded ());
-        //DbgTrace ("respraw={}"_f, Streams::BinaryToText::Reader::New (r.GetData ()).ReadAll ());
+        //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
         return TokenResponse::FromWireFormat (r.GetTypedData ());
     }
     catch (...) {

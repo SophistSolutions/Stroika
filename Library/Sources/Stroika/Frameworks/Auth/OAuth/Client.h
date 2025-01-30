@@ -44,20 +44,21 @@ namespace Stroika::Frameworks::Auth::OAuth {
         /**
          * The client ID obtained from the Cloud Console Clients page (https://console.cloud.google.com/auth/clients).
          */
-        String           client_id;
+        String client_id;
 
         /**
          * The authorization code returned from the request (https://developers.google.com/identity/protocols/oauth2/web-server#httprest_1)
          */
-        String           code;
+        String code;
 
         /**
          * \brief set to 'authorization_code' when exhanging authorization code for access token
          */
-        String           grant_type{"authorization_code"sv};
+        String grant_type{"authorization_code"sv};
 
         /**
-         * The client secret obtained from the Cloud Console Clients page (https://console.cloud.google.com/auth/clients).
+         *  The client secret obtained from the Cloud Console Clients page (https://console.cloud.google.com/auth/clients).
+         *  It is also often found in ClientConfiguration::fClientSecret
          */
         optional<String> client_secret;
 
@@ -65,7 +66,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
          * One of the redirect URIs listed for your project in the Cloud Console Clients page (https://console.cloud.google.com/auth/clients) for the given client_id.
          * Needed for most flows, but not all.
          */
-        optional<URI>    redirect_uri;
+        optional<URI> redirect_uri;
 
         nonvirtual String ToString () const;
 
@@ -85,12 +86,23 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         String access_token;
 
-        /** OAuth uses expires_in, but we convert to an expires_at since better to track (in UTC) */
+        /**
+         * OAuth uses expires_in, but we convert to an expires_at since better to track (in UTC)
+         */
         DateTime expires_at = DateTime::Now ();
 
         Set<String>      scope;
+        
+        /**
+         */
         optional<String> refresh_token;
+
+        /**
+         */
         optional<String> id_token;
+
+        /**
+         */
         optional<String> token_type;
 
         nonvirtual String ToString () const;
@@ -108,7 +120,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
     public:
         Fetcher ()               = delete;
         Fetcher (const Fetcher&) = default;
-        Fetcher (const ProviderConfiguration& providerConfiguration, const ClientConfiguration& clientConfig);
+        Fetcher (const ProviderConfiguration& providerConfiguration);
 
     public:
         /**
@@ -118,7 +130,6 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
     private:
         const ProviderConfiguration fProviderConfiguration_;
-        const ClientConfiguration   fClientConfig_;
     };
 
 }
