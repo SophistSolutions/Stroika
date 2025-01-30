@@ -91,8 +91,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         DateTime expires_at = DateTime::Now ();
 
-        Set<String>      scope;
-        
+        Set<String> scope;
+
         /**
          */
         optional<String> refresh_token;
