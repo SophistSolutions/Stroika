@@ -46,11 +46,11 @@ namespace {
                     for (auto i : words) {
                         sb << i.GetFullMatch () << " ";
                     }
-                    String t = sb.str ().RTrim ();
+                    sb = sb.str ().RTrim ();
                     if (not textStream.IsAtEOF ()) {
-                        t += "...";
+                        sb += "...";
                     }
-                    return t;
+                    return sb;
                 }
             }
         }
