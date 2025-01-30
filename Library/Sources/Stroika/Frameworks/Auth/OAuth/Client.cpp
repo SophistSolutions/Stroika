@@ -95,7 +95,7 @@ TypedBLOB TokenRequest::ToWireFormat () const
 
 TokenRequest TokenRequest::FromWireFormat (const TypedBLOB& src)
 {
-    if (!src.fType or InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kWWWFormURLEncoded, *src.fType)) {
+    if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kWWWFormURLEncoded, *src.fType)) {
         static const auto kExcept_ = RuntimeErrorException{"Expected {}"_f(InternetMediaTypes::kWWWFormURLEncoded)};
         Throw (kExcept_);
     }
@@ -177,7 +177,7 @@ TypedBLOB TokenResponse::ToWireFormat () const
 
 TokenResponse TokenResponse::FromWireFormat (const TypedBLOB& src)
 {
-    if (!src.fType or InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
+    if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
         static const auto kExcept_ = RuntimeErrorException{"Expected JSON"sv};
         Throw (kExcept_);
     }
