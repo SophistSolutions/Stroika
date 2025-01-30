@@ -32,7 +32,7 @@ namespace {
                     // The sample JSON - I have in mind:
                     //      {   "error": "unsupported_grant_type",   "error_description": "Invalid grant_type: "
                     // Try to just grab the first few 'words', and hope it makes some sense in an error message
-                    Character                      buf[256];
+                    Character                      buf[512];
                     String                         roughText = Streams::BinaryToText::Reader::New (response.GetData ()).ReadBlocking (buf);
                     static const RegularExpression kBunchaWords_{"([\\w]+)"};
                     StringBuilder                  sb;
