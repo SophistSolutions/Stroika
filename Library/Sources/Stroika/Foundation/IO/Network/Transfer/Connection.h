@@ -370,7 +370,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          */
         struct Authentication {
             /**
-             *      eProactivelySendAuthentication requires fewer round-trips, and less resnding of data, but may not always work
+             *      eProactivelySendAuthentication requires fewer round-trips, and less resending of data, but may not always work
              *      (e.g. if the auth requires server side information).
              *
              *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
