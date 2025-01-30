@@ -79,15 +79,15 @@ TypedBLOB TokenRequest::ToWireFormat () const
     }
     BLOB reqBody = [&] () {
         Association<String, String> params{};
-        params.Add ({"client_id", client_id});
-        params.Add ({"code", code});
+        params.Add ({"client_id"sv, client_id});
+        params.Add ({"code"sv, code});
         if (client_secret) {
-            params.Add ({"client_secret", *client_secret});
+            params.Add ({"client_secret"sv, *client_secret});
         }
         if (redirect_uri) {
-            params.Add ({"redirect_uri", redirect_uri->As<String> ()});
+            params.Add ({"redirect_uri"sv, redirect_uri->As<String> ()});
         }
-        params.Add ({"grant_type", grant_type});
+        params.Add ({"grant_type"sv, grant_type});
         return Variant::FormURLEncoded::Writer{}.WriteAsBLOB (params);
     }();
     return TypedBLOB{reqBody, InternetMediaTypes::kWWWFormURLEncoded};
@@ -95,8 +95,7 @@ TypedBLOB TokenRequest::ToWireFormat () const
 
 TokenRequest TokenRequest::FromWireFormat (const TypedBLOB& src)
 {
-    // not  sure we want to be this strict
-    if (src.fType != InternetMediaTypes::kWWWFormURLEncoded) {
+    if (!src.fType or InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kWWWFormURLEncoded, *src.fType)) {
         static const auto kExcept_ = RuntimeErrorException{"Expected {}"_f(InternetMediaTypes::kWWWFormURLEncoded)};
         Throw (kExcept_);
     }
@@ -178,8 +177,7 @@ TypedBLOB TokenResponse::ToWireFormat () const
 
 TokenResponse TokenResponse::FromWireFormat (const TypedBLOB& src)
 {
-    // not  sure we want to be this strict
-    if (src.fType != InternetMediaTypes::kJSON) {
+    if (!src.fType or InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
         static const auto kExcept_ = RuntimeErrorException{"Expected JSON"sv};
         Throw (kExcept_);
     }
@@ -200,11 +198,9 @@ TokenResponse Fetcher::Token (const TokenRequest& tr) const
 {
     URI  tokenRequestURI = fProviderConfiguration_.token_uri;
     auto connection      = IO::Network::Transfer::Connection::New ();
-
     try {
         //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (reqBody));
         IO::Network::Transfer::Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());
-        Assert (r.GetSucceeded ());
         //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
         return TokenResponse::FromWireFormat (r.GetTypedData ());
     }
