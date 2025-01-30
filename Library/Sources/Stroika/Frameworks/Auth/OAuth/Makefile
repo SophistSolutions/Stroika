@@ -22,6 +22,7 @@ SubDirs	:=	\
 
 
 Objs	:=	\
+	$(ObjDir)Client${OBJ_SUFFIX}\
 	$(ObjDir)Configuration${OBJ_SUFFIX}\
 
 

@@ -65,6 +65,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Client.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.cpp" />
@@ -101,6 +102,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\CurrentIdentity.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Client.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.h" />
@@ -141,6 +143,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\CurrentIdentity.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Client.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\ReadMe.md" />

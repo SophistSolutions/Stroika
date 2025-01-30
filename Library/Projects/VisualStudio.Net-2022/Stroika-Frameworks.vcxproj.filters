@@ -292,6 +292,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.inl">
       <Filter>Auth</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Client.inl">
+      <Filter>Auth\OAuth</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -507,6 +510,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\Interceptor.h">
       <Filter>Auth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Client.h">
+      <Filter>Auth\OAuth</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -786,6 +792,9 @@
       <Filter>WebService\Server</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Configuration.cpp">
+      <Filter>Auth\OAuth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Auth\OAuth\Client.cpp">
       <Filter>Auth\OAuth</Filter>
     </ClCompile>
   </ItemGroup>
