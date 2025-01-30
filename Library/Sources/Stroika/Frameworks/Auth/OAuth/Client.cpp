@@ -134,6 +134,7 @@ String TokenResponse::ToString () const
     sb << "}"sv;
     return sb;
 }
+
 const ObjectVariantMapper TokenResponse::kMapper = [] () {
     ObjectVariantMapper mapper;
     using TypeMappingDetails = ObjectVariantMapper::TypeMappingDetails;
@@ -147,11 +148,11 @@ const ObjectVariantMapper TokenResponse::kMapper = [] () {
         {"expires_in"sv, &TokenResponse::expires_at,
          TypeMappingDetails{ObjectVariantMapper::FromObjectMapperType<DateTime> (
                                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const DateTime* objOfType) -> VariantValue {
-                                    return VariantValue{(*objOfType - DateTime::Now ()).As<int> ()};
+                                    return VariantValue{(objOfType->AsUTC() - DateTime::NowUTC ()).As<int> ()};
                                 }),
                             ObjectVariantMapper::ToObjectMapperType<DateTime> (
                                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, DateTime* into) -> void {
-                                    *into = DateTime::Now ().AddSeconds (d.As<int> ());
+                                    *into = DateTime::NowUTC ().AddSeconds (d.As<int> ());
                                 })}},
         // scope in wire-format is space separated
         {"scope"sv, &TokenResponse::scope,
