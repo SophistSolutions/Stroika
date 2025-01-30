@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-        inline optional < MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOne (ArgByValueType<key_type> key) const
+    inline optional<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOne (ArgByValueType<key_type> key) const
     {
         auto tmp = Lookup (key);
         if (auto i = tmp.begin ()) [[likely]] {
