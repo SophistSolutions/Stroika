@@ -171,7 +171,9 @@ endif
 B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 #unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
-B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)/b2.exe
+# B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)/b2.exe
+#even more weird - its appearance in that odd spot appears sporadic when building under other apps (symbolic links) - so try this
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/b2.exe
 endif
 
 ScriptsLibPath=$(shell realpath ../../ScriptsLib)
