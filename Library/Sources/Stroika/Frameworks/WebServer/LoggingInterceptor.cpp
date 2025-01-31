@@ -68,7 +68,7 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
     {
         return "LoggingInterceptor"sv;
     }
-    shared_ptr<ILogHandler>                                                                      fLogger_;
+    shared_ptr<ILogHandler>                                                           fLogger_;
     mutable Synchronized<Mapping<Message*, shared_ptr<ILogHandler::MessageInstance>>> fOngoingMessages_;
 };
 

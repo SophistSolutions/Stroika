@@ -107,7 +107,7 @@ void InterceptorChain::AddAfter (const Interceptor& interceptor2Add, const Inter
     rwLock.store (rwLock->get ()->SetInterceptors (newInterceptors));
 }
 
-Characters::String InterceptorChain::ToString() const
+Characters::String InterceptorChain::ToString () const
 {
     StringBuilder sb;
     sb << "["sv;

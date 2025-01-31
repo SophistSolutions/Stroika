@@ -16,6 +16,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO::Network;
 
@@ -40,7 +41,7 @@ namespace {
         }
         catch (...) {
             static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kBadRequest, "request URI requires an absolute path"sv};
-            Execution::Throw (kException_);
+            Throw (kException_);
         }
     }
 }
@@ -123,11 +124,11 @@ struct Router::Rep_ : Interceptor::_IRep {
                 Assert (not o->empty ());
                 m.rwResponse ().rwHeaders ().allow = o;
                 static const auto kException_      = ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed};
-                Execution::Throw (kException_);
+                Throw (kException_);
             }
             DbgTrace ("Router 404: (...url={})"_f, m.request ().url ());
             static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kNotFound};
-            Execution::Throw (kException_);
+            Throw (kException_);
         }
     }
     nonvirtual void HandleCORSInNormallyHandledMessage_ (const Request& request, Response& response) const
@@ -258,13 +259,12 @@ struct Router::Rep_ : Interceptor::_IRep {
         }
         else {
             DbgTrace ("Router 404: (...url={})"_f, request.url ());
-            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
+            Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
         }
     }
-    virtual String ToString() const override
+    virtual String ToString () const override
     {
-        // @todo could add more info here, like # of routes?
-        return "Router"sv;
+        return "Router ({} routes)"_f(fRoutes_.size ());
     }
 
     const optional<Set<String>> fAllowedOrigins_; // missing <==> '*'

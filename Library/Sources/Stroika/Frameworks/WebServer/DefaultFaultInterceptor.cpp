@@ -81,6 +81,10 @@ struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
     virtual void HandleMessage ([[maybe_unused]] Message& m) const override
     {
     }
+    virtual String ToString () const override
+    {
+        return "DefaultFaultInterceptor(user-provided)"sv;
+    }
 };
 
 /*
