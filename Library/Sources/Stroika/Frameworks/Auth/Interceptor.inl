@@ -13,29 +13,29 @@ namespace Stroika::Frameworks::Auth {
      */
     template <IIdentityManagerCompatibleID ID_TYPE>
     struct CurrentIdentityAuthInterceptor::Rep_ : Interceptor::_IRep {
-        function<optional<ID_TYPE> (Frameworks::WebServer::Request&)> fCallback_;
+        function<optional<ID_TYPE> (WebServer::Request&)> fCallback_;
 
-        Rep_ (function<optional<ID_TYPE> (Frameworks::WebServer::Request&)> cb)
+        Rep_ (function<optional<ID_TYPE> (WebServer::Request&)> cb)
             : fCallback_{cb}
         {
         }
-        virtual void HandleFault (Message& m, [[maybe_unused]] const exception_ptr& e) const noexcept override
+        virtual void HandleFault (WebServer::Message& m, [[maybe_unused]] const exception_ptr& e) const noexcept override
         {
-            CurrentIdentityManager<ID_OBJ>::clear ();
+            CurrentIdentityManager<ID_TYPE>::clear ();
         }
-        virtual void HandleMessage (Message& m) const override
+        virtual void HandleMessage (WebServer::Message& m) const override
         {
-            if (optional<ID_TYPE> oId = fCallback_(m.rwRequest())) {
-                CurrentIdentityManager<ID_OBJ>::Set (*oId);
+            if (optional<ID_TYPE> oId = fCallback_ (m.rwRequest ())) {
+                CurrentIdentityManager<ID_TYPE>::Set (*oId);
             }
         }
-        virtual void CompleteNormally (Message& m) const override
+        virtual void CompleteNormally (WebServer::Message& m) const override
         {
-            CurrentIdentityManager<ID_OBJ>::clear ();
+            CurrentIdentityManager<ID_TYPE>::clear ();
         }
     };
     template <IIdentityManagerCompatibleID ID_TYPE>
-    CurrentIdentityAuthInterceptor::CurrentIdentityAuthInterceptor (function<optional<ID_TYPE> (Frameworks::WebServer::Request&)> cb)
+    CurrentIdentityAuthInterceptor::CurrentIdentityAuthInterceptor (function<optional<ID_TYPE> (WebServer::Request&)> cb)
         : inherited{make_shared<Rep_> (cb)}
     {
     }
