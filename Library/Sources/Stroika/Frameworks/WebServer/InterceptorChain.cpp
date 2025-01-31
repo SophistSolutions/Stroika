@@ -3,9 +3,12 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+
 #include "InterceptorChain.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
@@ -71,7 +74,7 @@ InterceptorChain::InterceptorChain (const shared_ptr<_IRep>& rep)
 {
 }
 
-void InterceptorChain::InterceptorChain::AddBefore (const Interceptor& interceptor2Add, const Interceptor& before)
+void InterceptorChain::AddBefore (const Interceptor& interceptor2Add, const Interceptor& before)
 {
     auto                  rwLock = fRep_.rwget ();
     [[maybe_unused]] bool found{false};
@@ -87,7 +90,7 @@ void InterceptorChain::InterceptorChain::AddBefore (const Interceptor& intercept
     rwLock.store (rwLock->get ()->SetInterceptors (newInterceptors));
 }
 
-void InterceptorChain::InterceptorChain::AddAfter (const Interceptor& interceptor2Add, const Interceptor& after)
+void InterceptorChain::AddAfter (const Interceptor& interceptor2Add, const Interceptor& after)
 {
     auto rwLock = fRep_.rwget ();
 
@@ -102,4 +105,15 @@ void InterceptorChain::InterceptorChain::AddAfter (const Interceptor& intercepto
     }
     Require (found);
     rwLock.store (rwLock->get ()->SetInterceptors (newInterceptors));
+}
+
+Characters::String InterceptorChain::ToString() const
+{
+    StringBuilder sb;
+    sb << "["sv;
+    for (auto i : fRep_.load ()->GetInterceptors ()) {
+        sb << i << ", "sv;
+    }
+    sb << "]"sv;
+    return sb;
 }

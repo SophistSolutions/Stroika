@@ -10,6 +10,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks;
@@ -63,8 +64,12 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
         }
         fLogger_->Completed (logID);
     }
+    virtual String ToString () const override
+    {
+        return "LoggingInterceptor"sv;
+    }
     shared_ptr<ILogHandler>                                                                      fLogger_;
-    mutable Execution::Synchronized<Mapping<Message*, shared_ptr<ILogHandler::MessageInstance>>> fOngoingMessages_;
+    mutable Synchronized<Mapping<Message*, shared_ptr<ILogHandler::MessageInstance>>> fOngoingMessages_;
 };
 
 LoggingInterceptor::LoggingInterceptor (const shared_ptr<ILogHandler>& logger)

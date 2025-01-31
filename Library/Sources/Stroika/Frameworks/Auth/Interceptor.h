@@ -63,6 +63,7 @@ namespace Stroika::Frameworks::Auth {
      *      \endcode
      * 
      */
+    template <IIdentityManagerCompatibleID ID_TYPE>
     class CurrentIdentityAuthInterceptor : public Interceptor {
     private:
         using inherited = Interceptor;
@@ -70,11 +71,9 @@ namespace Stroika::Frameworks::Auth {
     public:
         /**
          */
-        template <IIdentityManagerCompatibleID ID_TYPE>
         CurrentIdentityAuthInterceptor (function<optional<ID_TYPE> (Request&)> cb);
 
     private:
-        template <IIdentityManagerCompatibleID ID_TYPE>
         struct Rep_;
     };
 

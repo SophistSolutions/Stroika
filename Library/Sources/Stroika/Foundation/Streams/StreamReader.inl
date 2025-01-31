@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Streams {
     inline optional<size_t> StreamReader<ELEMENT_TYPE>::AvailableToRead () const
     {
         if (fFarthestReadInUnderlyingStream_ > fOffset_) {
-            return fFarthestReadInUnderlyingStream_ - fOffset_;
+            return static_cast<size_t> (fFarthestReadInUnderlyingStream_ - fOffset_);
         }
         return fStrm_.AvailableToRead ();
     }

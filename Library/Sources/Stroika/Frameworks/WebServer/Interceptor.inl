@@ -36,6 +36,11 @@ namespace Stroika::Frameworks::WebServer {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLock2{rhs.fThisAssertExternallySynchronized_};
         return fRep_ == rhs.fRep_;
     }
+    inline Characters::String Interceptor::ToString () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
+        return fRep_ == nullptr ? "nullptr"sv : fRep_->ToString ();
+    }
     template <typename T>
     inline auto Interceptor::_GetRep () const -> const T&
     {

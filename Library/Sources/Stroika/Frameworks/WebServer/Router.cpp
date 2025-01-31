@@ -261,6 +261,11 @@ struct Router::Rep_ : Interceptor::_IRep {
             Execution::Throw (ClientErrorException{HTTP::StatusCodes::kNotFound});
         }
     }
+    virtual String ToString() const override
+    {
+        // @todo could add more info here, like # of routes?
+        return "Router"sv;
+    }
 
     const optional<Set<String>> fAllowedOrigins_; // missing <==> '*'
     const optional<Set<String>> fAllowedHeaders_; // missing <==> '*'

@@ -12,7 +12,7 @@ namespace Stroika::Frameworks::Auth {
      ********************************************************************************
      */
     template <IIdentityManagerCompatibleID ID_TYPE>
-    struct CurrentIdentityAuthInterceptor::Rep_ : Interceptor::_IRep {
+    struct CurrentIdentityAuthInterceptor<ID_TYPE>::Rep_ : Interceptor::_IRep {
         function<optional<ID_TYPE> (WebServer::Request&)> fCallback_;
 
         Rep_ (function<optional<ID_TYPE> (WebServer::Request&)> cb)
@@ -33,9 +33,13 @@ namespace Stroika::Frameworks::Auth {
         {
             CurrentIdentityManager<ID_TYPE>::clear ();
         }
+        virtual String ToString () const override
+        {
+            return "CurrentIdentityAuthInterceptor"sv;
+        }
     };
     template <IIdentityManagerCompatibleID ID_TYPE>
-    CurrentIdentityAuthInterceptor::CurrentIdentityAuthInterceptor (function<optional<ID_TYPE> (WebServer::Request&)> cb)
+    CurrentIdentityAuthInterceptor<ID_TYPE>::CurrentIdentityAuthInterceptor (function<optional<ID_TYPE> (WebServer::Request&)> cb)
         : inherited{make_shared<Rep_> (cb)}
     {
     }

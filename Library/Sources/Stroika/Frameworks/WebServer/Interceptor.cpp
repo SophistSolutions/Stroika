@@ -3,9 +3,12 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/Format.h"
+
 #include "Interceptor.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
@@ -56,4 +59,9 @@ void Interceptor::_IRep::HandleFault ([[maybe_unused]] Message& m, [[maybe_unuse
 
 void Interceptor::_IRep::CompleteNormally ([[maybe_unused]] Message& m) const
 {
+}
+
+Characters::String Interceptor::_IRep::ToString () const
+{
+    return "{}"_f(this); // ptr representation
 }

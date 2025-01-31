@@ -124,6 +124,9 @@ namespace Stroika::Frameworks::WebServer {
          */
         nonvirtual void HandleMessage (Message& m) const;
 
+    public:
+        nonvirtual Characters::String ToString () const;
+
     private:
         Execution::RWSynchronized<shared_ptr<_IRep>> fRep_;
 

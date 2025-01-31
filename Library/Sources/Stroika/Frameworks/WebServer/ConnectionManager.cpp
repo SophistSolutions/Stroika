@@ -28,6 +28,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Math;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
+using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Foundation::IO::Network;
@@ -66,7 +67,7 @@ namespace {
  */
 String WebServer::ConnectionManager::Statistics::ThreadPool::ToString () const
 {
-    StringBuilder sb = Execution::ThreadPool::Statistics::ToString ().SubString (0, -1);
+    StringBuilder sb = ThreadPool::Statistics::ToString ().SubString (0, -1);
     sb << ", thread-entry-cont: "sv << fThreadEntryCount;
     sb << "}"sv;
     return sb;
@@ -174,7 +175,7 @@ namespace {
     }
 }
 
-ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options)
+ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options)
     : afterInterceptors{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
               const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
@@ -195,7 +196,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
               thisObj->fBeforeInterceptors_ = beforeInterceptors;
               thisObj->FixupInterceptorChain_ ();
           }}
-    , bindings{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Traversal::Iterable<SocketAddress> {
+    , bindings{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Iterable<SocketAddress> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::bindings);
         return thisObj->fBindings_;
     }}
@@ -263,7 +264,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                                                     .fThreadPoolName = fEffectiveOptions_.fThreadPoolName,
                                                     .fQMax = ThreadPool::QMax{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections},
                                                     .fCollectStatistics = fEffectiveOptions_.fCollectStatistics}}
-    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting,
+    , fWaitForReadyConnectionThread_{Thread::CleanupPtr::eAbortBeforeWaiting,
                                      Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, "WebServer-ConnectionMgr-Wait4IOReady"_k)}
     , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  *fEffectiveOptions_.fTCPBacklog}
@@ -286,6 +287,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     DbgTrace ("Constructing WebServer::ConnectionManager ({}), with threadpoolSize={}, backlog={}, and listening on {}"_f,
               static_cast<const void*> (this), fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options),
               Characters::ToString (bindAddresses));
+    DbgTrace ("Initial interceptors: {}"_f, fInterceptorChain_);
     fWaitForReadyConnectionThread_.Start (); // start here instead of AutoStart so a guaranteed initialized before thread main starts - see http://stroika-bugs.sophists.com/browse/STK-706
 }
 
@@ -370,7 +372,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     }
                     catch (...) {
                         AssertNotReached (); // these two lists need to be kept in sync, so really assume updating them cannot fail/break
-                        Execution::ReThrow ();
+                        ReThrow ();
                     }
 
 // @todo lose this code after a bit of testing that never triggered - LGP 2021-03-02
@@ -401,13 +403,13 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                 }
                 catch (...) {
                     AssertNotReached (); // these two lists need to be kept in sync, so really assume updating them cannot fail/break
-                    Execution::ReThrow ();
+                    ReThrow ();
                 }
                 fActiveConnectionThreads_.AddTask (handleActivatedConnection);
             }
         }
         catch (const Thread::AbortException&) {
-            Execution::ReThrow ();
+            ReThrow ();
         }
         catch (...) {
             DbgTrace ("Internal exception in WaitForReadyConnectionLoop_ loop suppressed: {}"_f, current_exception ());
@@ -418,6 +420,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 void ConnectionManager::FixupInterceptorChain_ ()
 {
     fInterceptorChain_ = InterceptorChain{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)};
+    DbgTrace ("Adjusted interceptors: {}"_f, fInterceptorChain_);
 }
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetInactiveConnections_ () const

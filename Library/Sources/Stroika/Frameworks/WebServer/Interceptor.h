@@ -78,6 +78,9 @@ namespace Stroika::Frameworks::WebServer {
          */
         nonvirtual bool operator== (const Interceptor& rhs) const;
 
+    public:
+        nonvirtual Characters::String ToString () const;
+
     protected:
         /**
          */
@@ -122,6 +125,11 @@ namespace Stroika::Frameworks::WebServer {
          * EG. for logging.
          */
         virtual void CompleteNormally (Message& m) const;
+
+        /**
+         *  For debugging purposes - dump some terse summary of the state of the interceptor
+         */
+        virtual Characters::String ToString () const;
     };
 
 }
