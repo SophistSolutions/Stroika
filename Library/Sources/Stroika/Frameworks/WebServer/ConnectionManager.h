@@ -425,9 +425,6 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void WaitForReadyConnectionLoop_ ();
 
     private:
-        nonvirtual void FixupInterceptorChain_ ();
-
-    private:
         // Inactive connections are those we are waiting (select/epoll) for incoming data; these are stored in fInactiveSockSetPoller_
         nonvirtual Collection<shared_ptr<Connection>> GetInactiveConnections_ () const;
 
