@@ -251,7 +251,7 @@ Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration)
 {
 }
 
-TokenResponse Fetcher::Token (const TokenRequest& tr) const
+TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
 {
     URI  tokenRequestURI = fProviderConfiguration_.token_uri;
     auto connection      = IO::Network::Transfer::Connection::New ();
@@ -267,7 +267,7 @@ TokenResponse Fetcher::Token (const TokenRequest& tr) const
     }
 }
 
-Auth::OAuth::UserInfo Fetcher::UserInfo (const String& accessToken) const
+Auth::OAuth::UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 {
     URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
     auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{accessToken};

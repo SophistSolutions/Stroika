@@ -12,7 +12,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
     inline const ObjectVariantMapper ProviderConfiguration::kMapper = [] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<URI> ();
-        mapper.AddCommonType < optional<URI>> ();
+        mapper.AddCommonType<optional<URI>> ();
         mapper.AddClass<ProviderConfiguration> ({
             {"provider"sv, &ProviderConfiguration::name},
             {"openid_configuration_uri"sv, &ProviderConfiguration::openid_configuration_uri},

@@ -158,7 +158,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         /**
          *  https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
          */
-        nonvirtual TokenResponse Token (const TokenRequest& tr) const;
+        nonvirtual TokenResponse GetToken (const TokenRequest& tr) const;
 
     public:
         /**
@@ -166,7 +166,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         * 
         * @todo FIND DOCS FOR THIS - try docs on https://accounts.google.com/.well-known/openid-configuration
          */
-        nonvirtual UserInfo UserInfo (const String& accessToken) const;
+        nonvirtual UserInfo GetUserInfo (const String& accessToken) const;
 
     private:
         const ProviderConfiguration fProviderConfiguration_;
