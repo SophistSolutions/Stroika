@@ -71,14 +71,13 @@ namespace Stroika::Frameworks::Auth {
     public:
         /**
          */
-        CurrentIdentityAuthInterceptor (function<optional<ID_TYPE> (Request&)> cb);
+        CurrentIdentityAuthInterceptor (function<ID_TYPE (Request&)> cb);
 
     private:
         struct Rep_;
     };
     template <invocable<Request&> FN>
-        requires (Common::IOptional<invoke_result_t<FN, Request&>>)
-    CurrentIdentityAuthInterceptor (FN) -> CurrentIdentityAuthInterceptor<typename invoke_result_t<FN, Request&>::value_type>;
+    CurrentIdentityAuthInterceptor (FN) -> CurrentIdentityAuthInterceptor<invoke_result_t<FN, Request&>>;
 
 }
 

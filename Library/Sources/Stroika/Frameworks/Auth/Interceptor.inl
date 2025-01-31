@@ -13,9 +13,9 @@ namespace Stroika::Frameworks::Auth {
      */
     template <IIdentityManagerCompatibleID ID_TYPE>
     struct CurrentIdentityAuthInterceptor<ID_TYPE>::Rep_ : Interceptor::_IRep {
-        function<optional<ID_TYPE> (WebServer::Request&)> fCallback_;
+        function<ID_TYPE (WebServer::Request&)> fCallback_;
 
-        Rep_ (function<optional<ID_TYPE> (WebServer::Request&)> cb)
+        Rep_ (function<ID_TYPE (WebServer::Request&)> cb)
             : fCallback_{cb}
         {
         }
@@ -25,8 +25,8 @@ namespace Stroika::Frameworks::Auth {
         }
         virtual void HandleMessage (WebServer::Message& m) const override
         {
-            if (optional<ID_TYPE> oId = fCallback_ (m.rwRequest ())) {
-                CurrentIdentityManager<ID_TYPE>::Set (*oId);
+            if (auto oId = fCallback_ (m.rwRequest ())) {
+                CurrentIdentityManager<ID_TYPE>::Set (oId);
             }
         }
         virtual void CompleteNormally ([[maybe_unused]] WebServer::Message& m) const override
@@ -39,7 +39,7 @@ namespace Stroika::Frameworks::Auth {
         }
     };
     template <IIdentityManagerCompatibleID ID_TYPE>
-    CurrentIdentityAuthInterceptor<ID_TYPE>::CurrentIdentityAuthInterceptor (function<optional<ID_TYPE> (WebServer::Request&)> cb)
+    CurrentIdentityAuthInterceptor<ID_TYPE>::CurrentIdentityAuthInterceptor (function<ID_TYPE (WebServer::Request&)> cb)
         : inherited{make_shared<Rep_> (cb)}
     {
     }
