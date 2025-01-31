@@ -168,15 +168,7 @@ endif
 	@$(MAKE) --silent configureAndBuild_
 
 
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-#unsure why windows and unix builds go to such different places, but they do. Probably not too hard to unify them, but not a priority
-# B2FullPath=$(PER_CONFIGURATION_BUILDS_DIR)/b2.exe
-#even more weird - its appearance in that odd spot appears sporadic when building under other apps (symbolic links) - so try this
-#Debug/ThirdPartyComponents/boost/tools/build/src/engine/b2.exe
-#B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/b2.exe
-B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe
-endif
+B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2${EXE_SUFFIX}
 
 ScriptsLibPath=$(shell realpath ../../ScriptsLib)
 
@@ -201,9 +193,11 @@ BOOTSTRAP_TOOLSET?=
 bootstrap_:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Bootstrapping - see ${OUTPUT_WORKDIR_PRETTYNAME}BOOTSTRAP-OUT.txt"` "... "
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && bootstrap.bat ${BOOTSTRAP_TOOLSET}" > BOOTSTRAP-OUT.txt)
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "cd tools\build && ${B2FullPath} install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP-OUT.txt 2>&1)
+	@### From https://www.boost.org/doc/libs/1_87_0/more/getting_started/windows.html#id37 - section 5.2
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "bootstrap.bat ${BOOTSTRAP_TOOLSET}" > ../../BOOTSTRAP-OUT.txt)
+	@#cuz seems this is place UNIX puts it, so keep consistent
+	@if [ ! -e ${B2FullPath} ]; then cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/b2.exe ${B2FullPath}; fi
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) ".\b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> ../../BOOTSTRAP-OUT.txt 2>&1)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP-OUT.txt)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP-OUT.txt 2>&1)
