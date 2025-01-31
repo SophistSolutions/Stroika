@@ -184,7 +184,7 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& afterInterceptors_) {
               ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
               thisObj->fAfterInterceptors_ = afterInterceptors_;
-              thisObj->FixupInterceptorChain_ ();
+              thisObj->DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
           }}
     , beforeInterceptors{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
@@ -194,7 +194,7 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& beforeInterceptors) {
               ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
               thisObj->fBeforeInterceptors_ = beforeInterceptors;
-              thisObj->FixupInterceptorChain_ ();
+              thisObj->DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
           }}
     , bindings{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Iterable<SocketAddress> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::bindings);
@@ -237,7 +237,7 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& earlyInterceptors) {
               ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
               thisObj->fEarlyInterceptors_ = earlyInterceptors;
-              thisObj->FixupInterceptorChain_ ();
+              thisObj->DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
           }}
     , options{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Options& {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::options);
@@ -300,14 +300,23 @@ ConnectionManager::~ConnectionManager ()
 
 void ConnectionManager::DeriveConnectionDefaultOptionsFromEffectiveOptions_ ()
 {
+#if qStroika_Foundation_Debug_DefaultTracingOn
+    auto prev = fUseDefaultConnectionOptions_.fInterceptorChain;
+#endif
     fUseDefaultConnectionOptions_ = Connection::Options{
-        .fInterceptorChain              = fInterceptorChain_,
+        .fInterceptorChain              = mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_),
         .fDefaultResponseHeaders        = *fEffectiveOptions_.fDefaultResponseHeaders,
         .fDefaultGETResponseHeaders     = fEffectiveOptions_.fDefaultGETResponseHeaders,
         .fAutoComputeETagResponse       = *fEffectiveOptions_.fAutoComputeETagResponse,
         .fAutomaticTransferChunkSize    = fEffectiveOptions_.fAutomaticTransferChunkSize,
         .fSupportedCompressionEncodings = fEffectiveOptions_.fSupportedCompressionEncodings,
     };
+    // @todo could add trace messages on other values changing...
+#if qStroika_Foundation_Debug_DefaultTracingOn
+    if (prev != fUseDefaultConnectionOptions_.fInterceptorChain) {
+        DbgTrace ("Updated InterceptorChain: {}"_f, fUseDefaultConnectionOptions_.fInterceptorChain);
+    }
+#endif
 }
 
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
@@ -417,12 +426,6 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
     }
 }
 
-void ConnectionManager::FixupInterceptorChain_ ()
-{
-    fInterceptorChain_ = InterceptorChain{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)};
-    DbgTrace ("Adjusted interceptors: {}"_f, fInterceptorChain_);
-}
-
 Collection<shared_ptr<Connection>> ConnectionManager::GetInactiveConnections_ () const
 {
     return fInactiveSockSetPoller_.GetDescriptors ().Map<Collection<shared_ptr<Connection>>> ([] (const auto& i) { return i.first; });
@@ -449,7 +452,7 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
         newInterceptors += *newValue;
     }
     rwLock.store (newInterceptors);
-    FixupInterceptorChain_ ();
+    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
 }
 
 void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
@@ -549,7 +552,7 @@ void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRela
             fBeforeInterceptors_.rwget ()->Append (i);
             break;
     }
-    FixupInterceptorChain_ ();
+    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
 }
 
 void ConnectionManager::RemoveInterceptor (const Interceptor& i)
@@ -570,5 +573,5 @@ void ConnectionManager::RemoveInterceptor (const Interceptor& i)
         }
     }
     Require (found);
-    FixupInterceptorChain_ ();
+    DeriveConnectionDefaultOptionsFromEffectiveOptions_ ();
 }

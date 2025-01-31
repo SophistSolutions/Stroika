@@ -450,7 +450,6 @@ namespace Stroika::Frameworks::WebServer {
         Execution::Synchronized<Sequence<Interceptor>> fAfterInterceptors_;
         Execution::Synchronized<optional<Duration>>    fAutomaticTCPDisconnectOnClose_;
         Router                                         fRouter_;
-        InterceptorChain                               fInterceptorChain_; // no need to synchronize cuz it's internally synchronized
 
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;

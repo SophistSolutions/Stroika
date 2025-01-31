@@ -21,5 +21,9 @@ namespace Stroika::Frameworks::WebServer {
     {
         fRep_.cget ().load ()->HandleMessage (m);
     }
+    inline bool InterceptorChain::operator== (const InterceptorChain& rhs) const
+    {
+        return fRep_.cget ().load ()->GetInterceptors () == rhs.fRep_.cget ().load ()->GetInterceptors ();
+    }
 
 }

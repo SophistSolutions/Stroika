@@ -125,6 +125,12 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void HandleMessage (Message& m) const;
 
     public:
+        /**
+         *  Two interceptors chains are equal if they have the same addresses, or are copies of one another by copy constructor or assignment.
+         */
+        nonvirtual bool operator== (const InterceptorChain& rhs) const;
+
+    public:
         nonvirtual Characters::String ToString () const;
 
     private:
