@@ -78,7 +78,7 @@ namespace Stroika::Frameworks::Auth {
     };
     template <invocable<Request&> FN>
         requires (Common::IOptional<invoke_result_t<FN, Request&>>)
-    CurrentIdentityAuthInterceptor (FN) -> CurrentIdentityAuthInterceptor<typename result_of_t<FN>::value_type>;
+    CurrentIdentityAuthInterceptor (FN) -> CurrentIdentityAuthInterceptor<typename invoke_result_t<FN, Request&>::value_type>;
 
 }
 
