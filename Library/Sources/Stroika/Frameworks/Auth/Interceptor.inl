@@ -25,7 +25,7 @@ namespace Stroika::Frameworks::Auth {
         }
         virtual void HandleMessage (Message& m) const override
         {
-            if (optional<ID_TYPE> oId = fCallback_(m.rwRequest()) {
+            if (optional<ID_TYPE> oId = fCallback_(m.rwRequest())) {
                 CurrentIdentityManager<ID_OBJ>::Set (*oId);
             }
         }
