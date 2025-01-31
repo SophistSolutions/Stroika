@@ -256,7 +256,6 @@ ConnectionManager::ConnectionManager (const Iterable<SocketAddress>& bindAddress
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
     , fRouter_{routes, *fEffectiveOptions_.fCORS}
-    , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     // note since Stroika v3.0d5, we set fQMax = so we don't get lots of useless requests that fill the Q. Probably shouldn't happen
     // anyhow, since we have set 'backlog' - but in case, better failure mode ; arguably could be zero length, but for latency of threads waking up to pickup work;
     // --LGP 2023-11-27
