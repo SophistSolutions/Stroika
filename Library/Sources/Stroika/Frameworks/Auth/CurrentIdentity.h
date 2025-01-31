@@ -55,6 +55,10 @@ namespace Stroika::Frameworks::Auth {
     struct CurrentIdentityManager {
 
         /**
+         */
+        using IDType = ID_OBJ;
+
+        /**
           * \brief sets the current ID to argument value -
           *     \req CurrentIdentityManager<ID_OBJ>::Get () == false
           */
@@ -62,7 +66,7 @@ namespace Stroika::Frameworks::Auth {
             /**
              *     \req CurrentIdentityManager<ID_OBJ>::Get () == false
              */
-            Establish (const ID_OBJ& id);
+            Establish (const IDType& id);
 
             /**
              *     \ens CurrentIdentityManager<ID_OBJ>::Get () == false
@@ -73,19 +77,19 @@ namespace Stroika::Frameworks::Auth {
         /**
          *  \brief if no identity set with Establish, and maybe even if it has been set, Get() == false
          */
-        static ID_OBJ Get ();
+        static IDType Get ();
 
         /**
          *  \brief if no identity set with Establish, and maybe even if it has been set, Get() == false
          */
-        static void Set (ID_OBJ id);
+        static void Set (IDType id);
 
         /**
          */
         static void clear ();
 
     private:
-        static inline thread_local ID_OBJ sCurrent_;
+        static inline thread_local IDType sCurrent_;
     };
 
 }
