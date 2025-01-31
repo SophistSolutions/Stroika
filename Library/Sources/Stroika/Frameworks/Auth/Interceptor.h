@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #ifndef _Stroika_Frameworks_Auth_Interceptor_h_
@@ -76,6 +76,9 @@ namespace Stroika::Frameworks::Auth {
     private:
         struct Rep_;
     };
+    template <invocable<Request&> FN>
+        requires (Common::IOptional<invoke_result_t<FN, Request&>>)
+    CurrentIdentityAuthInterceptor (FN) -> CurrentIdentityAuthInterceptor<typename result_of_t<FN>::value_type>;
 
 }
 

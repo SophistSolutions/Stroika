@@ -19,7 +19,7 @@ namespace Stroika::Frameworks::Auth {
             : fCallback_{cb}
         {
         }
-        virtual void HandleFault (WebServer::Message& m, [[maybe_unused]] const exception_ptr& e) const noexcept override
+        virtual void HandleFault ([[maybe_unused]] WebServer::Message& m, [[maybe_unused]] const exception_ptr& e) const noexcept override
         {
             CurrentIdentityManager<ID_TYPE>::clear ();
         }
@@ -29,11 +29,11 @@ namespace Stroika::Frameworks::Auth {
                 CurrentIdentityManager<ID_TYPE>::Set (*oId);
             }
         }
-        virtual void CompleteNormally (WebServer::Message& m) const override
+        virtual void CompleteNormally ([[maybe_unused]] WebServer::Message& m) const override
         {
             CurrentIdentityManager<ID_TYPE>::clear ();
         }
-        virtual String ToString () const override
+        virtual Characters::String ToString () const override
         {
             return "CurrentIdentityAuthInterceptor"sv;
         }
