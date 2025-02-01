@@ -150,7 +150,7 @@ const ObjectVariantMapper TokenResponse::kMapper = [] () {
         {"expires_in"sv, &TokenResponse::expires_at,
          TypeMappingDetails{ObjectVariantMapper::FromObjectMapperType<DateTime> (
                                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const DateTime* objOfType) -> VariantValue {
-                                    return VariantValue{(*objOfType - DateTime::NowUTC ()).As<int> ()};
+                                    return VariantValue{(objOfType->AsUTC () - DateTime::NowUTC ()).As<int> ()};
                                 }),
                             ObjectVariantMapper::ToObjectMapperType<DateTime> (
                                 [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, DateTime* into) -> void {
