@@ -51,6 +51,13 @@ ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 
 
 
+#not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
+# make clobber all you don't want those to happen at the same time. And make libraries samples wouldn't really work since all the libraries
+# have to be built before the samples etc...
+#		(ALSO THIS COULD BE REASON BEHIND FLAKY FAIL ON HearHE Windows building boost) --LGP 2025-02-01
+.NOTPARALLEL:
+
+
 all:	
 ifeq ($(CONFIGURATION),)
 	@for i in `../../ScriptsLib/GetConfigurations` ; do\
