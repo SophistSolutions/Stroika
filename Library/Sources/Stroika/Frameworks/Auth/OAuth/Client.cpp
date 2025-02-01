@@ -270,8 +270,8 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
 Auth::OAuth::UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 {
     URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
-    auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{accessToken};
-    auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = "Bearer "sv + authInfo});
+    auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{"Bearer "sv + accessToken};
+    auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = authInfo});
     try {
         IO::Network::Transfer::Response r = connection.GET (userInfoRequestURI);
         //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
