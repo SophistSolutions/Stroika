@@ -224,7 +224,6 @@ String UserInfo::ToString () const
 
 const ObjectVariantMapper UserInfo::kMapper = [] () {
     ObjectVariantMapper mapper;
-    using TypeMappingDetails = ObjectVariantMapper::TypeMappingDetails;
     mapper.AddCommonType<String> ();
     mapper.AddCommonType<optional<String>> ();
     mapper.AddCommonType<URI> ();
