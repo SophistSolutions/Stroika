@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Traversal/Range.h"
 
 /**
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 namespace Stroika::Foundation::DataExchange::JSON {
 
@@ -86,7 +87,9 @@ namespace Stroika::Foundation::DataExchange::JSON {
      *          }
      *      \endcode
      * 
-     *      \todo new CTOR taking set of claims , and producing signature etc..
+     *  \todo new CTOR taking set of claims , and producing signature etc..
+     * 
+     *  \note WARNING: signature validation NYI
      */
     class JWT {
     public:
