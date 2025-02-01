@@ -63,5 +63,5 @@ void Interceptor::_IRep::CompleteNormally ([[maybe_unused]] Message& m) const
 
 Characters::String Interceptor::_IRep::ToString () const
 {
-    return "{}"_f(this); // ptr representation
+    return "{}"_f(reinterpret_cast<const void*> (this)); // ptr representation
 }
