@@ -52,7 +52,9 @@ namespace Stroika::Frameworks::Auth::OAuth {
         String code;
 
         /**
-         * \brief set to 'authorization_code' when exhanging authorization code for access token
+         * \brief set to 'authorization_code' when exchanging authorization code for access token
+         * 
+         *  https://datatracker.ietf.org/doc/html/rfc6749#section-1.3.1
          */
         String grant_type{"authorization_code"sv};
 
@@ -88,6 +90,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
      */
     struct TokenResponse {
         /**
+         *      https://datatracker.ietf.org/doc/html/rfc6749#section-1.4
          */
         String access_token;
 
@@ -99,6 +102,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         Set<String> scope;
 
         /**
+         *  https://datatracker.ietf.org/doc/html/rfc6749#section-1.5
          */
         optional<String> refresh_token;
 
