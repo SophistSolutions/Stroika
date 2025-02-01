@@ -46,6 +46,9 @@ String TokenRequest::ToString () const
     if (redirect_uri) {
         sb << ", redirect_uri: "sv << redirect_uri;
     }
+    if (code_verifier) {
+        sb << ", code_verifier: "sv << code_verifier;
+    }
     sb << "}"sv;
     return sb;
 }
@@ -61,6 +64,7 @@ const ObjectVariantMapper TokenRequest::kMapper = [] () {
         {"grant_type"sv, &TokenRequest::grant_type},
         {"client_secret"sv, &TokenRequest::client_secret},
         {"redirect_uri"sv, &TokenRequest::redirect_uri},
+        {"code_verifier"sv, &TokenRequest::code_verifier},
     });
     return mapper;
 }();
@@ -90,6 +94,9 @@ TypedBLOB TokenRequest::ToWireFormat () const
             params.Add ({"redirect_uri"sv, redirect_uri->As<String> ()});
         }
         params.Add ({"grant_type"sv, grant_type});
+        if (code_verifier) {
+            params.Add ({"code_verifier"sv, *code_verifier});
+        }
         return Variant::FormURLEncoded::Writer{}.WriteAsBLOB (params);
     }();
     return TypedBLOB{reqBody, InternetMediaTypes::kWWWFormURLEncoded};

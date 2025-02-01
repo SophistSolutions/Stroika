@@ -68,6 +68,11 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         optional<URI> redirect_uri;
 
+       /**
+         * WAG - FIND DOCS ON THIS---
+         */
+        optional<String> code_verifier;
+
         nonvirtual String ToString () const;
 
         nonvirtual TypedBLOB ToWireFormat () const;
