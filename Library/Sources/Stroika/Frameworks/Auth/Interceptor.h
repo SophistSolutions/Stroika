@@ -35,33 +35,36 @@ namespace Stroika::Frameworks::Auth {
     /**
      *  \brief Interceptor added to WebServer::ConnectionManager to translate Authorization: headers (parse them) into thread_local ID variable accessible by webservice methods
      *
-     *  Caller defines ID_TYPE - the type of record stored to track a user ID (e.g. struct MyID_ { String fEmail; })
-     * 
-     *  \note  this doesn't generate 401s - but 
+     *  Caller defines ID_TYPE - the type of record stored to track a user ID; type: typically like this
      *  \par Example Usage
      *      \code
-     *          struct MyID_ { String fEmail; })
+     *          struct MyID_ { 
+     *              String fBearerToken;
+     *               MoreUserInfo GetInfoDerivedFromBearerOrThrow401 (); });
+     *          };
+     *      \enccode
+     * 
+     *  \note  The Interceptor doesn't generate 401s, populates a thread-local data structure CurrentIdentityAuthInterceptor with the auth-token
+     * 
+     *  \par Example Usage
+     *      \code
      *          ...ConnectionManager fConnectionMgr_{...}
      *          CTOR BODY
      *          {
-     *              auto convertRequest2IDToken = [] (Request& request) -> optional<MyID_> {
-     *                  // don't throw on bad conversion, but return nullopt - or COULD - 
-     *                  // depending on application logic - return an ID with a flag saying bad
-     *                  if (optional<String> authHdr = request.headers ().authorization ()) {
-     *                      // @todo parse as JWT maybe
-     *                      return MyID_{.fEmail = *authHdr };
+     *              auto convertAuthHeaderToIDObject  = [] (Request& request) -> optional<MyID_> {
+     *                  if (auto authHeader = request.headers ().authorization (); authHeader and authHeader->StartsWith ("Bearer "sv)) {
+     *                      return  WebServiceIdentity{.fBearerToken = authHeader->SubString (7).Trim ()};
      *                  }
      *                  return nullopt;
      *              };
-     *              fConnectionMgr_.AddInterceptor(CurrentIdentityAuthInterceptor{convertRequest2IDToken}, eEarly);
+     *              fConnectionMgr_.AddInterceptor (CurrentIdentityAuthInterceptor{convertAuthHeaderToIDObject}, ConnectionManager::ePrependsToEarly);
      *          }
      * 
      *          // THEN - inside any web-service method, the caller may check
-     *          if (CurrentIdentityManager<MyID_>::Get ()) {
-     *              String email = CurrentIdentityManager<MyID_>::Get ()->fEMail;
+     *          if (optional<MyID_> oid = CurrentIdentityManager<optional<MyID_>>::Get ()) {
+     *              String email = oid->GetInfoDerivedFromBearerOrThrow401 ().fEmail;
      *          }
      *      \endcode
-     * 
      */
     template <IIdentityManagerCompatibleID ID_TYPE>
     class CurrentIdentityAuthInterceptor : public Interceptor {

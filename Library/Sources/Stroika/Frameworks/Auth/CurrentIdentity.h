@@ -23,6 +23,14 @@ namespace Stroika::Frameworks::Auth {
      * struct AuthenticatedIdentity {
      *     String fEMail;  // for now - lets assume that's our identity - what we extract from JWT
      * };
+     * 
+     *  OR
+     * 
+     * struct AuthenticatedIdentity {
+     *     String fBearerToken;
+     * 
+     *      optional<MoreInfo> PeekAtDerivedInfo () const;
+     * };
      * then use optional<AuthenticatedIdentity> as arg to IIdentityManagerCompatibleID/CurrentIdentityManager
      */
     template <typename T>
@@ -50,6 +58,9 @@ namespace Stroika::Frameworks::Auth {
      *          fWSImpl.method(decoded_args_from_req);  // internally peeks at CurrentIdentityManager<ID_OBJ>::Get ()
      *          ...
      *      }
+     * 
+     *  \see also Stroika::Frameworks::Auth::CurrentIdentityAuthInterceptor - maybe better way to 'Establish' context auth values
+     * 
      */
     template <IIdentityManagerCompatibleID ID_OBJ>
     struct CurrentIdentityManager {
