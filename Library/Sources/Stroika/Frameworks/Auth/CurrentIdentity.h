@@ -100,7 +100,15 @@ namespace Stroika::Frameworks::Auth {
         static void clear ();
 
     private:
+#if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
+        static IDType& sCurrent_BWA_ ()
+        {
+            static thread_local IDType sCurrent_;
+            return sCurrent_;
+        }
+#else
         static inline thread_local IDType sCurrent_;
+#endif
     };
 
 }

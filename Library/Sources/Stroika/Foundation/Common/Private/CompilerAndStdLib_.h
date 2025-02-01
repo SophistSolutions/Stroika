@@ -344,6 +344,38 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 
 #endif
 
+/**
+* 
+* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66944
+* 
+*   \note THIS bug requires TWO uses in a single translation unit - which doesn't happen anywhere in Stroika as of 2025-02-01 (but probably will soon).
+*         And does happen in HearHE...
+* 
+ file included from /Sandbox/HearHE-Dev/ThirdPartyComponents/Stroika/StroikaRoot/Library/Sources/Stroika/Frameworks/Auth/Interceptor.h:12,
+                 from /Sandbox/HearHE-Dev/Backend//Sources/WebServer.cpp:25:
+/Sandbox/HearHE-Dev/ThirdPartyComponents/Stroika/StroikaRoot/Library/Sources/Stroika/Frameworks/Auth/CurrentIdentity.h:103:43: error: redefinition of ‘bool __tls_guard’
+  103 |         static inline thread_local IDType sCurrent_;
+      |                                           ^~~~~~~~~
+In file included from /Sandbox/HearHE-Dev/ThirdPartyComponents/Stroika/StroikaRoot/Library/Sources/Stroika/Foundation/Execution/ThreadPool.h:14,
+                 from /Sandbox/HearHE-Dev/ThirdPartyComponents/Stroika/StroikaRoot/Library/Sources/Stroika/Frameworks/WebServer/ConnectionManager.h:17,
+                 from /Sandbox/HearHE-Dev/Backend//Sources/WebServer.cpp:26:
+/Sandbox/HearHE-Dev/ThirdPartyComponents/Stroika/StroikaRoot/Library/Sources/Stroika/Foundation/Execution/Thread.h:761:76: note: ‘bool __tls_guard’ previously declared here
+  761 |             static inline thread_local weak_ptr<Rep_>                      sCurrentThreadRep_;
+      |                                                                            ^~~~~~~~~~~~~~~~~~
+/Sandbox/HearHE-Dev/ThirdPartyComponents/Stroika/StroikaRoot/Library/Sources/Stroika/Frameworks/Auth/CurrentIdentity.h:103: confused by earlier errors, bailing out
+make[2]: *** [/Sandbox/HearHE-Dev/ThirdPartyComponents/Stroika/StroikaRoot/ScriptsLib/SharedBuildRules-Default.mk:27: /Sandbox/HearHE-Dev/IntermediateFiles/Debug/HearHE/Backend/WebServer.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+*/
+#ifndef qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy ((__GNUC__ <= 14))
+#else
+#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy 0
+#endif
+
+#endif
+
 /*
      Compiling Library/Sources/Stroika/Frameworks/Led/BiDiLayoutEngine.cpp ... 
 In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,

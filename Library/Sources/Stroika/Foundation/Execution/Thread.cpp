@@ -489,7 +489,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
         }
 
         // So inside 'Run' - we will have access to this thread_local variable
+#if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
+        sCurrentThreadRep_BWA_ () = thisThreadRep;
+#else
         sCurrentThreadRep_ = thisThreadRep;
+#endif
 
         [[maybe_unused]] IDType thisThreadID = GetCurrentThreadID (); // NOTE - CANNOT call thisThreadRep->GetID () or in any way touch thisThreadRep->fThread_
 
@@ -1143,7 +1147,13 @@ void Thread::CheckForInterruption ()
      *  re-throw with string operations. Otherwise we would have to use SuppressInterruptionInContext
      *  just before the actual throw.
      */
-    if (shared_ptr<Ptr::Rep_> thisRunningThreadRep = Ptr::sCurrentThreadRep_.lock ()) {
+    if (shared_ptr<Ptr::Rep_> thisRunningThreadRep =
+#if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
+            Ptr::sCurrentThreadRep_BWA_ ().lock ()
+#else
+            Ptr::sCurrentThreadRep_.lock ()
+#endif
+    ) {
         if (t_InterruptionSuppressDepth_ == 0) [[likely]] {
             if (thisRunningThreadRep->fAbortRequested_) [[unlikely]] {
                 Throw (Thread::AbortException::kThe);

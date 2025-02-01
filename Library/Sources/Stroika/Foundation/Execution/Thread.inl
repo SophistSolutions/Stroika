@@ -370,7 +370,11 @@ namespace Stroika::Foundation::Execution {
      */
     inline Thread::Ptr Thread::GetCurrent ()
     {
+#if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
+        return Ptr{Ptr::sCurrentThreadRep_BWA_ ().lock ()};
+#else
         return Ptr{Ptr::sCurrentThreadRep_.lock ()};
+#endif
     }
 
 #if !qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
@@ -400,7 +404,11 @@ namespace Stroika::Foundation::Execution {
      */
     inline bool Thread::IsCurrentThreadInterruptible ()
     {
+#if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
+        return Ptr::sCurrentThreadRep_BWA_ ().lock () != nullptr;
+#else
         return Ptr::sCurrentThreadRep_.lock () != nullptr;
+#endif
     }
 #endif
 
