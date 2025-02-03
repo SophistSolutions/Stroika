@@ -57,8 +57,17 @@ namespace Stroika::Frameworks::Auth::OAuth {
                               .token_uri                   = "https://oauth2.googleapis.com/token"sv,
                               .userinfo_endpoint           = "https://openidconnect.googleapis.com/v1/userinfo"sv,
                               .auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"sv},
+        ProviderConfiguration{.name = "microsoft"sv,
+                              .openid_configuration_uri = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"sv,
+                              .auth_uri                    = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"sv,
+                              .token_uri                   = "https://login.microsoftonline.com/common/oauth2/v2.0/token"sv,
+                              .userinfo_endpoint           = "https://graph.microsoft.com/oidc/userinfo"sv,
+                              .auth_provider_x509_cert_url = "https://login.microsoftonline.com/common/discovery/v2.0/keys"sv},
+        ProviderConfiguration{.name                        = "facebook"sv,
+                              .openid_configuration_uri    = "https://www.facebook.com/.well-known/openid-configuration"sv,
+                              .auth_uri                    = "https://facebook.com/dialog/oauth/"sv,
+                              .auth_provider_x509_cert_url = "https://www.facebook.com/.well-known/oauth/openid/jwks/"sv},
         ProviderConfiguration{.name = "twitter"sv, .auth_uri = "https://api.twitter.com/oauth/authorize"sv, .token_uri = "https://api.twitter.com/oauth/request_token"sv},
-        ProviderConfiguration{.name = "facebook"sv, .openid_configuration_uri = "https://www.facebook.com/.well-known/openid-configuration"sv},
     };
 
 }

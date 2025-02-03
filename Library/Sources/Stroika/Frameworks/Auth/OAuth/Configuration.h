@@ -81,18 +81,22 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
         /**
          *  EG https://accounts.google.com/.well-known/openid-configuration
+         *     https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
+         *     https://www.facebook.com/.well-known/openid-configuration
+         *     https://dev-84941762.okta.com/.well-known/openid-configuration?client_id=0oa5km1v306LXN57y5d7
          */
-        URI openid_configuration_uri;
+        optional < URI> openid_configuration_uri;
 
         /**
          *  Same as authorization_endpoint from openid_configuration_uri
          */
-        URI auth_uri;
+        optional < URI> auth_uri;
 
         /**
          *  Same as token_endpoint from openid_configuration_uri
+         *      \note facebook doesn't appear to support this - so I guess just use id_token and (what flow)???
          */
-        URI token_uri;
+        optional<URI> token_uri;
 
         /**
          *  if missing, check userinfo_endpoint inside data from openid_configuration_uri
@@ -102,7 +106,23 @@ namespace Stroika::Frameworks::Auth::OAuth {
         /**
          *  Same as jwks_uri from openid_configuration_uri
          */
-        URI auth_provider_x509_cert_url;
+        optional < URI> auth_provider_x509_cert_url;
+
+        /**
+         *  Fetch the data from the openid_configuration_uri, and use it to augment the fields
+         *  of this structure, and return the updated record (replacing items that conflict).
+         * 
+         *  This can be used to fill in a Provider configuration when all you have is the URL for openid-configuration
+         *
+         *  \par Example Usage
+         *      \code
+         *          ProviderConfiguration providerConfig = 
+         *              ProviderConfiguration{.name = "MyOKTAAccount", .openid_configuration_uri = "https://dev-84941762.okta.com/.well-known/openid-configuration?client_id=0oa5km1v306LXN57y5d7"}
+         *              .FetchAdditionsFromOpenIDConfigurationURI ();
+         *      \endcode
+         *      
+         */
+        ProviderConfiguration            FetchAdditionsFromOpenIDConfigurationURI () const;
 
         static const ObjectVariantMapper kMapper;
 
