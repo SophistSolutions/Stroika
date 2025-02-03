@@ -82,6 +82,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         /**
          *  EG https://accounts.google.com/.well-known/openid-configuration
          *     https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
+         *     https://account.apple.com/.well-known/openid-configuration
          *     https://www.facebook.com/.well-known/openid-configuration
          *     https://dev-84941762.okta.com/.well-known/openid-configuration?client_id=0oa5km1v306LXN57y5d7
          */
@@ -99,7 +100,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         optional<URI> token_uri;
 
         /**
-         *  if missing, check userinfo_endpoint inside data from openid_configuration_uri
+         *  if missing, try FetchAdditionsFromOpenIDConfigurationURI (), or hopefully get id_token from GetToken() api.
          */
         optional<URI> userinfo_endpoint;
 
@@ -122,7 +123,15 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *      \endcode
          *      
          */
-        ProviderConfiguration FetchAdditionsFromOpenIDConfigurationURI () const;
+        nonvirtual ProviderConfiguration FetchAdditionsFromOpenIDConfigurationURI () const;
+
+        /**
+         */
+        nonvirtual bool operator== (const ProviderConfiguration& rhs) const = default;
+
+        /**
+         */
+        nonvirtual auto operator<=> (const ProviderConfiguration& rhs) const = default;
 
         static const ObjectVariantMapper kMapper;
 
@@ -176,6 +185,16 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
         static const ObjectVariantMapper kMapper;
 
+        /**
+         */
+        nonvirtual bool operator== (const ClientConfiguration& rhs) const = default;
+
+        /**
+         */
+        nonvirtual auto operator<=> (const ClientConfiguration& rhs) const = default;
+
+        /**
+         */
         nonvirtual String ToString () const;
     };
 
