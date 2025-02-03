@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
 #include "Stroika/Foundation/Cache/SynchronizedTimedCache.h"
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Deque.h"
@@ -24,6 +25,7 @@
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Containers/Stack.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/NullMutex.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Math/Common.h"
@@ -49,20 +51,6 @@ namespace {
     bool kSortaSlow_ = qStroika_Foundation_Debug_AssertionsChecked or Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer;
 }
 
-namespace {
-    /*
-     *  To REALLY this this code for thread-safety, use ExternallySynchronizedLock, but to verify it works
-     *  without worrying about races, just use mutex.
-     */
-    struct no_lock_ {
-        void lock ()
-        {
-        }
-        void unlock ()
-        {
-        }
-    };
-}
 
 namespace {
     template <typename ITERABLE_TYPE, typename LOCK_TYPE>
@@ -73,7 +61,7 @@ namespace {
             Debug::TraceContextBumper traceCtx{"{}IterateOverThread::MAIN..."};
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 //DbgTrace ("Iterate thread loop %d", i);
-                lock_guard<decltype (*lock)> critSec{*lock};
+                lock_guard critSec{*lock};
                 for (value_type e : iterable->load ()) {
                     [[maybe_unused]] value_type e2 = e; // do something
                 }
@@ -91,11 +79,11 @@ namespace {
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 for (int ii = 0; ii <= 100; ++ii) {
                     if (Math::IsOdd (ii)) {
-                        lock_guard<decltype (*lock)> critSec{*lock};
+                        lock_guard critSec{*lock};
                         (*oneToKeepOverwriting) = elt1;
                     }
                     else {
-                        lock_guard<decltype (*lock)> critSec{*lock};
+                        lock_guard critSec{*lock};
                         (*oneToKeepOverwriting) = elt2;
                     }
                 }
@@ -110,7 +98,7 @@ namespace {
         void DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
             Debug::TraceContextBumper traceCtx{"{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()"};
-            no_lock_                  lock;
+            NullMutex                  lock;
             //mutex lock;
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
             Thread::Ptr                 iterateThread   = mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
@@ -125,8 +113,8 @@ namespace {
             //const unsigned int kRepeatCount_ = 1;
             static const initializer_list<int>            kOrigValueInit_       = {1, 3, 4, 5, 6, 33, 12, 13};
             static const initializer_list<int>            kUpdateValueInit_     = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
-            static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {pair<int, int> (1, 3), pair<int, int> (4, 5),
-                                                                                   pair<int, int> (6, 33), pair<int, int> (12, 13)};
+            static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {{1, 3}, {4, 5},
+                                                                                   {6, 33}, {12, 13}};
             static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {
                 pair<int, int> (4, 5), pair<int, int> (6, 33),  pair<int, int> (12, 34), pair<int, int> (596, 13),
                 pair<int, int> (1, 3), pair<int, int> (99, 35), pair<int, int> (4, 5)};
@@ -180,7 +168,7 @@ namespace {
             static constexpr initializer_list<int> kOrigValueInit_   = {1, 3, 4, 5, 6, 33, 12, 13};
             static constexpr initializer_list<int> kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
 
-            no_lock_ lock;
+            NullMutex lock;
             //mutex lock;
 
             DoItOnce_<Set<int>> (&lock, Set<int> (kOrigValueInit_), kRepeatCount_, [&lock] (Synchronized<Set<int>>* oneToKeepOverwriting) {
@@ -253,22 +241,23 @@ namespace {
                         }
                     }
                 }
-                EXPECT_TRUE (sharedValue.load () == kMaxVal_);
+                EXPECT_EQ (sharedValue.load (), kMaxVal_);
             });
             Thread::Ptr                 adder             = Thread::New ([&sharedValue] () {
                 while (sharedValue.load () < kMaxVal_) {
                     sharedValue.store (*sharedValue.load () + 1);
                 }
-                EXPECT_TRUE (sharedValue.load () == kMaxVal_);
+                EXPECT_EQ (sharedValue.load (), kMaxVal_);
             });
             Thread::Start ({reader, adder});
             [[maybe_unused]] auto&& cleanup =
                 Execution::Finally ([&reader, &adder] () noexcept { Thread::AbortAndWaitForDone ({reader, adder}); });
             // wait long time cuz of debuggers (esp valgrind) etc
             Thread::WaitForDone ({reader, adder}, 15 * 60s);
-            EXPECT_TRUE (sharedValue.load () == kMaxVal_);
+            EXPECT_EQ (sharedValue.load (), kMaxVal_);
         }
         catch (...) {
+            Stroika::Frameworks::Test::WarnTestIssue ("unexpected exception: {}"_f ( current_exception ()) );
             EXPECT_TRUE (false);
         }
     }
@@ -305,8 +294,8 @@ namespace {
         static const Synchronized<Set<int>> kACUSensors_{Set<int>{1, 2}};
         Set<int>                            acufpgaSensors1 = kACUSensors_ ^ sensorsToActuallyRead;
         Set<int>                            acufpgaSensors2 = sensorsToActuallyRead ^ kACUSensors_;
-        EXPECT_TRUE ((acufpgaSensors1 == Set<int>{2}));
-        EXPECT_TRUE ((acufpgaSensors2 == Set<int>{2}));
+        EXPECT_EQ (acufpgaSensors1, (Set<int>{2}));
+        EXPECT_EQ (acufpgaSensors2, (Set<int>{2}));
     }
 }
 
@@ -336,27 +325,27 @@ namespace {
                     Synchronized<int> tmp;
                     tmp = 4;
                     int a{tmp};
-                    EXPECT_TRUE (a == 4);
+                    EXPECT_EQ (a, 4);
                 }
                 {
                     Synchronized<int> tmp{4};
                     int               a{tmp};
-                    EXPECT_TRUE (a == 4);
+                    EXPECT_EQ (a, 4);
                 }
                 {
                     Synchronized<String> tmp{"x"};
                     String               a{tmp};
-                    EXPECT_TRUE (a == "x");
-                    EXPECT_TRUE (tmp.cget ()->find ('z') == string::npos);
-                    EXPECT_TRUE (tmp.cget ()->find ('x') == 0);
+                    EXPECT_EQ (a, "x");
+                    EXPECT_EQ (tmp.cget ()->find ('z'), string::npos);
+                    EXPECT_EQ (tmp.cget ()->find ('x'), 0u);
                 }
                 {
                     static Synchronized<String> tmp{L"x"};
                     [[maybe_unused]] auto&&     critSec = lock_guard{tmp}; // make sure explicit locks work too
                     String                      a{tmp};
-                    EXPECT_TRUE (a == L"x");
-                    EXPECT_TRUE (tmp.cget ()->find ('z') == string::npos);
-                    EXPECT_TRUE (tmp.cget ()->find ('x') == 0);
+                    EXPECT_EQ (a, L"x");
+                    EXPECT_EQ (tmp.cget ()->find ('z') , string::npos);
+                    EXPECT_EQ (tmp.cget ()->find ('x') , 0u);
                 }
             }
             template <typename INTISH_TYPE>
@@ -379,7 +368,7 @@ namespace {
                 decrementer.Start ();
                 incrementer.WaitForDone ();
                 decrementer.WaitForDone ();
-                EXPECT_TRUE (s == INTISH_TYPE (0));
+                EXPECT_EQ (s, INTISH_TYPE (0));
             }
             void DoThreadTest_ ()
             {
@@ -455,7 +444,7 @@ namespace {
                     int x;
                 };
 #if !qStroika_Foundation_Debug_AssertionsChecked
-                EXPECT_TRUE (sizeof (A) == sizeof (APrime));
+                EXPECT_EQ (sizeof (A) , sizeof (APrime));
 #endif
             }
         }
@@ -492,9 +481,9 @@ namespace {
                 Thread::Ptr   t3 = Thread::New ([&tmp] () {
                     for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                         if (tmp.size () == 1000) {
-                            EXPECT_TRUE (tmp.IndexOf (6) == 5u);
-                            EXPECT_TRUE (*tmp.First () == 1);
-                            EXPECT_TRUE (*tmp.Last () == 1000);
+                            EXPECT_EQ (tmp.IndexOf (6) , 5u);
+                            EXPECT_EQ (*tmp.First () , 1);
+                            EXPECT_EQ (*tmp.Last () , 1000);
                         }
                     }
                 });
