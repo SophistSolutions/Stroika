@@ -260,7 +260,7 @@ Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration)
 TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
 {
     URI  tokenRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.token_uri, RuntimeErrorException{"no token_uri"sv});
-    auto connection = IO::Network::Transfer::Connection::New ();
+    auto connection      = IO::Network::Transfer::Connection::New ();
     try {
         //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (tr.ToWireFormat ().fData));
         IO::Network::Transfer::Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());

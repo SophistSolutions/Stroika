@@ -85,12 +85,12 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *     https://www.facebook.com/.well-known/openid-configuration
          *     https://dev-84941762.okta.com/.well-known/openid-configuration?client_id=0oa5km1v306LXN57y5d7
          */
-        optional < URI> openid_configuration_uri;
+        optional<URI> openid_configuration_uri;
 
         /**
          *  Same as authorization_endpoint from openid_configuration_uri
          */
-        optional < URI> auth_uri;
+        optional<URI> auth_uri;
 
         /**
          *  Same as token_endpoint from openid_configuration_uri
@@ -106,7 +106,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         /**
          *  Same as jwks_uri from openid_configuration_uri
          */
-        optional < URI> auth_provider_x509_cert_url;
+        optional<URI> auth_provider_x509_cert_url;
 
         /**
          *  Fetch the data from the openid_configuration_uri, and use it to augment the fields
@@ -122,7 +122,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *      \endcode
          *      
          */
-        ProviderConfiguration            FetchAdditionsFromOpenIDConfigurationURI () const;
+        ProviderConfiguration FetchAdditionsFromOpenIDConfigurationURI () const;
 
         static const ObjectVariantMapper kMapper;
 

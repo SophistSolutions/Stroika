@@ -4,11 +4,11 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
-#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
-#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 
 #include "Configuration.h"
 
@@ -53,18 +53,18 @@ String ProviderConfiguration::ToString () const
 
 ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurationURI () const
 {
-    URI configURI = ValueOfOrThrow (openid_configuration_uri, RuntimeErrorException{"no openid_configuration_uri"sv});
-    auto connection      = IO::Network::Transfer::Connection::New ();
+    URI  configURI  = ValueOfOrThrow (openid_configuration_uri, RuntimeErrorException{"no openid_configuration_uri"sv});
+    auto connection = IO::Network::Transfer::Connection::New ();
     try {
         IO::Network::Transfer::Response r = connection.GET (configURI);
         //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
         // empirical - not sure where documented/defined
         struct openid_configuration_ {
             optional<URI> issuer;
-            optional<URI>    authorization_endpoint;
-            optional<URI>    device_authorization_endpoint;
-            optional<URI>    token_endpoint;
-            optional<URI>    userinfo_endpoint;
+            optional<URI> authorization_endpoint;
+            optional<URI> device_authorization_endpoint;
+            optional<URI> token_endpoint;
+            optional<URI> userinfo_endpoint;
             // ..more ignored for now
             optional<URI> jwks_uri;
         };
@@ -100,7 +100,6 @@ ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurati
         Execution::ReThrow ();
     }
 }
-
 
 /*
  ********************************************************************************
