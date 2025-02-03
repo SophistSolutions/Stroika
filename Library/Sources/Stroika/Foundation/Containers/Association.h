@@ -538,7 +538,7 @@ namespace Stroika::Foundation::Containers {
          * simply indirect to @Association<>::EqualsComparer;
          * only defined if there is a default equals comparer for mapped_type
          * 
-         *  \note since the order of iteration for an association is undefined, two assocations maybe equal, but not enumerate out the same way.
+         *  \note since the order of iteration for an association is undefined, two associations maybe equal, but not enumerate out the same way.
          */
         nonvirtual bool operator== (const Association& rhs) const
             requires (equality_comparable<MAPPED_VALUE_TYPE>);
