@@ -289,9 +289,8 @@ namespace Stroika::Foundation::Characters {
         return String{span{fData_}};
     }
     template <typename OPTIONS>
-    template <typename RESULT_T>
+    template <Common::IAnyOf<String, wstring, u8string, u16string, u32string> RESULT_T>
     inline RESULT_T StringBuilder<OPTIONS>::As () const
-        requires (Common::IAnyOf<RESULT_T, String, wstring, u8string, u16string, u32string>)
     {
         if constexpr (same_as<RESULT_T, String>) {
             return str ();

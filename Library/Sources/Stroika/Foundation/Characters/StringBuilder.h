@@ -242,9 +242,8 @@ namespace Stroika::Foundation::Characters {
          *      o   u16string
          *      o   u32string
          */
-        template <typename RESULT_T>
-        nonvirtual RESULT_T As () const
-            requires (Common::IAnyOf<RESULT_T, String, wstring, u8string, u16string, u32string>);
+        template <Common::IAnyOf<String, wstring, u8string, u16string, u32string> RESULT_T>
+        nonvirtual RESULT_T As () const;
 
     public:
         /*
