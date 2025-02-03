@@ -51,7 +51,6 @@ namespace {
     bool kSortaSlow_ = qStroika_Foundation_Debug_AssertionsChecked or Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer;
 }
 
-
 namespace {
     template <typename ITERABLE_TYPE, typename LOCK_TYPE>
     Thread::Ptr mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
@@ -98,7 +97,7 @@ namespace {
         void DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
             Debug::TraceContextBumper traceCtx{"{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()"};
-            NullMutex                  lock;
+            NullMutex                 lock;
             //mutex lock;
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
             Thread::Ptr                 iterateThread   = mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
@@ -113,8 +112,7 @@ namespace {
             //const unsigned int kRepeatCount_ = 1;
             static const initializer_list<int>            kOrigValueInit_       = {1, 3, 4, 5, 6, 33, 12, 13};
             static const initializer_list<int>            kUpdateValueInit_     = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
-            static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {{1, 3}, {4, 5},
-                                                                                   {6, 33}, {12, 13}};
+            static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {{1, 3}, {4, 5}, {6, 33}, {12, 13}};
             static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {
                 pair<int, int> (4, 5), pair<int, int> (6, 33),  pair<int, int> (12, 34), pair<int, int> (596, 13),
                 pair<int, int> (1, 3), pair<int, int> (99, 35), pair<int, int> (4, 5)};
@@ -257,7 +255,7 @@ namespace {
             EXPECT_EQ (sharedValue.load (), kMaxVal_);
         }
         catch (...) {
-            Stroika::Frameworks::Test::WarnTestIssue ("unexpected exception: {}"_f ( current_exception ()) );
+            Stroika::Frameworks::Test::WarnTestIssue ("unexpected exception: {}"_f(current_exception ()));
             EXPECT_TRUE (false);
         }
     }
@@ -344,8 +342,8 @@ namespace {
                     [[maybe_unused]] auto&&     critSec = lock_guard{tmp}; // make sure explicit locks work too
                     String                      a{tmp};
                     EXPECT_EQ (a, L"x");
-                    EXPECT_EQ (tmp.cget ()->find ('z') , string::npos);
-                    EXPECT_EQ (tmp.cget ()->find ('x') , 0u);
+                    EXPECT_EQ (tmp.cget ()->find ('z'), string::npos);
+                    EXPECT_EQ (tmp.cget ()->find ('x'), 0u);
                 }
             }
             template <typename INTISH_TYPE>
@@ -444,7 +442,7 @@ namespace {
                     int x;
                 };
 #if !qStroika_Foundation_Debug_AssertionsChecked
-                EXPECT_EQ (sizeof (A) , sizeof (APrime));
+                EXPECT_EQ (sizeof (A), sizeof (APrime));
 #endif
             }
         }
@@ -481,9 +479,9 @@ namespace {
                 Thread::Ptr   t3 = Thread::New ([&tmp] () {
                     for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                         if (tmp.size () == 1000) {
-                            EXPECT_EQ (tmp.IndexOf (6) , 5u);
-                            EXPECT_EQ (*tmp.First () , 1);
-                            EXPECT_EQ (*tmp.Last () , 1000);
+                            EXPECT_EQ (tmp.IndexOf (6), 5u);
+                            EXPECT_EQ (*tmp.First (), 1);
+                            EXPECT_EQ (*tmp.Last (), 1000);
                         }
                     }
                 });
