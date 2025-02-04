@@ -43,17 +43,15 @@ export default boot(async (/* { app, router, ... } */) => {
     API_ROOT = kCompileTimeConfiguration.APP_ROOT_API;
   }
   if (!API_ROOT) {
+    const USE_API_PORT_ = DEFAULT_API_PORT || kCompileTimeConfiguration.APP_DEFAULT_API_PORT || window.location.port;
     API_ROOT =
       window.location.protocol +
       '//' +
       window.location.hostname +
-      ':' +
-      (DEFAULT_API_PORT ??
-        kCompileTimeConfiguration.APP_DEFAULT_API_PORT ??
-        window.location.port);
+      (USE_API_PORT_ ? `:${USE_API_PORT_}` : "");
   }
   gRuntimeConfiguration = {
-    API_ROOT: API_ROOT ?? '',
+    API_ROOT,
   };
   console.log(
     `gRuntimeConfiguration: ${JSON.stringify(gRuntimeConfiguration)}`
