@@ -121,11 +121,12 @@ String ClientConfiguration::ToString () const
     return sb;
 }
 
-  auto ClientConfiguration::operator<=> (const ClientConfiguration& rhs) const
- {
-    strong_ordering tmp =   tie(fProvider, fApplicationID, fRedirectURLs, fClientSecret) <=> std::tie(rhs.fProvider, rhs.fApplicationID, rhs.fRedirectURLs, rhs.fClientSecret);
+auto ClientConfiguration::operator<=> (const ClientConfiguration& rhs) const
+{
+    strong_ordering tmp = tie (fProvider, fApplicationID, fRedirectURLs, fClientSecret) <=>
+                          std::tie (rhs.fProvider, rhs.fApplicationID, rhs.fRedirectURLs, rhs.fClientSecret);
     if (tmp == strong_ordering::equal) {
-        return SortedSet<String> {fScopes} <=> SortedSet<String>{rhs.fScopes};
+        return SortedSet<String>{fScopes} <=> SortedSet<String>{rhs.fScopes};
     }
     return tmp;
- }
+}
