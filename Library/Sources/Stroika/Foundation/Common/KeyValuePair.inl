@@ -72,11 +72,7 @@ namespace Stroika::Foundation::Common {
     constexpr inline auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
         requires (three_way_comparable<KEY_TYPE> and three_way_comparable<VALUE_TYPE>)
     {
-        auto cmp = fKey <=> rhs.fKey;
-        if (cmp != strong_ordering::equal) {
-            return cmp;
-        }
-        return fValue <=> rhs.fValue;
+        return tie (fKey, fValue) <=> tie (rhs.fKey, rhs.fValue);
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr inline bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const

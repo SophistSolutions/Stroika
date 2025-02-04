@@ -45,10 +45,7 @@ namespace Stroika::Foundation::Common {
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
         requires (three_way_comparable<VALUE_TYPE>)
     {
-        if (auto cmp = fValue <=> rhs.fValue; cmp != strong_ordering::equal) {
-            return cmp;
-        }
-        return fCount <=> rhs.fCount;
+        return tie (fValue, fCount) <=> tie (rhs.fValue, rhs.fCount);
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
         requires (default_initializable<COUNTER_TYPE> and unsigned_integral<COUNTER_TYPE>)
