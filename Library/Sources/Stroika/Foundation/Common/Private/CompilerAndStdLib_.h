@@ -2133,8 +2133,6 @@ Configuration.cpp:126:21: error: no viable conversion from 'common_comparison_ca
 
 #endif
 
-
-
 #ifndef qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
