@@ -2116,6 +2116,25 @@ In file included from Namespace.cpp:10:
 
 #endif
 
+/*
+Configuration.cpp:126:21: error: no viable conversion from 'common_comparison_category_t<__synth_three_way_result<const String &, const String &>, __synth_three_way_result<const String &, const String &>, __synth_three_way_result<const Sequence<URI> &, const Sequence<URI> &>, __synth_three_way_result<const optional<String> &, const optional<String> &>>' (aka 'std::weak_ordering') to 'strong_ordering'
+    strong_ordering tmp = tie (fProvider, fApplicationID, fRedirectURLs, fClientSecret) <=>
+                    ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode_15.2.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__compare/ordering.h:223:7: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'common_comparison_category_t<__synth_three_way_result<const String &, const String &>, __synth_three_way_result<const String &, const String &>, __synth_three_way_result<const Sequence<URI> &, const Sequence<URI> &
+*/
+#ifndef qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy
+
+#if defined(_LIBCPP_VERSION)
+// Only seen on XCode 15.2
+#define qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy (_LIBCPP_VERSION < 160000)
+#else
+#define qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy 0
+#endif
+
+#endif
+
+
+
 #ifndef qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)

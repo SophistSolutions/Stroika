@@ -122,10 +122,26 @@ String ClientConfiguration::ToString () const
 
 auto ClientConfiguration::operator<=> (const ClientConfiguration& rhs) const
 {
+#if qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy
+    if (auto o = fProvider <=> rhs.fProvider; o != strong_ordering::equal) {
+        return o;
+    }
+    if (auto o = fApplicationID <=> rhs.fApplicationID; o != strong_ordering::equal) {
+        return o;
+    }
+    if (auto o = fRedirectURLs <=> rhs.fRedirectURLs; o != strong_ordering::equal) {
+        return o;
+    }
+    if (auto o = fClientSecret <=> rhs.fClientSecret; o != strong_ordering::equal) {
+        return o;
+    }
+    return SortedSet<String>{fScopes} <=> SortedSet<String>{rhs.fScopes};
+#else
     strong_ordering tmp = tie (fProvider, fApplicationID, fRedirectURLs, fClientSecret) <=>
                           std::tie (rhs.fProvider, rhs.fApplicationID, rhs.fRedirectURLs, rhs.fClientSecret);
     if (tmp == strong_ordering::equal) {
         return SortedSet<String>{fScopes} <=> SortedSet<String>{rhs.fScopes};
     }
     return tmp;
+#endif
 }
