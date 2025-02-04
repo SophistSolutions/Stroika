@@ -129,9 +129,16 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         nonvirtual bool operator== (const ProviderConfiguration& rhs) const = default;
 
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
         /**
          */
         nonvirtual auto operator<=> (const ProviderConfiguration& rhs) const = default;
+
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
 
         static const ObjectVariantMapper kMapper;
 
