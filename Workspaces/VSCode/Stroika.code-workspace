@@ -148,7 +148,10 @@
 			"expected": "cpp",
 			"generator": "cpp",
 			"print": "cpp",
-			"stdfloat": "cpp"
+			"stdfloat": "cpp",
+			"cuchar": "cpp",
+			"mdspan": "cpp",
+			"spanstream": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
