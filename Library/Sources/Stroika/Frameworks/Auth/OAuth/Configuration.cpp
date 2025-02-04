@@ -59,7 +59,6 @@ ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurati
     auto connection = IO::Network::Transfer::Connection::New ();
     try {
         IO::Network::Transfer::Response r = connection.GET (configURI);
-        //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
         // empirical - not sure where documented/defined
         struct openid_configuration_ {
             optional<URI> issuer;
