@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline strong_ordering SortedSet<T>::operator<=> (const SortedSet& rhs) const
     {
-        return typename Iterable<T>::template SequentialThreeWayComparer{GetElementThreeWayComparer ()}(*this, rhs);
+        return typename Iterable<T>::template SequentialThreeWayComparer<ElementThreeWayComparerType>{GetElementThreeWayComparer ()}(*this, rhs);
     }
     template <typename T>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
