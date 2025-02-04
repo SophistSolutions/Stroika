@@ -4,6 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
@@ -14,6 +15,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
@@ -118,3 +120,12 @@ String ClientConfiguration::ToString () const
     sb << "}"sv;
     return sb;
 }
+
+  auto ClientConfiguration::operator<=> (const ClientConfiguration& rhs) const
+ {
+    strong_ordering tmp =   tie(fProvider, fApplicationID, fRedirectURLs, fClientSecret) <=> std::tie(rhs.fProvider, rhs.fApplicationID, rhs.fRedirectURLs, rhs.fClientSecret);
+    if (tmp == strong_ordering::equal) {
+        return SortedSet<String> {fScopes} <=> SortedSet<String>{rhs.fScopes};
+    }
+    return tmp;
+ }

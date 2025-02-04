@@ -191,7 +191,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
         /**
          */
-        nonvirtual auto operator<=> (const ClientConfiguration& rhs) const = default;
+        nonvirtual auto operator<=> (const ClientConfiguration& rhs) const;
 
         /**
          */
