@@ -2126,7 +2126,7 @@ Configuration.cpp:126:21: error: no viable conversion from 'common_comparison_ca
 
 #if defined(_LIBCPP_VERSION)
 // Only seen on XCode 15.2
-#define qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy (_LIBCPP_VERSION < 160000)
+#define qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy (_LIBCPP_VERSION < 170000)
 #else
 #define qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy 0
 #endif

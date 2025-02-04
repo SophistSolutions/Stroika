@@ -4,6 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
@@ -132,7 +133,7 @@ auto ClientConfiguration::operator<=> (const ClientConfiguration& rhs) const
     if (auto o = fRedirectURLs <=> rhs.fRedirectURLs; o != strong_ordering::equal) {
         return o;
     }
-    if (auto o = fClientSecret <=> rhs.fClientSecret; o != strong_ordering::equal) {
+    if (auto o = Common::StdCompat::compare_three_way{} (fClientSecret, rhs.fClientSecret); o != strong_ordering::equal) {
         return o;
     }
     return SortedSet<String>{fScopes} <=> SortedSet<String>{rhs.fScopes};
