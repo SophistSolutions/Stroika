@@ -133,7 +133,7 @@ auto ClientConfiguration::operator<=> (const ClientConfiguration& rhs) const
     if (auto o = fRedirectURLs <=> rhs.fRedirectURLs; o != strong_ordering::equal) {
         return o;
     }
-    if (auto o = Common::StdCompat::compare_three_way{} (fClientSecret, rhs.fClientSecret); o != strong_ordering::equal) {
+    if (auto o = Common::StdCompat::compare_three_way{}(fClientSecret, rhs.fClientSecret); o != strong_ordering::equal) {
         return o;
     }
     return SortedSet<String>{fScopes} <=> SortedSet<String>{rhs.fScopes};
