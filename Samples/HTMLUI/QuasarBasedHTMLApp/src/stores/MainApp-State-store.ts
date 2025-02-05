@@ -2,16 +2,12 @@ import { useConfigurationStore } from './Configuration-Store';
 import { defineStore } from 'pinia';
 
 import { IAbout } from '../models/IAbout';
-import { Equals } from '../utils/Objects';
 import {
   fetchAboutInfo,
 } from '../proxy/API';
 
+import { gRuntimeConfiguration } from 'src/boot/configuration';
 
-
-
-
-import { kCompileTimeConfiguration } from '../config/config';
 
 // @todo perhaps add in 'lasttimerequested' and 'lastTimeSuccessfulResponse' and throttle/dont request
 // (not sure where in model) if outtsanding requests etc) and maybe show in UI if data stale
@@ -34,13 +30,9 @@ export const useMainAppStateStore = defineStore('MainApp-State-Store', {
     },
   },
   actions: {
-    async setAPIServer(i: string) {
-      const configurationStore = useConfigurationStore();
-      configurationStore.apiServer = i;
-    },
     async fetchAboutInfo() {
       const configurationStore = useConfigurationStore();
-      this.about = await fetchAboutInfo(configurationStore.apiServer);
+      this.about = await fetchAboutInfo(gRuntimeConfiguration.API_ROOT);
     },
   },
 });

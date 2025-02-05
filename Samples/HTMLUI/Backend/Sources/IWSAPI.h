@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 
+#include "Stroika/Frameworks/Auth/CurrentIdentity.h"
 #include "Stroika/Frameworks/WebService/OpenAPI/Specification.h"
 
 #include "Model.h"
@@ -22,8 +23,28 @@ namespace Stroika::Samples::HTMLUI {
     using Stroika::Foundation::Common::GUID;
     using Stroika::Foundation::Containers::Collection;
     using Stroika::Foundation::DataExchange::TypedBLOB;
+    using Stroika::Frameworks::Auth::CurrentIdentityManager;
 
     using namespace Model;
+
+    /**
+     * @brief identity inferred from webserver authentication information
+     */
+    struct WebServiceIdentity {
+        optional<String> fBearerToken;
+
+        String ToString () const;
+    };
+
+    /**
+     * \par Example Usage:
+     *      // In WebServer, to establish thread_local ID value - use CurrentIdentityAuthInterceptor
+     * 
+     *      // Then in WSAPI instance
+     *      if (auto c = CurrentAuthManager::Get ()) {
+     *      }
+     */
+    using CurrentAuthManager = CurrentIdentityManager<optional<WebServiceIdentity>>;
 
     /**
      *  \brief: IWSAPI defines an abstract version of the web service API provided by this program.
@@ -40,6 +61,26 @@ namespace Stroika::Samples::HTMLUI {
         /**
          */
         virtual Stroika::Frameworks::WebService::OpenAPI::Specification GetOpenAPISpecification () const = 0;
+
+    public:
+        /**
+         * @brief  
+         */
+        virtual Stroika::Frameworks::Auth::OAuth::ClientConfigurations auth_oauth_configurations_GET () const = 0;
+
+    public:
+        /**
+         * @brief  
+         */
+        virtual Auth::TokenResponse auth_oauth_tokens_POST (const Auth::TokenRequest& tr) const = 0;
+
+    public:
+        /**
+         * @brief  
+         * 
+         * @return Auth::UserInfo 
+         */
+        virtual Auth::UserInfo auth_oauth_user_info_GET () const = 0;
 
     public:
         /**

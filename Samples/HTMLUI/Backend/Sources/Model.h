@@ -15,6 +15,8 @@
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
+#include "Stroika/Frameworks/Auth/OAuth/Client.h"
+
 /**
  * \brief: The Model module defines all the objects, which can appear in web service requests (on the request or response side).
  *
@@ -29,6 +31,10 @@ namespace Stroika::Samples::HTMLUI::Model {
 
     using Characters::String;
     using Containers::Sequence;
+    using Containers::Set;
+    using DataExchange::InternetMediaType;
+    using DataExchange::ObjectVariantMapper;
+    using DataExchange::TypedBLOB;
     using IO::Network::URI;
     using Math::CommonStatistics;
     using Time::DateTime;
@@ -47,6 +53,77 @@ namespace Stroika::Samples::HTMLUI::Model {
 
         static const DataExchange::ObjectVariantMapper kMapper;
     };
+
+    namespace Auth {
+
+        /**
+        * @brief  OAuth2 works with gui client requesting a short-lived authorization_code from the web browser (typically)
+        *   and then the GUI client exchanges that for a longer-lived access_token (and sometimes a refresh_token, and/or id_token).
+        */
+        struct TokenRequest {
+            /**
+             * @brief e.g. google - index into ??
+             */
+            String fOAuthProvider;
+            String fApplicationID;
+            URI    fRedirectURL;
+
+            // magic code typically extracted from redirect URL parameters (not fRedirectURL above but what is ACTAULLY sent to that URL)
+            // note this somehow 'contains' - perhaps via pointer - the requested scopes, id_tokens, etc....
+            // note also - be careful to URL-decode the value when extracting from a URL, before placing here
+            String fAuthorizationCode;
+
+            optional<String> fCodeVerifier;
+
+            nonvirtual String ToString () const;
+
+            template <Common::IAnyOf<Stroika::Frameworks::Auth::OAuth::TokenRequest> T>
+            nonvirtual T As () const;
+        };
+        template <>
+        Stroika::Frameworks::Auth::OAuth::TokenRequest Auth::TokenRequest::As () const;
+
+        /**
+         */
+        struct TokenResponse {
+
+            TokenResponse () = default;
+            TokenResponse (const Stroika::Frameworks::Auth::OAuth::TokenResponse& tr);
+
+            /**
+             */
+            String access_token;
+
+            /** OAuth uses expires_in, but we convert to an expires_at since better to track (in UTC) */
+            DateTime expires_at;
+
+            Set<String>      scopes;
+            optional<String> refresh_token;
+            optional<String> id_token;
+
+            nonvirtual String ToString () const;
+        };
+
+        /**
+         * @brief  Information from OAuth2 server about the user.
+         */
+        struct UserInfo {
+
+            /**
+             */
+            UserInfo () = default;
+            UserInfo (const Stroika::Frameworks::Auth::OAuth::UserInfo& ui);
+
+            optional<String> fName;
+            optional<String> fEmail;
+            optional<URI>    fPersonImage;
+
+            nonvirtual String ToString () const;
+        };
+
+        extern const ObjectVariantMapper kMapper;
+
+    }
 
     /**
      * @brief  

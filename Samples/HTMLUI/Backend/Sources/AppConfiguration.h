@@ -7,12 +7,15 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/IO/Network/Port.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
+
+#include "Stroika/Frameworks/Auth/OAuth/Configuration.h"
 
 /**
  */
@@ -23,6 +26,7 @@ namespace Stroika::Samples::HTMLUI {
     using namespace Stroika::Foundation;
 
     using Characters::String;
+    using Containers::Sequence;
     using IO::Network::URI;
 
     /**
@@ -51,6 +55,12 @@ namespace Stroika::Samples::HTMLUI {
 #endif
         };
         optional<Logging> fLogging;
+
+        struct Auth {
+            optional<Stroika::Frameworks::Auth::OAuth::ClientConfigurations> fOAuthClients;
+            optional<Sequence<String>>                                       fAdministrators;
+        };
+        optional<Auth> fAuth;
 
         static const DataExchange::ObjectVariantMapper kMapper;
     };

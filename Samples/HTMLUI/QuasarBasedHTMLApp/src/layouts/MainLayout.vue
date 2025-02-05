@@ -25,6 +25,12 @@ const linksList = [
     icon: 'api',
     link: '/about',
   },
+   {
+    title: 'AuthTest',
+    caption: 'Test optional OAuth functionality',
+    icon: 'api',
+    link: '/authtest',
+  },
 ];
 
 // const leftDrawerOpen = ref(false);

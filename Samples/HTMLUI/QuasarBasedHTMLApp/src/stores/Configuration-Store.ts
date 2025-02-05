@@ -1,27 +1,22 @@
 import { defineStore } from 'pinia';
 
-import { gRuntimeConfiguration } from 'boot/configuration';
-
 export const useConfigurationStore = defineStore('Configuration-Store', {
   state: () => ({
-    apiServer: `${gRuntimeConfiguration.API_ROOT}` as string,
     leftDrawerOpen: false as boolean
   }),
   getters: {
-    // getAPIServer: (state) => {
-    //   return state.apiServer;
-    // },
     getLeftDrawerOpen: (state) => {
       return state.leftDrawerOpen;
     },
   },
   actions: {
-    // async setAPIServer(i: string) {
-    //   this.apiServer = i;
-    // },
     async setLeftDrawerOpen(i: boolean) {
       this.leftDrawerOpen = i;
     },
   },
-  persist: true
+  // see docs from https://github.com/prazdevs/pinia-plugin-persistedstate?tab=readme-ov-file
+  persist: {
+    // somenow hot working - and really persisting everything?
+    pick: ['leftDrawerOpen'],
+  }
 });

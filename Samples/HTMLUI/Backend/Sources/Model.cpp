@@ -8,6 +8,8 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
+#include "Stroika/Frameworks/Auth/OAuth/Configuration.h"
+
 #include "Model.h"
 
 using namespace std;
@@ -50,7 +52,106 @@ const ObjectVariantMapper HealthStatus::kMapper = [] () {
 
 /*
  ********************************************************************************
- ************ Model::About::APIServerInfo::OperatingSystem **********************
+ ****************************** Auth::TokenRequest ******************************
+ ********************************************************************************
+ */
+String Auth::TokenRequest::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "OAuthProvider: "sv << fOAuthProvider;
+    sb << ", applicationID: "sv << fApplicationID;
+    sb << ", redirectURL: "sv << fRedirectURL;
+    sb << ", authorizationCode: "sv << fAuthorizationCode;
+    if (fCodeVerifier) {
+        sb << ", codeVerifier: "sv << fCodeVerifier;
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ ****************************** Auth::TokenResponse *****************************
+ ********************************************************************************
+ */
+String Auth::TokenResponse::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "access_token: "sv << access_token;
+    sb << ", expires_at: "sv << expires_at;
+    sb << ", scopes: "sv << scopes;
+    if (refresh_token) {
+        sb << ", refresh_token: "sv << refresh_token;
+    }
+    if (id_token) {
+        sb << ", id_token: "sv << id_token;
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ ********************************* Auth::UserInfo *******************************
+ ********************************************************************************
+ */
+String Auth::UserInfo::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "Name: "sv << fName;
+    sb << ", email: "sv << fEmail;
+    sb << ", personImage: "sv << fPersonImage;
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ ********************************** Auth::kMapper *******************************
+ ********************************************************************************
+ */
+const ObjectVariantMapper Auth::kMapper = [] () {
+    ObjectVariantMapper mapper;
+
+    mapper += Stroika::Frameworks::Auth::OAuth::ClientConfiguration::kMapper;
+    mapper.AddCommonType<Stroika::Frameworks::Auth::OAuth::ClientConfigurations> ();
+
+    mapper.AddCommonType<String> ();
+    mapper.AddCommonType<URI> ();
+    mapper.AddClass<Auth::TokenRequest> ({
+        {"applicationId"sv, &Auth::TokenRequest::fApplicationID},
+        {"provider"sv, &Auth::TokenRequest::fOAuthProvider},
+        {"redirectURL"sv, &Auth::TokenRequest::fRedirectURL},
+        {"authorizationCode"sv, &Auth::TokenRequest::fAuthorizationCode},
+        {"codeVerifier"sv, &Auth::TokenRequest::fCodeVerifier},
+    });
+
+    mapper.AddCommonType<Set<String>> ();
+    mapper.AddClass<Auth::TokenResponse> ({
+        {"access_token"sv, &Auth::TokenResponse::access_token},
+        {"expires_at"sv, &Auth::TokenResponse::expires_at},
+        {"scopes"sv, &Auth::TokenResponse::scopes},
+        {"refresh_token"sv, &Auth::TokenResponse::refresh_token},
+        {"id_token"sv, &Auth::TokenResponse::id_token},
+    });
+
+    mapper.AddCommonType<optional<String>> ();
+    mapper.AddCommonType<optional<URI>> ();
+    mapper.AddClass<Auth::UserInfo> ({
+        {"personName"sv, &Auth::UserInfo::fName},
+        {"email"sv, &Auth::UserInfo::fEmail},
+        {"personImageURL"sv, &Auth::UserInfo::fPersonImage},
+    });
+
+    return mapper;
+}();
+
+/*
+ ********************************************************************************
+ **************** Model::About::APIServerInfo::OperatingSystem ******************
  ********************************************************************************
  */
 String About::APIServerInfo::OperatingSystem::ToString () const
@@ -332,6 +433,8 @@ const ObjectVariantMapper About::kMapper = [] () {
  */
 const ObjectVariantMapper Stroika::Samples::HTMLUI::Model::kMapper = [] () {
     ObjectVariantMapper mapper;
+
+    mapper += Auth::kMapper;
 
     mapper.AddCommonType<Collection<String>> ();
 

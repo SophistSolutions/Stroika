@@ -39,6 +39,20 @@ const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
 #endif
         },
         {.fOmitNullEntriesInFromObject = false});
+
+    using namespace Stroika::Frameworks::Auth::OAuth;
+    mapper += ClientConfiguration::kMapper;
+    mapper.AddCommonType<ClientConfigurations> ();
+    mapper.AddCommonType<optional<ClientConfigurations>> ();
+    mapper.AddCommonType<Sequence<String>> ();
+    mapper.AddCommonType<optional<Sequence<String>>> ();
+    mapper.AddClass<AppConfigurationType::Auth> (
+        {
+            {"OAuth2"sv, &AppConfigurationType::Auth::fOAuthClients},
+            {"Administrators"sv, &AppConfigurationType::Auth::fAdministrators},
+        },
+        {.fOmitNullEntriesInFromObject = false});
+    mapper.AddCommonType<optional<AppConfigurationType::Auth>> ();
     mapper.AddCommonType<optional<AppConfigurationType::Logging>> ();
     mapper.AddCommonType<optional<IO::Network::URI>> ();
     mapper.AddClass<AppConfigurationType> (
@@ -46,6 +60,7 @@ const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
             {"WebServerPort"sv, &AppConfigurationType::WebServerPort},
             {"Logging"sv, &AppConfigurationType::fLogging},
             {"ShowAsExternalURL"sv, &AppConfigurationType::ShowAsExternalURL},
+            {"Auth"sv, &AppConfigurationType::fAuth},
         },
         {.fOmitNullEntriesInFromObject = false});
     return mapper;

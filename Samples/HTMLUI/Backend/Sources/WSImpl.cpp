@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Stroika/Frameworks/SystemPerformance/Capturer.h"
 #include "Stroika/Frameworks/SystemPerformance/Instruments/CPU.h"
@@ -24,6 +25,7 @@
 #include <openssl/opensslv.h>
 #endif
 
+#include "AppConfiguration.h"
 #include "AppVersion.h"
 
 #include "OperationalStatistics.h"
@@ -39,7 +41,9 @@ using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
+using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks::WebService;
@@ -75,6 +79,33 @@ namespace {
     };
 }
 
+namespace {
+    // Kludge - til we support multiple providers
+    String GetUseProvider_ ()
+    {
+        return NullCoalesce (NullCoalesce (gAppConfiguration->fAuth).fOAuthClients).FirstValue ({.fProvider = "google"sv}).fProvider;
+    }
+    // @todo MEMOIZE CACHE and use this fetch as backup.... But be sure to respect TTL - so we don't use
+    // access token too long...
+    //
+    // or better yet - cache ID_Token return from TOKEN API (since that has the expiry and userinfo information)
+    // This maybe best! Avoids whole API call, and I'm not sure we have the right URL todo this with facebook
+    // as identity manager...
+    optional<Auth::UserInfo> GetUserInfo_ (const optional<WebServiceIdentity>& wsi)
+    {
+        using Stroika::Frameworks::Auth::OAuth::ProviderConfiguration;
+        // @todo to support multiple providers, we will need to somehow annotate the access tokens to tell one from another (e.g. prepend providername-)
+        // but for now, just pick the first and assume thats it...
+        ProviderConfiguration providerConfiguration{Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (
+            GetUseProvider_ (), RuntimeErrorException{"Unrecognized provider name"sv})};
+        if (wsi and wsi->fBearerToken) {
+            Stroika::Frameworks::Auth::OAuth::Fetcher f{providerConfiguration};
+            return Auth::UserInfo{f.GetUserInfo (wsi->fBearerToken.value_or (String{}))};
+        }
+        return nullopt;
+    }
+}
+
 /*
  ********************************************************************************
  ************************************* WSImpl ***********************************
@@ -94,6 +125,68 @@ OpenAPI::Specification WSImpl::GetOpenAPISpecification () const
 {
     static const auto kSpec_ = OpenAPI::Specification{BLOB::Attach (Resources_::api_json), OpenAPI::kMediaType};
     return kSpec_;
+}
+
+Stroika::Frameworks::Auth::OAuth::ClientConfigurations WSImpl::auth_oauth_configurations_GET () const
+{
+    using namespace Stroika::Frameworks::Auth::OAuth;
+    return NullCoalesce (NullCoalesce (gAppConfiguration->fAuth).fOAuthClients).Map<ClientConfigurations> ([] (ClientConfiguration i) {
+        i.fClientSecret = nullopt;
+        return i;
+    });
+}
+
+Auth::TokenResponse WSImpl::auth_oauth_tokens_POST (const Auth::TokenRequest& tr) const
+{
+    Debug::TraceContextBumper ctx{"auth_oauth_tokens_POST", "tr={}"_f, tr};
+
+    using Stroika::Frameworks::Auth::OAuth::ClientConfiguration;
+    using Stroika::Frameworks::Auth::OAuth::ProviderConfiguration;
+
+    auto lookupConfigs = [] (const Auth::TokenRequest& tr) -> tuple<ProviderConfiguration, ClientConfiguration> {
+        auto lookupClientSecret = [] (const Auth::TokenRequest& tr) -> String {
+            if (auto o = NullCoalesce (gAppConfiguration->fAuth).fOAuthClients) {
+                for (const auto& i : *o) {
+                    if (i.fApplicationID == tr.fApplicationID and i.fProvider == tr.fOAuthProvider) {
+                        static const auto kExcept_ = RuntimeErrorException{"No client secret found for OAuth request"sv};
+                        return Memory::ValueOfOrThrow (i.fClientSecret, kExcept_);
+                    }
+                }
+            }
+            Throw (RuntimeErrorException{"No matching applicationId found for OAuth request"sv});
+        };
+        static const auto kExcept_ = RuntimeErrorException{"Unrecognized provider name"sv};
+        return make_tuple (
+            Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (tr.fOAuthProvider, kExcept_),
+            ClientConfiguration{.fProvider = tr.fOAuthProvider, .fApplicationID = tr.fApplicationID, .fClientSecret = lookupClientSecret (tr)});
+    };
+
+    if (tr.fAuthorizationCode.empty ()) {
+        Throw (ClientErrorException{StatusCodes::kBadRequest, "Missing authorization code"sv});
+    }
+    if (tr.fApplicationID.empty ()) {
+        Throw (ClientErrorException{StatusCodes::kBadRequest, "Missing application_id"sv});
+    }
+    if (tr.fRedirectURL.As<String> ().empty ()) {
+        Throw (ClientErrorException{StatusCodes::kBadRequest, "Missing redirect_uri"sv});
+    }
+
+    auto [providerConfig, clientConfig] = lookupConfigs (tr);
+    Stroika::Frameworks::Auth::OAuth::Fetcher      f{providerConfig};
+    Stroika::Frameworks::Auth::OAuth::TokenRequest treq  = tr.As<Stroika::Frameworks::Auth::OAuth::TokenRequest> ();
+    treq.client_secret                                   = clientConfig.fClientSecret;
+    Stroika::Frameworks::Auth::OAuth::TokenResponse resp = f.GetToken (treq);
+    return Auth::TokenResponse{resp};
+}
+
+Auth::UserInfo WSImpl::auth_oauth_user_info_GET () const
+{
+    if (optional<WebServiceIdentity> c = CurrentAuthManager::Get ()) {
+        if (optional<Auth::UserInfo> ui = GetUserInfo_ (*c)) {
+            return *ui;
+        }
+    }
+    Throw (ClientErrorException{StatusCodes::kUnauthorized});
 }
 
 About WSImpl::about_GET () const

@@ -7,12 +7,6 @@ import { gRuntimeConfiguration } from 'boot/configuration';
 
 import { Logger } from '../utils/Logger';
 
-// On Chrome, CORS frequently fails - not sure why. In chrome debugger, Access-Control-Allow-Origin
-// lines not showing up but do in other browsers (edge)
-// --LGP 2022-11-24
-//const kFetchOptions_: RequestInit = { mode: 'no-cors' };
-// I BELIEVE this was fixed by:
-//      https://github.com/SophistSolutions/Stroika/commit/cf5a8c8537b0f954729a0911cea51c333ad428de
 const kFetchOptions_: RequestInit = {};
 
 function throwIfError_(response: Response): Response {
@@ -30,6 +24,59 @@ function throwIfError_(response: Response): Response {
   return response;
 }
 
+export interface IAppOAuthConfiguration {
+  applicationID: string;
+  scopes: string[];
+  openIdConnectUrl: string;
+  redirectUri: string;
+  provider: string;
+}
+
+export async function getOAuthConfigurations(apiServer: string): Promise<IAppOAuthConfiguration[]> {
+  try {
+    const response: Response = await fetch(`${apiServer}/api/auth/oauth/configurations`, kFetchOptions_);
+    throwIfError_(response);
+    const data = (await response.json()); // could embellish validation here
+    return data;
+  } catch (e) {
+    Logger.error(e);
+    throw e;
+  }
+}
+
+export async function fetchTokens(apiServer: string, params: object): Promise<object> {
+  try {
+    const response: Response = await fetch(`${apiServer}/api/auth/oauth/tokens`, {
+      ...kFetchOptions_,
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params)
+    });
+    throwIfError_(response);
+    const data = (await response.json()); // could embellish validation here
+    return data;
+  } catch (e) {
+    Logger.error(e);
+    throw e;
+  }
+}
+
+export async function fetchUserInfo(apiServer: string, authToken: string): Promise<object> {
+  try {
+    const response: Response = await fetch(`${apiServer}/api/auth/oauth/user_info`, {
+      ...kFetchOptions_,
+      headers: {
+        'Authorization': 'Bearer ' + authToken
+      }
+    });
+    throwIfError_(response);
+    const data = (await response.json()); // could embellish validation here
+    return data;
+  } catch (e) {
+    Logger.error(e);
+    throw e;
+  }
+}
 
 export async function fetchAboutInfo(apiServer: string): Promise<IAbout> {
   try {

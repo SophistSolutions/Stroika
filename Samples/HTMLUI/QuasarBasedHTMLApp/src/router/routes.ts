@@ -27,6 +27,22 @@ const routes: RouteRecordRaw[] = [
       showInDotDotDotMenu: true,
     },
   },
+  {
+    path: '/authtest',
+    name: 'Auth-Test',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '/authtest', component: () => import('pages/AuthTestPage.vue') },
+    ],
+    meta: {
+      breadcrumbs: [
+        { text: 'Home', href: '/#/' },
+        { text: 'Auth-Test-Page', disabled: true },
+      ],
+      showInDotDotDotMenu: true,
+    },
+  },
+  { path: '/oauth/callback', component: () => import('pages/OAuthCallback.vue') },
   // Always leave this as last one,
   // but you can also remove it
   {

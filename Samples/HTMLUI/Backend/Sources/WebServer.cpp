@@ -16,7 +16,9 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
+#include "Stroika/Frameworks/Auth/Interceptor.h"
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
 #include "Stroika/Frameworks/WebServer/DefaultFaultInterceptor.h"
 #include "Stroika/Frameworks/WebServer/FileSystemRequestHandler.h"
@@ -39,6 +41,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Frameworks::WebServer;
 using namespace Stroika::Frameworks::WebService;
@@ -46,6 +49,7 @@ using namespace Stroika::Frameworks::WebService::Server;
 using namespace Stroika::Frameworks::WebService::Server::VariantValue;
 
 using Memory::BLOB;
+using Stroika::Frameworks::Auth::CurrentIdentityAuthInterceptor;
 using Stroika::Frameworks::WebServer::Request;
 using Stroika::Frameworks::WebServer::Response;
 
@@ -95,7 +99,8 @@ namespace {
     };
     Config_ GetConfig_ ()
     {
-        return Config_{nullopt, gAppConfiguration.Get ().WebServerPort};
+        return Config_{.API_ROOT = OptionallyCopy<String> (gAppConfiguration->ShowAsExternalURL, [] (URI u) { return u.As<String> (); }),
+                       .DEFAULT_API_PORT = gAppConfiguration->WebServerPort};
     }
 }
 
@@ -133,6 +138,7 @@ public:
     IntervalTimer::Adder fStatsIntervalTimerAdder_;
 
     static const WebServiceMethodDescription kAbout_;
+    static const WebServiceMethodDescription kAuth_;
     static const WebServiceMethodDescription kConnections_;
     static const WebServiceMethodDescription kHeathCheck_;
 
@@ -140,6 +146,28 @@ public:
         : kRoutes_{
             
             Route{"api/?"_RegEx, DefaultPage_}
+
+           /**
+            * /auth
+            */
+            , Route{"api/(v1/)?auth/oauth/configurations/?"_RegEx, ObjectRequestHandler::Factory{
+                        {Auth::kMapper},
+                        [this] () {
+                            ActiveCallCounter_ acc{*this};
+                            return fWSImpl_->auth_oauth_configurations_GET ();
+                        }}}
+            , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?auth/oauth/tokens/?"_RegEx, ObjectRequestHandler::Factory{
+                        {Auth::kMapper},
+                        [this] (const Auth::TokenRequest& r) {
+                            ActiveCallCounter_ acc{*this};
+                            return fWSImpl_->auth_oauth_tokens_POST (r);
+                        }}}
+            , Route{"api/(v1/)?auth/oauth/user_info/?"_RegEx, ObjectRequestHandler::Factory{
+                        {Auth::kMapper},
+                        [this] () {
+                            ActiveCallCounter_ acc{*this};
+                            return fWSImpl_->auth_oauth_user_info_GET ();
+                        }}}
 
             /**
              * /about - health check etc
@@ -224,13 +252,20 @@ public:
             OperationalStatisticsMgr::ProcessAPICmd::NoteError ();
             defaultHandler.HandleFault (m, e);
         }};
+        auto convertAuthHeaderToIDObject    = [] (Request& request) -> optional<WebServiceIdentity> {
+            if (auto authHeader = request.headers ().authorization (); authHeader and authHeader->StartsWith ("Bearer "sv)) {
+                return WebServiceIdentity{.fBearerToken = authHeader->SubString (7).Trim ()};
+            }
+            return nullopt;
+        };
+        fConnectionMgr_.AddInterceptor (CurrentIdentityAuthInterceptor{convertAuthHeaderToIDObject}, ConnectionManager::ePrependsToEarly);
         Logger::sThe.Log (Logger::eInfo, "Started WebServices on {}"_f, fConnectionMgr_.bindings ());
     }
     // Can declare arguments as Request*,Response*
     static void DefaultPage_ (Request&, Response& response)
     {
         WriteDocsPage (
-            response, Sequence<WebServiceMethodDescription>{kAbout_, kConnections_, kHeathCheck_},
+            response, Sequence<WebServiceMethodDescription>{kAbout_, kAuth_, kConnections_, kHeathCheck_},
             DocsOptions{.fH1Text = "Stroika-Sample-HTMLUI"_k,
                         .fIntroductoryText = "Just a sample set of webservices to show how to hook C++ code into html via ajax callbacks..."_k,
                         .fVariables2Substitute =
@@ -257,6 +292,28 @@ const WebServiceMethodDescription WebServer::Rep_::kAbout_{
         "curl {{ShowAsExternalURI}}/api/about"sv,
     },
     Sequence<String>{"Fetch the component versions, web server connections, thread pool etc, etc."sv},
+};
+const WebServiceMethodDescription WebServer::Rep_::kAuth_{
+    "api/v1/auth/oauth/configurations"sv,
+    Set<String>{IO::Network::HTTP::Methods::kGet, IO::Network::HTTP::Methods::kPost},
+    DataExchange::InternetMediaTypes::kJSON,
+    "Authentication/OAuth2 related API support"sv,
+    Sequence<String>{
+        "curl -v {{ShowAsExternalURI}}api/v1/auth/oauth/configurations"sv,
+        "curl -v -X POST -H \"Content-Type: application/json\" {{ShowAsExternalURI}}api/v1/auth/oauth/tokens -d \"{\\\"authorizationCode\\\": \\\"123\\\", \\\"provider\\\": \\\"google\\\", \\\"applicationId\\\": \\\"xxx\\\", \\\"redirectURL\\\": \\\"http://localhost:9000/oauth/google\\\" }\""sv,
+        "curl -v -X POST -H \"Content-Type: application/json\" {{ShowAsExternalURI}}api/v1/auth/oauth/tokens -d \"{\\\"authorizationCode\\\": \\\"456\\\", \\\"provider\\\": \\\"google\\\", \\\"applicationId\\\": \\\"xxx\\\", \\\"redirectURL\\\": \\\"http://localhost:9000/oauth/google\\\", \\\"codeVerifier\\\": \\\"OPTIONAL-PASS-IF-USING-PKCE\\\" }\""sv,
+        "curl -v {{ShowAsExternalURI}}api/v1/auth/oauth/user_info -H \"Authorization: Bearer XXX\" ; echo where XXX is authentication_token from above"sv,
+    },
+    Sequence<String>{
+        "<em>Auth/Login</em>",
+        "<li>in web browser: "
+        "https://accounts.google.com/o/oauth2/v2/"
+        "auth?scope=openid+profile+email&access_type=offline&include_granted_scopes=true&response_type=code&state={}&redirect_uri=http%3A//"
+        "localhost:9000/oauth/google&client_id=291846620235-b7737mjsce5k6trrik7oi9b4dgum0sgg.apps.googleusercontent.com</li>"
+        "<li>see https://developers.google.com/identity/protocols/oauth2/web-server#httprest for info on getting authenication code</li>",
+        "<li>GET auth/oauth/configurations - returns available oauth configurations (from list of redirect urls you can pick any). </li>",
+        "<li>For 'tokens' API - just uses (hidden) client-secret and calls auth server token endpoint and returns its results;</li>",
+        "<li>user_info endpoint expects 'BEARER TOKEN' of auth token to be provided, and returns 401 otherwise, but if OK, returns info from user_info auth endpoint (which you might have gotten from JWT id_token).</li>"sv},
 };
 const WebServiceMethodDescription WebServer::Rep_::kConnections_{
     "api/connections"sv,
