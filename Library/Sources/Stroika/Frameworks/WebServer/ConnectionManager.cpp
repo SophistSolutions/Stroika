@@ -136,18 +136,17 @@ namespace {
     {
         using Options = ConnectionManager::Options;
         Options result{o};
-        result.fCORS           = Memory::NullCoalesce (result.fCORS, Options::kDefault_CORS ());
-        result.fMaxConnections = Memory::NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
-        result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
-        result.fBindFlags               = Memory::NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
-        result.fDefaultResponseHeaders  = Memory::NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
-        result.fAutoComputeETagResponse = Memory::NullCoalesce (result.fAutoComputeETagResponse, Options::kDefault_AutoComputeETagResponse);
-        result.fAutomaticTCPDisconnectOnClose =
-            Memory::NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
-        result.fLinger = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
-        result.fTCPNoDelay = Memory::NullCoalesce (result.fTCPNoDelay, Options::kDefault_TCPNoDelay);
+        result.fCORS           = NullCoalesce (result.fCORS, Options::kDefault_CORS ());
+        result.fMaxConnections = NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
+        result.fMaxConcurrentlyHandledConnections = NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
+        result.fBindFlags               = NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
+        result.fDefaultResponseHeaders  = NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
+        result.fAutoComputeETagResponse = NullCoalesce (result.fAutoComputeETagResponse, Options::kDefault_AutoComputeETagResponse);
+        result.fAutomaticTCPDisconnectOnClose = NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
+        result.fLinger     = NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
+        result.fTCPNoDelay = NullCoalesce (result.fTCPNoDelay, Options::kDefault_TCPNoDelay);
         // result.fThreadPoolName; can remain nullopt
-        result.fTCPBacklog = Memory::NullCoalesce (result.fTCPBacklog, ComputeConnectionBacklog_ (result));
+        result.fTCPBacklog = NullCoalesce (result.fTCPBacklog, ComputeConnectionBacklog_ (result));
 
         {
             // Not super clear. BUT - it appears that if you combine CORS with Caching, then the value returned from
@@ -165,8 +164,8 @@ namespace {
             //      including 304 Not Modified responses and the "default" response."
             //
             //      -- LGP 2022-12-09
-            HTTP::Headers s = Memory::NullCoalesce (result.fDefaultResponseHeaders);
-            Set<String>   v = Memory::NullCoalesce (s.vary ());
+            HTTP::Headers s = NullCoalesce (result.fDefaultResponseHeaders);
+            Set<String>   v = NullCoalesce (s.vary ());
             v += HTTP::HeaderName::kOrigin;
             s.vary                         = v;
             result.fDefaultResponseHeaders = s;
