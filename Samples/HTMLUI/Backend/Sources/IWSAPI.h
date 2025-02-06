@@ -66,7 +66,7 @@ namespace Stroika::Samples::HTMLUI {
         /**
          * @brief  
          */
-        virtual Stroika::Frameworks::Auth::OAuth::ClientConfigurations auth_oauth_configurations_GET () const = 0;
+        virtual Auth::Configuration auth_oauth_configuration_GET () const = 0;
 
     public:
         /**

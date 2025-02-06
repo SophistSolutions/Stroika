@@ -39,7 +39,7 @@ namespace Stroika::Samples::HTMLUI {
         virtual Stroika::Frameworks::WebService::OpenAPI::Specification GetOpenAPISpecification () const override;
 
     public:
-        virtual Stroika::Frameworks::Auth::OAuth::ClientConfigurations auth_oauth_configurations_GET () const override;
+        virtual Auth::Configuration auth_oauth_configuration_GET () const override;
 
     public:
         virtual Auth::TokenResponse auth_oauth_tokens_POST (const Auth::TokenRequest& tr) const override;

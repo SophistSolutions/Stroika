@@ -118,6 +118,12 @@ const ObjectVariantMapper Auth::kMapper = [] () {
 
     mapper += Stroika::Frameworks::Auth::OAuth::ClientConfiguration::kMapper;
     mapper.AddCommonType<Stroika::Frameworks::Auth::OAuth::ClientConfigurations> ();
+    mapper += Stroika::Frameworks::Auth::OAuth::ProviderConfiguration::kMapper;
+    mapper.AddCommonType<Stroika::Frameworks::Auth::OAuth::ProvidersConfigurations> ();
+    mapper.AddClass<Auth::Configuration> ({
+        {"clients"sv, &Auth::Configuration::fClients},
+        {"providers"sv, &Auth::Configuration::fProviders},
+    });
 
     mapper.AddCommonType<String> ();
     mapper.AddCommonType<URI> ();

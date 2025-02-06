@@ -2,11 +2,12 @@
 import { onMounted, ref } from "vue";
 
 import { getCurrentInstance } from "vue";
+import { IAuthService } from "../plugins/auth";
 
 let showPage = ref(false);
 
 onMounted(async () => {
-  const auth = getCurrentInstance()?.appContext.config.globalProperties.$auth;
+  const auth: IAuthService = getCurrentInstance()?.appContext.config.globalProperties.$auth;
   console.log("In RedirectPage onMounted Event: auth=", auth);
   await auth.handleRedirectCallback();
   setTimeout(() => {

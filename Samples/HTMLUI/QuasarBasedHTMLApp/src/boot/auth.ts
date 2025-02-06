@@ -1,29 +1,26 @@
 import { boot } from "quasar/wrappers"
 
-import authPlugin, { OAuthConfig } from '../plugins/auth'
+import authPlugin, { IOAuthProviderConfig } from '../plugins/auth'
 import { gRuntimeConfiguration } from 'boot/configuration';
 import { getOAuthConfigurations } from '../proxy/API';
 
-async function configFetcher(): Promise<OAuthConfig|undefined> {
-    const oauthConfigs = await getOAuthConfigurations(gRuntimeConfiguration.API_ROOT);
-    if (oauthConfigs == null || oauthConfigs.length < 1) {
+async function configFetcher(): Promise<IOAuthProviderConfig[] | undefined> {
+    const oauthConfig = await getOAuthConfigurations(gRuntimeConfiguration.API_ROOT);
+    const clientConfigs = oauthConfig.clients;
+    if (clientConfigs == null || clientConfigs.length < 1) {
         console.error("Failed to load OAuth configuration from server, so auth not available");
         return undefined;
     }
-    const oauthConfig = oauthConfigs[0];
-    console.log("Fetched oauthConfig from Backend:", oauthConfig);
-    const clientId = oauthConfig.applicationID;
-    const provider = oauthConfig.provider;
-    const openIdConnectUrl = 'https://accounts.google.com'; // @todo get this from provider
-    const redirectUri = `${window.origin}/oauth/callback`;
-    const scope = oauthConfig.scopes.join(" ");
-    return {
-        provider,
-        openIdConnectUrl,
-        clientId,
-        redirectUri,
-        scope
-    }
+    return clientConfigs.map(
+        (oc) => {
+            return {
+                provider: oc.provider,
+                clientId: oc.applicationID,
+                openIdConnectUrl: oauthConfig.providers.find((p)=>p.provider == oc.provider)?.openid_configuration_uri??"",
+                redirectUri: `${window.origin}/oauth/callback`,
+                scope: oc.scopes.join(" ")
+            }
+        });
 };
 
 export default boot(({ app, router, store }) => {

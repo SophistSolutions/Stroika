@@ -57,6 +57,15 @@ namespace Stroika::Samples::HTMLUI::Model {
     namespace Auth {
 
         /**
+         * Configuration returned by webservices - combo of client and provider configuration data
+         * ('joined by provider field')
+         */
+        struct Configuration {
+            Stroika::Frameworks::Auth::OAuth::ClientConfigurations  fClients;
+            Stroika::Frameworks::Auth::OAuth::ProvidersConfigurations fProviders;
+        };
+
+        /**
         * @brief  OAuth2 works with gui client requesting a short-lived authorization_code from the web browser (typically)
         *   and then the GUI client exchanges that for a longer-lived access_token (and sometimes a refresh_token, and/or id_token).
         */

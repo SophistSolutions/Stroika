@@ -32,7 +32,12 @@ export interface IAppOAuthConfiguration {
   provider: string;
 }
 
-export async function getOAuthConfigurations(apiServer: string): Promise<IAppOAuthConfiguration[]> {
+export interface IOAuthProviderConfiguration {
+  provider: string;
+  openid_configuration_uri?: string;
+}
+
+export async function getOAuthConfigurations(apiServer: string): Promise<{clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[]}> {
   try {
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/configurations`, kFetchOptions_);
     throwIfError_(response);

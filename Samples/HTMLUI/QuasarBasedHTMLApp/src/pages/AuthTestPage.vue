@@ -1,40 +1,59 @@
 <script setup lang="ts">
-import { defineComponent, computed, ref, Ref, onMounted, getCurrentInstance } from "vue";
+import { defineComponent, computed, watch, ref, Ref, onMounted, getCurrentInstance } from "vue";
+import { QSelectOption } from 'quasar';
 
 import { useRouter, useRoute } from "vue-router";
 import { useConfigurationStore } from "../stores/Configuration-Store";
-import { IAuthService, IUserInfo } from "../plugins/auth";
+import { IAuthService, IOAuthProviderConfig } from "../plugins/auth";
 
 defineComponent({
     components: {},
 });
 
+function capitalize_(s: string) {
+    if (s.length > 0) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+    return s;
+}
+
 const route = useRoute();
 const router = useRouter();
 const configurationStore = useConfigurationStore();
-let auth: Ref<IAuthService> = getCurrentInstance()?.appContext.config.globalProperties.$auth;
+let auth: IAuthService = getCurrentInstance()?.appContext.config.globalProperties.$auth;
 
+const availableProviders: Ref<IOAuthProviderConfig[] | undefined> = auth.availableProviders;
+const availableProviderOptions = computed(() => availableProviders.value?.map((i) => { return { 'label': capitalize_(i.provider), 'value': i.provider }; }));
+const activeProvider: Ref<IOAuthProviderConfig | undefined> = auth.activeProvider;
 
-const providers = [
-    'Google'
-];
-
-const loginWith = ref("Google");
+const loginWith: Ref<QSelectOption> = ref(availableProviderOptions.value?.length ? availableProviderOptions.value[0] : { 'label': "Unavailable", 'value': "unavailable" });
+// availableProviders not immediately available always, and not sure how to specify loginWith to have its default react this way
+// other than watch --LGP 2025-02-06
+watch(availableProviders, () => {
+    if (loginWith.value.value == "unavailable" && availableProviderOptions.value?.length) {
+        loginWith.value = availableProviderOptions.value[0];
+    }
+})
 
 onMounted(() => {
     console.log("in /user page on-mounted auth=", auth);
 });
 
-const isAuthenticated = computed(() => auth.user.value != null)
+const isAuthenticated = computed(() => auth.user.value != null);
 
 const personName = computed(() => auth.user.value?.personName);
 const personEMail = computed(() => auth.user.value?.email);
 const personImageURL = computed(() => auth.user.value?.personImageURL);
 
-function login() {
-    auth.login();
+async function login() {
+    const useProvider: IOAuthProviderConfig | undefined = availableProviders.value?.find((i) => { if (loginWith.value.value == i.provider) { return i; } });
+    try {
+        await auth.login({ useProvider });
+    }
+    catch (e) {
+        alert(`Error during login: ${e}`)
+    }
 }
-
 function logout() {
     auth.logout();
 }
@@ -48,18 +67,18 @@ function logout() {
         <div class="justify-center row">
             <q-card class="col-11 pageCard">
                 <q-card-section>
-                    <div class="row">Configuration:</div>
-                    <pre v-if="auth.config.value">{{ JSON.stringify(auth.config.value, null, 2) }}</pre>
-                    <div v-if="!auth.config.value">
+                    <div class="row">Configuration (availableProviders - from Backend webservices and its configuration):</div>
+                    <pre v-if="auth.availableProviders.value">{{
+                        JSON.stringify(auth.availableProviders.value, null, 2)
+                    }}</pre>
+                    <div v-if="!auth.availableProviders.value">
+                        <div class="row" style="color:red">No OAuth configuration.</div>
+                        <div class="row">See /api/v1/auth/oauth/configurations (backend api)</div>
                         <div class="row">
-                            No OAuth configuration.
+                            See C:/ProgramData/Stroika-Sample-HTMLUI/Server.json (or
+                            /var/opt/Stroika-Sample-HTMLUI on unix)
                         </div>
-                        <div class="row">
-                            See /api/v1/auth/oauth/configurations  (backend api)
-                        </div>
-                        <div class="row">
-                            See C:/ProgramData/Stroika-Sample-HTMLUI/Server.json (or /var/opt/Stroika-Sample-HTMLUI on unix)
-                        </div>
+                        TRY something like:
                         <pre class="row">
     "Auth" : {
         "OAuth2" : [
@@ -81,13 +100,21 @@ function logout() {
             }
         ]
     }
-                        </pre>
-                        
+            </pre>
                     </div>
-
                 </q-card-section>
             </q-card>
 
+            <q-card class="col-11 pageCard" v-if="activeProvider">
+                <q-card-section>
+                    <div class="row">Configuration (activeProvider - if logged in, will be valid, but can be valid even if not logged in):</div>
+                    <div class="row">
+                        <pre v-if="activeProvider">{{
+                            JSON.stringify(activeProvider, null, 2)
+                        }}</pre>
+                    </div>
+                </q-card-section>
+            </q-card>
 
             <q-card class="col-11 pageCard">
                 <q-card-section>
@@ -102,27 +129,25 @@ function logout() {
                             yourself.
                         </div>
                         <div class="row" v-if="!isAuthenticated">
-                            If you have already registered, and know your email, you may authenticate with
-                            that email.
+                            NOT CURRENTLY LOGGED IN.
                         </div>
                         <div class="row">
-                            <div class="col-1">
-                            </div>
+                            <div class="col-1"></div>
                             <div class="col-2 self-center" v-if="isAuthenticated">
                                 <button v-on:click="logout">LogOut</button>
                             </div>
                             <div class="col-3">
-                                <q-select v-model="loginWith" :options="providers" label="Authenticate With" />
+                                <q-select v-model="loginWith" :options="availableProviderOptions"
+                                    label="Authenticate With" />
                             </div>
                             <div class="self-center q-pl-md">
-                                <button v-on:click="login" class="q-pl-sm">{{ isAuthenticated ? "Re-authenticate" :
-                                    "Login" }}</button>
+                                <button v-on:click="login" class="q-pl-sm">
+                                    {{ isAuthenticated ? "Re-authenticate" : "Login" }}
+                                </button>
                             </div>
                         </div>
                     </div>
                 </q-card-section>
-
-
             </q-card>
         </div>
     </q-page>

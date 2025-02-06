@@ -154,7 +154,7 @@ public:
                         {Auth::kMapper},
                         [this] () {
                             ActiveCallCounter_ acc{*this};
-                            return fWSImpl_->auth_oauth_configurations_GET ();
+                            return fWSImpl_->auth_oauth_configuration_GET ();
                         }}}
             , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?auth/oauth/tokens/?"_RegEx, ObjectRequestHandler::Factory{
                         {Auth::kMapper},
