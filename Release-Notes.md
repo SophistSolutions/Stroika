@@ -24,391 +24,61 @@ UPGRADE NOTES:
 
 
 - Library
-  - Common
-    - Compiler Bug Workarounds
-      - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue - 
+  - Foundation
+    - Characters
+      - String
+        - Better concept usage on String::Match () - and support String* in addition to optional<String>*; added another example Match() and regtest
+        - new String::AsLines, and String::Grep, and regtests for these new methods
+        - optimized String::StripAll () - better use of StringBuilder
+      - StringBuilder
+        - docs
+    - Common
+      - Compiler Bug Workarounds
+        - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue
+    - Containers
+      - KeyedCollection
+        - support KeyedCollection::CTOR {initializer_list}
+    - DataExchange
+      - JWT
+        - Simple (but usable) JWT support  (just decoding for now, not validating much)
+    - Execution
+      - new utility function RunAll (alias InvokeAsync)
+      - new kRawEnvironment and kEnvironment properties, and regtests
+      - ProcessRunner
+        - support fEnvironment options support on ProcessRunner
+        - String2ContigArrayCStrs_ cleanup to processRunner
+        - use fBytesBuffer not fPtrsBuffer on Windows/CreateProcess
+
+    - IO
+      - Networking
+        - HTTP
+          - Added authorization property (and caching/storage) to IO::Network::HTTP::Headers class
+        - Sockets
+          - Socket API (ptr just so far) converted to using spans (deprecated a few const byte* methods)
+    - Traversal
+      - Iterable
+        - Iterable<>Join support for RESULT_TYPE=SDKString (at least when explicit type param)
 
 
 - Frameworks::Auth
-  - Simple (but usable) JWT support  (just decoding for now, not validating much)
+  - new CurrentIdentityManager
+    - manage templated identity object in thread_local storage
+  - new OAuth support
+    - ProvidersConfigurations, ClientConfiguration, and kDefaultProviderConfigurations
+    - Client support - to fetch a bunch of remote stuff (like wellknown/... ids and calls to oauth provider to convert tokens etc)
 
 - Frameworks::WebServer
   - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
+  - small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
 
 
 - Samples
   - HMTLUI
     - fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()
-
+    - connections API tweaks
 
 
 #if 0
-
-commit 6b9a14f8f94238492141cfa9b823eac0c0f0cedc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 12:57:48 2025 -0500
-
-    Added authorization property (and caching/storage) to IO::Network::HTTP::Headers class
-
-commit cf7c2f4563f8a74632cf12e7d21a85937d7e9dd0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 12:58:34 2025 -0500
-
-    Silence some warnings
-
-commit 0057e6a919e6eb96636190312b2c196d997b98ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 13:46:36 2025 -0500
-
-    cosmetic and silence warnings
-
-commit 49a23694847634241cfe7cbf9d390bdfb8c478e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 14:49:07 2025 -0500
-
-    mostly cosmetic
-
-commit f498b830177f524a8a80f54b5f531f96f1e6571c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 16:13:07 2025 -0500
-
-    first draft of Frameworks::Auth CurrentIdentityManager
-
-commit 7426676ae423597725e814750e518d3b3287fc11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 16:40:26 2025 -0500
-
-    fixed typo
-
-commit 9dff70f7e08dece1ec7f88173345b135978a411d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 16:45:58 2025 -0500
-
-    Progress on CurrentIdentityManager
-
-commit 4cf7c56f9599a811d5fd9464c55d3700a8403bf8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 16:50:14 2025 -0500
-
-    Progress on CurrentIdentityManager
-
-commit b1f89eedcd5f0cae7ea4c5e34a8c536784670cb0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 17:04:25 2025 -0500
-
-    Progress on CurrentIdentityManager
-
-commit a1b810bd4122f60dda8218cd52c556b5266e0e06
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 21:24:51 2025 -0500
-
-    tiny progress on Frameworks/Auth/CurrentIdentity (concepts)
-
-commit f6ef876cf86610c4912ebdd2e99abf1e0f6a44af
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 15 08:28:08 2025 -0500
-
-    progress on CurrentIdentityManager
-
-commit e677cfb34aa6eda28c65ba91edd78ef000c85910
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 15 08:33:02 2025 -0500
-
-    progress on CurrentIdentityManager
-
-commit 2971071069c95635fd137a44c494ab2dda8052c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 15 10:26:13 2025 -0500
-
-    Auth::OAuth::kDefaultProviderConfigurations and ProvidersConfigurations and extra provider field of ClientConfiguration
-
-commit fdb5322a85e4137c3da1508ea0894d0c57f6fc97
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 15 12:55:04 2025 -0500
-
-    Cosmetic
-
-commit ee607d4a34c75a11c0c27521227ea668f15b3bdf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 15 16:20:36 2025 -0500
-
-    OAuth ApplicationIDType is String not GUID
-
-commit caac9bfa7a6afba5b184b43d5e1a9e0fc8c2b4ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 15 17:17:42 2025 -0500
-
-    OAuth ProviderConfiguration struct additions
-
-commit 0262935e0c7e744c4ded08e512643cd946f4a59b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 15 17:18:01 2025 -0500
-
-    HTMLUI sample - connections API tweaks
-
-commit ce4a44f35a59b0b1ee3a8dda67a14b420f499c52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 18 07:52:46 2025 -0600
-
-    minor tweaks to Frameworks/WebServer/FileSystemRequestHandler: options
-
-commit a52152073f0113c91069c491ec80ec1d245dc294
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 18 19:28:28 2025 -0600
-
-    small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
-
-commit 2bf5b3bba3daa8e46492b418574e839e04b9ef82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 18 20:35:44 2025 -0600
-
-    Socket API (ptr just so far) converted to using spans (deprecated a few const byte* methods)
-
-commit 901e4a884bc22e5f7dc6ebf847d9b0138da62e3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 18 21:40:08 2025 -0600
-
-    ConnectionOrientedStreamSocket now uses stream style overloads, instead of byte* start, byte* end
-
-commit d6063083fdc62410a9310152b4d9af7d584a6da4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 19 13:30:17 2025 -0600
-
-    ConnectionOrientedStreamSocket: convert some of API to using spans, instead of ptrs
-
-commit abc7c44182a0ab485e5a638b36e5740dd8a4bc83
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 19 14:10:26 2025 -0600
-
-    ConnectionOrientedStreamSocket convert more to using span in reps
-
-commit 9db52bad3134ee0543898b37d3dddcadef04edf0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 19 15:03:35 2025 -0600
-
-    fixed typo
-
-commit 7098864e2cfef15ba34b82ad948b0d6c2daebf70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 09:58:12 2025 -0500
-
-    cosmetic/comments
-
-commit 7e6cd802b0ddf2463f5f5ddb948a5e23ee976530
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 10:05:48 2025 -0500
-
-    draft utility function Execution::InvokeAsync
-
-commit f5026f762cf9c33fe3e0ca1f51300035c38b0552
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 10:41:09 2025 -0500
-
-    cosmetic
-
-commit f1e2f67852ec60472a34acdc497edcad1b01d072
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 11:08:44 2025 -0500
-
-    renamed (new) InvokeAsync to RunAll
-
-commit fd03d22dffd74a1f428623be9322bd6e50ec8d3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 11:15:14 2025 -0500
-
-    Cosmetic
-
-commit d022c54831b724d6edaa0b0e34356908c517571f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 11:18:11 2025 -0500
-
-    cosmetic
-
-commit f7538b602d632d8ff53f0906548308ba189a74e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 14:44:26 2025 -0500
-
-    Mostly cosmetic
-
-commit a31de484c8e7a708f51e4b140785855f13d0be09
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 17:52:40 2025 -0500
-
-    docs
-
-commit 15b88c9d6e23e718c1ff50a0d7de07e483b360b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 17:53:21 2025 -0500
-
-    cosmetic
-
-commit 401d762a6cd8e5f04f57f0cf4ecb389e969dc8df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 20:29:27 2025 -0500
-
-    Mostly cosmetic
-
-commit 0546b1f8f3d93ba6696e9127a041717281c0711b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 20 20:30:49 2025 -0500
-
-    Better concept usage on String::Match () - and support String* in addition to optional<String>*; added another example Match() and regtest
-
-commit cbfc9473c7527b8d9a35b9cba2e91a5b39d4ad13
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 09:09:29 2025 -0500
-
-    cleanups to recent checkins
-
-commit f960466dd297b820eed8f0f8dc2948920d590620
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 09:34:51 2025 -0500
-
-    String class mostly cosmetic cleanups
-
-commit a0b84310ee074350e7760b2821e24353f63d7fe2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 10:28:39 2025 -0500
-
-    new String::AsLines, and String::Grep, and regtests for these new methods
-
-commit 3bef02b4ad4e8760cea48f27367e3999c94d85d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 14:55:06 2025 -0500
-
-    Iterable<>Join support for RESULT_TYPE=SDKString (at least when explicit type param)
-
-commit 06c0b95262c92e8989b765e154d7b6daae75e417
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 14:56:30 2025 -0500
-
-    Execution::kRawEnvironment  and  kEnvironment properties and prelim support fEnvironment options support on ProcessRunner
-
-commit fd408ff983e1d8b8881fde32313ae9985c12592c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 15:35:20 2025 -0500
-
-    hopefully fix typo in last checkin
-
-commit 40cbc7d7dfba95ad7ac59063e394ca374bb269b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 16:15:59 2025 -0500
-
-    fixed typo on recent Join chnages
-
-commit dd09ec85a363ca979b135ed93ec68604dfd4920c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 16:16:25 2025 -0500
-
-    String2ContigArrayCStrs_ cleanup to processRunner
-
-commit 633f45a0b4d94aa914450c8b7f100cf2ae03e990
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 16:41:24 2025 -0500
-
-    fix another typo in recent changes
-
-commit 0d1812fd1b46cba1738179b21a7872903cc8c692
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 17:11:01 2025 -0500
-
-    cosmetic
-
-commit 735e294ab97c2477db71e7633f6c05171f01c869
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 17:11:22 2025 -0500
-
-    minor fix for recent Join changes
-
-commit adb610146ad98b21af71cfbd2cd13d74abe1aaea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 18:47:57 2025 -0500
-
-    cleanup recent Iterable Join changes
-
-commit 90687f29cf9aeda84bfdf3ea8eb0967e532fb1f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 19:09:20 2025 -0500
-
-    cleanup recent Iterable Join changes
-
-commit 82f02bd16c44290f3fb3a9e731f2553c191f8658
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 19:10:35 2025 -0500
-
-    cleanup recent Iterable Join changes
-
-commit 5d8dd1a8d5f26783c1603330a71278297170e43c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 19:11:09 2025 -0500
-
-    progress on ProcessRunner suppor tfor options.fEnvironment - preliminary
-
-commit f123af26b07d733c9b5a89c0a1c0ec6806d49e9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 19:59:04 2025 -0500
-
-    progress on ProcessRunner env support (windows)
-
-commit fc89dd452b7aff8d1a94c9ef5924738e0b1aa070
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 20:04:17 2025 -0500
-
-    use _NSGetEnviron on macos
-
-commit cb09348ac98d97243b78027b527cb83c9d5b719b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 20:24:12 2025 -0500
-
-    minor progress on Windows Environment support ProcessRunner
-
-commit 65d63409d84e8baf32f3ea20bf0f1aab23881f35
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 20:39:05 2025 -0500
-
-    fixed typo
-
-commit 4ba22a554d10fea3741e817ab1e67575a87dd7fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 20:49:16 2025 -0500
-
-    ProcessRunner use fBytesBuffer not fPtrsBuffer on Windows/CreateProcess
-
-commit 46d077654beeb706d30bf2add49f92021e7313e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 21:45:38 2025 -0500
-
-    fixed Execution::kRawEnvironment property; added (and cleaned up) related regtests
-
-commit aebe3c44c73e44291d6e8298a82df8b2ba18a85e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 21 21:51:39 2025 -0500
-
-    cleanup regtests
-
-commit c78d82dfd18606bba244cdbe7729309e5e199c5e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 22 11:32:16 2025 -0500
-
-    minor mostly cosmetic changes to recent code
-
-commit 32684b511663f863739b7cf78da0ca602e4ba051
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 22 16:55:59 2025 -0500
-
-    mostly cosmetic changes to String; and optimized String::StripAll () - better use of StringBuilder
-
-commit 69ca9630fe43d0ad45df3c8378d69cd6cc439a45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 22 16:56:25 2025 -0500
-
-    performance comments StringBuilder
-
-commit ff2620caeebbd000dfbaf390bee59471e30dec3b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 22 16:57:05 2025 -0500
-
-    KeyedCollection::CTOR {initializer_list}
 
 commit 7525a71eead087d821aa85409df7d175946a379b
 Author: Lewis Pringle <lewis@sophists.com>
