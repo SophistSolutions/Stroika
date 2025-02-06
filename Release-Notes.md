@@ -21,6 +21,1294 @@ UPGRADE NOTES:
   - Streams::TextWriter -> Streams::TextToBinary::Writer
   - Streams::TextToByteReader -> Streams::TextToBinary::Reader
 
+- Frameworks::Auth
+  - Simple (but usable) JWT support  (just decoding for now, not validating much)
+
+#if 0
+
+    FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
+
+commit b6b06567eaf919a0e25ae53648349fa3b913a9dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 12 18:30:23 2025 -0500
+
+    Sample HTMLUI: fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()
+
+commit 7a97a56a1362c48338d654e516f9b6258e503b04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 12 18:30:53 2025 -0500
+
+    update release notes
+
+commit 6a92f66103e0df604c81dca1db0e4940ecaa86f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 13 07:58:59 2025 -0500
+
+    Minor JWT tweaks
+
+commit ac05257ef3b56fd4c909118950f0692a140fbc21
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 08:07:32 2025 -0500
+
+    super early prelim draft Auth framework
+
+commit 220f3e82f78bf423caf565cb8accd0718a018bc5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 10:59:25 2025 -0500
+
+    Comments
+
+commit 5760aebc3c1611fb2d6d191f107b59547bfdc6e1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 10:59:42 2025 -0500
+
+    Comments
+
+commit 63c887853a53ec834da8024089cc500dc7e965b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 12:32:04 2025 -0500
+
+    new bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue - qCompilerAndStdLib_function_dependency_too_complex_Buggy
+
+commit 6b9a14f8f94238492141cfa9b823eac0c0f0cedc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 12:57:48 2025 -0500
+
+    Added authorization property (and caching/storage) to IO::Network::HTTP::Headers class
+
+commit cf7c2f4563f8a74632cf12e7d21a85937d7e9dd0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 12:58:34 2025 -0500
+
+    Silence some warnings
+
+commit 0057e6a919e6eb96636190312b2c196d997b98ca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 13:46:36 2025 -0500
+
+    cosmetic and silence warnings
+
+commit 49a23694847634241cfe7cbf9d390bdfb8c478e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 14:49:07 2025 -0500
+
+    mostly cosmetic
+
+commit f498b830177f524a8a80f54b5f531f96f1e6571c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 16:13:07 2025 -0500
+
+    first draft of Frameworks::Auth CurrentIdentityManager
+
+commit 7426676ae423597725e814750e518d3b3287fc11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 16:40:26 2025 -0500
+
+    fixed typo
+
+commit 9dff70f7e08dece1ec7f88173345b135978a411d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 16:45:58 2025 -0500
+
+    Progress on CurrentIdentityManager
+
+commit 4cf7c56f9599a811d5fd9464c55d3700a8403bf8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 16:50:14 2025 -0500
+
+    Progress on CurrentIdentityManager
+
+commit b1f89eedcd5f0cae7ea4c5e34a8c536784670cb0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 17:04:25 2025 -0500
+
+    Progress on CurrentIdentityManager
+
+commit a1b810bd4122f60dda8218cd52c556b5266e0e06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 14 21:24:51 2025 -0500
+
+    tiny progress on Frameworks/Auth/CurrentIdentity (concepts)
+
+commit f6ef876cf86610c4912ebdd2e99abf1e0f6a44af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 15 08:28:08 2025 -0500
+
+    progress on CurrentIdentityManager
+
+commit e677cfb34aa6eda28c65ba91edd78ef000c85910
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 15 08:33:02 2025 -0500
+
+    progress on CurrentIdentityManager
+
+commit 2971071069c95635fd137a44c494ab2dda8052c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 15 10:26:13 2025 -0500
+
+    Auth::OAuth::kDefaultProviderConfigurations and ProvidersConfigurations and extra provider field of ClientConfiguration
+
+commit fdb5322a85e4137c3da1508ea0894d0c57f6fc97
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 15 12:55:04 2025 -0500
+
+    Cosmetic
+
+commit ee607d4a34c75a11c0c27521227ea668f15b3bdf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 15 16:20:36 2025 -0500
+
+    OAuth ApplicationIDType is String not GUID
+
+commit caac9bfa7a6afba5b184b43d5e1a9e0fc8c2b4ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 15 17:17:42 2025 -0500
+
+    OAuth ProviderConfiguration struct additions
+
+commit 0262935e0c7e744c4ded08e512643cd946f4a59b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 15 17:18:01 2025 -0500
+
+    HTMLUI sample - connections API tweaks
+
+commit ce4a44f35a59b0b1ee3a8dda67a14b420f499c52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 18 07:52:46 2025 -0600
+
+    minor tweaks to Frameworks/WebServer/FileSystemRequestHandler: options
+
+commit a52152073f0113c91069c491ec80ec1d245dc294
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 18 19:28:28 2025 -0600
+
+    small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
+
+commit 2bf5b3bba3daa8e46492b418574e839e04b9ef82
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 18 20:35:44 2025 -0600
+
+    Socket API (ptr just so far) converted to using spans (deprecated a few const byte* methods)
+
+commit 901e4a884bc22e5f7dc6ebf847d9b0138da62e3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 18 21:40:08 2025 -0600
+
+    ConnectionOrientedStreamSocket now uses stream style overloads, instead of byte* start, byte* end
+
+commit d6063083fdc62410a9310152b4d9af7d584a6da4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 19 13:30:17 2025 -0600
+
+    ConnectionOrientedStreamSocket: convert some of API to using spans, instead of ptrs
+
+commit abc7c44182a0ab485e5a638b36e5740dd8a4bc83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 19 14:10:26 2025 -0600
+
+    ConnectionOrientedStreamSocket convert more to using span in reps
+
+commit 9db52bad3134ee0543898b37d3dddcadef04edf0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 19 15:03:35 2025 -0600
+
+    fixed typo
+
+commit 7098864e2cfef15ba34b82ad948b0d6c2daebf70
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 09:58:12 2025 -0500
+
+    cosmetic/comments
+
+commit 7e6cd802b0ddf2463f5f5ddb948a5e23ee976530
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 10:05:48 2025 -0500
+
+    draft utility function Execution::InvokeAsync
+
+commit f5026f762cf9c33fe3e0ca1f51300035c38b0552
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 10:41:09 2025 -0500
+
+    cosmetic
+
+commit f1e2f67852ec60472a34acdc497edcad1b01d072
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 11:08:44 2025 -0500
+
+    renamed (new) InvokeAsync to RunAll
+
+commit fd03d22dffd74a1f428623be9322bd6e50ec8d3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 11:15:14 2025 -0500
+
+    Cosmetic
+
+commit d022c54831b724d6edaa0b0e34356908c517571f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 11:18:11 2025 -0500
+
+    cosmetic
+
+commit f7538b602d632d8ff53f0906548308ba189a74e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 14:44:26 2025 -0500
+
+    Mostly cosmetic
+
+commit a31de484c8e7a708f51e4b140785855f13d0be09
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 17:52:40 2025 -0500
+
+    docs
+
+commit 15b88c9d6e23e718c1ff50a0d7de07e483b360b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 17:53:21 2025 -0500
+
+    cosmetic
+
+commit 401d762a6cd8e5f04f57f0cf4ecb389e969dc8df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 20:29:27 2025 -0500
+
+    Mostly cosmetic
+
+commit 0546b1f8f3d93ba6696e9127a041717281c0711b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 20 20:30:49 2025 -0500
+
+    Better concept usage on String::Match () - and support String* in addition to optional<String>*; added another example Match() and regtest
+
+commit cbfc9473c7527b8d9a35b9cba2e91a5b39d4ad13
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 09:09:29 2025 -0500
+
+    cleanups to recent checkins
+
+commit f960466dd297b820eed8f0f8dc2948920d590620
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 09:34:51 2025 -0500
+
+    String class mostly cosmetic cleanups
+
+commit a0b84310ee074350e7760b2821e24353f63d7fe2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 10:28:39 2025 -0500
+
+    new String::AsLines, and String::Grep, and regtests for these new methods
+
+commit 3bef02b4ad4e8760cea48f27367e3999c94d85d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 14:55:06 2025 -0500
+
+    Iterable<>Join support for RESULT_TYPE=SDKString (at least when explicit type param)
+
+commit 06c0b95262c92e8989b765e154d7b6daae75e417
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 14:56:30 2025 -0500
+
+    Execution::kRawEnvironment  and  kEnvironment properties and prelim support fEnvironment options support on ProcessRunner
+
+commit fd408ff983e1d8b8881fde32313ae9985c12592c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 15:35:20 2025 -0500
+
+    hopefully fix typo in last checkin
+
+commit 40cbc7d7dfba95ad7ac59063e394ca374bb269b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 16:15:59 2025 -0500
+
+    fixed typo on recent Join chnages
+
+commit dd09ec85a363ca979b135ed93ec68604dfd4920c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 16:16:25 2025 -0500
+
+    String2ContigArrayCStrs_ cleanup to processRunner
+
+commit 633f45a0b4d94aa914450c8b7f100cf2ae03e990
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 16:41:24 2025 -0500
+
+    fix another typo in recent changes
+
+commit 0d1812fd1b46cba1738179b21a7872903cc8c692
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 17:11:01 2025 -0500
+
+    cosmetic
+
+commit 735e294ab97c2477db71e7633f6c05171f01c869
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 17:11:22 2025 -0500
+
+    minor fix for recent Join changes
+
+commit adb610146ad98b21af71cfbd2cd13d74abe1aaea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 18:47:57 2025 -0500
+
+    cleanup recent Iterable Join changes
+
+commit 90687f29cf9aeda84bfdf3ea8eb0967e532fb1f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 19:09:20 2025 -0500
+
+    cleanup recent Iterable Join changes
+
+commit 82f02bd16c44290f3fb3a9e731f2553c191f8658
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 19:10:35 2025 -0500
+
+    cleanup recent Iterable Join changes
+
+commit 5d8dd1a8d5f26783c1603330a71278297170e43c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 19:11:09 2025 -0500
+
+    progress on ProcessRunner suppor tfor options.fEnvironment - preliminary
+
+commit f123af26b07d733c9b5a89c0a1c0ec6806d49e9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 19:59:04 2025 -0500
+
+    progress on ProcessRunner env support (windows)
+
+commit fc89dd452b7aff8d1a94c9ef5924738e0b1aa070
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 20:04:17 2025 -0500
+
+    use _NSGetEnviron on macos
+
+commit cb09348ac98d97243b78027b527cb83c9d5b719b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 20:24:12 2025 -0500
+
+    minor progress on Windows Environment support ProcessRunner
+
+commit 65d63409d84e8baf32f3ea20bf0f1aab23881f35
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 20:39:05 2025 -0500
+
+    fixed typo
+
+commit 4ba22a554d10fea3741e817ab1e67575a87dd7fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 20:49:16 2025 -0500
+
+    ProcessRunner use fBytesBuffer not fPtrsBuffer on Windows/CreateProcess
+
+commit 46d077654beeb706d30bf2add49f92021e7313e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 21:45:38 2025 -0500
+
+    fixed Execution::kRawEnvironment property; added (and cleaned up) related regtests
+
+commit aebe3c44c73e44291d6e8298a82df8b2ba18a85e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 21 21:51:39 2025 -0500
+
+    cleanup regtests
+
+commit c78d82dfd18606bba244cdbe7729309e5e199c5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 22 11:32:16 2025 -0500
+
+    minor mostly cosmetic changes to recent code
+
+commit 32684b511663f863739b7cf78da0ca602e4ba051
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 22 16:55:59 2025 -0500
+
+    mostly cosmetic changes to String; and optimized String::StripAll () - better use of StringBuilder
+
+commit 69ca9630fe43d0ad45df3c8378d69cd6cc439a45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 22 16:56:25 2025 -0500
+
+    performance comments StringBuilder
+
+commit ff2620caeebbd000dfbaf390bee59471e30dec3b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 22 16:57:05 2025 -0500
+
+    KeyedCollection::CTOR {initializer_list}
+
+commit 7525a71eead087d821aa85409df7d175946a379b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 22 16:58:12 2025 -0500
+
+    OAuth framework: ProviderConfiguration has extra field openid_configuration_uri; and kMapper and ToString() methosts, and related minor cleanups (using fix to KeyedCollection)
+
+commit b04a066f3a40fc1b4efa76064165391169e241b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 22 17:12:16 2025 -0500
+
+    added openid_configuration_uri to ProviderConfiguration for facebook
+
+commit 75270731c4f021fd0be1384d1607b2754aeb159a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 09:26:55 2025 -0500
+
+    new ISpanBytesCastable concept to capture the requirements on SpanBytesCast API (and used it there); and strengthened the requirements to check trivially_copyable and no cast away const of underlying value_type
+
+commit 6a604a6ef1acfb48ec1f972f30171c4646b65936
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 09:28:25 2025 -0500
+
+    fixed typo/bug (a few releases back) to ToSeekableInputStream - RemainingLength
+
+commit 7a9506678f80eeeef810d80c5ecd6a7c664e4307
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 10:13:08 2025 -0500
+
+    Streams/ExternallyOwnedSpanInputStream::New now uses ISpanBytesCastable so slightly more flexable, and clean and simple
+
+commit 9b104cb483c8e6e07a9ea69fd75fa617e399d813
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 10:49:59 2025 -0500
+
+    Added static Character::IsWhitespace to encourage optimization/detecting use of that common algorithm
+
+commit 4e33b3cf42a36ee9a8a17ebf7ba9f4b3581ce9e1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 10:51:29 2025 -0500
+
+    changed String member functions to reference static Character::IsWhitespace instead of member-function version through lambda, so can check in impl - and optimize (no real semantics change)
+
+commit 688cfec8a17cc31027dc5bf68ae963fd8170a98d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 11:50:46 2025 -0500
+
+    possible performance optimizations for String LTrim/RTrim
+
+commit ba02b2485d6bf3708cb89cd931505aa8c63c3616
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 13:15:28 2025 -0500
+
+    String::Trim () optimization
+
+commit 8305f8a3e170f096a79b1d49aee17388e16433b3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 13:49:09 2025 -0500
+
+    Comments
+
+commit 624cbfa468d642e7e8a0dd93c126fdf9cb36a767
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 16:11:51 2025 -0500
+
+    refactored (still not depreacting) - but get rid of TextReader/TextWriter and TextToByteReader in favor of FromText/{Reader/Writer} and ToText/{Reader/Writer}
+
+commit 179cffcad7e67c9e792253049c62475043d427c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 17:46:37 2025 -0500
+
+    react to deprecations - Streams::TextReader/TextWriter/TextToByteReader replaced with Streams::ToText::{Reader/Writer} and Streams::FromText::{Reader/Writer}
+
+commit fd1664bb4e2af5f7c2472105ee7f7cc1dc1dc63d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 18:04:05 2025 -0500
+
+    More reactions to recent deprecations
+
+commit be3f05768770c26f222d6e4051a5ff3b46fe912d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 19:04:36 2025 -0500
+
+    more recent deprecation cleanups and comments
+
+commit 53f90ab67879d79cba2cd82c6a660573cd1307ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 19:11:41 2025 -0500
+
+    cosmetic
+
+commit 46a559933e678be368be8c67b1c2a2d227fef5a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 23 21:11:59 2025 -0500
+
+    comments
+
+commit 7658c8aa4338e5cf519507a9de872eee6247e472
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 08:09:55 2025 -0500
+
+    mostly cosmetic
+
+commit 72bc4aeee3898b241f0b9be286cac7adc479943c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 08:44:22 2025 -0500
+
+    renamed (recent change so just use newest in relnotes) - ToText to BinaryToText and FromText to TextToBinary; and misc minor cleanups
+
+commit a715c3a4b08b7193b5d5987a3a4dabd5a7379a24
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 10:22:27 2025 -0500
+
+    fixed a few property names (no longer use p prefix)
+
+commit 1239dfa65fc463692631a31912c5b6a005644867
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 15:57:24 2025 -0500
+
+    Added template utility RepeatedTuple_t
+
+commit c218ca771f83a2133ac8660013dde2093a254d8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 15:58:00 2025 -0500
+
+    cosmetic project file cleanups
+
+commit 0d891ac1187ef2b58ea1b4482b4660c773304de8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 16:00:03 2025 -0500
+
+    fixed docs on String::Find(RegExp); added RegExp overload of Tokenize (); added String::Matches<INT> helper to return tuples; added String::Col/ColValue to replace much use of Matches() regexp functions
+
+commit 31213f7a93c2f49632c26a6fb1a7d28ddd71aa27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 16:34:17 2025 -0500
+
+    cosmetic
+
+commit d8b49615abb9a24402532771678b0b072b0d131c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 21:41:02 2025 -0500
+
+    fixed bug with ToString(tuple<T>) - infinite loop
+
+commit 319b7fab8f7cc6f68f441fe18ab2d163f7f60cc0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 21:42:27 2025 -0500
+
+    Get rid of Trim() built into Tokeninize () - generally not needed (and added regtests and docs for where it is); added more regtests for String::Match<N> and fixed bug with new code
+
+commit 92a29cb5821ec46b66823cd3672b7a09bfccee95
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 22:17:52 2025 -0500
+
+    fixed CharacterDelimitedLines Reader for recent change to String::Tokenize (not trimming)
+
+commit a39bcdeef08e487fa656dab8c6888c896b971165
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 24 22:56:10 2025 -0500
+
+    fixed small bug in new String::Tokenize(regexp)
+
+commit ca5c2fc07edaf5ad731e0af76ceab927475e4be4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 26 08:33:55 2025 -0500
+
+    Minor cleanups to Syncrhonized usage
+
+commit de9d9034aec677a928a0aeb26b328d7a4d6d4e07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 26 19:06:51 2025 -0500
+
+    Comments
+
+commit cf8822a722e5b631f2e3bf6b9c8de3720a0d32c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 27 08:57:28 2025 -0500
+
+    mostly cosmetic
+
+commit 3353350da517d27c5ca1997cb74217f6987a716c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 27 13:49:19 2025 -0500
+
+    maybe impove optics of lzma extract random issue on ubuntu (WARNING: FAILURE in 7z)
+
+commit 6277a8e7cf550f755a7e6535dbe5811bb8534f23
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 05:44:50 2025 -0500
+
+    silence warning
+
+commit 19d438fc94bc558ae729ff00fe10269a4514a40e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 05:45:07 2025 -0500
+
+    silence warnings
+
+commit 5719f836e032379ae6ad28debddcbbee1bd9f2f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 05:46:29 2025 -0500
+
+    workaround issue with environ ptr being nullptr sometimes on Windows - in new Execution::kRawEnvironment API
+
+commit 8057eecb679262ad59fff7f2933f078eb4005e92
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 05:48:55 2025 -0500
+
+    WARNING: FAILURE in 7z rare further cleanups/hacks
+
+commit 1b1bab300c7488e86c703197a0f96cd1730ab2b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 07:27:30 2025 -0500
+
+    deleted HistoricalRegressionTestResults and HistoricalPerformanceRegressionTestResults from old, pre-release builds
+
+commit ee7e0d2cbd69dd8dc447fd9f9a656525610c2aca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 08:35:24 2025 -0500
+
+    new Memory::OptionallyCopy
+
+commit 704a6d118cdba598896ff2e6eb8aec50c8e9cb4d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 15:17:30 2025 -0500
+
+    Added scopes to Frameworks/Auth/OAuth/Configuration; and docs
+
+commit 7381473ce99ee3f0bff7a1abd932834d58150816
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 17:41:48 2025 -0500
+
+    Updated StreamReader API (not totally backward compatible, but not a new API so not really used by much yet so no need for lots of notes) - and API now basically just follows pattern in InputStream::Ptr better
+
+commit 3f76492a6428e555cf1ff6bc93967e0c7ccd0e75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 17:50:39 2025 -0500
+
+    InputStream::Ptr Read and ReadOrThrow no longer take default param for blockFlag - use another API (wiht diff return value) to get default blocking behavior - if using that API - you probably have the block flag value to pass
+
+commit b23edb65103e8f1be4fd51844e69500da38e7dc0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 18:33:31 2025 -0500
+
+    Variant::Reader/Writer::GetDefaultFileSuffix now returns optional<filesystem::path> instead of String
+
+commit fb94e153a91472e0f71a4ff03abe7aee92235646
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 20:34:40 2025 -0500
+
+    Added ReadBlocking overload (read to delimiter) to InputStream::PTr and StreamReader)
+
+commit 880d24e25b916bf402bff12718d0420ac6c5f5ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 20:47:20 2025 -0500
+
+    Added draft of FormURLEncoded Reader/Writer and regtest - very basic but seems to mostly work
+
+commit e6357ddccc9e6dfc3ce4595f38944d8248ef5242
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 20:47:47 2025 -0500
+
+    cosmetic
+
+commit fb1b01cafc88455c6d0679a6afca023b31fa1219
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 20:54:14 2025 -0500
+
+    defined kWWWFormURLEncoded and docs
+
+commit d9e106a135545cf919f14e71da08af06f18f810a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 28 22:41:05 2025 -0500
+
+    Added clientSecret to Frameworks/Auth/OAuth/Configuration
+
+commit ddbd7bd72754c0ff84deae5f2aa70a87feb72de7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 07:47:27 2025 -0500
+
+    Added draft Frameworks\Auth\Interceptor
+
+commit c5f262b172fdab72d1be4eb18052001a66f82a0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 07:51:48 2025 -0500
+
+    fixed typo
+
+commit 368e1a6475b6cdb6e5f335634f0fa1b26fab64b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 08:12:36 2025 -0500
+
+    docs on NoDataAvailableHandling; and deprecated NoDataAvailableHandling::eDEFAULT
+
+commit eefb27b4a0fc675a69738c4d3050635666589602
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 14:01:56 2025 -0500
+
+    new concept Common::explicitly_convertible_to
+
+commit 8407e29e0958016df1daf2f3b33fecbcd65f3241
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 14:02:33 2025 -0500
+
+    fixed Memory::OptionallyCopy to use new Common::explicitly_convertible_to
+
+commit 01d1a6b50a94e7c7a98b2c7233f508fc47b95432
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 14:03:25 2025 -0500
+
+    Made fType field of (new) TypedBLOB optional, and reversed order
+
+commit 826914358186db4722136be019201373b7ee005f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 14:24:50 2025 -0500
+
+    In IO::Transfer code - use TypedBLOB in place of two separate BLOB/InternetMediaTypes params (deprecting older API)
+
+commit 0e89798f6459fb50b70b72954fd7bb813fc5b5e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 17:17:23 2025 -0500
+
+    cleanups for Foundation_IO_Network_Transfer regtest
+
+commit eb46ec3feba5b32b537ea726b8af96bbc9fb127b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 18:33:57 2025 -0500
+
+    fixed bug i (new code) new BinaryToText
+
+commit e8a14966e03bcea56ac19820bf9d321b66d89b1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 18:35:34 2025 -0500
+
+    IO::Network::Transfer::Connection - cleaned up docs/semantics on Send/and new SendAndThrowOnFailure (Send now doesnt throw on HTTP status error but SendAndThrowOnFailure does) - so change in semantics (docs were ambiguous) - but no change to wrappers like POST, PUT, etc which I think most people call
+
+commit c44c6f0a5c597210b085ad339a70d0cb4b86d284
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 18:36:55 2025 -0500
+
+    improved error reporting in IO::Network::Transfer::Exception code - so captures some stuff from the body to include as part of 'reason' - maybe now works SLIGHTLY better giving hints about what went wrong - need more experience to know
+
+commit 4b2f6a4803d13223b4f383cd6ba3ba521169390f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 18:37:14 2025 -0500
+
+    cosmetic
+
+commit 54a55baf179953223fc95daf02c3a69b39df90a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 18:37:30 2025 -0500
+
+    cosmetic
+
+commit 34142a16787e2de55337c968f47dcd9c4142aae8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 22:19:01 2025 -0500
+
+    new simple utility TextToBinary::Convert(BLOB...) -> String utility
+
+commit bcdac386bec89289595fe61cde38f21412f00dd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 23:35:18 2025 -0500
+
+    Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOne () method
+
+commit 381f4092ed4b39464e5fb6e3f8dc1eb9cc896803
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 23:35:37 2025 -0500
+
+    docs
+
+commit 8994446d9735bc5f29931308cc375bfc0d6fdafd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 29 23:36:32 2025 -0500
+
+    Added draft of Frameworks::Auth::OAuth Client support (sb able to get/send token requests)
+
+commit 87a26b3c2ce53e17cb63bf47781dd04439c2f61e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 00:05:47 2025 -0500
+
+    cosmetic
+
+commit 9e27734ba3f7be506f72f64c9b8d3b102120b80f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 00:06:28 2025 -0500
+
+    Frameworks/Auth/OAuth/Client.cpp fixup a couple serializer/deserializers cuz queer wireformat for scopes and expires_in/at
+
+commit 782b5fd520deb31059c686fded64342b0409b31f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 07:46:21 2025 -0500
+
+    attempt at workaround for issue building boost on windows under HearHE
+
+commit 67fb3f6645de1d18037d6710a98c982da8b1629f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 07:46:44 2025 -0500
+
+    cosmetic
+
+commit c56ac837838d62fa30becdd4885ecd4da6ed9044
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 08:15:44 2025 -0500
+
+    docs
+
+commit f9c20193732866412011d18da343172449566d9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 08:16:01 2025 -0500
+
+    Another attempt to BWA build issue of boost under windows/HearHE
+
+commit 2e12429fbbd6937f8df1c317b748546f7956fc11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 10:28:23 2025 -0500
+
+    changed IO/Network/Transfer/Exception to grab a little more text
+
+commit f701d2fb9341313fc7f7f8d24d3873ee6c5e5a46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 10:33:56 2025 -0500
+
+    changed IO/Network/Transfer/Exception to grab a little more text
+
+commit 219e5a4939202c0396ccc4431bc40fef665b1560
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 10:40:18 2025 -0500
+
+    changed IO/Network/Transfer/Exception to grab a little more text
+
+commit 5d63bf18d9b0d95e747abaf143a6bdde590f725e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 10:53:42 2025 -0500
+
+    cosmetic
+
+commit 1da9c1b1eaae0b889a168fb8ae04b831ccc09b97
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 10:54:06 2025 -0500
+
+    small progress on Frameworks/Auth/OAuth/Client
+
+commit 9531a1f4f85c980de3055ef2f85e88adc0495d85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 11:14:37 2025 -0500
+
+    docs
+
+commit ef1efa72ebe53a9de2477e7746d49e4c7b1861bd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 11:23:52 2025 -0500
+
+    Minor cleanups to Stroika/Frameworks/Auth/OAuth/Client
+
+commit 369c57cdaab56b869f2338df81ce9df740e2fa7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 13:12:30 2025 -0500
+
+    fixed typo
+
+commit ed2b8f04c714c3c9d5e8cbead063b1623a8ec8c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 14:55:04 2025 -0500
+
+    Added DateTime::NowUTC () method
+
+commit 0dd4bda623bed0f1271bd61ffb84ada27cd0716a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 14:58:06 2025 -0500
+
+    new auth framework - expires_at now expressed in UTC
+
+commit 810a07b51545093f7213a3f9254d6e37b6dd04fc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 15:14:25 2025 -0500
+
+    cosmetic
+
+commit ddda31bded633ffb333523e177a7e09cff0cbef8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 15:32:42 2025 -0500
+
+    cosmetic
+
+commit 4b4e93e6b8918c27fe6e8c9cfa4f4342edde5a99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 16:11:13 2025 -0500
+
+    cosmetic
+
+commit 75951e7c862df2c5a6289eed371af9b8a94a4a5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 16:12:23 2025 -0500
+
+    rough draft support for userinfo endpoint in OAuth supprt - Fetcher::UserInfo method (takeing accessToken as argument)
+
+commit 662b32b18a8501dbea22844943fafac06f14dc21
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 16:14:15 2025 -0500
+
+    cosmetic
+
+commit 969ebf78ccd7c2e0d7e3b0f3eff63c78c70445ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 30 16:17:22 2025 -0500
+
+    fix minor regressions and cleanups
+
+commit 8d0c1fab89e71534ce369cd63e9862708a54b410
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 09:38:08 2025 -0500
+
+    tweak OAuth::Fetcher:
+
+commit e2583c58ddb9d3dbcf186fd918ad490851d31665
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 09:44:26 2025 -0500
+
+    another try to workaround issue building boost under HearHE
+
+commit b1715020aaeb0853d6adbe6b6788af5cfcda27e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 11:54:19 2025 -0500
+
+    boost makefile tweaks: simplified/cleaned up and hopefully fixed issue I had building HearHE Windows(still more testing todo)
+
+commit 19c5cf650c8b68961a544f07333040c9f135f46d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 12:52:33 2025 -0500
+
+    fixed typo
+
+commit fa0cd62a9faaef597d651e6a79d31ce97cc066bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 13:21:32 2025 -0500
+
+    fixed typo
+
+commit 30c27dfb6f931a91bbb6e3dabdf75d1ad338724e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 13:27:36 2025 -0500
+
+    Cleanup draft CurrentIdentityAuthInterceptor code
+
+commit f9a7b7bee9337b0194f06474c895f30e79bb98c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 16:52:23 2025 -0500
+
+    Minor fixes to new CurrentIdentityAuthInterceptor; and ToString() repliminary support for Frameworks::WebServer::Interceptor (and subtypes)
+
+commit a0a1d8b3b1e78912d3fc05a1c61d58d837f972e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 17:02:17 2025 -0500
+
+    Minor tweaks to last checkin
+
+commit d8f43e0e8b15ddae00f6fa7a906851f7cdbd13dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 17:18:53 2025 -0500
+
+    CurrentIdentityAuthInterceptor tweaks (tried deduction guide and fixed warnings)
+
+commit 4cd305a0a480d51040452c430a91cb07106c5368
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 17:40:20 2025 -0500
+
+    Allow comparing WebServer InterceptorChain for equality, and fixed bug where DeriveConnectionDefaultOptionsFromEffectiveOptions_ not updated (where we store interceptor chain) on chagnne - so lose fInterceptorChain - just store in fUseDefaultConnectionOptions_ (connection manager)
+
+commit b00c74feccb9f6cdd7a73f7a1d2141b7bd1b8d87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 17:41:20 2025 -0500
+
+    fixed typo
+
+commit 22d342f7b5509b3a10aab941063a41d60dc3ca47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 17:54:18 2025 -0500
+
+    fixed typo
+
+commit 6238ba27333ee23302b859554c9a7098196d5123
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 18:03:19 2025 -0500
+
+    fixed typo on recent checkin
+
+commit 366a09588ae518ef8c51649ca9255cc6083e10d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 18:03:39 2025 -0500
+
+    Simplified new auth-frameowrk CurrentIdentityAuthInterceptor
+
+commit c34b57d8779105ae3e9a1e00f527e79c73a0e3ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 18:35:36 2025 -0500
+
+    Minor CurrentIdentityManager cleanups
+
+commit 5a9d87bdfffbd8c423cbf652c68ba74a218b15af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 21:14:00 2025 -0500
+
+    Auth/OAuth/Client expires_in uses UTC
+
+commit aa0edf22709abd58d10b884fb792d5cc07dd2047
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 21:16:40 2025 -0500
+
+    Auth/OAuth/Client expires_in uses UTC
+
+commit 12eea3687f0f9a2d2ff1ccd4c08d60cf7814795d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 21:22:06 2025 -0500
+
+    Auth/OAuth/Client auth fix
+
+commit 077ac0815d33d874ebc16bc9742a21eb3085a05f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 31 21:23:45 2025 -0500
+
+    Fixed typo
+
+commit 04f88c170f13ddd5f05e255fc85aef569df4ceb0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 07:25:58 2025 -0500
+
+    minor
+
+commit 83098f03afbe577e9e7e4d4b30b307a5d5f70145
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 07:48:30 2025 -0500
+
+    docs
+
+commit e0231a791fe69809bac55d07b361758a552d9c67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 09:07:24 2025 -0500
+
+    Added draft code_verifier to OAuth::TokenRequest object
+
+commit 33b661422dbea8cc12f7cd4b7f851b41a85d25e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 09:44:38 2025 -0500
+
+    zlib makefile typo
+
+commit 8dae9c7efcb25b39844a40d5a0ea591e250a26d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 09:58:45 2025 -0500
+
+    docs
+
+commit 75fd04b9e7fc9b9c1dd1251437f66269fa39016d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 10:57:07 2025 -0500
+
+    qCompilerAndStdLib_thread_local_static_inline_twice_Buggy BWA
+
+commit 77fb8fec98c189779e1781647144cb7ccfdc08f1
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Feb 1 11:09:53 2025 -0500
+
+    cleanup
+
+commit 9a2b483623de964b9199874359da7571227b04f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 11:21:27 2025 -0500
+
+    more trouble with HearHE Boost Windows builds - b2 - debugging more
+
+commit 5dfc6fe7a67955d2199bd93fd7141b2bc4887d00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 11:27:16 2025 -0500
+
+    NOTPARALLEL on boost makefile (cuz done parallel inside)
+
+commit 90170512b9d135bd2c192e9a359f45e857f57032
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 11:44:55 2025 -0500
+
+    docs
+
+commit 2e5ab2918602ff36424ec18f3234526d1e0edc87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 1 12:04:39 2025 -0500
+
+    maybe no longer need echo in boost makefile for windows
+
+commit 9d51a86462740390c30f1614fae5f373e085f3e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 08:56:07 2025 -0500
+
+    Frameworks/Auth/OAuth: added FetchAdditionsFromOpenIDConfigurationURI method to ProviderConfig; and added a few more preset configs (msft)
+
+commit 26c5132f0a6317d6111c11ed1e841356f559ec47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 09:50:05 2025 -0500
+
+    cosmetic
+
+commit a047b6a60da1395895a5d7d50d2a67e60ce9857a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 3 10:21:28 2025 -0500
+
+    small cleanups to regtest 40 (ThreadSafetyBuiltinObject) - better debug one issue I saw but cannot reprpduce with valgrind
+
+commit 287d800ddc6b2bd0a4965cb4582d25cadd95b7cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 10:32:36 2025 -0500
+
+    cosmetic; and fixed typo in Execution::SleepUntil ()
+
+commit e00ccf58b2c360329ecb574ef0047bd9990adc8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 11:02:07 2025 -0500
+
+    cleanup StringBuilder<OPTIONS>::As ()
+
+commit 9a43c928d0acb706799e27875f35c368624ff23b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 11:02:25 2025 -0500
+
+    cosmetic
+
+commit bb85179023104ee048f89b33afb847fdca0848e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 11:03:08 2025 -0500
+
+    Added support to Frameworks/Auth/OAuth for comparison operators; and added apple to list of predefined ProviderConfiguration objects
+
+commit 2bd606bcab3dcce3b4b6d9ad6cf888e9ca4f7d87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 16:39:09 2025 -0500
+
+    Revert "maybe no longer need echo in boost makefile for windows"
+    
+    This reverts commit 2e5ab2918602ff36424ec18f3234526d1e0edc87.
+
+commit 4cb746f3a90183e79cc670c1998a804b0196d8d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 3 16:55:50 2025 -0500
+
+    another try at fixing boost HearHe flaky build issue
+
+commit b1a6d323607dadaec3dab2333cdfb90e1ac5a240
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 08:03:36 2025 -0500
+
+    simplified impl of CountedValue operator<=> and KeyValuePair  operator<=> (using tie)
+
+commit 495c39dfc7e15d2a2b6c5322029a0e57c8e21e92
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 08:04:15 2025 -0500
+
+    fixed typo in SortedSet<T>::operator<=>
+
+commit 60c5ad50ff43cf7ac2c1455e6a2524d54cc25d13
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 08:05:05 2025 -0500
+
+    fixed ClientConfiguration::operator<=> - must specially handle scopes
+
+commit cedc9a0c607d4d39ddda08cecdf06017993b435e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 08:05:34 2025 -0500
+
+    cosmetic
+
+commit dbe0d8daefbfe332254021698649628835f94244
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 08:05:51 2025 -0500
+
+    workspace
+
+commit cd7dd2b239943045321ad21e3f52203f67551a25
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 08:56:32 2025 -0500
+
+    fixed template call for picker clang
+
+commit d70ccea5b4bbf56428c53bff83bb266783feed69
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 10:03:43 2025 -0500
+
+    one qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy specific to xcode 15
+
+commit 68c06014a88c29b77f70d0d35bb769f9558c059c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 10:04:01 2025 -0500
+
+    cosmetic
+
+commit 545cb393fc616cd9c88694f914e4f9c8707faa67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 10:10:13 2025 -0500
+
+    qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy
+
+commit e1bd0736b085901687935398cbee72f68a88a52a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 10:11:54 2025 -0500
+
+    cosmetic
+
+commit bc7fe3884d5ab6e6771819a3bb8911d188c27494
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Feb 4 14:35:19 2025 -0500
+
+    compilerbug workaroudns (e.g qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy_
+
+commit d5e687255d2aa427436ff475ee6c27392e28db7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 14:45:13 2025 -0500
+
+    crazy BWA attempt in HearHE/Boost build cp issue
+
+commit 4c5b98e8a81879a53fa1cf5df20406adb6eddbfa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 14:57:52 2025 -0500
+
+    cosmetic
+
+commit f5a22f3ccd37e0f25e23327a84d075fb5324fc24
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 4 16:37:39 2025 -0500
+
+    Minor tweaks to HTMLUI boot/configuration.ts
+
+commit e16329cad5d5c8c8fb890687136e5a7a5e07284a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 5 12:38:06 2025 -0500
+
+    Draft (working) OAuth support in Sample HTMLUI - authtest page and you can login/logout - and backend uses TLS interceptor to get auth info from http auth token
+
+commit f759fdecc16e5b5c36c73a55b8b0e9dc8be86bbd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 5 12:38:21 2025 -0500
+
+    minor code cleanups
+
+commit b6c763ad709551eb24d46546f4a50f52c5195187
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 6 11:48:34 2025 -0500
+
+    Samples/HTMLUI: Lots of changes so authentication process supports multiple providers, and various cleanups/fixups to vue reactivity logic
+
+commit eb2db6b3b4c3b0bc0ff6d48d1067ba8c47aba6eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 6 12:01:34 2025 -0500
+
+    sample docs
+
+commit d24104e8808249486758ce85a0e0fd916fefe1f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 6 12:05:23 2025 -0500
+
+    fixed warning
+
+commit 5db42d93eaeb89c7fda5e91b0b5f2816cfb8a2dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 6 12:10:17 2025 -0500
+
+    Start 3.0d15 release
+
+commit 0c904e92abff430822a29ba77281ea5cd075f7d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 6 12:13:28 2025 -0500
+
+    cosmetic
+#ednif
+
 -----
 
 
