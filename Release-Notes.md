@@ -25,6 +25,7 @@ UPGRADE NOTES:
 
 - Everywhere
   - Minor docs/messaging cleanups
+  - fixed a few remaining property names (no longer use p prefix)
 - Library
   - Foundation
     - Characters
@@ -36,12 +37,22 @@ UPGRADE NOTES:
         - optimized String::StripAll () - better use of StringBuilder
         - changed String member functions to reference static Character::IsWhitespace instead of member-function version through lambda, so can check in impl - and optimize (no real semantics change)
         - performance optimizations for String LTrim/RTrim/Trim
+        - fixed docs on String::Find(RegExp); 
+        - added RegExp overload of Tokenize (); 
+        - added String::Matches<INT> helper to return tuples; 
+        - added String::Col/ColValue to replace much use of Matches() regexp functions
+        - Get rid of Trim() built into Tokeninize () - generally not needed (and added regtests and docs for where it is); added more regtests for String::Match<N> and fixed bug with new code (not 100% backward compatible, but sb OK)
 
       - StringBuilder
         - docs
+      - ToString
+        - fixed bug with ToString(tuple<T>) - infinite loop
+
     - Common
       - Compiler Bug Workarounds
         - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue
+      - TemplateUtilities
+        - new template utility RepeatedTuple_t
 
     - Containers
       - KeyedCollection
@@ -49,6 +60,10 @@ UPGRADE NOTES:
     - DataExchange
       - JWT
         - Simple (but usable) JWT support  (just decoding for now, not validating much)
+      - Variant
+        - fixed CharacterDelimitedLines Reader for recent change to String::Tokenize (not trimming)
+        - Variant::Reader/Writer::GetDefaultFileSuffix now returns optional<filesystem::path> instead of String
+
     - Execution
       - new utility function RunAll (alias InvokeAsync)
       - new kRawEnvironment and kEnvironment properties, and regtests
@@ -66,15 +81,26 @@ UPGRADE NOTES:
 
     - Memory
       - new ISpanBytesCastable concept to capture the requirements on SpanBytesCast API (and used it there); and strengthened the requirements to check trivially_copyable and no cast away const of underlying value_type
+      - new OptionallyCopy
+
     - Streams
       - fixed typo/bug (a few releases back) to ToSeekableInputStream - RemainingLength
       - ExternallyOwnedSpanInputStream
         - New now uses ISpanBytesCastable so slightly more flexable, and clean and simple
+      - {TextToBinary,BinaryToText} was {TextToByteReader,TextReader,TextWriter}
+        - refactored - but get rid of TextReader/TextWriter and TextToByteReader in favor of FromText/{Reader/Writer} and ToText/{Reader/Writer}
+        - Streams::TextReader/TextWriter/TextToByteReader replaced with Streams::ToText::{Reader/Writer} and Streams::FromText::{Reader/Writer}
+        - renamed (recent change so just use newest in relnotes) - ToText to BinaryToText and FromText to TextToBinary; and misc minor cleanups
+      - InputStream
+        - InputStream::Ptr Read and ReadOrThrow no longer take default param for blockFlag - use another API (wiht diff return value) to get default blocking behavior - if using that API - you probably have the block flag value to pass
+
+      - StreamReader
+        - Updated StreamReader API (not totally backward compatible, but not a new API so not really used by much yet so no need for lots of notes) - and API now basically just follows pattern in InputStream::Ptr better
+        - Added ReadBlocking overload (read to delimiter) to InputStream::PTr and StreamReader
 
     - Traversal
       - Iterable
         - Iterable<>Join support for RESULT_TYPE=SDKString (at least when explicit type param)
-
 
 - Frameworks::Auth
   - new CurrentIdentityManager
@@ -93,136 +119,19 @@ UPGRADE NOTES:
     - fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()
     - connections API tweaks
 
+- ThirdPartyComponents
+  - boost
+    - attempt at workaround for issue building boost on windows under HearHE- flakiness persists, but improved
+      reporting/testing, so maybe I can get to the bottom of it before too long (b2.exe disappears)
+
+  - lzma
+    - maybe impove optics of lzma extract random issue on ubuntu (WARNING: FAILURE in 7z)
+
+- Tests
+  - deleted HistoricalRegressionTestResults and HistoricalPerformanceRegressionTestResults from old, pre-release builds
+
 
 #if 0
-
-    refactored (still not depreacting) - but get rid of TextReader/TextWriter and TextToByteReader in favor of FromText/{Reader/Writer} and ToText/{Reader/Writer}
-
-commit 179cffcad7e67c9e792253049c62475043d427c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 23 17:46:37 2025 -0500
-
-    react to deprecations - Streams::TextReader/TextWriter/TextToByteReader replaced with Streams::ToText::{Reader/Writer} and Streams::FromText::{Reader/Writer}
-
-commit fd1664bb4e2af5f7c2472105ee7f7cc1dc1dc63d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 23 18:04:05 2025 -0500
-
-    More reactions to recent deprecations
-
-commit 72bc4aeee3898b241f0b9be286cac7adc479943c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 08:44:22 2025 -0500
-
-    renamed (recent change so just use newest in relnotes) - ToText to BinaryToText and FromText to TextToBinary; and misc minor cleanups
-
-commit a715c3a4b08b7193b5d5987a3a4dabd5a7379a24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 10:22:27 2025 -0500
-
-    fixed a few property names (no longer use p prefix)
-
-commit 1239dfa65fc463692631a31912c5b6a005644867
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 15:57:24 2025 -0500
-
-    Added template utility RepeatedTuple_t
-
-commit 0d891ac1187ef2b58ea1b4482b4660c773304de8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 16:00:03 2025 -0500
-
-    fixed docs on String::Find(RegExp); added RegExp overload of Tokenize (); added String::Matches<INT> helper to return tuples; added String::Col/ColValue to replace much use of Matches() regexp functions
-
-commit d8b49615abb9a24402532771678b0b072b0d131c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 21:41:02 2025 -0500
-
-    fixed bug with ToString(tuple<T>) - infinite loop
-
-commit 319b7fab8f7cc6f68f441fe18ab2d163f7f60cc0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 21:42:27 2025 -0500
-
-    Get rid of Trim() built into Tokeninize () - generally not needed (and added regtests and docs for where it is); added more regtests for String::Match<N> and fixed bug with new code
-
-commit 92a29cb5821ec46b66823cd3672b7a09bfccee95
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 22:17:52 2025 -0500
-
-    fixed CharacterDelimitedLines Reader for recent change to String::Tokenize (not trimming)
-
-commit a39bcdeef08e487fa656dab8c6888c896b971165
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 24 22:56:10 2025 -0500
-
-    fixed small bug in new String::Tokenize(regexp)
-
-commit ca5c2fc07edaf5ad731e0af76ceab927475e4be4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 26 08:33:55 2025 -0500
-
-    Minor cleanups to Syncrhonized usage
-
-commit 3353350da517d27c5ca1997cb74217f6987a716c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 27 13:49:19 2025 -0500
-
-    maybe impove optics of lzma extract random issue on ubuntu (WARNING: FAILURE in 7z)
-
-commit 5719f836e032379ae6ad28debddcbbee1bd9f2f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 05:46:29 2025 -0500
-
-    workaround issue with environ ptr being nullptr sometimes on Windows - in new Execution::kRawEnvironment API
-
-commit 8057eecb679262ad59fff7f2933f078eb4005e92
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 05:48:55 2025 -0500
-
-    WARNING: FAILURE in 7z rare further cleanups/hacks
-
-commit 1b1bab300c7488e86c703197a0f96cd1730ab2b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 07:27:30 2025 -0500
-
-    deleted HistoricalRegressionTestResults and HistoricalPerformanceRegressionTestResults from old, pre-release builds
-
-commit ee7e0d2cbd69dd8dc447fd9f9a656525610c2aca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 08:35:24 2025 -0500
-
-    new Memory::OptionallyCopy
-
-commit 704a6d118cdba598896ff2e6eb8aec50c8e9cb4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 15:17:30 2025 -0500
-
-    Added scopes to Frameworks/Auth/OAuth/Configuration; and docs
-
-commit 7381473ce99ee3f0bff7a1abd932834d58150816
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 17:41:48 2025 -0500
-
-    Updated StreamReader API (not totally backward compatible, but not a new API so not really used by much yet so no need for lots of notes) - and API now basically just follows pattern in InputStream::Ptr better
-
-commit 3f76492a6428e555cf1ff6bc93967e0c7ccd0e75
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 17:50:39 2025 -0500
-
-    InputStream::Ptr Read and ReadOrThrow no longer take default param for blockFlag - use another API (wiht diff return value) to get default blocking behavior - if using that API - you probably have the block flag value to pass
-
-commit b23edb65103e8f1be4fd51844e69500da38e7dc0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 18:33:31 2025 -0500
-
-    Variant::Reader/Writer::GetDefaultFileSuffix now returns optional<filesystem::path> instead of String
-
-commit fb94e153a91472e0f71a4ff03abe7aee92235646
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 20:34:40 2025 -0500
-
-    Added ReadBlocking overload (read to delimiter) to InputStream::PTr and StreamReader)
 
 commit 880d24e25b916bf402bff12718d0420ac6c5f5ec
 Author: Lewis Pringle <lewis@sophists.com>
@@ -320,11 +229,6 @@ Date:   Thu Jan 30 00:06:28 2025 -0500
 
     Frameworks/Auth/OAuth/Client.cpp fixup a couple serializer/deserializers cuz queer wireformat for scopes and expires_in/at
 
-commit 782b5fd520deb31059c686fded64342b0409b31f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 07:46:21 2025 -0500
-
-    attempt at workaround for issue building boost on windows under HearHE
 
 commit f9c20193732866412011d18da343172449566d9c
 Author: Lewis Pringle <lewis@sophists.com>
