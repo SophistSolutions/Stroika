@@ -104,7 +104,7 @@ namespace Stroika::Samples::HTMLUI::Model {
             String access_token;
 
             /** OAuth uses expires_in, but we convert to an expires_at since better to track (in UTC) */
-            DateTime expires_at;
+            DateTime expires_at{DateTime::NowUTC ()};
 
             Set<String>      scopes;
             optional<String> refresh_token;
