@@ -202,17 +202,10 @@ bootstrap_:
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@### From https://www.boost.org/doc/libs/1_87_0/more/getting_started/windows.html#id37 - section 5.2
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "bootstrap.bat ${BOOTSTRAP_TOOLSET}" > ../../BOOTSTRAP-OUT.txt)
-	@#cuz seems this is place UNIX puts it, so keep consistent (ECHO LINE CUZ STILL NOT WORKING RELIABLY)
-	@if [ ! -e "${B2FullPath}" ]; then echo cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe ${B2FullPath}; fi
+	@#cuz seems this is place UNIX puts it, so keep consistent
+	@#NOTE as of 2025-02-06 - seeing this not always work for HearHE app on Windoze... Will need to debug further - but not reliably failing there either
+	@#					      failures seem worse the more -jN flag given, and if vscode running/watching, and maybe if I left app running when rebuilding/clobber???
 	@if [ ! -e "${B2FullPath}" ]; then cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe ${B2FullPath}; fi
-	@if [ ! -e "${B2FullPath}" ]; then echo TROUBLE IN RIVER CITY; fi
-	@if [ ! -e "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe" ]; then echo SRC doesnt exist; fi
-	@if [ ! -e "${B2FullPath}" ]; then cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe ${B2FullPath}; fi
-	@if [ ! -e "${B2FullPath}" ]; then cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe ${B2FullPath}; fi
-	@if [ ! -e "${B2FullPath}" ]; then echo STILL CANNOT COPY; fi
-	@if [ ! -e "${B2FullPath}" ]; then cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) "bootstrap.bat ${BOOTSTRAP_TOOLSET}" >> ../../BOOTSTRAP-OUT.txt); fi
-	@if [ ! -e "${B2FullPath}" ]; then cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe ${B2FullPath}; fi
-	@if [ ! -e "${B2FullPath}" ]; then echo rebootstreap didnt work; fi
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) ".\b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> ../../BOOTSTRAP-OUT.txt 2>&1)
 else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP-OUT.txt)
