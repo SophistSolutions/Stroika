@@ -61,7 +61,7 @@ namespace Stroika::Samples::HTMLUI::Model {
          * ('joined by provider field')
          */
         struct Configuration {
-            Stroika::Frameworks::Auth::OAuth::ClientConfigurations  fClients;
+            Stroika::Frameworks::Auth::OAuth::ClientConfigurations    fClients;
             Stroika::Frameworks::Auth::OAuth::ProvidersConfigurations fProviders;
         };
 

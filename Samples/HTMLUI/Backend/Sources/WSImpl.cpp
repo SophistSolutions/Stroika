@@ -130,11 +130,12 @@ OpenAPI::Specification WSImpl::GetOpenAPISpecification () const
 Auth::Configuration WSImpl::auth_oauth_configuration_GET () const
 {
     using namespace Stroika::Frameworks::Auth::OAuth;
-    return Auth::Configuration{.fClients = NullCoalesce (NullCoalesce (gAppConfiguration->fAuth).fOAuthClients).Map<ClientConfigurations> ([] (ClientConfiguration i) {
-                                   i.fClientSecret = nullopt;
-                                   return i;
-                               }),
-                               .fProviders = kDefaultProviderConfigurations};
+    return Auth::Configuration{
+        .fClients = NullCoalesce (NullCoalesce (gAppConfiguration->fAuth).fOAuthClients).Map<ClientConfigurations> ([] (ClientConfiguration i) {
+            i.fClientSecret = nullopt;
+            return i;
+        }),
+        .fProviders = kDefaultProviderConfigurations};
 }
 
 Auth::TokenResponse WSImpl::auth_oauth_tokens_POST (const Auth::TokenRequest& tr) const
