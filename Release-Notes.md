@@ -21,54 +21,28 @@ UPGRADE NOTES:
   - Streams::TextWriter -> Streams::TextToBinary::Writer
   - Streams::TextToByteReader -> Streams::TextToBinary::Reader
 
+
+
+- Library
+  - Common
+    - Compiler Bug Workarounds
+      - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue - 
+
+
 - Frameworks::Auth
   - Simple (but usable) JWT support  (just decoding for now, not validating much)
 
+- Frameworks::WebServer
+  - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
+
+
+- Samples
+  - HMTLUI
+    - fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()
+
+
+
 #if 0
-
-    FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
-
-commit b6b06567eaf919a0e25ae53648349fa3b913a9dd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 12 18:30:23 2025 -0500
-
-    Sample HTMLUI: fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()
-
-commit 7a97a56a1362c48338d654e516f9b6258e503b04
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 12 18:30:53 2025 -0500
-
-    update release notes
-
-commit 6a92f66103e0df604c81dca1db0e4940ecaa86f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 13 07:58:59 2025 -0500
-
-    Minor JWT tweaks
-
-commit ac05257ef3b56fd4c909118950f0692a140fbc21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 08:07:32 2025 -0500
-
-    super early prelim draft Auth framework
-
-commit 220f3e82f78bf423caf565cb8accd0718a018bc5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 10:59:25 2025 -0500
-
-    Comments
-
-commit 5760aebc3c1611fb2d6d191f107b59547bfdc6e1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 10:59:42 2025 -0500
-
-    Comments
-
-commit 63c887853a53ec834da8024089cc500dc7e965b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 14 12:32:04 2025 -0500
-
-    new bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue - qCompilerAndStdLib_function_dependency_too_complex_Buggy
 
 commit 6b9a14f8f94238492141cfa9b823eac0c0f0cedc
 Author: Lewis Pringle <lewis@sophists.com>

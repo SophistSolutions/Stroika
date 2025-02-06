@@ -211,7 +211,7 @@ else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP-OUT.txt)
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP-OUT.txt 2>&1)
 endif
-	@if [ ! -e "${B2FullPath}" ]; then (StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "${B2FullPath} not found - so bootstrap failed"; exit 1; fi
+	@if [ ! -e "${B2FullPath}" ]; then $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "${B2FullPath} not found - so bootstrap failed"; exit 1; fi
 
 ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
