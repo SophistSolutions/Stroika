@@ -70,7 +70,8 @@ jobs:
       matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      # vm has 4 virtual CPUs, but 16GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing --LGP 2025-02-07
+      MAKEFLAGS: "--jobs=5 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
     steps:
       - uses: actions/checkout@v4
