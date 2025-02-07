@@ -45,18 +45,23 @@ UPGRADE NOTES:
 
       - StringBuilder
         - docs
+        - cleanup StringBuilder<OPTIONS>::As ()
       - ToString
         - fixed bug with ToString(tuple<T>) - infinite loop
 
     - Common
       - Compiler Bug Workarounds
         - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue
+        - new qCompilerAndStdLib_thread_local_static_inline_twice_Buggy BWA
       - Concepts
         - new concept Common::explicitly_convertible_to
       - TemplateUtilities
         - new template utility RepeatedTuple_t
+      - simplified impl of CountedValue operator<=> and KeyValuePair  operator<=> (using tie)
 
     - Containers
+      - Association
+        - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOne () method
       - KeyedCollection
         - support KeyedCollection::CTOR {initializer_list}
     - DataExchange
@@ -80,6 +85,7 @@ UPGRADE NOTES:
         - support fEnvironment options support on ProcessRunner
         - String2ContigArrayCStrs_ cleanup to processRunner
         - use fBytesBuffer not fPtrsBuffer on Windows/CreateProcess
+      - fixed typo in Execution::SleepUntil ()
 
     - IO
       - Networking
@@ -94,6 +100,9 @@ UPGRADE NOTES:
             (Send now doesnt throw on HTTP status error but SendAndThrowOnFailure does) -
             so change in semantics (docs were ambiguous) -
             but no change to wrappers like POST, PUT, etc which I think most people call
+          - improved error reporting in IO::Network::Transfer::Exception code - 
+            so captures some stuff from the body to include as part of 'reason' -
+            maybe now works SLIGHTLY better giving hints about what went wrong
 
     - Memory
       - new ISpanBytesCastable concept to capture the requirements on SpanBytesCast API (and used it there); 
@@ -109,6 +118,8 @@ UPGRADE NOTES:
         - refactored - but get rid of TextReader/TextWriter and TextToByteReader in favor of FromText/{Reader/Writer} and ToText/{Reader/Writer}
         - Streams::TextReader/TextWriter/TextToByteReader replaced with Streams::ToText::{Reader/Writer} and Streams::FromText::{Reader/Writer}
         - renamed (recent change so just use newest in relnotes) - ToText to BinaryToText and FromText to TextToBinary; and misc minor cleanups
+        - new simple utility TextToBinary::Convert(BLOB...) -> String utility
+
       - InputStream
         - InputStream::Ptr Read and ReadOrThrow no longer take default param for blockFlag - use another API (wiht diff return value) to get default blocking behavior - if using that API - you probably have the block flag value to pass
 
@@ -127,14 +138,19 @@ UPGRADE NOTES:
     - manage templated identity object in thread_local storage
   - new OAuth support
     - ProvidersConfigurations, ClientConfiguration, and kDefaultProviderConfigurations
-    - Client support - to fetch a bunch of remote stuff (like wellknown/... ids and calls to oauth provider to convert tokens etc)
+    - Client/Fetcher support - to fetch a bunch of remote stuff (like wellknown/... ids and calls to oauth provider to convert tokens, get UserInfo etc)
   - New (WebServer)-Interceptor
     WebServer::Interceptor instance that translates auth-headers into CurrentIdentityManager thread_local 
     storage object with that information interpretted (fits well with route callbacks)
 
 - Frameworks::WebServer
-  - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
-  - small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
+  - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); 
+    - fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
+    - small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
+  - IntercetorMgr
+    - Allow comparing WebServer InterceptorChain for equality, 
+  - Connection/
+    - fixed bug where DeriveConnectionDefaultOptionsFromEffectiveOptions_ not updated (where we store interceptor chain) on chagnne - so lose fInterceptorChain - just store in fUseDefaultConnectionOptions_ (connection manager)
 
 - Samples
   - HMTLUI
@@ -151,6 +167,7 @@ UPGRADE NOTES:
 
 - Tests
   - deleted HistoricalRegressionTestResults and HistoricalPerformanceRegressionTestResults from old, pre-release builds
+  - small cleanups to regtest 40 (ThreadSafetyBuiltinObject) - better debug one issue I saw but cannot reprpduce with valgrind
 
 - Github Actions/Workflows
   - Tweaked sizes of various containers, and reporting, to fix run-out-of-memory issue on windows, and
@@ -159,210 +176,11 @@ UPGRADE NOTES:
 
 #if 0
 
-commit c44c6f0a5c597210b085ad339a70d0cb4b86d284
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 18:36:55 2025 -0500
-
-    improved error reporting in IO::Network::Transfer::Exception code - so captures some stuff from the body to include as part of 'reason' - maybe now works SLIGHTLY better giving hints about what went wrong - need more experience to know
-
-commit 34142a16787e2de55337c968f47dcd9c4142aae8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 22:19:01 2025 -0500
-
-    new simple utility TextToBinary::Convert(BLOB...) -> String utility
-
-commit bcdac386bec89289595fe61cde38f21412f00dd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 23:35:18 2025 -0500
-
-    Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOne () method
-
-commit 8994446d9735bc5f29931308cc375bfc0d6fdafd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 23:36:32 2025 -0500
-
-    Added draft of Frameworks::Auth::OAuth Client support (sb able to get/send token requests)
-
-commit 9e27734ba3f7be506f72f64c9b8d3b102120b80f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 00:06:28 2025 -0500
-
-    Frameworks/Auth/OAuth/Client.cpp fixup a couple serializer/deserializers cuz queer wireformat for scopes and expires_in/at
-
-commit f9c20193732866412011d18da343172449566d9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 08:16:01 2025 -0500
-
-    Another attempt to BWA build issue of boost under windows/HearHE
-
-commit 2e12429fbbd6937f8df1c317b748546f7956fc11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 10:28:23 2025 -0500
-
-    changed IO/Network/Transfer/Exception to grab a little more text
-
-commit f701d2fb9341313fc7f7f8d24d3873ee6c5e5a46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 10:33:56 2025 -0500
-
-    changed IO/Network/Transfer/Exception to grab a little more text
-
-commit 219e5a4939202c0396ccc4431bc40fef665b1560
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 10:40:18 2025 -0500
-
-    changed IO/Network/Transfer/Exception to grab a little more text
-
-commit ed2b8f04c714c3c9d5e8cbead063b1623a8ec8c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 14:55:04 2025 -0500
-
-
-commit 0dd4bda623bed0f1271bd61ffb84ada27cd0716a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 14:58:06 2025 -0500
-
-    new auth framework - expires_at now expressed in UTC
-
-commit 75951e7c862df2c5a6289eed371af9b8a94a4a5e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 30 16:12:23 2025 -0500
-
-    rough draft support for userinfo endpoint in OAuth supprt - Fetcher::UserInfo method (takeing accessToken as argument)
-
-commit 8d0c1fab89e71534ce369cd63e9862708a54b410
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 09:38:08 2025 -0500
-
-    tweak OAuth::Fetcher:
-
-commit e2583c58ddb9d3dbcf186fd918ad490851d31665
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 09:44:26 2025 -0500
-
-    another try to workaround issue building boost under HearHE
-
-commit b1715020aaeb0853d6adbe6b6788af5cfcda27e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 11:54:19 2025 -0500
-
-    boost makefile tweaks: simplified/cleaned up and hopefully fixed issue I had building HearHE Windows(still more testing todo)
-
-commit 30c27dfb6f931a91bbb6e3dabdf75d1ad338724e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 13:27:36 2025 -0500
-
-    Cleanup draft CurrentIdentityAuthInterceptor code
-
-commit f9a7b7bee9337b0194f06474c895f30e79bb98c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 16:52:23 2025 -0500
-
-    Minor fixes to new CurrentIdentityAuthInterceptor; and ToString() repliminary support for Frameworks::WebServer::Interceptor (and subtypes)
-
-commit a0a1d8b3b1e78912d3fc05a1c61d58d837f972e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 17:02:17 2025 -0500
-
-    Minor tweaks to last checkin
-
-commit d8f43e0e8b15ddae00f6fa7a906851f7cdbd13dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 17:18:53 2025 -0500
-
-    CurrentIdentityAuthInterceptor tweaks (tried deduction guide and fixed warnings)
-
-commit 4cd305a0a480d51040452c430a91cb07106c5368
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 31 17:40:20 2025 -0500
-
-    Allow comparing WebServer InterceptorChain for equality, and fixed bug where DeriveConnectionDefaultOptionsFromEffectiveOptions_ not updated (where we store interceptor chain) on chagnne - so lose fInterceptorChain - just store in fUseDefaultConnectionOptions_ (connection manager)
-
-commit e0231a791fe69809bac55d07b361758a552d9c67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 1 09:07:24 2025 -0500
-
-    Added draft code_verifier to OAuth::TokenRequest object
-
-commit 33b661422dbea8cc12f7cd4b7f851b41a85d25e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 1 09:44:38 2025 -0500
-
-    zlib makefile typo
-
-commit 75fd04b9e7fc9b9c1dd1251437f66269fa39016d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 1 10:57:07 2025 -0500
-
-    qCompilerAndStdLib_thread_local_static_inline_twice_Buggy BWA
-
-commit 9a2b483623de964b9199874359da7571227b04f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 1 11:21:27 2025 -0500
-
-    more trouble with HearHE Boost Windows builds - b2 - debugging more
-
-commit 5dfc6fe7a67955d2199bd93fd7141b2bc4887d00
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 1 11:27:16 2025 -0500
-
-    NOTPARALLEL on boost makefile (cuz done parallel inside)
-
-commit 2e5ab2918602ff36424ec18f3234526d1e0edc87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 1 12:04:39 2025 -0500
-
-    maybe no longer need echo in boost makefile for windows
-
-commit 9d51a86462740390c30f1614fae5f373e085f3e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 3 08:56:07 2025 -0500
-
-    Frameworks/Auth/OAuth: added FetchAdditionsFromOpenIDConfigurationURI method to ProviderConfig; and added a few more preset configs (msft)
-
-commit a047b6a60da1395895a5d7d50d2a67e60ce9857a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 3 10:21:28 2025 -0500
-
-    small cleanups to regtest 40 (ThreadSafetyBuiltinObject) - better debug one issue I saw but cannot reprpduce with valgrind
-
-commit 287d800ddc6b2bd0a4965cb4582d25cadd95b7cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 3 10:32:36 2025 -0500
-
-    cosmetic; and fixed typo in Execution::SleepUntil ()
-
-commit e00ccf58b2c360329ecb574ef0047bd9990adc8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 3 11:02:07 2025 -0500
-
-    cleanup StringBuilder<OPTIONS>::As ()
-
-commit bb85179023104ee048f89b33afb847fdca0848e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 3 11:03:08 2025 -0500
-
-    Added support to Frameworks/Auth/OAuth for comparison operators; and added apple to list of predefined ProviderConfiguration objects
-
-commit 2bd606bcab3dcce3b4b6d9ad6cf888e9ca4f7d87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 3 16:39:09 2025 -0500
-
-    Revert "maybe no longer need echo in boost makefile for windows"
-    
-    This reverts commit 2e5ab2918602ff36424ec18f3234526d1e0edc87.
-
-commit 4cb746f3a90183e79cc670c1998a804b0196d8d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 3 16:55:50 2025 -0500
-
-    another try at fixing boost HearHe flaky build issue
 
 commit b1a6d323607dadaec3dab2333cdfb90e1ac5a240
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 4 08:03:36 2025 -0500
 
-    simplified impl of CountedValue operator<=> and KeyValuePair  operator<=> (using tie)
 
 commit 495c39dfc7e15d2a2b6c5322029a0e57c8e21e92
 Author: Lewis Pringle <lewis@sophists.com>
