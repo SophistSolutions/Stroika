@@ -51,6 +51,8 @@ UPGRADE NOTES:
     - Common
       - Compiler Bug Workarounds
         - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue
+      - Concepts
+        - new concept Common::explicitly_convertible_to
       - TemplateUtilities
         - new template utility RepeatedTuple_t
 
@@ -60,9 +62,16 @@ UPGRADE NOTES:
     - DataExchange
       - JWT
         - Simple (but usable) JWT support  (just decoding for now, not validating much)
+      - TypedBLOB
+        - Made fType field of (new) TypedBLOB optional, and reversed order of fields
       - Variant
         - fixed CharacterDelimitedLines Reader for recent change to String::Tokenize (not trimming)
         - Variant::Reader/Writer::GetDefaultFileSuffix now returns optional<filesystem::path> instead of String
+        - FormURLEncoded
+          - new module, and regtests
+      - InternetMediaTypesRegistry
+        - new kWWWFormURLEncoded
+
 
     - Execution
       - new utility function RunAll (alias InvokeAsync)
@@ -78,13 +87,22 @@ UPGRADE NOTES:
           - Added authorization property (and caching/storage) to IO::Network::HTTP::Headers class
         - Sockets
           - Socket API (ptr just so far) converted to using spans (deprecated a few const byte* methods)
+        - Transfer
+          - use TypedBLOB in place of two separate BLOB/InternetMediaTypes params (deprecting older API)
+          - cleanups for Foundation_IO_Network_Transfer regtest
+          - Connection - cleaned up docs/semantics on Send/and new SendAndThrowOnFailure
+            (Send now doesnt throw on HTTP status error but SendAndThrowOnFailure does) -
+            so change in semantics (docs were ambiguous) -
+            but no change to wrappers like POST, PUT, etc which I think most people call
 
     - Memory
-      - new ISpanBytesCastable concept to capture the requirements on SpanBytesCast API (and used it there); and strengthened the requirements to check trivially_copyable and no cast away const of underlying value_type
+      - new ISpanBytesCastable concept to capture the requirements on SpanBytesCast API (and used it there); 
+        and strengthened the requirements to check trivially_copyable and no cast away const of underlying value_type
       - new OptionallyCopy
 
     - Streams
       - fixed typo/bug (a few releases back) to ToSeekableInputStream - RemainingLength
+      - docs on NoDataAvailableHandling; and deprecated NoDataAvailableHandling::eDEFAULT
       - ExternallyOwnedSpanInputStream
         - New now uses ISpanBytesCastable so slightly more flexable, and clean and simple
       - {TextToBinary,BinaryToText} was {TextToByteReader,TextReader,TextWriter}
@@ -97,6 +115,8 @@ UPGRADE NOTES:
       - StreamReader
         - Updated StreamReader API (not totally backward compatible, but not a new API so not really used by much yet so no need for lots of notes) - and API now basically just follows pattern in InputStream::Ptr better
         - Added ReadBlocking overload (read to delimiter) to InputStream::PTr and StreamReader
+    - Time
+      - Added DateTime::NowUTC () method
 
     - Traversal
       - Iterable
@@ -108,11 +128,13 @@ UPGRADE NOTES:
   - new OAuth support
     - ProvidersConfigurations, ClientConfiguration, and kDefaultProviderConfigurations
     - Client support - to fetch a bunch of remote stuff (like wellknown/... ids and calls to oauth provider to convert tokens etc)
+  - New (WebServer)-Interceptor
+    WebServer::Interceptor instance that translates auth-headers into CurrentIdentityManager thread_local 
+    storage object with that information interpretted (fits well with route callbacks)
 
 - Frameworks::WebServer
   - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
   - small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
-
 
 - Samples
   - HMTLUI
@@ -130,74 +152,12 @@ UPGRADE NOTES:
 - Tests
   - deleted HistoricalRegressionTestResults and HistoricalPerformanceRegressionTestResults from old, pre-release builds
 
+- Github Actions/Workflows
+  - Tweaked sizes of various containers, and reporting, to fix run-out-of-memory issue on windows, and
+    increase build performance (and generally cleanup/remove older uneeded hacks)
+
 
 #if 0
-
-commit 880d24e25b916bf402bff12718d0420ac6c5f5ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 20:47:20 2025 -0500
-
-    Added draft of FormURLEncoded Reader/Writer and regtest - very basic but seems to mostly work
-
-commit fb1b01cafc88455c6d0679a6afca023b31fa1219
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 20:54:14 2025 -0500
-
-    defined kWWWFormURLEncoded and docs
-
-commit d9e106a135545cf919f14e71da08af06f18f810a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 28 22:41:05 2025 -0500
-
-    Added clientSecret to Frameworks/Auth/OAuth/Configuration
-
-commit ddbd7bd72754c0ff84deae5f2aa70a87feb72de7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 07:47:27 2025 -0500
-
-    Added draft Frameworks\Auth\Interceptor
-
-commit 368e1a6475b6cdb6e5f335634f0fa1b26fab64b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 08:12:36 2025 -0500
-
-    docs on NoDataAvailableHandling; and deprecated NoDataAvailableHandling::eDEFAULT
-
-commit eefb27b4a0fc675a69738c4d3050635666589602
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 14:01:56 2025 -0500
-
-    new concept Common::explicitly_convertible_to
-
-commit 8407e29e0958016df1daf2f3b33fecbcd65f3241
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 14:02:33 2025 -0500
-
-    fixed Memory::OptionallyCopy to use new Common::explicitly_convertible_to
-
-commit 01d1a6b50a94e7c7a98b2c7233f508fc47b95432
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 14:03:25 2025 -0500
-
-    Made fType field of (new) TypedBLOB optional, and reversed order
-
-commit 826914358186db4722136be019201373b7ee005f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 14:24:50 2025 -0500
-
-    In IO::Transfer code - use TypedBLOB in place of two separate BLOB/InternetMediaTypes params (deprecting older API)
-
-commit 0e89798f6459fb50b70b72954fd7bb813fc5b5e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 17:17:23 2025 -0500
-
-    cleanups for Foundation_IO_Network_Transfer regtest
-
-commit e8a14966e03bcea56ac19820bf9d321b66d89b1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 29 18:35:34 2025 -0500
-
-    IO::Network::Transfer::Connection - cleaned up docs/semantics on Send/and new SendAndThrowOnFailure (Send now doesnt throw on HTTP status error but SendAndThrowOnFailure does) - so change in semantics (docs were ambiguous) - but no change to wrappers like POST, PUT, etc which I think most people call
 
 commit c44c6f0a5c597210b085ad339a70d0cb4b86d284
 Author: Lewis Pringle <lewis@sophists.com>
@@ -229,7 +189,6 @@ Date:   Thu Jan 30 00:06:28 2025 -0500
 
     Frameworks/Auth/OAuth/Client.cpp fixup a couple serializer/deserializers cuz queer wireformat for scopes and expires_in/at
 
-
 commit f9c20193732866412011d18da343172449566d9c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 30 08:16:01 2025 -0500
@@ -258,7 +217,6 @@ commit ed2b8f04c714c3c9d5e8cbead063b1623a8ec8c5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 30 14:55:04 2025 -0500
 
-    Added DateTime::NowUTC () method
 
 commit 0dd4bda623bed0f1271bd61ffb84ada27cd0716a
 Author: Lewis Pringle <lewis@sophists.com>
