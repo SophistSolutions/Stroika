@@ -69,7 +69,7 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
+      # (HISTORICAL): vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       # vm has 4 virtual CPUs, but 16GB ram, so jobs=4 (empirical. tried 5 and 6 with no significant improvement), and QUICK_BUILD avoids some internal testing --LGP 2025-02-07
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
     container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
@@ -84,23 +84,23 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
-      - name: Hacks 2 Save Space
-        run: |
-          echo ""*************Before cleanups"*************:"
-          df -h
-          #du -hs /* || true
-          #du -hs /usr/* || true
-          #du -hs /usr/share/* || true
-          #du -hs /__w/* || true
-          du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || true
-          du -hs Archive .git
-          echo Deleting:
-          rm -r /usr/share/doc  /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || echo "Issue deleting incomplete"
-          rm -rf Archive .git || echo "Issue deleting incomplete"
-          #ls -la .
-          echo ""*************After cleanups"*************:"
-          df -h
-          du -hs /usr/* /usr/share/* /usr/lib/* || true
+      # - name: Hacks 2 Save Space (appears no longer needed- since no more space on containers and these hacks dangerous --LGP 2025-02-07)
+      #   run: |
+      #     echo ""*************Before cleanups"*************:"
+      #     df -h
+      #     #du -hs /* || true
+      #     #du -hs /usr/* || true
+      #     #du -hs /usr/share/* || true
+      #     #du -hs /__w/* || true
+      #     du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || true
+      #     du -hs Archive .git
+      #     echo Deleting:
+      #     rm -r /usr/share/doc  /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || echo "Issue deleting incomplete"
+      #     rm -rf Archive .git || echo "Issue deleting incomplete"
+      #     #ls -la .
+      #     echo ""*************After cleanups"*************:"
+      #     df -h
+      #     du -hs /usr/* /usr/share/* /usr/lib/* || true
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
@@ -187,7 +187,6 @@ jobs:
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix: ${{fromJson(needs.MacOSMatrixPrep.outputs.matrix)}}
-
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
@@ -207,6 +206,7 @@ jobs:
           sw_vers
           echo "    X-CODE: `xcodebuild -version | tr '\n' ';'`"
           echo "LIBRARY_PATH = $LIBRARY_PATH"
+          echo nproc=`nproc`
       # If we had docker ability, most of these would be built into a docker file
       - name: Install Basic Build requirements
         run: |
@@ -276,18 +276,12 @@ jobs:
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
-
     env:
       # see docker run for --cpus and --memory, and adjust --jobs accodingly (last done 2025-02-07), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
       - uses: actions/checkout@v4
-      # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
-      # - name: Extract branch name
-      #   shell: bash
-      #   run: echo "branch=`echo ${GITHUB_REF#refs/heads/}`" >> $GITHUB_OUTPUT
-      #   id: extract_branch
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
         shell: "bash"
         run: |
@@ -383,7 +377,7 @@ jobs:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
     env:
       # QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
