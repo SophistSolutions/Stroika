@@ -53,6 +53,9 @@ UPGRADE NOTES:
       - Compiler Bug Workarounds
         - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue
         - new qCompilerAndStdLib_thread_local_static_inline_twice_Buggy BWA
+        - one qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy specific to xcode 15
+        - qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy
+
       - Concepts
         - new concept Common::explicitly_convertible_to
       - TemplateUtilities
@@ -64,6 +67,9 @@ UPGRADE NOTES:
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOne () method
       - KeyedCollection
         - support KeyedCollection::CTOR {initializer_list}
+      - SortedSet
+        - fixed typo in SortedSet<T>::operator<=>
+
     - DataExchange
       - JWT
         - Simple (but usable) JWT support  (just decoding for now, not validating much)
@@ -156,6 +162,9 @@ UPGRADE NOTES:
   - HMTLUI
     - fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()
     - connections API tweaks
+    - Minor tweaks to HTMLUI boot/configuration.ts
+    - Draft (working) OAuth support in Sample HTMLUI - authtest page and you can login/logout - and backend uses TLS interceptor to get auth info from http auth token
+    - Samples/HTMLUI: Lots of changes so authentication process supports multiple providers, and various cleanups/fixups to vue reactivity logic
 
 - ThirdPartyComponents
   - boost
@@ -173,76 +182,6 @@ UPGRADE NOTES:
   - Tweaked sizes of various containers, and reporting, to fix run-out-of-memory issue on windows, and
     increase build performance (and generally cleanup/remove older uneeded hacks)
 
-
-#if 0
-
-
-commit b1a6d323607dadaec3dab2333cdfb90e1ac5a240
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 08:03:36 2025 -0500
-
-
-commit 495c39dfc7e15d2a2b6c5322029a0e57c8e21e92
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 08:04:15 2025 -0500
-
-    fixed typo in SortedSet<T>::operator<=>
-
-commit 60c5ad50ff43cf7ac2c1455e6a2524d54cc25d13
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 08:05:05 2025 -0500
-
-    fixed ClientConfiguration::operator<=> - must specially handle scopes
-
-commit cd7dd2b239943045321ad21e3f52203f67551a25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 08:56:32 2025 -0500
-
-    fixed template call for picker clang
-
-commit d70ccea5b4bbf56428c53bff83bb266783feed69
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 10:03:43 2025 -0500
-
-    one qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy specific to xcode 15
-
-commit 545cb393fc616cd9c88694f914e4f9c8707faa67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 10:10:13 2025 -0500
-
-    qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy
-
-commit bc7fe3884d5ab6e6771819a3bb8911d188c27494
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Feb 4 14:35:19 2025 -0500
-
-    compilerbug workaroudns (e.g qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy_
-
-commit d5e687255d2aa427436ff475ee6c27392e28db7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 14:45:13 2025 -0500
-
-    crazy BWA attempt in HearHE/Boost build cp issue
-
-commit f5a22f3ccd37e0f25e23327a84d075fb5324fc24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 4 16:37:39 2025 -0500
-
-    Minor tweaks to HTMLUI boot/configuration.ts
-
-commit e16329cad5d5c8c8fb890687136e5a7a5e07284a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 5 12:38:06 2025 -0500
-
-    Draft (working) OAuth support in Sample HTMLUI - authtest page and you can login/logout - and backend uses TLS interceptor to get auth info from http auth token
-
-commit b6c763ad709551eb24d46546f4a50f52c5195187
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 6 11:48:34 2025 -0500
-
-    Samples/HTMLUI: Lots of changes so authentication process supports multiple providers, and various cleanups/fixups to vue reactivity logic
-
-#ednif
 
 -----
 
