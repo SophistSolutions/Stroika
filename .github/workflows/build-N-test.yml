@@ -283,10 +283,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=`echo ${GITHUB_REF#refs/heads/}`" >> $GITHUB_OUTPUT
-        id: extract_branch
+      # - name: Extract branch name
+      #   shell: bash
+      #   run: echo "branch=`echo ${GITHUB_REF#refs/heads/}`" >> $GITHUB_OUTPUT
+      #   id: extract_branch
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
         shell: "bash"
         run: |
@@ -304,8 +304,9 @@ jobs:
         ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
         ### and with this hack, it hasn't happened in years --LGP 2024-03-03
         # docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+        # was running out of memory with 7GB docker container (doing build of help) - and appears running on 16G vm, so up mem# also appears host as 4 vir cpus, so up # cpus from 2 to 4-- LGP 2025-02-07
         run: |
-          docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}} bash
+          docker run --interactive --memory 10G --cpus 4 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}} bash
       - name: Print Info about docker system
         shell: "bash"
         run: |
