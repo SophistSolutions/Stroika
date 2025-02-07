@@ -306,7 +306,7 @@ jobs:
         # docker run --interactive --memory 7G --cpus 2 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
         # was running out of memory with 7GB docker container (doing build of help) - and appears running on 16G vm, so up mem# also appears host as 4 vir cpus, so up # cpus from 2 to 4-- LGP 2025-02-07
         run: |
-          docker run --interactive --memory 13G --cpus 4 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}} bash
+          docker run --interactive --memory 14G --cpus 4 --storage-opt 'size=50GB' -v "${GITHUB_WORKSPACE}:c:\Stroika" --detach --name buildContainer ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}} bash
       - name: Print Info about docker system
         shell: "bash"
         run: |
@@ -341,7 +341,7 @@ jobs:
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p /TRACE_LOGS; cp $TEMP/Trace*.txt /TRACE_LOGS/') || :
           docker stop buildContainer
-          (docker cp "buildContainer:TRACE_LOGS/" $ARTIFACTS_DIR) || :
+          (docker cp "buildContainer:/TRACE_LOGS/" $ARTIFACTS_DIR) || :
           (cp -r "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           ls -l $ARTIFACTS_DIR/
