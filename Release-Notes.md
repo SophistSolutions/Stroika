@@ -7,24 +7,24 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d15x {2025-02-08xxxxx} {[diff](../../compare/3.0d14...3.0d15)}
+### 3.0d15 {2025-02-09} {[diff](../../compare/3.0d14...3.0d15)}
 
 #### TLDR
 
-- Authentication Framework (OAuth, JWT, webserver interceptor for auth, HTMLUI sample code)
+- **new** Authentication Framework (OAuth, JWT, webserver interceptor for auth, HTMLUI sample code)
 - kRawEnvironment and kEnvironment and environment support in ProcessRunner (control env variables of child processes)
 - Streams
   - {TextToByteReader,TextReader,TextWriter} renamed to {TextToBinary,BinaryToText}
   - More API cleanups - harmonizing StreamReader with InputStream::Ptr
-- IO::Network socket code - use spans like done before with streams
-- IO::Network::Transfer code - use TypedBLOB, and improved Exception handling (and changed semantics of Send, now separate SendAndThrowOnFailure).
+- IO::Network
+  - socket code - use spans like done before with streams
+  - Transfer code - use TypedBLOB, and improved Exception handling (and changed semantics of Send, now separate SendAndThrowOnFailure).
 - String: improved RegExp overloads (Tokeninze, Match), and new AsLines, Grep, and Col methods to simulate what often done with grep, and awk
 
 #### Upgrade Notes (3.0d14 to 3.0d15)
 
 - HTMLUI Sample
-  - changed from createWebHashHistory to createWebHistory - to allow working with oauth
-  - see git commit b6b06567ea
+  - changed from createWebHashHistory to createWebHistory - to allow working with oauth (see git commit b6b06567ea)
 - Streams refactoring:
   - Streams/TextReader.h -> Streams/BinaryToText.h
   - Streams/TextWriter.h -> Streams/TextToBinary.h
