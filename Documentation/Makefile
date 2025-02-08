@@ -30,5 +30,6 @@ doxygen:
 		mv html Stroika-Doxygen-Help; \
 		tar cf Stroika-Doxygen-Help.tar Stroika-Doxygen-Help; \
 		gzip --best Stroika-Doxygen-Help.tar; \
+		mkdir -p $(StroikaRoot)/Builds/; \
 		mv Stroika-Doxygen-Help.tar.gz $(StroikaRoot)/Builds/
 	@echo done
