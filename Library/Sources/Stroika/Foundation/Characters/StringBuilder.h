@@ -312,12 +312,12 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          Memory::StackBuffer<wchar_t> probablyIgnoredBuf;
          *          span<const wchar_t> s = sb.GetData (&probablyIgnoredBuf);
-         *      \encode
+         *      \endcode
          * 
          *      \code
          *          Memory::StackBuffer<wchar_t> probablyIgnoredBuf;
          *          out.Write (sb.GetData (&probablyIgnoredBuf));
-         *      \encode
+         *      \endcode
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
