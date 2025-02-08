@@ -329,20 +329,26 @@ jobs:
       - name: Copy Build Artifacts
         shell: "bash"
         if: always()
-        # due to flaws in docker (windows must stop) - and cp no wildcards
+        # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
         run: |
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           docker stop buildContainer
-          echo got here1
           (docker cp "buildContainer:c:/TRACE_LOGS/" $ARTIFACTS_DIR) || :
           echo got here2
+          echo "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR
+          echo gothere 2.2
           (cp -r "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
           echo got here3
+          ls -l "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/"
+          echo got here3.5
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
+          echo got here4
           (cp "${GITHUB_WORKSPACE}/Documentation/Doxygen/BUILD.OUT $ARTIFACTS_DIR/Doxygen-BUILD.OUT) || :
+          echo got here5
           ls -l $ARTIFACTS_DIR/
+          echo got here6
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
