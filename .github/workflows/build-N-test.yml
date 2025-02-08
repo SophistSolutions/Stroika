@@ -328,27 +328,30 @@ jobs:
         run: |
           df -h
           docker exec buildContainer df -h
-      - name: Copy Build Artifacts
+      - name: Copy Build Artifacts (Log Data and Sample apps etc)
         shell: "bash"
         if: always()
         # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
         run: |
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
+          mkdir -p $ARTIFACTS_DIR || echo oops
+          echo gothere 2.1
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           docker stop buildContainer
-          (docker cp "buildContainer:c:/TRACE_LOGS/" $ARTIFACTS_DIR/TRACE_LOGS/) || echo "error copying tracelogs ignored"
-          echo "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR
+          echo gothere 2.11
+          (docker cp "buildContainer:c:/TRACE_LOGS" "${ARTIFACTS_DIR}") || echo "error copying tracelogs ignored"
+          echo "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
           echo gothere 2.2
           ls -l $ARTIFACTS_DIR || :
-          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || echo "error copying builds ignored"
+          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
           echo got here3
           ls -l $ARTIFACTS_DIR || :
           echo got here3.1
           ls -l "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/"
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           echo got here4
-          (cp "${GITHUB_WORKSPACE}/Documentation/Doxygen/BUILD.OUT" $ARTIFACTS_DIR/Doxygen-BUILD.OUT) || echo "error copying Doxygen/BUILD.OUT ignored"
+          (cp "${GITHUB_WORKSPACE}/Documentation/Doxygen/BUILD.OUT" "${ARTIFACTS_DIR}Doxygen-BUILD.OUT") || echo "error copying Doxygen/BUILD.OUT ignored"
           echo got here5
           ls -l $ARTIFACTS_DIR || :
           echo got here6
