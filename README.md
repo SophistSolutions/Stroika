@@ -84,7 +84,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
 <details style="margin-left: 1.4em;">
   <summary>Containers (are Iterable&lt;something>)</summary>
 
-- COW (copy-on-write) often signifcantly improves performance for most common cases
+- COW (copy-on-write) often signifcantly improves performance for most common cases (e.g. when one type aggregates another)
 - APIs organized by access pattern: representational transparency (e.g. Sequence might be implemented as array, linked list, or memory mapped file)
   
   ~~~c++
@@ -132,7 +132,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
   MemoryStream::Ptr<byte> tmpStream = MemoryStream::New<byte> ();
   tmpStream.Write (BLOB{...});  // just write binary data to the stream
   
-  TextReader::Ptr r = TextReader::New (tmpStream);  // optional args for character codes
+  BinaryToText::Reader::Ptr r = BinaryToText::Reader::New (tmpStream);  // optional args for character codes
   String asStr = r.ReadAll ();  // read that data back as strings
 
   // persist these to file
@@ -141,7 +141,7 @@ Stroika is a modern, portable, C++ application framework. It makes writing C++ a
       FileOutputStream::New (WellKnownLocations::GetTemporary () / "t.txt");
   tmpFileStream.Write (BLOB{});
   // or write text
-  TextWriter::New (tmpFileStream/*,optionally specify codepage/conversions*/).Write (asStr);
+  TextToBinary::Writer::New (tmpFileStream/*,optionally specify codepage/conversions/BOM?*/).Write (asStr);
   ~~~
   </details>
 
