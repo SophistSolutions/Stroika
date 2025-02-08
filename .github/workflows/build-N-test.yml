@@ -336,16 +336,14 @@ jobs:
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           docker stop buildContainer
           (docker cp "buildContainer:c:/TRACE_LOGS/" $ARTIFACTS_DIR) || :
-          echo got here2
           echo "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR
           echo gothere 2.2
-          (cp -r "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
+          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
           echo got here3
           ls -l "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/"
-          echo got here3.5
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           echo got here4
-          (cp "${GITHUB_WORKSPACE}/Documentation/Doxygen/BUILD.OUT $ARTIFACTS_DIR/Doxygen-BUILD.OUT) || :
+          (cp "${GITHUB_WORKSPACE}/Documentation/Doxygen/BUILD.OUT" $ARTIFACTS_DIR/Doxygen-BUILD.OUT) || :
           echo got here5
           ls -l $ARTIFACTS_DIR/
           echo got here6
