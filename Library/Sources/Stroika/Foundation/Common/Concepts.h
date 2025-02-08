@@ -218,8 +218,8 @@ namespace Stroika::Foundation::Common {
      * 
      *  \see https://stackoverflow.com/questions/76547398/stdconvertible-to-failing-to-recognize-explicitly-convertible-types
      */
-    template <class From, class To>
-    concept explicitly_convertible_to = requires { static_cast<To> (std::declval<From> ()); };
+    template <class FROM, class TO>
+    concept explicitly_convertible_to = requires { static_cast<TO> (std::declval<FROM> ()); };
 
     /**
      */
