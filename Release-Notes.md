@@ -7,12 +7,23 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-#### 3.0d15x
-UPGRADE NOTES:
- = HTMLUI Sample
-   - changed from createWebHashHistory to createWebHistory - to allow working with oauth
-   - see git commit b6b06567ea
+### 3.0d15x {2025-02-08xxxxx} {[diff](../../compare/3.0d14...3.0d15)}
 
+#### TLDR
+
+- Authentication Framework (OAuth, JWT, webserver interceptor for auth, HTMLUI sample code)
+- kRawEnvironment and kEnvironment and environment support in ProcessRunner (control env variables of child processes)
+- Streams
+  - {TextToByteReader,TextReader,TextWriter} renamed to {TextToBinary,BinaryToText}
+  - More API cleanups - harmonizing StreamReader with InputStream::Ptr
+- IO::Network socket code - use spans like done before with streams
+- IO::Network::Transfer code - use TypedBLOB, and improved Exception handling (and changed semantics of Send, now separate SendAndThrowOnFailure).
+
+#### Upgrade Notes (3.0d14 to 3.0d15)
+
+- HTMLUI Sample
+  - changed from createWebHashHistory to createWebHistory - to allow working with oauth
+  - see git commit b6b06567ea
 - Streams refactoring:
   - Streams/TextReader.h -> Streams/BinaryToText.h
   - Streams/TextWriter.h -> Streams/TextToBinary.h
@@ -21,7 +32,7 @@ UPGRADE NOTES:
   - Streams::TextWriter -> Streams::TextToBinary::Writer
   - Streams::TextToByteReader -> Streams::TextToBinary::Reader
 
-
+#### Change Details
 
 - Everywhere
   - Minor docs/messaging cleanups
@@ -42,26 +53,22 @@ UPGRADE NOTES:
         - added String::Matches<INT> helper to return tuples; 
         - added String::Col/ColValue to replace much use of Matches() regexp functions
         - Get rid of Trim() built into Tokeninize () - generally not needed (and added regtests and docs for where it is); added more regtests for String::Match<N> and fixed bug with new code (not 100% backward compatible, but sb OK)
-
       - StringBuilder
         - docs
         - cleanup StringBuilder<OPTIONS>::As ()
       - ToString
         - fixed bug with ToString(tuple<T>) - infinite loop
-
     - Common
       - Compiler Bug Workarounds
         - new qCompilerAndStdLib_function_dependency_too_complex_Buggy -  bug Workaround for fatal error C1202: recursive type or function dependency context too complex issue
         - new qCompilerAndStdLib_thread_local_static_inline_twice_Buggy BWA
         - one qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy specific to xcode 15
         - qCompilerAndStdLib_tie_trick_spaceship_impl_Buggy
-
       - Concepts
         - new concept Common::explicitly_convertible_to
       - TemplateUtilities
         - new template utility RepeatedTuple_t
       - simplified impl of CountedValue operator<=> and KeyValuePair  operator<=> (using tie)
-
     - Containers
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOne () method
@@ -69,7 +76,6 @@ UPGRADE NOTES:
         - support KeyedCollection::CTOR {initializer_list}
       - SortedSet
         - fixed typo in SortedSet<T>::operator<=>
-
     - DataExchange
       - JWT
         - Simple (but usable) JWT support  (just decoding for now, not validating much)
@@ -82,8 +88,6 @@ UPGRADE NOTES:
           - new module, and regtests
       - InternetMediaTypesRegistry
         - new kWWWFormURLEncoded
-
-
     - Execution
       - new utility function RunAll (alias InvokeAsync)
       - new kRawEnvironment and kEnvironment properties, and regtests
@@ -92,7 +96,6 @@ UPGRADE NOTES:
         - String2ContigArrayCStrs_ cleanup to processRunner
         - use fBytesBuffer not fPtrsBuffer on Windows/CreateProcess
       - fixed typo in Execution::SleepUntil ()
-
     - IO
       - Networking
         - HTTP
@@ -103,18 +106,16 @@ UPGRADE NOTES:
           - use TypedBLOB in place of two separate BLOB/InternetMediaTypes params (deprecting older API)
           - cleanups for Foundation_IO_Network_Transfer regtest
           - Connection - cleaned up docs/semantics on Send/and new SendAndThrowOnFailure
-            (Send now doesnt throw on HTTP status error but SendAndThrowOnFailure does) -
-            so change in semantics (docs were ambiguous) -
-            but no change to wrappers like POST, PUT, etc which I think most people call
+            - (Send now doesnt throw on HTTP status error but SendAndThrowOnFailure does) -
+              so change in semantics (docs were ambiguous) -
+              but no change to wrappers like POST, PUT, etc which I think most people call
           - improved error reporting in IO::Network::Transfer::Exception code - 
             so captures some stuff from the body to include as part of 'reason' -
             maybe now works SLIGHTLY better giving hints about what went wrong
-
     - Memory
       - new ISpanBytesCastable concept to capture the requirements on SpanBytesCast API (and used it there); 
         and strengthened the requirements to check trivially_copyable and no cast away const of underlying value_type
       - new OptionallyCopy
-
     - Streams
       - fixed typo/bug (a few releases back) to ToSeekableInputStream - RemainingLength
       - docs on NoDataAvailableHandling; and deprecated NoDataAvailableHandling::eDEFAULT
@@ -125,20 +126,17 @@ UPGRADE NOTES:
         - Streams::TextReader/TextWriter/TextToByteReader replaced with Streams::ToText::{Reader/Writer} and Streams::FromText::{Reader/Writer}
         - renamed (recent change so just use newest in relnotes) - ToText to BinaryToText and FromText to TextToBinary; and misc minor cleanups
         - new simple utility TextToBinary::Convert(BLOB...) -> String utility
-
       - InputStream
-        - InputStream::Ptr Read and ReadOrThrow no longer take default param for blockFlag - use another API (wiht diff return value) to get default blocking behavior - if using that API - you probably have the block flag value to pass
-
+        - InputStream::Ptr Read and ReadOrThrow no longer take default param for blockFlag - use another API (wiht diff return value) to get default blocking behavior -
+          if using that API - you probably have the block flag value to pass
       - StreamReader
         - Updated StreamReader API (not totally backward compatible, but not a new API so not really used by much yet so no need for lots of notes) - and API now basically just follows pattern in InputStream::Ptr better
         - Added ReadBlocking overload (read to delimiter) to InputStream::PTr and StreamReader
     - Time
       - Added DateTime::NowUTC () method
-
     - Traversal
       - Iterable
         - Iterable<>Join support for RESULT_TYPE=SDKString (at least when explicit type param)
-
 - Frameworks::Auth
   - new CurrentIdentityManager
     - manage templated identity object in thread_local storage
@@ -146,9 +144,8 @@ UPGRADE NOTES:
     - ProvidersConfigurations, ClientConfiguration, and kDefaultProviderConfigurations
     - Client/Fetcher support - to fetch a bunch of remote stuff (like wellknown/... ids and calls to oauth provider to convert tokens, get UserInfo etc)
   - New (WebServer)-Interceptor
-    WebServer::Interceptor instance that translates auth-headers into CurrentIdentityManager thread_local 
-    storage object with that information interpretted (fits well with route callbacks)
-
+    - WebServer::Interceptor instance that translates auth-headers into CurrentIdentityManager thread_local 
+      storage object with that information interpretted (fits well with route callbacks)
 - Frameworks::WebServer
   - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); 
     - fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
@@ -156,8 +153,8 @@ UPGRADE NOTES:
   - IntercetorMgr
     - Allow comparing WebServer InterceptorChain for equality, 
   - Connection/
-    - fixed bug where DeriveConnectionDefaultOptionsFromEffectiveOptions_ not updated (where we store interceptor chain) on chagnne - so lose fInterceptorChain - just store in fUseDefaultConnectionOptions_ (connection manager)
-
+    - fixed bug where DeriveConnectionDefaultOptionsFromEffectiveOptions_ not updated (where we store interceptor chain) on change -
+      so lose fInterceptorChain - just store in fUseDefaultConnectionOptions_ (connection manager)
 - Samples
   - HMTLUI
     - fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()
@@ -165,27 +162,52 @@ UPGRADE NOTES:
     - Minor tweaks to HTMLUI boot/configuration.ts
     - Draft (working) OAuth support in Sample HTMLUI - authtest page and you can login/logout - and backend uses TLS interceptor to get auth info from http auth token
     - Samples/HTMLUI: Lots of changes so authentication process supports multiple providers, and various cleanups/fixups to vue reactivity logic
-
 - ThirdPartyComponents
   - boost
     - attempt at workaround for issue building boost on windows under HearHE- flakiness persists, but improved
       reporting/testing, so maybe I can get to the bottom of it before too long (b2.exe disappears)
-
   - lzma
     - maybe impove optics of lzma extract random issue on ubuntu (WARNING: FAILURE in 7z)
-
 - Tests
   - deleted HistoricalRegressionTestResults and HistoricalPerformanceRegressionTestResults from old, pre-release builds
   - small cleanups to regtest 40 (ThreadSafetyBuiltinObject) - better debug one issue I saw but cannot reprpduce with valgrind
-
 - Github Actions/Workflows
   - Tweaked sizes of various containers, and reporting, to fix run-out-of-memory issue on windows, and
     increase build performance (and generally cleanup/remove older uneeded hacks)
+  - Tweaked reporting of memory/etc sizes of all platforms, and adjusted --jobs= values for newly discovered
+    values (size of hosts probably changed).
 
+#### Release-Validation
 
------
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
+  - MSVC: { 17.12.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-
+---
 
 ### 3.0d14 {2025-01-11} {[diff](../../compare/3.0d13...3.0d14)}
 
