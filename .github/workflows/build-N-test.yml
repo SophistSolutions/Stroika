@@ -80,6 +80,7 @@ jobs:
           lsb_release -d 2>/dev/null || true
           echo "CWD=" `pwd`
           echo "hw.ncpu=" $(sysctl -n hw.ncpu)
+          echo "hw.memsize=" $(sysctl -n hw.memsize)
           grep "model name" /proc/cpuinfo | head -1
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
@@ -188,11 +189,9 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.MacOSMatrixPrep.outputs.matrix)}}
     env:
-      # OLD- vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
-      # vm has 4 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing --LGP 2025-05-08 - still testing
-      #MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
-      MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
-      # EXPERIMENTAL FIX TO LIBIDB2 not found https://github.com/actions/runner-images/issues/9638
+      # vm has 3 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing --LGP 2025-05-08
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      # Workaround for LIBIDB2 not found https://github.com/actions/runner-images/issues/9638
       LIBRARY_PATH: "/opt/homebrew/lib"
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
