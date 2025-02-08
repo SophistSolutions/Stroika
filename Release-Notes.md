@@ -18,6 +18,7 @@ especially those they need to be aware of when upgrading.
   - More API cleanups - harmonizing StreamReader with InputStream::Ptr
 - IO::Network socket code - use spans like done before with streams
 - IO::Network::Transfer code - use TypedBLOB, and improved Exception handling (and changed semantics of Send, now separate SendAndThrowOnFailure).
+- String: improved RegExp overloads (Tokeninze, Match), and new AsLines, Grep, and Col methods to simulate what often done with grep, and awk
 
 #### Upgrade Notes (3.0d14 to 3.0d15)
 
