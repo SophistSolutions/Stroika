@@ -2,6 +2,8 @@ StroikaRoot=$(abspath ..)/
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
+INTERMEDIATE_FILES=$(abspath ../IntermediateFiles/Doxygen)
+
 .PHONY:	all doxygen
 
 all:
@@ -17,13 +19,14 @@ clobber: clean
 	@rm -f $(StroikaRoot)/Builds/Stroika-Doxygen-Help.tar.gz
 
 clean:
-	@rm -rf Doxygen/Stroika-Doxygen-Help.tar.gz Doxygen/Output Doxygen/IntermediateFiles
+	@rm -rf Doxygen/Stroika-Doxygen-Help.tar.gz ${INTERMEDIATE_FILES}
 
 doxygen:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo -n "Building Doxygen Documentation (Builds/Stroika-Doxygen-Help.tar.gz; see Documentation/Doxygen/BUILD.OUT)..."
-	@rm -rf Doxygen/Output Doxygen/IntermediateFiles
-	@cd Doxygen && doxygen Stroika-Library.cfg >BUILD.OUT 2>&1
-	@cd Doxygen/IntermediateFiles; \
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo -n "Building Doxygen Documentation (Builds/Stroika-Doxygen-Help.tar.gz; see IntermediateFiles/Doxygen/BUILD.OUT)..."
+	@rm -rf ${INTERMEDIATE_FILES}
+	@mkdir -p ${INTERMEDIATE_FILES}
+	@cd Doxygen && doxygen Stroika-Library.cfg >${INTERMEDIATE_FILES}/BUILD.OUT 2>&1
+	@cd ${INTERMEDIATE_FILES}; \
 		mv html Stroika-Doxygen-Help; \
 		tar cf Stroika-Doxygen-Help.tar Stroika-Doxygen-Help; \
 		gzip --best Stroika-Doxygen-Help.tar; \
