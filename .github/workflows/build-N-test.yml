@@ -188,8 +188,10 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.MacOSMatrixPrep.outputs.matrix)}}
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      # OLD- vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
+      # vm has 4 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing --LGP 2025-05-08 - still testing
+      #MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
       # EXPERIMENTAL FIX TO LIBIDB2 not found https://github.com/actions/runner-images/issues/9638
       LIBRARY_PATH: "/opt/homebrew/lib"
     steps:
@@ -207,6 +209,7 @@ jobs:
           echo "    X-CODE: `xcodebuild -version | tr '\n' ';'`"
           echo "LIBRARY_PATH = $LIBRARY_PATH"
           echo "hw.ncpu=" $(sysctl -n hw.ncpu)
+          echo "hw.memsize=" $(sysctl -n hw.memsize)
       # If we had docker ability, most of these would be built into a docker file
       - name: Install Basic Build requirements
         run: |
@@ -335,15 +338,15 @@ jobs:
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           docker stop buildContainer
-          (docker cp "buildContainer:c:/TRACE_LOGS/" $ARTIFACTS_DIR) || :
+          (docker cp "buildContainer:c:/TRACE_LOGS/" $ARTIFACTS_DIR) || echo "error copying tracelogs ignored"
           echo "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR
           echo gothere 2.2
-          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || :
+          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" $ARTIFACTS_DIR) || echo "error copying builds ignored"
           echo got here3
           ls -l "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/"
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           echo got here4
-          (cp "${GITHUB_WORKSPACE}/Documentation/Doxygen/BUILD.OUT" $ARTIFACTS_DIR/Doxygen-BUILD.OUT) || :
+          (cp "${GITHUB_WORKSPACE}/Documentation/Doxygen/BUILD.OUT" $ARTIFACTS_DIR/Doxygen-BUILD.OUT) || echo "error copying Doxygen/BUILD.OUT ignored"
           echo got here5
           ls -l $ARTIFACTS_DIR/
           echo got here6
