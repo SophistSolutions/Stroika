@@ -85,23 +85,6 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
-      # - name: Hacks 2 Save Space (appears no longer needed- since no more space on containers and these hacks dangerous --LGP 2025-02-07)
-      #   run: |
-      #     echo ""*************Before cleanups"*************:"
-      #     df -h
-      #     #du -hs /* || true
-      #     #du -hs /usr/* || true
-      #     #du -hs /usr/share/* || true
-      #     #du -hs /__w/* || true
-      #     du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || true
-      #     du -hs Archive .git
-      #     echo Deleting:
-      #     rm -r /usr/share/doc  /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts /usr/share/fonts-droid-fallback /usr/share/poppler /usr/share/vim /usr/share/X11 || echo "Issue deleting incomplete"
-      #     rm -rf Archive .git || echo "Issue deleting incomplete"
-      #     #ls -la .
-      #     echo ""*************After cleanups"*************:"
-      #     df -h
-      #     du -hs /usr/* /usr/share/* /usr/lib/* || true
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
