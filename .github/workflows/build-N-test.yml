@@ -460,6 +460,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    container: sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
     steps:
       - name: Checkout
         uses: actions/checkout@v4
