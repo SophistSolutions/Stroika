@@ -315,10 +315,18 @@ jobs:
         run: |
           docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
           docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
-      - name: Build All
+      - name: Build Library and Tools
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make libraries tools
+      - name: Build Samples
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make samples
+      - name: Build Tests
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make tests
       - name: Run-Tests
         shell: "bash"
         run: |
@@ -344,7 +352,7 @@ jobs:
           echo "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
           echo gothere 2.2
           ls -l $ARTIFACTS_DIR || :
-          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
+          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/Sample-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
           echo got here3
           ls -l $ARTIFACTS_DIR || :
           echo got here3.1
