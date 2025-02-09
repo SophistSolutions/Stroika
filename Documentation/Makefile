@@ -25,10 +25,10 @@ clean:
 	@rm -rf Doxygen/Stroika-Doxygen-Help.tar.gz ${INTERMEDIATE_FILES}
 
 doxygen:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo -n "Building Doxygen Documentation (Builds/Stroika-Doxygen-Help.tar.gz; see IntermediateFiles/Doxygen/BUILD.OUT)..."
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo -n "Building Doxygen Documentation (Builds/Stroika-Doxygen-Help.tar.gz; see IntermediateFiles/Doxygen/BUILD.txt)..."
 	@rm -rf ${INTERMEDIATE_FILES}
 	@mkdir -p ${INTERMEDIATE_FILES}
-	@cd Doxygen && ${DOXYGEN} Stroika-Library.cfg >${INTERMEDIATE_FILES}/BUILD.OUT 2>&1
+	@cd Doxygen && ${DOXYGEN} Stroika-Library.cfg >${INTERMEDIATE_FILES}/BUILD.txt 2>&1
 	@cd ${INTERMEDIATE_FILES}; \
 		mv html Stroika-Doxygen-Help; \
 		tar cf Stroika-Doxygen-Help.tar Stroika-Doxygen-Help; \

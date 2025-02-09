@@ -442,4 +442,4 @@ jobs:
           name: Log Data (doxygen)
           if-no-files-found: warn
           path: |
-            IntermediateFiles/Doxygen/BUILD.OUT
+            IntermediateFiles/Doxygen/BUILD.txt
