@@ -6,6 +6,9 @@ INTERMEDIATE_FILES=$(abspath ../IntermediateFiles/Doxygen)
 
 .PHONY:	all doxygen
 
+DOXYGEN=doxygen
+# DOXYGEN=C:/tools/cygwin/bin/doxygen.exe
+
 all:
 	@if [ ! -e $(StroikaRoot)/Builds/Stroika-Doxygen-Help.tar.gz ] ; then\
 		if which doxygen 2>&1 > /dev/null; then\
@@ -25,7 +28,7 @@ doxygen:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && echo -n "Building Doxygen Documentation (Builds/Stroika-Doxygen-Help.tar.gz; see IntermediateFiles/Doxygen/BUILD.OUT)..."
 	@rm -rf ${INTERMEDIATE_FILES}
 	@mkdir -p ${INTERMEDIATE_FILES}
-	@cd Doxygen && doxygen Stroika-Library.cfg >${INTERMEDIATE_FILES}/BUILD.OUT 2>&1
+	@cd Doxygen && ${DOXYGEN} Stroika-Library.cfg >${INTERMEDIATE_FILES}/BUILD.OUT 2>&1
 	@cd ${INTERMEDIATE_FILES}; \
 		mv html Stroika-Doxygen-Help; \
 		tar cf Stroika-Doxygen-Help.tar Stroika-Doxygen-Help; \
