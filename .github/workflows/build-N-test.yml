@@ -131,20 +131,6 @@ jobs:
           if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/*Samples-*
-      - name: Make Documentation
-        run: make documentation
-      - name: Archive Documentation Results
-        uses: actions/upload-artifact@v4
-        # https://github.com/actions/upload-artifact/issues/506 include matrix configname until bug fixed --LGP 2024-11-27
-        continue-on-error: true
-        with:
-          name: Stroika-Doxygen-Help.tar.gz
-          path: |
-            Builds/Stroika-Doxygen-Help.tar.gz
-          #Dont name based on who built - sb all the same
-          overwrite: true
-          # https://github.com/actions/upload-artifact/issues/506 include matrix configname until bug fixed --LGP 2024-11-27
-          # name: ${{ matrix.config_name }}-Stroika-Doxygen-Help.tar.gz
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
@@ -423,3 +409,37 @@ jobs:
           IntermediateFiles/Release/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
+
+  doxygen:
+    runs-on: ubuntu-latest
+    container: sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
+        run: |
+          lsb_release -d 2>/dev/null || true
+          echo "CWD=" `pwd`
+          echo "hw.ncpu=" $(sysctl -n hw.ncpu)
+          echo "hw.memsize=" $(sysctl -n hw.memsize)
+          grep "model name" /proc/cpuinfo | head -1
+          grep processor /proc/cpuinfo | wc -l
+          grep MemTotal /proc/meminfo
+          df -h
+      - name: Make Documentation
+        run: make documentation
+      - name: Archive Documentation Results
+        uses: actions/upload-artifact@v4
+        # https://github.com/actions/upload-artifact/issues/506 include matrix configname until bug fixed --LGP 2024-11-27
+        continue-on-error: true
+        with:
+          name: Stroika-Doxygen-Help.tar.gz
+          path: |
+            Builds/Stroika-Doxygen-Help.tar.gz
+      - name: Archive Log Data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Log Data (doxygen)
+          if-no-files-found: warn
+          path: |
+            IntermediateFiles/Doxygen/BUILD.OUT
