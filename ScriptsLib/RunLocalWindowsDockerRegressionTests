@@ -18,16 +18,18 @@ DOCKER="${DOCKER:-docker.exe}"
 # DOCKER_NETWORK="${DOCKER_NETWORK:-Default Switch}"
 
 CPUS_=6
+MEMORY_=12G
 
 DOCKER_RUN_ARGS_=
 DOCKER_RUN_ARGS_+=" --detach"
 DOCKER_RUN_ARGS_+=" --interactive"
-DOCKER_RUN_ARGS_+=" --memory 12G"
+DOCKER_RUN_ARGS_+=" --memory ${MEMORY_}"
 DOCKER_RUN_ARGS_+=" --cpus ${CPUS_}"
 DOCKER_RUN_ARGS_+=" --name $CONTAINER_NAME"
 if [[ "$DOCKER_NETWORK" != "" ]] ; then
     DOCKER_RUN_ARGS_ = "${DOCKER_RUN_ARGS_} --network ${DOCKER_NETWORK}"
 fi
+DOCKER_RUN_ARGS_+=" --storage-opt \"size=125GB\""
 
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
@@ -36,7 +38,6 @@ fi
 echo "Running docker build (${CONTAINER_IMAGE} for ${USE_TEST_BASENAME})(usually takes about 7 hrs)"
 $DOCKER run \
     ${DOCKER_RUN_ARGS_} \
-    --storage-opt "size=125GB" \
     -v `cygpath --windows --absolute .`:c:\\LAUNCHEDFROM \
     $CONTAINER_IMAGE
 
