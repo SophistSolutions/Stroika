@@ -1,4 +1,4 @@
-# **_Thread Safety_**
+# _Thread Safety_
 
 Stroika classes respect several different levels of thread safety:
 
