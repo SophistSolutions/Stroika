@@ -260,14 +260,14 @@ fi
 echo >>$TEST_OUT_FILE 2>&1
 echo >>$TEST_OUT_FILE 2>&1
 STAGE_STARTAT_INT=$(date +%s)
-echo "<Make all>" >>$TEST_OUT_FILE 2>&1
-echo -n "Make all ($PARALELLMAKEFLAG)..."
-echo "$PREFIX_OUT_LABEL" "Make all ($PARALELLMAKEFLAG)..."  >>$TEST_OUT_FILE 2>&1
-make all QUICK_BUILD=0 $PARALELLMAKEFLAG >>$TEST_OUT_FILE 2>&1
+echo "<Make libraries tools tests samples>" >>$TEST_OUT_FILE 2>&1
+echo -n "Make libraries tools tests samples ($PARALELLMAKEFLAG)..."
+echo "$PREFIX_OUT_LABEL" "Make libraries tools tests samples ($PARALELLMAKEFLAG)..."  >>$TEST_OUT_FILE 2>&1
+make libraries tools tests samples QUICK_BUILD=0 $PARALELLMAKEFLAG >>$TEST_OUT_FILE 2>&1
 STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-echo "</Make all>" >>$TEST_OUT_FILE 2>&1
+echo "</Make libraries tools tests samples>" >>$TEST_OUT_FILE 2>&1
 
 
 
