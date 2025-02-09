@@ -204,8 +204,8 @@ jobs:
       - name: Build Library and Tools
         run: |
           make libraries tools
-          - name: Build Samples
-          run: |
+      - name: Build Samples
+        run: |
             make samples
       - name: Build Tests
         run: |
