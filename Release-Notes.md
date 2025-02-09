@@ -7,7 +7,9 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d15 {2025-02-09} {[diff](../../compare/3.0d14...3.0d15)}
+### 3.0d15 {2025-02-09} {[diff](../../compare/3.0d14...3.0d15)}?????? RELEASE NOTES NOT READY
+
+update relnotes for stuff done feb 8-10 - fixing doxgygen and getting ready to deploy dox docs to github pages.
 
 #### TLDR
 
