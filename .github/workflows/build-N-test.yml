@@ -432,15 +432,17 @@ jobs:
           grep MemTotal /proc/meminfo
           df -h
       - name: Make Documentation
-        run: make documentation
+        run: |
+          make documentation
+          (cd Builds; tar xvf Stroika-Doxygen-Help.tar.gz)
       - name: Archive Documentation Results
         uses: actions/upload-artifact@v4
         # https://github.com/actions/upload-artifact/issues/506 include matrix configname until bug fixed --LGP 2024-11-27
         continue-on-error: true
         with:
-          name: Stroika-Doxygen-Help.tar.gz
+          name: Stroika-Doxygen-Help
           path: |
-            Builds/Stroika-Doxygen-Help.tar.gz
+            Builds/Stroika-Doxygen-Help
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
@@ -464,7 +466,7 @@ jobs:
       - name: Make Documentation (since I dont know how to copy result from other step - this is simpler)
         run:  |
           make documentation
-          tar xvf Builds/Stroika-Doxygen-Help.tar.gz
+          (cd Builds; tar xvf Stroika-Doxygen-Help.tar.gz)
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
