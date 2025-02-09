@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::Factory {
          *          Collection_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
          *          which might use the factory).
          * 
-         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         *  \note this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
          * 
          *  \note If you wanted a dynamically changeable factory (change after main), you could write one yourself with its own internal synchronization,
          *        set the global one here, then perform the changes to its internal structure through another API.
