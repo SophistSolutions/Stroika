@@ -453,7 +453,7 @@ jobs:
             IntermediateFiles/Doxygen/BUILD.txt
 
 
-  # Single deploy job since we're just deploying
+  # Single deploy job since we're just deploying help to github pages
   deploy-doxygen:
     needs: doxygen
     environment:
@@ -473,7 +473,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
           path: 'Builds/Stroika-Doxygen-Help'
       - name: Deploy to GitHub Pages
         id: deployment
