@@ -34,7 +34,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          *  For CIDR (const InternetAddress& internetAddress) CTOR
-         *      \req internetAddress.GetAddressFamily () is V4 or V6 (not unknown).
+         *      \pre internetAddress.GetAddressFamily () is V4 or V6 (not unknown).
          *
          *  For CIDR (const String& cidrNotation... CTOR)
          *      cidrNotation ends with "/NNN" where NNN are digits of an integer where the numberOfBits. This will

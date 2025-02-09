@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Execution {
          *  Note: these timers CAN throw, and SHOULD throw if interrupted, but the Idle Manager will 'eat' those
          *  exceptions.
          *  
-         *  \req TimerCallback must be cancelable!
+         *  \pre TimerCallback must be cancelable!
          */
         using TimerCallback = Function<void ()>;
 
@@ -122,9 +122,9 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief Add a timer to be called once after duration when
          * 
-         *  \req intervalTimer valid function ptr (not null)
-         *  \req intervalTimer not already registered
-         *  \req when >= 0
+         *  \pre intervalTimer valid function ptr (not null)
+         *  \pre intervalTimer not already registered
+         *  \pre when >= 0
          */
         nonvirtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when);
 
@@ -132,10 +132,10 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \brief Add a timer to be called repeatedly after duration repeatInterval
          * 
-         *  \req intervalTimer valid function ptr (not null)
-         *  \req intervalTimer not already registered
-         *  \req repeatInterval >= 0
-         *  \req hysteresis == nullopt or hysteresis >= 0
+         *  \pre intervalTimer valid function ptr (not null)
+         *  \pre intervalTimer not already registered
+         *  \pre repeatInterval >= 0
+         *  \pre hysteresis == nullopt or hysteresis >= 0
          */
         nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
                                       const optional<Time::Duration>& hysteresis = nullopt);
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Can remove a repeating task, but cannot remove a oneShot, since it might not be there by the time you go to remove it.
          * 
-         *  \req argument intervalTimer is registered.
+         *  \pre argument intervalTimer is registered.
          */
         nonvirtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept;
 
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Execution {
          *              Execution::IntervalTimer::Manager::Activator intervalTimerMgrActivator;
          *      \endcode
          *
-         *  \req (Debug::AppearsDuringMainLifetime ()); during activator lifetime
+         *  \pre (Debug::AppearsDuringMainLifetime ()); during activator lifetime
          */
         struct Activator {
             Activator ();
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \req (but unenforced) - lifetime of manager must be > that of created Adder
+         *  \pre (but unenforced) - lifetime of manager must be > that of created Adder
          *  \note if no manager specified, IntervalTimer::Manager::sThe is used.
          * 
          *  \par Example Usage

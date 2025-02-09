@@ -23,11 +23,6 @@
  *        We chose NOT to do this with Ensure/Assert etc because
  *          > they are used so much it would be awkward
  *          > they will go away before too long, due to C++26 contracts (I hope)
- *
- *  TODO:
- *      @todo   Find some way to map Require(), RequireNotNull(), etc to things picked up automatically
- *              by Doxygen. Right now - I must manually map them to \\pre statements in the function header.
- *
  */
 
 namespace Stroika::Foundation::Debug {

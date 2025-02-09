@@ -239,8 +239,8 @@ namespace Stroika::Foundation::Execution {
          *  \note the cv_status returning overload CAN return/wakeup spuriously (not timeout, and not desired condition true)
          *        The PREDICATE (readyToWake) overload, never returns a spurious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
-         *  \req (lock.owns_lock ());
-         *  \ensure (lock.owns_lock ());
+         *  \pre (lock.owns_lock ());
+         *  \post (lock.owns_lock ());
          * 
          * @todo maybe lose the (no predicate) overload --LGP 2023-10-09
          */
@@ -267,8 +267,8 @@ namespace Stroika::Foundation::Execution {
          *  \note the cv_status returning overload CAN return/wakeup spuriously (not timeout, and not desired condition true)
          *        The PREDICATE (readyToWake) overload, never returns a spurious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
-         *  \req (lock.owns_lock ());
-         *  \ensure (lock.owns_lock ());
+         *  \pre (lock.owns_lock ());
+         *  \post (lock.owns_lock ());
          */
         nonvirtual cv_status wait_for (LockType& lock, Time::DurationSeconds timeout);
         template <invocable PREDICATE>

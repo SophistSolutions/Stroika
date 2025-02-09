@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers {
      *          be equal. There is no need for the backends to be of the same underlying representation either (stl map
      *          vers linked list).
      *
-     *          \req lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
+     *          \pre lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
      *
      *          @todo - document computational complexity
      *
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
          *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-         *      \req    Ensure (item == nullptr or returnValue == item->has_value());
+         *      \pre    Ensure (item == nullptr or returnValue == item->has_value());
          *
          *  \note   Alias - Lookup (key, mapped_type* value) - is equivalent to .Net TryGetValue ()
          * 
@@ -332,7 +332,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \req ContainsKey (key);
+         *  \pre ContainsKey (key);
          *
          *  \note   Design Note:
          *      Defined operator[](KEY_TYPE) const - to return const MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because

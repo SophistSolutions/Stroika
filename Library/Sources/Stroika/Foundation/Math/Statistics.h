@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Math {
     /**
      *  \brief Mean (average) of a collection of numbers computed
      * 
-     *  \req not empty (or start != end)
+     *  \pre not empty (or start != end)
      * 
      *  \par Example Usage:
      *      \code
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Math {
      *  First template requires explicit RESULT_TYPE argument.
      *  Second and third infer it from the iterator/container arguments.
      * 
-     *  \req not empty
+     *  \pre not empty
      * 
      *  \note O(N) time complexity
      * 
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Math {
     auto Median (const CONTAINER_OF_T& container, INORDER_COMPARE_FUNCTION&& compare = {}) -> typename CONTAINER_OF_T::value_type;
 
     /**
-     *  \req size of container >= 1
+     *  \pre size of container >= 1
      *
      *  \brief Alias: sd, standard-deviation, stddev
      * 

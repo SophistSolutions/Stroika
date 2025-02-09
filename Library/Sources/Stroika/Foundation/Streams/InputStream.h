@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         /**
          * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
          *
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          *
          *  \note does NOT require IsSeekable () so always must be supported by rep
          */
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
          *
-         *  \req IsSeekable ()
+         *  \pre IsSeekable ()
          */
         nonvirtual SeekOffsetType Seek (SeekOffsetType offset) const;
         nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  \note It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
          *
-         *  \req not intoBuffer.empty ()
+         *  \pre not intoBuffer.empty ()
          *
          *  @see ReadAll () to read all the data from the stream at once.
          *
@@ -363,10 +363,10 @@ namespace Stroika::Foundation::Streams::InputStream {
         /**
          *  \brief block until one item available, read it and return it (seeking back before returning) - and returns nullopt for EOF.
          *
-         * Same as ReadBlocking () - reading one element, but \req IsSeekable, and seeks back to original position - nullopt implies
+         * Same as ReadBlocking () - reading one element, but \pre IsSeekable, and seeks back to original position - nullopt implies
          *  \note    PeekBlocking will block if no data available
          * 
-         *      \req IsSeekable ()
+         *      \pre IsSeekable ()
          */
         nonvirtual optional<ElementType> PeekBlocking () const;
 
@@ -378,7 +378,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  \note - IsAtEOF (eDontBlock) returns optional<bool> - nullopt if would block, and false if known not at EOF, and true if known EOF; 
          *          this differs from most Stroika streams APIs - in that nullopt here means 'EWouldBlock';
          *
-         *  \req IsSeekable ()
+         *  \pre IsSeekable ()
          */
         nonvirtual bool IsAtEOF () const;
         nonvirtual optional<bool> IsAtEOF (NoDataAvailableHandling blockFlag) const;
@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  ReadLine() will return an empty string iff EOF.
          *
-         *      \req IsSeekable () to implement read-ahead required for CRLF mapping support 
+         *      \pre IsSeekable () to implement read-ahead required for CRLF mapping support 
          *
          *  This API is always blocking.
          */
@@ -446,7 +446,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *      Also - since upTo elements may be read before EOF, the stream may or may not be at the
          *      EOF state/position after ReadAll ().
          *
-         *      \req upTo >= 1
+         *      \pre upTo >= 1
          *
          *  ReadAll/span<ElementType> intoBuffer
          *      Like Read, in that it reads all the elements that will fit into the range intoBuffer.
@@ -458,7 +458,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *      ReadAll will always return a subspan of intoBuffer (or empty).
          *
-         *      \req intoEnd-intoStart >= 1
+         *      \pre intoEnd-intoStart >= 1
          *
          *  \note ReadAll () will block if the stream is not KNOWN to be at EOF, and we just ran out of data. Use
          *        @see ReadNonBlocking () or Read (eDontBlock) to get non-blocking read behavior.
@@ -493,13 +493,13 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 
@@ -600,7 +600,7 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         *  May (but typically not) called before destruction. If called, \req no other read or seek etc operations.
+         *  May (but typically not) called before destruction. If called, \pre no other read or seek etc operations.
          *
          *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Read, so subclassers don't need to
          *          do that in implementing reps, but probably good docs/style todo in both places.'
@@ -625,7 +625,7 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /*
-         *  \req IsSeekable ()
+         *  \pre IsSeekable ()
          *
          *  \note this could have just be called 'Seek' but we want to be able to mix InputStream::IRep and OutputStream::IRep without conflict.
          * 

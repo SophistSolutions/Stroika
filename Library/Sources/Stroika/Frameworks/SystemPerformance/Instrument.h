@@ -155,7 +155,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         /**
          *  \brief the set of MeasurementTypes measured by this instrument (often just one)
          * 
-         * \ens capturedMeasurementTypes ().size () >= 1
+         * \post capturedMeasurementTypes ().size () >= 1
          */
         Common::ReadOnlyProperty<Set<MeasurementType>> capturedMeasurementTypes;
 

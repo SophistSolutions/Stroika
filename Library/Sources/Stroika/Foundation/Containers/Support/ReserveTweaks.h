@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
      *  Adjust the given target (required) capacity to grow in geometric rate (so ln N reallocs), and use the argument chunkSize to
      *  make sure the number of entries is a multiple of that chunk size.
      * 
-     *  \ens capacityResult >= targetSize;
+     *  \post capacityResult >= targetSize;
      *
      *  \note the targetSize, minChunk and returned capacity are in units of elements, not bytes. eltSizeInBytes is measured in bytes.
      */

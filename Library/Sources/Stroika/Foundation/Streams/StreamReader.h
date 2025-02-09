@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Streams {
          * 
          *  \note At destruction, StreamReader automatically calls SynchronizeToUnderlyingStream
          * 
-         *  \req underlyingReadFromStreamAdopted.Seekable ();
+         *  \pre underlyingReadFromStreamAdopted.Seekable ();
          */
         StreamReader (const typename InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted);
         StreamReader ()                    = delete;
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Streams {
          *
          *  \note It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
          *
-         *  \req not intoBuffer.empty ()
+         *  \pre not intoBuffer.empty ()
          *
          *  @see ReadAll () to read all the data from the stream at once.
          *

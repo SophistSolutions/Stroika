@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief alias for Tail
-         *  \req not empty ()
+         *  \pre not empty ()
          */
         nonvirtual T back () const;
 

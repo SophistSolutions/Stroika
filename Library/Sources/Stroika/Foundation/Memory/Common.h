@@ -107,11 +107,11 @@ namespace Stroika::Foundation::Memory {
      *  \note Aliases: memcmp, MemCmp
      * 
      *  Pointer Overload: 
-     *      \req  (count == 0 or lhs != nullptr);
-     *      \req  (count == 0 or rhs != nullptr);
+     *      \pre  (count == 0 or lhs != nullptr);
+     *      \pre  (count == 0 or rhs != nullptr);
      * 
      *  Span Overload: 
-     *      \req  lhs.size () == rhs.size ()
+     *      \pre  lhs.size () == rhs.size ()
      * 
      *  \note - like std::memcmp() it returns an int < 0 for less, == 0 for equal, and > 0 for greater, but that corresponds
      *          backward compatibly to the strong_ordering C++20 type, so we use that for clarity going forward.
@@ -158,14 +158,14 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief 'cast' a span of one thing to another, as if as_bytes, from_bytes; require span<T1...> and span<T2...> such that one T size is a multiple of the other
      * 
-     *  \req ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ());    - so this doesn't change size in bytes of span
+     *  \pre ((src.size_bytes () / sizeof (TO_T)) * sizeof (TO_T) == src.size_bytes ());    - so this doesn't change size in bytes of span
      * 
      *  This requirement on the same size in bytes of elements sizeof FROM_T must evenly divide sizeof TO_T (or the reverse).
      *  This is to allow the returned span{} to cover the same number of bytes.
      * 
      *  \note - TO_T == std::byte, this is the same as std::as_bytes or std::as_writable_bytes
      * 
-     *  \ens resulting span same size_bytes () as src.size_bytes().
+     *  \post resulting span same size_bytes () as src.size_bytes().
      * 
      *  \note Though this CAN be used with fixed-extent spans, the caller must then specify the fixed extent,
      *        which must be correct. Probably works most simply if the EXTENT in the TO_SPAN is dynamic_extent (or omitted).
@@ -184,8 +184,8 @@ namespace Stroika::Foundation::Memory {
      *  like std::copy, except copies the data the spans point to/reference. Target span maybe larger than src,
      *  but must (require) be no smaller than src span;
      * 
-     *  \req src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
-     *  \req not Intersects (src, target) - so non-overlapping
+     *  \pre src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
+     *  \pre not Intersects (src, target) - so non-overlapping
      * 
      *  \note somewhat unlike memcpy, its fine if the spans{} are empty ()
      *  
@@ -204,8 +204,8 @@ namespace Stroika::Foundation::Memory {
      *  data (strides), where the individuals are preserved (fully type-safe); No requirement in size_bytes on the two
      *  spans, just on the SIZE of the two spans.
      * 
-     *  \req from.size() <= to.size()
-     *  \req not Intersects (src, target) - so non-overlapping
+     *  \pre from.size() <= to.size()
+     *  \pre not Intersects (src, target) - so non-overlapping
      *
      *  \returns the subspan of the target which was just filled in.
      * 
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Memory {
      *  like std::copy_backward, except copies the data the spans point to/reference. Target span maybe larger than src,
      *  but must (require) be no smaller than src span;
      * 
-     *  \req src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
+     *  \pre src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
      * 
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  \brief A utility for declaring constant bytes (byte literals).
          * 
-         *  \req b <= 0xff
+         *  \pre b <= 0xff
          * 
          *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
          */

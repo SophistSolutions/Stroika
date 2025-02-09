@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
          *  And if ElementType is Characters::Character, then T can also be one of:
          *      o   String
          * 
-         *  \req GetOptions ().fSeekable
+         *  \pre GetOptions ().fSeekable
          */
         template <typename T>
         nonvirtual T As () const
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
 
     private:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual const Private_::IRep_<ELEMENT_TYPE>& GetRepConstRef_ () const;
 

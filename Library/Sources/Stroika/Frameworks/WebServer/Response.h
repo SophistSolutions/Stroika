@@ -117,7 +117,7 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  As of Stroika 2.1b10, this is not done for 'chunked' transfer responses, because we don't yet support trailers.
          * 
-         *  \req this->state == ePreparingHeaders (before first write to body) to set
+         *  \pre this->state == ePreparingHeaders (before first write to body) to set
          */
         Common::Property<bool> autoComputeETag;
 
@@ -143,9 +143,9 @@ namespace Stroika::Frameworks::WebServer {
          *  \note When combined with compression, due to chunking of the compression algorithm, this may not result in very uniformly
          *        sized chunks.
          * 
-         *  \req this->state == ePreparingHeaders (before first write to body) to set, but can always be read
+         *  \pre this->state == ePreparingHeaders (before first write to body) to set, but can always be read
          * 
-         *  \req value == nullopt or value > 0   (zero chunk size wouldn't make sense)
+         *  \pre value == nullopt or value > 0   (zero chunk size wouldn't make sense)
          */
         Common::Property<optional<size_t>> automaticTransferChunkSize;
 
@@ -171,8 +171,8 @@ namespace Stroika::Frameworks::WebServer {
          *  \note - this is typically NOT set directly by users, and is set by the connection/message, based on the request
          *        'Accept-Encoding' headers.
          * 
-         *  \req this->headersCanBeSet() to set property
-         *  \req all provided encodings, the library is built to support (caller should check)
+         *  \pre this->headersCanBeSet() to set property
+         *  \pre all provided encodings, the library is built to support (caller should check)
          */
         Common::Property<optional<HTTP::ContentEncodings>> bodyEncoding;
 
@@ -205,8 +205,8 @@ namespace Stroika::Frameworks::WebServer {
          *          "text/html; charset=UTF-8"
          *
          * codePage.Set ()
-         *      \req this->headersCanBeSet()
-         *      \req TotalBytesWritten == 0
+         *      \pre this->headersCanBeSet()
+         *      \pre TotalBytesWritten == 0
          * 
          *  \note SEE http://stroika-bugs.sophists.com/browse/STK-983
          * 
@@ -214,7 +214,7 @@ namespace Stroika::Frameworks::WebServer {
          *         the character set will be automatically folded into the used contentType. To avoid this, 
          *         Use UpdateHeader() to modify the contenttype field directly.
          * 
-         *  \req this->headersCanBeSet() to set property
+         *  \pre this->headersCanBeSet() to set property
          */
         Common::Property<Characters::CodePage> codePage;
 
@@ -222,7 +222,7 @@ namespace Stroika::Frameworks::WebServer {
         /*
          * \brief Common::Property <optional<InternetMediaType>> contentType is a short-hand for headers().contentType (or rwHeaders().contentType);
          *
-         *  \req this->headersCanBeSet() to set property
+         *  \pre this->headersCanBeSet() to set property
          * 
          *  NOTE - if DataExchange::InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::Wildcards::kText, contentType), then
          *  the character set will be automatically folded into the used contentType (on WRITES to the property - not reads).
@@ -256,7 +256,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Once set to true, this cannot be set false. It defaults to false;
          * 
-         *  \req not this->responseStatusSent()
+         *  \pre not this->responseStatusSent()
          */
         Common::Property<bool> headMode;
 
@@ -334,7 +334,7 @@ namespace Stroika::Frameworks::WebServer {
          *  \note An internal failure in End (say because the outgoing socket was closed) will internally mark the Response
          *        as aborted (and completed), as if a call to Abort() had been done
          *
-         *  \ens this->responseCompleted ()      (even if exiting the routine via exception)
+         *  \post this->responseCompleted ()      (even if exiting the routine via exception)
          */
         nonvirtual bool End ();
 
@@ -344,7 +344,7 @@ namespace Stroika::Frameworks::WebServer {
          * unsent data, and closing the associated socket.
          *
          *  Can be called in any state.
-         *  \ens this->responseCompleted ()
+         *  \post this->responseCompleted ()
          */
         nonvirtual void Abort ();
 
@@ -352,8 +352,8 @@ namespace Stroika::Frameworks::WebServer {
         /**
          * \brief End processing of this response, and direct the client to retry the request at the given url.
          *
-         *  \req this->headersCanBeSet
-         *  \ens this->responseCompleted ()
+         *  \pre this->headersCanBeSet
+         *  \post this->responseCompleted ()
          */
         nonvirtual void Redirect (const URI& url);
 
@@ -364,8 +364,8 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  Note for string and wchar_t* writes, this uses this->codePage to encode the characters.
          * 
-         *  \req not this->responseCompleted ()
-         *  \req not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)))
+         *  \pre not this->responseCompleted ()
+         *  \pre not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)))
          */
         nonvirtual void write (const span<const byte>& b);
         template <Characters::IConvertibleToString T>

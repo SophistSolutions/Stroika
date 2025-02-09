@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  if ValidationStrategy is eAssert (DEFAULT if not specified)
-         *      \req kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)
+         *      \pre kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)
          *  else throws if out of range.
          */
         Timezone () = delete;
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Time {
          *
          *  This offset (number of minutes) - is added to a UTC time to get the time in that local timezone.
          *
-         *  \ens  (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
+         *  \post  (kBiasInMinutesFromUTCTypeValidRange.Contains (fBiasInMinutesFromUTC_));
          */
         nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTC (const Date& date, const TimeOfDay& tod) const;
 

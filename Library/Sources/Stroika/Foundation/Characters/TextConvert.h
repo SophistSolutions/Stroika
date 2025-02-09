@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Characters {
     constexpr optional<tuple<UnicodeExternalEncodings, size_t>> ReadByteOrderMark (span<const byte> d) noexcept;
 
     /**
-     *  \req into.size () >= SizeOfByteOrderMark (e)
+     *  \pre into.size () >= SizeOfByteOrderMark (e)
      * 
      *  returns remaining span to write into (basically just into.subspan(SizeOfByteOrderMark (e))
      *  so caller can continue writing

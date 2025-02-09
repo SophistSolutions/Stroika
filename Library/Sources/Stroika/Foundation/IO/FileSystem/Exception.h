@@ -66,8 +66,8 @@ namespace Stroika::Foundation::IO::FileSystem {
         /**
          *  \brief treats errNo as a `POSIX errno` value, and throws a FileSystem::Exception (subclass of @std::filesystem_error) exception with it.
          *
-         *  \req errNo != 0
-         *  \req if (p1.empty() then require (p2.empty ()); but neither is required
+         *  \pre errNo != 0
+         *  \pre if (p1.empty() then require (p2.empty ()); but neither is required
          *
          *  See:
          *      @see Execution::ThrowPOSIXErrNo ();
@@ -86,8 +86,8 @@ namespace Stroika::Foundation::IO::FileSystem {
         /**
          *  \brief treats errNo as a platform-defined error number, and throws a FileSystem::Exception (subclass of @std::filesystem_error) exception with it.
          *
-         *  \req sysErr != 0
-         *  \req if (p1.empty() then require (p2.empty ()); but neither is required
+         *  \pre sysErr != 0
+         *  \pre if (p1.empty() then require (p2.empty ()); but neither is required
          *
          *  See:
          *      @see SystemErrorException<>::ThrowSystemErrNo ();

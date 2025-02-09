@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers {
          *  is key to differentiating SortedSet from Set construction (where you specify an IEqualsComparer). Here the IEqualsComparer
          *  is implicitly defined by the supposed ITotallyOrderingComparer.
          *
-         * \req ITotallyOrderingComparer<COMPARER,T> - for constructors with that type parameter
+         * \pre ITotallyOrderingComparer<COMPARER,T> - for constructors with that type parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */

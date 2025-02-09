@@ -655,8 +655,8 @@ namespace Stroika::Foundation::Traversal {
          *           EXPECT_EQ (c.Nth (-1), 6);
          *       \endcode
          *
-         *  \req n < size ()                     // for size_t overload
-         *  \req n < size () and n > -size()     // for ptrdiff_t overload
+         *  \pre n < size ()                     // for size_t overload
+         *  \pre n < size () and n > -size()     // for ptrdiff_t overload
          */
         nonvirtual T Nth (ptrdiff_t n) const;
 
@@ -1009,7 +1009,7 @@ namespace Stroika::Foundation::Traversal {
          *          EXPECT_TRUE (c.Slice (3, 5).SequentialEquals ({ 4, 5 }));
          *      \endcode
          *
-         *  \req from <= to
+         *  \pre from <= to
          * 
          *  \note equivalent to Skip (from).Take (to-from)
          *
@@ -1079,7 +1079,7 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
          *      @see IsOrderedBy ()
          * 
-         *  \ens result.IsOrderedBy (inorderComparer);
+         *  \post result.IsOrderedBy (inorderComparer);
          */
         template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
         nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
@@ -1619,7 +1619,7 @@ namespace Stroika::Foundation::Traversal {
          *  But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
          *  its worth the singling out of this important special case.
          * 
-         *  \req Common::IEqualToOptimizable<T>; would like to only define (with requires) but
+         *  \pre Common::IEqualToOptimizable<T>; would like to only define (with requires) but
          *       cannot seem to do in C++20 - requires on virtual function
          * 
          *  Default implemented as

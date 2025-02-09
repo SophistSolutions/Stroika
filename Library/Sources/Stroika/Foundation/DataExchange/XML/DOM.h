@@ -221,7 +221,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *        if they refer to the same underlying (in providers representation) object. Meaning if they are created by two
              *        different APIs (say an interator and some other api) - you can check to see if they refer to the same underlying node.
              * 
-             *  \req the two Ptrs are either nullptr or come from the same XML Provider object.
+             *  \pre the two Ptrs are either nullptr or come from the same XML Provider object.
              */
             nonvirtual bool operator== (const Ptr& rhs) const;
             nonvirtual bool operator== (nullptr_t) const;
@@ -239,13 +239,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             *  \req GetNodeType == eAttributeNT or eElementNT
+             *  \pre GetNodeType == eAttributeNT or eElementNT
              */
             nonvirtual NameWithNamespace GetName () const;
 
         public:
             /**
-             *  \req GetNodeType == eAttributeNT or eElementNT
+             *  \pre GetNodeType == eAttributeNT or eElementNT
              */
             nonvirtual void SetName (const NameWithNamespace& name);
 
@@ -260,20 +260,20 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  The /0 overload looks at 'this node'. The overload taking an XPath::Expression looks at the first selected node (using this node as context)
              *  Either way, the result is a node, and its text is returned. For XPath case, if no node is returned, the return value is nullopt.
              *
-             *  \req GetNodeType == eAttributeNT or eElementNT
+             *  \pre GetNodeType == eAttributeNT or eElementNT
              */
             nonvirtual String GetValue () const;
 
         public:
             /**
-             *  \req GetNodeType == eAttributeNT or eElementNT
+             *  \pre GetNodeType == eAttributeNT or eElementNT
              */
             nonvirtual void SetValue (const String& v);
 
         public:
             /**
-             *  \req *this != nullptr
-             *  \ens *this == nullptr
+             *  \pre *this != nullptr
+             *  \post *this == nullptr
              */
             nonvirtual void Delete ();
 
@@ -287,7 +287,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  \brief return the associated shared_ptr (cannot be nullptr)
              * 
-             *  \ens result != nullptr
+             *  \post result != nullptr
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
 
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              * returns string value of attribute, and nullopt if doesn't exist
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual optional<String> GetAttribute (const NameWithNamespace& attrName) const;
 
@@ -372,7 +372,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * return true iff attribute exists on this node
              * return true iff attribute exists on this node and equals (case sensitive) value
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual bool HasAttribute (const NameWithNamespace& attrName) const;
             nonvirtual bool HasAttribute (const NameWithNamespace& attrName, const String& value) const;
@@ -383,7 +383,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  The 'VariantValue' overload maps null to missing attribute, and any other value to a String (v.As<String>()).
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v);
             template <same_as<VariantValue> VV>
@@ -391,7 +391,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual optional<String> GetID () const;
 
@@ -421,19 +421,19 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  The /0 overload looks at 'this node'. The overload taking an XPath::Expression looks at the first selected node (using this node as context)
              *  Either way, the resulting eAttributeNT or eElementNT nodes value.
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             using Node::Ptr::GetValue;
             nonvirtual optional<String> GetValue (const XPath::Expression& e) const;
 
         public:
             /**
-             *  \req e is an expression resulting in DOM nodes (could be attributes), and then get its text, and add that to an Iterable. Ignores nodes in result set other than attribute/element (like comment nodes)
+             *  \pre e is an expression resulting in DOM nodes (could be attributes), and then get its text, and add that to an Iterable. Ignores nodes in result set other than attribute/element (like comment nodes)
              * 
              *  \note COULD have usefully made this return a Set<> since that's the most common case, but iterable is about as good, and you might
              *        plausibly want to track dup results, or other???
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Traversal::Iterable<String> GetValues (const XPath::Expression& e) const;
 
@@ -444,7 +444,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  The overloads with VariantValue are just a short-hand for v.As<String> () on the variant value (with no checking).
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             using Node::Ptr::SetValue;
             nonvirtual void SetValue (const XPath::Expression& e, const String& v);
@@ -459,7 +459,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'Node::Ptr::GetChildren()' - need not be an element
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Ptr Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode);
 
@@ -469,7 +469,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  value=VariantValue overload is just a short-hand for value.As<String>() - so will fail if value cannot be converted to a String
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Ptr Append (const NameWithNamespace& eltName);
             nonvirtual Ptr Append (const NameWithNamespace& eltName, const String& value);
@@ -484,7 +484,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  VariantValue overload maps nullptr/nullopt=v to 'missing' case above, but otherwise calls v.As<String>() which may fail depending on the type of v.
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Ptr AppendIf (const NameWithNamespace& eltName, const optional<String>& v);
             template <same_as<VariantValue> VV>
@@ -505,7 +505,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  Note - this CAN be used to replace the document root (same as Document::Ptr{}.ReplaceRootElement()).
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Ptr Replace (const NameWithNamespace& newEltName);
 
@@ -513,7 +513,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  Can return nullptr
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Ptr GetParent () const;
 
@@ -523,7 +523,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *
              *  \warning Any modification of the DOM may invalidate live iterators or iterables, so re-fetch after each change
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Iterable<Node::Ptr> GetChildNodes () const;
 
@@ -533,7 +533,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *
              *  \warning Any modification of the DOM may invalidate live iterators or iterables, so re-fetch after each change
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Iterable<Ptr> GetChildElements () const;
 
@@ -541,7 +541,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children elements (not attributes)
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Ptr GetChild (const NameWithNamespace& eltName) const;
 
@@ -549,7 +549,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Ptr GetChildByID (const String& id) const;
 
@@ -558,7 +558,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \note same as Lookup(), but returns 0 or 1 result, instead of iterable of all of them (so ignores e.GetOptions.fSnapshot).
              *  Often more performant and easier to use (if you know zero or one matching element).
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Element::Ptr LookupOneElement (const XPath::Expression& e) const;
 
@@ -567,7 +567,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \note same as Lookup(), but returns 0 or 1 result, instead of iterable of all of them (so ignores e.GetOptions.fSnapshot).
              *  Often more performant and easier to use (if you know zero or one matching element).
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Node::Ptr LookupOneNode (const XPath::Expression& e) const;
 
@@ -576,7 +576,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  PROBABLY quite unsafe to modify DOM while holding this result etc... Needs work on whehn/what is allowed.
              *  NOTE MORE SAFE IF expression uses 'snapshot'
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) const;
 
@@ -587,7 +587,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  \note Same as Lookup - but filters out all non-element nodes
              * 
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual Traversal::Iterable<Element::Ptr> LookupElements (const XPath::Expression& e) const;
 
@@ -595,7 +595,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  \brief return the associated shared_ptr (cannot be nullptr)
              * 
-             *  \ens result != nullptr
+             *  \post result != nullptr
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
 

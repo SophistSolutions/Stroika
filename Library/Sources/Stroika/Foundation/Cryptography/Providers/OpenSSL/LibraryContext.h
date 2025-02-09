@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
 
     public:
         /**
-         * \req the provider has been successfully loaded with LoadProvider, and the number of loads is greater than the number of
+         * \pre the provider has been successfully loaded with LoadProvider, and the number of loads is greater than the number of
          *      unloads before this.
          */
         nonvirtual void UnLoadProvider (const String& providerName);

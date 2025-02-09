@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default COMPARER for 'T'.
          *
-         * \req ITotallyOrderingComparer<COMPARER,T>  - for constructors with inorderComparer parameter
+         * \pre ITotallyOrderingComparer<COMPARER,T>  - for constructors with inorderComparer parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */

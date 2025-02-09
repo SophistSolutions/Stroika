@@ -214,7 +214,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
          * 
          *  If you call capture more frequently than this interval, some (averaged) items maybe missing from the result.
          *
-         *  \req fMinimumAveragingInterval > 0
+         *  \pre fMinimumAveragingInterval > 0
          */
         Time::DurationSeconds fMinimumAveragingInterval{1.0s};
 

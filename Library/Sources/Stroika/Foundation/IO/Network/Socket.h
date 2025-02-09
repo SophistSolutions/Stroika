@@ -219,7 +219,7 @@ namespace Stroika::Foundation::IO::Network {
              *  If the socket is shared among various smart_ptr reps, this dissociates those as well.
              *
              *  This is legal to call if *this == nullptr.
-             *  \ensure (*this == nullptr)
+             *  \post (*this == nullptr)
              *
              *   @see Close ()
              */
@@ -371,13 +371,13 @@ namespace Stroika::Foundation::IO::Network {
 
         protected:
             /**
-             * \req fRep_ != nullptr
+             * \pre fRep_ != nullptr
              */
             nonvirtual _IRep& _ref () const;
 
         protected:
             /**
-             * \req fRep_ != nullptr
+             * \pre fRep_ != nullptr
              */
             nonvirtual const _IRep& _cref () const;
 

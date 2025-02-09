@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Containers {
          *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>
          *        so the REP can see the actual type, but the container API itself erases this specific type using std::function.
          *
-         *  \req EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER - for constructors with that type parameter
+         *  \pre EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER - for constructors with that type parameter
          *
          *  \par Example Usage
          *      \code

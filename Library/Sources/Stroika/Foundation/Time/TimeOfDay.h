@@ -76,11 +76,11 @@ namespace Stroika::Foundation::Time {
          *  And the first hour (1pm) is hour 0, so TimeOfDay{2, 0, 0} is 3am.
          *
          *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
-         *      \req argument time-of-day (in seconds or hours/minutes/seconds) is in valid range for one day
-         *      \req t < kMaxSecondsPerDay
-         *      \req hour < 24
-         *      \req minute < 60
-         *      \req seconds <= 60   (note <= not < due to leap seconds)
+         *      \pre argument time-of-day (in seconds or hours/minutes/seconds) is in valid range for one day
+         *      \pre t < kMaxSecondsPerDay
+         *      \pre hour < 24
+         *      \pre minute < 60
+         *      \pre seconds <= 60   (note <= not < due to leap seconds)
          *  else if validationStrategy == eThrow, then check and throw if out of range.
          */
         constexpr TimeOfDay (TimeOfDay&& src) noexcept = default;
@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  \ensure {return} < kMaxSecondsPerDay
+         *  \post {return} < kMaxSecondsPerDay
          */
         nonvirtual constexpr uint32_t GetAsSecondsCount () const; // seconds since StartOfDay (midnight)
 

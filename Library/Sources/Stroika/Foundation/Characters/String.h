@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Characters {
          *        All data is copied out / saved by the end of the constructor for all constructors EXCEPT
          *        the basic_string_view<CHAR_T> constructors - where it is REQUIRED the data last 'forever'.
          * 
-         *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
+         *  \pre for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          * 
          *  \note 'char' (using ASCII = char) constructors:
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Characters {
 
     protected:
         /**
-         * \req rep MUST be not-null
+         * \pre rep MUST be not-null
          *  However, with move constructor, it maybe null on exit.
          */
         String (const shared_ptr<_IRep>& rep) noexcept;
@@ -368,7 +368,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime (intended use case is C string literals).
          * 
-         *  \req argument string MAY contain embedded nul characters (but for char* overloads wrong size inferred).
+         *  \pre argument string MAY contain embedded nul characters (but for char* overloads wrong size inferred).
          * 
          *  \note In Stroika v2.1 this was called class String_ExternalMemoryOwnership_ApplicationLifetime.
          *  \note In Stroika v2.1 this was called class String_Constant.
@@ -477,9 +477,9 @@ namespace Stroika::Foundation::Characters {
          *          }
          *      \endcode
          *
-         *  \req (charAt < size ())
-         *  \req (from <= to)
-         *  \req (to <= size ())
+         *  \pre (charAt < size ())
+         *  \pre (from <= to)
+         *  \pre (to <= size ())
          *
          *  \em Note that this is quite inefficient: consider using StringBuilder
          */
@@ -519,8 +519,8 @@ namespace Stroika::Foundation::Characters {
          *  very common cases of substr(N) - because second argument is defaulted, and,
          *  substr (0, N) - because then the count and end are the same.
          *
-         *  \req  (from <= to);
-         *  \req  (to <= size ());     // for 2-arg variant
+         *  \pre  (from <= to);
+         *  \pre  (to <= size ());     // for 2-arg variant
          *
          *  \par Example Usage
          *      \code
@@ -549,8 +549,8 @@ namespace Stroika::Foundation::Characters {
          *  Similarly, SubString (-5) is equivalent to SubString (size ()-5, size ()) - so can be used
          *  to grab the end of a string.
          *
-         *  \req  (adjustedFrom <= adjustedTo);
-         *  \req  (adjustedTo <= size ());     // for 2-arg variant
+         *  \pre  (adjustedFrom <= adjustedTo);
+         *  \pre  (adjustedTo <= size ());     // for 2-arg variant
          *
          *  \note \em Design Note
          *      We chose not to overload SubString() with this functionality because it would have been to easy
@@ -624,7 +624,7 @@ namespace Stroika::Foundation::Characters {
          *      return Matches (X + ".*");
          *  except for the fact that with StartsWith() doesn't interpret 'X' as a regular expression
          *
-         *  \req not subString.empty () -- for the subString overload (because otherwise "".StartsWith("") would be ill-defined)
+         *  \pre not subString.empty () -- for the subString overload (because otherwise "".StartsWith("") would be ill-defined)
          * 
          *  @see Match
          *  @see EndsWith
@@ -640,7 +640,7 @@ namespace Stroika::Foundation::Characters {
          *      return Matches (X + ".*");
          *  except for the fact that with StartsWith() doesn't interpret 'X' as a regular expression
          *
-         *  \req not subString.empty () -- for the subString overload (because otherwise "".EndsWith("") would be ill-defined)
+         *  \pre not subString.empty () -- for the subString overload (because otherwise "".EndsWith("") would be ill-defined)
          *
          *  @see Match
          *  @see StartsWith
@@ -743,7 +743,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note   Alias - could have been called IndexOf ()
          *
-         *  \req (startAt <= size ());
+         *  \pre (startAt <= size ());
          *
          *  \par Example Usage
          *      \code
@@ -1084,7 +1084,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  Returns span of CHAR_T objects written - a subspan of the argument span
          * 
-         *  \req s.size () >= UTFConvert::ComputeTargetBufferSize<CHAR_T> (...this-string-data...);
+         *  \pre s.size () >= UTFConvert::ComputeTargetBufferSize<CHAR_T> (...this-string-data...);
          * 
          *  \see See also GetData<CHAR_T> (buf) - similar functionality - except caller doesn't need to know size of buffer to allocate
          */
@@ -1450,7 +1450,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  mimic https://en.cppreference.com/w/cpp/string/basic_string/front
          * 
-         *  \req not empty ()
+         *  \pre not empty ()
          */
         nonvirtual Character front () const;
 
@@ -1458,7 +1458,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  mimic https://en.cppreference.com/w/cpp/string/basic_string/back
          * 
-         *  \req not empty ()
+         *  \pre not empty ()
          */
         nonvirtual Character back () const;
 
@@ -1752,7 +1752,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note Since Stroika v3.0d1, this can return nullptr (in which case the String library will allocate a new backend)
          * 
-         *  \ensure returnResult == nullptr or returnResult[len] == '\0';
+         *  \post returnResult == nullptr or returnResult[len] == '\0';
          */
         virtual const wchar_t* c_str_peek () const noexcept = 0;
 

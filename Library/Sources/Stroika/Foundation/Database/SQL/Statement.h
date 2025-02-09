@@ -135,8 +135,8 @@ namespace Stroika::Foundation::Database::SQL {
          * 
          *  \note the paramterIndex is 'zero-based' unlike sqlite native APIs
          *
-         *  \req parameterIndex < GetParameters ().length ()
-         *  \req paramterName FOUND in GetParameters ().fName's
+         *  \pre parameterIndex < GetParameters ().length ()
+         *  \pre paramterName FOUND in GetParameters ().fName's
          *  and similarly for other overloads
          *
          *  \note - parameterName can be the name of the variable with or without the prefixing :

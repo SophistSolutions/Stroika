@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Iterators are safely copyable, preserving their current position.
          *
-         *  \req RequireNotNull (rep.get ())
+         *  \pre RequireNotNull (rep.get ())
          */
         explicit BidirectionalIterator (const BidirectionalIteratorRepSharedPtr& rep);
         BidirectionalIterator (const BidirectionalIterator& from);

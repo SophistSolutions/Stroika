@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers {
          *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>
          *        so the REP can see the actual type, but the MultiSet API itself erases this specific type using std::function.
          *
-         * \req IEqualsComparer<EQUALS_COMPARER> - for constructors with that type parameter
+         * \pre IEqualsComparer<EQUALS_COMPARER> - for constructors with that type parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Containers {
          *  \note   AddAll/2 is alias for .net AddRange ()
          *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<typename TRAITS::CountedValueType>
          *
-         *  \req IInputIterator<typename TRAITS::CountedValueType> or IIterableOfTo<typename TRAITS::CountedValueType>
+         *  \pre IInputIterator<typename TRAITS::CountedValueType> or IIterableOfTo<typename TRAITS::CountedValueType>
          *
          *  \note mutates container
          */
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \see RemoveIf
          * 
-         *  \req count >= 1
+         *  \pre count >= 1
          *
          * This function requires that the iterator 'i' came from this container.
          *
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief remove the argument data from the multiset (can specify remove of more than are present) - returns number actually removed (multisets never have count < 0)
          * 
-         *  \req count >= 1
+         *  \pre count >= 1
          * 
          *  \note mutates container
          */

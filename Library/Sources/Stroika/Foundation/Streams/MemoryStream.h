@@ -143,13 +143,13 @@ namespace Stroika::Foundation ::Streams::MemoryStream {
 
     private:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual const Private_::Rep_<ELEMENT_TYPE>& GetRepConstRef_ () const;
 
     private:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual Private_::Rep_<ELEMENT_TYPE>& GetRepRWRef_ () const;
     };

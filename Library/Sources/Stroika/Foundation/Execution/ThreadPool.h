@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Execution {
      *  Also - where you want to CONTROL the level of thread creation (possibly to avoid
      *  DOS attacks or just accidental overloading).
      *
-     *  \req     Debug::AppearsDuringMainLifetime (); during the lifetime of the ThreadPool
+     *  \pre     Debug::AppearsDuringMainLifetime (); during the lifetime of the ThreadPool
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *          all methods can be freely used from any thread, and they will block internally as needed.
@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  returns true if queued OR actively running.
          *
-         *  \req task != nullptr
+         *  \pre task != nullptr
          */
         nonvirtual bool IsPresent (const TaskType& task) const;
 
@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  returns true actively running
          *
-         *  \req task != nullptr
+         *  \pre task != nullptr
          */
         nonvirtual bool IsRunning (const TaskType& task) const;
 
@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  throws if timeout. Returns when task has completed (or if not in task q)
          *
-         *  \req task != nullptr
+         *  \pre task != nullptr
          */
         nonvirtual void WaitForTask (const TaskType& task, Time::DurationSeconds timeout = Time::kInfinity) const;
 
@@ -363,13 +363,13 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \require (GetOptions ().fCollectStatistics);
+         *  \pre (GetOptions ().fCollectStatistics);
          */
         nonvirtual void ResetStatistics ();
 
     public:
         /**
-         *  \require (GetOptions ().fCollectStatistics);
+         *  \pre (GetOptions ().fCollectStatistics);
          */
         nonvirtual Statistics GetCurrentStatistics () const;
 

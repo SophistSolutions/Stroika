@@ -72,7 +72,7 @@ namespace Stroika::Frameworks::Modbus {
      *      o   ReadInputRegister       (#4)
      *      o   WriteSingleCoil         (#5)
      *
-     *  \req serviceHandler != nullptr
+     *  \pre serviceHandler != nullptr
      */
     Execution::Thread::Ptr MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions{});
 

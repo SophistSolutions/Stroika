@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Private {
          * 
          *  \note Note that this does not affect the semantics of the container.
          * 
-         *  \req slotsAllocated >= size ()
+         *  \pre slotsAllocated >= size ()
          */
         nonvirtual void reserve (size_t slotsAlloced);
 

@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  If TRAITS (TraitsType) has a valid default extractor, enable certain constructors.
          *
-         * \req ITotallyOrderingComparer<KEY_COMPARER,KEY_TYPE> - for constructors with that type parameter
+         * \pre ITotallyOrderingComparer<KEY_COMPARER,KEY_TYPE> - for constructors with that type parameter
          * 
          *  \note sort order specified/determined at construction time, and cannot be reset (without creating a new SortedKeyCollection)
          *

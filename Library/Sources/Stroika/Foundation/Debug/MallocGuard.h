@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Debug {
     /**
      *      qStroika_Foundation_Debug_MallocGuard_GuardSize can be 0, or any integer number greater;
      *
-     *  \req qStroika_Foundation_Debug_MallocGuard
+     *  \pre qStroika_Foundation_Debug_MallocGuard
      */
 #if !defined(qStroika_Foundation_Debug_MallocGuard_GuardSize)
 #define qStroika_Foundation_Debug_MallocGuard_GuardSize 16

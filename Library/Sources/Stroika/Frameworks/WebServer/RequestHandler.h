@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::WebServer {
          *       Just ignore matchedArgs, and handled flags
          * 
          * HANDLER (Message& message, String arg1, String arg2, ...)
-         *      note: for this overload, \req count of arguments == matchedArgs.size () - cuz must match count of matches returned from Route regexp. 
+         *      note: for this overload, \pre count of arguments == matchedArgs.size () - cuz must match count of matches returned from Route regexp. 
          * 
          *  \par See Route constructors for examples...
          */

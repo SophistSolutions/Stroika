@@ -102,8 +102,8 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  DiscreteRange () with no arguments produces an empty sequence.
          *
-         *  \req begin <= end (after substitution of optional values)
-         *  \req src range must be eClosed on both sides
+         *  \pre begin <= end (after substitution of optional values)
+         *  \pre src range must be eClosed on both sides
          */
         explicit constexpr DiscreteRange () = default;
         explicit constexpr DiscreteRange (T begin, T end);
@@ -140,8 +140,8 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \req not empty
-         *  \req the DiscreteRange produced by applying the given offset to *this remains valid with respect to the constraints on this DiscreteRange.
+         *  \pre not empty
+         *  \pre the DiscreteRange produced by applying the given offset to *this remains valid with respect to the constraints on this DiscreteRange.
          */
         constexpr DiscreteRange Offset (SignedDifferenceType o) const;
 

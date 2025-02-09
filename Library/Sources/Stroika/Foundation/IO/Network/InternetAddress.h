@@ -326,7 +326,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  \req not empty ()
+         *  \pre not empty ()
          *
          *  Return true iff the given address is a localhost IP address (typically 127.0.0.1, but can be anything
          *  in that class C range, or ::1, for IPv6 or that range).
@@ -345,7 +345,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  \req not empty ()
+         *  \pre not empty ()
          *  Return true iff the given address is a private IP address (non-routable).
          *  This is sometimes also called Unique Local Addresses (especially in IPv6).
          */
@@ -353,7 +353,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  \req not empty ()
+         *  \pre not empty ()
          *  Return true iff the given address is a mutlicast IP address.
          */
         nonvirtual bool IsMulticastAddress () const;

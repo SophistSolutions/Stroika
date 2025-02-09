@@ -156,7 +156,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         /**
          *  experimental wildcard API
          *
-         *  \req WMICollector::kWildcardInstance
+         *  \pre WMICollector::kWildcardInstance
          */
         nonvirtual Mapping<String, double> GetCurrentValues (const String& counterName);
 

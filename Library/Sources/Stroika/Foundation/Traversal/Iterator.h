@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note for ranges to work, the return type of Iterable<T>::end () must be a 'sentinel_for' compatible concept
          *        which implies it must be default constructible. So interpret default construction of Iterator as meaning empty/end sentinel.
          * 
-         *  \req RequireNotNull (rep.get ())
+         *  \pre RequireNotNull (rep.get ())
          */
         Iterator (const unique_ptr<IRep>& rep) noexcept;
         Iterator (unique_ptr<IRep>&& rep) noexcept;
@@ -371,7 +371,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /*
-         *  \req operator++ can be called 'i' times (on a copy of this), and the result returned.
+         *  \pre operator++ can be called 'i' times (on a copy of this), and the result returned.
          *
          *  \note   don't use unsigned 'i' because that works less well with overloads and ambiguity.
          *  \note   similar to std::advance, but allows for simpler usage (i + n)
@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \em NB: Equals () is the same notion of equality as used by STL iterators.
          *
-         *  \em NB: It is \req required that the two iterators being compared must come from the same source, or from the special source nullptr.
+         *  \em NB: It is \pre required that the two iterators being compared must come from the same source, or from the special source nullptr.
          *
          *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
          *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
@@ -626,7 +626,7 @@ namespace Stroika::Foundation::Traversal {
          *  This function returns the current value in result if the iterator is positioned at a valid position,
          *  and sets result to an nullopt if at the end - its 'at end'.
          *
-         *  \req result != nullptr
+         *  \pre result != nullptr
          *
          *  \em Design Note
          *      We chose to use a pointer parameter instead of a return value to avoid extra
@@ -638,9 +638,9 @@ namespace Stroika::Foundation::Traversal {
         /**
          * \brief two iterators must be iterating over the same source, and be up to the same position.
          *
-         *  \req rhs != nullptr
+         *  \pre rhs != nullptr
          *
-         *  \req this and rhs must be of the same dynamic type, and come from the same iterable object
+         *  \pre this and rhs must be of the same dynamic type, and come from the same iterable object
          *
          *  @see Iterator<T>::Equals for details
          */

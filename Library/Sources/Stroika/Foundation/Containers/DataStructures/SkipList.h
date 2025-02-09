@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \brief Remove an item with the given key (require it exists)
          * 
-         *  \req contains (key)
+         *  \pre contains (key)
          * 
          *  \note same as Verify (RemoveIf (key))
          * 
@@ -269,7 +269,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \brief remove the element at i, and return valid iterator to the element that was following it (which can be empty iterator)
          * 
-         *  \req i != end ()
+         *  \pre i != end ()
          * 
          *  \brief see https://en.cppreference.com/w/cpp/container/vector/erase
          * 
@@ -526,9 +526,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * this is specialized for the case of adding or removing elements, as it also returns
          * all links that will need to be updated for the new element or the element to be removed
          *
-         *      \ens (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
+         *      \post (result == nullptr or fKeyThreeWayComparer_ (result->fEntry.fKey, key) == strong_ordering::equal);
          * 
-///??? MAYBE NOT         *  \ens all links in linksPointingToReturnedLink are non-null, and valid Link_* pointers
+///??? MAYBE NOT         *  \post all links in linksPointingToReturnedLink are non-null, and valid Link_* pointers
                 @todo CONSIDER if LinkVector sb replaced with set<Link*>
          */
         struct LinkAndInfoAboutBackPointers {
@@ -632,13 +632,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
          * 
-         *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
+         *  \pre data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
          */
         nonvirtual size_t CurrentIndex (const SkipList* data) const;
 
     public:
         /**
-         *  \req GetUnderlyingData() == rhs.GetUnderlyingData (), or special case of one or the other is nullptr
+         *  \pre GetUnderlyingData() == rhs.GetUnderlyingData (), or special case of one or the other is nullptr
          */
         constexpr bool operator== (const ForwardIterator& rhs) const;
 

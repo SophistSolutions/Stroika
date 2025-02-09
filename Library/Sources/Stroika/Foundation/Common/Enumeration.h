@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  Increment the given enumeration safely, without a bunch of casts.
      *
-     *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
+     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
      */
     template <typename ENUM>
     constexpr ENUM Inc (ENUM e);
@@ -49,8 +49,8 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  Cast the given enum to an int (like static_cast<int>()) - but check range.
      *
-     *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
+     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
      *
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      *
@@ -80,8 +80,8 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
      *
-     *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
+     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
      *
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      */
@@ -91,8 +91,8 @@ namespace Stroika::Foundation::Common {
     /**
      *  \brief  offset of given enum from ENUM::eSTART
      *
-     *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
-     *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+     *      \pre    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
+     *      \pre    e >= typename ENUM::eSTART and e < typename ENUM::eEND
      *
      *  @todo   See if there is some better way for this.
      */
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Common {
      *          it need not start at any particular number, but the number of enumerators must equal eCOUNT,
      *          and a name and enumerator must be provided for each value from eSTART to eEND.
      *          (future versions MAY lift that requirement).
-     *          \req RequireItemsOrderedByEnumValue_
+     *          \pre RequireItemsOrderedByEnumValue_
      */
     template <typename ENUM_TYPE>
     class EnumNames {
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Common {
          *  The argument 'e' must be a valid enumerator entry between eSTART, and eEND (not including eEND).
          *  It returns a pointer to a valid const wchar_t* string of the name of the enumerator.
          *
-         *  \req ENUM_TYPE::eStart <= e and e < ENUM_TYPE::eEnd
+         *  \pre ENUM_TYPE::eStart <= e and e < ENUM_TYPE::eEnd
          *
          *  @see PeekName ();
          */

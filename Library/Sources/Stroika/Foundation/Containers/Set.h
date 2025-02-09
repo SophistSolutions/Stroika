@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
-         * \req IEqualsComparer<EQUALS_COMPARER> () - for constructors with that type parameter
+         * \pre IEqualsComparer<EQUALS_COMPARER> () - for constructors with that type parameter
          *
          *  \par Example Usage
          *      \code
@@ -302,7 +302,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Remove the item (given by value or iterator pointing to it) from the contain. The item MUST exist.
          * 
-         *  \req argument (i or item) is present in the Set.
+         *  \pre argument (i or item) is present in the Set.
          *
          *  @see RemoveIf () to remove without the requirement that the value exist in the Set
          *
@@ -594,7 +594,7 @@ namespace Stroika::Foundation::Containers {
      *  Two Sets are considered equal if they contain the same elements (by comparing them with EqualsCompareFunctionType (defaults to operator==)).
      *  Note, if two equalsComparer functions are provided, they must produce the same result comparing elements.
      *
-     *  \req lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
+     *  \pre lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
      *
      *  EqualsComparer is commutative ().
      *

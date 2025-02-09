@@ -138,7 +138,7 @@ namespace Stroika::Foundation::IO::Network {
              *        it is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
              *        done simultaneously, from different threads.
              *
-             *  \req into.size () >= 1
+             *  \pre into.size () >= 1
              */
             nonvirtual optional<span<byte>> ReadNonBlocking (span<byte> into) const;
 
@@ -235,13 +235,13 @@ namespace Stroika::Foundation::IO::Network {
 
         protected:
             /**
-             * \req fRep_ != nullptr
+             * \pre fRep_ != nullptr
              */
             nonvirtual _IRep& _ref () const;
 
         protected:
             /**
-             * \req fRep_ != nullptr
+             * \pre fRep_ != nullptr
              */
             nonvirtual const _IRep& _cref () const;
 

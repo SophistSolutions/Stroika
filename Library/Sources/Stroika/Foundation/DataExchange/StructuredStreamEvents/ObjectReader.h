@@ -286,7 +286,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     public:
         /**
-         *  \req    AddCommonReader_Class<> requires that each field data type already be pre-loaded into the
+         *  \pre    AddCommonReader_Class<> requires that each field data type already be pre-loaded into the
          *          ObjectReader::Registry. To avoid this requirement, you an use MakeClassReader
          *          directly, but if this type is absent when you call AddClass<> - its most likely
          *          a bug.

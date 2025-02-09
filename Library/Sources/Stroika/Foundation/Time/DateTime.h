@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Time {
          *  Creates a new DateTime object known to be in localtime. If this DateTime timezone is unknown, then the
          *  the datetime will be just assumed to have been in localtime.
          *
-         *  \ens result.GetTimezone () == Timezone::LocalTime ()
+         *  \post result.GetTimezone () == Timezone::LocalTime ()
          */
         nonvirtual DateTime AsLocalTime () const;
 
@@ -337,7 +337,7 @@ namespace Stroika::Foundation::Time {
          *
          *  Either way, this will always produce a result in the timezone UTC.
          *
-         *  \ens result.GetTimezone () == Timezone::UTC ()
+         *  \post result.GetTimezone () == Timezone::UTC ()
          *
          *  @see AsTimezone ()
          */
@@ -350,7 +350,7 @@ namespace Stroika::Foundation::Time {
          *
          *  Either way, this will always produce a result in the timezone tz.
          *
-         *  \ens result.GetTimezone () == Timezone::UTC ()
+         *  \post result.GetTimezone () == Timezone::UTC ()
          */
         nonvirtual DateTime AsTimezone (Timezone tz) const;
 
@@ -476,7 +476,7 @@ namespace Stroika::Foundation::Time {
          *  returns the TimeOfDay part of the DateTime object (in this datetime's timezone). It returns 'missing' if there
          *  is no TimeOfDay associated with this DateTime object.
          *
-         *  \ens (not result.has_value () or not result->empty ())
+         *  \post (not result.has_value () or not result->empty ())
          *
          *  \note Operations on a DateTime which require a 'TimeOfDay' will implicitly create a '0' time of day. So for example,
          *        if you AddSeconds (1) to a DateTime with a missing TimeOfDay it creates a TimeOfDay with value 12:00:01.

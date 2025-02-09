@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \req IsASCII()
+         *  \pre IsASCII()
          */
         nonvirtual ASCII GetAsciiCode () const noexcept;
 
@@ -450,7 +450,7 @@ namespace Stroika::Foundation::Characters {
          * Convert String losslessly into a standard C++ type.
          * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
          * 
-         *  \req into->empty ()
+         *  \pre into->empty ()
          * 
          *  Supported Types (RESULT_T):
          *      o   Memory::StackBuffer<ASCII>
@@ -487,7 +487,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \req IsSurrogatePair
+         *  \pre IsSurrogatePair
          *  returns the high/low pseudo-characters of the character
          */
         constexpr pair<char16_t, char16_t> GetSurrogatePair () const;

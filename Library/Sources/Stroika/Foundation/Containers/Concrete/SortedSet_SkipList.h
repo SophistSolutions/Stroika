@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          *  \see docs on SortedSet<> constructor
-         *  \req IThreeWayComparer<COMPARER,T> ()
+         *  \pre IThreeWayComparer<COMPARER,T> ()
          */
         SortedSet_SkipList ();
         template <IThreeWayComparer<T> COMPARER>

@@ -394,7 +394,7 @@ namespace Stroika::Foundation::DataExchange {
              *  \see FromGenericObjectMapperType
              *  \see GetGenericFromObjectMapper
              * 
-             *  \req 'T' same_as one TypeMappingDetails constructed from (using type_info dynamic type compare)
+             *  \pre 'T' same_as one TypeMappingDetails constructed from (using type_info dynamic type compare)
              */
             template <typename T>
             static FromObjectMapperType<T> FromObjectMapper (const FromGenericObjectMapperType& fromObjectMapper);
@@ -406,7 +406,7 @@ namespace Stroika::Foundation::DataExchange {
              *  \see ToGenericObjectMapperType
              *  \see GetGenericToObjectMapper
              * 
-             *  \req 'T' same_as one TypeMappingDetails constructed from (using type_info dynamic type compare)
+             *  \pre 'T' same_as one TypeMappingDetails constructed from (using type_info dynamic type compare)
              */
             template <typename T>
             static ToObjectMapperType<T> ToObjectMapper (const ToGenericObjectMapperType& toObjectMapper);
@@ -664,7 +664,7 @@ namespace Stroika::Foundation::DataExchange {
          *  Also, optionally provide a 'readPreflight' function to be applied to the read-in VariantValue object before
          *  decomposing (into C++ structs), as a helpful backward compatible file format hook.
          *
-         *  \req    AddClass<> requires that each field data type already be pre-loaded into the
+         *  \pre    AddClass<> requires that each field data type already be pre-loaded into the
          *          Registry, opr be provided as an optional parameter to the StructFieldInfo.
          *
          *  \par Example Usage

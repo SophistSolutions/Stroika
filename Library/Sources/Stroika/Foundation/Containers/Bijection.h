@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
          *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-         *      \req    Ensure (item == nullptr or returnValue == item->has_value());
+         *      \pre    Ensure (item == nullptr or returnValue == item->has_value());
          *
          *  \note   Alias - Lookup (key, RangeType* value) - is equivalent to .Net TryGetValue ()
          *
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
          *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-         *      \req    Ensure (item == nullptr or returnValue == item->has_value());
+         *      \pre    Ensure (item == nullptr or returnValue == item->has_value());
          *
          *  @see   Lookup ()
          *  @see   LookupValue ()
@@ -328,14 +328,14 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * For each value in the source set, map it back using the bijection to the target set.
-         *  \req that each element be present in the bijection
+         *  \pre that each element be present in the bijection
          */
         nonvirtual Iterable<RangeType> MapToRange (const Iterable<DomainType>& values) const;
 
     public:
         /**
          * For each value in the source set, map it back using the bijection to the target set.
-         *  \req that each element be present in the bijection
+         *  \pre that each element be present in the bijection
          */
         nonvirtual Iterable<DomainType> MapToDomain (const Iterable<RangeType>& values) const;
 

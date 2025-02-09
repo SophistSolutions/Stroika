@@ -174,14 +174,14 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  \req i < size ()
+         *  \pre i < size ()
          */
         nonvirtual reference       at (size_t i) noexcept;
         nonvirtual const_reference at (size_t i) const noexcept;
 
     public:
         /**
-         *  \req i < size ()
+         *  \pre i < size ()
          */
         nonvirtual reference       operator[] (size_t i) noexcept;
         nonvirtual const_reference operator[] (size_t i) const noexcept;
@@ -207,8 +207,8 @@ namespace Stroika::Foundation::Memory {
          *
          *  @see capacity
          *
-         *  \req  (newCapacity >= size ());
-         *  \ens  (newCapacity <= BUF_SIZE and capacity () == BUF_SIZE) or (newCapacity > BUF_SIZE and newCapacity == capacity ());
+         *  \pre  (newCapacity >= size ());
+         *  \post  (newCapacity <= BUF_SIZE and capacity () == BUF_SIZE) or (newCapacity > BUF_SIZE and newCapacity == capacity ());
          */
         nonvirtual void reserve (size_t newCapacity, bool atLeast = true);
 
@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Returns the number of (constructed) elements in the buffer in ELEMENTS (not necessarily in bytes).
          *
-         *  \ensure GetSize () <= capacity ();
+         *  \post GetSize () <= capacity ();
          */
         nonvirtual size_t GetSize () const noexcept;
 
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Memory {
          *  @see GetSize ();        // alias
          *  @see capacity ();
          *
-         *  \ensure size () <= capacity ();
+         *  \post size () <= capacity ();
          */
         nonvirtual size_t size () const noexcept;
 
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  If resize () causes the list to grow, the new elements are default-initialized()
          *
-         *  \ensure GetSize () <= capacity ();
+         *  \post GetSize () <= capacity ();
          */
         nonvirtual void resize (size_t nElements);
 
@@ -258,8 +258,8 @@ namespace Stroika::Foundation::Memory {
         /**
          * \brief same as resize (), except leaves newly created elements uninitialized (requires is_trivially_copyable_v<T>) 
          *
-         *  \req is_trivially_copyable_v<T>
-         *  \ensure GetSize () <= capacity ();
+         *  \pre is_trivially_copyable_v<T>
+         *  \post GetSize () <= capacity ();
          */
         nonvirtual void resize_uninitialized (size_t nElements)
             requires (is_trivially_copyable_v<T> and is_trivially_destructible_v<T>);
@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Same as resize (nElements), except asserts (documents) the new size must be smaller or equal to the old size.
          * 
-         *  \req nElements <= size ()
+         *  \pre nElements <= size ()
          */
         nonvirtual void ShrinkTo (size_t nElements);
 
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Memory {
          *  Grow the buffer to at least nElements in size (wont shrink). The 'size' is the number of constructed elements,
          *  and this function automatically assures the capacity is maintained at least as large as the size.
          *
-         *  \ensure GetSize () <= capacity ();
+         *  \post GetSize () <= capacity ();
          */
         nonvirtual void GrowToSize (size_t nElements);
 
@@ -285,8 +285,8 @@ namespace Stroika::Foundation::Memory {
         /**
          * \brief same as GrowToSize (), except leaves newly created elements uninitialized (requires is_trivially_copyable_v<T>)
          *
-         *  \req is_trivially_copyable_v<T>
-         *  \ensure GetSize () <= capacity ();
+         *  \pre is_trivially_copyable_v<T>
+         *  \post GetSize () <= capacity ();
          */
         nonvirtual void GrowToSize_uninitialized (size_t nElements)
             requires (is_trivially_copyable_v<T>);

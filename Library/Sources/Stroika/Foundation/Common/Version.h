@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  \req verSubStage <= kMaxVersionSubStage
+         *  \pre verSubStage <= kMaxVersionSubStage
          */
         constexpr Version ();
         constexpr explicit Version (Binary32BitFullVersionType fullVersionNumber);

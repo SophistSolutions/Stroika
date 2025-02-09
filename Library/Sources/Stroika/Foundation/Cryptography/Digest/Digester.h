@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         /**
          * After you construct an IncrementalDigester, call Write() zero or more times, before calling Complete() to retrieve the result.
          * 
-         *  \req not CompleteHasBeenCalled ();
+         *  \pre not CompleteHasBeenCalled ();
          */
         nonvirtual void Write (const byte* from, const byte* to);
         nonvirtual void Write (span<const byte> from);
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         /**
          * When all the data has been accumulated, call Complete () once to retrieve the converted result.
          * 
-         *  \req not CompleteHasBeenCalled ();
+         *  \pre not CompleteHasBeenCalled ();
          */
         nonvirtual ReturnType Complete ();
 

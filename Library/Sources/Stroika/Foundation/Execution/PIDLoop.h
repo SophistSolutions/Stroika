@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Typically this is what you would do, and receive the Thread object, to cancel (Abort)
          *
-         *  \req only called once.
+         *  \pre only called once.
          *
          *  If ever run, PIDLoop DTOR automatically terminates Run loop and waits for thread to terminate.
          */

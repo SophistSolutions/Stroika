@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
          *          defaults to null (aka empty ())
          *      shared_ptr<IRep<ELEMENT_TYPE>>
          *          rep is the underlying shared output Stream object.
-         *          \req rep != nullptr (use nullptr_t constructor)
+         *          \pre rep != nullptr (use nullptr_t constructor)
          */
         Ptr () = default;
         Ptr (nullptr_t);
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
 
     public:
         /**
-         *      \req InputStream::Ptr<ELEMENT_TYPE>::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ()
+         *      \pre InputStream::Ptr<ELEMENT_TYPE>::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ()
          */
         nonvirtual bool IsSeekable () const;
 
@@ -169,13 +169,13 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
     };

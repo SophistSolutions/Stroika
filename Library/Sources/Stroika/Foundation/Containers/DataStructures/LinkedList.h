@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Average/WorseCase:  O(N)        - super slow cuz have to traverse on average half the list
          * 
-         *  \req data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
+         *  \pre data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
          */
         nonvirtual size_t CurrentIndex (const LinkedList* data) const;
 

@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  \req (n == 1)
+         *  \pre (n == 1)
          *
          *  \note - though this can throw due to memory exhaustion, it will not throw Thread::InterupptionException - it is not a cancelation point.
          */
@@ -118,8 +118,8 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  \req (p allocated by BlockAllocator<T>::Allocate ());
-         *  \req (n == 1)
+         *  \pre (p allocated by BlockAllocator<T>::Allocate ());
+         *  \pre (n == 1)
          *  p can be nullptr
          */
         nonvirtual void deallocate (T* p, std::size_t n) noexcept;

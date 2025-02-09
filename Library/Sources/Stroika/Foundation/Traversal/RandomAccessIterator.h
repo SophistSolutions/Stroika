@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Iterators are safely copyable, preserving their current position.
          *
-         *  \req RequireNotNull (rep.get ())
+         *  \pre RequireNotNull (rep.get ())
          */
         explicit RandomAccessIterator (const RandomAccessIteratorRepSharedPtr& rep);
         RandomAccessIterator (const RandomAccessIterator& from);

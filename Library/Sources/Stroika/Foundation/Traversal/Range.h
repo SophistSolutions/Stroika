@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Traversal {
             /**
              *  Return the Next possible value.
              * 
-             *  \req arg != last-possible-value
+             *  \pre arg != last-possible-value
              *
              *  \note its hard todo GetNext() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Traversal {
             /**
              *  Return the Previous possible value.
              * 
-             *  \req arg != first-possible-value
+             *  \pre arg != first-possible-value
              *
              *  \note its hard todo GetPrevious() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
@@ -302,8 +302,8 @@ namespace Stroika::Foundation::Traversal {
          *  optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as 'TRAITs' default openness).
          *  Constructors with actual numeric values (begin/end) MUST construct non-empty ranges (begin == end ==> both sides closed).
          *
-         *  \req begin <= end (after substitution of optional values)
-         *  \req begin < end or LHS/RHS CLOSED (after substitution of optional values)
+         *  \pre begin <= end (after substitution of optional values)
+         *  \pre begin < end or LHS/RHS CLOSED (after substitution of optional values)
          *
          *  \par Example Usage
          *      \code
@@ -324,14 +324,14 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  \brief Construct a new Range from this, but with the given start
-         *      \req start <= GetUpperBound ()
+         *      \pre start <= GetUpperBound ()
          */
         constexpr Range ReplaceStart (Common::ArgByValueType<T> start) const;
 
     public:
         /**
          *  \brief Construct a new Range from this, but with the given end
-         *      \req GetLowerBound () <= end
+         *      \pre GetLowerBound () <= end
          */
         constexpr Range ReplaceEnd (Common::ArgByValueType<T> end) const;
 
@@ -394,7 +394,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \req not empty ()
+         *  \pre not empty ()
          */
         constexpr T GetMidpoint () const;
 
@@ -406,7 +406,7 @@ namespace Stroika::Foundation::Traversal {
          *  If 'v' is not in range, and this Range is open, GetNext or GetPrevious maybe used to find a value
          *  in range.
          *
-         *  \req not empty ()
+         *  \pre not empty ()
          *
          *  @see std::clamp
          */
@@ -424,7 +424,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Returns an identical Range to this, but including its end points.
          *
-         *  \req not empty ();
+         *  \pre not empty ();
          */
         nonvirtual constexpr Range Closure () const;
 
@@ -509,7 +509,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \req not empty ();      // special case - no upper/lower bound
+         *  \pre not empty ();      // special case - no upper/lower bound
          */
         constexpr T GetLowerBound () const;
 
@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \req not empty ();      // special case - no upper/lower bound
+         *  \pre not empty ();      // special case - no upper/lower bound
          */
         constexpr T GetUpperBound () const;
 
@@ -531,16 +531,16 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \req not empty
-         *  \req the Range produced by applying the given offset to *this remains valid with respect to the constraints on this Range.
+         *  \pre not empty
+         *  \pre the Range produced by applying the given offset to *this remains valid with respect to the constraints on this Range.
          */
         constexpr Range Offset (SignedDifferenceType o) const;
 
     public:
         /**
-         *  \req not empty
-         *  \req the Range produced by applying the given factor to the upper and lower bounds.
-         *  \req T has operator* (T,T) -> T defined
+         *  \pre not empty
+         *  \pre the Range produced by applying the given factor to the upper and lower bounds.
+         *  \pre T has operator* (T,T) -> T defined
          */
         constexpr Range Times (T o) const;
 
@@ -599,7 +599,7 @@ namespace Stroika::Foundation::Traversal {
 
     /**
      *  Alias: T * RANGE => RANGE.Times(T)
-     *  \req T has operator* (T,T) -> T defined
+     *  \pre T has operator* (T,T) -> T defined
      */
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs);

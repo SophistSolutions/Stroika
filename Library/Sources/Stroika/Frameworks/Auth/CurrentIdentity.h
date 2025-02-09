@@ -71,16 +71,16 @@ namespace Stroika::Frameworks::Auth {
 
         /**
           * \brief sets the current ID to argument value -
-          *     \req CurrentIdentityManager<ID_OBJ>::Get () == false
+          *     \pre CurrentIdentityManager<ID_OBJ>::Get () == false
           */
         struct Establish {
             /**
-             *     \req CurrentIdentityManager<ID_OBJ>::Get () == false
+             *     \pre CurrentIdentityManager<ID_OBJ>::Get () == false
              */
             Establish (const IDType& id);
 
             /**
-             *     \ens CurrentIdentityManager<ID_OBJ>::Get () == false
+             *     \post CurrentIdentityManager<ID_OBJ>::Get () == false
              */
             ~Establish ();
         };

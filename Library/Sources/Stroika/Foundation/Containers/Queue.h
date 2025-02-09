@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \req not empty ()
+         *  \pre not empty ()
          *  @see HeadIf ()
          */
         nonvirtual value_type Head () const;
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief stlish alias for Head
-         *  \req not empty ()
+         *  \pre not empty ()
          */
         nonvirtual T front () const;
 
@@ -184,14 +184,14 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \req not empty ()
+         *  \pre not empty ()
          *  \note mutates container
          */
         nonvirtual value_type RemoveHead ();
 
     public:
         /**
-         *  \req not empty ()
+         *  \pre not empty ()
          *  \note mutates container
          */
         nonvirtual value_type pop_back ();
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers {
          *  \brief Alias for RemoveHead () - remove item from the head of the Q (line).
          *
          *  \note mutates container
-         *  \req not empty ()
+         *  \pre not empty ()
          */
         nonvirtual value_type Dequeue ();
 
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          *
-         *  \req  IIterableOfTo<ITERABLE_OF_ADDABLE, T>  or IInputIterator<T>
+         *  \pre  IIterableOfTo<ITERABLE_OF_ADDABLE, T>  or IInputIterator<T>
          * 
          *  \note This works efficiently because a Queue<> iterates from head to tail, and that's the order in which you would want to
          *        add them to copy the Queue (unlike with Stack).

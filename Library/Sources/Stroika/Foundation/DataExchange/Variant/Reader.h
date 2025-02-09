@@ -48,7 +48,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     protected:
         /**
-         *  \req rep != nullptr
+         *  \pre rep != nullptr
          */
         explicit Reader (const shared_ptr<_IRep>& rep);
 

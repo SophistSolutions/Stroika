@@ -320,8 +320,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *        We will PROBABLY change this API to take a ToFloatOptions parameter to handle proper locale/conversions of strings to numbers
      *        but so far I've not been able to get any of that working, so ignore for now...
      *
-     *  \req start <= end; for overloads with start/end, and must point to valid string in that range
-     *  \req remainder != nullptr
+     *  \pre start <= end; for overloads with start/end, and must point to valid string in that range
+     *  \pre remainder != nullptr
      * 
      *      // @todo redo all these with some concept to make it shorter - like ISCOVNERTIBLE TO STRING
      *

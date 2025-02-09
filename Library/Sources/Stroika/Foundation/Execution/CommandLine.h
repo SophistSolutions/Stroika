@@ -129,8 +129,8 @@ namespace Stroika::Foundation::Execution {
          * 
          *  \note fSingleCharName is optional, and fLongName is also optional. Meaning its totally legal to supply no short name and no long-name (in which case its required to support fSupportsArgument)
          * 
-         *  \req fSingleCharName or fLongName or fSupportsArgument
-         *  \req not fRepeatable or fSupportsArgument
+         *  \pre fSingleCharName or fLongName or fSupportsArgument
+         *  \pre not fRepeatable or fSupportsArgument
          * 
          *  \todo figure out if I can make this a literal type, so can be defined constexpr when not using fLongName (or maybe even with using stringview)
          */
@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-        *  \req o.fSupportsArgument
+        *  \pre o.fSupportsArgument
         * 
          *  \par Example Usage
          *      \code
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  overload with no arguments /0 - returns all commandline arguments.
-         *  \req o.fSupportsArgument
+         *  \pre o.fSupportsArgument
          */
         nonvirtual Sequence<String> GetArguments () const;
         nonvirtual Sequence<String> GetArguments (const Option& o) const;

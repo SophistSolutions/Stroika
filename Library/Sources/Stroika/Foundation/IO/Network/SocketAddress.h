@@ -99,13 +99,13 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  \req IsInternetAddress()
+         *  \pre IsInternetAddress()
          */
         nonvirtual InternetAddress GetInternetAddress () const;
 
     public:
         /**
-         *  \req IsInternetAddress()
+         *  \pre IsInternetAddress()
          */
         nonvirtual PortType GetPort () const;
 

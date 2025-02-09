@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0), except that the later
          * requires IsSeekable ().
          *
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          */
         nonvirtual SeekOffsetType GetOffset () const;
 
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *
          *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
          *
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          */
         nonvirtual SeekOffsetType Seek (SeekOffsetType offset) const;
         nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *  \note Span argument is really a span<const ELEMENT_TYPE> but must declare this way to it matches non-const
          *        arguments as well - one area where either spans suck, or I'm not using/understanding properly.
          *
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          */
         template <typename ELEMENT_TYPE2, size_t EXTENT_2>
         nonvirtual void Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
 
     public:
         /**
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          */
         nonvirtual void PrintF (const wchar_t* format, ...)
             requires (same_as<ELEMENT_TYPE, Character>);
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *
          *        See the stream documentation for that stream class to see how it handles Close.
          *
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          */
         nonvirtual void Close () const;
         nonvirtual void Close (bool reset);
@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *  propagate exceptions! Calling Flush() before destroying the output stream allows exceptions
          *  to be propagated properly.
          *
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          */
         nonvirtual void Flush () const;
 
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          * But don't do except for string for now. Don't make same mistake as iostream - with formatting. Not clear how todo
          * right so don't dig a hole and do it wrong (yet).
          *
-         *  \req IsOpen ()
+         *  \pre IsOpen ()
          */
         template <typename T>
         const typename OutputStream::Ptr<ELEMENT_TYPE>& operator<< (const T& write2TextStream) const
@@ -263,13 +263,13 @@ namespace Stroika::Foundation::Streams::OutputStream {
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 
@@ -340,7 +340,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
 
     public:
         /**
-         *  May (but typically not) called before destruction. If called, \req no other write or seek etc operations.
+         *  May (but typically not) called before destruction. If called, \pre no other write or seek etc operations.
          *
          *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Write, so subclassers don't need to
          *          do that in implementing reps, but probably good docs/style todo in both places.'

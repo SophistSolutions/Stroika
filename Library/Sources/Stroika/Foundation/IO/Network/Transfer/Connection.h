@@ -92,7 +92,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
     class Ptr {
     public:
         /**
-         *  \req rep != nullptr
+         *  \pre rep != nullptr
          */
         Ptr (const shared_ptr<IRep>& rep);
 
@@ -116,14 +116,14 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
     public:
         /**
          *  Returns a URI with only the scheme/authority part set (the part defining the connection)
-         *      \ens (url.GetSchemeAndAuthority () == url);
+         *      \post (url.GetSchemeAndAuthority () == url);
          */
         nonvirtual URI GetSchemeAndAuthority () const;
 
     public:
         /**
          *  Set a URI with only the scheme/authority part set (the part defining the connection)
-         *      \req (url.GetSchemeAndAuthority () == url);
+         *      \pre (url.GetSchemeAndAuthority () == url);
          */
         nonvirtual void SetSchemeAndAuthority (const URI& url);
 
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *          if you want to handle 300. The ONLY exception to this might be in caching, when you get a NOT-MODIFIED. We MAY
          *          want to somehow reconsider that. But its simpler - at least for now - to treat these all uniformly.
          *
-         *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
+         *  \pre r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
          */
         nonvirtual Response Send (const Request& r);
 
@@ -184,9 +184,9 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *          if you want to handle 300. The ONLY exception to this might be in caching, when you get a NOT-MODIFIED. We MAY
          *          want to somehow reconsider that. But its simpler - at least for now - to treat these all uniformly.
          *
-         *  \ensure (r.GetSucceeded());
+         *  \post (r.GetSucceeded());
          *
-         *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
+         *  \pre r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
          */
         nonvirtual Response SendAndThrowOnFailure (const Request& r);
 
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *
          *  \see    Use Send () if you dont want exceptions on HTTP-response-code failures
          *
-         *  \ensure (r.GetSucceeded());
+         *  \post (r.GetSucceeded());
          */
         nonvirtual Response GET (const URI& l, const Mapping<String, String>& extraHeaders = {});
 
@@ -222,7 +222,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse (), or call Send() directly.
          *
-         *  \ensure (r.GetSucceeded());
+         *  \post (r.GetSucceeded());
          */
         nonvirtual Response POST (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders = {});
 
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse (), or call Send() directly.
          *
-         *  \ensure (r.GetSucceeded());
+         *  \post (r.GetSucceeded());
          *
          *  \note see https://tools.ietf.org/html/rfc5789 for docs on Patch
          */
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse (), or call Send() directly.
          *
-         *  \ensure (r.GetSucceeded());
+         *  \post (r.GetSucceeded());
          */
         nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = {});
 
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
          *          at e.GetResponse (), or call Send() directly.
          *
-         *  \ensure (r.GetSucceeded());
+         *  \post (r.GetSucceeded());
          */
         nonvirtual Response PUT (const URI& l, const TypedBLOB& body, const Mapping<String, String>& extraHeaders = {});
 
@@ -291,7 +291,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
          *          at e.GetResponse (), or call Send() directly.
          *
-         *  \ensure (r.GetSucceeded());
+         *  \post (r.GetSucceeded());
          */
         nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = {});
 

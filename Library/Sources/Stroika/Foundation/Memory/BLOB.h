@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  \req i < size ();
+         *  \pre i < size ();
          */
         nonvirtual byte operator[] (const size_t i) const;
 
@@ -306,8 +306,8 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          *  Return a BLOB made from the given sub-range of bytes.
-         *      \req startAt <= endAt
-         *      \req endAt < GetSize ()
+         *      \pre startAt <= endAt
+         *      \pre endAt < GetSize ()
          */
         nonvirtual BLOB Slice (size_t startAt, size_t endAt) const;
 

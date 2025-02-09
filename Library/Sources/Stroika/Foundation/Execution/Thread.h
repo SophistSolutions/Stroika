@@ -401,8 +401,8 @@ namespace Stroika::Foundation::Execution {
 
         public:
             /**
-             * \req    GetStatus () == Status::eNotYetRunning or Status::eAborting
-             * \req    never called before on this thread object
+             * \pre    GetStatus () == Status::eNotYetRunning or Status::eAborting
+             * \pre    never called before on this thread object
              *
              *  Typically you won't call this directly, but instead pass the eStart parameter to the Thread constructor.
              *  But you can explicitly call if you prefer.
@@ -431,7 +431,7 @@ namespace Stroika::Foundation::Execution {
              *  However, occasionally you use a library (like gsoap) that makes this difficult, so for those cases, enable this throw from APC feature.
              *
              *  \note Get function CAN be called with *this == nullptr, but 
-             *  \req if throwInterruptExceptionInsideUserAPC then *this != nullptr;
+             *  \pre if throwInterruptExceptionInsideUserAPC then *this != nullptr;
              */
             nonvirtual bool ThrowInterruptExceptionInsideUserAPC () const noexcept;
             nonvirtual bool ThrowInterruptExceptionInsideUserAPC (optional<bool> throwInterruptExceptionInsideUserAPC);
@@ -462,7 +462,7 @@ namespace Stroika::Foundation::Execution {
              *  \note It IS possible to have two DIFFERNT Ptr objects being called in different threads, one doing a Start ()
              *        and the other doing an Abort (); because of this, its allowed to call Start() in the 'aborted' state.
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void Abort () const;
 
@@ -482,7 +482,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void Join (Time::DurationSeconds timeout = Time::kInfinity) const;
 
@@ -519,7 +519,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void JoinUntil (Time::TimePointSeconds timeoutAt) const;
 
@@ -533,7 +533,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void WaitForDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
@@ -551,7 +551,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
@@ -570,7 +570,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual bool WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) const;
 
@@ -587,7 +587,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note ***Cancelation Point***
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void AbortAndWaitForDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
@@ -617,7 +617,7 @@ namespace Stroika::Foundation::Execution {
              *  @see WaitForDoneUntil ()
              *  @see AbortAndWaitForDone ()
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
@@ -648,7 +648,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note   ***Cancelation Point***
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              */
             nonvirtual void WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout = Time::kInfinity) const;
 #endif
@@ -680,7 +680,7 @@ namespace Stroika::Foundation::Execution {
              *  A thread object can never transition back (by this I mean the underlying pointed to rep - the container of
              *  course can transition back by being assigned another ThreadRep).
              *
-             *  \req *this != nullptr
+             *  \pre *this != nullptr
              *
              *  \note - Calling GetStatus () is generally not a good idea, except for debugging purposes. Generally, you will
              *          want to call WaitForDone (), and perhaps Abort, or AbortAndWaitForDone (). GetStatus () gives you a clue
@@ -692,7 +692,7 @@ namespace Stroika::Foundation::Execution {
             /**
              *  Return true iff WaitForDone () would return immediately;
              * 
-             *  \req not == nullptr
+             *  \pre not == nullptr
              *  
              *  This will return true iff GetStatus() would return eCompleted.
              * 
@@ -715,7 +715,7 @@ namespace Stroika::Foundation::Execution {
 
         public:
             /**
-             *  \req GetStatus () != Status::eNull
+             *  \pre GetStatus () != Status::eNull
              *
              *  @see GetThreadName ();
              */
@@ -924,7 +924,7 @@ namespace Stroika::Foundation::Execution {
          *  \note   Unlike std::thread, a Stroika Thread is not started automatically (unless you pass eAutoStart as a constructor argument),
          *          and it can run in the background after the Thread has gone out of scope (std::thread you can do this but must call detach).
          *
-         *  \req    Debug::AppearsDuringMainLifetime() at all points during the threads lifetime. It must be stopped
+         *  \pre    Debug::AppearsDuringMainLifetime() at all points during the threads lifetime. It must be stopped
          *          before Debug::AppearsDuringMainLifetime() becomes untrue. This is somewhat checked by the Stroika
          *          thread infrastructure, but may not be fully reliably asserted (see AllThreadsDeadDetector_)
          *
@@ -955,14 +955,14 @@ namespace Stroika::Foundation::Execution {
         Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration = nullopt);
 
         /**
-         * \req    foreach Thread t: t.GetStatus () == Status::eNotYetRunning
+         * \pre    foreach Thread t: t.GetStatus () == Status::eNotYetRunning
          */
         void Start (const Traversal::Iterable<Ptr>& threads);
 
         /**
          *    \brief foreach Thread t: t.Abort ()
          *
-         * \req    foreach Thread t: t != nullptr
+         * \pre    foreach Thread t: t != nullptr
          *
          *  \see Thread::Ptr::Abort
          */
@@ -971,14 +971,14 @@ namespace Stroika::Foundation::Execution {
         /**
          *  \note ***Cancelation Point***
          *
-         * \req    foreach Thread t: t != nullptr
+         * \pre    foreach Thread t: t != nullptr
          */
         void WaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSeconds timeout = Time::kInfinity);
 
         /**
          *  \note ***Cancelation Point***
          *
-         * \req    foreach Thread t: t != nullptr
+         * \pre    foreach Thread t: t != nullptr
          */
         void WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt);
 
@@ -996,7 +996,7 @@ namespace Stroika::Foundation::Execution {
          *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to prohibit this thread from interruption until its killed owned threads
          *      \endcode
          *
-         * \req    foreach Thread t: t != nullptr
+         * \pre    foreach Thread t: t != nullptr
          */
         void AbortAndWaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSeconds timeout = Time::kInfinity);
 
@@ -1010,7 +1010,7 @@ namespace Stroika::Foundation::Execution {
          *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to prohibit this thread from interruption until its killed owned threads
          *      \endcode
          *
-         * \req    foreach Thread t: t != nullptr
+         * \pre    foreach Thread t: t != nullptr
          */
         void AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt);
 

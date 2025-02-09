@@ -54,7 +54,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         NameType fType{eElement};
 
         /**
-         *  The overload with only NameType \req type == NameType::eValue
+         *  The overload with only NameType \pre type == NameType::eValue
          */
         Name ()            = delete;
         Name (const Name&) = default;

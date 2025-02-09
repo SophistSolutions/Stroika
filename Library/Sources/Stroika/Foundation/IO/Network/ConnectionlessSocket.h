@@ -118,13 +118,13 @@ namespace Stroika::Foundation::IO::Network {
 
         protected:
             /**
-             * \req fRep_ != nullptr
+             * \pre fRep_ != nullptr
              */
             nonvirtual _IRep& _ref () const;
 
         protected:
             /**
-             * \req fRep_ != nullptr
+             * \pre fRep_ != nullptr
              */
             nonvirtual const _IRep& _cref () const;
 
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::IO::Network {
          *          ConnectionlessSocket::Ptr   s  = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
          *      \endcode
          *
-         *  \req socketKind != SOCK_STREAM
+         *  \pre socketKind != SOCK_STREAM
          *
          *  \note unless you call @Detach() - socket is CLOSED in DTOR of rep, so when final reference goes away
          *

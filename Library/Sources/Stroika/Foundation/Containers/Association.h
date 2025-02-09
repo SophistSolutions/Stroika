@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers {
      *          be equal. There is no need for the backends to be of the same underlying representation either (stlmap
      *          vers LinkedList).
      *
-     *          \req lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
+     *          \pre lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
      *
      *          @todo - document computational complexity
      *

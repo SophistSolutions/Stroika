@@ -286,8 +286,8 @@ namespace Stroika::Foundation::Characters {
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to byte, and the codecvt API calls this extern_type
          * 
-         *  /2 overload \req to.size () >= min(Bytes2Characters(*from), ComputeTargetCharacterBufferSize (*from)) on input.
-         *  span<const byte>* \ens from->size () very small on return (at most partial character)
+         *  /2 overload \pre to.size () >= min(Bytes2Characters(*from), ComputeTargetCharacterBufferSize (*from)) on input.
+         *  span<const byte>* \post from->size () very small on return (at most partial character)
          * 
          *  \see also Bytes2String for similar function, but operating on strings
          */
@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Characters {
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to byte, and the codecvt API calls this extern_type
          * 
-         *  /2 overload \req to.size () >= min(ComputeTargetByteBufferSize (from),Characters2Bytes(from)) on input.
+         *  /2 overload \pre to.size () >= min(ComputeTargetByteBufferSize (from),Characters2Bytes(from)) on input.
          * 
          *  \see also String2Bytes for similar function, but operating on strings
          */

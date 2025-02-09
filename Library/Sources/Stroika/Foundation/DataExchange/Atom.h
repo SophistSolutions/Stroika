@@ -136,7 +136,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  with the Atom (AtomInternalType) CTOR, we \req the value already be interned in the ATOM_MANAGER.
+         *  with the Atom (AtomInternalType) CTOR, we \pre the value already be interned in the ATOM_MANAGER.
          */
         constexpr Atom () noexcept;
         template <Characters::IConvertibleToString STRING_LIKE>

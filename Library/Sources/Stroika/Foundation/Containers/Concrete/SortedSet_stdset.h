@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          *  \see docs on SortedSet<> constructor
-         *  \req IInOrderComparer<INORDER_COMPARER,T> ()
+         *  \pre IInOrderComparer<INORDER_COMPARER,T> ()
          */
         SortedSet_stdset ()
             requires (totally_ordered<T>);

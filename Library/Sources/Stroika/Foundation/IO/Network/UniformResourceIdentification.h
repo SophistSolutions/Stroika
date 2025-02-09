@@ -209,7 +209,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  maybe empty, but for the sake of consistency with the rest of this module, we intead represent
          *  this using optional<Host> and say that the optional host is missing.
          *
-         *  So, \req not registeredName.empty ()
+         *  So, \pre not registeredName.empty ()
          * 
          *  \todo http://stroika-bugs.sophists.com/browse/STK-750
          *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexcept
@@ -352,7 +352,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  handle that case with uses of UserInfo being optional<UserInfo>. So, we require that the decoded userInfo
          *  is not an empty string in this class.
          *
-         *  \req not decodedUserInfo.empty ()
+         *  \pre not decodedUserInfo.empty ()
          */
         UserInfo (const String& decodedUserInfo);
         UserInfo (const UserInfo&) noexcept = default;
@@ -370,7 +370,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresses etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
          *
-         *  \req not rawURLUserInfo.empty ()        // use optional<UserInfo> {} instead
+         *  \pre not rawURLUserInfo.empty ()        // use optional<UserInfo> {} instead
          */
         static UserInfo Parse (const String& rawURLUserInfo);
 

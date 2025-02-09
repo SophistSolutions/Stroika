@@ -607,7 +607,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Can construct ReadableReference with nullptr_t mutex, in which case its the subclasses responsability to manage locking
          *
-         *  \req t != nullptr, and this class holds onto that pointer.
+         *  \pre t != nullptr, and this class holds onto that pointer.
          */
         ReadableReference (const Synchronized* s);
         ReadableReference (const Synchronized* s, _ExternallyLocked);

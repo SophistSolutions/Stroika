@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
             /**
              *  This option only applies if fDBPath is set. 
-             *  \req fCreateDBPathIfDoesNotExist => not fReadOnly
+             *  \pre fCreateDBPathIfDoesNotExist => not fReadOnly
              */
             bool fCreateDBPathIfDoesNotExist{true};
 
@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
              *  The immutable query parameter is a boolean that signals to SQLite that the underlying database file is held on read-only media and
              *  cannot be modified, even by another process with elevated privileges.
              * 
-             *  \req fImmutable ==> fReadOnly
+             *  \pre fImmutable ==> fReadOnly
             */
             bool fImmutable{false};
 
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
         public:
             /**
-             *  \req timeout >= 0
+             *  \pre timeout >= 0
              */
             virtual void SetBusyTimeout (const Duration& timeout) = 0;
 

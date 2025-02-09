@@ -303,7 +303,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief treats errNo as a `POSIX errno` value, and throws a SystemError (subclass of @std::system_error) exception with it.
      *
-     *  \req errNo != 0
+     *  \pre errNo != 0
      *
      *  \note   Translates some throws to subclass of SystemErrorException like TimedException or other classes like bad_alloc.
      *
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief treats sysErr as a platform-defined error number, and throws a SystemErrorException (subclass of @std::system_error) exception with it.
      *
-     *  \req sysErr != 0
+     *  \pre sysErr != 0
      *
      *  \note   stdc++ uses 'int' for the type of this error number, but Windows generally defines the type to be
      *          DWORD.

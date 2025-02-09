@@ -102,7 +102,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  Parse (decode) an http cookie into an object.
          *      @see https://tools.ietf.org/html/rfc6265#section-4.2.1
          *
-         *  \req src.IsSeekable () for InputStream overload
+         *  \pre src.IsSeekable () for InputStream overload
          */
         static Cookie Parse (Streams::InputStream::Ptr<Character> src);
         static Cookie Parse (const String& src);

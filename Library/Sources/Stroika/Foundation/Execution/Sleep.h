@@ -41,10 +41,10 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   Sleep (0) will still yield the processor (so like std::thread::yield ())
      *
-     *  \req    seconds2Wait >= 0
+     *  \pre    seconds2Wait >= 0
      *
-     *  \ens    *remainingInSleep <= seconds2Wait
-     *  \ens    *remainingInSleep >= 0
+     *  \post    *remainingInSleep <= seconds2Wait
+     *  \post    *remainingInSleep >= 0
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *

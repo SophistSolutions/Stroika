@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Cache {
         /**
          *  Return the timestamp backwards the given timestamp.
          *
-         *  \req backThisTime >= 0
+         *  \pre backThisTime >= 0
          *
          *  \par Example Usage
          *      \code

@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \brief remove the element at i, and return valid iterator to the element that was following it (which can be empty iterator)
          * 
-         *  \req i != end ()
+         *  \pre i != end ()
          * 
          *  \brief see https://en.cppreference.com/w/cpp/container/vector/erase
          */

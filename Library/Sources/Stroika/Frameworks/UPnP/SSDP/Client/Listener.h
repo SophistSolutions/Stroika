@@ -84,7 +84,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
     public:
         /**
          *  Starts listener (probably starts a thread).
-         *  \req not already started.
+         *  \pre not already started.
          */
         nonvirtual void Start ();
 

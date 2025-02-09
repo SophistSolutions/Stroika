@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Debug {
     public:
         /**
          *  Saves current thread, and increments lock count, and
-         *      \req    already locked by this thread or no existing locks (either shared or exclusive)
+         *      \pre    already locked by this thread or no existing locks (either shared or exclusive)
          *
          *  \note   method non-const (can always const_cast if needed) because of standard C++ convention of non-const objects
          *          for write-lock
@@ -247,14 +247,14 @@ namespace Stroika::Foundation::Debug {
         /**
          *  Just decrement lock count
          *
-         *  \req    still running on the same locking thread and locks not unbalanced
+         *  \pre    still running on the same locking thread and locks not unbalanced
          */
         nonvirtual void unlock () noexcept;
 
     public:
         /**
          *  Saves current thread (multiset), and increments shared count, and
-         *      \req    no pre-existing locks on other threads
+         *      \pre    no pre-existing locks on other threads
          *
          *  \note   method const despite usual lockable rules, so easier to work with 'const' objects being 'marked' as doing a read operation.
          */
@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Debug {
          *
          *  \note   see lock_shard for why const.
          *
-         *  \req    still running on the same locking thread and locks not unbalanced
+         *  \pre    still running on the same locking thread and locks not unbalanced
          */
         nonvirtual void unlock_shared () const noexcept;
 

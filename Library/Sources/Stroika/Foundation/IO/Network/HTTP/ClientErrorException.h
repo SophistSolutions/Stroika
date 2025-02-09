@@ -47,7 +47,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *          Throw (ClientErrorException{StatusCodes::kBadRequest});
          *      \endcode
          *
-         *  \req 400 <= status and status < 500
+         *  \pre 400 <= status and status < 500
          */
         ClientErrorException (Status status = StatusCodes::kBadRequest, const String& reason = String{});
         ClientErrorException (const String& reason);

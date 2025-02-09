@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Math::ReBin {
 
     public:
         /*
-            *  \req 0 <= bucket and bucket < GetBucketCount ()
+            *  \pre 0 <= bucket and bucket < GetBucketCount ()
             */
         nonvirtual  ValueType  GetValue (BucketIndexType bucket) const;
 #endif
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Math::ReBin {
 
     public:
         /*
-         *  \req 0 <= bucket and bucket < GetBucketCount ()
+         *  \pre 0 <= bucket and bucket < GetBucketCount ()
          */
         nonvirtual ValueType GetValue (BucketIndexType bucket) const;
 

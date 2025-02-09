@@ -83,7 +83,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
     /**
      *  The constructor overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor (depending on AdoptFDPolicy).
      *
-     *  \req fd is a valid file descriptor (for that overload)
+     *  \pre fd is a valid file descriptor (for that overload)
      *
      *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
      *          possibilities for bugs (like changing the blocking nature of the IO). If you wish - you can always

@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Math {
      *      returns a float with the given number of digits of precision (rounding properly).
      *      Note here 'precision' means significant figures.
      *      in C++26 this will become constexpr, but cannot for now (cuz pow constexpr in c++26).
-     *      \req nDigitsOfPrecision >= 1
+     *      \pre nDigitsOfPrecision >= 1
      *      EX:
      *          Round (1.2, 2) => 1.2
      *          Round (1.23, 2) => 1.2
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Math {
      *      o   not NearlyEquals (Math::infinity (), -Math::infinity ())
      *      o   not NearlyEquals (Math::infinity (), 3)
      * 
-     *  \req epsilon >= 0 OR l or r is nan or inf (in which case epsilon ignored)
+     *  \pre epsilon >= 0 OR l or r is nan or inf (in which case epsilon ignored)
      * 
      *  \note - this is ROUGHLY the same as abs (l)-abs(r) < 0.00001, except for the issue that
      *        the right comparison depends a bit on the scale of the numbers l and r, and NearlyEquals
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Math {
      *  @todo   Also - we want multiple algorithms for this - including simple search (done now), sieve, and
      *          partitioned sieves (so use less ram).
      *
-     *  \req v >= 0
+     *  \pre v >= 0
      */
     template <integral T>
     bool IsPrime (T v);

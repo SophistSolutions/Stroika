@@ -424,7 +424,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  if DataExchange::ValidationStrategy is NOT specified, or == DataExchange::ValidationStrategy::eAssertion, then
-         *      \req kMinJulianRep <= julianRep <= kMaxJulianRep AND Date::kMin <= d <= Date::kMax
+         *      \pre kMinJulianRep <= julianRep <= kMaxJulianRep AND Date::kMin <= d <= Date::kMax
          *  else if eThrow, then throw when arguments out of range.
          * 
          *  \par Example Usage

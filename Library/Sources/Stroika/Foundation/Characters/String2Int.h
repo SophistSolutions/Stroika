@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Characters {
      *  strtoll() is more flexible. This is merely meant to be an often convenient wrapper.
      *  Use strtoll etc directly to see if the string parsed properly.
      * 
-     *  \req
+     *  \pre
      *      No leading or trailing whitespace in string argument (unlike strcoll/wstrcoll). (new requirement since Stroika 2.1b14)
      *
      *  \par Example Usage

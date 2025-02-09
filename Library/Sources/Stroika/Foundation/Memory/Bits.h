@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Memory {
      *  Capture the bits from 'bitField' - starting at bit 'startOffset' (zero-based),
      *  extending to endOffset (also zero based - not inclusive). The number of bits captured
      *  is endOffset-startOffset, so:
-     *       \req    startOffset <= endOffset
+     *       \pre    startOffset <= endOffset
      *
      *  the result is zero-filled with bits, so if zero bits are captured, the return value will be zero.
      *

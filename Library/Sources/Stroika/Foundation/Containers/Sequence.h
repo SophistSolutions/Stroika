@@ -362,13 +362,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \req i < size ()
+         *  \pre i < size ()
          */
         nonvirtual value_type GetAt (size_t i) const;
 
     public:
         /**
-         *  \req i < size ()
+         *  \pre i < size ()
          *
          *  \note mutates container
          */
@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief alias for GetAt (i) - but returning const T
          * 
-         *  \req i < size ().
+         *  \pre i < size ().
          *
          *  \note this returns const value_type, so you cannot accidentally assign to the result
          *          a[3] = 4; // wont compile because return type const
@@ -422,7 +422,7 @@ namespace Stroika::Foundation::Containers {
          *          s.SetAt (2, i);     // note when using operator() - this SetAt() dont even if t not updated so wasteful unless updating
          *      \endcode
          * 
-         *  \req i < size ()
+         *  \pre i < size ()
          *
          *  \note mutates container
          */
@@ -440,7 +440,7 @@ namespace Stroika::Foundation::Containers {
          *  cannot be overloaded with template members.
          *
          *  If not found for the by value overloads, IndexOf () return {};
-         *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
+         *  For the IndexOf(Iterator<T>) - \pre it is found/legal iterator 
          */
         template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual optional<size_t> IndexOf (ArgByValueType<value_type> i, EQUALS_COMPARER&& equalsComparer = {}) const;
@@ -471,7 +471,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Insert all the given items into this sequence, starting at offset 'i'.
          *
-         *  \req IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterableOfTo<ITERABLE_OF_ADDABLE, T>
+         *  \pre IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterableOfTo<ITERABLE_OF_ADDABLE, T>
          */
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<ITERATOR_OF_ADDABLE> ITERATOR_OF_ADDABLE2>
         nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE2&& end);
@@ -486,7 +486,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \req IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterableOfTo<ITERABLE_OF_ADDABLE, T>
+         *  \pre IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterableOfTo<ITERABLE_OF_ADDABLE, T>
          *
          *  \note mutates container
          */

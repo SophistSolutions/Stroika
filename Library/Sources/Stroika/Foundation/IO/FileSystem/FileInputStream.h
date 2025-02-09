@@ -76,7 +76,7 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
      *
      *  The New overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
      *
-     *  \req fd is a valid file descriptor (for that overload)
+     *  \pre fd is a valid file descriptor (for that overload)
      *
      *  \par Example Usage
      *      \code

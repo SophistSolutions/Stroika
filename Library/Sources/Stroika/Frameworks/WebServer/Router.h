@@ -71,7 +71,7 @@ namespace Stroika::Frameworks::WebServer {
      *              But note that Matches() is a const method, so it can safely be called from any number of threads
      *              simultaneously.
      * 
-     *  \req it is expected aggregated handlers provided MUST be <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a> as well.
+     *  \pre it is expected aggregated handlers provided MUST be <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a> as well.
      */
     class Route {
     public:

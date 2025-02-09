@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Debug {
      *  \brief return the same value as dynamic_cast<T> would have, except instead of checking nullptr,
      *         only check in DEBUG builds, and there ASSERT != null (if original pointer not null)
      * 
-     *  \req arg != nullptr
+     *  \pre arg != nullptr
      *
      *  Use where you would want to check Assert (dynamic_cast<const T*> (&ir) != nullptr) and then do static_cast<> instead;)
      * 
@@ -57,8 +57,8 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \brief Produce the same result as dynamic_pointer_cast if the successful case (non-null) - with better performance.
      * 
-     *  \req arg != nullptr
-     *  \req dynamic_pointer_cast<T> (arg) != nullptr
+     *  \pre arg != nullptr
+     *  \pre dynamic_pointer_cast<T> (arg) != nullptr
      * 
      *  \see UncheckedDynamicCast and dynamic_pointer_cast
      * 

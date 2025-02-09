@@ -214,13 +214,13 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
     public:
         /**
-         * \req *this != nullptr
+         * \pre *this != nullptr
          */
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 

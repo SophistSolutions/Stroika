@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Characters {
          *      you must use the ConvertQuietly API.
          * 
          *  For overloads taking a target span:
-         *      \req size of target span must be at least as large as specified by ComputeTargetBufferSize
+         *      \pre size of target span must be at least as large as specified by ComputeTargetBufferSize
          * 
          *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffient for buffer).
          *
@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  Source and target spans can be of any IUNICODECanUnambiguouslyConvertFrom character type (but source const and target non-const)
          * 
-         *  \req target.size () >= ComputeTargetBufferSize<TRG_T> (source)
+         *  \pre target.size () >= ComputeTargetBufferSize<TRG_T> (source)
          * 
          *  \note, if given illegal UTF-8, or illegal ascii (ASCII) source input, the will either return 
          *          with fStatus==sourceIllegal (if fOptions.fInvalidCharacterReplacement == nullopt), or will just use that
