@@ -13,7 +13,8 @@
 #include "Stroika/Foundation/Containers/DataStructures/SkipList.h"
 
 /**
- *  \file support classes for Concrete classes 'extensions' of behavior specific to the SkipList data structure
+ *  \file 
+ *      support classes for Concrete classes 'extensions' of behavior specific to the SkipList data structure
  */
 
 namespace Stroika::Foundation::Containers::Private {

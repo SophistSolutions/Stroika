@@ -13,7 +13,8 @@
 #include "Stroika/Foundation/Containers/DataStructures/Array.h"
 
 /**
- *  \file support classes for Concrete classes 'extensions' of behavior specific to the Array data structure
+ *  \file
+ *      support classes for Concrete classes 'extensions' of behavior specific to the Array data structure
  */
 
 namespace Stroika::Foundation::Containers::Private {

@@ -29,7 +29,8 @@
 #endif
 
 /**
- *  \file Convert arbitrary objects to String form, for the purpose of debugging (not reversible).
+ *  \file
+ *       Convert arbitrary objects to String form, for the purpose of debugging (not reversible).
  * 
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 

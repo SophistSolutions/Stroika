@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Characters {
     static_assert (IStdCodeCVT<std::codecvt<wchar_t, char, std::mbstate_t>>);
     static_assert (IStdCodeCVT<std::codecvt_byname<wchar_t, char, std::mbstate_t>>);
 
-    /*
+    /**
      *  \brief CodeCvt unifies byte <-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConvert etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
      *  Note, UTFConvert is probably a slightly better API, and better designed, and faster. HOWEVER, it ONLY converts to/from UNICODE. std::codecvt can convert to/from

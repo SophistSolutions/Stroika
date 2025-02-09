@@ -12,7 +12,8 @@
 #include "Stroika/Foundation/Containers/Common.h"
 
 /**
- *  \file support classes for Concrete classes 'extensions' of behavior specific to the std::vector data structure
+ *  \file 
+ *      support classes for Concrete classes 'extensions' of behavior specific to the std::vector data structure
  */
 
 namespace Stroika::Foundation::Containers::Private {

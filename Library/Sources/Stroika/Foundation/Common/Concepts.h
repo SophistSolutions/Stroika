@@ -18,7 +18,8 @@
 #include "Stroika/Foundation/Common/ConceptsBase.h"
 
 /*
- *  \file Miscellaneous type traits and concepts for metaprogramming
+ *  \file
+ *      Miscellaneous type traits and concepts for metaprogramming
  * 
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  * 
