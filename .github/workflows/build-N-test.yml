@@ -19,6 +19,12 @@ on:
         required: false
         default: "v3"
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   LinuxMatrixPrep:
     runs-on: ubuntu-latest
@@ -443,3 +449,28 @@ jobs:
           if-no-files-found: warn
           path: |
             IntermediateFiles/Doxygen/BUILD.txt
+
+
+  # Single deploy job since we're just deploying
+  deploy-doxygen:
+    needs: doxygen
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Make Documentation (since I dont know how to copy result from other step - this is simpler)
+        run: make documentation |
+             tar xvf Builds/Stroika-Doxygen-Help.tar.gz
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: 'Builds/Stroika-Doxygen-Help'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
