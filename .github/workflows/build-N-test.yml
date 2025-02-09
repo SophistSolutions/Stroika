@@ -462,8 +462,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Make Documentation (since I dont know how to copy result from other step - this is simpler)
-        run: make documentation |
-             tar xvf Builds/Stroika-Doxygen-Help.tar.gz
+        run:  |
+          make documentation
+          tar xvf Builds/Stroika-Doxygen-Help.tar.gz
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
