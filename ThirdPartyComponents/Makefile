@@ -15,6 +15,22 @@ CONFIGURATION_TAGS?=$(TAGS)
 APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ../ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"))
 
 
+# For clean/clobber - when we might not have a configuration
+AllSubDirs_= \
+	boost \
+	curl \
+	fmtlib \
+	GoogleTest \
+	lzma \
+	openssl \
+	sqlite \
+	StrawberryPerl \
+	WIX \
+	Xerces \
+	libxml2 \
+	zlib
+
+
 
 ifneq ($(CONFIGURATION),)
 
@@ -54,22 +70,6 @@ endif
 ifeq ($(qFeatureFlag_ZLib), use)
 	BUILD_zlib=1
 endif
-
-
-# For clean/clobber - when we might not have a configuration
-AllSubDirs_=
-AllSubDirs_+= boost
-AllSubDirs_+= curl
-AllSubDirs_+= fmtlib
-AllSubDirs_+= GoogleTest
-AllSubDirs_+= lzma
-AllSubDirs_+= openssl
-AllSubDirs_+= sqlite
-AllSubDirs_+= StrawberryPerl
-AllSubDirs_+= WIX
-AllSubDirs_+= Xerces
-AllSubDirs_+= libxml2
-AllSubDirs_+= zlib
 
 
 SubDirs=

@@ -107,9 +107,11 @@ endif
 endif
 
 # NOT sure why needed - retest --LGP 2024-10-21 - and better document why if still needed
+ifeq (Unix,$(BuildPlatform))
 ifeq ($(shell test `$(StroikaRoot)ScriptsLib/GetGCCVersion $(LINKER) -i` -lt 12; echo $$?), 0)
 CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+endif
 endif
 
 # curl uses LDFLAGS, so provide it (needed to find other libraries, sanitizer flags - for those other libs, etc).
