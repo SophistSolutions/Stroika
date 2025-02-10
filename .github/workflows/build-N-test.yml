@@ -327,24 +327,24 @@ jobs:
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
           echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}"
           echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
-          X=`cygpath --mixed "${GITHUB_WORKSPACE}"`
-          echo "X=${X}"
+          NORMALIZED_WORKSPACE_DIR_=`cygpath --mixed "${GITHUB_WORKSPACE}"`
+          echo "NORMALIZED_WORKSPACE_DIR_=${NORMALIZED_WORKSPACE_DIR_}"
           mkdir -p $ARTIFACTS_DIR || echo oops
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           docker stop buildContainer
           (docker cp "buildContainer:c:/TRACE_LOGS" "${ARTIFACTS_DIR}") || echo "error copying tracelogs ignored"
-          echo "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
+          echo "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
           echo gothere 2.2
           ls -l $ARTIFACTS_DIR || :
-          (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/Sample-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
+          (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Sample-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
           echo got here3
           ls -l $ARTIFACTS_DIR || :
           echo got here3.1
-          ls -l "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/"
+          ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           echo here3.2
-          echo ls -l  "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/Sample-*"
-          ls -l  "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/Sample-*" || echo oops
+          echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Sample-*"
+          ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Sample-*" || echo oops
           echo got here5
           ls -l $ARTIFACTS_DIR || :
           echo got here6
