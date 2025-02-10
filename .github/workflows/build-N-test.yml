@@ -335,7 +335,8 @@ jobs:
           ls -l "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/"
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           echo here3.2
-          ls -l  "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/Sample-*"
+          echo ls -l  "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/Sample-*"
+          ls -l  "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/Sample-*" || echo oops
           echo got here5
           ls -l $ARTIFACTS_DIR || :
           echo got here6
