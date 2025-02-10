@@ -322,11 +322,6 @@ jobs:
         shell: "bash"
         if: always()
         run: |
-          echo "github.event.inputs.deploy_doxygen=${{github.event.inputs.deploy_doxygen}}"
-          echo "github.ref=${{github.ref}}"
-          echo ("${{github.event.inputs.deploy_doxygen}}"=="true")
-          echo ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
-          echo ("${{github.event.inputs.deploy_doxygen}}"=="true") || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
           echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}"
@@ -469,7 +464,8 @@ jobs:
   # Single deploy job since we're just deploying help to github pages
   deploy-doxygen:
     needs: doxygen
-    if: ("${{github.event.inputs.deploy_doxygen}}"=="true") || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
+    if: github.event.inputs.deploy_doxygen == 'true'
+    # if: github.event.inputs.deploy_doxygen == 'true' || $(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
