@@ -17,7 +17,7 @@
  *  \todo   add Concept for IMPL type so clear documentation on how to use.
  */
 
-namespace Stroika::Foundation ::Execution {
+namespace Stroika::Foundation::Execution {
 
     /**
      *  \brief  Helper to define synchronized, lazy constructed, module initialization (intended to work with DataExchange::OptionFile)

@@ -1,4 +1,4 @@
-# **_Git Tags and Branches_**
+# Git Tags and Branches
 
 ## Major Release Versions
 

@@ -33,4 +33,4 @@ make TAGS=Unix all -j10
 to build all configurations with the tag Unix
 
 To learn more about Building Stroika-based applications and configurations, see
-[StroikaRoot/Documentation/Building Stroika.md](https://github.com/SophistSolutions/Stroika/blob/V2.1-Release/Documentation/Building%20Stroika.md)
+[StroikaRoot/Documentation/Building-Stroika.md](https://github.com/SophistSolutions/Stroika/blob/V2.1-Release/Documentation/Building-Stroika.md)

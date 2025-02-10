@@ -20,7 +20,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
-namespace Stroika::Foundation ::Streams::MemoryStream {
+namespace Stroika::Foundation::Streams::MemoryStream {
 
     using Characters::Character;
     using Characters::String;

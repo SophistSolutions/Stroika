@@ -1,4 +1,6 @@
-# Quick-Start building your application with Stroika
+# Quick-Start
+
+Building your application with Stroika
 
 ## Rough Outline
 
