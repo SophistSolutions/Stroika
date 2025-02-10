@@ -321,10 +321,9 @@ jobs:
       - name: Copy Build Artifacts (Log Data and Sample apps etc)
         shell: "bash"
         if: always()
-        # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
         run: |
-          echo "github.event.inputs.deploy_doxygen=${github.event.inputs.deploy_doxygen}"
-          echo "github.ref=${github.ref}"
+          echo "github.event.inputs.deploy_doxygen=${{github.event.inputs.deploy_doxygen}}"
+          echo "github.ref=${{github.ref}}"
           echo ("${{github.event.inputs.deploy_doxygen}}"=="true")
           echo ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
           echo ("${{github.event.inputs.deploy_doxygen}}"=="true") || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
@@ -336,6 +335,7 @@ jobs:
           echo "NORMALIZED_WORKSPACE_DIR_=${NORMALIZED_WORKSPACE_DIR_}"
           mkdir -p $ARTIFACTS_DIR || echo oops
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
+          # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
           docker stop buildContainer
           (docker cp "buildContainer:c:/TRACE_LOGS" "${ARTIFACTS_DIR}") || echo "error copying tracelogs ignored"
           echo "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
