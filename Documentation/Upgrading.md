@@ -35,7 +35,7 @@ Each stage of upgrade should come with fairly clear instructions (deprecation wa
 
 ## Writing code that works with multiple versions of Stroika
 
-~~~c++
+~~~c
 #if kStroika_Version_FullVersion <= Stroika_Make_FULL_VERSION (2, 1, kStroika_Version_Stage_ReleaseCandidate, 2, 1)
   old_way();
 #else
