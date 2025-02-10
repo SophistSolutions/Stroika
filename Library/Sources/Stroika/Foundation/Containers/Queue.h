@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<T> ==> totally_ordered<Queue<T>>);
      * 
      *      o   EqualsComparer provided as alias to SequentialEqualsComparer

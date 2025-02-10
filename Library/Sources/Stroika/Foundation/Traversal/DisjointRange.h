@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *  DiscreteRange<> is an immutable type (once constructed, will never change), except for allowing operator=.
      * 
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   operator==, operator!= supported, but this assumes operator== is defined on 'T'
      */
     template <typename T, typename RANGE_TYPE = Range<T>>

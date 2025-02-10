@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
 
 #if qStroika_HasComponent_OpenSSL
     /**
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *        o (only for c++20 or later)
      */

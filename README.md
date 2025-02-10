@@ -242,7 +242,7 @@ your first stroika-based application on your machine, in minutes (less download/
 - Thoroughly integrated assertions (including thread-safety assertions) help document and enforce usage patterns (without performance cost in production builds).
 - Each release is tested with Valgrind (memcheck), Google Sanitizers (TSAN, UBSAN, LEAK, and ASAN), Github CodeQL, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
 - [Sample applications](Samples/) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
-- [Quick start using pre-built Docker containers](Documentation/Building%20Stroika.md#build-with-docker) (for Windows, and Linux).
+- [Quick start using pre-built Docker containers](Documentation/Building-Stroika.md#build-with-docker) (for Windows, and Linux).
 
 ## Stroika [Foundation](Library/Sources/Stroika/Foundation/) provides
 

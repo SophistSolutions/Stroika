@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers {
      *          The caller may use the inherited (from Iterable<>) SetEquals, MultiSetEquals, or SequenceEquals()
      *          as appropriate. Methods that require and equals comparer, take one as argument with appropriate defaulting.
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      static_assert (not equality_comparable<Collection<...>>);
      * 
      *      o   No comparisons are provided, because there is no intrinsic way to compare collections for equality, less etc. (order not defined)

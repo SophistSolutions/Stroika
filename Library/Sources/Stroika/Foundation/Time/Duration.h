@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Time {
      *      whose lifetime is controlled (an object). So now - just call As<String> ().c_str () or
      *      As<wstring> ().c_str ()
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<Duration>);
      */
     class [[nodiscard]] Duration final : public chrono::duration<double> {

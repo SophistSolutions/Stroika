@@ -344,7 +344,7 @@ namespace Stroika::Foundation::DataExchange {
          *  This CAN be directly constructed, and passed into the ObjectVariantMapper (via the Add method), but more commonly
          *  helpers like MakeCommonSerializer () or AddClass will be used.
          *
-         *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>         * 
+         *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>         * 
          *  \note fFromObjectMapper_ is nullptr, then this field is added as nullptr.
          *  \note toObjectMapper is nullptr, then it is simply not called (as if did nothing or empty function)
          */

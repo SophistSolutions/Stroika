@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Common {
      * 
      *  \note   Supports KeyValuePair<T,void> - so second type maybe void (sometimes useful as degenerate case - e.g. SkipList)
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<KEY_TYPE> and totally_ordered<VALUE_TYPE> IMPLIES totally_ordered<KeyValuePair<...>>)
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>

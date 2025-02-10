@@ -57,7 +57,7 @@ git commit -m "my first stroika-based app"
 
 now build and run the app
 ~~~
-make CONFIGURATION=Debug all -j10
+make CONFIGURATION=Debug samples -j10
 ./Builds/Debug/myStarterApp/myStarterApp
 ~~~
 
@@ -79,5 +79,5 @@ git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
 ./ScriptsLib/Skel --appRoot ../myHTMLGUIApp --template HTMLUI
 cd ../myHTMLGUIApp
-make CONFIGURATION=Debug all -j10
+make CONFIGURATION=Debug samples -j10
 ~~~

@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Characters {
      *          not bad cuz I deprecated? COULD just deprecate ALL of these, and then the class is fully immutable. Probably
      *          easier to understand/reason about.
      * 
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<String>);
      *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
      */

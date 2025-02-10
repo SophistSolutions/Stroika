@@ -89,7 +89,7 @@ namespace Stroika::Foundation::DataExchange {
      *  So for now - we just store the largest signed and unsigned integer types and cast down to what
      *  the user users/requests.
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *          o static_assert (totally_ordered<VariantValue>);    // but notice that such comparisons expensive, as they imply normalizing
      * 
      *          @todo UPDATE DOCS FOR EQUALS COMPARER AND SHARE APPRORIATE DOCS FOR THREEWAY COMPARER AND SAY WHAT PART IS FOR 

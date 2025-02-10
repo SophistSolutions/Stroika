@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers {
      *      We intentionally omit the Update () method since update given an iterator would do the same thing
      *      as Container::Add(). We COULD enhance Add () to take an optional hint parameter in a future version of Stroika.
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        o static_assert (equality_comparable<Set<T>)
      * 
      *        o ordering (<,<=> etc) not provided, because a set has no intrinsic ordering between the set elements

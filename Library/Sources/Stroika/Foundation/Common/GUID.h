@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Common {
      *      o   static_assert (regular<GUID>);
      *      o   static_assert (totally_ordered<GUID>);
      * 
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<GUID>);
      */
     struct GUID {

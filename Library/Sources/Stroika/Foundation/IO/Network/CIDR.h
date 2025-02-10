@@ -25,7 +25,7 @@ namespace Stroika::Foundation::IO::Network {
     using Characters::String;
 
     /**
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      static_assert (totally_ordered<CIDR>);
      *
      *      Compare the significant bits of the CIDR.

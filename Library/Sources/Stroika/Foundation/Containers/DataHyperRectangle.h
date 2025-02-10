@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers {
      *          PROBABLY - it still makes sense to keep. I THINK mdspan<> is restricted to DENSE_HYPERRECTANGLES of data
      *          Making this abstraction still potentially useful.
      * 
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   operator== and operator!= are supported
      *  
      *          Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with ELEMENT_EQUALS_COMPARER)

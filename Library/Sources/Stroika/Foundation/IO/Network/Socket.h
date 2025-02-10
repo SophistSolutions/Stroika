@@ -162,7 +162,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note inherits from Socket just for inherited type definitions - no methods or data.
          *
-         *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+         *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
          *        o static_assert (totally_ordered<Ptr>);
          *        o Socket::Ptr objects are compared (relative or equality) by their underlying 'rep' object.
          *          This USED to be done by calling GetNativeSocket () so two separately attached sockets

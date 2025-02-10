@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers {
      *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
      *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        o MultiSet (base class) are already intrinsically equals-comparable.
      *
      *        o Since SortedMultiSet implies an ordering on the elements of the MultiSet, we can use this to define a

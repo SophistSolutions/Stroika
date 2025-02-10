@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Math {
     public:
         /**
          *
-         *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+         *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
          *      o   static_assert (totally_ordered<Angle>);
          *      o   partial_ordering because floating point admits only partial ordering.
          *      

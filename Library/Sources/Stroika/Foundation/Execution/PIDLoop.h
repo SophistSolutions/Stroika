@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \note   <a href="Design Overview.md#Comparisons">Comparisons</a>:
+         *  \note   <a href="Design-Overview.md#Comparisons">Comparisons</a>:
          *          static_assert (totally_ordered<ControlParams>);
          */
         struct ControlParams {

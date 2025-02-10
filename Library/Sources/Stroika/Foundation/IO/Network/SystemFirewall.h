@@ -26,7 +26,7 @@ namespace Stroika::Foundation::IO::Network::SystemFirewall {
     using Characters::String;
 
     /**
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<Rule>);
      */
     struct Rule {

@@ -321,7 +321,7 @@ namespace Stroika::Foundation::Time {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        static_assert (totally_ordered<Date>);
      */
     class [[nodiscard]] Date {

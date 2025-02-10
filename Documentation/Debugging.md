@@ -1,5 +1,7 @@
 # Debugging with Stroika
 
+## @todo DOC ABOUT setting up vscode and using .natvis files
+
 ## GDB and ASAN (Address Sanitizer) and UBSAN (Undefined Behavior Sanitizer)
 
 * br __ubsan::ScopedReport::~ScopedReport or __ubsan::Diag::~Diag

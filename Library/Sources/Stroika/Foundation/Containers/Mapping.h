@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (equality_comparable<VALUE_TYPE> ==> equality_comparable<Mapping<KEY, VALUE_TYPE>>);
      *
      *          Two Mappings are considered equal if they contain the same elements (keys) and each key is associated

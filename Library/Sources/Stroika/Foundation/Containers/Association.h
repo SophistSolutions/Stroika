@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   operator==(Association& rhs) requires (equality_comparable<MAPPED_VALUE_TYPE>);
      *
      *          Two Associations are considered equal if they contain the same elements (keys) and each key is associated

@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Characters {
      *  \note Satisfies Concepts:
      *      o   static_assert (regular<Character>);
      * 
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<Character>)
      *      o   Character::EqualsComparer and Character::ThreeWayComparer provided with construction parameters to allow case insensitive compares 
      */

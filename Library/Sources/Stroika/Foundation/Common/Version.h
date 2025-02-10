@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Common {
      *
      *  @see Stroika_Make_FULL_VERSION for the mapping
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<Version>);
      */
     struct Version {

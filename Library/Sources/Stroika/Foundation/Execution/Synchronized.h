@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Execution {
      *        indicating failure, or take a callback that gets notified of the need to recompute the cached value/data.
      * 
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (equality_comparable<T> and TRAITS::kIsRecursiveReadMutex ==> equality_comparable<Synchronized<T>>);
      *      o   static_assert (totally_ordered<T> and TRAITS::kIsRecursiveReadMutex ==> totally_ordered<Synchronized<T>>);
      * 

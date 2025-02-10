@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Containers {
      *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
      *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (equality_comparable<Bijection<...>>);
      * 
      *      o   All Bijections MUST have = comparable DOMAIN_TYPE and RANGE_TYPE, so operator== for the bijection is well-defined.

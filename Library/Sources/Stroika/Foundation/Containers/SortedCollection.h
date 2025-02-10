@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers {
      *  \note <a href="ReadMe.md#Container Element comparisons">Container Element comparisons</a>:
      *        See about ElementInOrderComparerType, ElementThreeWayComparerType and GetElementThreeWayComparer etc
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   Even though the base class Collection<T> provides no intrinsic comparison operators, to be sorted,
      *          does imply a comparison operator, so a SortedCollection<T> fully supports the c++ standard operator<=> strong comparison
      *          feature.

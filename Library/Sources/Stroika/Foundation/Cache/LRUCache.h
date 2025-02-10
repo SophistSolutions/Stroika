@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Cache {
      *          relevant only in case where the objects use significant resources, or where their lifetime has
      *          externally visible (e.g. lockfiles) impact.
      *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        o No comparison of LRUCache objects is currently supported. It might make sense, but would be of questionable use.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

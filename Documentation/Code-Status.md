@@ -1,7 +1,7 @@
-# Code_status Code StatusCode-Status.md#
+# Code Status
 
 Each module will be marked with a 'Status' flag, indicating how
-stable the API is, and something about the implmentation quality.
+stable the API is, and something about the implementation quality.
 
 - Release
 

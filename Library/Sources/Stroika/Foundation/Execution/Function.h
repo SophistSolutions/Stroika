@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Execution {
      *  \note   This was implemented using a shared_ptr<function<...>> instead of a directly aggregated function object
      *          until Stroika v2.1d8.
      *
-     *  \note   <a href="Design Overview.md#Comparisons">Comparisons</a>:
+     *  \note   <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *          static_assert (totally_ordered<Function<...>);
      */
     template <typename FUNCTION_SIGNATURE>
