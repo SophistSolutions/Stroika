@@ -189,4 +189,7 @@ endif
 
 
 distclean:
+	@for subdir in $(SubDirs) ; do \
+		$(MAKE) --directory $$subdir --silent clobber; \
+	done
 	@cd Origs-Cache ; find . ! -name 'doxygen-1.8.2-setup.exe' ! -name 'doxygen-1.8.2-Windows-Installed.tar.gz' ! -name '.gitignore' -type f -exec rm -f {} +
