@@ -323,6 +323,11 @@ jobs:
         if: always()
         # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
         run: |
+          echo "github.event.inputs.deploy_doxygen=${github.event.inputs.deploy_doxygen}"
+          echo "github.ref=${github.ref}"
+          echo ("${{github.event.inputs.deploy_doxygen}}"=="true")
+          echo ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
+          echo ("${{github.event.inputs.deploy_doxygen}}"=="true") || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
           echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}"
@@ -336,15 +341,15 @@ jobs:
           echo "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
           echo gothere 2.2
           ls -l $ARTIFACTS_DIR || :
-          (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Sample-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
+          (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
           echo got here3
           ls -l $ARTIFACTS_DIR || :
           echo got here3.1
           ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           echo here3.2
-          echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Sample-*"
-          ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Sample-*" || echo oops
+          echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*"
+          ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" || echo oops
           echo got here5
           ls -l $ARTIFACTS_DIR || :
           echo got here6
