@@ -56,6 +56,21 @@ ifeq ($(qFeatureFlag_ZLib), use)
 endif
 
 
+# For clean/clobber - when we might not have a configuration
+AllSubDirs_=
+AllSubDirs_+= boost
+AllSubDirs_+= curl
+AllSubDirs_+= fmtlib
+AllSubDirs_+= GoogleTest
+AllSubDirs_+= lzma
+AllSubDirs_+= openssl
+AllSubDirs_+= sqlite
+AllSubDirs_+= StrawberryPerl
+AllSubDirs_+= WIX
+AllSubDirs_+= Xerces
+AllSubDirs_+= libxml2
+AllSubDirs_+= zlib
+
 
 SubDirs=
 ifeq ($(BUILD_boost), 1)
@@ -182,14 +197,14 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 endif
-	@for subdir in $(SubDirs) ; do \
+	@for subdir in $(AllSubDirs_) ; do \
 		$(MAKE) --directory $$subdir --silent $@; \
 	done
 	@$(ECHO) done
 
 
 distclean:
-	@for subdir in $(SubDirs) ; do \
+	@for subdir in $(AllSubDirs_) ; do \
 		$(MAKE) --directory $$subdir --silent clobber; \
 	done
 	@cd Origs-Cache ; find . ! -name 'doxygen-1.8.2-setup.exe' ! -name 'doxygen-1.8.2-Windows-Installed.tar.gz' ! -name '.gitignore' -type f -exec rm -f {} +
