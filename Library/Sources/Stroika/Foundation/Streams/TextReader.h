@@ -11,14 +11,14 @@
 /**
  *  FILE DEPRECATED - USE Streams/BinaryToText.h
  */
-_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::BinaryToText::Reader");
+_DeprecatedFile_ ("DEPRECATED - TextReader.h  - since v3.0d15 - use Streams::BinaryToText::Reader");
 
 namespace Stroika::Foundation::Streams::TextReader {
 
     using namespace Streams::BinaryToText;
     using namespace Streams::BinaryToText::Reader;
 
-    using Ptr = InputStream::Ptr<Character>; //not replicated in BinaryToText
+    using Ptr = InputStream::Ptr<Character>;
 
 }
 

@@ -6,7 +6,8 @@
 
 #include "Stroika/Foundation/Common/Platform/Windows/Registry.h"
 
-_DeprecatedFile_ ("DEPRECATED - since v3.0d11, use .../Common/Platform/Windows/Registry and Common:: instead of Configuration::");
+_DeprecatedFile_ ("DEPRECATED - Configuration/Platform/Windows/Registry.h -- since v3.0d11, use .../Common/Platform/Windows/Registry and "
+                  "Common:: instead of Configuration::");
 
 namespace Stroika::Foundation::Configuration::Platform::Windows {
     using namespace Stroika::Foundation::Common::Platform::Windows;

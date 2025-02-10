@@ -11,7 +11,7 @@
 /**
  *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::TextToBinary
  */
-_DeprecatedFile_ ("DEPRECATED v3.0d15 - instead of TextWriter - use TextToBinary::Writer");
+_DeprecatedFile_ ("DEPRECATED - Streams/TextWriter.h - since v3.0d15 - instead of TextWriter - use TextToBinary::Writer");
 
 namespace Stroika::Foundation::Streams::TextWriter {
 

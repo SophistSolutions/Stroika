@@ -11,7 +11,7 @@
 /**
  *  *  FILE DEPRECATED SINCE STROIKA v3.0d15 - use Streams::TextToBinary
  */
-_DeprecatedFile_ ("DEPRECATED v3.0d15 - use Streams::TextToBinary::Reader");
+_DeprecatedFile_ ("DEPRECATED - Streams-TextToByteReader.h - since v3.0d15 - use Streams::TextToBinary::Reader");
 
 namespace Stroika::Foundation::Streams::TextToByteReader {
     using namespace TextToBinary::Reader;
