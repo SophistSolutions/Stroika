@@ -10,6 +10,9 @@ DOXYGEN=doxygen
 # DOXYGEN=C:/tools/cygwin/bin/doxygen.exe
 
 all:
+	@#NOTE - takes a couple minutes on linux, and 55 minutes on cygwin (doxygen 1.9.2) and I think around 6 hours on MSYS doxygen (1.13.1)
+	@#note sure the issue is just the doxygen version, but could be (seemed to take a while running cygwin binary on MSYS but dont recall precisely - I htink 2 hrs?)
+	@#Didn't do alot of clean careful testing cuz so painful --LGP 2025-02-10
 	@if [ ! -e $(StroikaRoot)/Builds/Stroika-Doxygen-Help.tar.gz ] ; then\
 		if which doxygen 2>&1 > /dev/null; then\
 			$(MAKE) --silent doxygen;\
