@@ -7,12 +7,12 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d15 {2025-02-09} {[diff](../../compare/3.0d14...3.0d15)}?????? RELEASE NOTES NOT READY
-
-update relnotes for stuff done feb 8-10 - fixing doxgygen and getting ready to deploy dox docs to github pages.
+### 3.0d15 {2025-02-10} {[diff](../../compare/3.0d14...3.0d15)}
 
 #### TLDR
 
+- doxygen: dont build on regular regtests - just on linux in github action (once) cuz very slow build; and
+  cleaned up a bit, and pushed output to https://sophistsolutions.github.io/Stroika/
 - **new** Authentication Framework (OAuth, JWT, webserver interceptor for auth, HTMLUI sample code)
 - kRawEnvironment and kEnvironment and environment support in ProcessRunner (control env variables of child processes)
 - Streams
@@ -37,9 +37,18 @@ update relnotes for stuff done feb 8-10 - fixing doxgygen and getting ready to d
 
 #### Change Details
 
+- Build System
+  - RegressionTests
+    - dont use make all - use make libraries tools tests samples - since docs builds can take a very long time (MSYS especially)
+  - Github actions
+    - fixed output of samples apps from windows jobs
+    - broke out jobs doxygen and deploy-doxygen (pushes to github pages), due to very bad performance of these builds sometimes.
+- Documentation
+  - Significant cleanup to doxygen, and now publish to https://sophistsolutions.github.io/Stroika/
+  - Misc docs cleanups everywhere
 - Everywhere
-  - Minor docs/messaging cleanups
   - fixed a few remaining property names (no longer use p prefix)
+  - minor tweaks for doxygen
 - Library
   - Foundation
     - Characters
@@ -140,24 +149,25 @@ update relnotes for stuff done feb 8-10 - fixing doxgygen and getting ready to d
     - Traversal
       - Iterable
         - Iterable<>Join support for RESULT_TYPE=SDKString (at least when explicit type param)
-- Frameworks::Auth
-  - new CurrentIdentityManager
-    - manage templated identity object in thread_local storage
-  - new OAuth support
-    - ProvidersConfigurations, ClientConfiguration, and kDefaultProviderConfigurations
-    - Client/Fetcher support - to fetch a bunch of remote stuff (like wellknown/... ids and calls to oauth provider to convert tokens, get UserInfo etc)
-  - New (WebServer)-Interceptor
-    - WebServer::Interceptor instance that translates auth-headers into CurrentIdentityManager thread_local 
-      storage object with that information interpretted (fits well with route callbacks)
-- Frameworks::WebServer
-  - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); 
-    - fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
-    - small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
-  - IntercetorMgr
-    - Allow comparing WebServer InterceptorChain for equality, 
-  - Connection/
-    - fixed bug where DeriveConnectionDefaultOptionsFromEffectiveOptions_ not updated (where we store interceptor chain) on change -
-      so lose fInterceptorChain - just store in fUseDefaultConnectionOptions_ (connection manager)
+  - Frameworks
+    - Auth
+      - new CurrentIdentityManager
+        - manage templated identity object in thread_local storage
+      - new OAuth support
+        - ProvidersConfigurations, ClientConfiguration, and kDefaultProviderConfigurations
+        - Client/Fetcher support - to fetch a bunch of remote stuff (like wellknown/... ids and calls to oauth provider to convert tokens, get UserInfo etc)
+      - New (WebServer)-Interceptor
+        - WebServer::Interceptor instance that translates auth-headers into CurrentIdentityManager thread_local 
+          storage object with that information interpretted (fits well with route callbacks)
+    - WebServer
+      - FileSystemRequestHandler support for Option fFallbackFile (useful for integrating with vue3/oauth where cannot use # for router); 
+        - fixed one case where it was still throwing ClientErrorException{HTTP::StatusCodes::kNotFound to treat as not-found by route search
+        - small mostly cosmetic namespace usage cleanups and webserver fDefaultIndexFileNames sequence<filesystem::path> instead of string
+      - IntercetorMgr
+        - Allow comparing WebServer InterceptorChain for equality, 
+      - Connection/
+        - fixed bug where DeriveConnectionDefaultOptionsFromEffectiveOptions_ not updated (where we store interceptor chain) on change -
+          so lose fInterceptorChain - just store in fUseDefaultConnectionOptions_ (connection manager)
 - Samples
   - HMTLUI
     - fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect; and use createWebHistory()

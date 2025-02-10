@@ -18,6 +18,10 @@ on:
         description: "Container Version"
         required: false
         default: "v3"
+      deploy_doxygen:
+        description: "deploy_doxygen"
+        required: false
+        default: "false"
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -460,6 +464,7 @@ jobs:
   # Single deploy job since we're just deploying help to github pages
   deploy-doxygen:
     needs: doxygen
+    if: ("${{github.event.inputs.deploy_doxygen}}"=="true") || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
