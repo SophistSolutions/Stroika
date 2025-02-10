@@ -321,6 +321,10 @@ jobs:
         run: |
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
+          echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}"
+          echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+          X=`cygpath --mixed "${GITHUB_WORKSPACE}"`
+          echo "X=${X}"
           mkdir -p $ARTIFACTS_DIR || echo oops
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           docker stop buildContainer
