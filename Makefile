@@ -27,6 +27,13 @@ SHELL=/bin/bash
 # Only applies to run-tests
 export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 
+# Only applies make all
+# Needed for Windows - especially MSYS - where builds can take many hours (possibly due to newer version of doxygen) --LGP 2025-02-11
+ifeq ($(BuildPlatform),VisualStudio.Net-2022)
+export ALL_INCLUDES_BUILDING_DOCUMENTATION?=0
+else
+export ALL_INCLUDES_BUILDING_DOCUMENTATION?=1
+endif
 
 .DEFAULT_GOAL := help
 
@@ -91,6 +98,8 @@ help:
 	@$(ECHO) "    TEST_FAILURES_CAUSE_FAILED_MAKE=0"
 	@$(ECHO) "                                      only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)"
 
+	
+
 
 ifeq ($(CONFIGURATION),)
 all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
@@ -105,7 +114,11 @@ all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFA
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
+ifeq ($(ALL_INCLUDES_BUILDING_DOCUMENTATION),1)
 all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries tools samples tests documentation
+else
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries tools samples tests
+endif
 endif
 
 
