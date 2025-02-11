@@ -478,9 +478,6 @@ jobs:
   # Single deploy job since we're just deploying help to github pages
   deploy-doxygen:
     needs: doxygen
-    # if: ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
-    # if: ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
-    # if: (github.event.inputs.deploy_doxygen == 'true') || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
     if: github.event.inputs.deploy_doxygen == 'true' || github.ref == 'refs/heads/v3-Release' 
     environment:
       name: github-pages
@@ -488,15 +485,10 @@ jobs:
     runs-on: ubuntu-latest
     container: sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
     steps:
-      - name: foo
-        run: |
-          echo $(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
-          echo $(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release'
-          echo ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
       - name: Checkout
         uses: actions/checkout@v4
       - name: Make Documentation (since I dont know how to copy result from other step - this is simpler)
-        run:  |
+        run: |
           make documentation
           (cd Builds; tar xvf Stroika-Doxygen-Help.tar.gz)
       - name: Setup Pages
