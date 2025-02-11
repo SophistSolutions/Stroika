@@ -358,7 +358,7 @@ jobs:
           echo got here3.1
           # echo ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           # ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
-          rm -rf "${ARTIFACTS_DIR}/{ThirdPartyComponents,Tests,*.lib}"
+          rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib}
           
           echo here3.2
           # echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*"
