@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Cryptography/Digest/Digester.h"
 #include "Stroika/Foundation/DataExchange/Compression/Common.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Response.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Status.h"
@@ -44,6 +45,7 @@ namespace Stroika::Frameworks::WebServer {
     using Characters::FormatString;
     using Characters::String;
     using DataExchange::InternetMediaType;
+    using DataExchange::TypedBLOB;
     using HTTP::Status;
     using Memory::BLOB;
 
@@ -364,14 +366,33 @@ namespace Stroika::Frameworks::WebServer {
          * 
          *  Note for string and wchar_t* writes, this uses this->codePage to encode the characters.
          * 
+         *  write (TypedBLOB) is short-hand for setting the contentType, and then writing the BLOB.
+         * 
          *  \pre not this->responseCompleted ()
          *  \pre not this->responseStatusSent () or (this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::kChunked)))
          */
         nonvirtual void write (const span<const byte>& b);
+        nonvirtual void write (const TypedBLOB& b);
         template <Characters::IConvertibleToString T>
         nonvirtual void write (T&& s);
         template <typename CHAR_T, typename... ARGS>
         nonvirtual void write (const FormatString<CHAR_T>& f, ARGS&&... args);
+
+    public:
+        // @todo deprecate lowercase write() - lowercase implies stdC++ like functionality and not true here
+        template <typename T>
+        nonvirtual void Write (T t)
+        {
+            write (t);
+        }
+
+    public:
+        // @todo deprecate lowercase write() - lowercase implies stdC++ like functionality and not true here
+        template <typename T>
+        nonvirtual void WriteLn (T t)
+        {
+            writeln (t);
+        }
 
     public:
         /**

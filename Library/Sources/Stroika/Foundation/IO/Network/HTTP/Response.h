@@ -24,7 +24,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using Characters::String;
     using DataExchange::InternetMediaType;
 
-    /*
+    /**
      *  \note Satisfies Concepts:
      *      o   static_assert (not copyable<Response>);
      *      o   static_assert (movable<Response>);

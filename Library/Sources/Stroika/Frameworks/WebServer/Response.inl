@@ -19,6 +19,11 @@ namespace Stroika::Frameworks::WebServer {
             write (String{s});
         }
     }
+    inline void Response::write (const TypedBLOB& b)
+    {
+        this->contentType (b.fType);
+        this->write (b.fData);
+    }
     template <typename CHAR_T, typename... ARGS>
     inline void Response::write (const FormatString<CHAR_T>& f, ARGS&&... args)
     {
