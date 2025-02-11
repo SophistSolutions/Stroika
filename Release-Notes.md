@@ -27,6 +27,7 @@ especially those they need to be aware of when upgrading.
 
 - HTMLUI Sample
   - changed from createWebHashHistory to createWebHistory - to allow working with oauth (see git commit b6b06567ea)
+  - patch security warning / upgrade - PITA - and not super helpful - but git commit e144b9d79b if you want to try
 - Streams refactoring:
   - Streams/TextReader.h -> Streams/BinaryToText.h
   - Streams/TextWriter.h -> Streams/TextToBinary.h
