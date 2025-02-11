@@ -334,7 +334,10 @@ jobs:
           docker stop buildContainer
           (docker cp "buildContainer:c:/TRACE_LOGS" "${ARTIFACTS_DIR}") || echo "error copying tracelogs ignored"
           echo "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
+          echo NORMALIZED_WORKSPACE_DIR_:
           ls -l "${NORMALIZED_WORKSPACE_DIR_}"
+          echo NORMALIZED_WORKSPACE_DIR_/..:
+          ls -l "${NORMALIZED_WORKSPACE_DIR_}/.."
           echo hh
           ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           echo ${ARTIFACTS_DIR}
@@ -475,6 +478,9 @@ jobs:
     runs-on: ubuntu-latest
     container: sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
     steps:
+      - name: foo
+        run: |
+          echo $(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
       - name: Checkout
         uses: actions/checkout@v4
       - name: Make Documentation (since I dont know how to copy result from other step - this is simpler)
