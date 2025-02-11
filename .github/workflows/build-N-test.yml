@@ -324,37 +324,43 @@ jobs:
         run: |
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
+          NORMALIZED_WORKSPACE_DIR_=`cygpath --mixed "${GITHUB_WORKSPACE}"`
+          
           echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}"
           echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
-          NORMALIZED_WORKSPACE_DIR_=`cygpath --mixed "${GITHUB_WORKSPACE}"`
           echo "NORMALIZED_WORKSPACE_DIR_=${NORMALIZED_WORKSPACE_DIR_}"
-          mkdir -p $ARTIFACTS_DIR || echo oops
+
+          mkdir -p $ARTIFACTS_DIR
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
           docker stop buildContainer
           (docker cp "buildContainer:c:/TRACE_LOGS" "${ARTIFACTS_DIR}") || echo "error copying tracelogs ignored"
-          echo "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
-          echo NORMALIZED_WORKSPACE_DIR_:
-          ls -l "${NORMALIZED_WORKSPACE_DIR_}"
-          echo hh
-          echo ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}"
-          ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}"
-          # echo ${ARTIFACTS_DIR}
+
           echo gothere 2.2
-          echo ls -lR $ARTIFACTS_DIR || :
-          ls -lR $ARTIFACTS_DIR || :
+          # echo ls -lR $ARTIFACTS_DIR || :
+          # ls -lR $ARTIFACTS_DIR || :
+
+          echo ls -l "D:/a/Stroika/Stroika/Builds/Debug/Samples-AppSettings"
+          ls -lR "D:/a/Stroika/Stroika/Builds/Debug/Samples-AppSettings"
+          echo ls -l "D:/a/Stroika/Stroika/Builds/${{ matrix.config_name }}/Samples-AppSettings"
+          ls -lR "D:/a/Stroika/Stroika/Builds/${{ matrix.config_name }}/Samples-AppSettings"
+          echo ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-AppSettings"
+          ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-AppSettings"
+          
           (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
           echo got here3
           ls -lR $ARTIFACTS_DIR || :
+
           echo got here3.1
           # echo ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           # ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
-          rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
+          rm -rf "${ARTIFACTS_DIR}/{ThirdPartyComponents,Tests,*.lib}}
+          
           echo here3.2
           # echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*"
           # ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" || echo oops
           echo got here5
-          ls -l $ARTIFACTS_DIR || :
+          ls -lR "${ARTIFACTS_DIR}" || :
           echo got here6
       - name: Archive Log Data
         if: always()
