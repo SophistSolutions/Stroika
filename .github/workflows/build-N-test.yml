@@ -346,8 +346,13 @@ jobs:
           path: |
             ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
             ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
+            ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/NPM-Install.txt 
+            ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/Build.txt 
             ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/WIX-Installer-Build-Output.txt
+            Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/CONFIG-OUT.txt
+            Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt
             Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
+            Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
         with:
