@@ -472,8 +472,10 @@ jobs:
   # Single deploy job since we're just deploying help to github pages
   deploy-doxygen:
     needs: doxygen
-    if: ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
+    # if: ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
+    # if: ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
     # if: (github.event.inputs.deploy_doxygen == 'true') || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
+    if: github.event.inputs.deploy_doxygen == 'true' || github.ref == 'refs/heads/v3-Release' 
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -483,6 +485,8 @@ jobs:
       - name: foo
         run: |
           echo $(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
+          echo $(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release'
+          echo ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
       - name: Checkout
         uses: actions/checkout@v4
       - name: Make Documentation (since I dont know how to copy result from other step - this is simpler)
