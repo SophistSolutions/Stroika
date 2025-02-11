@@ -2,19 +2,16 @@
 <doxygenlayout version="2.0">
 
   <navindex>
-    <tab type="classes" visible="yes" title="">
-      <tab type="classlist" visible="yes" title="Stroika Library Classes" intro=""/>
-    </tab>
-    <tab type="files" visible="yes" title="">
-      <tab type="filelist" visible="yes" title="Stroika Library Files" intro=""/>
-    </tab>
-    <!-- <tab type="namespaces" visible="yes" title="">
-      <tab type="namespacelist" visible="yes" title="Stroika Library Namespaces" intro=""/>
-    </tab> -->
+    <tab type="classlist" visible="yes" title="Stroika Library Classes" intro=""/>
+
+    <!--disable namespaces cuz somehow not being generated-->
+   <!-- <tab type="namespacelist" visible="yes" title="Stroika Library Namespaces" intro=""/>
+    <tab type="namespaces" visible="yes" title="Stroika Library Namespaces2" intro=""/>
+    -->
+
+    <tab type="filelist" visible="yes" title="Stroika Library Files" intro=""/>
 
     <tab type="pages" visible="yes" title="Miscelaneous Introductions FAQs, etc" intro=""/>
-    <!-- <tab type="usergroup" title="Documentation">
-    </tab> -->
   </navindex>
 
   <!-- Layout definition for a class page -->
