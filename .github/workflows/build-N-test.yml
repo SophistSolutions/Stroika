@@ -346,6 +346,7 @@ jobs:
           path: |
             ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
             ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
+            ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/WIX-Installer-Build-Output.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
         with:
