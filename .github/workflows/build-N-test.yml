@@ -338,6 +338,10 @@ jobs:
           ls -l "${NORMALIZED_WORKSPACE_DIR_}"
           echo NORMALIZED_WORKSPACE_DIR_/..:
           ls -l "${NORMALIZED_WORKSPACE_DIR_}/.."
+          echo NORMALIZED_WORKSPACE_DIR_/Samples-Traceroute:
+          ls -l "${NORMALIZED_WORKSPACE_DIR_}/Samples-Traceroute"
+          echo ls -ld "${NORMALIZED_WORKSPACE_DIR_}/Samples-*"
+          ls -ld "${NORMALIZED_WORKSPACE_DIR_}/Samples-*"
           echo hh
           ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           echo ${ARTIFACTS_DIR}
@@ -471,7 +475,7 @@ jobs:
   # Single deploy job since we're just deploying help to github pages
   deploy-doxygen:
     needs: doxygen
-    if: github.event.inputs.deploy_doxygen == 'true' || $(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release'
+    if: (github.event.inputs.deploy_doxygen == 'true') || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
