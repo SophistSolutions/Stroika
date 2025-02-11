@@ -8,14 +8,18 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-const { configure } = require('quasar/wrappers');
+//const { configure } = require('quasar/wrappers');
+import { defineConfig } from '#q-app/wrappers';
 
-const fs = require('fs');
+import fs from 'fs'
+import dotenv from 'dotenv'
+
+//const fs = require('fs');
 const packageLockJson = JSON.parse(fs.readFileSync('./package-lock.json'));
 const vueVersion =
   packageLockJson.packages['node_modules/@vue/runtime-core'].version;
 
-module.exports = configure(function (/* ctx */) {
+module.exports = defineConfig(function (/* ctx */) {
   return {
     eslint: {
       // fix: true,
@@ -72,7 +76,7 @@ module.exports = configure(function (/* ctx */) {
 
       // https://quasar.dev/quasar-cli-webpack/handling-process-env
       env: {
-        ...require('dotenv').config().parsed,
+        ...dotenv.config().parsed,
         VUE_VERSION: vueVersion,
         VUE_MY_HTML_APP_VERSION: packageLockJson.version,
       },
