@@ -336,26 +336,23 @@ jobs:
           echo "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/" ${ARTIFACTS_DIR}
           echo NORMALIZED_WORKSPACE_DIR_:
           ls -l "${NORMALIZED_WORKSPACE_DIR_}"
-          echo NORMALIZED_WORKSPACE_DIR_/..:
-          ls -l "${NORMALIZED_WORKSPACE_DIR_}/.."
-          echo NORMALIZED_WORKSPACE_DIR_/Samples-Traceroute:
-          ls -l "${NORMALIZED_WORKSPACE_DIR_}/Samples-Traceroute"
-          echo ls -ld "${NORMALIZED_WORKSPACE_DIR_}/Samples-*"
-          ls -ld "${NORMALIZED_WORKSPACE_DIR_}/Samples-*"
           echo hh
-          ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
-          echo ${ARTIFACTS_DIR}
+          echo ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}"
+          ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}"
+          # echo ${ARTIFACTS_DIR}
           echo gothere 2.2
-          ls -l $ARTIFACTS_DIR || :
+          echo ls -lR $ARTIFACTS_DIR || :
+          ls -lR $ARTIFACTS_DIR || :
           (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
           echo got here3
-          ls -l $ARTIFACTS_DIR || :
+          ls -lR $ARTIFACTS_DIR || :
           echo got here3.1
-          ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
+          # echo ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
+          # ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
           echo here3.2
-          echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*"
-          ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" || echo oops
+          # echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*"
+          # ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" || echo oops
           echo got here5
           ls -l $ARTIFACTS_DIR || :
           echo got here6
@@ -475,7 +472,8 @@ jobs:
   # Single deploy job since we're just deploying help to github pages
   deploy-doxygen:
     needs: doxygen
-    if: (github.event.inputs.deploy_doxygen == 'true') || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
+    if: ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
+    # if: (github.event.inputs.deploy_doxygen == 'true') || ($(echo '${{ github.ref }}' | sed 's,refs/heads/,,g') == 'v3-Release')
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
