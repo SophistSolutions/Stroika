@@ -347,6 +347,10 @@ jobs:
           echo ls -l "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-AppSettings"
           ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-AppSettings"
           
+          (echo cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-AppSettings" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
+          (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-AppSettings" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
+          echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
           (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*" "${ARTIFACTS_DIR}") || echo "error copying builds ignored"
           echo got here3
           ls -lR $ARTIFACTS_DIR || :
@@ -354,7 +358,7 @@ jobs:
           echo got here3.1
           # echo ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
           # ls -lR "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"
-          rm -rf "${ARTIFACTS_DIR}/{ThirdPartyComponents,Tests,*.lib}}
+          rm -rf "${ARTIFACTS_DIR}/{ThirdPartyComponents,Tests,*.lib}"
           
           echo here3.2
           # echo ls -l  "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/Samples-*"
