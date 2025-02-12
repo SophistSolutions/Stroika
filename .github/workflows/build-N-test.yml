@@ -343,11 +343,13 @@ jobs:
           mkdir -p \
             "${COPY_TO_ROOT_}" \
             "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/"
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/WIX-Installer-Build-Output.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
           
       - name: Archive Log Data
         if: always()
@@ -356,7 +358,7 @@ jobs:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
-            # ${{ env.ARTIFACTS_DIR }}
+            ${{ env.ARTIFACTS_DIR }}
             # ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/NPM-Install.txt 
             # ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/Build.txt 
             # ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/WIX-Installer-Build-Output.txt
