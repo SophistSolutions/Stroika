@@ -264,6 +264,7 @@ jobs:
       # see docker run for --cpus and --memory, and adjust --jobs accodingly (last done 2025-02-07), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
+      RUST_BACKTRACE: 1
     steps:
       - uses: actions/checkout@v4
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
@@ -351,6 +352,7 @@ jobs:
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
@@ -358,9 +360,9 @@ jobs:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
-            ${{ env.ARTIFACTS_DIR }}/PerformanceDump.txt
-            ${{ env.ARTIFACTS_DIR }}/BUILD_LOGS
-            ${{ env.ARTIFACTS_DIR }}/TRACE_LOGS
+            ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
+            ${{ env.ARTIFACTS_DIR }}BUILD_LOGS
+            ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
         with:
