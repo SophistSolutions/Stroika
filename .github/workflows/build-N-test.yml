@@ -346,7 +346,7 @@ jobs:
             "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/"
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/"
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
