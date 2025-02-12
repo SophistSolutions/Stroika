@@ -264,7 +264,6 @@ jobs:
       # see docker run for --cpus and --memory, and adjust --jobs accodingly (last done 2025-02-07), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
-      RUST_BACKTRACE: 1
     steps:
       - uses: actions/checkout@v4
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
@@ -289,8 +288,6 @@ jobs:
       - name: Print Info about docker system
         shell: "bash"
         run: |
-          rsync --version || echo no rsync installed
-          pacman --version || echo no pacman installed
           docker ps -a
           docker exec buildContainer systeminfo
           docker exec buildContainer echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
@@ -307,7 +304,7 @@ jobs:
       - name: Build Samples
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" -env RUST_BACKTRACE="$RUST_BACKTRACE" buildContainer make samples
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env RUST_BACKTRACE=1 buildContainer make samples
       - name: Build Tests
         shell: "bash"
         run: |
@@ -345,14 +342,24 @@ jobs:
             "${COPY_TO_ROOT_}" \
             "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/"
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/GoogleTest/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/"
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/"
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/WIX-Installer-Build-Output.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/GoogleTest/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/sqlite/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/Xerces/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" || :
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
