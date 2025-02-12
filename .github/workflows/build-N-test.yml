@@ -304,7 +304,7 @@ jobs:
       - name: Build Samples
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env RUST_BACKTRACE=1 buildContainer make samples
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env RUST_BACKTRACE=full buildContainer make samples
       - name: Build Tests
         shell: "bash"
         run: |
@@ -347,7 +347,8 @@ jobs:
             "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" \
             "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" \
-            "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/"
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/zlib/"
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/WIX-Installer-Build-Output.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/" || :
@@ -355,11 +356,15 @@ jobs:
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/boost/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/GoogleTest/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/libxml2/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/lzma/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/sqlite/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/sqlite/" || :
           cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/Xerces/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/Xerces/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/Xerces/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/zlib/BUILD-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/zlib/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/zlib/INSTALL-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/zlib/" || :
       - name: Archive Log Data
         if: always()
         uses: actions/upload-artifact@v4
