@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d15 {2025-02-10} {[diff](../../compare/3.0d14...3.0d15)}
+### 3.0d15 {2025-02-12} {[diff](../../compare/3.0d14...3.0d15)}
 
 #### TLDR
 
