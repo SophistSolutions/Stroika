@@ -288,6 +288,8 @@ jobs:
       - name: Print Info about docker system
         shell: "bash"
         run: |
+          rsync --version || echo no rsync installed
+          pacman --version || echo no pacman installed
           docker ps -a
           docker exec buildContainer systeminfo
           docker exec buildContainer echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
@@ -336,6 +338,16 @@ jobs:
           (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
           #PDB files are big - no need to save if I want to debug, will do from source/rebuild
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
+          COPY_FROM_ROOT_="${NORMALIZED_WORKSPACE_DIR_}/IntermediateFiles/${{ matrix.config_name }}/"
+          COPY_TO_ROOT_="${ARTIFACTS_DIR}/BUILD-LOGS/"
+          mkdir -p \
+            "${COPY_TO_ROOT_}" \
+            "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" \
+            "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/"
+          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/WIX-Installer-Build-Output.txt" "${COPY_TO_ROOT_}/Samples-HTMLUI/" || :
+          cp "${COPY_FROM_ROOT_}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${COPY_TO_ROOT_}/ThirdPartyComponents/openssl/" || :
           
       - name: Archive Log Data
         if: always()
@@ -344,18 +356,17 @@ jobs:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
-            # ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
-            # ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
+            # ${{ env.ARTIFACTS_DIR }}
             # ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/NPM-Install.txt 
             # ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/Build.txt 
             # ${{ github.workspace }}Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/WIX-Installer-Build-Output.txt
-            Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/NPM-Install.txt 
-            Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/Build.txt 
-            Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/WIX-Installer-Build-Output.txt
-            Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/CONFIG-OUT.txt
-            Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt
-            Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
-            Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
+            # Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/NPM-Install.txt 
+            # Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/Build.txt 
+            # Stroika/IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/WIX-Installer-Build-Output.txt
+            # Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/CONFIG-OUT.txt
+            # Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt
+            # Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
+            # Stroika/IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
         with:
