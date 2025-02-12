@@ -150,8 +150,14 @@ jobs:
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/*-Installer-Build-Output.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-CONF-TOOLS-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt
             /tmp/Trace*.txt
       - name: Archive Core-Dumps
         if: always()
@@ -242,10 +248,15 @@ jobs:
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/LOGS-ARCHIVE
+            IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/*-Installer-Build-Output.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-CONF-TOOLS-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt
             ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
@@ -304,7 +315,7 @@ jobs:
       - name: Build Samples
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" --env RUST_BACKTRACE=full buildContainer make samples
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make samples
       - name: Build Tests
         shell: "bash"
         run: |
