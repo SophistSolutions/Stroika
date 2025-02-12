@@ -103,8 +103,20 @@ COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
 COPY Windows-MSYS/.bash_profile $MSYS_DIR/home/
 
 ARG INSTALL_QUASAR=0
-SHELL ["cmd", "/S", "/C"]
-RUN IF %INSTALL_QUASAR%==1 ( pacman --noconfirm -S mingw-w64-x86_64-nodejs && npm i -g npm @quasar/cli )
+# SHELL ["cmd", "/S", "/C"]
+# RUN IF %INSTALL_QUASAR%==1 ( pacman --noconfirm -S mingw-w64-x86_64-nodejs && npm i -g npm @quasar/cli )
+SHELL ["powershell"]
+# It appears this installed nodejs 23.5 - which appears incompatible with quasar-vite 2.0 (recent)  - so
+# try installing nodejs 20 - from nodesource
+ARG MSYS_NODEJSURI='https://nodejs.org/dist/v20.9.0/node-v20.9.0-x64.msi'
+RUN IF ($env:INSTALL_QUASAR -eq 1) { \
+        Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_NODEJSURI" -OutFile node.msi; \
+        msiexec /i "node.msi" /L*V ".\node.msi.log" /quiet /norestart; \
+        $env:PATH = $env:PATH + ';C:\Program Files\node'; \
+        [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine); \
+        Remove-Item node.msi ;\
+        Remove-Item node.msi.log ;\
+    }
 
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
