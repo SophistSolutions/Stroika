@@ -8,19 +8,32 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-//const { configure } = require('quasar/wrappers');
-import { defineConfig } from '#q-app/wrappers';
+// @todo - NOTES on upgrading to quasar vite v2.0:
+// -    "@quasar/app-vite": "^2.0.9",
+// +    "@quasar/app-vite": "^1.0.0",
+// -    const { configure } = require('quasar/wrappers');
+// +    import { defineConfig } from '#q-app/wrappers';
+// -    const fs = require('fs');
+// +    import fs from 'fs'
+// -    const dotenv = require('dotenv');
+// +    import dotenv from 'dotenv'
+// -    module.exports = configure(function (/* ctx */) {
+// +    module.exports = defineConfig(function (/* ctx */) {
+// 
+//     BUT - sadly - doing this causes npm run build to crash with a RUST error and no great hints - running in
+//     docker container (but fine in regular shell, so some chance I can find magic env var incantation).
 
-import fs from 'fs'
-import dotenv from 'dotenv'
+const { configure } = require('quasar/wrappers'); // import { defineConfig } from '#q-app/wrappers';
+const fs = require('fs'); //import fs from 'fs'
+const dotenv = require('dotenv');   // import dotenv from 'dotenv'
 
-//const fs = require('fs');
 const packageLockJson = JSON.parse(fs.readFileSync('./package-lock.json'));
 const vueVersion =
   packageLockJson.packages['node_modules/@vue/runtime-core'].version;
 
-module.exports = defineConfig(function (/* ctx */) {
-  return {
+// module.exports = defineConfig(function (/* ctx */) {
+module.exports = configure(function (/* ctx */) {
+    return {
     eslint: {
       // fix: true,
       // include = [],
