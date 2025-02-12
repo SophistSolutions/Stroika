@@ -111,7 +111,7 @@ SHELL ["powershell"]
 ARG MSYS_NODEJSURI='https://nodejs.org/dist/v20.9.0/node-v20.9.0-x64.msi'
 RUN IF ($env:INSTALL_QUASAR -eq 1) { \
         Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_NODEJSURI" -OutFile node.msi; \
-        msiexec /i "node.msi" /L*V ".\node.msi.log" /quiet /norestart; \
+        Start-Process msiexec.exe -Wait -ArgumentList '/i "node.msi" /L*V ".\node.msi.log" /quiet /norestart'; \
         $env:PATH = $env:PATH + ';C:\Program Files\node'; \
         [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine); \
         Remove-Item node.msi ;\
