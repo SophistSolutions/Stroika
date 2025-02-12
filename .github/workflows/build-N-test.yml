@@ -307,7 +307,7 @@ jobs:
       - name: Build Samples
         shell: "bash"
         run: |
-          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make samples
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" -env RUST_BACKTRACE="$RUST_BACKTRACE" buildContainer make samples
       - name: Build Tests
         shell: "bash"
         run: |
