@@ -23,13 +23,12 @@ endif
 
 SHELL=/bin/bash
 
-
 # Only applies to run-tests
 export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 
 # Only applies make all
 # Needed for Windows - especially MSYS - where builds can take many hours (possibly due to newer version of doxygen) --LGP 2025-02-11
-ifeq ($(BuildPlatform),VisualStudio.Net-2022)
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 export ALL_INCLUDES_BUILDING_DOCUMENTATION?=0
 else
 export ALL_INCLUDES_BUILDING_DOCUMENTATION?=1
