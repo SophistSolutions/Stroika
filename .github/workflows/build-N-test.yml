@@ -136,6 +136,9 @@ jobs:
       - name: Make samples
         run: |
           make samples
+      - name: Build System Info
+        run: |
+          df -h
       - name: Archive Samples Results
         uses: actions/upload-artifact@v4
         with:
