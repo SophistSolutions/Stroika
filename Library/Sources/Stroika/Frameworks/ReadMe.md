@@ -2,6 +2,10 @@
 
 This folder contains all the Stroika Library Frameworks source code.
 
+- [Auth](Auth/)
+
+  Support for authentication. WebServer interceptor to capture Auth headers; Identity manager to track (thread_local) user identities. OAuth support (data structures and webservice apis).
+
 - [Led](Led/)
 
   A rich text processing and editing framework (includes sample LedIt word processor application, and LedLineIt, text editor)
@@ -25,7 +29,7 @@ This folder contains all the Stroika Library Frameworks source code.
 
 - [UPnP](UPnP/)
 
-  Universal Plug and Play
+  Universal Plug and Play.
   The only part currently implemented is SSDP
 
 - [Web Server](WebServer/)
