@@ -82,7 +82,9 @@ jobs:
       # (HISTORICAL): vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       # vm has 4 virtual CPUs, but 16GB ram, so jobs=4 (empirical. tried 5 and 6 with no significant improvement), and QUICK_BUILD avoids some internal testing --LGP 2025-02-07
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
-    container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
+      ARTIFACTS_DIR: "/Artifacts/"
+      ARTIFACTS_DIR_BUILDLOGS: "${ARTIFACTS_DIR}/BUILD_LOGS/"
+      container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
     steps:
       - uses: actions/checkout@v4
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
@@ -104,10 +106,37 @@ jobs:
       - name: Make third-party-components
         run: |
           make third-party-components
-      - name: Save space
-        if: false
+      - name: Copy Build Artifacts (Log Data etc)
+        if: always()
         run: |
-          make clean
+          mkdir -p ${ARTIFACTS_DIR_BUILDLOGS}
+          mkdir -p \
+            "${ARTIFACTS_DIR_BUILDLOGS}" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/sqlite/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/"
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/sqlite/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/sqlite/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/Xerces/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/Xerces/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
+      - name: Save space (Safe)
+        if: true
+        run: |
+          make --directory=ThirdPartyComponents --silent clean
       - name: Make libraries and tools
         run: |
           make libraries tools
@@ -142,6 +171,18 @@ jobs:
       - name: Build System Info
         run: |
           df -h
+      - name: Copy Build Artifacts (Sample apps etc)
+        if: always()
+        run: |
+          mkdir -p $ARTIFACTS_DIR
+          (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
+          rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
+          COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
+          mkdir -p \
+            "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" \
+          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/WIX-Installer-Build-Output.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
       - name: Archive Samples Results
         uses: actions/upload-artifact@v4
         with:
@@ -156,16 +197,8 @@ jobs:
           name: Log Data (${{ matrix.displayTargetName }})
           if-no-files-found: warn
           path: |
-            Builds/${{ matrix.config_name }}/PerformanceDump.txt
-            IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/*-Installer-Build-Output.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-CONF-TOOLS-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt
-            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt
+            ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
+            ${{ env.ARTIFACTS_DIR_BUILDLOGS }}
             /tmp/Trace*.txt
       - name: Archive Core-Dumps
         if: always()
