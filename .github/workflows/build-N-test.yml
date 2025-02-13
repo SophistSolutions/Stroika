@@ -82,7 +82,7 @@ jobs:
       # (HISTORICAL): vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       # vm has 4 virtual CPUs, but 16GB ram, so jobs=4 (empirical. tried 5 and 6 with no significant improvement), and QUICK_BUILD avoids some internal testing --LGP 2025-02-07
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
-      ARTIFACTS_DIR: "/Artifacts/"
+      ARTIFACTS_DIR: "/tmp/Artifacts/"
       ARTIFACTS_DIR_BUILDLOGS: "${ARTIFACTS_DIR}/BUILD_LOGS/"
     container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
     steps:
@@ -134,7 +134,7 @@ jobs:
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
       - name: Save space (Safe)
-        if: true
+        if: always()
         run: |
           make --directory=ThirdPartyComponents --silent clean
       - name: Make libraries and tools
