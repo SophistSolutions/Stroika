@@ -84,7 +84,7 @@ jobs:
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
       ARTIFACTS_DIR: "/Artifacts/"
       ARTIFACTS_DIR_BUILDLOGS: "${ARTIFACTS_DIR}/BUILD_LOGS/"
-      container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
+    container: ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
     steps:
       - uses: actions/checkout@v4
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
