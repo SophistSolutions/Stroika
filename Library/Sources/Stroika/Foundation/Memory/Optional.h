@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Memory {
     optional<OUT_T> OptionallyCopy (const optional<IN_T>& in);
     template <typename OUT_T, typename IN_T, invocable<IN_T> IN_TO_OUT_CONVERTER>
     optional<OUT_T> OptionallyCopy (const optional<IN_T>& in, IN_TO_OUT_CONVERTER&& cvt)
-        requires (convertible_to<invoke_result_t<IN_TO_OUT_CONVERTER, IN_T>, OUT_T>);
+        requires (convertible_to<invoke_result_t<IN_TO_OUT_CONVERTER, IN_T>, optional<OUT_T>>);
 
     /**
      *  wrappers on std c++23 monadic optional support, til we can assume c++23
