@@ -52,6 +52,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr string_view kAllow                         = "Allow"sv;
         constexpr string_view kAuthorization                 = "Authorization"sv;
         constexpr string_view kCacheControl                  = "Cache-Control"sv;
+        constexpr string_view kContentDisposition            = "Content-Disposition"sv;
         constexpr string_view kContentEncoding               = "Content-Encoding"sv;
         constexpr string_view kContentLength                 = "Content-Length"sv;
         constexpr string_view kContentType                   = "Content-Type"sv;
