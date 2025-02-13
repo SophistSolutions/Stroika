@@ -28,6 +28,7 @@ especially those they need to be aware of when upgrading.
 - HTMLUI Sample
   - changed from createWebHashHistory to createWebHistory - to allow working with oauth (see git commit b6b06567ea)
   - patch security warning / upgrade - PITA - and not super helpful - but git commit e144b9d79b if you want to try
+  - must be careful to use nodejs 20 for this to work (fixed docker containers to fetch this version)
 - Streams refactoring:
   - Streams/TextReader.h -> Streams/BinaryToText.h
   - Streams/TextWriter.h -> Streams/TextToBinary.h
@@ -43,7 +44,8 @@ especially those they need to be aware of when upgrading.
     - dont use make all - use make libraries tools tests samples - since docs builds can take a very long time (MSYS especially)
   - Github actions
     - fixed output of samples apps from windows jobs
-    - broke out jobs doxygen and deploy-doxygen (pushes to github pages), due to very bad performance of these builds sometimes.
+    - broke out jobs doxygen and deploy-doxygen (pushes to github pages), due to very bad performance of these builds sometimes
+    - various cleanups of log data capturing (zip file artifacts)
 - Documentation
   - Significant cleanup to doxygen, and now publish to https://sophistsolutions.github.io/Stroika/
   - Misc docs cleanups everywhere

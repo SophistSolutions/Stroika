@@ -104,6 +104,9 @@ jobs:
       - name: Make third-party-components
         run: |
           make third-party-components
+      - name: Save space
+        if: false
+        run: |
           make clean
       - name: Make libraries and tools
         run: |
