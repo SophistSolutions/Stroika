@@ -39,7 +39,7 @@
     "eslint-plugin-vue": "^8.5.0",
     "prettier": "^2.5.1",
     "typescript": "^5.0",
-    "workbox-build": "^6.5.3",
+    "workbox-build": "^7.3.0",
     "workbox-cacheable-response": "^6.5.3",
     "workbox-core": "^6.5.3",
     "workbox-expiration": "^6.5.3",
