@@ -91,6 +91,9 @@ namespace Stroika::Foundation::IO::Network {
      *      This class provides no support for site-local addresses because they have been deprecated
      *      in http://www.ietf.org/rfc/rfc3879.txt
      *
+     * TODO:
+     *      \todo   Consider if InternetAddress CTOR should allow empty method, and default CTOR?
+     *
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      static_assert (totally_ordered<InternetAddress>);
      */

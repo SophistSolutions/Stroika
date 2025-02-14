@@ -77,7 +77,7 @@ namespace Stroika::Foundation::IO::Network {
                 return sizeof (fSocketAddress_V6_);
             }
             /*case AF_UNIX:
-                @todo something like this - add to variant union - but didnt compile on windoze...
+                @todo something like this - add to variant union - but didn't compile on windoze...
                 return sizeof (sockaddr_un);*/
             default: {
                 return sizeof (fSocketAddressStorage_);
@@ -93,10 +93,10 @@ namespace Stroika::Foundation::IO::Network {
         Require (IsInternetAddress ());
         switch (fSocketAddress_.sa_family) {
             case AF_INET: {
-                return InternetAddress (fSocketAddress_V4_.sin_addr);
+                return InternetAddress{fSocketAddress_V4_.sin_addr};
             }
             case AF_INET6: {
-                return InternetAddress (fSocketAddress_V6_.sin6_addr);
+                return InternetAddress{fSocketAddress_V6_.sin6_addr};
             }
             default: {
                 AssertNotReached ();

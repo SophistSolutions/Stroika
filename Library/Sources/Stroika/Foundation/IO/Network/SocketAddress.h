@@ -18,8 +18,7 @@
 #include "Stroika/Foundation/IO/Network/Port.h"
 
 /**
- * TODO:
- *  @todo   Optimize storage for case when sockaddr_storage is too large.
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::IO::Network {
@@ -27,6 +26,12 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  Friendly C++ wrapper on Berkley socket sockaddr structure (so sockaddr, sockaddr_in, sockaddr_storage, etc).
      *  A SocketAddress is the combination of an @see InternetAddress with a port#.
+     * 
+     *  \note we support empty/clear () APIs, because the underlying model supports UNSPEC (AF_UNSPEC).
+     * 
+     * TODO:
+     *      @todo   Optimize storage for case when sockaddr_storage is too large (128 bytes vs 28 for ipv6); use InlineBuffer<byte> with default
+     *              buffer size of IPV4 (16)? maybe
      */
     class SocketAddress {
     public:
