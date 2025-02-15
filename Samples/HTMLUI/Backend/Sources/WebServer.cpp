@@ -67,7 +67,7 @@ namespace {
     const ConstantProperty<FileSystemRequestHandler::Options> kStaticSiteHandlerOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_{
             {RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)"sv, eCaseInsensitive}, CacheControl::kImmutable},
-            {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{24h}.As<int32_t> ()}},
+            {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{5min}.As<int32_t> ()}},
         };
         return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<filesystem::path>{"index.html"sv},
                                                  .fCacheControlSettings  = kFSCacheControlSettings_,
