@@ -166,6 +166,10 @@ namespace Stroika::Frameworks::Auth::OAuth {
     public:
         /**
          *  https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
+         * 
+         *  \note - confusingly - despite docs above to the contrary, if you are not getting a refresh_token back it could
+         *          be because google doesn't return it except on the first get token call
+         *          (https://stackoverflow.com/questions/10827920/not-receiving-google-oauth-refresh-token)
          */
         nonvirtual TokenResponse GetToken (const TokenRequest& tr) const;
 
