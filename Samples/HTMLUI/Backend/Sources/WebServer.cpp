@@ -66,7 +66,17 @@ namespace {
 namespace {
     const ConstantProperty<FileSystemRequestHandler::Options> kStaticSiteHandlerOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_{
+            /*
+             *  Values with hashes in names never change value - you get new hashes when the files do, so these files are immutable, and
+             *  can be cached forever by the browser.
+             */
             {RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)"sv, eCaseInsensitive}, CacheControl::kImmutable},
+            /*
+             *  Top level (other) files, like "Home.html", its less clear how long to tell the browser they will be valid.
+             *  If you pick to large a time, when you update your site it can lead to grave confusion. Pick a time that's too slow, and you
+             *  needlessly generate web traffic (though still should do conditional gets and not actually transfer much data). 5 minutes
+             *  is a compromise I've found suggested someplace on the web.
+             */
             {RegularExpression::kAny, CacheControl{.fCacheability = CacheControl::ePublic, .fMaxAge = Duration{5min}.As<int32_t> ()}},
         };
         return FileSystemRequestHandler::Options{.fDefaultIndexFileNames = Sequence<filesystem::path>{"index.html"sv},
