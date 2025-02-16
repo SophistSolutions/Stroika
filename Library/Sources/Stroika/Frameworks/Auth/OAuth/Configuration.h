@@ -87,6 +87,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *     https://dev-84941762.okta.com/.well-known/openid-configuration?client_id=0oa5km1v306LXN57y5d7
          * 
          *  \see https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
+         *  \see https://openid.net/specs/openid-connect-rpinitiated-1_0.html
          */
         optional<URI> openid_configuration_uri;
 
