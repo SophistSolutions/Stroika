@@ -85,6 +85,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *     https://account.apple.com/.well-known/openid-configuration
          *     https://www.facebook.com/.well-known/openid-configuration
          *     https://dev-84941762.okta.com/.well-known/openid-configuration?client_id=0oa5km1v306LXN57y5d7
+         * 
+         *  \see https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
          */
         optional<URI> openid_configuration_uri;
 
