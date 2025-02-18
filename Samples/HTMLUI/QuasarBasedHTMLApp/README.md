@@ -1,6 +1,6 @@
 # Stroika Sample HTMLUI (html-quasar)
 
-WRONG_- DRAFT
+Stroika sample showing how to combine web services and a simple HTML UI (here using Quasar and Vue3).
 
 ## Configure
 
