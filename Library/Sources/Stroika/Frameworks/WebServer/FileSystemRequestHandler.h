@@ -106,7 +106,7 @@ namespace Stroika::Frameworks::WebServer {
          *              // webpack generates js/css files with a hex/hash prefix, so those are immutable
          *              pair<RegularExpression, CacheControl>{RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)", eCaseInsensitive}, CacheControl::kImmutable},
          *              // treat everything else as valid to be cached for a day (very arbitrary)
-         *              pair<RegularExpression, CacheControl>{RegularExpression::kAny, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}},
+         *              pair<RegularExpression, CacheControl>{RegularExpression::kAny, CacheControl{.fMaxAge = Duration{5min}.As<int32_t> ()}},
          *          };
          *      \endcode      
          */
