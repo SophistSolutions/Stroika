@@ -195,7 +195,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         uint64_t fCaptureSetChangeCount_{0}; // doesn't need to be atomic because only updated/checked holding capturesets lock
         Execution::Synchronized<Collection<NewMeasurementsCallbackType>> fCallbacks_;
         Execution::Synchronized<MeasurementSet>                          fCurrentMeasurementSet_;
-        Execution::ThreadPool fThreadPool_; // Subtle - construct last so auto-destructed first (shuts down threads)
+        Execution::ThreadPool fThreadPool_{Execution::ThreadPool::Options{.fThreadCount = 0, .fThreadPoolName = "SystemPerformanceCapturer"}}; // Subtle - construct last so auto-destructed first (shuts down threads)
     };
 
 }
