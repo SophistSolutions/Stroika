@@ -22,7 +22,7 @@
  *  TODO:
  *      @todo   AddTask () implementation is HORRIBLE (for case where fAddBlockTimeout != 0) and needs to be rewritten with condition variables.
  * 
- *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
+ *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation (but probably rarely called).
  *
  *      @todo   CONSIDER USE OF blocking q - I think it will help. Or figure out
  *              how these tie together. Or rewrite using condition_variable.
@@ -299,33 +299,33 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-        *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
-        *
-        *   When called with a specific set of tasks, this procedure waits for exactly those tasks. When called with no task
-        *   argument, it waits until GetTaskCount () == 0.
-        *
-        *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.
-        *         But - its perfectly legal to add new tasks after this returns, so the task count could increase (if tasks were added) after
-        *         this returns without exception (obviously there are likely more tasks if it returns with a timeout exception).
-        *
-        *  \note ***Cancelation Point***
-        */
+         *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
+         *
+         *   When called with a specific set of tasks, this procedure waits for exactly those tasks. When called with no task
+         *   argument, it waits until GetTaskCount () == 0.
+         *
+         *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.
+         *         But - its perfectly legal to add new tasks after this returns, so the task count could increase (if tasks were added) after
+         *         this returns without exception (obviously there are likely more tasks if it returns with a timeout exception).
+         *
+         *  \note ***Cancelation Point***
+         */
         nonvirtual void WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSeconds timeout = Time::kInfinity) const;
         nonvirtual void WaitForTasksDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
         /**
-        *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
-        *
-        *   When called with a specific set of tasks, this procedure waits for exactly those tasks. When called with no task
-        *   argument, it waits until GetTaskCount () == 0.
-        *
-        *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.
-        *         But - its perfectly legal to add new tasks after this returns, so the task count could increase (if tasks were added) after
-        *         this returns without exception (obviously there are likely more tasks if it returns with a timeout exception).
-        *
-        *  \note ***Cancelation Point***
-        */
+         *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
+         *
+         *   When called with a specific set of tasks, this procedure waits for exactly those tasks. When called with no task
+         *   argument, it waits until GetTaskCount () == 0.
+         *
+         *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.
+         *         But - its perfectly legal to add new tasks after this returns, so the task count could increase (if tasks were added) after
+         *         this returns without exception (obviously there are likely more tasks if it returns with a timeout exception).
+         *
+         *  \note ***Cancelation Point***
+         */
         nonvirtual void WaitForTasksDoneUntil (const Traversal::Iterable<TaskType>& tasks, Time::TimePointSeconds timeoutAt) const;
         nonvirtual void WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
@@ -415,7 +415,7 @@ namespace Stroika::Foundation::Execution {
             TaskType                     fTask;
             optional<Characters::String> fName;
         };
-        mutable mutex fCriticalSection_; // fCriticalSection_ protectes fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
+        mutable mutex fCriticalSection_; // fCriticalSection_ protects fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
             // Each should be a very short critical section, except for SetPoolSize()
         atomic<bool>                    fAborted_{false};
         optional<QMax>                  fDefaultQMax_;
