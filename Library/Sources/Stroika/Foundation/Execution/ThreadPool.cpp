@@ -62,7 +62,7 @@ public:
                     Assert (fCurTask != nullptr);
                 }
             }
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
+            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
                 Time::TimePointSeconds taskStartedAt;
                 {
                     [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
@@ -150,7 +150,7 @@ unsigned int ThreadPool::GetPoolSize () const
 
 void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
-    Debug::TraceContextBumper ctx{"ThreadPool::SetPoolSize", "poolSize={}"_f, poolSize};
+    Debug::TraceContextBumper ctx{"ThreadPool::SetPoolSize", "newPoolSize={}, *this={}"_f, poolSize, ToString ()};
     Require (not fAborted_);
     [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     DbgTrace ("fThreads_.size ()={}"_f, fThreads_.size ());
@@ -195,7 +195,7 @@ auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Charac
                 blockedAtLeastOnce = true;
             }
 #endif
-            Execution::ThrowTimeoutExceptionAfter (timeoutAt);
+            ThrowTimeoutExceptionAfter (timeoutAt);
             Execution::Sleep (500ms); // @todo fix and use condition variable - but good news is can only happen if fAddBlockTimeout != 0s
         }
         else {
@@ -213,7 +213,7 @@ auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::Stri
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         fPendingTasks_.push_back (PendingTaskInfo_{.fTask = task, .fName = name});
-#if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("fPendingTasks.size () now = {}"_f, (int)fPendingTasks_.size ());
 #endif
         ++fCollectedTaskStats_.fNumberOfTasksAdded;
@@ -329,7 +329,7 @@ bool ThreadPool::IsRunning (const TaskType& task) const
 void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSeconds timeout) const
 {
     Debug::TraceContextBumper ctx{"ThreadPool::WaitForTask"};
-    // Inefficient / VERY SLOPPY impl - @todo fix use WaitableEvent or conidtion variables...
+    // Inefficient / VERY SLOPPY impl - @todo fix use WaitableEvent or condition variables...
     using Time::TimePointSeconds;
     TimePointSeconds timeoutAt = timeout + Time::GetTickCount ();
     while (true) {
@@ -337,7 +337,7 @@ void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSeconds timeou
             return;
         }
         Time::DurationSeconds remaining = timeoutAt - Time::GetTickCount ();
-        Execution::ThrowTimeoutExceptionAfter (timeoutAt);
+        ThrowTimeoutExceptionAfter (timeoutAt);
         Execution::Sleep (min<Time::DurationSeconds> (remaining, 1.0s));
     }
 }
@@ -409,7 +409,7 @@ void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::T
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
-        L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, tasks=%s, timeoutAt=%f", ToString ().c_str (), ToString (tasks).c_str (), timeoutAt)};
+        "ThreadPool::WaitForTasksDoneUntil", "*this={}, tasks={}, timeoutAt={}"_f, ToString (), ToString (tasks), timeoutAt)};
 #endif
     Thread::CheckForInterruption ();
     for (const auto& task : tasks) {
@@ -422,11 +422,11 @@ void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::T
 void ThreadPool::WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil",
-                                                                                 L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ThreadPool::WaitForTasksDoneUntil",
+                                                                                 "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
 #endif
     Thread::CheckForInterruption ();
-    // @todo - use waitableevent - this is a horribe implementation
+    // @todo - use WaitablEvent - this is a horrible implementation
     while (GetTasksCount () != 0) {
         ThrowTimeoutExceptionAfter (timeoutAt);
         Execution::Sleep (100ms);
@@ -468,9 +468,8 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ThreadPool::AbortAndWaitForDone_",
-                                                                                 "*this={}, timeoutAt={}"_f, ToString (), timeoutAt)};
-    Debug::TimingTrace        tt{1.0s};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ThreadPool::AbortAndWaitForDone_", "*this={}"_f, ToString ())};
+    Debug::TimingTrace tt{1.0s};
 #endif
     try {
         Abort_ (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
@@ -480,11 +479,17 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
             fThreads_.Apply ([&] (const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
         }
         Thread::AbortAndWaitForDone (threadsToShutdown);
+        {
+            [[maybe_unused]] lock_guard critSec{fCriticalSection_}; // they should all be shutdown now
+            fThreads_.Apply ([&] (const TPInfo_& i) { Assert (i.fThread.IsDone ()); });
+            fThreads_.RemoveAll ();
+        }
     }
     catch (...) {
         DbgTrace ("ThreadPool::AbortAndWaitForDone_: serious bug/exception"_f);
         AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
     }
+    Ensure (fThreads_.empty ());
 }
 
 String ThreadPool::ToString () const
@@ -497,7 +502,10 @@ String ThreadPool::ToString () const
             sb << "pool-name: '{}'"_f(*fThreadPoolName_);
         }
     }
-    sb << ", pending-task-count: {}"_f(GetPendingTasksCount ());
+    if (fThreadPoolName_) {
+        sb << ", "sv;
+    }
+    sb << "pending-task-count: {}"_f(GetPendingTasksCount ());
     sb << ", running-task-count: {}"_f(GetRunningTasks ().size ());
     {
         [[maybe_unused]] lock_guard critSec{fCriticalSection_};
@@ -515,7 +523,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
     Require (*result == nullptr);
     while (true) {
         if (fAborted_) [[unlikely]] {
-            Execution::Throw (Thread::AbortException::kThe);
+            Throw (Thread::AbortException::kThe);
         }
 
         {
