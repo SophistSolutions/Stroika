@@ -106,10 +106,10 @@ String Auth::TokenRevocationRequest::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "fOAuthProvider: "sv << fOAuthProvider;
-    sb << "access_token: "sv << fAccessToken;
+    sb << "provider: "sv << fOAuthProvider;
+    sb << "accessToken: "sv << fAccessToken;
     if (fRefreshToken) {
-        sb << ", fRefreshToken: "sv << fRefreshToken;
+        sb << ", refreshToken: "sv << fRefreshToken;
     }
     sb << "}"sv;
     return sb;
@@ -171,8 +171,8 @@ const ObjectVariantMapper Auth::kMapper = [] () {
 
     mapper.AddClass<Auth::TokenRevocationRequest> ({
         {"provider"sv, &Auth::TokenRevocationRequest::fOAuthProvider},
-        {"access_token"sv, &Auth::TokenRevocationRequest::fAccessToken},
-        {"refresh_token"sv, &Auth::TokenRevocationRequest::fRefreshToken},
+        {"accessToken"sv, &Auth::TokenRevocationRequest::fAccessToken},
+        {"refreshToken"sv, &Auth::TokenRevocationRequest::fRefreshToken},
     });
 
     mapper.AddCommonType<optional<String>> ();
@@ -457,7 +457,7 @@ const ObjectVariantMapper About::kMapper = [] () {
     mapper.AddClass<About> ({
         {"applicationVersion"sv, &About::fOverallApplicationVersion},
         {"serverInfo"sv, &About::fAPIServerInfo},
-        {"healthstatus"sv, &About::fHealthStatus},
+        {"healthStatus"sv, &About::fHealthStatus},
     });
 
     return mapper;
@@ -465,7 +465,7 @@ const ObjectVariantMapper About::kMapper = [] () {
 
 /*
  ********************************************************************************
- ************************************ Model::kMapper ****************************
+ ********************************** Model::kMapper ******************************
  ********************************************************************************
  */
 const ObjectVariantMapper Stroika::Samples::HTMLUI::Model::kMapper = [] () {

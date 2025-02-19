@@ -76,9 +76,9 @@ async function login() {
  */
 const expiresIn = ref("");
 function recomputeExpiresIn_() {
-    expiresIn.value = auth.authorizationTokens.value.expires_at.toRelative();
+    expiresIn.value = auth.authorizationTokens.value?.expires_at?.toRelative();
 }
-watch (auth.authorizationTokens, () => {
+watch(auth.authorizationTokens, () => {
     recomputeExpiresIn_();
 });
 
@@ -120,11 +120,7 @@ function logout() {
                     "http://localhost:9000/oauth/callback",
                     "http://localhost:9001/oauth/callback",
                 ],
-                "scopes" : [
-                    "email",
-                    "openid",
-                    "profile"
-                ],
+                "scopes" : [ "email", "openid", "profile" ],
                 "clientSecret" : "ITS A SECRET"
             }
         ]

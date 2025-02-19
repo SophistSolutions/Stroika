@@ -7,11 +7,11 @@ import {
     AuthorizationResponse,
     RedirectRequestHandler,
     FetchRequestor, LocalStorageBackend,
-    TokenRequestHandler,BaseTokenRequestHandler,RevokeTokenRequest
+    BaseTokenRequestHandler, RevokeTokenRequest
 } from '@openid/appauth';
 import { DateTime, Duration } from "luxon";
 
-import { fetchTokens, fetchUserInfo } from 'src/proxy/API';
+import { fetchTokens, fetchUserInfo, revokeTokens } from 'src/proxy/API';
 import { gRuntimeConfiguration } from 'boot/configuration';
 
 export interface IOAuthProviderConfig {
@@ -57,6 +57,7 @@ export interface IUserInfo {
 
 const kStoreExtraStuffInSessionForSpeed_ = false;
 const kDebugLogging_ = false;
+const kSupportAuthJSBasedRevocation_ = false;
 
 /**
  *  API published by the plugin, on the  app.globalProperties.$auth field and the app.provide name (not sure why both
@@ -142,7 +143,7 @@ class AuthService {
     private fAvailableProviderConfigs_: Ref<IOAuthProviderConfig[] | undefined> = ref(undefined);
     private fActiveProviderConfig_: Ref<IOAuthProviderConfig | undefined> = ref(undefined);
 
-    private fAutoRefreshTokenThisMuchBeforeExpiry_: Ref<Duration | undefined> = ref(Duration.fromDurationLike(55 * 60 * 1000));
+    private fAutoRefreshTokenThisMuchBeforeExpiry_: Ref<Duration | undefined> = ref(Duration.fromDurationLike(5 * 60 * 1000));
     private fAutoRefreshTimeoutCallback_?: NodeJS.Timeout;
 
     private fUser_: Ref<IUserInfo | undefined> = ref(undefined);
@@ -193,7 +194,7 @@ class AuthService {
             if (this.fAutoRefreshTokenThisMuchBeforeExpiry_.value) {
                 dur = dur.minus(this.fAutoRefreshTokenThisMuchBeforeExpiry_.value);
                 this.fAutoRefreshTimeoutCallback_ = setTimeout(() => {
-                    this.autoRefreshTokenIExpired_();
+                    this.autoRefreshAccessToken_();
                 }, dur.as('milliseconds'));
             }
         }
@@ -256,21 +257,16 @@ class AuthService {
     //
     // note - we do this with setTimeout instead of on-demand when our async methods accessed, because that works better with
     // reactive elements (which dont callback to us in async calls as needed).
-    private async autoRefreshTokenIExpired_() {
+    private async autoRefreshAccessToken_() {
         const ti = this.fTokensInfo_.value;
-      //  if (ti && ti.expires_at < DateTime.now()) {
-            console.log('Expired auth token - so trying to refresh it');
-            if (ti?.refresh_token) {
-                // 
-                const o =      await this.makeTokenRequest_({refresh_token: ti.refresh_token});
-
-                console.log('tried refresh token and it returned', o);
-                return;
-                
-            }
-            // try an actual login again
-            await this.login();// best option? - naybe can do better _ think I've refreed better in the past with extra param saying prev login and msft auth server
-       // }
+        console.log('Nearly expired auth token - so trying to refresh it');
+        if (ti?.refresh_token) {
+            const o = await this.makeTokenRequest_({ refresh_token: ti.refresh_token });
+            console.log('Successfully refreshed access_token with refresh_token', o);
+            return;
+        }
+        // try an actual login again
+        await this.login();// best option? - maybe can do better ; think I've done better in the past with extra param saying prev login and msft auth server
     }
 
     private async getLastAuthorizationCode_(): Promise<string | undefined> {
@@ -320,7 +316,7 @@ class AuthService {
             try {
                 const authorization_code = await this.getLastAuthorizationCode_();
                 const authorizationRequest = await this.getLastAuthorizationRequest_();
-                await this.makeTokenRequest_({authorization_code,authorizationRequest});
+                await this.makeTokenRequest_({ authorization_code, authorizationRequest });
             }
             catch (e) {
                 console.log('makeTokenRequest_ failed - seems google doesnt allow PKCE as of 2025-01-27 for web hosted JS apps - but authjs library requires it!', e);
@@ -335,7 +331,9 @@ class AuthService {
     private fForceConsentPrompt_ = false;
 
     public async login(args?: { useProvider?: IOAuthProviderConfig, redirectTo?: string }) {
-        // Workaround wierd issue with google - use prompt: consent to force gen of refresh token
+        // Workaround weird issue with google - use prompt: consent to force gen of refresh token
+        // Maybe not needed if you use the 'logout' feature (currently in use) - but this appears to cause
+        // no problems, and sometimes fixes missing refresh token issues --LGP 2025-02-19
         if (this.fTokensInfo_.value && this.fTokensInfo_.value.refresh_token == undefined) {
             this.fForceConsentPrompt_ = true;
         }
@@ -359,9 +357,8 @@ class AuthService {
     }
 
     public async logout() {
-
         const tokens2Revoke = this.fTokensInfo_.value;
-        const oauthConfig: IOAuthProviderConfig | undefined = await (async () : Promise<IOAuthProviderConfig | undefined> => {
+        const oauthConfig: IOAuthProviderConfig | undefined = await (async (): Promise<IOAuthProviderConfig | undefined> => {
             try {
                 return await this.assureActiveProvider_();
             }
@@ -369,14 +366,21 @@ class AuthService {
                 return undefined;
             }
         })();
-        const configuration: AuthorizationServiceConfiguration | undefined = await (async () : Promise<AuthorizationServiceConfiguration | undefined> => {
-            try {
-                return await this.fetchServiceConfiguration_();
-            }
-            catch {
-                return undefined;
-            }
-        })();
+
+        let configuration: AuthorizationServiceConfiguration | undefined;
+        if (kSupportAuthJSBasedRevocation_) {
+            configuration = await (async (): Promise<AuthorizationServiceConfiguration | undefined> => {
+                try {
+                    return await this.fetchServiceConfiguration_();
+                }
+                catch {
+                    return undefined;
+                }
+            })();
+        }
+        if (tokens2Revoke && oauthConfig) {
+            await revokeTokens({ apiServer: gRuntimeConfiguration.API_ROOT, provider: oauthConfig.provider, refreshToken: tokens2Revoke.refresh_token, accessToken: tokens2Revoke.access_token });
+        }
 
         await this.cleanOutCachedPluginData_();
         this.activeProvider.value = undefined;
@@ -386,21 +390,21 @@ class AuthService {
 
         if (tokens2Revoke && configuration && oauthConfig) {
             console.log('revoking token', tokens2Revoke.refresh_token);
-            console.log('configuration=', configuration);
-            // revoke the token
-            const revocationHandler = new BaseTokenRequestHandler( new FetchRequestor());
-            const result = await  revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
-                token: tokens2Revoke.refresh_token,
-                client_id: oauthConfig.clientId,
-                // client_secret: oauthConfig.clientSecret
-            }));
-            console.log ('revocation result', result);
-            const result2 = await  revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
-                token: tokens2Revoke.access_token,
-                client_id: oauthConfig.clientId,
-                client_secret: "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"
-            }));
-            console.log ('revocation result2', result);
+            if (kSupportAuthJSBasedRevocation_) {
+                console.log('configuration=', configuration);
+                // revoke the token(s) - really only need todo to refresh token OR the access token since doing for refresh token should automatically do both
+                const revocationHandler = new BaseTokenRequestHandler(new FetchRequestor());
+                const result = await revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
+                    token: tokens2Revoke.refresh_token,
+                    client_id: oauthConfig.clientId,
+                    // client_secret: oauthConfig.clientSecret
+                }));
+                const result2 = await revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
+                    token: tokens2Revoke.access_token,
+                    client_id: oauthConfig.clientId,
+                    client_secret: "THE REASON THIS DOESNT WORK WITH GOOGLE AND WHY WE DO IT IN THE BACKEND"
+                }));
+            }
         }
 
     }
@@ -428,7 +432,7 @@ class AuthService {
     // to perform the actual token request.
     //
     // NOTE - alternatively, we could just grab the ID_token out of the first /auth request, if it provides an ID_Token (google does with the right scopes).
-    private async makeTokenRequest_(args: {authorization_code?:string, authorizationRequest?:AuthorizationRequest, refresh_token?:string} ) {
+    private async makeTokenRequest_(args: { authorization_code?: string, authorizationRequest?: AuthorizationRequest, refresh_token?: string }) {
         const oauthConfig: IOAuthProviderConfig = await this.assureActiveProvider_();
         if (kDebugLogging_) {
             console.log(`do call back to backend: authorization_code=${args.authorization_code} refresh_token=${args.refresh_token}, and verifier=${args.authorizationRequest?.internal && args.authorizationRequest?.internal['code_verifier']}`)
@@ -440,7 +444,7 @@ class AuthService {
         const tokensInfo = await fetchTokens(gRuntimeConfiguration.API_ROOT, { authorizationCode: args.authorization_code, refreshToken: args.refresh_token, provider, applicationId, redirectURL, codeVerifier }) as ITokenInfo;
         if (tokensInfo.refresh_token == undefined && args.refresh_token) {
             console.log('refresh_token not returned from server, but we had one, so using the one we had');
-            tokensInfo.refresh_token = args.refresh_token ;
+            tokensInfo.refresh_token = args.refresh_token;
         }
         this.preserve_('tokensInfo', tokensInfo);
         if (typeof tokensInfo.expires_at == "string") {

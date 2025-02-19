@@ -37,7 +37,7 @@ export interface IOAuthProviderConfiguration {
   openid_configuration_uri?: string;
 }
 
-export async function getOAuthConfigurations(apiServer: string): Promise<{clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[]}> {
+export async function getOAuthConfigurations(apiServer: string): Promise<{ clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[] }> {
   try {
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/configurations`, kFetchOptions_);
     throwIfError_(response);
@@ -60,6 +60,22 @@ export async function fetchTokens(apiServer: string, params: object): Promise<ob
     throwIfError_(response);
     const data = (await response.json()); // could embellish validation here
     return data;
+  } catch (e) {
+    Logger.error(e);
+    throw e;
+  }
+}
+
+
+export async function revokeTokens(args: { apiServer: string, provider: string, refreshToken?: string, accessToken?: string }): Promise<void> {
+  try {
+    const response: Response = await fetch(`${args.apiServer}/api/auth/oauth/tokens/revoke`, {
+      ...kFetchOptions_,
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: args.provider, refreshToken: args.refreshToken, accessToken: args.accessToken })
+    });
+    throwIfError_(response);
   } catch (e) {
     Logger.error(e);
     throw e;

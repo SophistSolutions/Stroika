@@ -125,7 +125,12 @@ namespace Stroika::Samples::HTMLUI::Model {
             optional<String> fRefreshToken;
 
             nonvirtual String ToString () const;
+
+            template <Common::IAnyOf<Stroika::Frameworks::Auth::OAuth::TokenRevocationRequest> T>
+            nonvirtual T As () const;
         };
+        template <>
+        Stroika::Frameworks::Auth::OAuth::TokenRequest Auth::TokenRequest::As () const;
 
         /**
          * @brief  Information from OAuth2 server about the user.

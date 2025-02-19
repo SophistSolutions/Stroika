@@ -36,6 +36,18 @@ namespace Stroika::Samples::HTMLUI::Model {
 
     /*
      ********************************************************************************
+     **************************** Auth::TokenRevocationRequest **********************
+     ********************************************************************************
+     */
+    template <>
+    inline Stroika::Frameworks::Auth::OAuth::TokenRevocationRequest Auth::TokenRevocationRequest::As () const
+    {
+        return Stroika::Frameworks::Auth::OAuth::TokenRevocationRequest{
+            .access_token = fAccessToken, .refresh_token = fRefreshToken, .client_secret = nullopt};
+    }
+
+    /*
+     ********************************************************************************
      *********************************** Auth::UserInfo *****************************
      ********************************************************************************
      */

@@ -4,9 +4,9 @@ import { useQuasar } from "quasar";
 import moment from "moment";
 import prettyBytes from "pretty-bytes";
 
-import { kCompileTimeConfiguration } from "../config/config";
-import { IAbout, IAPIEndpoint, IComponent, IDatabase } from "../models/IAbout";
-import { useMainAppStateStore } from "../stores/MainApp-State-store";
+import { kCompileTimeConfiguration } from "src/config/config";
+import { IAbout, IAPIEndpoint, IComponent, IDatabase } from "src/models/IAbout";
+import { useMainAppStateStore } from "src/stores/MainApp-State-store";
 import { PluralizeNoun } from "src/utils/Linguistics";
 import { useConfigurationStore } from "stores/Configuration-Store";
 import { gRuntimeConfiguration } from 'boot/configuration';

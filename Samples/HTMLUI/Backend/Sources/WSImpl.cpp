@@ -50,6 +50,8 @@ using namespace Stroika::Frameworks::WebService;
 using namespace Stroika::Frameworks::SystemPerformance;
 
 using IO ::Network::HTTP::ClientErrorException;
+using Stroika::Frameworks::Auth::OAuth::ClientConfiguration;
+using Stroika::Frameworks::Auth::OAuth::ProviderConfiguration;
 
 using namespace Stroika::Samples::HTMLUI;
 
@@ -138,39 +140,38 @@ Auth::Configuration WSImpl::auth_oauth_configuration_GET () const
         .fProviders = kDefaultProviderConfigurations};
 }
 
-Auth::TokenResponse WSImpl::auth_oauth_tokens_POST (const Auth::TokenRequest& tr) const
-{
-    Debug::TraceContextBumper ctx{"auth_oauth_tokens_POST", "tr={}"_f, tr};
-
-    using Stroika::Frameworks::Auth::OAuth::ClientConfiguration;
-    using Stroika::Frameworks::Auth::OAuth::ProviderConfiguration;
-
-    auto lookupConfigs = [] (const Auth::TokenRequest& tr) -> tuple<ProviderConfiguration, ClientConfiguration> {
-        auto lookupClientSecret = [] (const Auth::TokenRequest& tr) -> String {
+namespace {
+    auto LookupConfigs_ (const String& oauthProvider, const optional<String>& appIDOrAny = nullopt) -> tuple<ProviderConfiguration, ClientConfiguration>
+    {
+        auto lookupClientSecret = [] (const String& oauthProvider, const optional<String>& appIDOrAny) -> ClientConfiguration {
             if (auto o = NullCoalesce (gAppConfiguration->fAuth).fOAuthClients) {
                 for (const auto& i : *o) {
-                    if (i.fApplicationID == tr.fApplicationID and i.fProvider == tr.fOAuthProvider) {
-                        static const auto kExcept_ = RuntimeErrorException{"No client secret found for OAuth request"sv};
-                        return Memory::ValueOfOrThrow (i.fClientSecret, kExcept_);
+                    if (i.fProvider == oauthProvider and (i.fApplicationID == appIDOrAny or appIDOrAny == nullopt)) {
+                        return i;
                     }
                 }
             }
             Throw (RuntimeErrorException{"No matching applicationId found for OAuth request"sv});
         };
-        static const auto kExcept_ = RuntimeErrorException{"Unrecognized provider name"sv};
-        return make_tuple (
-            Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (tr.fOAuthProvider, kExcept_),
-            ClientConfiguration{.fProvider = tr.fOAuthProvider, .fApplicationID = tr.fApplicationID, .fClientSecret = lookupClientSecret (tr)});
-    };
+        static const auto     kExcept_ = RuntimeErrorException{"Unrecognized provider name"sv};
+        ProviderConfiguration pc = Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (oauthProvider, kExcept_);
+        ClientConfiguration   cc = lookupClientSecret (oauthProvider, appIDOrAny);
+        static const auto     kExceptNOClientSecret_ = RuntimeErrorException{"No client secret found for OAuth request"sv};
+        Memory::ValueOfOrThrow (cc.fClientSecret, kExceptNOClientSecret_);
+        return make_tuple (pc, cc);
+    }
+}
 
+Auth::TokenResponse WSImpl::auth_oauth_tokens_POST (const Auth::TokenRequest& tr) const
+{
+    Debug::TraceContextBumper ctx{"auth_oauth_tokens_POST", "tr={}"_f, tr};
     if (tr.fApplicationID.empty ()) {
         Throw (ClientErrorException{StatusCodes::kBadRequest, "Missing application_id"sv});
     }
     if (tr.fRedirectURL.As<String> ().empty ()) {
         Throw (ClientErrorException{StatusCodes::kBadRequest, "Missing redirect_uri"sv});
     }
-
-    auto [providerConfig, clientConfig] = lookupConfigs (tr);
+    auto [providerConfig, clientConfig] = LookupConfigs_ (tr.fOAuthProvider);
     Stroika::Frameworks::Auth::OAuth::Fetcher      f{providerConfig};
     Stroika::Frameworks::Auth::OAuth::TokenRequest treq  = tr.As<Stroika::Frameworks::Auth::OAuth::TokenRequest> ();
     treq.client_secret                                   = clientConfig.fClientSecret;
@@ -180,6 +181,13 @@ Auth::TokenResponse WSImpl::auth_oauth_tokens_POST (const Auth::TokenRequest& tr
 
 void WSImpl::auth_oauth_tokens_revoke_POST (const Auth::TokenRevocationRequest& tr) const
 {
+    Debug::TraceContextBumper ctx{"auth_oauth_tokens_revoke_POST", "tr={}"_f, tr};
+    auto [providerConfig, clientConfig] = LookupConfigs_ (tr.fOAuthProvider); // should this api take appid, or just force provider to be unique
+    Stroika::Frameworks::Auth::OAuth::Fetcher                f{providerConfig};
+    Stroika::Frameworks::Auth::OAuth::TokenRevocationRequest treq = tr.As<Stroika::Frameworks::Auth::OAuth::TokenRevocationRequest> ();
+    treq.client_id                                                = clientConfig.fApplicationID;
+    treq.client_secret                                            = clientConfig.fClientSecret;
+    f.RevokeTokens (treq);
 }
 
 Auth::UserInfo WSImpl::auth_oauth_user_info_GET () const
