@@ -132,7 +132,6 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *              ProviderConfiguration{.name = "MyOKTAAccount", .openid_configuration_uri = "https://dev-84941762.okta.com/.well-known/openid-configuration?client_id=0oa5km1v306LXN57y5d7"}
          *              .FetchAdditionsFromOpenIDConfigurationURI ();
          *      \endcode
-         *      
          */
         nonvirtual ProviderConfiguration FetchAdditionsFromOpenIDConfigurationURI () const;
 
