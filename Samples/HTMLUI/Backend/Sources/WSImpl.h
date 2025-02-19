@@ -45,6 +45,9 @@ namespace Stroika::Samples::HTMLUI {
         virtual Auth::TokenResponse auth_oauth_tokens_POST (const Auth::TokenRequest& tr) const override;
 
     public:
+        virtual void auth_oauth_tokens_revoke_POST (const Auth::TokenRevocationRequest& tr) const override;
+
+    public:
         virtual Auth::UserInfo auth_oauth_user_info_GET () const override;
 
     public:

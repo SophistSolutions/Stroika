@@ -163,9 +163,6 @@ Auth::TokenResponse WSImpl::auth_oauth_tokens_POST (const Auth::TokenRequest& tr
             ClientConfiguration{.fProvider = tr.fOAuthProvider, .fApplicationID = tr.fApplicationID, .fClientSecret = lookupClientSecret (tr)});
     };
 
-    if (tr.fAuthorizationCode.empty ()) {
-        Throw (ClientErrorException{StatusCodes::kBadRequest, "Missing authorization code"sv});
-    }
     if (tr.fApplicationID.empty ()) {
         Throw (ClientErrorException{StatusCodes::kBadRequest, "Missing application_id"sv});
     }
@@ -179,6 +176,10 @@ Auth::TokenResponse WSImpl::auth_oauth_tokens_POST (const Auth::TokenRequest& tr
     treq.client_secret                                   = clientConfig.fClientSecret;
     Stroika::Frameworks::Auth::OAuth::TokenResponse resp = f.GetToken (treq);
     return Auth::TokenResponse{resp};
+}
+
+void WSImpl::auth_oauth_tokens_revoke_POST (const Auth::TokenRevocationRequest& tr) const
+{
 }
 
 Auth::UserInfo WSImpl::auth_oauth_user_info_GET () const

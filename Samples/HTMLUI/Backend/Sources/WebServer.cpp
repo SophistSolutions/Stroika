@@ -172,6 +172,12 @@ public:
                             ActiveCallCounter_ acc{*this};
                             return fWSImpl_->auth_oauth_tokens_POST (r);
                         }}}
+            , Route{IO::Network::HTTP::MethodsRegEx::kPost, "api/(v1/)?auth/oauth/tokens/revoke/?"_RegEx, ObjectRequestHandler::Factory{
+                        {Auth::kMapper},
+                        [this] (const Auth::TokenRevocationRequest& r) {
+                            ActiveCallCounter_ acc{*this};
+                            return fWSImpl_->auth_oauth_tokens_revoke_POST (r);
+                        }}}
             , Route{"api/(v1/)?auth/oauth/user_info/?"_RegEx, ObjectRequestHandler::Factory{
                         {Auth::kMapper},
                         [this] () {
@@ -242,7 +248,7 @@ public:
         , fWSImpl_{ make_shared<WSImpl>(   [this](const WSImpl::WithWebServerCallbackType& f) { f (fConnectionMgr_);}  )}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
                          , kRoutes_
-                         , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 20,
+                         , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 10,
                                                      .fDefaultResponseHeaders            = kDefaultResponseHeaders_,
                                                      .fCollectStatistics                 = true}}
         , fStatsIntervalTimerAdder_{[this] () {
@@ -312,6 +318,7 @@ const WebServiceMethodDescription WebServer::Rep_::kAuth_{
         "curl -v {{ShowAsExternalURI}}api/v1/auth/oauth/configurations"sv,
         "curl -v -X POST -H \"Content-Type: application/json\" {{ShowAsExternalURI}}api/v1/auth/oauth/tokens -d \"{\\\"authorizationCode\\\": \\\"123\\\", \\\"provider\\\": \\\"google\\\", \\\"applicationId\\\": \\\"xxx\\\", \\\"redirectURL\\\": \\\"http://localhost:9000/oauth/google\\\" }\""sv,
         "curl -v -X POST -H \"Content-Type: application/json\" {{ShowAsExternalURI}}api/v1/auth/oauth/tokens -d \"{\\\"authorizationCode\\\": \\\"456\\\", \\\"provider\\\": \\\"google\\\", \\\"applicationId\\\": \\\"xxx\\\", \\\"redirectURL\\\": \\\"http://localhost:9000/oauth/google\\\", \\\"codeVerifier\\\": \\\"OPTIONAL-PASS-IF-USING-PKCE\\\" }\""sv,
+        "curl -v -X POST -H \"Content-Type: application/json\" {{ShowAsExternalURI}}api/v1/auth/oauth/tokens/revoke -d \"{\\\"provider\\\": \\\"google\\\", \\\"access_token\\\": \\\"xxx\\\", \\\"refresh_token\\\": \\\"xxxx\\\" }\""sv,
         "curl -v {{ShowAsExternalURI}}api/v1/auth/oauth/user_info -H \"Authorization: Bearer XXX\" ; echo where XXX is authentication_token from above"sv,
     },
     Sequence<String>{
@@ -323,6 +330,7 @@ const WebServiceMethodDescription WebServer::Rep_::kAuth_{
         "<li>see https://developers.google.com/identity/protocols/oauth2/web-server#httprest for info on getting authenication code</li>",
         "<li>GET auth/oauth/configurations - returns available oauth configurations (from list of redirect urls you can pick any). </li>",
         "<li>For 'tokens' API - just uses (hidden) client-secret and calls auth server token endpoint and returns its results;</li>",
+        "<li>For revoke API, refresh_token is optional. Silently does nothing if token revocation not supported by the provider API</li>",
         "<li>user_info endpoint expects 'BEARER TOKEN' of auth token to be provided, and returns 401 otherwise, but if OK, returns info from user_info auth endpoint (which you might have gotten from JWT id_token).</li>"sv},
 };
 const WebServiceMethodDescription WebServer::Rep_::kConnections_{

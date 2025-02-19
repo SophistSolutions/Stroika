@@ -77,6 +77,12 @@ namespace Stroika::Samples::HTMLUI {
     public:
         /**
          * @brief  
+         */
+        virtual void auth_oauth_tokens_revoke_POST (const Auth::TokenRevocationRequest& tr) const = 0;
+
+    public:
+        /**
+         * @brief  
          * 
          * @return Auth::UserInfo 
          */

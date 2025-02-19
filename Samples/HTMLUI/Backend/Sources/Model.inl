@@ -14,7 +14,7 @@ namespace Stroika::Samples::HTMLUI::Model {
     {
         return Stroika::Frameworks::Auth::OAuth::TokenRequest{.client_id     = fApplicationID,
                                                               .code          = fAuthorizationCode,
-                                                              .grant_type    = "authorization_code"sv,
+                                                              .refresh_token = fRefreshToken,
                                                               .client_secret = nullopt,
                                                               .redirect_uri  = fRedirectURL,
                                                               .code_verifier = fCodeVerifier};

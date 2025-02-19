@@ -66,9 +66,9 @@ namespace Stroika::Samples::HTMLUI::Model {
         };
 
         /**
-        * @brief  OAuth2 works with gui client requesting a short-lived authorization_code from the web browser (typically)
-        *   and then the GUI client exchanges that for a longer-lived access_token (and sometimes a refresh_token, and/or id_token).
-        */
+         * @brief  OAuth2 works with gui client requesting a short-lived authorization_code from the web browser (typically)
+         *   and then the GUI client exchanges that for a longer-lived access_token (and sometimes a refresh_token, and/or id_token).
+         */
         struct TokenRequest {
             /**
              * @brief e.g. google - index into ??
@@ -80,7 +80,8 @@ namespace Stroika::Samples::HTMLUI::Model {
             // magic code typically extracted from redirect URL parameters (not fRedirectURL above but what is ACTAULLY sent to that URL)
             // note this somehow 'contains' - perhaps via pointer - the requested scopes, id_tokens, etc....
             // note also - be careful to URL-decode the value when extracting from a URL, before placing here
-            String fAuthorizationCode;
+            optional<String> fAuthorizationCode;
+            optional<String> fRefreshToken;
 
             optional<String> fCodeVerifier;
 
@@ -109,6 +110,19 @@ namespace Stroika::Samples::HTMLUI::Model {
             Set<String>      scopes;
             optional<String> refresh_token;
             optional<String> id_token;
+
+            nonvirtual String ToString () const;
+        };
+
+        /**
+         */
+        struct TokenRevocationRequest {
+            /**
+             * @brief e.g. google - index into ??
+             */
+            String           fOAuthProvider;
+            String           fAccessToken;
+            optional<String> fRefreshToken;
 
             nonvirtual String ToString () const;
         };

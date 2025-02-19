@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineComponent, computed, watch, ref, Ref, onMounted, getCurrentInstance } from "vue";
+import { defineComponent, computed, watch, ref, Ref, onMounted, getCurrentInstance, onUnmounted } from "vue";
 import { QSelectOption } from 'quasar';
-import { DateTime } from "luxon";
+// import { DateTime } from "luxon";
 
 import { useRouter, useRoute } from "vue-router";
 import { useConfigurationStore } from "../stores/Configuration-Store";
@@ -36,8 +36,22 @@ watch(availableProviders, () => {
     }
 })
 
+let iterervalTimer: NodeJS.Timeout | undefined = undefined;
+
 onMounted(() => {
     console.log("in /user page on-mounted auth=", auth);
+
+    recomputeExpiresIn_()
+    iterervalTimer = setInterval(function () {
+        recomputeExpiresIn_()
+    }, 30 * 1000);
+});
+
+onUnmounted(() => {
+    console.log("in /user page on-mounted auth=", auth);
+    if (iterervalTimer) {
+        clearInterval(iterervalTimer);
+    }
 });
 
 const isAuthenticated = computed(() => auth.user.value != null);
@@ -52,9 +66,22 @@ async function login() {
         await auth.login({ useProvider });
     }
     catch (e) {
-        alert(`Error during login: ${e}`)
+        alert(`Error during login: ${e?.message}`);
     }
 }
+
+/*
+ *  Somewhat confusing limitation of vue reactivity - not working well with Luxons 'time' - or noticing that time going by
+ *  changes these relative values. So we must update manually with setInterval
+ */
+const expiresIn = ref("");
+function recomputeExpiresIn_() {
+    expiresIn.value = auth.authorizationTokens.value.expires_at.toRelative();
+}
+watch (auth.authorizationTokens, () => {
+    recomputeExpiresIn_();
+});
+
 function logout() {
     auth.logout();
 }
@@ -146,7 +173,7 @@ function logout() {
                             <div class="col-1"></div>
                             <div class="col-1">ExpiresAt</div>
                             <div class="col">{{ auth.authorizationTokens.value.expires_at }} ({{
-                                auth.authorizationTokens.value.expires_at.toRelative() }})</div>
+                                expiresIn }})</div>
                         </div>
                         <div class="row" v-if="auth.authorizationTokens.value?.id_token">
                             <div class="col-1"></div>

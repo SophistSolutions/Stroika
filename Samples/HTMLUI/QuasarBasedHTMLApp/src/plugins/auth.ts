@@ -7,6 +7,7 @@ import {
     AuthorizationResponse,
     RedirectRequestHandler,
     FetchRequestor, LocalStorageBackend,
+    TokenRequestHandler,BaseTokenRequestHandler,RevokeTokenRequest
 } from '@openid/appauth';
 import { DateTime, Duration } from "luxon";
 
@@ -141,7 +142,7 @@ class AuthService {
     private fAvailableProviderConfigs_: Ref<IOAuthProviderConfig[] | undefined> = ref(undefined);
     private fActiveProviderConfig_: Ref<IOAuthProviderConfig | undefined> = ref(undefined);
 
-    private fAutoRefreshTokenThisMuchBeforeExpiry_: Ref<Duration | undefined> = ref(Duration.fromDurationLike(5 * 60 * 1000));
+    private fAutoRefreshTokenThisMuchBeforeExpiry_: Ref<Duration | undefined> = ref(Duration.fromDurationLike(55 * 60 * 1000));
     private fAutoRefreshTimeoutCallback_?: NodeJS.Timeout;
 
     private fUser_: Ref<IUserInfo | undefined> = ref(undefined);
@@ -250,28 +251,27 @@ class AuthService {
         await this.clearPreserved_();
     }
 
-
-    private async autoRefreshTokenIfNeeded_() {
-        //
-    }
-
     // If logged in, but logged in with expired token, try to auto-refresh that token
     // if not logged in, do nothing
+    //
+    // note - we do this with setTimeout instead of on-demand when our async methods accessed, because that works better with
+    // reactive elements (which dont callback to us in async calls as needed).
     private async autoRefreshTokenIExpired_() {
         const ti = this.fTokensInfo_.value;
-        if (ti && ti.expires_at < DateTime.now()) {
+      //  if (ti && ti.expires_at < DateTime.now()) {
             console.log('Expired auth token - so trying to refresh it');
-            if (ti.refresh_token) {
+            if (ti?.refresh_token) {
                 // 
-                console.log('should have tried refresh token first but NYI')
+                const o =      await this.makeTokenRequest_({refresh_token: ti.refresh_token});
+
+                console.log('tried refresh token and it returned', o);
+                return;
+                
             }
             // try an actual login again
             await this.login();// best option? - naybe can do better _ think I've refreed better in the past with extra param saying prev login and msft auth server
-        }
-
-        // todo add setTimeout - whenver we get new token - so this invoked when the token would timeout
+       // }
     }
-
 
     private async getLastAuthorizationCode_(): Promise<string | undefined> {
         if (!this.fLastAuthorizationCode_) {
@@ -318,7 +318,9 @@ class AuthService {
         else {
             await this.checkForAuthorizationResponse_();
             try {
-                await this.makeTokenRequest_();
+                const authorization_code = await this.getLastAuthorizationCode_();
+                const authorizationRequest = await this.getLastAuthorizationRequest_();
+                await this.makeTokenRequest_({authorization_code,authorizationRequest});
             }
             catch (e) {
                 console.log('makeTokenRequest_ failed - seems google doesnt allow PKCE as of 2025-01-27 for web hosted JS apps - but authjs library requires it!', e);
@@ -330,7 +332,13 @@ class AuthService {
         this.fRouter_.push(this.fBackToAfterRedirectRoute_)
     }
 
+    private fForceConsentPrompt_ = false;
+
     public async login(args?: { useProvider?: IOAuthProviderConfig, redirectTo?: string }) {
+        // Workaround wierd issue with google - use prompt: consent to force gen of refresh token
+        if (this.fTokensInfo_.value && this.fTokensInfo_.value.refresh_token == undefined) {
+            this.fForceConsentPrompt_ = true;
+        }
         await this.logout();    // else we could leave some data structures with inconsistent values - partialled logged into one and partially another
 
         this.fBackToAfterRedirectRoute_ = args?.redirectTo || this.fRouter_.currentRoute.value;
@@ -351,11 +359,50 @@ class AuthService {
     }
 
     public async logout() {
+
+        const tokens2Revoke = this.fTokensInfo_.value;
+        const oauthConfig: IOAuthProviderConfig | undefined = await (async () : Promise<IOAuthProviderConfig | undefined> => {
+            try {
+                return await this.assureActiveProvider_();
+            }
+            catch {
+                return undefined;
+            }
+        })();
+        const configuration: AuthorizationServiceConfiguration | undefined = await (async () : Promise<AuthorizationServiceConfiguration | undefined> => {
+            try {
+                return await this.fetchServiceConfiguration_();
+            }
+            catch {
+                return undefined;
+            }
+        })();
+
         await this.cleanOutCachedPluginData_();
         this.activeProvider.value = undefined;
         this.fUser_.value = undefined;
         this.fTokensInfo_.value = undefined;
         this.setupAutoRefreshCallback_();
+
+        if (tokens2Revoke && configuration && oauthConfig) {
+            console.log('revoking token', tokens2Revoke.refresh_token);
+            console.log('configuration=', configuration);
+            // revoke the token
+            const revocationHandler = new BaseTokenRequestHandler( new FetchRequestor());
+            const result = await  revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
+                token: tokens2Revoke.refresh_token,
+                client_id: oauthConfig.clientId,
+                // client_secret: oauthConfig.clientSecret
+            }));
+            console.log ('revocation result', result);
+            const result2 = await  revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
+                token: tokens2Revoke.access_token,
+                client_id: oauthConfig.clientId,
+                client_secret: "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"
+            }));
+            console.log ('revocation result2', result);
+        }
+
     }
     get activeProvider(): Ref<IOAuthProviderConfig | undefined> {
         return this.fActiveProviderConfig_;
@@ -381,20 +428,20 @@ class AuthService {
     // to perform the actual token request.
     //
     // NOTE - alternatively, we could just grab the ID_token out of the first /auth request, if it provides an ID_Token (google does with the right scopes).
-    private async makeTokenRequest_() {
+    private async makeTokenRequest_(args: {authorization_code?:string, authorizationRequest?:AuthorizationRequest, refresh_token?:string} ) {
         const oauthConfig: IOAuthProviderConfig = await this.assureActiveProvider_();
-        const code = await this.getLastAuthorizationCode_();
-        const lastAuthorizationRequest = await this.getLastAuthorizationRequest_();
         if (kDebugLogging_) {
-            console.log(`do call back to backend: code=${code} and verifier=${lastAuthorizationRequest?.internal && lastAuthorizationRequest?.internal['code_verifier']}`)
+            console.log(`do call back to backend: authorization_code=${args.authorization_code} refresh_token=${args.refresh_token}, and verifier=${args.authorizationRequest?.internal && args.authorizationRequest?.internal['code_verifier']}`)
         }
-
-        const authorizationCode = code ?? "";
         const applicationId = oauthConfig.clientId;
-        const codeVerifier: string | undefined = lastAuthorizationRequest?.internal && lastAuthorizationRequest?.internal['code_verifier'];
+        const codeVerifier: string | undefined = args.authorizationRequest?.internal && args.authorizationRequest?.internal['code_verifier'];
         const redirectURL = oauthConfig.redirectUri;
         const provider = oauthConfig.provider;
-        const tokensInfo = await fetchTokens(gRuntimeConfiguration.API_ROOT, { authorizationCode, provider, applicationId, redirectURL, codeVerifier }) as ITokenInfo;
+        const tokensInfo = await fetchTokens(gRuntimeConfiguration.API_ROOT, { authorizationCode: args.authorization_code, refreshToken: args.refresh_token, provider, applicationId, redirectURL, codeVerifier }) as ITokenInfo;
+        if (tokensInfo.refresh_token == undefined && args.refresh_token) {
+            console.log('refresh_token not returned from server, but we had one, so using the one we had');
+            tokensInfo.refresh_token = args.refresh_token ;
+        }
         this.preserve_('tokensInfo', tokensInfo);
         if (typeof tokensInfo.expires_at == "string") {
             tokensInfo.expires_at = DateTime.fromISO(tokensInfo.expires_at);
@@ -404,6 +451,7 @@ class AuthService {
         const userInfo = await fetchUserInfo(gRuntimeConfiguration.API_ROOT, tokensInfo.access_token);
         this.fUser_.value = userInfo;
         this.preserve_('userInfo', this.fUser_.value);
+        return tokensInfo;
     }
 
     private async assureOAuthConfigs_(): Promise<IOAuthProviderConfig[]> {
@@ -449,13 +497,11 @@ class AuthService {
             scope: oauthConfig.scope,
             response_type: AuthorizationRequest.RESPONSE_TYPE_CODE,
             state: undefined,
-
-            // use prompt: consent to force gen of refresh token
-
-            // We currently dont use offline/refersh tokens, but might, and not sure why you would want to specify consent prompt...
-            // extras: { 'prompt': 'consent', 'access_type': 'offline' }
-            extras: { 'access_type': 'offline' }
+            extras: { 'access_type': 'offline' }    // offline to get refresh token
         });
+        if (this.fForceConsentPrompt_) {
+            request.extras['prompt'] = 'consent';   // not sure when we would logically want todo this, but it appears to be needed for google to get refresh token when re-logging in
+        }
         const configuration = await this.fetchServiceConfiguration_()
         // make the authorization request (in the web browser - send sending urls to auth server)
         this.fAuthorizationHandler_.performAuthorizationRequest(configuration, request);

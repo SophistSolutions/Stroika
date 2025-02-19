@@ -62,7 +62,12 @@ String Auth::TokenRequest::ToString () const
     sb << "OAuthProvider: "sv << fOAuthProvider;
     sb << ", applicationID: "sv << fApplicationID;
     sb << ", redirectURL: "sv << fRedirectURL;
-    sb << ", authorizationCode: "sv << fAuthorizationCode;
+    if (fAuthorizationCode) {
+        sb << ", authorizationCode: "sv << fAuthorizationCode;
+    }
+    if (fRefreshToken) {
+        sb << ", refreshToken: "sv << fRefreshToken;
+    }
     if (fCodeVerifier) {
         sb << ", codeVerifier: "sv << fCodeVerifier;
     }
@@ -87,6 +92,24 @@ String Auth::TokenResponse::ToString () const
     }
     if (id_token) {
         sb << ", id_token: "sv << id_token;
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+/*
+ ********************************************************************************
+ ************************ Auth::TokenRevocationRequest **************************
+ ********************************************************************************
+ */
+String Auth::TokenRevocationRequest::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "fOAuthProvider: "sv << fOAuthProvider;
+    sb << "access_token: "sv << fAccessToken;
+    if (fRefreshToken) {
+        sb << ", fRefreshToken: "sv << fRefreshToken;
     }
     sb << "}"sv;
     return sb;
@@ -126,12 +149,14 @@ const ObjectVariantMapper Auth::kMapper = [] () {
     });
 
     mapper.AddCommonType<String> ();
+    mapper.AddCommonType<optional<String>> ();
     mapper.AddCommonType<URI> ();
     mapper.AddClass<Auth::TokenRequest> ({
         {"applicationId"sv, &Auth::TokenRequest::fApplicationID},
         {"provider"sv, &Auth::TokenRequest::fOAuthProvider},
         {"redirectURL"sv, &Auth::TokenRequest::fRedirectURL},
         {"authorizationCode"sv, &Auth::TokenRequest::fAuthorizationCode},
+        {"refreshToken"sv, &Auth::TokenRequest::fRefreshToken},
         {"codeVerifier"sv, &Auth::TokenRequest::fCodeVerifier},
     });
 
@@ -142,6 +167,12 @@ const ObjectVariantMapper Auth::kMapper = [] () {
         {"scopes"sv, &Auth::TokenResponse::scopes},
         {"refresh_token"sv, &Auth::TokenResponse::refresh_token},
         {"id_token"sv, &Auth::TokenResponse::id_token},
+    });
+
+    mapper.AddClass<Auth::TokenRevocationRequest> ({
+        {"provider"sv, &Auth::TokenRevocationRequest::fOAuthProvider},
+        {"access_token"sv, &Auth::TokenRevocationRequest::fAccessToken},
+        {"refresh_token"sv, &Auth::TokenRevocationRequest::fRefreshToken},
     });
 
     mapper.AddCommonType<optional<String>> ();
