@@ -68,7 +68,8 @@ function logout() {
         <div class="justify-center row">
             <q-card class="col-11 pageCard">
                 <q-card-section>
-                    <div class="row">Configuration (availableProviders - from Backend webservices and its configuration):</div>
+                    <div class="row">Configuration (availableProviders - from Backend webservices and its
+                        configuration):</div>
                     <pre v-if="auth.availableProviders.value">{{
                         JSON.stringify(auth.availableProviders.value, null, 2)
                     }}</pre>
@@ -108,7 +109,8 @@ function logout() {
 
             <q-card class="col-11 pageCard" v-if="activeProvider">
                 <q-card-section>
-                    <div class="row">Configuration (activeProvider - if logged in, will be valid, but can be valid even if not logged in):</div>
+                    <div class="row">Configuration (activeProvider - if logged in, will be valid, but can be valid even
+                        if not logged in):</div>
                     <div class="row">
                         <pre v-if="activeProvider">{{
                             JSON.stringify(activeProvider, null, 2)
@@ -120,23 +122,45 @@ function logout() {
             <q-card class="col-11 pageCard">
                 <q-card-section>
                     <div class="row">Login/Logout:</div>
-                    <div class="q-gutter-y-sm column">
+                    <div class="q-gutter-y-sm">
                         <div class="row" v-if="isAuthenticated">
-                            You are logged in as "{{ personName }}" (email: {{ personEMail }})
-                            <img v-if="personImageURL" :src="personImageURL" />
+                            <div class="col-1"></div>
+                            <div class="col-1">
+                                User Info:
+                            </div>
+                            <div class="col">
+                                You are logged in as "{{ personName }}" (email: {{ personEMail }})
+                                <img v-if="personImageURL" :src="personImageURL" style="height: .25in; width: .25in;" />
+                            </div>
                         </div>
                         <div class="row" v-if="auth.authorizationTokens.value">
-                           Access Token: {{ auth.authorizationTokens.value.access_token }}
+                            <div class="col-1"></div>
+                            <div class="col-1">
+                                Access Token:
+                            </div>
+                            <div class="col">
+                                <pre>{{ auth.authorizationTokens.value.access_token }}</pre>
+                            </div>
                         </div>
                         <div class="row" v-if="auth.authorizationTokens.value">
-                           ExpiresAt: {{ auth.authorizationTokens.value.expires_at }}
-                           ({{ auth.authorizationTokens.value.expires_at.diff (DateTime.now(), "minutes").minutes }} minutes)
+                            <div class="col-1"></div>
+                            <div class="col-1">ExpiresAt</div>
+                            <div class="col">{{ auth.authorizationTokens.value.expires_at }} ({{
+                                auth.authorizationTokens.value.expires_at.toRelative() }})</div>
                         </div>
                         <div class="row" v-if="auth.authorizationTokens.value?.id_token">
-                           ID Token: {{ auth.authorizationTokens.value.id_token }}
+                            <div class="col-1"></div>
+                            <div class="col-1">ID Token:</div>
+                            <div class="col">
+                                <pre>{{ auth.authorizationTokens.value.id_token }}</pre>
+                            </div>
                         </div>
                         <div class="row" v-if="auth.authorizationTokens.value?.refresh_token">
-                           Refresh Token: {{ auth.authorizationTokens.value.refresh_token }}
+                            <div class="col-1"></div>
+                            <div class="col-1">Refresh Token:</div>
+                            <div class="col">
+                                <pre>{{ auth.authorizationTokens.value.refresh_token }}</pre>
+                            </div>
                         </div>
                         <div class="row" v-if="!isAuthenticated">
                             NOT CURRENTLY LOGGED IN.

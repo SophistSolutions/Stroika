@@ -8,7 +8,7 @@ import {
     RedirectRequestHandler,
     FetchRequestor, LocalStorageBackend,
 } from '@openid/appauth';
-import { DateTime } from "luxon";
+import { DateTime, Duration } from "luxon";
 
 import { fetchTokens, fetchUserInfo } from 'src/proxy/API';
 import { gRuntimeConfiguration } from 'boot/configuration';
@@ -76,16 +76,20 @@ export interface IAuthService {
     availableProviders: Ref<IOAuthProviderConfig[] | undefined>;
 
     /**
- * The auth plugin requires information about the auth provider to use - application id, etc. (maybe extend to support a list in the future).
-@@ -96,6 +105,11 @@ export interface IAuthService {
- */
+     * if undefined, no auto-refresh (disabled). But otherwise, auto-refresh the token - either with refresh_token or re-login whenever it would
+     * have expired (this much before expiry).
+     */
+    autoRefreshAuth: Ref<Duration | undefined>;
+
+    /**
+     * The auth plugin requires information about the auth provider to use - application id, etc. (maybe extend to support a list in the future).
+     */
     authorizationHeader: Ref<string | undefined>;
 
     /**
      *  Returns null if not logged in fully. But if successfully logged in, returns access_token, optional id_token, optional referesh_token, and the, expires_at value.
      */
     authorizationTokens: Ref<ITokenInfo | undefined>;
-
 
     /**
      *   call this method in the oauth redirect to handle the page arguments
@@ -137,6 +141,9 @@ class AuthService {
     private fAvailableProviderConfigs_: Ref<IOAuthProviderConfig[] | undefined> = ref(undefined);
     private fActiveProviderConfig_: Ref<IOAuthProviderConfig | undefined> = ref(undefined);
 
+    private fAutoRefreshTokenThisMuchBeforeExpiry_: Ref<Duration | undefined> = ref(Duration.fromDurationLike(5 * 60 * 1000));
+    private fAutoRefreshTimeoutCallback_?: NodeJS.Timeout;
+
     private fUser_: Ref<IUserInfo | undefined> = ref(undefined);
 
 
@@ -171,9 +178,24 @@ class AuthService {
             await this.fPreserveVarsInPlugin_.removeItem(kAuthPluginLocalstorageNamePrefix_ + 'availableProviders');
         }
         await this.fPreserveVarsInPlugin_.removeItem(kAuthPluginLocalstorageNamePrefix_ + 'activeProvider');
-        // @todo if we are to save this, we must also handle TIMEOUTS better - maybe best to not store this? - but maybe needed for some scenarios
         await this.fPreserveVarsInPlugin_.removeItem(kAuthPluginLocalstorageNamePrefix_ + 'userInfo');
-        await this.fPreserveVarsInPlugin_.removeItem(kAuthPluginLocalstorageNamePrefix_ + 'tokensInfo');      // not currently used/stored, but might be useful for refresh, and expiring userInfo
+        await this.fPreserveVarsInPlugin_.removeItem(kAuthPluginLocalstorageNamePrefix_ + 'tokensInfo');
+    }
+
+    private setupAutoRefreshCallback_() {
+        if (this.fAutoRefreshTimeoutCallback_) {
+            clearTimeout(this.fAutoRefreshTimeoutCallback_);
+            this.fAutoRefreshTimeoutCallback_ = undefined;
+        }
+        if (this.fTokensInfo_.value && this.fTokensInfo_.value.expires_at) {
+            let dur = this.fTokensInfo_.value.expires_at.diffNow();
+            if (this.fAutoRefreshTokenThisMuchBeforeExpiry_.value) {
+                dur = dur.minus(this.fAutoRefreshTokenThisMuchBeforeExpiry_.value);
+                this.fAutoRefreshTimeoutCallback_ = setTimeout(() => {
+                    this.autoRefreshTokenIExpired_();
+                }, dur.as('milliseconds'));
+            }
+        }
     }
 
     constructor(options: AuthOptions) {
@@ -208,7 +230,6 @@ class AuthService {
             this.fLastAuthorizationCode_ = await this.retrievePreserved_('lastAuthorizationCode');
             this.fLastAuthorizationRequest_ = await this.retrievePreservedT_<AuthorizationRequest>('lastAuthorizationRequest');
 
-
             const ti = await this.retrievePreservedT_<ITokenInfo>('tokensInfo');
             if (typeof ti?.expires_at == "string") {
                 // console.log('xxx', tokensInfo.expires_at)
@@ -221,6 +242,7 @@ class AuthService {
             }
             catch { }
             this.activeProvider.value = await this.retrievePreservedT_<IOAuthProviderConfig>('activeProvider');
+            this.setupAutoRefreshCallback_();
         }, 1);
     }
 
@@ -333,12 +355,16 @@ class AuthService {
         this.activeProvider.value = undefined;
         this.fUser_.value = undefined;
         this.fTokensInfo_.value = undefined;
+        this.setupAutoRefreshCallback_();
     }
     get activeProvider(): Ref<IOAuthProviderConfig | undefined> {
         return this.fActiveProviderConfig_;
     }
     get availableProviders(): Ref<IOAuthProviderConfig[] | undefined> {
         return this.fAvailableProviderConfigs_;
+    }
+    get autoRefreshAuth(): Ref<Duration | undefined> {
+        return this.fAutoRefreshTokenThisMuchBeforeExpiry_;
     }
     get authorizationHeader(): Ref<string | undefined> {
         return computed(() => this.fTokensInfo_.value ? "Bearer " + this.fTokensInfo_.value?.access_token : undefined);
@@ -374,7 +400,7 @@ class AuthService {
             tokensInfo.expires_at = DateTime.fromISO(tokensInfo.expires_at);
         }
         this.fTokensInfo_.value = tokensInfo
-
+        this.setupAutoRefreshCallback_();
         const userInfo = await fetchUserInfo(gRuntimeConfiguration.API_ROOT, tokensInfo.access_token);
         this.fUser_.value = userInfo;
         this.preserve_('userInfo', this.fUser_.value);
