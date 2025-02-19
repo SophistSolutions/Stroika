@@ -1,8 +1,8 @@
 import { boot } from "quasar/wrappers"
 
-import authPlugin, { IOAuthProviderConfig } from '../plugins/auth'
+import authPlugin, { IOAuthProviderConfig } from 'src/plugins/auth'
 import { gRuntimeConfiguration } from 'boot/configuration';
-import { getOAuthConfigurations } from '../proxy/API';
+import { getOAuthConfigurations } from 'src/proxy/API';
 
 async function configFetcher(): Promise<IOAuthProviderConfig[] | undefined> {
     const oauthConfig = await getOAuthConfigurations(gRuntimeConfiguration.API_ROOT);
@@ -16,7 +16,7 @@ async function configFetcher(): Promise<IOAuthProviderConfig[] | undefined> {
             return {
                 provider: oc.provider,
                 clientId: oc.applicationID,
-                openIdConnectUrl: oauthConfig.providers.find((p)=>p.provider == oc.provider)?.openid_configuration_uri??"",
+                openIdConnectUrl: oauthConfig.providers.find((p) => p.provider == oc.provider)?.openid_configuration_uri ?? "",
                 redirectUri: `${window.origin}/oauth/callback`,
                 scope: oc.scopes.join(" ")
             }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineComponent, computed, watch, ref, Ref, onMounted, getCurrentInstance } from "vue";
 import { QSelectOption } from 'quasar';
+import { DateTime } from "luxon";
 
 import { useRouter, useRoute } from "vue-router";
 import { useConfigurationStore } from "../stores/Configuration-Store";
@@ -124,9 +125,18 @@ function logout() {
                             You are logged in as "{{ personName }}" (email: {{ personEMail }})
                             <img v-if="personImageURL" :src="personImageURL" />
                         </div>
-                        <div class="row" v-if="personName == ''">
-                            For your caregivers to associate test results with you, you must identify
-                            yourself.
+                        <div class="row" v-if="auth.authorizationTokens.value">
+                           Access Token: {{ auth.authorizationTokens.value.access_token }}
+                        </div>
+                        <div class="row" v-if="auth.authorizationTokens.value">
+                           ExpiresAt: {{ auth.authorizationTokens.value.expires_at }}
+                           ({{ auth.authorizationTokens.value.expires_at.diff (DateTime.now(), "minutes").minutes }} minutes)
+                        </div>
+                        <div class="row" v-if="auth.authorizationTokens.value?.id_token">
+                           ID Token: {{ auth.authorizationTokens.value.id_token }}
+                        </div>
+                        <div class="row" v-if="auth.authorizationTokens.value?.refresh_token">
+                           Refresh Token: {{ auth.authorizationTokens.value.refresh_token }}
                         </div>
                         <div class="row" v-if="!isAuthenticated">
                             NOT CURRENTLY LOGGED IN.

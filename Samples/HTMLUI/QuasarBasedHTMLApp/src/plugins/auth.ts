@@ -1,8 +1,5 @@
-import { App, ref, Ref } from 'vue';
+import { App, ref, Ref, computed } from 'vue';
 import { Router, RouteLocationRaw } from "vue-router";
-
-import { fetchTokens, fetchUserInfo } from '../proxy/API';
-
 import {
     AuthorizationRequest,
     AuthorizationNotifier, AuthorizationRequestHandler,
@@ -11,7 +8,9 @@ import {
     RedirectRequestHandler,
     FetchRequestor, LocalStorageBackend,
 } from '@openid/appauth';
+import { DateTime } from "luxon";
 
+import { fetchTokens, fetchUserInfo } from 'src/proxy/API';
 import { gRuntimeConfiguration } from 'boot/configuration';
 
 export interface IOAuthProviderConfig {
@@ -36,6 +35,14 @@ export interface AuthOptions {
      *  the oauth redirect, routes back to that original saved route).
      */
     router: Router;
+}
+
+export interface ITokenInfo {
+    access_token: string;
+    id_token?: string;
+    refresh_token?: string;
+    expires_at: DateTime;
+    scopes?: string[];
 }
 
 /**
@@ -67,6 +74,18 @@ export interface IAuthService {
      *  readonly ref - all available configurations
      */
     availableProviders: Ref<IOAuthProviderConfig[] | undefined>;
+
+    /**
+ * The auth plugin requires information about the auth provider to use - application id, etc. (maybe extend to support a list in the future).
+@@ -96,6 +105,11 @@ export interface IAuthService {
+ */
+    authorizationHeader: Ref<string | undefined>;
+
+    /**
+     *  Returns null if not logged in fully. But if successfully logged in, returns access_token, optional id_token, optional referesh_token, and the, expires_at value.
+     */
+    authorizationTokens: Ref<ITokenInfo | undefined>;
+
 
     /**
      *   call this method in the oauth redirect to handle the page arguments
@@ -112,6 +131,7 @@ class AuthService {
     private fLastAuthorizationRequest_: AuthorizationRequest | undefined;
     private fLastAuthorizationResponse_: AuthorizationResponse | undefined; // so far unused, but I think used in some scenarios (like token request instead of code request)
     private fLastAuthorizationCode_: string | undefined;
+    private fTokensInfo_: Ref<ITokenInfo | undefined> = ref(undefined);
 
     private fOptions_: AuthOptions;
     private fAvailableProviderConfigs_: Ref<IOAuthProviderConfig[] | undefined> = ref(undefined);
@@ -187,6 +207,15 @@ class AuthService {
             this.fUser_.value = await this.retrievePreservedT_<IUserInfo>('userInfo');
             this.fLastAuthorizationCode_ = await this.retrievePreserved_('lastAuthorizationCode');
             this.fLastAuthorizationRequest_ = await this.retrievePreservedT_<AuthorizationRequest>('lastAuthorizationRequest');
+
+
+            const ti = await this.retrievePreservedT_<ITokenInfo>('tokensInfo');
+            if (typeof ti?.expires_at == "string") {
+                // console.log('xxx', tokensInfo.expires_at)
+                ti.expires_at = DateTime.fromISO(ti.expires_at);
+            }
+            this.fTokensInfo_.value = ti;
+
             try {
                 this.fAvailableProviderConfigs_.value = await this.assureOAuthConfigs_();
             }
@@ -198,6 +227,29 @@ class AuthService {
     private async cleanOutCachedPluginData_() {
         await this.clearPreserved_();
     }
+
+
+    private async autoRefreshTokenIfNeeded_() {
+        //
+    }
+
+    // If logged in, but logged in with expired token, try to auto-refresh that token
+    // if not logged in, do nothing
+    private async autoRefreshTokenIExpired_() {
+        const ti = this.fTokensInfo_.value;
+        if (ti && ti.expires_at < DateTime.now()) {
+            console.log('Expired auth token - so trying to refresh it');
+            if (ti.refresh_token) {
+                // 
+                console.log('should have tried refresh token first but NYI')
+            }
+            // try an actual login again
+            await this.login();// best option? - naybe can do better _ think I've refreed better in the past with extra param saying prev login and msft auth server
+        }
+
+        // todo add setTimeout - whenver we get new token - so this invoked when the token would timeout
+    }
+
 
     private async getLastAuthorizationCode_(): Promise<string | undefined> {
         if (!this.fLastAuthorizationCode_) {
@@ -279,13 +331,20 @@ class AuthService {
     public async logout() {
         await this.cleanOutCachedPluginData_();
         this.activeProvider.value = undefined;
-        this.fUser_.value = undefined;   // this doesn't work but without the .value does!!!
+        this.fUser_.value = undefined;
+        this.fTokensInfo_.value = undefined;
     }
     get activeProvider(): Ref<IOAuthProviderConfig | undefined> {
         return this.fActiveProviderConfig_;
     }
     get availableProviders(): Ref<IOAuthProviderConfig[] | undefined> {
         return this.fAvailableProviderConfigs_;
+    }
+    get authorizationHeader(): Ref<string | undefined> {
+        return computed(() => this.fTokensInfo_.value ? "Bearer " + this.fTokensInfo_.value?.access_token : undefined);
+    }
+    get authorizationTokens(): Ref<ITokenInfo | undefined> {
+        return this.fTokensInfo_;
     }
     get user(): Ref<IUserInfo | undefined> {
         return this.fUser_;
@@ -309,12 +368,14 @@ class AuthService {
         const codeVerifier: string | undefined = lastAuthorizationRequest?.internal && lastAuthorizationRequest?.internal['code_verifier'];
         const redirectURL = oauthConfig.redirectUri;
         const provider = oauthConfig.provider;
-        const tokensInfo = await fetchTokens(gRuntimeConfiguration.API_ROOT, { authorizationCode, provider, applicationId, redirectURL, codeVerifier });
-        // console.log('tokensInfo=', tokensInfo);
+        const tokensInfo = await fetchTokens(gRuntimeConfiguration.API_ROOT, { authorizationCode, provider, applicationId, redirectURL, codeVerifier }) as ITokenInfo;
         this.preserve_('tokensInfo', tokensInfo);
+        if (typeof tokensInfo.expires_at == "string") {
+            tokensInfo.expires_at = DateTime.fromISO(tokensInfo.expires_at);
+        }
+        this.fTokensInfo_.value = tokensInfo
 
         const userInfo = await fetchUserInfo(gRuntimeConfiguration.API_ROOT, tokensInfo.access_token);
-        // console.log('userInfo=', userInfo);
         this.fUser_.value = userInfo;
         this.preserve_('userInfo', this.fUser_.value);
     }
@@ -362,6 +423,9 @@ class AuthService {
             scope: oauthConfig.scope,
             response_type: AuthorizationRequest.RESPONSE_TYPE_CODE,
             state: undefined,
+
+            // use prompt: consent to force gen of refresh token
+
             // We currently dont use offline/refersh tokens, but might, and not sure why you would want to specify consent prompt...
             // extras: { 'prompt': 'consent', 'access_type': 'offline' }
             extras: { 'access_type': 'offline' }
