@@ -124,6 +124,21 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
     /**
      */
+    struct TokenRevocationRequest {
+        String           access_token;
+        optional<String> refresh_token;
+        optional<String> client_id;
+        optional<String> client_secret;
+
+        nonvirtual String ToString () const;
+
+        nonvirtual TypedBLOB ToWireFormat () const;
+
+        static const ObjectVariantMapper kMapper;
+    };
+
+    /**
+     */
     struct UserInfo {
 
         /**
@@ -175,9 +190,20 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
     public:
         /**
-        * curl -v -H "Authorization: Bearer ddd" https://www.googleapis.com/oauth2/v3/userinfo
-        * 
-        * @todo FIND DOCS FOR THIS - try docs on https://accounts.google.com/.well-known/openid-configuration
+         *  Try to revoke the given refresh/access tokens. If no URI found in the ProviderConfiguration, its assumed the provider
+         *  doesn't support this, and nothing todo. If an error occurs (say because of bad or missing client_id, or client_secret or already revoked?)
+         *  an exception will be reported.
+         *
+         *  \see https://datatracker.ietf.org/doc/html/rfc7009 (but this is woefully insufficient/incomplete/NOT what I followed)
+         *  \see https://github.com/openid/AppAuth-JS/blob/master/src/revoke_token_request.ts - really got impl from here
+         */
+        nonvirtual void RevokeTokens (const TokenRevocationRequest& tr) const;
+
+    public:
+        /**
+         * curl -v -H "Authorization: Bearer ddd" https://www.googleapis.com/oauth2/v3/userinfo
+         * 
+         * @todo FIND DOCS FOR THIS - try docs on https://accounts.google.com/.well-known/openid-configuration
          */
         nonvirtual UserInfo GetUserInfo (const String& accessToken) const;
 

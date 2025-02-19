@@ -19,6 +19,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
             {"auth_uri"sv, &ProviderConfiguration::auth_uri},
             {"token_uri"sv, &ProviderConfiguration::token_uri},
             {"userinfo_endpoint"sv, &ProviderConfiguration::userinfo_endpoint},
+            {"revocation_endpoint"sv, &ProviderConfiguration::revocation_endpoint},
             {"auth_provider_x509_cert_url"sv, &ProviderConfiguration::auth_provider_x509_cert_url},
         });
         return mapper;
@@ -56,6 +57,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
                               .auth_uri                    = "https://accounts.google.com/o/oauth2/auth"sv,
                               .token_uri                   = "https://oauth2.googleapis.com/token"sv,
                               .userinfo_endpoint           = "https://openidconnect.googleapis.com/v1/userinfo"sv,
+                              .revocation_endpoint         = "https://oauth2.googleapis.com/revoke"sv,
                               .auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"sv},
         ProviderConfiguration{.name = "microsoft"sv,
                               .openid_configuration_uri = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"sv,

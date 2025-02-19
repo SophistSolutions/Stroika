@@ -108,6 +108,11 @@ namespace Stroika::Frameworks::Auth::OAuth {
         optional<URI> userinfo_endpoint;
 
         /**
+         *  GOOGLE uses this but I cannot find docs - https://accounts.google.com/.well-known/openid-configuration
+         */
+        optional<URI> revocation_endpoint;
+
+        /**
          *  Same as jwks_uri from openid_configuration_uri
          */
         optional<URI> auth_provider_x509_cert_url;

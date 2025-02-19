@@ -196,6 +196,69 @@ TokenResponse TokenResponse::FromWireFormat (const TypedBLOB& src)
 
 /*
  ********************************************************************************
+ ********************* Auth::OAuth::TokenRevocationRequest **********************
+ ********************************************************************************
+ */
+String TokenRevocationRequest::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "access_token: "sv << access_token;
+    if (refresh_token) {
+        sb << ", refresh_token: "sv << *refresh_token;
+    }
+    if (client_id) {
+        sb << ", client_id: "sv << *client_id;
+    }
+    if (client_secret) {
+        sb << ", client_secret: "sv << *client_secret;
+    }
+    sb << "}"sv;
+    return sb;
+}
+
+const ObjectVariantMapper TokenRevocationRequest::kMapper = [] () {
+    ObjectVariantMapper mapper;
+    mapper.AddCommonType<String> ();
+    mapper.AddCommonType<optional<String>> ();
+    mapper.AddClass<TokenRevocationRequest> ({
+        {"access_token"sv, &TokenRevocationRequest::access_token},
+        {"refresh_token"sv, &TokenRevocationRequest::refresh_token},
+        {"client_id"sv, &TokenRevocationRequest::client_id},
+        {"client_secret"sv, &TokenRevocationRequest::client_secret},
+    });
+    return mapper;
+}();
+
+TypedBLOB TokenRevocationRequest::ToWireFormat () const
+{
+    if (access_token.empty ()) {
+        static const auto kExcept_ = RuntimeErrorException{"Missing access_token"sv};
+        Throw (kExcept_);
+    }
+    BLOB reqBody = [&] () {
+        Association<String, String> params{};
+        if (refresh_token) {
+            params.Add ({"token_type_hint"sv, "refresh_token"sv});
+            params.Add ({"token"sv, *refresh_token});
+        }
+        else {
+            params.Add ({"token_type_hint"sv, "access_token"sv});
+            params.Add ({"token"sv, access_token});
+        }
+        if (client_id) {
+            params.Add ({"client_id"sv, *client_id});
+        }
+        if (client_secret) {
+            params.Add ({"client_secret"sv, *client_secret});
+        }
+        return Variant::FormURLEncoded::Writer{}.WriteAsBLOB (params);
+    }();
+    return TypedBLOB{reqBody, InternetMediaTypes::kWWWFormURLEncoded};
+}
+
+/*
+ ********************************************************************************
  ****************************** Auth::OAuth::UserInfo ***************************
  ********************************************************************************
  */
@@ -270,6 +333,24 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     catch (...) {
         DbgTrace ("Fetcher::Token: exception={}"_f, current_exception ());
         Execution::ReThrow ();
+    }
+}
+
+void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
+{
+    if (optional<URI> revokeURI = fProviderConfiguration_.revocation_endpoint) {
+        auto connection = IO::Network::Transfer::Connection::New ();
+        try {
+            //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (tr.ToWireFormat ().fData));
+            [[maybe_unused]] IO::Network::Transfer::Response r = connection.POST (*revokeURI, tr.ToWireFormat ());
+        }
+        catch (...) {
+            DbgTrace ("Fetcher::RevokeTokens: exception={}"_f, current_exception ());
+            Execution::ReThrow ();
+        }
+    }
+    else {
+        DbgTrace ("Fetcher::RevokeTokens: skipping due to missing revocation_endpoint");
     }
 }
 
