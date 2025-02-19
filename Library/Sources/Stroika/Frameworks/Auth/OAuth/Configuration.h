@@ -88,6 +88,9 @@ namespace Stroika::Frameworks::Auth::OAuth {
          * 
          *  \see https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
          *  \see https://openid.net/specs/openid-connect-rpinitiated-1_0.html
+         * 
+         *  \note - this ID may or may not end in '/.well-known/openid-configuration'; however, even if it
+         *          doesn't, that is implicitly appended before fetching the configuration data.
          */
         optional<URI> openid_configuration_uri;
 

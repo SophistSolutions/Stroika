@@ -59,7 +59,11 @@ String ProviderConfiguration::ToString () const
 
 ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurationURI () const
 {
-    URI  configURI  = ValueOfOrThrow (openid_configuration_uri, RuntimeErrorException{"no openid_configuration_uri"sv});
+    static const String kSUFFIX_  = "/.well-known/openid-configuration"sv;
+    URI                 configURI = ValueOfOrThrow (openid_configuration_uri, RuntimeErrorException{"no openid_configuration_uri"sv});
+    if (not configURI.GetAbsPath<optional<String>> ().value_or (String{}).EndsWith (kSUFFIX_)) {
+        configURI = configURI.Combine (URI{nullopt, nullopt, kSUFFIX_});
+    }
     auto connection = IO::Network::Transfer::Connection::New ();
     try {
         IO::Network::Transfer::Response r = connection.GET (configURI);
@@ -70,6 +74,7 @@ ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurati
             optional<URI> device_authorization_endpoint;
             optional<URI> token_endpoint;
             optional<URI> userinfo_endpoint;
+            optional<URI> revocation_endpoint;
             // ..more ignored for now
             optional<URI> jwks_uri;
         };
@@ -82,6 +87,7 @@ ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurati
             {"device_authorization_endpoint", &openid_configuration_::device_authorization_endpoint},
             {"token_endpoint", &openid_configuration_::token_endpoint},
             {"userinfo_endpoint", &openid_configuration_::userinfo_endpoint},
+            {"revocation_endpoint", &openid_configuration_::revocation_endpoint},
             {"jwks_uri", &openid_configuration_::jwks_uri},
         });
         openid_configuration_ cfgRead = mapper.ToObject<openid_configuration_> (DataExchange::Variant::JSON::Reader{}.Read (r.GetData ()));
@@ -95,13 +101,16 @@ ProviderConfiguration ProviderConfiguration::FetchAdditionsFromOpenIDConfigurati
         if (cfgRead.userinfo_endpoint) {
             result.userinfo_endpoint = *cfgRead.userinfo_endpoint;
         }
+        if (cfgRead.revocation_endpoint) {
+            result.revocation_endpoint = *cfgRead.revocation_endpoint;
+        }
         if (cfgRead.jwks_uri) {
             result.auth_provider_x509_cert_url = *cfgRead.jwks_uri;
         }
         return result;
     }
     catch (...) {
-        DbgTrace ("Fetcher::Token: exception={}"_f, current_exception ());
+        DbgTrace ("Fetcher::FetchAdditionsFromOpenIDConfigurationURI: exception={}"_f, current_exception ());
         Execution::ReThrow ();
     }
 }
