@@ -48,15 +48,28 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
         /**
          * The authorization code returned from the request (https://developers.google.com/identity/protocols/oauth2/web-server#httprest_1)
+         *
+         *   \note refresh_token and code are mutually exclusive (not using variant cuz same type and no name)
+         * 
+         *  implies grant_type: authorization_code
          */
-        String code;
+        optional<String> code;
 
+        /**
+         *   \note refresh_token and code are mutually exclusive (not using variant cuz same type and no name)
+         * 
+         *  implies grant_type: refresh_token
+         */
+        optional<String> refresh_token;
+
+#if 0
         /**
          * \brief set to 'authorization_code' when exchanging authorization code for access token
          * 
          *  https://datatracker.ietf.org/doc/html/rfc6749#section-1.3.1
          */
         String grant_type{"authorization_code"sv};
+#endif
 
         /**
          *  The client secret obtained from the Cloud Console Clients page (https://console.cloud.google.com/auth/clients).
@@ -72,6 +85,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
         /**
          * WAG - FIND DOCS ON THIS---
+         *  \note only applies to 
          */
         optional<String> code_verifier;
 
@@ -142,24 +156,24 @@ namespace Stroika::Frameworks::Auth::OAuth {
     struct UserInfo {
 
         /**
-          */
+         */
         optional<String> name;
 
         /**
-          */
+         */
         optional<String> given_name;
 
         /**
-          */
+         */
         optional<String> family_name;
 
         /**
-          */
+         */
         optional<String> email;
 
         /**
          * image of user (thumbnail)
-          */
+         */
         optional<URI> picture;
 
         nonvirtual String ToString () const;
@@ -181,6 +195,10 @@ namespace Stroika::Frameworks::Auth::OAuth {
     public:
         /**
          *  https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
+         *  https://developers.google.com/identity/protocols/oauth2/web-server#offline
+         * 
+         *  This can be used to convert EITHER an authorization_code (code parameter) or a refresh_token
+         *  to a new access_code (and other TokenResponse info).
          * 
          *  \note - confusingly - despite docs above to the contrary, if you are not getting a refresh_token back it could
          *          be because google doesn't return it except on the first get token call

@@ -38,8 +38,14 @@ String TokenRequest::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     sb << "client_id: "sv << client_id;
-    sb << ", code: "sv << code;
-    sb << ", grant_type: "sv << grant_type;
+    if (code) {
+        sb << ", code: "sv << code;
+        sb << ", grant_type: authorization_code"sv;
+    }
+    if (refresh_token) {
+        sb << ", refresh_token: "sv << refresh_token;
+        sb << ", grant_type: refresh_token"sv;
+    }
     if (client_secret) {
         sb << ", client_secret: "sv << client_secret;
     }
@@ -61,7 +67,7 @@ const ObjectVariantMapper TokenRequest::kMapper = [] () {
     mapper.AddClass<TokenRequest> ({
         {"client_id"sv, &TokenRequest::client_id},
         {"code"sv, &TokenRequest::code},
-        {"grant_type"sv, &TokenRequest::grant_type},
+        {"refresh_token"sv, &TokenRequest::refresh_token},
         {"client_secret"sv, &TokenRequest::client_secret},
         {"redirect_uri"sv, &TokenRequest::redirect_uri},
         {"code_verifier"sv, &TokenRequest::code_verifier},
@@ -71,29 +77,35 @@ const ObjectVariantMapper TokenRequest::kMapper = [] () {
 
 TypedBLOB TokenRequest::ToWireFormat () const
 {
-    if (code.empty ()) {
-        static const auto kExcept_ = RuntimeErrorException{"Missing authorization code"sv};
+    if (not code and not refresh_token) {
+        static const auto kExcept_ = RuntimeErrorException{"Missing authorization code/refresh_token"sv};
+        Throw (kExcept_);
+    }
+    if (code and refresh_token) {
+        static const auto kExcept_ = RuntimeErrorException{"Cannot combine authorization code/refresh_token"sv};
         Throw (kExcept_);
     }
     if (client_id.empty ()) {
         static const auto kExcept_ = RuntimeErrorException{"Missing client_id"sv};
         Throw (kExcept_);
     }
-    if (grant_type.empty ()) {
-        static const auto kExcept_ = RuntimeErrorException{"Missing grant_type"sv};
-        Throw (kExcept_);
-    }
     BLOB reqBody = [&] () {
         Association<String, String> params{};
         params.Add ({"client_id"sv, client_id});
-        params.Add ({"code"sv, code});
+        if (code) {
+            params.Add ({"code"sv, *code});
+            params.Add ({"grant_type"sv, "authorization_code"sv});
+        }
+        else {
+            params.Add ({"refresh_token"sv, *refresh_token});
+            params.Add ({"grant_type"sv, "refresh_token"sv});
+        }
         if (client_secret) {
             params.Add ({"client_secret"sv, *client_secret});
         }
         if (redirect_uri) {
             params.Add ({"redirect_uri"sv, redirect_uri->As<String> ()});
         }
-        params.Add ({"grant_type"sv, grant_type});
         if (code_verifier) {
             params.Add ({"code_verifier"sv, *code_verifier});
         }
@@ -112,9 +124,19 @@ TokenRequest TokenRequest::FromWireFormat (const TypedBLOB& src)
     static const auto           kExcept_clientid_   = RuntimeErrorException{"Missing client_id"sv};
     static const auto           kExcept_authCode_   = RuntimeErrorException{"Missing authentication code"sv};
     static const auto           kExcept_grant_type_ = RuntimeErrorException{"Missing grant_type"sv};
+    auto                        code                = params.LookupOne ("code"sv);
+    auto                        refresh_token       = params.LookupOne ("refresh_token"sv);
+    if (not code and not refresh_token) {
+        static const auto kExcept_ = RuntimeErrorException{"Missing authorization code/refresh_token"sv};
+        Throw (kExcept_);
+    }
+    if (code and refresh_token) {
+        static const auto kExcept_ = RuntimeErrorException{"Cannot combine authorization code/refresh_token"sv};
+        Throw (kExcept_);
+    }
     return TokenRequest{.client_id     = params.LookupOneChecked ("client_id"sv, kExcept_clientid_),
-                        .code          = params.LookupOneChecked ("code"sv, kExcept_authCode_),
-                        .grant_type    = params.LookupOneChecked ("grant_type"sv, kExcept_grant_type_),
+                        .code          = code,
+                        .refresh_token = refresh_token,
                         .client_secret = params.LookupOne ("client_secret"sv),
                         .redirect_uri  = params.LookupOne ("redirect_uri"sv)};
 }
@@ -350,7 +372,7 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
         }
     }
     else {
-        DbgTrace ("Fetcher::RevokeTokens: skipping due to missing revocation_endpoint");
+        DbgTrace ("Fetcher::RevokeTokens: skipping due to missing revocation_endpoint"_f);
     }
 }
 
