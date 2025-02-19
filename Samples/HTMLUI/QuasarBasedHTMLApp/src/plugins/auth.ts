@@ -234,7 +234,6 @@ class AuthService {
 
             const ti = await this.retrievePreservedT_<ITokenInfo>('tokensInfo');
             if (typeof ti?.expires_at == "string") {
-                // console.log('xxx', tokensInfo.expires_at)
                 ti.expires_at = DateTime.fromISO(ti.expires_at);
             }
             this.fTokensInfo_.value = ti;

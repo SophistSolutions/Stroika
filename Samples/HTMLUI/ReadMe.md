@@ -29,6 +29,13 @@ This sample guides you to breakup your web-service application into serveral par
 
 ## OAuth
 
+### Tested With
+- Google OAuth Provider (only so far, but setup to support others)
+- non-public client (because google appears to require client secret for many apis to work)
+- Supports automatic refresh token processing
+- Supports revocation on logout
+- As of 2025-02-19
+
 ### Reference Docs
 
 - https://developers.google.com/identity/protocols/oauth2/web-server#httprest
