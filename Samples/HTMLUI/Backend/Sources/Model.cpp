@@ -162,11 +162,11 @@ const ObjectVariantMapper Auth::kMapper = [] () {
 
     mapper.AddCommonType<Set<String>> ();
     mapper.AddClass<Auth::TokenResponse> ({
-        {"access_token"sv, &Auth::TokenResponse::access_token},
-        {"expires_at"sv, &Auth::TokenResponse::expires_at},
+        {"accessToken"sv, &Auth::TokenResponse::access_token},
+        {"expiresAt"sv, &Auth::TokenResponse::expires_at},
         {"scopes"sv, &Auth::TokenResponse::scopes},
-        {"refresh_token"sv, &Auth::TokenResponse::refresh_token},
-        {"id_token"sv, &Auth::TokenResponse::id_token},
+        {"refreshToken"sv, &Auth::TokenResponse::refresh_token},
+        {"idToken"sv, &Auth::TokenResponse::id_token},
     });
 
     mapper.AddClass<Auth::TokenRevocationRequest> ({

@@ -75,7 +75,7 @@ async function login() {
  */
 const expiresIn = ref("");
 function recomputeExpiresIn_() {
-    expiresIn.value = auth.authorizationTokens.value?.expires_at?.toRelative();
+    expiresIn.value = auth.authorizationTokens.value?.expiresAt?.toRelative();
 }
 watch(auth.authorizationTokens, () => {
     recomputeExpiresIn_();
@@ -161,27 +161,27 @@ function logout() {
                                 Access Token:
                             </div>
                             <div class="col">
-                                <pre>{{ auth.authorizationTokens.value.access_token }}</pre>
+                                <pre>{{ auth.authorizationTokens.value.accessToken }}</pre>
                             </div>
                         </div>
-                        <div class="row" v-if="auth.authorizationTokens.value">
+                        <div class="row" v-if="auth.authorizationTokens.value?.expiresAt">
                             <div class="col-1"></div>
                             <div class="col-1">ExpiresAt</div>
-                            <div class="col">{{ auth.authorizationTokens.value.expires_at }} ({{
+                            <div class="col">{{ auth.authorizationTokens.value.expiresAt }} ({{
                                 expiresIn }})</div>
                         </div>
-                        <div class="row" v-if="auth.authorizationTokens.value?.id_token">
+                        <div class="row" v-if="auth.authorizationTokens.value?.idToken">
                             <div class="col-1"></div>
                             <div class="col-1">ID Token:</div>
                             <div class="col">
-                                <pre>{{ auth.authorizationTokens.value.id_token }}</pre>
+                                <pre>{{ auth.authorizationTokens.value.idToken }}</pre>
                             </div>
                         </div>
-                        <div class="row" v-if="auth.authorizationTokens.value?.refresh_token">
+                        <div class="row" v-if="auth.authorizationTokens.value?.refreshToken">
                             <div class="col-1"></div>
                             <div class="col-1">Refresh Token:</div>
                             <div class="col">
-                                <pre>{{ auth.authorizationTokens.value.refresh_token }}</pre>
+                                <pre>{{ auth.authorizationTokens.value.refreshToken }}</pre>
                             </div>
                         </div>
                         <div class="row" v-if="!isAuthenticated">
