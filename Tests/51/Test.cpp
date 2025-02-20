@@ -1546,7 +1546,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     if (sShowOutput_) {
         RunPerformanceTests_ ();
-        return S_OK;
+        return EXIT_SUCCESS;
     }
 
     Test::Setup (argc, argv);
