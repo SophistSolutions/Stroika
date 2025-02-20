@@ -379,7 +379,7 @@ class AuthService {
         }
         if (tokens2Revoke && oauthConfig) {
             try {
-                await revokeTokens({ apiServer: gRuntimeConfiguration.API_ROOT, provider: oauthConfig.provider, refreshToken: tokens2Revoke.refreshToken, accessToken: tokens2Revoke.accessToken });
+                await revokeTokens({ provider: oauthConfig.provider, refreshToken: tokens2Revoke.refreshToken, accessToken: tokens2Revoke.accessToken });
             }
             catch{}
         }
@@ -443,9 +443,9 @@ class AuthService {
         const codeVerifier: string | undefined = args.authorizationRequest?.internal && args.authorizationRequest?.internal['code_verifier'];
         const redirectURL = oauthConfig.redirectUri;
         const provider = oauthConfig.provider;
-        const tokensInfo = await fetchTokens(gRuntimeConfiguration.API_ROOT, { authorizationCode: args.authorizationCode, refreshToken: args.refreshToken, provider, applicationId, redirectURL, codeVerifier }) as ITokenInfo;
+        const tokensInfo = await fetchTokens({params: { authorizationCode: args.authorizationCode, refreshToken: args.refreshToken, provider, applicationId, redirectURL, codeVerifier }}) as ITokenInfo;
         if (tokensInfo.refreshToken == undefined && args.refreshToken) {
-            console.log('refresh_token not returned from server, but we had one, so using the one we had');
+            console.error('refresh_token not returned from server, but we had one, so using the one we had');   // never seen, just worried might happen
             tokensInfo.refreshToken = args.refreshToken;
         }
         this.preserve_('tokensInfo', tokensInfo);
@@ -454,7 +454,7 @@ class AuthService {
         }
         this.fTokensInfo_.value = tokensInfo
         this.setupAutoRefreshCallback_();
-        const userInfo = await fetchUserInfo(gRuntimeConfiguration.API_ROOT, tokensInfo.accessToken);
+        const userInfo = await fetchUserInfo({authToken: tokensInfo.accessToken});
         this.fUser_.value = userInfo;
         this.preserve_('userInfo', this.fUser_.value);
         return tokensInfo;

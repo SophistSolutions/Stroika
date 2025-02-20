@@ -1,12 +1,8 @@
 import { useConfigurationStore } from './Configuration-Store';
 import { defineStore } from 'pinia';
 
-import { IAbout } from '../models/IAbout';
-import {
-  fetchAboutInfo,
-} from '../proxy/API';
-
-import { gRuntimeConfiguration } from 'src/boot/configuration';
+import { IAbout } from 'src/models/IAbout';
+import {fetchAboutInfo,} from 'src/proxy/API';
 
 
 // @todo perhaps add in 'lasttimerequested' and 'lastTimeSuccessfulResponse' and throttle/dont request
@@ -32,7 +28,7 @@ export const useMainAppStateStore = defineStore('MainApp-State-Store', {
   actions: {
     async fetchAboutInfo() {
       const configurationStore = useConfigurationStore();
-      this.about = await fetchAboutInfo(gRuntimeConfiguration.API_ROOT);
+      this.about = await fetchAboutInfo();
     },
   },
 });

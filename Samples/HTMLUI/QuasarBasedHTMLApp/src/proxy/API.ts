@@ -1,11 +1,6 @@
-import { DateTime } from 'luxon';
-import { ref } from "vue";
-
-import { IAbout } from '../models/IAbout';
-
+import { IAbout } from 'src/models/IAbout';
 import { gRuntimeConfiguration } from 'boot/configuration';
-
-import { Logger } from '../utils/Logger';
+import { Logger } from 'src/utils/Logger';
 
 const kFetchOptions_: RequestInit = {};
 
@@ -37,8 +32,9 @@ export interface IOAuthProviderConfiguration {
   openid_configuration_uri?: string;
 }
 
-export async function getOAuthConfigurations(apiServer: string): Promise<{ clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[] }> {
+export async function getOAuthConfigurations(args?:{apiServer?: string}): Promise<{ clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[] }> {
   try {
+    const apiServer = args?.apiServer || gRuntimeConfiguration.API_ROOT;
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/configurations`, kFetchOptions_);
     throwIfError_(response);
     const data = (await response.json()); // could embellish validation here
@@ -49,13 +45,14 @@ export async function getOAuthConfigurations(apiServer: string): Promise<{ clien
   }
 }
 
-export async function fetchTokens(apiServer: string, params: object): Promise<object> {
+export async function fetchTokens(args:{apiServer?: string, params: object}): Promise<object> {
+  const apiServer = args.apiServer || gRuntimeConfiguration.API_ROOT;
   try {
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/tokens`, {
       ...kFetchOptions_,
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params)
+      body: JSON.stringify(args.params)
     });
     throwIfError_(response);
     const data = (await response.json()); // could embellish validation here
@@ -67,9 +64,10 @@ export async function fetchTokens(apiServer: string, params: object): Promise<ob
 }
 
 
-export async function revokeTokens(args: { apiServer: string, provider: string, refreshToken?: string, accessToken?: string }): Promise<void> {
+export async function revokeTokens(args: { apiServer?: string, provider: string, refreshToken?: string, accessToken?: string }): Promise<void> {
+  const apiServer = args.apiServer || gRuntimeConfiguration.API_ROOT;
   try {
-    const response: Response = await fetch(`${args.apiServer}/api/auth/oauth/tokens/revoke`, {
+    const response: Response = await fetch(`${apiServer}/api/auth/oauth/tokens/revoke`, {
       ...kFetchOptions_,
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
@@ -82,12 +80,13 @@ export async function revokeTokens(args: { apiServer: string, provider: string, 
   }
 }
 
-export async function fetchUserInfo(apiServer: string, authToken: string): Promise<object> {
+export async function fetchUserInfo(args:{apiServer?: string, authToken: string}): Promise<object> {
+  const apiServer = args.apiServer || gRuntimeConfiguration.API_ROOT;
   try {
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/user_info`, {
       ...kFetchOptions_,
       headers: {
-        'Authorization': 'Bearer ' + authToken
+        'Authorization': 'Bearer ' + args.authToken
       }
     });
     throwIfError_(response);
@@ -99,7 +98,8 @@ export async function fetchUserInfo(apiServer: string, authToken: string): Promi
   }
 }
 
-export async function fetchAboutInfo(apiServer: string): Promise<IAbout> {
+export async function fetchAboutInfo(args?:{apiServer: string}): Promise<IAbout> {
+  const apiServer = args?.apiServer || gRuntimeConfiguration.API_ROOT;
   try {
     const response: Response = await fetch(
       `${apiServer}/api/about`,

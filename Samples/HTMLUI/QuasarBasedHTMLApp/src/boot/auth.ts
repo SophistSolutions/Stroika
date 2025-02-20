@@ -1,11 +1,10 @@
 import { boot } from "quasar/wrappers"
 
 import authPlugin, { IOAuthProviderConfig } from 'src/plugins/auth'
-import { gRuntimeConfiguration } from 'boot/configuration';
 import { getOAuthConfigurations } from 'src/proxy/API';
 
 async function configFetcher(): Promise<IOAuthProviderConfig[] | undefined> {
-    const oauthConfig = await getOAuthConfigurations(gRuntimeConfiguration.API_ROOT);
+    const oauthConfig = await getOAuthConfigurations();
     const clientConfigs = oauthConfig.clients;
     if (clientConfigs == null || clientConfigs.length < 1) {
         console.error("Failed to load OAuth configuration from server, so auth not available");
