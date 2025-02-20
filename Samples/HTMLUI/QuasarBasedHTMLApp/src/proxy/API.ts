@@ -33,8 +33,8 @@ export interface IOAuthProviderConfiguration {
 }
 
 export async function getOAuthConfigurations(args?:{apiServer?: string}): Promise<{ clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[] }> {
+  const apiServer = args?.apiServer || gRuntimeConfiguration.API_ROOT;
   try {
-    const apiServer = args?.apiServer || gRuntimeConfiguration.API_ROOT;
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/configurations`, kFetchOptions_);
     throwIfError_(response);
     const data = (await response.json()); // could embellish validation here

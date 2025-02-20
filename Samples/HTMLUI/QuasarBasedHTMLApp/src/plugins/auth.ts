@@ -12,7 +12,6 @@ import {
 import { DateTime, Duration } from "luxon";
 
 import { fetchTokens, fetchUserInfo, revokeTokens } from 'src/proxy/API';
-import { gRuntimeConfiguration } from 'boot/configuration';
 
 export interface IOAuthProviderConfig {
     provider: string;
@@ -53,11 +52,19 @@ export interface IUserInfo {
     personImageURL?: string;
     personName?: string;
     email?: string;
+    // note could add stuff like userRole, etc here...(just change webservice API to report that information)
 }
 
 const kStoreExtraStuffInSessionForSpeed_ = false;
 const kDebugLogging_ = false;
 const kSupportAuthJSBasedRevocation_ = false;
+
+// Generating refresh tokens works better with this, but I've noticed gmail becomes goofy after you
+// do this, so disable it for now 
+// MAYBE just revoke the auth-token, not the refresh token?
+//      --LGP 2025-02-19
+const kSupportRefreshTokenRevocation_ = false;
+
 
 /**
  *  API published by the plugin, on the  app.globalProperties.$auth field and the app.provide name (not sure why both
@@ -377,11 +384,13 @@ class AuthService {
                 }
             })();
         }
-        if (tokens2Revoke && oauthConfig) {
-            try {
-                await revokeTokens({ provider: oauthConfig.provider, refreshToken: tokens2Revoke.refreshToken, accessToken: tokens2Revoke.accessToken });
+        if (kSupportRefreshTokenRevocation_) {
+            if (tokens2Revoke && oauthConfig) {
+                try {
+                    await revokeTokens({ provider: oauthConfig.provider, refreshToken: tokens2Revoke.refreshToken, accessToken: tokens2Revoke.accessToken });
+                }
+                catch { }
             }
-            catch{}
         }
 
         await this.cleanOutCachedPluginData_();
@@ -443,7 +452,7 @@ class AuthService {
         const codeVerifier: string | undefined = args.authorizationRequest?.internal && args.authorizationRequest?.internal['code_verifier'];
         const redirectURL = oauthConfig.redirectUri;
         const provider = oauthConfig.provider;
-        const tokensInfo = await fetchTokens({params: { authorizationCode: args.authorizationCode, refreshToken: args.refreshToken, provider, applicationId, redirectURL, codeVerifier }}) as ITokenInfo;
+        const tokensInfo = await fetchTokens({ params: { authorizationCode: args.authorizationCode, refreshToken: args.refreshToken, provider, applicationId, redirectURL, codeVerifier } }) as ITokenInfo;
         if (tokensInfo.refreshToken == undefined && args.refreshToken) {
             console.error('refresh_token not returned from server, but we had one, so using the one we had');   // never seen, just worried might happen
             tokensInfo.refreshToken = args.refreshToken;
@@ -454,7 +463,7 @@ class AuthService {
         }
         this.fTokensInfo_.value = tokensInfo
         this.setupAutoRefreshCallback_();
-        const userInfo = await fetchUserInfo({authToken: tokensInfo.accessToken});
+        const userInfo = await fetchUserInfo({ authToken: tokensInfo.accessToken });
         this.fUser_.value = userInfo;
         this.preserve_('userInfo', this.fUser_.value);
         return tokensInfo;
