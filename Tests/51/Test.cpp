@@ -1262,20 +1262,20 @@ namespace {
                  make_tuple (DoStroikaJSONParse_boost_json2Stk, "boost_json-vv-parser")
 #endif
                 }};
-            path jsonTestRoot = path{"."} / "52" / "JSONTestData";
+            path jsonTestRoot = path{"."} / "51" / "JSONTestData";
             // hack a bit to find jsonTestRoot, since sometimes run from different places; no need to do good/formal job here
             // since this is for a rarely used test suite
             if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{"."} / "Tests" / "52" / "JSONTestData";
+                jsonTestRoot = path{"."} / "Tests" / "51" / "JSONTestData";
             }
             if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / "Tests" / "52" / "JSONTestData";
+                jsonTestRoot = path{".."} / "Tests" / "51" / "JSONTestData";
             }
             if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / ".." / "Tests" / "52" / "JSONTestData";
+                jsonTestRoot = path{".."} / ".." / "Tests" / "51" / "JSONTestData";
             }
             if (not filesystem::exists (jsonTestRoot)) {
-                jsonTestRoot = path{".."} / ".." / ".." / "52" / "JSONTestData";
+                jsonTestRoot = path{".."} / ".." / ".." / "51" / "JSONTestData";
             }
             for (auto testCase : kTestCases_) {
                 DoJSONParse_ (jsonTestRoot / "small-dict.json", nTimes, std::get<0> (testCase), std::get<1> (testCase));
@@ -1543,6 +1543,12 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if qStroika_HasComponent_googletest
     TemporaryTest_::DoTest_ ();
 #endif
+
+    if (sShowOutput_)
+        {
+        RunPerformanceTests_ ();
+        return S_OK;
+        }
 
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest

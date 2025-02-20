@@ -12,7 +12,7 @@
 VER=`ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
 : "${USE_TEST_BASENAME:=UNKNOWN}"
-: "${PERF_TEST:=Test52}"
+: "${PERF_TEST:=Test51}"
 
 export DETECTED_HOST_OS=`ScriptsLib/DetectedHostOS`
 
