@@ -1544,11 +1544,10 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     TemporaryTest_::DoTest_ ();
 #endif
 
-    if (sShowOutput_)
-        {
+    if (sShowOutput_) {
         RunPerformanceTests_ ();
         return S_OK;
-        }
+    }
 
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
