@@ -63,7 +63,6 @@ export async function fetchTokens(args:{apiServer?: string, params: object}): Pr
   }
 }
 
-
 export async function revokeTokens(args: { apiServer?: string, provider: string, refreshToken?: string, accessToken?: string }): Promise<void> {
   const apiServer = args.apiServer || gRuntimeConfiguration.API_ROOT;
   try {
