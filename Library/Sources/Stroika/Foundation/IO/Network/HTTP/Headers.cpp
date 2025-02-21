@@ -144,6 +144,16 @@ Headers::Headers ()
                       AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
                       thisObj->fContentType_ = contentType;
                   }}
+    , contentDisposition{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<String> {
+                             const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentDisposition);
+                             AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                             return thisObj->LookupOne (HeaderName::kContentDisposition);
+                         },
+                         [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& hdrVal) {
+                             Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::contentDisposition);
+                             AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                             thisObj->SetExtras_ (HeaderName::kContentDisposition, hdrVal);
+                         }}
     , date{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                const Headers* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Headers::date);
                AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};

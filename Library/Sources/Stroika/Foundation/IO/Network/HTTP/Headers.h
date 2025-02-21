@@ -325,6 +325,19 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
+         *  \brief The HTTP Content-Disposition header indicates whether content should be displayed inline in the browser as a web page or part of a web page or downloaded as an attachment locally
+         *
+         *  \par Example Usage
+         *      \code
+         *          fHeaders_.contentDisposition = "inline";        // default value
+         *          fHeaders_.contentDisposition = "attachment";    // file should be downloaded
+         *          fHeaders_.contentDisposition = "attachment; filename=\"foo.jpg\"";
+         *      \endcode         
+         */
+        Common::Property<optional<String>> contentDisposition;
+
+    public:
+        /**
          *  Property with the optional<DateTime> value of the Date header.
          *
          *  \par Example Usage
