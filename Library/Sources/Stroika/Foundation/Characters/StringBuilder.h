@@ -126,15 +126,15 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Append (CHAR_T c);
 
+    // clang-format off
     public:
         /**
          *  Alias for Append
          */
         template <typename APPEND_ARG_T>
-        nonvirtual auto operator+= (APPEND_ARG_T&& a) -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) {
-            s.Append (forward<APPEND_ARG_T> (a));
-        })
-#if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+        nonvirtual auto operator+= (APPEND_ARG_T&& a)
+            -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+    #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             if constexpr (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
                 Append (forward<APPEND_ARG_T> (a));
@@ -144,20 +144,19 @@ namespace Stroika::Foundation::Characters {
             }
             return *this;
         }
-#else
-        ;
-#endif
+    #else
+            ;
+    #endif
 
 #if qCompiler_IUseToStringFormatterForFormatter_Buggy
-        public :
-            // this hack has nothing todo with real IUseToStringFormatterForFormatter bug - but is needed as artifact of workaround
-            Characters::String ToString () const
+    public:
+        // this hack has nothing todo with real IUseToStringFormatterForFormatter bug - but is needed as artifact of workaround
+        Characters::String ToString () const
         {
             return this->str ();
         }
 #endif
 
-        // clang-format off
     public:
         /**
          *  Alias for Append if that would work, and otherwise alias for Append (ToString(arg)), if that would work;
@@ -179,9 +178,9 @@ namespace Stroika::Foundation::Characters {
 #else
         ;
 #endif
-        // clang-format on
+    // clang-format on
 
-    public:
+    public :
         /**
          */
         nonvirtual void push_back (Character c);
