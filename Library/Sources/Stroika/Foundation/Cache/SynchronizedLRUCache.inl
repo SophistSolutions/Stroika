@@ -45,7 +45,8 @@ namespace Stroika::Foundation::Cache {
         return inherited::GetStats ();
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline auto SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetKeyEqualsCompareFunction () const -> KeyEqualsCompareFunctionType
+    inline auto SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetKeyEqualsCompareFunction () const
+        -> KeyEqualsCompareFunctionType
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::GetKeyEqualsCompareFunction ();

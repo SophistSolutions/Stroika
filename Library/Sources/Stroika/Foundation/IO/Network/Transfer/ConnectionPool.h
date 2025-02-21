@@ -38,7 +38,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          */
         struct Options {
             Options (const optional<unsigned int>&       maxConnections    = nullopt,
-                     const function<Connection::Ptr ()>& connectionFactory = (Connection::Ptr (*) ()) & Connection::New);
+                     const function<Connection::Ptr ()>& connectionFactory = (Connection::Ptr (*) ())&Connection::New);
 
             /**
              *  Default options for each connection

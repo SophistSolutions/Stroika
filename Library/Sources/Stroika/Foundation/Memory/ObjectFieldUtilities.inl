@@ -13,7 +13,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    inline OUTER_OBJECT* GetObjectOwningField (APPARENT_MEMBER_TYPE* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
+    inline OUTER_OBJECT* GetObjectOwningField (APPARENT_MEMBER_TYPE* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::* aggregatedPtrToMember))
     {
         RequireNotNull (aggregatedMember);
         RequireNotNull (aggregatedPtrToMember);
@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
     inline const OUTER_OBJECT* GetObjectOwningField (const APPARENT_MEMBER_TYPE* aggregatedMember,
-                                                     AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
+                                                     AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::* aggregatedPtrToMember))
     {
         RequireNotNull (aggregatedMember);
         RequireNotNull (aggregatedPtrToMember);
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Memory {
 
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     [[deprecated ("Since Stroika v3.0d2 - use Memory::OffsetOf()")]] inline constexpr size_t
-    ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
+    ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (OUTER_OBJECT::* dataMember))
     {
         return Memory::OffsetOf (dataMember);
     }

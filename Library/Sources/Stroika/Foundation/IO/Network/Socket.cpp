@@ -89,8 +89,8 @@ Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddres
 
 namespace {
     // Not all operating systems support all flavors of socketpair (e.g. MacOS only supports for AF_UNIX)
-    auto mkLowLevelSocketPair_BackCompat_ (SocketAddress::FamilyType family, Socket::Type socketKind,
-                                           const optional<IPPROTO>& protocol) -> tuple<PlatformNativeHandle, PlatformNativeHandle>
+    auto mkLowLevelSocketPair_BackCompat_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol)
+        -> tuple<PlatformNativeHandle, PlatformNativeHandle>
     {
         // auto connectionOrientedMaster = ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType::INET, Socket::Type::STREAM);
         PlatformNativeHandle masterSocket = Socket::_Protected::mkLowLevelSocket_ (family, socketKind, protocol);
@@ -166,8 +166,8 @@ namespace {
     }
 }
 
-auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family, Socket::Type socketKind,
-                                                const optional<IPPROTO>& protocol) -> tuple<PlatformNativeHandle, PlatformNativeHandle>
+auto Socket::_Protected::mkLowLevelSocketPair_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol)
+    -> tuple<PlatformNativeHandle, PlatformNativeHandle>
 {
 #if qStroika_Foundation_Common_Platform_POSIX
     // docs in https://man7.org/linux/man-pages/man2/socketpair.2.html suggest dont have ot worry about EINTR

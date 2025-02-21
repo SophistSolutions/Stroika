@@ -188,7 +188,7 @@ namespace {
     private:
         void setupToken_ ()
         {
-            if (not ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, false, &fToken_)) {
+            if (not::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, false, &fToken_)) {
                 if (::GetLastError () == ERROR_NO_TOKEN) {
                     Execution::Platform::Windows::ThrowIfZeroGetLastError (::ImpersonateSelf (SecurityImpersonation));
                     Execution::Platform::Windows::ThrowIfZeroGetLastError (
@@ -268,7 +268,7 @@ namespace {
             te32.dwSize = sizeof (THREADENTRY32);
 
             // Retrieve information about the first thread, and exit if unsuccessful
-            if (not ::Thread32First (hThreadSnap, &te32)) {
+            if (not::Thread32First (hThreadSnap, &te32)) {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: {}"_f, ::GetLastError ());
                 return;
             }
@@ -1543,7 +1543,7 @@ namespace {
             DWORD cbNeeded;
 
             Set<pid_t> result;
-            if (not ::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
+            if (not::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
                 AssertNotReached ();
                 return result;
             }
@@ -1609,22 +1609,22 @@ namespace {
 #endif
                                 /* get the address of ProcessParameters */
                                 void* rtlUserProcParamsAddress{};
-                                if (not ::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_,
-                                                             &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
+                                if (not::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress,
+                                                            sizeof (PVOID), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 UNICODE_STRING commandLine;
 
                                 /* read the CommandLine UNICODE_STRING structure */
-                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_, &commandLine,
-                                                             sizeof (commandLine), NULL)) {
+                                if (not::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_, &commandLine,
+                                                            sizeof (commandLine), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 {
                                     size_t                     strLen = commandLine.Length / sizeof (WCHAR); // length field in bytes
                                     Memory::StackBuffer<WCHAR> commandLineContents{strLen + 1};
                                     /* read the command line */
-                                    if (not ::ReadProcessMemory (hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
+                                    if (not::ReadProcessMemory (hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
                                         goto SkipCmdLine_;
                                     }
                                     commandLineContents[strLen] = 0;

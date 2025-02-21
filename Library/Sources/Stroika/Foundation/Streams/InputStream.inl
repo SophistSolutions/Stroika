@@ -166,7 +166,8 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepRWRef ().RemainingLength ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const -> optional<span<ElementType>>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const
+        -> optional<span<ElementType>>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
@@ -194,7 +195,8 @@ namespace Stroika::Foundation::Streams::InputStream {
         return Memory::ValueOf (Read (intoBuffer, NoDataAvailableHandling::eBlockIfNoDataAvailable));
     }
     template <typename ELEMENT_TYPE>
-    auto InputStream::Ptr<ELEMENT_TYPE>::ReadBlocking (Memory::InlineBuffer<ElementType>* intoBuffer, ElementType upToSentinel) const -> span<ElementType>
+    auto InputStream::Ptr<ELEMENT_TYPE>::ReadBlocking (Memory::InlineBuffer<ElementType>* intoBuffer, ElementType upToSentinel) const
+        -> span<ElementType>
     {
         Require (intoBuffer->size () == 0);
         while (auto oe = ReadBlocking ()) {

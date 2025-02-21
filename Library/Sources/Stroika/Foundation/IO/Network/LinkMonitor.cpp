@@ -159,7 +159,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     return InternetAddress{};
 #elif qStroika_Foundation_Common_Platform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
-        struct ::ifreq ifreq {};
+        struct ::ifreq ifreq{};
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         // Since this is used only to filter the list of addresses, if we get an error, don't throw but
@@ -173,7 +173,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     };
 
     struct ::ifreq  ifreqs[32]{};
-    struct ::ifconf ifconf {};
+    struct ::ifconf ifconf{};
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof (ifreqs);
 
@@ -222,7 +222,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 
         const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof (struct ifreq));
         for (const ifreq* it = ifc.ifc_req; it != end; ++it) {
-            struct ifreq ifr {};
+            struct ifreq ifr{};
             Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
             if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
                 if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback

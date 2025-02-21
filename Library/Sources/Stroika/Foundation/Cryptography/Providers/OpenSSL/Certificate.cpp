@@ -45,8 +45,8 @@ namespace {
         virtual Range<DateTime> GetValidDates () const override
         {
             using Time::Timezone;
-            struct tm from {};
-            struct tm to {};
+            struct tm from{};
+            struct tm to{};
             Exception::ThrowLastErrorIfFailed (::ASN1_TIME_to_tm (X509_get_notBefore (fCert_.get ()), &from));
             Exception::ThrowLastErrorIfFailed (::ASN1_TIME_to_tm (X509_get_notAfter (fCert_.get ()), &to));
             return Range<DateTime>{DateTime{from, Timezone::kUTC}, DateTime{to, Timezone::kUTC}};

@@ -239,7 +239,8 @@ namespace Stroika::Foundation::Traversal {
         return this->empty () ? optional<value_type>{} : FindLastThat (testF, FindHints (this->GetBounds ().GetUpperBound (), false));
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const
+        -> optional<value_type>
     {
         Require (this->Contains (hints.fSeedPosition));
         optional<value_type> o = ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
@@ -264,9 +265,9 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool (value_type)>&                 testF,
-                                                         const function<optional<value_type> (value_type)>& iterNext,
-                                                         value_type seedPosition) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool (value_type)>& testF,
+                                                         const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const
+        -> optional<value_type>
     {
         value_type i{seedPosition};
         while (not testF (i)) {
@@ -282,8 +283,8 @@ namespace Stroika::Foundation::Traversal {
         return i;
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition,
-                                                             bool forwardFirst) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition, bool forwardFirst) const
+        -> optional<value_type>
     {
         /*
          *  First we must find a value/position where testF is true. It could be forward or backward from our start hint.

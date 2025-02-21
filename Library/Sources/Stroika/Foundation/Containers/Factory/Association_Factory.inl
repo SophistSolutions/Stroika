@@ -55,7 +55,8 @@ namespace Stroika::Foundation::Containers::Factory {
         return AccessDefault_ ();
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
-    inline auto Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const -> ConstructedType
+    inline auto Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const
+        -> ConstructedType
     {
         return this->fFactory_ (keyEqualsComparer);
     }

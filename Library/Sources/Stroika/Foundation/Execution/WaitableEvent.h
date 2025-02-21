@@ -308,8 +308,11 @@ namespace Stroika::Foundation::Execution {
         DISABLE_COMPILER_MSC_WARNING_START (4996);
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-        enum class [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] ResetType{eAutoReset, eManualReset,
-                                                                                        Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)};
+        enum class [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] ResetType {
+            eAutoReset,
+            eManualReset,
+            Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)
+        };
         [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eAutoReset   = ResetType::eAutoReset;
         [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eManualReset = ResetType::eManualReset;
         [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};

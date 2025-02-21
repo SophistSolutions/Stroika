@@ -456,8 +456,8 @@ namespace {
  ********************************************************************************
  */
 namespace {
-    auto New_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable,
-               Reader::ReadAhead readAhead) -> InputStream::Ptr<Character>
+    auto New_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable, Reader::ReadAhead readAhead)
+        -> InputStream::Ptr<Character>
     {
         using Ptr = InputStream::Ptr<Character>;
         Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}

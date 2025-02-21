@@ -818,7 +818,7 @@ void Main::WindowsService::_UnInstall ()
 
     {
         SERVICE_STATUS status;
-        if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
+        if (not::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
                 Execution::ThrowSystemErrNo (e);
@@ -908,7 +908,7 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSeconds timeout
 
     {
         SERVICE_STATUS status;
-        if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
+        if (not::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
                 Execution::ThrowSystemErrNo (e);

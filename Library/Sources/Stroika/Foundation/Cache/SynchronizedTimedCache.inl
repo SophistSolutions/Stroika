@@ -50,7 +50,8 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key,
-                                                                    [[maybe_unused]] LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag) -> optional<VALUE>
+                                                                    [[maybe_unused]] LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
+        -> optional<VALUE>
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         return inherited::Lookup (key);

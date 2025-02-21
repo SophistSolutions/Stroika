@@ -98,7 +98,7 @@ namespace {
             result = getdtablesize ();
         }
         else if constexpr (kUseGetRLimit_) {
-            struct rlimit fds {};
+            struct rlimit fds{};
             if (::getrlimit (RLIMIT_NOFILE, &fds) == 0) {
                 return fds.rlim_cur;
             }

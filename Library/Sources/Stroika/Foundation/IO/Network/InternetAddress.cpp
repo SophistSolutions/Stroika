@@ -38,7 +38,7 @@ namespace {
     int inet_pton (int af, const char* src, void* dst)
     {
         IO::Network::Platform::Windows::WinSock::AssureStarted ();
-        struct sockaddr_storage ss {};
+        struct sockaddr_storage ss{};
         int                     size = sizeof (ss);
         wchar_t                 src_copy[INET6_ADDRSTRLEN + 1]; // stupid non-const API
         {
@@ -66,7 +66,7 @@ namespace {
     const char* inet_ntop (int af, const void* src, char* dst, socklen_t size)
     {
         IO::Network::Platform::Windows::WinSock::AssureStarted ();
-        struct sockaddr_storage ss {};
+        struct sockaddr_storage ss{};
         ss.ss_family = af;
         switch (af) {
             case AF_INET:
@@ -240,7 +240,7 @@ bool InternetAddress::IsLinkLocalAddress () const
             static constexpr InternetAddress kMinLinkLocal_{169, 254, 0, 1};
             static constexpr InternetAddress kMaxLinkLocal_{169, 254, 255, 254};
             Assert (kMinLinkLocal_ < kMaxLinkLocal_);
-            return kMinLinkLocal_ <= *this and *this <= kMaxLinkLocal_;
+            return kMinLinkLocal_ <= *this and * this <= kMaxLinkLocal_;
         } break;
         case AddressFamily::V6: {
             return fV6_.s6_addr[0] == 0xfe and fV6_.s6_addr[1] == 0x80 and fV6_.s6_addr[2] == 0x0 and fV6_.s6_addr[3] == 0x0 and

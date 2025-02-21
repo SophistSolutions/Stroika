@@ -11,7 +11,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-    inline StructFieldMetaInfo::StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+    inline StructFieldMetaInfo::StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::* member)
         : fTypeInfo_{typeid (FIELD_VALUE_TYPE)}
     {
         fPTR2MEM_.push_back (as_bytes (span{&member, 1}));
@@ -64,10 +64,10 @@ namespace Stroika::Foundation::DataExchange {
         return fTypeInfo_ == rhs.fTypeInfo_ and Memory::CompareBytes (span{this->fPTR2MEM_}, span{rhs.fPTR2MEM_}) == strong_ordering::equal;
     }
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-    inline FIELD_VALUE_TYPE OWNING_OBJECT ::*const StructFieldMetaInfo::GetP2M_ () const
+    inline FIELD_VALUE_TYPE OWNING_OBJECT ::* const StructFieldMetaInfo::GetP2M_ () const
     {
         Require (sizeof (const FIELD_VALUE_TYPE OWNING_OBJECT::*) == fPTR2MEM_.size ());
-        using X                        = FIELD_VALUE_TYPE OWNING_OBJECT::*const;
+        using X                        = FIELD_VALUE_TYPE OWNING_OBJECT::* const;
         X*                         aaa = reinterpret_cast<X*> (fPTR2MEM_.data ());
         return *aaa;
         // return *(X*)(fPTR2MEM_.data ());

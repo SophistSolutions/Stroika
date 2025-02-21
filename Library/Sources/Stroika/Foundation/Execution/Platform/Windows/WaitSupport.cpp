@@ -52,7 +52,7 @@ void Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Ti
         MSG msg;
         while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {
             try {
-                if (dialog == nullptr or not ::IsDialogMessage (dialog, &msg)) {
+                if (dialog == nullptr or not::IsDialogMessage (dialog, &msg)) {
                     ::TranslateMessage (&msg);
                     ::DispatchMessage (&msg);
                 }
@@ -79,7 +79,7 @@ void Windows::PumpMessagesWhileInputAvailable (HWND dialog, Time::DurationSecond
     MSG msg;
     while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {
         try {
-            if (dialog == nullptr or not ::IsDialogMessage (dialog, &msg)) {
+            if (dialog == nullptr or not::IsDialogMessage (dialog, &msg)) {
                 ::TranslateMessage (&msg);
                 ::DispatchMessage (&msg);
             }

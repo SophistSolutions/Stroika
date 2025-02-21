@@ -37,8 +37,7 @@ namespace {
 #else
     const GuradBytes_ kMallocGuardHeader_;
     const GuradBytes_ kMallocGuardFooter_;
-    struct DoInit_ ()
-    {
+    struct DoInit_ () {
         DoInit_ ()
         {
             size_t fromI = 0;

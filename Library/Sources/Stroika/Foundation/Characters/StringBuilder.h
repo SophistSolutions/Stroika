@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Append (CHAR_T c);
 
-    // clang-format off
+        // clang-format off
     public:
         /**
          *  Alias for Append

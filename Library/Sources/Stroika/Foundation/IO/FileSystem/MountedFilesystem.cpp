@@ -276,7 +276,7 @@ namespace {
             }
 
             // find next
-            if (not ::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf)))) {
+            if (not::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf)))) {
                 ::FindVolumeClose (hVol);
                 hVol = INVALID_HANDLE_VALUE;
             }

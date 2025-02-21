@@ -232,7 +232,7 @@ namespace {
                 fd_set input;
                 FD_ZERO (&input);
                 FD_SET (fSD_, &input);
-                struct timeval timeout {};
+                struct timeval timeout{};
                 if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
                     // don't know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
                     // But MUST check if is EOF or real data available

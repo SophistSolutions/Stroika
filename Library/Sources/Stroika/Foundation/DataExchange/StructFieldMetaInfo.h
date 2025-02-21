@@ -34,7 +34,7 @@ namespace Stroika::Foundation::DataExchange {
          *          worked (guaranteed) on std-layout objects, this should always work portably.
          */
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
+        StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::* member);
 
     public:
         /**
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        inline FIELD_VALUE_TYPE OWNING_OBJECT::*const GetP2M_ () const;
+        inline FIELD_VALUE_TYPE OWNING_OBJECT::* const GetP2M_ () const;
     };
 
 }

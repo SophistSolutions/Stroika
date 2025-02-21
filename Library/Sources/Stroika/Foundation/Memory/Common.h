@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Memory {
      *  \note   Tricky to get this to work with constexpr. See implementation for details.
      */
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
-    constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
+    constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::* dataMember));
 
     /**
      *  \brief UninitializedConstructorFlag::eUninitialized is a flag to some memory routines to allocate without initializing

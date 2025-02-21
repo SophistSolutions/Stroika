@@ -766,8 +766,8 @@ namespace {
             {static_cast<size_t> (sourceStart - source.data ()), static_cast<size_t> (targetStart - target.data ())}, cvt_ (r)};
     }
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
-                                                  span<char16_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source, span<char16_t> target)
+    -> ConversionResultWithStatus
 {
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
     if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
@@ -781,8 +781,8 @@ auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCha
 #endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF16_);
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
-                                                  span<char32_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source, span<char32_t> target)
+    -> ConversionResultWithStatus
 {
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
     if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
@@ -826,8 +826,8 @@ auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCha
 #endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF16_);
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
-                                                  span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source, span<char8_t> target)
+    -> ConversionResultWithStatus
 {
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
     if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
@@ -841,8 +841,8 @@ auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCha
 #endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF8_);
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
-                                                  span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source, span<char8_t> target)
+    -> ConversionResultWithStatus
 {
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
     if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {

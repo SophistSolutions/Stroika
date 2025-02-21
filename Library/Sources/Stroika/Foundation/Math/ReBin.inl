@@ -53,7 +53,8 @@ namespace Stroika::Foundation::Math::ReBin {
         return Range<X_TYPE>{s, s + kDelta_, Traversal::Openness::eClosed, Traversal::Openness::eOpen};
     }
     template <typename X_TYPE, typename VALUE_TYPE>
-    auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const -> Containers::Set<BucketIndexType>
+    auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const
+        -> Containers::Set<BucketIndexType>
     {
         using Traversal::DiscreteRange;
         if (xrange.GetUpperBound () < fXStart_) {

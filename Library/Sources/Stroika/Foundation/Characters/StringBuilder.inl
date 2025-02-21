@@ -179,25 +179,23 @@ namespace Stroika::Foundation::Characters {
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
     template <typename OPTIONS>
     template <typename APPEND_ARG_T>
-    inline auto StringBuilder<OPTIONS>::operator+= (APPEND_ARG_T&& a) -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) {
-        s.Append (forward<APPEND_ARG_T> (a));
-    }) {
-        Append (forward<APPEND_ARG_T> (a));
-        return *this;
-    } template <typename OPTIONS>
-                                                                      template <typename APPEND_ARG_T>
-                                                                      inline auto StringBuilder<OPTIONS>::operator<< (APPEND_ARG_T&& a) -> StringBuilder&
-        requires (Characters::Private_::IToString<APPEND_ARG_T> or
-                  requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
-    {
-        if constexpr (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+    inline auto StringBuilder<OPTIONS>::operator+= (APPEND_ARG_T&& a)
+        -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
             Append (forward<APPEND_ARG_T> (a));
-        }
-        else {
-            Append (Characters::UnoverloadedToString (forward<APPEND_ARG_T> (a)));
-        }
-        return *this;
-    }
+            return *this;
+        } template <typename OPTIONS>
+        template <typename APPEND_ARG_T>
+        inline auto StringBuilder<OPTIONS>::operator<< (APPEND_ARG_T&& a)
+            -> StringBuilder& requires (Characters::Private_::IToString<APPEND_ARG_T> or
+                                        requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+                if constexpr (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+                    Append (forward<APPEND_ARG_T> (a));
+                }
+                else {
+                    Append (Characters::UnoverloadedToString (forward<APPEND_ARG_T> (a)));
+                }
+                return *this;
+            }
 #endif
     template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::push_back (Character c)

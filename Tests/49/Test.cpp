@@ -805,7 +805,7 @@ namespace {
     {
         TraceContextBumper ctx{"DateTimeStructTM_"};
         {
-            struct tm x {};
+            struct tm x{};
             x.tm_hour    = 3;
             x.tm_min     = 30;
             x.tm_year    = 80;

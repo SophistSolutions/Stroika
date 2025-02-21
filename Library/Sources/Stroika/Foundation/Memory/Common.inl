@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Memory {
                 struct offset_of_impl {
                     template <size_t off, auto union_part = MakeUnion<BASE_CLASS, MEMBER, off>::u>
                     // This gets called with nullptr as 'object' for computing diff below to avoid ever building the object (cuz just computing offsets)
-                    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::*member)
+                    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::* member)
                     {
                         if constexpr (off > sizeof (BASE_CLASS)) {
                             throw 1;
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Memory {
                 // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
                 template <typename T1, typename T2>
                 struct offset_of {
-                    static constexpr size_t offset (T1 T2::*member)
+                    static constexpr size_t offset (T1 T2::* member)
                     {
                         union X {
                             array<char, sizeof (T2)> bytes;
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Memory {
 
             namespace UsingAlignedByteArrayBuf_ {
                 template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-                inline size_t offset_of (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+                inline size_t offset_of (FIELD_VALUE_TYPE OWNING_OBJECT::* member)
                 {
                     // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
                     //      --LGP 2021-05-27
@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Memory {
                 template <typename T1, typename T2>
                 struct offset_of_ {
                     static inline constexpr T2 sObj_{};
-                    static constexpr size_t    offset (T1 T2::*member)
+                    static constexpr size_t    offset (T1 T2::* member)
                     {
                         /*
                          *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Memory {
             namespace UsingSimpleUnionToConstructActualObj_ {
 
                 template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
-                inline constexpr size_t offset_of (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
+                inline constexpr size_t offset_of (DATA_MEMBER_TYPE (OUTER_OBJECT::* dataMember))
                 {
                     // NOT real assert - just tmphack to test
                     //   auto a1 = Private_::OffsetOfImpl_::UsingRecursiveSideStruct_::offset_of<OUTER_OBJECT> (dataMember);
@@ -359,7 +359,7 @@ namespace Stroika::Foundation::Memory {
     }
 
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
-    inline constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
+    inline constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::* dataMember))
     {
         //constexpr bool          kTestAllWays_ = false;
         constexpr bool          kTestAllWays_ = true;
@@ -415,7 +415,7 @@ namespace Stroika::Foundation::Memory {
 
     ////////////////////// DEPRECATED .//////////////////////////
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-    [[deprecated ("Since Stroika v3.0d2 - just use OffsetOf")]] inline size_t constexpr OffsetOf_Constexpr (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+    [[deprecated ("Since Stroika v3.0d2 - just use OffsetOf")]] inline size_t constexpr OffsetOf_Constexpr (FIELD_VALUE_TYPE OWNING_OBJECT::* member)
     {
         return OffsetOf (member);
     }

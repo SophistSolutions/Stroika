@@ -250,7 +250,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Lookup (typename Common::ArgByValueType<KEY> key) -> optional<VALUE>
+    auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Lookup (typename Common::ArgByValueType<KEY> key)
+        -> optional<VALUE>
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_}; // subtle - WRITE cuz updates LRU
         optional<KeyValuePair_>* v = LookupElement_ (key);
@@ -366,8 +367,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LookupElement_ (
-        typename Common::ArgByValueType<KeyType> item) -> optional<KeyValuePair_>*
+    inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LookupElement_ (typename Common::ArgByValueType<KeyType> item)
+        -> optional<KeyValuePair_>*
     {
         size_t chainIdx = H_ (item);
         Assert (0 <= chainIdx and chainIdx < fHashtableSize_);

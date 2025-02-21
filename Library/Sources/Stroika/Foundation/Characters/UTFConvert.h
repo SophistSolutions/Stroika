@@ -426,13 +426,16 @@ namespace Stroika::Foundation::Characters {
 
         //********************** DEPRECATED BELOW ****************************
     public:
-        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] LEGACY_ConversionResult{
+        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] LEGACY_ConversionResult {
             conversionOK,    /* conversion successful */
             sourceExhausted, /* partial character in source, but hit end */
             targetExhausted, /* insuff. room in target for conversion */
             sourceIllegal    /* source sequence is illegal/malformed */
         };
-        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] ConversionFlags{strictConversion = 0, lenientConversion};
+        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] ConversionFlags {
+            strictConversion = 0,
+            lenientConversion
+        };
 
         /**
          */

@@ -64,15 +64,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         template <typename TRAITS, typename KEY_TYPE>
-        concept IValidTraits = Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE>and
-            requires (TRAITS)
-        {
-            {
-                TRAITS::kKeepStatistics
-            } -> std::convertible_to<bool>;
-            {
-                TRAITS::kAddOrExtendOrReplaceMode
-            } -> std::convertible_to<AddOrExtendOrReplaceMode>;
+        concept IValidTraits = Common::IThreeWayComparer<typename TRAITS::KeyComparerType, KEY_TYPE> and requires (TRAITS) {
+            { TRAITS::kKeepStatistics } -> std::convertible_to<bool>;
+            { TRAITS::kAddOrExtendOrReplaceMode } -> std::convertible_to<AddOrExtendOrReplaceMode>;
         };
 
         struct Stats_Basic {

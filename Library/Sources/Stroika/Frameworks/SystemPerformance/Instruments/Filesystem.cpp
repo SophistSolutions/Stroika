@@ -295,7 +295,7 @@ namespace {
         static void UpdateVolumeInfo_statvfs_ (const filesystem::path& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
-            struct statvfs sbuf {};
+            struct statvfs sbuf{};
             if (::statvfs (mountedOnName.c_str (), &sbuf) == 0) {
                 uint64_t diskSize        = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes          = diskSize;
@@ -326,7 +326,7 @@ namespace {
                             }
                             dev_t useDevT;
                             {
-                                struct stat sbuf {};
+                                struct stat sbuf{};
                                 if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                                     useDevT = sbuf.st_rdev;
                                 }

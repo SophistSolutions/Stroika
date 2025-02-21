@@ -327,7 +327,7 @@ URI URI::Combine (const URI& overridingURI) const
      *          return r;
      *      }
      */
-    if (not *this) {
+    if (not*this) {
         return overridingURI;
     }
 
