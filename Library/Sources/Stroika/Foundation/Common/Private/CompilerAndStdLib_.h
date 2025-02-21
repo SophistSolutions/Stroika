@@ -114,16 +114,17 @@
 #define _MSC_VER_2k22_17Pt10_ 1940
 #define _MSC_VER_2k22_17Pt11_ 1941
 #define _MSC_VER_2k22_17Pt12_ 1942
+#define _MSC_VER_2k22_17Pt13_ 1943
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #if _MSC_VER < _MSC_VER_2k22_17Pt9_
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2022 (17.9) - (use Stroika v2.1 or earlier)"
-#elif _MSC_VER <= _MSC_VER_2k22_17Pt12_
+#elif _MSC_VER <= _MSC_VER_2k22_17Pt13_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (> 17.12) of Microsoft Visual "       \
+    "Warning: This version of Stroika (check newer version of Stroika) is untested with this release (> 17.13) of Microsoft Visual "       \
     "Studio.net / Visual C++ - USING "                                                                                                     \
     "PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -269,7 +270,9 @@ C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: e
 #endif
 
 /**
-.
+    SEE ALSO qCompilerAndStdLib_function_dependency_too_complex_Buggy
+
+
 7>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp(451): fatal error C1202: recursive type or function dependency context too complex
 7>C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\
 */
@@ -279,8 +282,9 @@ C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: e
 // verified broken in _MSC_VER_2k22_17Pt10_
 // verified broken in _MSC_VER_2k22_17Pt11_
 // verified broken in _MSC_VER_2k22_17Pt12_
+// verified broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy 0
 #endif
@@ -928,8 +932,9 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
 // still broken in _MSC_VER_2k22_17Pt12_
+// still broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy                                                                    \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy 0
 #endif
@@ -1346,6 +1351,9 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 #endif
 
 /**
+* SEE ALSO qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy
+* 
+* 
  2>   Compiling Library/Sources/Stroika/Frameworks/WebServer/Message.cpp ...
 2>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Frameworks\WebServer\Message.cpp(89): fatal error C1202: recursive type or function dependency context too complex
 2>Creating Builds/Debug/Stroika-Frameworks.lib ...
@@ -1357,8 +1365,9 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 #if defined(_MSC_VER)
 
 // first seen broken in _MSC_VER_2k22_17Pt12_
+// seen broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_function_dependency_too_complex_Buggy                                                                           \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_function_dependency_too_complex_Buggy 0
 #endif
@@ -1715,8 +1724,9 @@ C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to functi
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
 // still broken in _MSC_VER_2k22_17Pt12_
+// still broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #elif defined(__clang__)
 // first broken in clang++ 19 (linux)
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
@@ -1893,6 +1903,10 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 
 /*
 
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Characters\ToString.h(443): note: the concept 'Stroika::Foundation::Common::StdCompat::formattable<std::filesystem::path,wchar_t>' evaluated to false
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\StdCompat.h(76): note: the concept 'std::formattable<std::filesystem::path,wchar_t>' evaluated to false
+1>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\include\__msvc_ranges_tuple_formatter.hpp(891): note: the concept 'std::_Formattable_with<std::filesystem::path,std::basic_format_context<std::_Phony_fmt_iter_for<wchar_t>,wchar_t>,std::formatter<std::filesystem::path,_CharT>>' evaluated to false
+1>        with
  */
 #ifndef qCompilerAndStdLib_StdFmtOfPath_Buggy
 
@@ -1901,7 +1915,8 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt12_
-#define qCompilerAndStdLib_StdFmtOfPath_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+// verified still broken in _MSC_VER_2k22_17Pt13_
+#define qCompilerAndStdLib_StdFmtOfPath_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 0
 #endif
@@ -2088,7 +2103,8 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
 // verified still broken in _MSC_VER_2k22_17Pt12_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+// verified still broken in _MSC_VER_2k22_17Pt13_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -2685,6 +2701,13 @@ Test.cpp:173:31: error: template template argument has different template parame
 
 /*
  * qCompilerAndStdLib_template_template_auto_deduced_Buggy fails on SystemPerformanceClient sample
+ * 
+ * 
+C:\Sandbox\Stroika\DevRoot\Samples\SystemPerformanceClient\Sources\SystemPerformanceClient.cpp(71): error C2672: 'Stroika::Foundation::Time::clock_cast': no matching overloaded function found
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Clock.h(33): note: could be 'RANGE<DESTINATION_CLOCK_T::time_point> Stroika::Foundation::Time::clock_cast(RANGE<std::chrono::time_point<_Clock,_Duration>>)'
+C:\Sandbox\Stroika\DevRoot\Samples\SystemPerformanceClient\Sources\SystemPerformanceClient.cpp(71): note: 'RANGE<DESTINATION_CLOCK_T::time_point> Stroika::Foundation::Time::clock_cast(RANGE<std::chrono::time_point<_Clock,_Duration>>)': could not deduce template argument for 'RANGE<std::chrono::time_point<_Clock,_Duration>>' from 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::TimePointSeconds,Stroika::Foundation::Traversal::RangeTraits::Default<Stroika::Foundation::Time::TimePointSeconds>>'
+C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Clock.h(31): note: or       'DESTINATION_CLOCK_T::time_point Stroika::Foundation::Time::clock_cast(std::chrono::time_point<_Clock,_Duration>)'
+C:\Sandbox\Stroika\DevRoot\Samples\SystemPerformanceClient\Sources\SystemPerformanceClient.cpp(71): note: 'DESTINATION_CLOCK_T::time_point Stroika::Foundation::Time::clock_cast(std::chrono::time_point<_Clock,_Duration>)': could not deduce template argument for 'std::chrono::time_point<_Clock,_Duration>' from 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::TimePointSeconds,Stroika::Foundation::Traversal::RangeTraits::Default<Stroika::Foundation::Time::TimePointSeconds>>'
  */
 #ifndef qCompilerAndStdLib_template_template_auto_deduced_Buggy
 #if defined(_MSC_VER)
@@ -2692,8 +2715,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 // still broken in _MSC_VER_2k22_17Pt10_
 // still broken in _MSC_VER_2k22_17Pt11_
 // still broken in _MSC_VER_2k22_17Pt12_
+// still broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_template_template_auto_deduced_Buggy                                                                            \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_template_template_auto_deduced_Buggy 0
 #endif
@@ -2788,6 +2812,9 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
  *          FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
  * 
  * FAILED: RegressionTestFailure; (error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out);;C:\Sandbox\Stroika\DevRoot\Tests\36\Test.cpp: 218
+ *     [36] Foundation::Execution::Exceptions - ../Builds/Debug/Tests/Test36.exe --gtest_brief
+FAILED: Assert; Not Reached;Stroika::Foundation::Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_;C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Exceptions.cpp: 187
+         C:\Sandbox\Stroika\DevRoot\Tests\36\Test.cpp(216): error: Value of: (error_code{(12000 + 2), system_category ()} == errc::timed_out)           Actual: false         Expected: true
  */
 #ifndef qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
 
@@ -2796,8 +2823,9 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 // Verified still broken in _MSC_VER_2k22_17Pt10_
 // Verified still broken in _MSC_VER_2k22_17Pt11_
 // Verified still broken in _MSC_VER_2k22_17Pt12_
+// Verified still broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy                                                                           \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -2984,8 +3012,11 @@ TRIED alignas to fix on the array but no luck
  *  with formatPattern = "%c" - produces a numeric format date with C locale, compared to UNIX which produces 
  *  %a %b %e %T %Y - as is suggested by code docs and https://en.cppreference.com/w/cpp/locale/time_put/put (example - not clear cuz not for all locales)
    ...
-FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox\Stroika\DevRoot\Tests\50\Test.cpp: 505
-   []  (0  seconds)  [48]  Foundation::Time  (../Builds/Release-U-64/Tests/Test48.exe)
+   [49] Foundation::Time - ../Builds/Debug/Tests/Test49.exe --gtest_brief
+         C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(564): error: Expected equality of these values:           tmp             Which is: 4/5/1903 12:01:41 AM           "Sun 05 Apr 1903 12:01:41 AM"             Which is: 0,000,7FF,660,83C,CE0                  C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(580): error: Expected equality of these values:           tmp             Which is: 04/06/03 00:01:41           "Mon Apr  6 00:01:41 1903"             Which is: 00007FF66083CEA0                  [  FAILED  ] Foundation_Time.TestDateTime_ (750 ms)         C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(783): error: Expected equality of these values:           d.Format (DateTime::eCurrentLocale_WithZerosStripped)             Which is: 12/28/24 19:08:34           "Sat Dec 28 19:08:34 2024"             Which is: 00007FF660843140                  C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(788): error: Expected equality of these values:           d.Format (DateTime::eCurrentLocale_WithZerosStripped)             Which is: 12/8/24 19:08:34           "Sun Dec 8 19:08:34 2024"             Which is: 00007FF660843360                  C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(792): error: Expected equality of these values:           d.Format (locale{}).NormalizeSpace ()             Which is: 01/04/17 03:03:00           "Wed Jan 4 03:03:00 2017"             Which is: 00007FF6608434A0                  C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(794): error: Expected equality of these values:           d.Format (DateTime::eCurrentLocale_WithZerosStripped)             Which is: 1/4/17 3:03:00           "Wed Jan 4 3:03 2017"
+ Which is: 00007FF6608438C0                  [  FAILED  ] Foundation_Time.DateTime_eCurrentLocale_WithZerosStripped (22 ms)  
+
+
  */
 #ifndef qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
 
@@ -2994,8 +3025,9 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified broken in _MSC_VER_2k22_17Pt10_
 // verified broken in _MSC_VER_2k22_17Pt11_
 // verified broken in _MSC_VER_2k22_17Pt12_
+// verified broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -3035,6 +3067,11 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
  * 
  *  NOTE - though not directly related to this bug, this is AGGRAVATED and of extra importance betcause of
  *          StdCPctxTraits::kLocaleClassic_Write4DigitYear being false
+ * 
+ * 
+         C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(211): error: Expected equality of these values:           resultTM.tm_mday             Which is: 3           kTargetTM_MDY_.tm_mday             Which is: 7                  C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(212): error: Expected equality of these values:           resultTM.tm_mon             Which is: 6           kTargetTM_MDY_.tm_mon
+  Which is: 2                  [  FAILED  ] Foundation_Time.AssumptionsAboutUnderlyingTimeLocaleLibrary_ (35 ms)         C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(564): error: Expected equality of these values:           tmp             Which is: 4/5/1903 12:01:41 AM           "Sun 05 Apr 1903 12:01:41 AM"             Which is: 0,000,7FF,75D,67B,D40                  C:\Sandbox\Stroika\DevRoot\Tests\49\Test.cpp(580): error: Expected equality of these values:           tmp             Which is: 04/06/03 00:01:41           "Mon Apr  6 00:01:41 1903"             Which is: 00007FF75D67BF00                  C:\San
+
  */
 #ifndef qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
 
@@ -3043,15 +3080,16 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
 // verified still broken in _MSC_VER_2k22_17Pt12_
+// verified still broken in _MSC_VER_2k22_17Pt13_
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy                                                       \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy 0
 #endif
 
 #endif
 
-/* attempts to format a date outside the range -1900 to 8099 trigger an assertion erorr in vis studio runtime lib
+/* attempts to format a date outside the range -1900 to 8099 trigger an assertion error in vis studio runtime lib
 * 
 * 
 *   @todo if this is still broken - add regtest and document how to retest / verify if still broken
@@ -3097,7 +3135,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified still broken in _MSC_VER_2k22_17Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt11_
 // verified still broken in _MSC_VER_2k22_17Pt12_
-#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt12_)
+// verified still broken in _MSC_VER_2k22_17Pt13_
+#define qCompilerAndStdLib_locale_utf8_string_convert_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #else
 #define qCompilerAndStdLib_locale_utf8_string_convert_Buggy 0
 #endif
