@@ -693,19 +693,16 @@ namespace {
         void Test17_FindEach_ ()
         {
             {
-                // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-                EXPECT_TRUE (String{"abc"}.FindEach ("b") == Containers::Sequence<size_t> ({1}).As<vector<size_t>> ());
+                EXPECT_EQ (String{"abc"}.FindEach ("b"), Containers::Sequence<size_t> ({1}));
             }
-            // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            EXPECT_TRUE (String{"01-23-45-67-89"}.FindEach ("-") == Containers::Sequence<size_t> ({2, 5, 8, 11}).As<vector<size_t>> ());
-            // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            EXPECT_TRUE (String{"AAAA"}.FindEach ("AA") == Containers::Sequence<size_t> ({0, 2}).As<vector<size_t>> ());
+            EXPECT_EQ (String{"01-23-45-67-89"}.FindEach ("-"), Containers::Sequence<size_t> ({2, 5, 8, 11}));
+            EXPECT_EQ (String{"AAAA"}.FindEach ("AA"), Containers::Sequence<size_t> ({0, 2}));
         }
         void Test17_ReplaceAll_ ()
         {
-            EXPECT_TRUE (String{"01-23-45-67-89"}.ReplaceAll ("-", "") == "0123456789");
-            EXPECT_TRUE (String{"01-23-45-67-89"}.ReplaceAll ("-", "x") == "01x23x45x67x89");
-            EXPECT_TRUE (String{"01-23-45-67-89"}.ReplaceAll ("-", "--") == "01--23--45--67--89");
+            EXPECT_EQ (String{"01-23-45-67-89"}.ReplaceAll ("-", ""), "0123456789");
+            EXPECT_EQ (String{"01-23-45-67-89"}.ReplaceAll ("-", "x"), "01x23x45x67x89");
+            EXPECT_EQ (String{"01-23-45-67-89"}.ReplaceAll ("-", "--"), "01--23--45--67--89");
         }
         void Test17_Replace_ ()
         {
@@ -751,7 +748,7 @@ namespace {
                 RegularExpression regExp{"abc"};
                 String            testStr2Search = String{"abc"};
                 EXPECT_EQ (testStr2Search.FindEach (regExp).size (), 1u);
-                EXPECT_TRUE ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
+                EXPECT_EQ (testStr2Search.FindEach (regExp)[0], (pair<size_t, size_t>{0, 3}));
             }
             {
                 // Test replace crlfs
@@ -779,10 +776,10 @@ namespace {
             Test17_RegExp_Search_ ();
             Test17_RegExpMatch_ ();
             Test17_Replace_ ();
-            EXPECT_TRUE ((String{"Hello world"}.Find (RegularExpression{"ello"}) == pair<size_t, size_t> (1, 5)));
-            vector<RegularExpressionMatch> r = String{"<h2>Egg prices</h2>"}.FindEachMatch (RegularExpression{"<h(.)>([^<]+)"});
+            EXPECT_EQ ((String{"Hello world"}.Find (RegularExpression{"ello"})), (pair<size_t, size_t>{1, 5}));
+            Sequence<RegularExpressionMatch> r = String{"<h2>Egg prices</h2>"}.FindEachMatch (RegularExpression{"<h(.)>([^<]+)"});
             EXPECT_TRUE (r.size () == 1 and r[0].GetSubMatches ()[0] == "2" and r[0].GetSubMatches ()[1] == "Egg prices");
-            EXPECT_TRUE (String{"Hello world"}.ReplaceAll (RegularExpression{"world"}, "Planet") == "Hello Planet");
+            EXPECT_EQ (String{"Hello world"}.ReplaceAll (RegularExpression{"world"}, "Planet"), "Hello Planet");
         }
         void docsTests_ ()
         {
@@ -852,7 +849,7 @@ namespace {
                 {
                     const String            kTest_{"a=b, c=d"sv};
                     const RegularExpression kRE_{"(.)=(.)"};
-                    EXPECT_TRUE ((kTest_.FindEachString (kRE_) == vector<String>{"a=b", "c=d"}));
+                    EXPECT_EQ (kTest_.FindEachString (kRE_), (Sequence<String>{"a=b", "c=d"}));
                 }
             }
         }
