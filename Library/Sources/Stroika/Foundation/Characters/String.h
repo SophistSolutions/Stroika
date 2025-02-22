@@ -38,9 +38,6 @@
  *
  *              Not a biggie opportunity, so we can delay this -- LGP 2014-04-10
  *
- *      @todo   Change APIs that return vector to return Iterable<> using CreateGenerator (). Tried once and worked
- *              very nicely.
- *
  *      @todo   Add PadLeft/PadRight or FillLeft/FilLRight() - not sure which name is better. But idea is to
  *              produce a string which is identical to the orig except that IF start len < n, then expand it with
  *              the given arg char repeated on the left or right.
@@ -789,8 +786,8 @@ namespace Stroika::Foundation::Characters {
          *  @see FindEachString ()
          *  @see Matches ()
          */
-        nonvirtual vector<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
-        nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = eWithCase) const;
+        nonvirtual Containers::Sequence<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
+        nonvirtual Containers::Sequence<size_t> FindEach (const String& string2SearchFor, CompareOptions co = eWithCase) const;
 
     public:
         /**
@@ -808,7 +805,7 @@ namespace Stroika::Foundation::Characters {
          *  @see FindEachString ()
          *  @see Matches ()
          */
-        nonvirtual vector<RegularExpressionMatch> FindEachMatch (const RegularExpression& regEx) const;
+        nonvirtual Containers::Sequence<RegularExpressionMatch> FindEachMatch (const RegularExpression& regEx) const;
 
     public:
         /**
@@ -816,14 +813,14 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          const String            kTest_ { "a=b, c=d"_k };
          *          const RegularExpression kRE_ { "(.)=(.)" };
-         *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {"a=b", "c=d"}));
+         *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String>{"a=b", "c=d"}));
          *      \endcode
          *
          *  @see Find ()
          *  @see FindEachMatch ()
          *  @see Matches ()
          */
-        nonvirtual vector<String> FindEachString (const RegularExpression& regEx) const;
+        nonvirtual Containers::Sequence<String> FindEachString (const RegularExpression& regEx) const;
 
     public:
         /**
@@ -1103,7 +1100,7 @@ namespace Stroika::Foundation::Characters {
          *      o   u32string
          *      o   String    (return *this; handy sometimes in templated usage; harmless)
          *    as well as:
-         *      o   filesystem::path (or anything with .wstring() -> wstring method)
+         *      o   filesystem::path (or anything with .wstring() -> wstring method) - note see qStroika_Foundation_Characters_AsPathAutoMapMSYSAndCygwin
          *
          *  DEPRECATED AS OF v3.0d1 because As is const method - could do non-const As<> overload for these, but that would be confusing
          *      o   const wchar_t*

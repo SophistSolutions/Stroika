@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Characters/SDKString.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Common/Empty.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
@@ -952,17 +953,17 @@ optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, siz
     return {};
 }
 
-vector<size_t> String::FindEach (const String& string2SearchFor, CompareOptions co) const
+Containers::Sequence<size_t> String::FindEach (const String& string2SearchFor, CompareOptions co) const
 {
     vector<size_t> result;
     for (optional<size_t> i = Find (string2SearchFor, 0, co); i; i = Find (string2SearchFor, *i, co)) {
         result.push_back (*i);
         *i += string2SearchFor.length (); // this cannot point past end of this string because we FOUND string2SearchFor
     }
-    return result;
+    return Containers::Concrete::Sequence_stdvector{move (result)};
 }
 
-vector<pair<size_t, size_t>> String::FindEach (const RegularExpression& regEx) const
+Containers::Sequence<pair<size_t, size_t>> String::FindEach (const RegularExpression& regEx) const
 {
     vector<pair<size_t, size_t>> result;
     //@TODO - FIX - IF we get back zero length match
@@ -977,10 +978,10 @@ vector<pair<size_t, size_t>> String::FindEach (const RegularExpression& regEx) c
             result.push_back (pair<size_t, size_t>{res.position (mi), matchLen});
         }
     }
-    return result;
+    return Containers::Concrete::Sequence_stdvector{move (result)};
 }
 
-vector<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& regEx) const
+Containers::Sequence<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& regEx) const
 {
     vector<RegularExpressionMatch> result;
     wstring                        tmp{As<wstring> ()};
@@ -994,17 +995,17 @@ vector<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& r
         }
         result.push_back (RegularExpressionMatch{match.str (0), s});
     }
-    return result;
+    return Containers::Concrete::Sequence_stdvector{move (result)};
 }
 
-vector<String> String::FindEachString (const RegularExpression& regEx) const
+Containers::Sequence<String> String::FindEachString (const RegularExpression& regEx) const
 {
     vector<String> result;
     wstring        tmp{As<wstring> ()};
     for (wsregex_iterator i = wsregex_iterator{tmp.begin (), tmp.end (), regEx.GetCompiled ()}; i != wsregex_iterator (); ++i) {
         result.push_back (String{i->str ()});
     }
-    return result;
+    return Containers::Concrete::Sequence_stdvector{move (result)};
 }
 
 optional<size_t> String::RFind (Character c) const noexcept
