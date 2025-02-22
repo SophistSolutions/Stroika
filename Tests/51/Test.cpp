@@ -1542,12 +1542,12 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
 #if qStroika_HasComponent_googletest
     TemporaryTest_::DoTest_ ();
-#endif
 
     if (sShowOutput_) {
         RunPerformanceTests_ ();
         return EXIT_SUCCESS;
     }
+#endif
 
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
