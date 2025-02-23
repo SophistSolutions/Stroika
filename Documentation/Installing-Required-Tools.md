@@ -1,4 +1,4 @@
-# Installing Development Environment Tools
+# Installing Development Environment Tools {#Installing-Required-Tools}
 
 This documetation is incomplete, and really has little to do with Stroika, but has been frequently requested, so I'm adding some brief docs on this.
 

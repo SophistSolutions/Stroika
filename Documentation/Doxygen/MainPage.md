@@ -1,8 +1,20 @@
-# Stroika Library
+# Stroika Library {#mainpage}
+- [All Classes](annotated.html)
+- [All Files](files.html)
 
-- todo fill in details here - but not clear how to link to pages???
+### Getting Started
+- [Building Stroika](#Building-Stroika)
+- [Quick-Start](#Quick-Start)
 
-- [Thread Safety](@ref=_Thread Safety_)
-- [Thread Safety](@ref=Thread-Safety)
-- [dd](@ref=md__2_sandbox_2_stroika-_dev_2_documentation_2_debugging.html)
-- [Git Tags and Branches](@ref=Git Tags and Branches)
+### Design
+- [Design Overview](#Design-Overview)
+- [Approach To Performance](#Stroika-Approach-to-System-Performance)
+- [Thread Safety](#Thread-Safety)
+
+### Misc
+- [Code Status](#Code-Status)
+- [Debugging with Stroika](#Debugging-with-Stroika)
+- [Git Tags and Branches](#Git-Tags-and-Branches)
+- [Installing Development Environment Tools](#Installing-Required-Tools)
+- [Setup RaspberryPi to be target for remote raspberry pi testing (and debugging)](#Setup-Remote-Debug-RaspberryPi)
+- [Upgrading Stroika Versions](#Upgrading-Stroika-Versions)

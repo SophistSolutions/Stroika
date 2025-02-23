@@ -1,4 +1,4 @@
-# Upgrading Stroika versions
+# Upgrading Stroika Versions {#Upgrading-Stroika-Versions}
 
 Stroika makes lots of changes in its APIs over time. This the only way to improve. This is imposes a cost on developers using Stroika, but also provides significant benefits (better deisgn, better features)
 

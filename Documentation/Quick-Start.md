@@ -1,4 +1,4 @@
-# Quick-Start
+# Quick-Start {#Quick-Start}
 
 Building your application with Stroika
 

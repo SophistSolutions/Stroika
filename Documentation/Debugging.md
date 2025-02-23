@@ -1,4 +1,4 @@
-# Debugging with Stroika
+# Debugging with Stroika {#Debugging-with-Stroika}
 
 ## @todo DOC ABOUT setting up vscode and using .natvis files
 

@@ -1,4 +1,4 @@
-# Building Stroika
+# Building Stroika {#Building-Stroika}
 
 ---
 

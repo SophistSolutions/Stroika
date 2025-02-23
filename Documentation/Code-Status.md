@@ -1,4 +1,4 @@
-# Code Status
+# Code Status {#Code-Status}
 
 Each module will be marked with a 'Status' flag, indicating how
 stable the API is, and something about the implementation quality.
