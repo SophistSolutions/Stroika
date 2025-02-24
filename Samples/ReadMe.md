@@ -1,4 +1,4 @@
-# Stroika Samples
+# Stroika Samples {#Samples}
 
 * [ActiveLedIt](ActiveLedIt/)
   is a word-processor activeX control. This works only for Windows.

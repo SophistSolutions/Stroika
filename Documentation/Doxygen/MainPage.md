@@ -5,6 +5,7 @@
 ### Getting Started
 - [Building Stroika](#Building-Stroika)
 - [Quick-Start](#Quick-Start)
+- [Samples](#Samples)
 
 ### Design
 - [Design Overview](#Design-Overview)
