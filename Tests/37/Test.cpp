@@ -47,7 +47,6 @@ namespace {
                 Stroika::Frameworks::Test::WarnTestIssue ("{} not found in path ({})"_f(i, kPath ()));
             }
         }
-
     }
 }
 
