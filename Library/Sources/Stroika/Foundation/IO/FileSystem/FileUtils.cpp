@@ -155,7 +155,7 @@ bool FileSystem::is_cygwin_symlink (const filesystem::path& p)
         if (attributes & FILE_ATTRIBUTE_SYSTEM) {
             try {
                 (void)read_cygwin_symlink (p);
-                return true;    // else would throw
+                return true; // else would throw
             }
             catch (...) {
                 return false;
