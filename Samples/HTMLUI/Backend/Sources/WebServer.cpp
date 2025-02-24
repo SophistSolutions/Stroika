@@ -69,8 +69,10 @@ namespace {
             /*
              *  Values with hashes in names never change value - you get new hashes when the files do, so these files are immutable, and
              *  can be cached forever by the browser.
+             * 
+             *  Empirically, vite/quasar appears to put hash/immutable files into dist/spa/assets/AboutPage-BBsu2LrN.css, AboutPage-D6hvYwgY.js etc...
              */
-            {RegularExpression{".*[0-9a-f]+\\.(js|css|js\\.map)"sv, eCaseInsensitive}, CacheControl::kImmutable},
+            {RegularExpression{".*\\bassets\\/.+"sv, eCaseInsensitive}, CacheControl::kImmutable},
             /*
              *  Top level (other) files, like "Home.html", its less clear how long to tell the browser they will be valid.
              *  If you pick to large a time, when you update your site it can lead to grave confusion. Pick a time that's too slow, and you
