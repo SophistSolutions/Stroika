@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Cache {
      *              static CallerStalenessCache<int, optional<int>> sCache_;
      *              try {
      *                  return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
-     *                      return v;   // could be more expensive computation
+     *                      return v;   // typically more expensive computation
      *                  });
      *              }
      *              catch (...) {
@@ -104,8 +104,8 @@ namespace Stroika::Foundation::Cache {
      *                  // return null here, or Execution::ReThrow ()
      *              }
      *          }
-     *          EXPECT_TRUE (MapValue_ (1) == 1);  // skips 'more expensive computation' if in cache
-     *          EXPECT_TRUE (MapValue_ (2) == 2);  // ''
+     *          EXPECT_EQ (MapValue_ (1), 1);  // skips 'more expensive computation' if in cache
+     *          EXPECT_EQ (MapValue_ (2), 2);  // ''
      *      \endcode
      * 
      *  \par Example Usage

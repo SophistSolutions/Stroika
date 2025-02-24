@@ -103,7 +103,7 @@ namespace Stroika::Frameworks::UPnP {
         /**
          *  Mapper to facilitate serialization
          */
-        static const Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> kMapper;
+        static const Foundation::Execution::LazyInitialized<Foundation::DataExchange::ObjectVariantMapper> kMapper;
 
         /**
          *  @see Characters::ToString ();
