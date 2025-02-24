@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     using Common::ArgByValueType;
 
-    /*
+    /**
      *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.
      *  We provide no public means to access the links themselves.
      *

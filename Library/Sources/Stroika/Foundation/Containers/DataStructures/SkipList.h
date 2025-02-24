@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using StatsType = conditional_t<TRAITS::kKeepStatistics, Stats_Basic, Common::Empty>;
     }
 
-    /*
+    /**
      *      SkipList<> is a (low level) data structure class. It is not intended to be directly
      *  used by programmers, except in implementing concrete container reps, but of course can be
      *  where extra performance maybe needed, over convenience and flexibility.

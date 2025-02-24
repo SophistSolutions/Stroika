@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     using Common::ArgByValueType;
 
-    /*
+    /**
      *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation (similar to std::forward_list).
      *   We provide no public means to access the links themselves.
      *
