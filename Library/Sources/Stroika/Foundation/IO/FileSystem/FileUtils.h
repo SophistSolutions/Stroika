@@ -35,6 +35,18 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     void SetFileAccessWideOpened (const filesystem::path& filePathName);
 
+#if qStroika_Foundation_Common_Platform_Windows
+    /**
+     *  Sadly std::filesystem::is_symlink() doesn't work with some cygwin (old fashioned) symbolic links
+     */
+    bool is_cygwin_symlink (const filesystem::path& p);
+
+    /**
+     *  Sadly std::filesystem::read_symlink() doesn't work with some cygwin (old fashioned) symbolic links
+     */
+    filesystem::path read_cygwin_symlink (const filesystem::path& p);
+#endif
+
     /**
      * Possibly useful, even after using std::filesystem, as I dont think supported in std::filesystem.
      * but @todo DOCUMENT WHAT THIS DOES ***

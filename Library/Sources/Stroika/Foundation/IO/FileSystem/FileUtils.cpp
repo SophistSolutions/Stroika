@@ -142,6 +142,54 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
 #endif
 }
 
+#if qStroika_Foundation_Common_Platform_Windows
+/*
+ ********************************************************************************
+ ********************** FileSystem::is_cygwin_symlink ***************************
+ ********************************************************************************
+ */
+bool FileSystem::is_cygwin_symlink (const filesystem::path& p)
+{
+    if (filesystem::exists (p)) {
+        DWORD attributes = GetFileAttributes (p.native ().c_str ());
+        if (attributes & FILE_ATTRIBUTE_SYSTEM) {
+            try {
+                (void)read_cygwin_symlink (p);
+                return true;    // else would throw
+            }
+            catch (...) {
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
+/*
+ ********************************************************************************
+ ********************** FileSystem::read_cygwin_symlink *************************
+ ********************************************************************************
+ */
+filesystem::path FileSystem::read_cygwin_symlink (const filesystem::path& p)
+{
+    if (filesystem::exists (p)) {
+        DWORD attributes = GetFileAttributes (p.native ().c_str ());
+        if (attributes & FILE_ATTRIBUTE_SYSTEM) {
+            ifstream file{p, ios::binary};
+            if (file.is_open ()) {
+                char buffer[MAX_PATH];
+                file.read (buffer, sizeof (buffer));
+                size_t nBytesRead = file.gcount ();
+                if (nBytesRead > 10 and strncmp (buffer, "!<symlink>", 10) == 0) {
+                    return &buffer[10];
+                }
+            }
+        }
+    }
+    Execution::Throw (filesystem_error{"read_cygwin_symlink", p, make_error_code (errc::wrong_protocol_type)}); // not sure best error to throw?
+}
+#endif
+
 /*
  ********************************************************************************
  ************************** FileSystem::GetVolumeName ***************************
