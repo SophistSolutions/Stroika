@@ -15,6 +15,7 @@
 #endif
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
 #include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
@@ -46,6 +47,7 @@ namespace {
                 Stroika::Frameworks::Test::WarnTestIssue ("{} not found in path ({})"_f(i, kPath ()));
             }
         }
+
     }
 }
 
@@ -266,7 +268,18 @@ namespace {
         }
         {
             // can use full path or just plain name (if in path) for make/awk
-            ProcessRunner pr{"\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, "awk"_k)};
+            // EXCEPT small issue on cygwin version of awk - which is symbolic link, and cygwin symbolic links dont work when run under DOS, so
+            // map the filename in that case
+            String awk2Use = "awk"_k;
+#if qStroika_Foundation_Common_Platform_Windows
+            if (auto op = FindExecutableInPath ("awk")) {
+                if (IO::FileSystem::is_cygwin_symlink (*op)) {
+                    awk2Use = String{IO::FileSystem::read_cygwin_symlink (*op)};
+                }
+            }
+#endif
+
+            ProcessRunner pr{"\"{}\" -version | \"{}\" 'NR == 1 {{print $3}}'"_f("make"_k, awk2Use)};
             try {
                 auto [stdOutStr, stdErrStr] = pr.Run (""sv);
                 EXPECT_TRUE (not stdOutStr.empty ());
