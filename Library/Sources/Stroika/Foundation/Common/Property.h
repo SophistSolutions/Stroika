@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Common {
     };
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d16 use Execution::LazyInitialized")]] using ConstantProperty = Execution::LazyInitialized<T>;
+    using ConstantProperty [[deprecated ("Since Stroika v3.0d16 use Execution::LazyInitialized")]] = Execution::LazyInitialized<T>;
 
     /**
      *  \brief ExtendableProperty is a Property which has callbacks associated with it, to be notified when it is accessed or updated
