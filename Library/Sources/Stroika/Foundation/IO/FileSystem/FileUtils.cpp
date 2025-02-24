@@ -179,7 +179,7 @@ filesystem::path FileSystem::read_cygwin_symlink (const filesystem::path& p)
             if (file.is_open ()) {
                 char buffer[MAX_PATH + 11];
                 file.read (buffer, sizeof (buffer));
-                size_t nBytesRead = file.gcount ();
+                size_t nBytesRead = static_cast <size_t> (file.gcount ());
                 if (nBytesRead > 10 and strncmp (buffer, "!<symlink>", 10) == 0) {
                     return &buffer[10];
                 }
