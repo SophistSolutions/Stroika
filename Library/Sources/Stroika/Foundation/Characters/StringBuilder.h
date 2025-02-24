@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Characters {
         // clang-format off
     public:
         /**
-         *  Alias for Append
+         *  @aliases Append
          */
         template <typename APPEND_ARG_T>
         nonvirtual auto operator+= (APPEND_ARG_T&& a)
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Alias for Append if that would work, and otherwise alias for Append (ToString(arg)), if that would work;
+         *  @aliases Append if that would work, and otherwise alias for Append (ToString(arg)), if that would work;
          */
         template <typename APPEND_ARG_T>
         nonvirtual auto
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief return (read-only) Character object
          *
-         *  Alias for GetAt (size_t i) const;
+         *  @aliases GetAt (size_t i) const;
          * 
          *  \note this is very inefficient, unless using StringBuilder_Options<char32_t> - in which case its quite fast
          */
@@ -271,7 +271,9 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  STL-ish alias for size () - number of characters, not bytes or code-points...
+         *  \brief number of characters, not bytes or code-points
+         * 
+         *  @aliases size ()
          */
         nonvirtual size_t length () const noexcept;
 

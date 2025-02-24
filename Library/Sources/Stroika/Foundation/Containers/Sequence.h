@@ -291,7 +291,7 @@ namespace Stroika::Foundation::Containers {
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
          *
-         *  \note alias for Sort ()
+         *  @aliases Sort ()
          *
          *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          */
@@ -380,6 +380,8 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \brief alias for GetAt (i) - but returning const T
+         * 
+         *  @aliases GetAt
          * 
          *  \pre i < size ().
          *
@@ -591,7 +593,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \alias Append
+         *  @aliases Append
          * 
          *  \note mutates container
          */
@@ -610,13 +612,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for RemoveAll ().
+         * @aliases RemoveAll ().
          */
         nonvirtual void clear ();
 
     public:
         /**
-         * \brief STL-ish alias for Remove ().
+         * @aliases Remove ().
          *
          *  \note mutates container
          */

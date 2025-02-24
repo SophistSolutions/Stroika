@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Containers {
          *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
          *      keys a logical copy at the point 'keys' is called.
          *
-         *  \note   Alias - this could also have been called Image ()
+         *  @aliases Image ()
          *
          *  See:
          *      @see Keys ()
@@ -306,7 +306,7 @@ namespace Stroika::Foundation::Containers {
          *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
          *      \pre    Ensure (item == nullptr or returnValue == item->has_value());
          *
-         *  \note   Alias - Lookup (key, mapped_type* value) - is equivalent to .Net TryGetValue ()
+         *  @aliases Lookup (key, mapped_type* value) - is equivalent to .Net TryGetValue ()
          * 
          *  \@todo http://stroika-bugs.sophists.com/browse/STK-928 - add overload 'returning' Iterator<>, so can use with Update method
          */
@@ -317,7 +317,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \note Alias LookupOrException
+         *  @aliases LookupOrException
          */
         template <typename THROW_IF_MISSING>
         nonvirtual mapped_type LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const;
@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinel' value.
          *
-         *  \note Alias LookupOrDefault
+         *  @aliases LookupOrDefault
          */
         nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type{}) const;
 
@@ -400,7 +400,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \summary Add all the argument (container or bound range of iterators) elements; if replaceExistingMapping true (default) force replace on each. Return count of added items (not count of updated items)
          *
-         *  \note   AddAll/2 is alias for .net AddRange ()
+         *  @aliases AddAll/2 is alias for .net AddRange ()
          *
          *  \note mutates container
          */
@@ -501,7 +501,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Apply the function function to each element, and return a subset Mapping including just the ones for which it was true.
          *
-         *  \note   Alias - this could have been called 'Subset' - as it constructs a subset mapping (filtering on key or key-value pairs)
+         *  @aliases 'Subset' - as it constructs a subset mapping (filtering on key or key-value pairs)
          *
          *  @see Iterable<T>::Where
          *
@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Return a subset of this Mapping<> where the keys are included in the argument includeKeys set..
          *
-         *  \note   Alias - this could have been called 'Subset' - as it constructs a subset mapping (where the given keys intersect)
+         *  @aliases Subset - as it constructs a subset mapping (where the given keys intersect)
          *
          *  @see Iterable<T>::Where
          *  @see Where
@@ -599,7 +599,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for Add ().
+         * @aliases Add ().
          * 
          *  \see https://en.cppreference.com/w/cpp/container/map/insert
          * 
@@ -609,7 +609,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for Remove ().
+         * @aliases Remove ().
          * 
          *  \note - beware of using erase(iterator) - probably should use Stroika 'Remove' so you can pass extra parameter to get iterator patched.
          *        At any rate, beware its illegal to use 'i' after erasing at i (detected by Stroika when use use it).
@@ -619,7 +619,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for RemoveAll ().
+         * @aliases RemoveAll ().
          */
         nonvirtual void clear ();
 

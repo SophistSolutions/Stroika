@@ -152,7 +152,7 @@ namespace Stroika::Foundation::Characters {
         constexpr Options GetOptions () const;
 
     public:
-        /*
+        /**
          *  Quickly compute the buffer size needed for a call to Convert (or ConvertSpan)
          *
          *  This will frequently (greatly) over-estimate the amount of space needed but it will always produce a sufficient answer without much computation.
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  @See ConvertQuietly ()
          *  @See Convert ()
-         *  \Alias used to be called QuickComputeConversionOutputBufferSize
+         *  @aliases used to be called QuickComputeConversionOutputBufferSize
          */
         template <IUNICODECanUnambiguouslyConvertTo TO, IUNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (span<const FROM> src)

@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  With a single T argument, this is somewhat STLISH, but also takes overload of a span, so you can append multiple.
          * 
-         *  \note ALIAS: Append
+         *  @aliases Append
          * 
          *  \see also push_back_coerced ()
          */

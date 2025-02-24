@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \brief STL-ish alias for Insert (size(), item)
          * 
-         *  \alias Append
+         *  @aliases Append
          * 
          *  \note Runtime performance/complexity:
          *      Worst Case: O(N)

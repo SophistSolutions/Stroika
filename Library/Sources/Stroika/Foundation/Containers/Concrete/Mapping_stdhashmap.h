@@ -21,11 +21,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
-     *  \note Alias
-     *          Could have been called Mapping_stdunorderedmap - but that name would not be nearly as suggestive.
-     *          the name std::unordered_map is something of an move towards the approach taken by Stroika - focusing
-     *          on data access patterns, rather than implementation data structure. But the API - truly has hash-table
-     *          written all over it (so the name is really misleading in std).
+     *  @aliases Could have been called Mapping_stdunorderedmap - but that name would not be nearly as suggestive.
+     *           the name std::unordered_map is something of an move towards the approach taken by Stroika - focusing
+     *           on data access patterns, rather than implementation data structure. But the API - truly has hash-table
+     *           written all over it (so the name is really misleading in std).
      * 
      *  \note   \em Implementation Details
      *          This module is essentially identical to SortedMapping_stdhashmap, but making it dependent on SortedMapping<> creates

@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief alias for AddHead
+         *  @aliases AddHead
          */
         nonvirtual void push_front (ArgByValueType<value_type> item);
 
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief alias for AddHead
+         *  @aliases RemoveTail
          */
         nonvirtual T pop_back ();
 
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief alias for Tail
+         *  @aliases Tail
          *  \pre not empty ()
          */
         nonvirtual T back () const;

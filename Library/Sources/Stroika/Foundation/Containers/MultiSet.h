@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
-     *  \note   \em Aliases         Tally (Stroika 1.0), Bag (from SmallTalk-80)
+     *  @aliases    Tally (Stroika 1.0), Bag (from SmallTalk-80)
      *
      *  \em Concrete Implementations:
      *      o   @see Concrete::MultiSet_Array<>
@@ -246,8 +246,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \note   AddAll/2 is alias for .net AddRange ()
-         *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<typename TRAITS::CountedValueType>
+         *  @aliases AddAll/2 is alias for .net AddRange ()
+         *           and AddAll/2 - the iterator can be Iterator<T> or Iterator<typename TRAITS::CountedValueType>
          *
          *  \pre IInputIterator<typename TRAITS::CountedValueType> or IIterableOfTo<typename TRAITS::CountedValueType>
          *
@@ -337,13 +337,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for Remove ().
+         * @aliases Remove ().
          */
         nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:
         /**
-         * \brief STL-ish alias for RemoveAll ().
+         * @aliases RemoveAll ().
          *
          *  \note mutates container
          */

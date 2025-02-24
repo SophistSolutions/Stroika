@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Common {
      * 
      *  \see https://en.wikipedia.org/wiki/Total_order#:~:text=A%20set%20equipped%20with%20a,a%20given%20partially%20ordered%20set.
      * 
-     *  \alias Could have been called IThreeWayAdaptableComparer
+     *  @aliases Could have been called IThreeWayAdaptableComparer
      * 
      *  \note this will NOT work with an equals_to<T> comparer! - as that's not sufficient to generate a total ordering...
      * 

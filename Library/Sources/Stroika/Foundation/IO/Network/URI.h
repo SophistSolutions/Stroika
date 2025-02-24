@@ -231,7 +231,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \brief Return the (PCT etc encoded if a string) data AFTER the authority, but not including the fragment
          *
-         *  \note Alias - this used to be called GetHostRelativePathPlusQuery
+         *  @aliases GetHostRelativePathPlusQuery
          *
          *  This returns the path + the query (omitting authority, scheme, and fragment).
          *
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::IO::Network {
         /**
          *  \brief Return the path component, excluding any text after the final /.
          *
-         *  \note Alias - this used to be called GetHostRelPathDir
+         *  @aliases GetHostRelPathDir
          *
          *  This value maybe a full UNICODE String, and is NOT PCT encoded.
          */

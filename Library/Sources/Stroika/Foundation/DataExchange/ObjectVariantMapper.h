@@ -554,7 +554,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Alias for Add ()
+         *  @aliases Add ()
          */
         nonvirtual void operator+= (const TypeMappingDetails& rhs);
         nonvirtual void operator+= (const Traversal::Iterable<TypeMappingDetails>& rhs);
@@ -1153,7 +1153,7 @@ namespace Stroika::Foundation::DataExchange {
 
         public:
             /**
-             *  Alias for Add ()
+             *  @aliases Add ()
              */
             nonvirtual void operator+= (const TypeMappingDetails& typeMapDetails);
             nonvirtual void operator+= (const Traversal::Iterable<TypeMappingDetails>& typeMapDetails);

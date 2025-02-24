@@ -44,11 +44,10 @@ namespace Stroika::Foundation::Execution {
      *
      *  This should be convertible to a normal std::function<>, and fairly if not totally interoperable.
      *
-     *  \note   Alias
-     *      This template could have been called Callback<> - as that's principally what its used for.
-     *      Callbacks you need to be able to create, and then later remove (by value) - and this class
-     *      lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
-     *      and then later removed by value.
+     *  @aliases This template could have been called Callback<> - as that's principally what its used for.
+     *           Callbacks you need to be able to create, and then later remove (by value) - and this class
+     *           lets you create an object (callback/Function) - which can then be added to a Mapping (or Set)
+     *           and then later removed by value.
      *
      *  \note   This was implemented using a shared_ptr<function<...>> instead of a directly aggregated function object
      *          until Stroika v2.1d8.

@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \alias Prepend
+         *  @aliases Prepend
          * 
          *  \note Runtime performance/complexity:
          *      Always: constant
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \alias Append
+         *  @aliases Append
          * 
          *  \note Runtime performance/complexity:
          *      Always: constant

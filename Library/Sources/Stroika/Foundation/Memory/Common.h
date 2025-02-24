@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Memory {
      * 
      *  fixes the problem.
      * 
-     *  \note Aliases:
+     *  @aliases
      *      SpanOfPossiblyConstT - but name just too long (though might be clearer).
      * 
      *  note - matches span<T>, span<T,EXTENT>, span<const T>, span<const T,EXTENT>, but not things that
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Memory {
      *  \brief - like std::memcmp() - except count is in units of T (not bytes) and this function is
      *           constexpr, and this function allows nullptr arguments (if count == 0).
      * 
-     *  \note Aliases: memcmp, MemCmp
+     *  @aliases memcmp, MemCmp
      * 
      *  Pointer Overload: 
      *      \pre  (count == 0 or lhs != nullptr);

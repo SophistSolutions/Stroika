@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          *
-         *  \alias Enqueue, push_back
+         *  @aliases Enqueue, push_back
          */
         nonvirtual void AddTail (ArgByValueType<value_type> item);
 
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief stlish alias for Head
+         *  @aliases Head
          *  \pre not empty ()
          */
         nonvirtual T front () const;
@@ -204,7 +204,9 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief Alias for AddTail () - add item to the end of the Q (line).
+         *  @aliases AddTail ()
+         * 
+         * \brief add item to the end of the Q (line).
          *
          *  \note mutates container
          */

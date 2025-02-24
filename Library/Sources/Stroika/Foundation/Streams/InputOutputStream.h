@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
 
     public:
         /**
-         *  \brief Alias for OutputStream<>::Ptr::Close ();
+         *  @aliases OutputStream<>::Ptr::Close ();
          */
         nonvirtual void CloseWrite () const;
         nonvirtual void CloseWrite (bool reset);

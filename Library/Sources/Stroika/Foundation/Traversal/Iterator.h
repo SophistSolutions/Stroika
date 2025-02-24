@@ -491,7 +491,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *   Equivalent to *this = GetEmptyIterator();
          *
-         *  @see clear () - and alias
+         *  @aliases clear ()
          */
         nonvirtual void reset ();
 
@@ -502,7 +502,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Equivalent to *this = GetEmptyIterator();
          *
-         *  @see reset () - and alias
+         *  @aliases reset ()
          */
         nonvirtual void clear ();
 

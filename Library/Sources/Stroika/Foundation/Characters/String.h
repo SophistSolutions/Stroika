@@ -393,7 +393,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note if character code point >= 256, this will throw an exception - not defined for that range (only checked if sizeof (CHAR_T) > 1)
          *
-         *  \note Alias From8bitASCII () or FromExtendedASCII ()
+         *  @aliases From8bitASCII () or FromExtendedASCII ()
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (const CHAR_T* cString);
@@ -421,7 +421,7 @@ namespace Stroika::Foundation::Characters {
          *  does not include NUL termination, and doesn't in any way respect NUL termination (meaning
          *  a nul-character is allowed in a Stroika string.
          * 
-         * \note Alias GetLength ()
+         * @aliases GetLength ()
          */
         nonvirtual size_t size () const noexcept;
 
@@ -439,7 +439,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief return (read-only) Character object
          *
-         *  Alias for GetCharAt (size_t i) const;
+         *  @aliases GetCharAt (size_t i) const;
          * 
          *  \note returns const due to https://stroika.atlassian.net/browse/STK-376 - so cannot accidentally have illusion of assignment being legal
          */
@@ -557,12 +557,12 @@ namespace Stroika::Foundation::Characters {
          *      This was originally inspired by Python arrays. From https://docs.python.org/2/tutorial/introduction.html:
          *          Indices may also be negative numbers, to start counting from the right
          *
-         *  \note \em Alias
+         *  @aliases
          *      This API is identical to the javascript String.slice () method/behavior
          *      @see http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
          *           15.5.4.13 String.prototype.slice (start, end)
          *
-         *  \note \em Alias
+         *  @aliases
          *      This API - when called with negative indexes - used to be called CircularSubString ().
          *
          *  @see substr
@@ -578,7 +578,7 @@ namespace Stroika::Foundation::Characters {
          *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
          *  if the exceed those endpoints. And if arguments are <0, they are interpreted as end-relative.
          *
-         *  \note \em Alias
+         *  @aliases
          *      This API - when called with negative indexes - used to be called SafeCircularSubString ().
          *
          *  @see substr
@@ -738,7 +738,7 @@ namespace Stroika::Foundation::Characters {
          *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
          *  is non-empty, and nullopt if this string was empty.
          *
-         *  \note   Alias - could have been called IndexOf ()
+         *  @aliases - could have been called IndexOf ()
          *
          *  \pre (startAt <= size ());
          *
@@ -828,7 +828,7 @@ namespace Stroika::Foundation::Characters {
          * this string. This function always returns a valid string index, which is followed by the
          * given substring, or optional<size_t> {} otherwise.
          *
-         *  \note   Alias - could have been called RIndexOf ()
+         *  @aliases RIndexOf ()
          */
         nonvirtual optional<size_t> RFind (Character c) const noexcept;
         nonvirtual optional<size_t> RFind (const String& subString) const;
@@ -1383,7 +1383,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Alias for basic_string>char>::npos - except this is constexpr.
+         *  @aliases basic_string>char>::npos
          *
          *  This is only used for 'STL-compatibility APIs, like substr (), find, rfind (), etc.
          */
@@ -1391,7 +1391,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  basic_string alias: length = size
+         *  @aliases size
          */
         nonvirtual size_t length () const noexcept;
 

@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \note   AddAll/2 is alias for .net AddRange ()
+         *  @aliases .net AddRange ()
          *
          *  \note mutates container
          */
@@ -463,7 +463,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for RemoveAll ().
+         * @aliases RemoveAll ().
          *
          *  \note mutates container
          */
@@ -478,7 +478,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for Add ().
+         * @aliases Add ().
          * 
          *  \see https://en.cppreference.com/w/cpp/container/set/insert
          *
@@ -615,7 +615,7 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  Alias for Set<>::Union
+     *  @aliases Set<>::Union
      */
     template <typename T>
     Set<T> operator+ (const Set<T>& lhs, const Iterable<T>& rhs);
@@ -623,13 +623,13 @@ namespace Stroika::Foundation::Containers {
     Set<T> operator+ (const Set<T>& lhs, const T& rhs);
 
     /**
-     *  Alias for Set<>::Difference.
+     *  @aliases Set<>::Difference.
      */
     template <typename T>
     Set<T> operator- (const Set<T>& lhs, const Iterable<T>& rhs);
 
     /**
-     *   Alias for Set<>::Intersection.
+     *   @aliases Set<>::Intersection.
      */
     template <typename T>
     Set<T> operator^ (const Set<T>& lhs, const Iterable<T>& rhs);

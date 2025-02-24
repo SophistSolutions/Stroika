@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Containers {
          *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
          *      \pre    Ensure (item == nullptr or returnValue == item->has_value());
          *
-         *  \note   Alias - Lookup (key, RangeType* value) - is equivalent to .Net TryGetValue ()
+         *  @aliases Lookup (key, RangeType* value) - is equivalent to .Net TryGetValue ()
          *
          *  @see   LookupValue ()
          *  @see   InverseLookup ()
@@ -395,7 +395,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \note   AddAll/2 is alias for .net AddRange ()
+         *  \@aliases  .net AddRange ()
          *
          *  \note mutates container
          */
@@ -485,7 +485,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for RemoveAll ().
+         * @aliases RemoveAll ().
          *
          *  \note mutates container
          */

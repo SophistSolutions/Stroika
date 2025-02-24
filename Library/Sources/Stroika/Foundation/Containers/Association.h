@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  @see    SortedAssociation<Key,T>
      *
-     *  \note   Alias MultiMap
+     *  @aliases MultiMap
      * 
      *  \note   The term 'KEY' usually implies a UNIQUE mapping to the associated value, but DOES NOT do so in this container ArcheType.
      *          Though databases generally use key to imply unique, https://en.cppreference.com/w/cpp/container/multimap, for example, does not.
@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Containers {
          *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
          *      keys a logical copy at the point 'keys' is called.
          *
-         *  \note   Alias - this could also have been called Image ()
+         *  @aliases Image ()
          *
          *  See:
          *      @see Keys ()
@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Lookup and return the first (maybe arbitrarily chosen which is first) value with this key, and throw if there are none.
          * 
-         *  \note Alias LookupOrException
+         *  @aliases LookupOrException
          */
         nonvirtual optional<mapped_type> LookupOne (ArgByValueType<key_type> key) const;
 
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Lookup and return the first (maybe arbitrarily chosen which is first) value with this key, and throw if there are none.
          * 
-         *  \note Alias LookupOrException
+         *  @aliases LookupOrException
          */
         template <typename THROW_IF_MISSING>
         nonvirtual mapped_type LookupOneChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const;
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Lookup and return the first (maybe arbitrarily chosen which is first) value with this key, and otherwise return argument value as default.
          *
-         *  \note Alias LookupOneOrDefault
+         *  @aliases LookupOneOrDefault
          */
         nonvirtual mapped_type LookupOneValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type{}) const;
 
@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \summary Add all the argument (container or bound range of iterators) elements.
          *
-         *  \note   AddAll/2 is alias for .net AddRange ()
+         *  @aliases  AddAll/2 is alias for .net AddRange ()
          *
          *  \note AddAll () does not return the number of items added because all items are added (so the count can be made on the iterators/diff or items.size()
          * 

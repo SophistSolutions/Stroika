@@ -415,7 +415,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * call when list is relatively stable in size, and it will set links to near classic log(n/2) search time
          * relatively fast to call, as is order N (single list traversal)
          * 
-         *  \note alias: Could be called 'Optimize'
+         *  @aliases Optimize
          * 
          *  \note Runtime performance/complexity:
          *      Average/WorseCase???

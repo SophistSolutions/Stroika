@@ -358,7 +358,7 @@ namespace Stroika::Foundation::Traversal {
          *  Also note that size () can return a ridiculous number - like numeric_limits<size_t>::max () -
          *  for logically infinite sequences... like a sequence of random numbers.
          *
-         *  \note Alias GetLength () - in fact in Stroika before 2.1b14, this was called GetLength ()
+         *  @aliases GetLength () - in fact in Stroika before 2.1b14, this was called GetLength ()
          *
          *  \note Design Note: noexcept
          *      We chose to allow the empty () method to allow exceptions, since an Iterable<T>
@@ -374,7 +374,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          * \brief Returns true iff size() == 0
          *
-         *  \note Alias IsEmpty () - called IsEmpty () in Stroika 2.1b13 and prior
+         *  @aliases IsEmpty () - called IsEmpty () in Stroika 2.1b13 and prior
          *
          *  \note Design Note: noexcept
          *      We chose to allow the empty () method to allow exceptions, since an Iterable<T>
@@ -589,7 +589,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note though semantically similar to iterating, it maybe faster, due to delegating 'search' to backend container
          *        implementation (though then call to lambda/checker maybe indirected countering this performance benefit).
          *
-         *  \alias FirstThat
+         *  @aliases FirstThat
          * 
          *  @see Apply
          *
@@ -680,8 +680,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  BASED ON Microsoft .net Linq.
          * 
-         *  \alias Filter
-         *  \alias AllThat, AllOf
+         *  @aliases Filter
+         *  @aliases AllThat, AllOf
          *
          *  This returns either an Iterable<T>, or a concrete container (provided template argument). If returning
          *  just an Iterable<T>, then the result is lazy evaluated. If a concrete container is provided, its fully constructed
@@ -821,7 +821,7 @@ namespace Stroika::Foundation::Traversal {
          *  \see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
          *  \see https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.aggregate?redirectedfrom=MSDN&view=net-7.0#overloads
          * 
-         *  \note   Alias - Accumulate
+         *  @aliases Accumulate
          * 
          *  \note   This was called Accumulate in Stroika up until 2.1.10
          *
@@ -1071,7 +1071,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
          *
-         *  \note alias for Sort ()
+         *  @aliases Sort ()
          *
          *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          *
@@ -1087,7 +1087,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \note alias for IsSorted ()
+         *  @aliases IsSorted ()
          * 
          *  \see
          *      OrderBy ()
@@ -1099,7 +1099,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  return first element in iterable, or if 'that' specified, first where 'that' is true, (or return nullopt if none)
          *
-         *  \alias Find () - but in Stroika, Find () returns an Iterator<>
+         *  @aliases Find () - but in Stroika, Find () returns an Iterator<>
          * 
          *  \par Example Usage
          *      \code
@@ -1360,7 +1360,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note @see Count
          *  \note @see Where
-         *  \alias AnyThat (predicate)
+         *  @aliases AnyThat (predicate)
          */
         nonvirtual bool Any () const;
         nonvirtual bool Any (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;

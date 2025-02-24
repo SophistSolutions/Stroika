@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Alias for 'Elements' ()
+         *  @aliases Elements ()
          */
         nonvirtual operator Iterable<T> () const;
 

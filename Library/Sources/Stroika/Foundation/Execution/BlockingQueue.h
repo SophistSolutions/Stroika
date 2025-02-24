@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Alias for size()
+         * @aliases size()
          */
         nonvirtual size_t length () const;
 

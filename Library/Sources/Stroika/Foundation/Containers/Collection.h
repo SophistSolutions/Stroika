@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \note   AddAll/2 is alias for .net AddRange ()
+         *  @aliases AddAll/2 is alias for .net AddRange ()
          * 
          *  \note mutates container
          */
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for RemoveAll ().
+         * @aliases RemoveAll ().
          *
          *  \note mutates container
          */
@@ -312,7 +312,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for Remove ().
+         * @aliases Remove ().
          *
          *  \note mutates container
          */

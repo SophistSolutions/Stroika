@@ -354,7 +354,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \note Alias LookupOrException
+         *  @aliases LookupOrException
          */
         template <typename THROW_IF_MISSING>
         nonvirtual value_type LookupChecked (ArgByValueType<KeyType> key, THROW_IF_MISSING&& throwIfMissing) const;
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinel' value.
          *
-         *  \note Alias LookupOrDefault
+         *  @aliases LookupOrDefault
          */
         nonvirtual value_type LookupValue (ArgByValueType<KeyType> key, ArgByValueType<value_type> defaultValue = value_type{}) const;
 
@@ -466,7 +466,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Apply the function function to each element, and return all the ones for which it was true.
          *
-         *  \note   Alias - this could have been called 'Subset' - as it constructs a subset.
+         *  @aliases Subset - as it constructs a subset.
          *
          *  @see Iterable<T>::Where
          */
@@ -507,7 +507,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for RemoveAll ().
+         * @aliases RemoveAll ().
          *
          *  \note mutates container
          */
@@ -515,7 +515,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         * \brief STL-ish alias for Remove ().
+         * @aliases Remove ().
          *
          *  \note mutates container
          */

@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Execution {
      *  This object CAN be constructed before main, and accessed before main (after constructed) - but its up to caller to assure
      *  the 'oneTimeGetter' is safe to call when called.
      * 
-     *  \note \em Alias for ConstantProperty, 'virtual constant', VirtualConstant
+     *  @aliases for ConstantProperty, 'virtual constant', VirtualConstant
      * 
      *  \par Example Usage
      *      \code

@@ -352,13 +352,13 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  Trivial alias for @see GetSize()
+         *  @aliases GetSize()
          */
         nonvirtual size_t size () const;
 
     public:
         /**
-         *  Trivial alias for @see GetSize()
+         *  @aliases GetSize()
          */
         nonvirtual size_t length () const;
 

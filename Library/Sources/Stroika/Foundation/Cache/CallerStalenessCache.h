@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         * \brief STL-ish alias for Clear/RemoveAll ().
+         * @aliases Clear/RemoveAll ().
          */
         nonvirtual void clear ();
 

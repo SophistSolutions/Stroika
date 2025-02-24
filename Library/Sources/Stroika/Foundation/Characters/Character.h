@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Characters {
      *        could reasonably, in context (so with extra info), could be safely converted into
      *        a Character object.
      * 
-     *  \note Possible alias for this - Character_CanConditionallyConvertUNICODEStringToArrayOfThese
+     *  @aliases Character_CanConditionallyConvertUNICODEStringToArrayOfThese
      *        for example, ASCII is one of these - any depending on what is in the UNICODE string
      *        you maybe able to (unambiguously) covnert to a string of this type.
      * 

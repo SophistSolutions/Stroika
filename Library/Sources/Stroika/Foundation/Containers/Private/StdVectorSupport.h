@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Containers::Private {
          * 
          * This optional API allows pre-reserving space as an optimization.
          * 
-         *  \note alias GetCapacity ();
+         *  @aliases GetCapacity ();
          */
         nonvirtual size_t capacity () const;
 
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Private {
         /**
          * This optional API allows pre-reserving space as an optimization.
          * 
-         *  \note Alias SetCapacity ();
+         *  @aliases SetCapacity ();
          * 
          *  \note Note that this does not affect the semantics of the container.
          * 

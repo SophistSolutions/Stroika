@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Containers {
     /**
      *      A SortedMapping is a Mapping<Key,T> which remains sorted (iterator) by the Key.
      *
-     *  \note Alias this class might have been called "Dictionary".
+     *  @aliases Dictionary
      *
      *  \note   \em Iterators
      *      Note that iterators always run in sorted order, from least

@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note Date/Time required in case Timezone is 'localtime' to determine DST
          *
-         *  \note alias - could have been called AsRFC822 ()
+         *  @aliases AsRFC822 ()
          */
         nonvirtual String AsRFC1123 (const Date& date, const TimeOfDay& tod) const;
 
