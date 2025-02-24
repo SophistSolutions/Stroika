@@ -67,18 +67,17 @@ optional<DigestAlgorithm> DigestAlgorithm::GetByNameQuietly (const String& diges
 
 /*
  ********************************************************************************
- ***************** Cryptography::Providers::OpenSSL::DigestAlgorithms **********************
+ *********** Cryptography::Providers::OpenSSL::DigestAlgorithms *****************
  ********************************************************************************
  */
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1{[] () { return ::EVP_sha1 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1_224{[] () { return ::EVP_sha224 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1_256{[] () { return ::EVP_sha256 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1_384{[] () { return ::EVP_sha384 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1_512{[] () { return ::EVP_sha512 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_224{[] () { return ::EVP_sha3_224 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_256{[] () { return ::EVP_sha3_256 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_384{[] () { return ::EVP_sha3_384 (); }};
-const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_512{[] () { return ::EVP_sha3_512 (); }};
-
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA1{[] () { return ::EVP_sha1 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA1_224{[] () { return ::EVP_sha224 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA1_256{[] () { return ::EVP_sha256 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA1_384{[] () { return ::EVP_sha384 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA1_512{[] () { return ::EVP_sha512 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA3_224{[] () { return ::EVP_sha3_224 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA3_256{[] () { return ::EVP_sha3_256 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA3_384{[] () { return ::EVP_sha3_384 (); }};
+const Execution::LazyInitialized<DigestAlgorithm> DigestAlgorithms::kSHA3_512{[] () { return ::EVP_sha3_512 (); }};
 #endif

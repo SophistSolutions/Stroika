@@ -11,9 +11,9 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
-#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
@@ -48,7 +48,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
         /**
          *  Mapper to facilitate serialization
          */
-        static const Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> kMapper;
+        static const Foundation::Execution::LazyInitialized<Foundation::DataExchange::ObjectVariantMapper> kMapper;
 
         /**
          *  @see Characters::ToString ();
@@ -58,7 +58,7 @@ namespace Stroika::Frameworks::UPnP::SSDP {
     private:
         static Foundation::DataExchange::ObjectVariantMapper kMapperGetter_ ();
     };
-    inline const Foundation::Common::ConstantProperty<Foundation::DataExchange::ObjectVariantMapper> Advertisement::kMapper{Advertisement::kMapperGetter_};
+    inline const Foundation::Execution::LazyInitialized<Foundation::DataExchange::ObjectVariantMapper> Advertisement::kMapper{Advertisement::kMapperGetter_};
 
     /**
      */

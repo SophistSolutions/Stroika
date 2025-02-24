@@ -6,13 +6,12 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Streams/InputStream.h"
-
 #include "Stroika/Foundation/DataExchange/XML/Common.h"
 #include "Stroika/Foundation/DataExchange/XML/DOM.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/DataExchange/XML/Schema.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
  *  \file
@@ -57,10 +56,10 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
 #endif
 
     /**
-     *  Provided as a property so can be ...??? so used before main - and still destroyed properly... without forcing include of libxml2/xerces stuff
+     *  Provided as using LazyInitialized so can be ...??? so used before main - and still destroyed properly... without forcing include of libxml2/xerces stuff
      */
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
-    inline const Foundation::Common::ConstantProperty<const IXMLProvider*> kDefaultProvider{Private_::GetDefaultProvider_};
+    inline const Foundation::Execution::LazyInitialized<const IXMLProvider*> kDefaultProvider{Private_::GetDefaultProvider_};
 #endif
 
 }

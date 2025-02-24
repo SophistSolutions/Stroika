@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
 
 #if !defined(qHas_pid_t)
 #error "qHas_pid_t must  be defined in StroikaConfig.h"
@@ -56,7 +57,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  The set of system locations to look for an executable (note order matters, which is why this is a Sequence)
      */
-    extern Common::ConstantProperty<Containers::Sequence<filesystem::path>> kPath;
+    extern const LazyInitialized<Containers::Sequence<filesystem::path>> kPath;
 
 #if qStroika_Foundation_Common_Platform_Windows
     /**
@@ -64,16 +65,16 @@ namespace Stroika::Foundation::Execution {
      * 
      *  https://wiki.tcl-lang.org/page/PATHEXT
      */
-    extern Common::ConstantProperty<Containers::Sequence<filesystem::path>> kPathEXT;
+    extern const LazyInitialized<Containers::Sequence<filesystem::path>> kPathEXT;
 #endif
 
     /**
      */
-    extern Common::ConstantProperty<Containers::Mapping<Characters::SDKString, Characters::SDKString>> kRawEnvironment;
+    extern const LazyInitialized<Containers::Mapping<Characters::SDKString, Characters::SDKString>> kRawEnvironment;
 
     /**
      */
-    extern Common::ConstantProperty<Containers::Mapping<Characters::String, Characters::String>> kEnvironment;
+    extern const LazyInitialized<Containers::Mapping<Characters::String, Characters::String>> kEnvironment;
 
     /**
      *  \brief If fn refers to an executable - return it (using kPATH, and kPathEXT as appropriate)

@@ -14,6 +14,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h" // tmp for deprecation impl
 
 /**
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
@@ -443,136 +444,8 @@ namespace Stroika::Foundation::Common {
         using WriteOnlyProperty<decayed_value_type>::operator();
     };
 
-    /**
-     *  \brief ConstantProperty is a 'virtual constant' - computed once at app startup, and thence forward just the cached constant value
-     * 
-     *  A ConstantProperty is just something that makes a function returning a value look
-     *  like a constant, except that the ConstantProperty calls the construction function once, lazily;
-     * 
-     *  This can be useful if you have a logical constant, but one that depends on other 'logical constants'
-     *  but want to avoid the nasty C++ deadly embrace of startup inter-module initialization.
-     *
-     *  In C++, you sometimes want to define a global constant, but run into problems because of order of initialization
-     *  of global constants (across files). This class solves that problem by allowing you to manage the construction
-     *  timing of your constant in a provided function, 
-     * 
-     *  This isn't guaranteed to always solve that problem no matter what, it allows you to declare a constant
-     *  globally, and yet delay when its constructed until its first used (as opposed to some unspecified time
-     *  before main).
-     * 
-     *  \note Names - the Stroika convention for names of properties is that they start with 'p' and for constants, they
-     *        start with 'k'. This is both, but its more like an application constant, so the Stroika convention for
-     *        these ConstantProperty objects is to start with 'k'.
-     * 
-     *  \note \alias Prior to Stroika v2.1b12, this was called VirtualConstant
-     * 
-     *  \note Unlike other properties (which are generally associated with some object)
-     *        ConstantProperty objects generally are not associated with a particular object.
-     * 
-     *  \note Design Note: 
-     *        Don't inherit from ReadOnlyProperty because if it already defining extra function object
-     *        we don't need. API OK (though more general than needed).
-     * 
-     *  \par Example Usage
-     *      \code
-     *          inline String                 kXGetter_ () { return "X"; }
-     *          const ConstantProperty<String> kX {kXGetter_};
-     *          ...
-     *          const String a = kX;
-     *      \endcode
-     *
-     *  \note   it would be HIGHLY DESIRABLE if C++ allowed operator'.' overloading, as accessing one of these
-     *          values without assigning to a temporary first - means that you cannot directly call its methods.
-     *          That's a bit awkward.
-     *
-     *          So if you have a type T, with method m(), and variable of type T t.
-     *          Your starter code might be:
-     *              T   t;
-     *              t.m ();
-     *          When you replace 'T t' with
-     *              ConstantProperty<T> t;
-     *              you must call t().m();
-     *          OR
-     *              you must call t->m();
-     * 
-     *  \note   C++ also only allows one level of automatic operator conversions, so things like comparing
-     *          optional<T> {} == ConstantProperty<T,...> {} won't work. To workaround, simply
-     *          apply () after the ConstantProperty<> instance.
-     *
-     *  TODO:
-     *      @todo   Using optional<> and fValueInitialized_ (once_flag) is REDUNDANT, and wasteful of space.
-     *              But re-using these APIs is tricky without keeping both 'flags'. Probably just store in byte array
-     *              (re-implementing parts of Optional) - and do right magic destruct/etc...
-     *              ALSO - we store the FUNCTION pointer needlessly (after its been run).
-     *              So LOTS of opportunities to make this smaller (at least use UNION so keep T in ones side of union and stuff preparing to
-     *              use it in the other).
-     * 
-     *              Can be done later in v3 release process cuz doesn't impact API.
-     */
     template <typename T>
-    class ConstantProperty {
-    public:
-        /**
-         *  oneTimeGetter is a function (can be a lambda()) which computes the given value. It is called 
-         *  just once, and LAZILY, the first time the given VirtualConstant value is required.
-         */
-        ConstantProperty () = delete;
-        template <invocable F>
-        constexpr ConstantProperty (F oneTimeGetter)
-            requires (convertible_to<invoke_result_t<F>, T>);
-
-    public:
-        /**
-         */
-        ConstantProperty& operator= (const ConstantProperty&) = delete;
-
-    public:
-        /**
-         */
-        ~ConstantProperty () = default;
-
-    public:
-        /**
-         *  A virtual constant can be automatically assigned to its underlying base type.
-         *  Due to how conversion operators work, this won't always be helpful (like with overloading
-         *  or multiple levels of conversions). But when it works (80% of the time) - its helpful.
-         */
-        nonvirtual operator const T () const;
-
-    public:
-        /**
-         *  This works 100% of the time. Just use the function syntax, and you get back a constant of the desired
-         *  underlying type.
-         *
-         *  \par Example Usage
-         *      \code
-         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG...
-         *
-         *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsA (InternetMediaTypes::Wildcards::kImage);
-         *      \endcode
-         */
-        nonvirtual const T operator() () const;
-
-    public:
-        /**
-         *  This works 100% of the time. Just use the operator-> syntax, and you get back a constant of the desired
-         *  underlying type.
-         *
-         *  \par Example Usage
-         *      \code
-         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG = ...
-         *
-         *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsA (InternetMediaTypes::Wildcards::kImage);
-         *      \endcode
-         */
-        nonvirtual const T* operator->() const;
-
-    private:
-        const function<T ()> fOneTimeGetter_;
-        mutable optional<T> fCachedValue_; // @todo Could use array of bytes and manually construct/destruct - more work, but saves a few bytes
-        mutable once_flag fValueInitialized_;
-        const T&          Getter_ () const;
-    };
+    [[deprecated ("Since Stroika v3.0d16 use Execution::LazyInitialized")]] using ConstantProperty = Execution::LazyInitialized<T>;
 
     /**
      *  \brief ExtendableProperty is a Property which has callbacks associated with it, to be notified when it is accessed or updated

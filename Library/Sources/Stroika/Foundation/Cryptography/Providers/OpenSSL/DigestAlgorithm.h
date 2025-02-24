@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
 /**
@@ -78,28 +79,28 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         /**
          *  very widely used, but not secure
          */
-        extern const Common::ConstantProperty<DigestAlgorithm> kMD5;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kMD5;
 
         /**
          *  very widely used, but not secure
          */
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA1;
 
         /**
          *  kSHA224, kSHA256, kSHA384, and kSHA512 are generally a good (secure) choice
          */
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_224;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_256;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_384;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA1_512;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA1_224;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA1_256;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA1_384;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA1_512;
 
         /**
          *  https://www.veracode.com/blog/research/message-digests-aka-hashing-functions
          */
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_224;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_256;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_384;
-        extern const Common::ConstantProperty<DigestAlgorithm> kSHA3_512;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA3_224;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA3_256;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA3_384;
+        extern const Execution::LazyInitialized<DigestAlgorithm> kSHA3_512;
     }
 
 #endif

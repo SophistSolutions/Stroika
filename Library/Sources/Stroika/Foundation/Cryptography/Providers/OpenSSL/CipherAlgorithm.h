@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
 /**
@@ -83,24 +84,24 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
      *      @see https://wiki.openssl.org/index.php/OpenSSL_3.0 section 9.3.2
      */
     namespace CipherAlgorithms {
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CBC;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_ECB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_OFB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB1;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB8;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB128;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CBC;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_ECB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_OFB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB1;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB8;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB128;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CBC;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_ECB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_OFB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB1;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB8;
-        extern const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB128;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_128_CBC;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_128_ECB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_128_OFB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_128_CFB1;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_128_CFB8;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_128_CFB128;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_192_CBC;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_192_ECB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_192_OFB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_192_CFB1;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_192_CFB8;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_192_CFB128;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_256_CBC;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_256_ECB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_256_OFB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_256_CFB1;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_256_CFB8;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kAES_256_CFB128;
 
         /*
          * NB: In OpenSSL v3, the algorithms:
@@ -114,16 +115,16 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
          * 
          * @todo mark these below as deprecated...
          */
-        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_CBC;
-        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_ECB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_CFB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish_OFB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kBlowfish;
-        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_CBC;
-        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_ECB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_CFB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kRC2_OFB;
-        extern const Common::ConstantProperty<CipherAlgorithm> kRC4;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kBlowfish_CBC;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kBlowfish_ECB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kBlowfish_CFB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kBlowfish_OFB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kBlowfish;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kRC2_CBC;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kRC2_ECB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kRC2_CFB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kRC2_OFB;
+        extern const Execution::LazyInitialized<CipherAlgorithm> kRC4;
     }
 
 }

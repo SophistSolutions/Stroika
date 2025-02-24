@@ -141,7 +141,7 @@ filesystem::path Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
  ******************************** Execution::kPath ******************************
  ********************************************************************************
  */
-Common::ConstantProperty<Sequence<filesystem::path>> Execution::kPath{[] () -> Sequence<filesystem::path> {
+const LazyInitialized<Sequence<filesystem::path>> Execution::kPath{[] () -> Sequence<filesystem::path> {
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     if (const char* env_p = std::getenv ("PATH")) {
         String pathVar = String::FromNarrowSDKString (env_p);
@@ -161,7 +161,7 @@ Common::ConstantProperty<Sequence<filesystem::path>> Execution::kPath{[] () -> S
  ***************************** Execution::kPathEXT ******************************
  ********************************************************************************
  */
-Common::ConstantProperty<Sequence<filesystem::path>> Execution::kPathEXT{[] () -> Sequence<filesystem::path> {
+const LazyInitialized<Sequence<filesystem::path>> Execution::kPathEXT{[] () -> Sequence<filesystem::path> {
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     if (const char* env_p = std::getenv ("PATHEXT")) {
         String pathVar = String::FromNarrowSDKString (env_p);
@@ -177,7 +177,7 @@ Common::ConstantProperty<Sequence<filesystem::path>> Execution::kPathEXT{[] () -
  ************************ Execution::kRawEnvironment ****************************
  ********************************************************************************
  */
-Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{[] () -> Mapping<SDKString, SDKString> {
+const LazyInitialized<Mapping<SDKString, SDKString>> Execution::kRawEnvironment{[] () -> Mapping<SDKString, SDKString> {
     Mapping<SDKString, SDKString> r;
     const SDKChar* const*         envHead = nullptr;
 #if qStroika_Foundation_Common_Platform_Windows
@@ -229,7 +229,7 @@ Common::ConstantProperty<Mapping<SDKString, SDKString>> Execution::kRawEnvironme
  *************************** Execution::kEnvironment ****************************
  ********************************************************************************
  */
-Common::ConstantProperty<Mapping<String, String>> Execution::kEnvironment{[] () -> Mapping<String, String> {
+const LazyInitialized<Mapping<String, String>> Execution::kEnvironment{[] () -> Mapping<String, String> {
     Mapping<String, String> r;
     for (auto i : kRawEnvironment ()) {
         r.Add (String::FromSDKString (i.fKey), String::FromSDKString (i.fValue));

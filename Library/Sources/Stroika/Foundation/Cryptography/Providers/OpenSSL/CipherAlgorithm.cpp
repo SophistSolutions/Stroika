@@ -69,37 +69,35 @@ optional<CipherAlgorithm> CipherAlgorithm::GetByNameQuietly (const String& ciphe
 
 /*
  ********************************************************************************
- ***************** Cryptography::Providers::OpenSSL::CipherAlgorithms **********************
+ ************ Cryptography::Providers::OpenSSL::CipherAlgorithms ****************
  ********************************************************************************
  */
-
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_CBC{[] () { return ::EVP_aes_128_cbc (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_ECB{[] () { return ::EVP_aes_128_ecb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_OFB{[] () { return ::EVP_aes_128_ofb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_CFB1{[] () { return ::EVP_aes_128_cfb1 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_CFB8{[] () { return ::EVP_aes_128_cfb8 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_CFB128{[] () { return ::EVP_aes_128_cfb128 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_192_CBC{[] () { return ::EVP_aes_192_cbc (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_192_ECB{[] () { return ::EVP_aes_192_ecb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_192_OFB{[] () { return ::EVP_aes_192_ofb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_192_CFB1{[] () { return ::EVP_aes_192_cfb1 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_192_CFB8{[] () { return ::EVP_aes_192_cfb8 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_192_CFB128{[] () { return ::EVP_aes_192_cfb128 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_CBC{[] () { return ::EVP_aes_256_cbc (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_ECB{[] () { return ::EVP_aes_256_ecb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_OFB{[] () { return ::EVP_aes_256_ofb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB1{[] () { return ::EVP_aes_256_cfb1 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB8{[] () { return ::EVP_aes_256_cfb8 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB128{[] () { return ::EVP_aes_256_cfb128 (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_CBC{[] () { return ::EVP_bf_cbc (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish{[] () { return CipherAlgorithms::kBlowfish_CBC (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_ECB{[] () { return ::EVP_bf_ecb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_CFB{[] () { return ::EVP_bf_cfb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kBlowfish_OFB{[] () { return ::EVP_bf_ofb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC2_CBC{[] () { return ::EVP_rc2_cbc (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC2_ECB{[] () { return ::EVP_rc2_ecb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC2_CFB{[] () { return ::EVP_rc2_cfb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC2_OFB{[] () { return ::EVP_rc2_ofb (); }};
-const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC4{[] () { return ::EVP_rc4 (); }};
-
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_128_CBC{[] () { return ::EVP_aes_128_cbc (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_128_ECB{[] () { return ::EVP_aes_128_ecb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_128_OFB{[] () { return ::EVP_aes_128_ofb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_128_CFB1{[] () { return ::EVP_aes_128_cfb1 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_128_CFB8{[] () { return ::EVP_aes_128_cfb8 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_128_CFB128{[] () { return ::EVP_aes_128_cfb128 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_192_CBC{[] () { return ::EVP_aes_192_cbc (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_192_ECB{[] () { return ::EVP_aes_192_ecb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_192_OFB{[] () { return ::EVP_aes_192_ofb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_192_CFB1{[] () { return ::EVP_aes_192_cfb1 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_192_CFB8{[] () { return ::EVP_aes_192_cfb8 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_192_CFB128{[] () { return ::EVP_aes_192_cfb128 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_256_CBC{[] () { return ::EVP_aes_256_cbc (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_256_ECB{[] () { return ::EVP_aes_256_ecb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_256_OFB{[] () { return ::EVP_aes_256_ofb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB1{[] () { return ::EVP_aes_256_cfb1 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB8{[] () { return ::EVP_aes_256_cfb8 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kAES_256_CFB128{[] () { return ::EVP_aes_256_cfb128 (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kBlowfish_CBC{[] () { return ::EVP_bf_cbc (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kBlowfish{[] () { return CipherAlgorithms::kBlowfish_CBC (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kBlowfish_ECB{[] () { return ::EVP_bf_ecb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kBlowfish_CFB{[] () { return ::EVP_bf_cfb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kBlowfish_OFB{[] () { return ::EVP_bf_ofb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kRC2_CBC{[] () { return ::EVP_rc2_cbc (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kRC2_ECB{[] () { return ::EVP_rc2_ecb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kRC2_CFB{[] () { return ::EVP_rc2_cfb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kRC2_OFB{[] () { return ::EVP_rc2_ofb (); }};
+const Execution::LazyInitialized<CipherAlgorithm> CipherAlgorithms::kRC4{[] () { return ::EVP_rc4 (); }};
 #endif

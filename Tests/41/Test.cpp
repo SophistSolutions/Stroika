@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -15,6 +14,7 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
@@ -133,33 +133,33 @@ namespace {
     namespace Test4_ConstantProperty_ {
         namespace Private_ {
             namespace T1_ {
-                static const String                    x{"3"};
-                const Common::ConstantProperty<String> kX = [] () { return x; };
-                void                                   DoIt ()
+                static const String                      x{"3"};
+                const Execution::LazyInitialized<String> kX = [] () { return x; };
+                void                                     DoIt ()
                 {
                     const String a = kX;
                 }
             }
             namespace T2_ {
-                const Common::ConstantProperty<String> kX = [] () { return "6"; };
-                void                                   DoIt ()
+                const Execution::LazyInitialized<String> kX = [] () { return "6"; };
+                void                                     DoIt ()
                 {
                     const String a = kX;
                     EXPECT_TRUE (a == "6"); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
             namespace T3_ {
-                // @todo get constexpr working - see docs for Common::ConstantProperty
-                //constexpr Common::ConstantProperty<int> kX = [] () { return 3; };
-                const Common::ConstantProperty<int> kX = [] () { return 3; };
-                void                                DoIt ()
+                // @todo get constexpr working - see docs for Execution::LazyInitialized
+                //constexpr Execution::LazyInitialized<int> kX = [] () { return 3; };
+                const Execution::LazyInitialized<int> kX = [] () { return 3; };
+                void                                  DoIt ()
                 {
                     const int a [[maybe_unused]] = kX;
                 }
             }
             namespace T4_ {
-                const Common::ConstantProperty<int> kX = [] () { return 4; };
-                void                                DoIt ()
+                const Execution::LazyInitialized<int> kX = [] () { return 4; };
+                void                                  DoIt ()
                 {
                     const int a [[maybe_unused]] = kX;
                     EXPECT_TRUE (a == 4); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!

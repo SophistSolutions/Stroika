@@ -152,7 +152,7 @@ bool FileSystem::is_cygwin_symlink (const filesystem::path& p)
 {
     if (filesystem::exists (p)) {
         DWORD attributes = GetFileAttributes (p.native ().c_str ());
-        if (attributes & FILE_ATTRIBUTE_SYSTEM) {
+        if (attributes & FILE_ATTRIBUTE_SYSTEM) [[unlikely]] {
             try {
                 (void)read_cygwin_symlink (p);
                 return true; // else would throw
@@ -172,16 +172,17 @@ bool FileSystem::is_cygwin_symlink (const filesystem::path& p)
  */
 filesystem::path FileSystem::read_cygwin_symlink (const filesystem::path& p)
 {
-    if (filesystem::exists (p)) {
+    if (filesystem::exists (p)) [[likely]] {
         DWORD attributes = GetFileAttributes (p.native ().c_str ());
-        if (attributes & FILE_ATTRIBUTE_SYSTEM) {
+        if (attributes & FILE_ATTRIBUTE_SYSTEM) [[likely]] {
             ifstream file{p, ios::binary};
-            if (file.is_open ()) {
+            if (file.is_open ()) [[likely]] {
                 char buffer[MAX_PATH + 11];
                 file.read (buffer, sizeof (buffer));
-                size_t nBytesRead = static_cast <size_t> (file.gcount ());
-                if (nBytesRead > 10 and strncmp (buffer, "!<symlink>", 10) == 0) {
-                    return &buffer[10];
+                size_t         nBytesRead    = static_cast<size_t> (file.gcount ());
+                constexpr auto kMagicHeader_ = "!<symlink>"sv;
+                if (nBytesRead > 10 and strncmp (buffer, kMagicHeader_.data (), 10) == 0) [[likely]] {
+                    return &buffer[kMagicHeader_.size ()];
                 }
             }
         }

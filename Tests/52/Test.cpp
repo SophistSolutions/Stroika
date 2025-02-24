@@ -41,7 +41,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
-using Common::ConstantProperty;
 using Common::GUID;
 using IO::Network::HTTP::ClientErrorException;
 using Memory::BLOB;

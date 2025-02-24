@@ -6,9 +6,12 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <concepts>
 #include <functional>
 #include <mutex>
 #include <optional>
+
+#include "Stroika/Foundation/Common/Common.h"
 
 /*
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
@@ -17,38 +20,152 @@
 namespace Stroika::Foundation::Execution {
 
     /**
+     *  \brief value-object, where the value construction is delayed until first needed (can be handy to avoid c++ include/initializer deadly embrace)
+     * 
+     *  Also can be used to 'lazy initialize' facilities that might be costly to setup, but might never be used.
+     * 
      *  Can be used to initialize a static constant object - declared at file scope - dependent on another file-scope data object,
      *  without incurring the pain of static initialization problems (before main). Often this is not needed, if you just
      *  make the dependent objects constexpr. But sometimes you cannot do that.
      * 
-     *  LazyInitialized<T> acts mostly like a T (as much as I could figure out how to) - except that its constructor is delayed
-     *  until first needed.
+     *  LazyInitialized<T> acts mostly like a T (as much as I could figure out how to).
      * 
      *  This object (at least the magic init part) - is fully internally synchronized (though other operations of T itself are in general not).
+     * 
+     *  This object CAN be constructed before main, and accessed before main (after constructed) - but its up to caller to assure
+     *  the 'oneTimeGetter' is safe to call when called.
+     * 
+     *  \note \em Alias for ConstantProperty, 'virtual constant', VirtualConstant
+     * 
+     *  \par Example Usage
+     *      \code
+     *          const LazyInitialized<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          const LazyInitialized<Sequence<filesystem::path>> Execution::kPath{[] () -> Sequence<filesystem::path> {
+     *              if (const char* env_p = std::getenv ("PATH")) {
+     *                  String pathVar = String::FromNarrowSDKString (env_p);
+     *                  return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
+     *              }
+     *              return {};
+     *          }};
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          inline String                 kXGetter_ () { return "X"; }
+     *          const LazyInitialized<String> kX {kXGetter_};
+     *          ...
+     *          const String a = kX;
+     *      \endcode
+     *
+     *  \note   it would be HIGHLY DESIRABLE if C++ allowed operator'.' overloading, as accessing one of these
+     *          values without assigning to a temporary first - means that you cannot directly call its methods.
+     *          That's a bit awkward.
+     *
+     *          So if you have a type T, with method m(), and variable of type T t.
+     *          Your starter code might be:
+     *              T   t;
+     *              t.m ();
+     *          When you replace 'T t' with
+     *              ConstantProperty<T> t;
+     *              you must call t().m();
+     *          OR
+     *              you must call t->m();
+     * 
+     *  \note   C++ also only allows one level of automatic operator conversions, so things like comparing
+     *          optional<T> {} == ConstantProperty<T,...> {} won't work. To workaround, simply
+     *          apply () after the ConstantProperty<> instance.
+     *
+     *  TODO:
+     *      @todo   Using optional<> and fValueInitialized_ (once_flag) is REDUNDANT, and wasteful of space.
+     *              But re-using these APIs is tricky without keeping both 'flags'. Probably just store in byte array
+     *              (re-implementing parts of Optional) - and do right magic destruct/etc...
+     *              ALSO - we store the FUNCTION pointer needlessly (after its been run).
+     *              So LOTS of opportunities to make this smaller (at least use UNION so keep T in ones side of union and stuff preparing to
+     *              use it in the other).
+     * 
+     *              NOTE - could also overlay the space of the function object with optional<T> - since once initialized we dont need that anymore (if T copyable or function copyable copy it elsewhere temporarily during init)
+     * 
+     *              Can be done later in v3 release process cuz doesn't impact API.
      */
     template <typename T>
     class LazyInitialized {
     public:
         /**
+         *  oneTimeGetter is a function (can be a lambda()) which computes the given value. It is called 
+         *  just once, and LAZILY, the first time the given VirtualConstant value is required.
+         * 
+         *      LazyInitialized default-constructible iff default_constructible<T>
+         *      LazyInitialized (ONE TIME GETTER) - is the normal way to use LazyInitialized
+         *      LazyInitialized (T) - somewhat pointless, but you can do it....
+         *      copy-constructible
          */
-        LazyInitialized (const function<T (void)>& ctor);
-        LazyInitialized (const T& v);
-        LazyInitialized (const LazyInitialized&) = default;
+        constexpr LazyInitialized () = default;
+        template <invocable F>
+        constexpr LazyInitialized (F&& oneTimeGetter)
+            requires (convertible_to<invoke_result_t<F>, T>);
+        constexpr LazyInitialized (const T& v);
+        constexpr LazyInitialized (const LazyInitialized&) = default;
 
     public:
-        nonvirtual operator T ();
+        /**
+         */
+        LazyInitialized& operator= (const LazyInitialized&) = delete;
 
     public:
+        /**
+         */
+        constexpr ~LazyInitialized () = default;
+
+    public:
+        /**
+         *  A LazyInitialized can be automatically assigned to its underlying base type.
+         *  Due to how conversion operators work, this won't always be helpful (like with overloading
+         *  or multiple levels of conversions). But when it works (80% of the time) - its helpful.
+         */
+        nonvirtual constexpr operator const T () const;
+
+    public:
+        /**
+         *  This works 100% of the time. Just use the function syntax, and you get back a constant of the desired
+         *  underlying type.
+         *
+         *  \par Example Usage
+         *      \code
+         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG...
+         *
+         *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsA (InternetMediaTypes::Wildcards::kImage);
+         *      \endcode
+         */
+        nonvirtual const T operator() () const;
+
+    public:
+        /**
+         *  This works 100% of the time. Just use the operator-> syntax, and you get back a constant of the desired
+         *  underlying type.
+         *
+         *  \par Example Usage
+         *      \code
+         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG = ...
+         *
+         *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsA (InternetMediaTypes::Wildcards::kImage);
+         *      \endcode
+         */
         nonvirtual T*       operator->();
         nonvirtual const T* operator->() const;
 
     private:
-        nonvirtual void doInit_ ();
+        // @todo put first two into struct, and then do union of that combined struct with fValue to save space
+        mutable once_flag   fOneFlag_;
+        function<T (void)>  fOneTimeGetter_;
+        mutable optional<T> fValue_;
 
     private:
-        mutable once_flag   fOneFlag_;
-        function<T (void)>  fCTOR_;
-        mutable optional<T> fValue_;
+        T&       Getter_ ();
+        const T& Getter_ () const;
     };
 
 }

@@ -119,41 +119,6 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ****************************** ConstantProperty<T> *****************************
-     ********************************************************************************
-     */
-    template <typename T>
-    template <invocable F>
-    constexpr ConstantProperty<T>::ConstantProperty (F oneTimeGetter)
-        requires (convertible_to<invoke_result_t<F>, T>)
-        : fOneTimeGetter_{oneTimeGetter}
-    {
-    }
-    template <typename T>
-    inline ConstantProperty<T>::operator const T () const
-    {
-        return Getter_ ();
-    }
-    template <typename T>
-    inline const T ConstantProperty<T>::operator() () const
-    {
-        return Getter_ ();
-    }
-    template <typename T>
-    inline const T* ConstantProperty<T>::operator->() const
-    {
-        return &(Getter_ ());
-    }
-    template <typename T>
-    const inline T& ConstantProperty<T>::Getter_ () const
-    {
-        call_once (fValueInitialized_, [&] () { fCachedValue_ = fOneTimeGetter_ (); });
-        Ensure (fCachedValue_.has_value ());
-        return *fCachedValue_;
-    }
-
-    /*
-     ********************************************************************************
      ************************** ExtendableProperty<T> *******************************
      ********************************************************************************
      */
