@@ -177,7 +177,7 @@ filesystem::path FileSystem::read_cygwin_symlink (const filesystem::path& p)
         if (attributes & FILE_ATTRIBUTE_SYSTEM) {
             ifstream file{p, ios::binary};
             if (file.is_open ()) {
-                char buffer[MAX_PATH];
+                char buffer[MAX_PATH + 11];
                 file.read (buffer, sizeof (buffer));
                 size_t nBytesRead = file.gcount ();
                 if (nBytesRead > 10 and strncmp (buffer, "!<symlink>", 10) == 0) {
