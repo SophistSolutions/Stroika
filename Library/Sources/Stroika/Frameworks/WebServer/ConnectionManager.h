@@ -13,7 +13,6 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/ThreadPool.h"
 #include "Stroika/Foundation/Execution/UpdatableWaitForIOReady.h"
@@ -198,10 +197,10 @@ namespace Stroika::Frameworks::WebServer {
             static constexpr unsigned int      kDefault_MaxConnections{25};
             static constexpr Socket::BindFlags kDefault_BindFlags{};
             static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
-            static inline const Execution::LazyInitialized<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
-            static constexpr bool                                       kDefault_AutoComputeETagResponse{true};
-            static constexpr Duration                                   kDefault_AutomaticTCPDisconnectOnClose{2.0s};
-            static constexpr optional<int>                              kDefault_Linger{nullopt}; // intentionally optional-valued
+            static inline const CORSOptions kDefault_CORS{[] () { return kDefault_CORSOptions; }()};
+            static constexpr bool           kDefault_AutoComputeETagResponse{true};
+            static constexpr Duration       kDefault_AutomaticTCPDisconnectOnClose{2.0s};
+            static constexpr optional<int>  kDefault_Linger{nullopt}; // intentionally optional-valued
             static constexpr bool kDefault_TCPNoDelay{true}; // https://brooker.co.za/blog/2024/05/09/nagle.html (defaults to NO DELAY - disable Nagle - because we are carefully to only write once when the response is fully read)
         };
         static const Options kDefaultOptions;

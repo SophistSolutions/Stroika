@@ -136,7 +136,7 @@ namespace {
     {
         using Options = ConnectionManager::Options;
         Options result{o};
-        result.fCORS           = NullCoalesce (result.fCORS, Options::kDefault_CORS ());
+        result.fCORS           = NullCoalesce (result.fCORS, Options::kDefault_CORS);
         result.fMaxConnections = NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
         result.fMaxConcurrentlyHandledConnections = NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
         result.fBindFlags               = NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
