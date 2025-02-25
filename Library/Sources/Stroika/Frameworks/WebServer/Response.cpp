@@ -206,6 +206,16 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
                        Require (thisObj->fHeadMode_ == newHeadMode);
                    }
                }}
+    , location{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                   const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::location);
+                   AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                   return thisObj->headers ().location ();
+               },
+               [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newLoc) {
+                   Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::location);
+                   AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
+                   thisObj->rwHeaders ().location = newLoc;
+               }}
     , responseAborted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};

@@ -264,6 +264,12 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
+         *  \brief rarely used, but used in 'Created' 201 responses, and redirects
+         */
+        Common::Property<optional<URI>> location;
+
+    public:
+        /**
          *  Returns true iff the response has been aborted with a call to response.Abort ()
          *  \note - responseAborted() implies responseCompleted();
          */
