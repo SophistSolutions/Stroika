@@ -39,6 +39,9 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \par Example Usage
      *      \code
+     *          // say not legal to call EVP_md5 til you've initialized openssl, and maybe you never will - but still want to declare but
+     *          // not use these constants - or at least declare the constants in a file/module (file scope so constructed before main) and
+     *          // initialize openssl from after main starts?
      *          const LazyInitialized<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
      *      \endcode
      *
@@ -157,10 +160,10 @@ namespace Stroika::Foundation::Execution {
         nonvirtual const T* operator->() const;
 
     private:
-        mutable once_flag   fOneFlag_;
+        mutable once_flag fOneFlag_;
         // small space savings - don't need both getter and value at same time
         union {
-            mutable T fValue_;
+            mutable T                  fValue_;
             mutable function<T (void)> fOneTimeGetter_;
         };
 

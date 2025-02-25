@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Execution {
     constexpr LazyInitialized<T>::LazyInitialized (const T& v)
         : fValue_{v}
     {
-        call_once (fOneFlag_, [&] () {destroy_at (&fOneTimeGetter_);}); // nothing todo but prevent call_once from invoking again
+        call_once (fOneFlag_, [&] () { destroy_at (&fOneTimeGetter_); }); // nothing todo but prevent call_once from invoking again
     }
     template <typename T>
     constexpr LazyInitialized<T>::~LazyInitialized ()
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Execution {
             // because of union, be careful about overwriting function pointer during function invocation
             auto tmp = fOneTimeGetter_ ();
             destroy_at (&fOneTimeGetter_);
-            construct_at (&fValue_ , move (tmp));
+            construct_at (&fValue_, move (tmp));
         });
         return fValue_;
     }
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
             // because of union, be careful about overwriting function pointer during function invocation
             auto tmp = fOneTimeGetter_ ();
             destroy_at (&fOneTimeGetter_);
-            construct_at (&fValue_ , move (tmp));
+            construct_at (&fValue_, move (tmp));
         });
         return fValue_;
     }
