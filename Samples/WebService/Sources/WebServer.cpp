@@ -3,8 +3,6 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
-#include <iostream>
-
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -47,11 +45,11 @@ using Stroika::Frameworks::WebService::Server::VariantValue::ExtractArgumentsAsV
 using namespace StroikaSample::WebServices;
 
 namespace {
-    const LazyInitialized<Headers> kDefaultResponseHeaders_{[] () {
+    const Headers kDefaultResponseHeaders_{[] () {
         Headers h;
         h.server = "Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;
-    }};
+    }()};
 }
 
 namespace {
