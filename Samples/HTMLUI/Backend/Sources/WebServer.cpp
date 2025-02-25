@@ -56,15 +56,15 @@ using Stroika::Frameworks::WebServer::Response;
 using namespace Stroika::Samples::HTMLUI;
 
 namespace {
-    const Common::ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
+    const Headers kDefaultResponseHeaders_{[] () {
         Headers h;
         h.server = "Stroika-Sample-HTMLUI/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;
-    }};
+    }()};
 }
 
 namespace {
-    const ConstantProperty<FileSystemRequestHandler::Options> kStaticSiteHandlerOptions_{[] () {
+    const FileSystemRequestHandler::Options kStaticSiteHandlerOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_{
             /*
              *  Values with hashes in names never change value - you get new hashes when the files do, so these files are immutable, and
@@ -85,7 +85,7 @@ namespace {
                                                  .fCacheControlSettings  = kFSCacheControlSettings_,
                                                  //fallback file to support createWebHistory () in vuejs, in turn to support oauth2 redirect
                                                  .fFallbackFile = "index.html"};
-    }};
+    }()};
 }
 
 // Configuration object passed to GUI as startup parameters/configuration

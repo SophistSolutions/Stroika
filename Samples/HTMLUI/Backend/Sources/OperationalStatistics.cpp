@@ -6,7 +6,6 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Common/Property.h"
-// #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/Optional.h"
@@ -19,11 +18,10 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Time;
 
 using Memory::BLOB;
-using Stroika::Foundation::Common::ConstantProperty;
 using Stroika::Foundation::Common::GUID;
-// using Stroika::Foundation::DataExchange::ObjectVariantMapper;
 
 using namespace Stroika::Samples::HTMLUI;
 
@@ -39,13 +37,13 @@ using namespace Stroika::Samples::HTMLUI;
  */
 OperationalStatisticsMgr::ProcessAPICmd::~ProcessAPICmd ()
 {
-    Time::TimePointSeconds now{Time::GetTickCount ()};
+    TimePointSeconds now{Time::GetTickCount ()};
     sThe.Add_ (Rec_{Rec_::Kind::eAPI, now, now - fStart_});
 }
 
 void OperationalStatisticsMgr::ProcessAPICmd::NoteError ()
 {
-    Time::TimePointSeconds now{Time::GetTickCount ()};
+    TimePointSeconds now{Time::GetTickCount ()};
     sThe.Add_ (Rec_{.fKind = Rec_::Kind::eAPIError, .fAt = now, .fDuration = 0s});
 }
 
@@ -56,19 +54,19 @@ void OperationalStatisticsMgr::ProcessAPICmd::NoteError ()
  */
 void OperationalStatisticsMgr::RecordActiveRunningTasksCount (size_t length)
 {
-    Time::TimePointSeconds now{Time::GetTickCount ()};
+    TimePointSeconds now{Time::GetTickCount ()};
     sThe.Add_ (Rec_{.fKind = Rec_::Kind::eAPIActiveRunningTasks, .fAt = now, .fDuration = 0s, .fLength = length});
 }
 
 void OperationalStatisticsMgr::RecordOpenConnectionCount (size_t length)
 {
-    Time::TimePointSeconds now{Time::GetTickCount ()};
+    TimePointSeconds now{Time::GetTickCount ()};
     sThe.Add_ (Rec_{.fKind = Rec_::Kind::eAPIOpenConnectionCount, .fAt = now, .fDuration = 0s, .fLength = length});
 }
 
 void OperationalStatisticsMgr::RecordProcessingConnectionCount (size_t length)
 {
-    Time::TimePointSeconds now{Time::GetTickCount ()};
+    TimePointSeconds now{Time::GetTickCount ()};
     sThe.Add_ (Rec_{.fKind = Rec_::Kind::eAPIProcessingConnectionCount, .fAt = now, .fDuration = 0s, .fLength = length});
 }
 
@@ -76,13 +74,10 @@ auto OperationalStatisticsMgr::GetStatistics () const -> Statistics
 {
     Statistics result;
 
-    using Time::Duration;
-    using Time::DurationSeconds;
-    using Time::TimePointSeconds;
     // hit every entry and just skip those with null events
     TimePointSeconds skipBefore = Time::GetTickCount () - kLookbackInterval;
 
-    // could optimize slightly and skip a bunch in a row, but not worht the trouble probably
+    // could optimize slightly and skip a bunch in a row, but not worth the trouble probably
     Iterable<Rec_> allApplicable = [&] () {
         lock_guard lk{fMutex_};
         return Sequence<Rec_>{begin (fRollingHistory_), end (fRollingHistory_)}.Where (

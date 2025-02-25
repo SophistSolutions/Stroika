@@ -7,12 +7,12 @@
 #include <random>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
@@ -42,12 +42,12 @@ namespace {
         double        fSalary{};
         bool          fStillEmployed{};
 
-        static const ConstantProperty<ObjectVariantMapper> kMapper;
+        static const LazyInitialized<ObjectVariantMapper> kMapper;
     };
     /*
      *  Define mapping to VariantValues (think JSON)
      */
-    const ConstantProperty<ObjectVariantMapper> Employee::kMapper{[] () {
+    const LazyInitialized<ObjectVariantMapper> Employee::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
         mapper.AddClass<Employee> (
@@ -70,12 +70,12 @@ namespace {
         double        fAmount{};
         Time::Date    fDate;
 
-        static const ConstantProperty<ObjectVariantMapper> kMapper;
+        static const LazyInitialized<ObjectVariantMapper> kMapper;
     };
     /*
      *  Define mapping to VariantValues (think JSON)
      */
-    const ConstantProperty<ObjectVariantMapper> Paycheck::kMapper{[] () {
+    const LazyInitialized<ObjectVariantMapper> Paycheck::kMapper{[] () {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
         mapper.AddClass<Paycheck> (
@@ -91,10 +91,10 @@ namespace {
 
     /**
      *  Combine all the ObjectVariantMappers for the objects we use in this database into one, and
-     *  AMEND any mappers as needed to accomodate possible changes in the mappings (like represeting
+     *  AMEND any mappers as needed to accommodate possible changes in the mappings (like representing
      *  some things as strings vs. BLOBs etc).
      */
-    const ConstantProperty<ObjectVariantMapper> kDBObjectMapper_{[] () {
+    const LazyInitialized<ObjectVariantMapper> kDBObjectMapper_{[] () {
         ObjectVariantMapper mapper;
         mapper += Employee::kMapper;
         mapper += Paycheck::kMapper;

@@ -53,6 +53,17 @@ namespace Stroika::Foundation::Execution {
      *          }};
      *      \endcode
      *
+     *  \par Example ALTERNATIVE (use lambda as with LazyInitialize but directly invoke) - but this invoked before main()
+     *      \code
+     *          const Sequence<filesystem::path> Execution::kPath{[] () -> Sequence<filesystem::path> {
+     *              if (const char* env_p = std::getenv ("PATH")) {
+     *                  String pathVar = String::FromNarrowSDKString (env_p);
+     *                  return pathVar.Tokenize ({':'}).Map<Sequence<filesystem::path>> ([] (auto i) { return i.template As<filesystem::path> (); });
+     *              }
+     *              return {};
+     *          } ()};
+     *      \endcode
+     *
      *  \par Example Usage
      *      \code
      *          inline String                 kXGetter_ () { return "X"; }

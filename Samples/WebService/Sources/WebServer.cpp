@@ -30,6 +30,7 @@ using namespace std;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::Traversal;
 
@@ -46,7 +47,7 @@ using Stroika::Frameworks::WebService::Server::VariantValue::ExtractArgumentsAsV
 using namespace StroikaSample::WebServices;
 
 namespace {
-    const Common::ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
+    const LazyInitialized<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
         h.server = "Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;
@@ -131,7 +132,7 @@ public:
                                  number = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                              }
                              if (not number) {
-                                 Execution::Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
+                                 Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
                              }
                              fWSImpl_->Variables_SET (varName, *number);
                              WriteResponse (m.rwResponse (), kVariables_);
@@ -166,7 +167,7 @@ public:
                                                            .fTreatBodyAsListOfArguments     = Iterable<String>{"err-if-more-than-10"sv}},
                              [] (double check) {
                                  if (check > 10) {
-                                     Execution::Throw (Execution::Exception{"more than 10"sv});
+                                     Throw (Exception{"more than 10"sv});
                                  }
                              }}}}
         , fWSImpl_{wsImpl}

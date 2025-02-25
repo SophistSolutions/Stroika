@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Time {
     constexpr DurationSeconds kInfinity = DurationSeconds{numeric_limits<DurationSeconds::rep>::infinity ()};
 
     /**
-     *  If you want to convert tickcount times to be zero based (often helpful for display purposes), you can use:
+     *  If you want to convert tick-count times to be zero based (often helpful for display purposes), you can use:
      *      \code
      *          clock_cast<DisplayedRealtimeClock> (GetTickCount ())
      *      \endcode

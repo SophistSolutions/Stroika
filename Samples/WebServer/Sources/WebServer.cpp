@@ -7,7 +7,6 @@
 
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
@@ -36,7 +35,6 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks::WebServer;
 
 using Characters::String;
-using Common::ConstantProperty;
 using Memory::BLOB;
 
 using Stroika::Frameworks::WebServer::FileSystemRequestHandler;
@@ -50,22 +48,22 @@ namespace {
      *  You don't need to specify any of this, but it maybe helpful to specify caching control policies to
      *  get the best web-server performance.
      */
-    const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
+    const FileSystemRequestHandler::Options kFileSystemRouterOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings{
-            {RegularExpression{".*\\.gif", eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
+            {RegularExpression{".*\\.gif", eCaseInsensitive}, CacheControl{.fMaxAge = Duration{5min}.As<int32_t> ()}}};
         return FileSystemRequestHandler::Options{.fURLPrefix2Strip       = "/Files/"_k,
                                                  .fDefaultIndexFileNames = Sequence<filesystem::path>{"index.html"sv},
                                                  .fCacheControlSettings  = cacheControlSettings};
-    }};
+    }()};
 
     /**
      *  You don't need to specify any of this, but its a good idea to properly identify your application.
      */
-    const ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
+    const Headers kDefaultResponseHeaders_{[] () {
         Headers h;
         h.server = "Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;
-    }};
+    }()};
 
     /*
      *  It's often helpful to structure together, routes, special interceptors, with your connection manager, to package up
