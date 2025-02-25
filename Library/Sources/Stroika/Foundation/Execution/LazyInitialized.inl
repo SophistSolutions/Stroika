@@ -22,6 +22,19 @@ namespace Stroika::Foundation::Execution {
     constexpr LazyInitialized<T>::LazyInitialized (const T& v)
         : fValue_{v}
     {
+        call_once (fOneFlag_, [&] () {destroy_at (&fOneTimeGetter_);}); // nothing todo but prevent call_once from invoking again
+    }
+    template <typename T>
+    constexpr LazyInitialized<T>::~LazyInitialized ()
+    {
+        bool wasCallOnceInvoked = false;
+        call_once (fOneFlag_, [&] () { wasCallOnceInvoked = true; });
+        if (wasCallOnceInvoked) {
+            destroy_at (&fValue_);
+        }
+        else {
+            destroy_at (&fOneTimeGetter_);
+        }
     }
     template <typename T>
     constexpr LazyInitialized<T>::operator const T () const
@@ -46,20 +59,24 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline T& LazyInitialized<T>::Getter_ ()
     {
-        if (!fValue_) {
-            call_once (fOneFlag_, [&] () { fValue_ = fOneTimeGetter_ (); });
-        }
-        Ensure (fValue_.has_value ());
-        return *fValue_;
+        call_once (fOneFlag_, [&] () {
+            // because of union, be careful about overwriting function pointer during function invocation
+            auto tmp = fOneTimeGetter_ ();
+            destroy_at (&fOneTimeGetter_);
+            construct_at (&fValue_ , move (tmp));
+        });
+        return fValue_;
     }
     template <typename T>
     inline const T& LazyInitialized<T>::Getter_ () const
     {
-        if (!fValue_) {
-            call_once (fOneFlag_, [&] () { fValue_ = fOneTimeGetter_ (); });
-        }
-        Ensure (fValue_.has_value ());
-        return *fValue_;
+        call_once (fOneFlag_, [&] () {
+            // because of union, be careful about overwriting function pointer during function invocation
+            auto tmp = fOneTimeGetter_ ();
+            destroy_at (&fOneTimeGetter_);
+            construct_at (&fValue_ , move (tmp));
+        });
+        return fValue_;
     }
 
 }

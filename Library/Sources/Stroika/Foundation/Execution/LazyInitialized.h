@@ -14,7 +14,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 
 /*
- *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Execution {
@@ -87,20 +87,8 @@ namespace Stroika::Foundation::Execution {
      *              you must call t->m();
      * 
      *  \note   C++ also only allows one level of automatic operator conversions, so things like comparing
-     *          optional<T> {} == ConstantProperty<T,...> {} won't work. To workaround, simply
-     *          apply () after the ConstantProperty<> instance.
-     *
-     *  TODO:
-     *      @todo   Using optional<> and fValueInitialized_ (once_flag) is REDUNDANT, and wasteful of space.
-     *              But re-using these APIs is tricky without keeping both 'flags'. Probably just store in byte array
-     *              (re-implementing parts of Optional) - and do right magic destruct/etc...
-     *              ALSO - we store the FUNCTION pointer needlessly (after its been run).
-     *              So LOTS of opportunities to make this smaller (at least use UNION so keep T in ones side of union and stuff preparing to
-     *              use it in the other).
-     * 
-     *              NOTE - could also overlay the space of the function object with optional<T> - since once initialized we dont need that anymore (if T copyable or function copyable copy it elsewhere temporarily during init)
-     * 
-     *              Can be done later in v3 release process cuz doesn't impact API.
+     *          optional<T> {} == LazyInitialized<T,...> {} won't work. To workaround, simply
+     *          apply () after the LazyInitialized<> instance.
      */
     template <typename T>
     class LazyInitialized {
@@ -119,7 +107,7 @@ namespace Stroika::Foundation::Execution {
         constexpr LazyInitialized (F&& oneTimeGetter)
             requires (convertible_to<invoke_result_t<F>, T>);
         constexpr LazyInitialized (const T& v);
-        constexpr LazyInitialized (const LazyInitialized&) = default;
+        constexpr LazyInitialized (const LazyInitialized&) = delete;
 
     public:
         /**
@@ -129,7 +117,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        constexpr ~LazyInitialized () = default;
+        constexpr ~LazyInitialized ();
 
     public:
         /**
@@ -169,10 +157,12 @@ namespace Stroika::Foundation::Execution {
         nonvirtual const T* operator->() const;
 
     private:
-        // @todo put first two into struct, and then do union of that combined struct with fValue to save space
         mutable once_flag   fOneFlag_;
-        function<T (void)>  fOneTimeGetter_;
-        mutable optional<T> fValue_;
+        // small space savings - don't need both getter and value at same time
+        union {
+            mutable T fValue_;
+            mutable function<T (void)> fOneTimeGetter_;
+        };
 
     private:
         T&       Getter_ ();
