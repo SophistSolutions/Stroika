@@ -100,12 +100,11 @@ namespace Stroika::Foundation::Execution {
          *  oneTimeGetter is a function (can be a lambda()) which computes the given value. It is called 
          *  just once, and LAZILY, the first time the given VirtualConstant value is required.
          * 
-         *      LazyInitialized default-constructible iff default_constructible<T>
          *      LazyInitialized (ONE TIME GETTER) - is the normal way to use LazyInitialized
          *      LazyInitialized (T) - somewhat pointless, but you can do it....
          *      copy-constructible
          */
-        constexpr LazyInitialized () = default;
+        LazyInitialized () = delete;
         template <invocable F>
         constexpr LazyInitialized (F&& oneTimeGetter)
             requires (convertible_to<invoke_result_t<F>, T>);
