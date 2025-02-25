@@ -9,7 +9,6 @@
 #include <concepts>
 #include <functional>
 #include <mutex>
-#include <optional>
 
 #include "Stroika/Foundation/Common/Common.h"
 
@@ -131,12 +130,11 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  This works 100% of the time. Just use the function syntax, and you get back a constant of the desired
-         *  underlying type.
+         *  Just use the function syntax, and you get back the initialized value.
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG...
+         *          namespace PredefinedInternetMediaType {  const inline Execution::LazyInitialized<InternetMediaType> kPNG...
          *
          *          bool checkIsImage1 = PredefinedInternetMediaType::kPNG().IsA (InternetMediaTypes::Wildcards::kImage);
          *      \endcode
@@ -145,12 +143,11 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  This works 100% of the time. Just use the operator-> syntax, and you get back a constant of the desired
-         *  underlying type.
+         *  Just use the operator-> syntax, and you get back the wrapper objects value (initializing if needed).
          *
          *  \par Example Usage
          *      \code
-         *          namespace PredefinedInternetMediaType {  const inline Execution::ConstantProperty<InternetMediaType> kPNG = ...
+         *          namespace PredefinedInternetMediaType {  const inline Execution::LazyInitialized<InternetMediaType> kPNG = ...
          *
          *          bool checkIsImage2 = PredefinedInternetMediaType::kPNG->IsA (InternetMediaTypes::Wildcards::kImage);
          *      \endcode
@@ -159,7 +156,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual const T* operator->() const;
 
     private:
-        mutable once_flag fOneFlag_;
+        mutable once_flag fOnceFlag_; // cannot go in union cuz this 'discriminates' the union
         // small space savings - don't need both getter and value at same time
         union {
             mutable T                  fValue_;
