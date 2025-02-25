@@ -75,12 +75,13 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
         -> decltype (tuple_cat (make_tuple (declval<remove_cvref_t<ARG_FIRST>> ()), make_tuple (declval<REST_ARG_TYPES...> ())))
     {
         [[maybe_unused]] constexpr size_t kTotalArgsRemaining_ = sizeof...(REST_ARG_TYPES) + 1; // +1 cuz still processing ARG_FIRST here
-        Require (variantValueArgs.size () >= kTotalArgsRemaining_);
+        Require (variantValueArgs.size () >= kTotalArgsRemaining_ - 1);                         // -1 cuz one may be context
         if constexpr (same_as<remove_cvref_t<ARG_FIRST>, Context>) {
             return tuple_cat (mkArgsTuple_ (context, Iterable<VariantValue>{}, function<RETURN_TYPE (ARG_FIRST)>{}),
                               mkArgsTuple_ (context, variantValueArgs, function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
         else {
+            Require (variantValueArgs.size () >= 1);    // must consume one here (@todo consider if we should require or silently trim/ignore missing data) --LGP 2025-02-25
             return tuple_cat (mkArgsTuple_ (context, variantValueArgs.Take (1), function<RETURN_TYPE (ARG_FIRST)>{}),
                               mkArgsTuple_ (context, variantValueArgs.Skip (1), function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }

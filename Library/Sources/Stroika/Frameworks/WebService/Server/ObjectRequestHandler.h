@@ -218,7 +218,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
 
     private:
         // use tuple_cat to put all the args together (but in a tuple) and then apply on the function to expand the args to call f
-        // \pre nArgs in variantValueArgs >= count(ARGS_TYPE...)
+        // \pre nArgs in variantValueArgs >= count(ARGS_TYPE...) - @todo consider if this should be requirement - depends on behavior of extract code...--LGP 2025-02-25
         template <typename RET = RETURN_TYPE>
         nonvirtual tuple<> mkArgsTuple_ (const Context& context, const Iterable<VariantValue>& variantValueArgs,
                                          [[maybe_unused]] const function<RET ()>& f) const;
