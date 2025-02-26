@@ -2165,34 +2165,6 @@ Configuration.cpp:126:21: error: no viable conversion from 'common_comparison_ca
 
 #endif
 
-/**
- *  
-/Applications/Xcode16.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:648:17: runtime error: member call on address 0x0001041087e0 which does not point to an object of type 'std::__shared_weak_count'
-0x0001041087e0: note: object is of type 'std::__1::__function::__func<Stroika::Foundation::Execution::$_2, std::__1::allocator<Stroika::Foundation::Execution::$_2>, Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String> ()>'
- ff ff ff ff  10 61 83 03 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  e0 87 10 04
-              ^~~~~~~~~~~~~~~~~~~~~~~
-              vptr for 'std::__1::__function::__func<Stroika::Foundation::Execution::$_2, std::__1::allocator<Stroika::Foundation::Execution::$_2>, Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String> ()>'
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /Applications/Xcode16.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:648:17 in 
-/Applications/Xcode16.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:186:25: runtime error: member call on address 0x0001041087e0 which does not point to an object of type 'std::__shared_count'
-0x0001041087e0: note: object is of type 'std::__1::__function::__func<Stroika::Foundation::Execution::$_2, std::__1::allocator<Stroika::Foundation::Execution::$_2>, Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String> ()>'
- ff ff ff ff  10 61 83 03 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  e0 87 10 04
-              ^~~~~~~~~~~~~~~~~~~~~~~
-              vptr for 'std::__1::__function::__func<Stroika::Foundation::Execution::$_2, std::__1::allocator<Stroika::Foundation::Execution::$_2>, Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String> ()>'
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior /Applications/Xcode16.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:186:25 in 
-/Applications/Xcode16.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__memory/shared_ptr.h:156:44: runtime error: member access within address 0x0001041087e0 which does not point to an object of type 'std::__shared_count'
-0x0001041087e0: note: object is of type 'std::__1::__function::__func<Stroika::Foundation::Execution::$_2, std::__1::allocator<Stroika::Foundation::Execution::$_2>, Stroika::Foundation::Containers::Mapping<Stroika::Foundation::Characters::String, Stroika::Foundation::Characters::String> ()>'
- ff ff ff ff  10 61 83 03 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  e0 87 10 04
- */
-#ifndef qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
-#else
-#define qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy 0
-#endif
-
-#endif
-
 /*
  ERROR ON GCC VERY WEIRD g++-11-debug-c++2a
 

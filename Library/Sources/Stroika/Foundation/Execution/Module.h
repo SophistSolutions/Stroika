@@ -69,10 +69,16 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     /**
+     *  \brief convert getenv() to a Mapping of SDKString (in case some issue with charactor set conversion)
+     * 
+     *  \note LazyInitialized so if not used, nearly zero cost
      */
     extern const LazyInitialized<Containers::Mapping<Characters::SDKString, Characters::SDKString>> kRawEnvironment;
 
     /**
+     *  \brief convert getenv() to a Mapping of Strings for easier access
+     * 
+     *  \note LazyInitialized so if not used, nearly zero cost
      */
     extern const LazyInitialized<Containers::Mapping<Characters::String, Characters::String>> kEnvironment;
 

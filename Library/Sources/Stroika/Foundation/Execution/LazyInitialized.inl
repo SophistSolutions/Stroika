@@ -23,28 +23,22 @@ namespace Stroika::Foundation::Execution {
         : fValue_{v}
     {
         // prevent call_once from invoking again
-#if qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-        call_once (fOnceFlag_, [&] () {});
-#else
         call_once (fOnceFlag_, [&] () {
             destroy_at (&fOneTimeGetter_);
             construct_at (&fValue_, T{});
         });
-#endif
     }
     template <typename T>
     constexpr LazyInitialized<T>::~LazyInitialized ()
     {
-#if !qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-        bool wasCallOnceInvoked = false;
-        call_once (fOnceFlag_, [&] () { wasCallOnceInvoked = true; });
-        if (wasCallOnceInvoked) {
-            destroy_at (&fValue_);
+        bool wasOneTimeGetterCalled = true;
+        call_once (fOnceFlag_, [&] () { wasOneTimeGetterCalled = false; });
+        if (wasOneTimeGetterCalled) {
+             destroy_at (&fValue_);
         }
         else {
             destroy_at (&fOneTimeGetter_);
         }
-#endif
     }
     template <typename T>
     constexpr LazyInitialized<T>::operator const T () const
@@ -69,21 +63,8 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline T& LazyInitialized<T>::Getter_ ()
     {
-        call_once (fOnceFlag_, [&] () {
-            // because of union, be careful about overwriting function pointer during function invocation
-            auto tmp = fOneTimeGetter_ ();
-#if qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-            fValue_ = tmp;
-#else
-            destroy_at (&fOneTimeGetter_);
-            construct_at (&fValue_, move (tmp));
-#endif
-        });
-#if qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-        return *fValue_;
-#else
-        return fValue_;
-#endif
+        // same implementation...
+        return const_cast<T&> (const_cast<const LazyInitialized<T>*> (this)->Getter_ ());
     }
     template <typename T>
     inline const T& LazyInitialized<T>::Getter_ () const
@@ -91,18 +72,10 @@ namespace Stroika::Foundation::Execution {
         call_once (fOnceFlag_, [&] () {
             // because of union, be careful about overwriting function pointer during function invocation
             auto tmp = fOneTimeGetter_ ();
-#if qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-            fValue_ = tmp;
-#else
             destroy_at (&fOneTimeGetter_);
             construct_at (&fValue_, move (tmp));
-#endif
         });
-#if qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-        return *fValue_;
-#else
         return fValue_;
-#endif
     }
 
 }
