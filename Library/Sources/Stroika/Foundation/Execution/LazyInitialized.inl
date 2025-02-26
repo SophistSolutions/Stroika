@@ -26,7 +26,10 @@ namespace Stroika::Foundation::Execution {
 #if qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
         call_once (fOnceFlag_, [&] () {});
 #else
-        call_once (fOnceFlag_, [&] () { destroy_at (&fOneTimeGetter_); });
+        call_once (fOnceFlag_, [&] () {
+            destroy_at (&fOneTimeGetter_);
+            construct_at (&fValue_, T{});
+        });
 #endif
     }
     template <typename T>

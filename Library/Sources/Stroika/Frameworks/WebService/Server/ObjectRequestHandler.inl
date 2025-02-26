@@ -81,7 +81,7 @@ namespace Stroika::Frameworks::WebService::Server::ObjectRequestHandler {
                               mkArgsTuple_ (context, variantValueArgs, function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
         else {
-            Require (variantValueArgs.size () >= 1);    // must consume one here (@todo consider if we should require or silently trim/ignore missing data) --LGP 2025-02-25
+            Require (variantValueArgs.size () >= 1); // must consume one here (@todo consider if we should require or silently trim/ignore missing data) --LGP 2025-02-25
             return tuple_cat (mkArgsTuple_ (context, variantValueArgs.Take (1), function<RETURN_TYPE (ARG_FIRST)>{}),
                               mkArgsTuple_ (context, variantValueArgs.Skip (1), function<RETURN_TYPE (REST_ARG_TYPES...)>{}));
         }
