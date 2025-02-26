@@ -20,12 +20,11 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T>
     constexpr LazyInitialized<T>::LazyInitialized (const T& v)
-        : fValue_{v}
     {
         // prevent call_once from invoking again
         call_once (fOnceFlag_, [&] () {
-            destroy_at (&fOneTimeGetter_);
-            construct_at (&fValue_, T{});
+            // fOneTimeGetter_ never constructed
+            construct_at (&fValue_, v);
         });
     }
     template <typename T>
@@ -34,11 +33,25 @@ namespace Stroika::Foundation::Execution {
         bool wasOneTimeGetterCalled = true;
         call_once (fOnceFlag_, [&] () { wasOneTimeGetterCalled = false; });
         if (wasOneTimeGetterCalled) {
-             destroy_at (&fValue_);
+            destroy_at (&fValue_);
         }
         else {
             destroy_at (&fOneTimeGetter_);
         }
+    }
+    template <typename T>
+    inline LazyInitialized<T>& LazyInitialized<T>::operator= (const T& rhs)
+    {
+        bool wasOneTimeGetterCalled = true;
+        call_once (fOnceFlag_, [&] () { wasOneTimeGetterCalled = false; });
+        if (wasOneTimeGetterCalled) {
+            fValue_ = rhs;
+        }
+        else {
+            destroy_at (&fOneTimeGetter_);  // then never called, if set before read
+            construct_at (&fValue_, rhs);
+        }
+        return *this;
     }
     template <typename T>
     constexpr LazyInitialized<T>::operator const T () const

@@ -113,7 +113,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        LazyInitialized& operator= (const LazyInitialized&) = delete;
+        nonvirtual LazyInitialized& operator= (const LazyInitialized&) = delete;
+        nonvirtual LazyInitialized& operator= (const T&);
 
     public:
         /**
@@ -164,8 +165,8 @@ namespace Stroika::Foundation::Execution {
         };
 
     private:
-        T&       Getter_ ();
-        const T& Getter_ () const;
+        nonvirtual T&       Getter_ ();
+        nonvirtual const T& Getter_ () const;
     };
 
 }
