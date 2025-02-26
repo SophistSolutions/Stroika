@@ -20,6 +20,34 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 
 namespace {
+    String ExtractReasonFromResponse_NonPlainText_ (const String& responseBody, bool atEOF)
+    {
+        // The sample JSON - I have in mind:
+        //      {   "error": "unsupported_grant_type",   "error_description": "Invalid grant_type: "
+        // Try to just grab the first few 'words', and hope it makes some sense in an error message
+
+        //static const RegularExpression kBunchaWords_{"([\\w]+)"};
+        static const RegularExpression kBunchaWordsOrTags_{"(<?[\\w]+/?>?)"};
+        auto                           words = responseBody.FindEachMatch (kBunchaWordsOrTags_);
+        if (atEOF) {
+            if (words.size () > 2) {
+                words.Remove (words.size () - 1); // last word cut-off, so don't include
+            }
+        }
+        StringBuilder    sb;
+        Iterable<String> wordText = words.Map<Iterable<String>> ([] (const auto& i) { return i.GetFullMatch (); });
+        for (const String& w : wordText) {
+            // remove html tags
+            if (not w.StartsWith ("<"sv)) {
+                sb << w << " ";
+            }
+        }
+        sb = sb.str ().RTrim ();
+        if (not atEOF) {
+            sb += "..."sv;
+        }
+        return sb;
+    }
     String ExtractReasonFromResponse_ (const Response& response)
     {
         using namespace Streams;
@@ -32,39 +60,15 @@ namespace {
                     return Streams::BinaryToText::Reader::New (response.GetData ()).ReadLine ();
                 }
                 else {
-                    // The sample JSON - I have in mind:
-                    //      {   "error": "unsupported_grant_type",   "error_description": "Invalid grant_type: "
-                    // Try to just grab the first few 'words', and hope it makes some sense in an error message
                     Character                   buf[512];
                     InputStream::Ptr<Character> textStream = BinaryToText::Reader::New (response.GetData ());
                     String                      roughText  = textStream.ReadAll (span{buf});
-                    //static const RegularExpression kBunchaWords_{"([\\w]+)"};
-                    static const RegularExpression kBunchaWordsOrTags_{"(<?[\\w]+/?>?)"};
-                    auto                           words = roughText.FindEachMatch (kBunchaWordsOrTags_);
-                    if (not textStream.IsAtEOF ()) {
-                        if (words.size () > 2) {
-                            words.Remove (words.size () - 1); // last word cut-off, so don't include
-                        }
-                    }
-                    StringBuilder    sb;
-                    Iterable<String> wordText = words.Map<Iterable<String>> ([] (const auto& i) { return i.GetFullMatch (); });
-                    for (const String& w : wordText) {
-                        // remove html tags
-                        if (not w.StartsWith ("<"sv)) {
-                            sb << w << " ";
-                        }
-                    }
-                    sb = sb.str ().RTrim ();
-                    if (not textStream.IsAtEOF ()) {
-                        sb += "..."sv;
-                    }
-                    return sb;
+                    return ExtractReasonFromResponse_NonPlainText_ (roughText, textStream.IsAtEOF ());
                 }
             }
         }
         return String{};
     }
-
 }
 
 /*
