@@ -47,7 +47,7 @@ namespace {
                         }
                     }
                     StringBuilder    sb;
-                    Iterable<String> wordText = words.Map<Iterable<String>> ([] (auto i) { return i.GetFullMatch (); });
+                    Iterable<String> wordText = words.Map<Iterable<String>> ([] (const auto& i) { return i.GetFullMatch (); });
                     for (const String& w : wordText) {
                         // remove html tags
                         if (not w.StartsWith ("<"sv)) {
