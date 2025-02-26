@@ -6,6 +6,7 @@
 
 * br __ubsan::ScopedReport::~ScopedReport or __ubsan::Diag::~Diag
 * br __asan::ReportGenericError
+- see https://stackoverflow.com/questions/30809022/how-can-i-break-on-ubsan-reports-in-gdb-and-continue
 
 ## TSAN (thread sanitizer) on Ubuntu 24.04 (Host - not container) and later
 
