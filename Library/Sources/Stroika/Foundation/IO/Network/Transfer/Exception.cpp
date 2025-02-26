@@ -39,7 +39,7 @@ namespace {
                     InputStream::Ptr<Character> textStream = BinaryToText::Reader::New (response.GetData ());
                     String                      roughText  = textStream.ReadAll (span{buf});
                     //static const RegularExpression kBunchaWords_{"([\\w]+)"};
-                    static const RegularExpression kBunchaWordsOrTags_{"(<?[\\w]+/?)>?"};
+                    static const RegularExpression kBunchaWordsOrTags_{"(<?[\\w]+/?>?)"};
                     auto                           words = roughText.FindEachMatch (kBunchaWordsOrTags_);
                     if (not textStream.IsAtEOF ()) {
                         if (words.size () > 2) {
