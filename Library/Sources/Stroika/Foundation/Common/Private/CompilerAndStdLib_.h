@@ -2165,6 +2165,19 @@ Configuration.cpp:126:21: error: no viable conversion from 'common_comparison_ca
 
 #endif
 
+
+
+#ifndef qCompilerAndStdLib_lazyunion_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_lazyunion_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#else
+#define qCompilerAndStdLib_lazyunion_Buggy 0
+#endif
+
+#endif
+
+
 /*
  ERROR ON GCC VERY WEIRD g++-11-debug-c++2a
 

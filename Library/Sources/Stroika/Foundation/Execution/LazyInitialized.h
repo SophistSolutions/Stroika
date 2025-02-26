@@ -158,10 +158,16 @@ namespace Stroika::Foundation::Execution {
     private:
         mutable once_flag fOnceFlag_; // cannot go in union cuz this 'discriminates' the union
         // small space savings - don't need both getter and value at same time
-        union {
-            mutable T                  fValue_;
-            mutable function<T (void)> fOneTimeGetter_;
-        };
+        #if qCompilerAndStdLib_lazyunion_Buggy
+        mutable optional<T>                  fValue_;
+        mutable function<T (void)> fOneTimeGetter_;
+    #else
+    union {
+        mutable T                  fValue_;
+   
+        mutable function<T (void)> fOneTimeGetter_;
+   };
+    #endif
 
     private:
         T&       Getter_ ();

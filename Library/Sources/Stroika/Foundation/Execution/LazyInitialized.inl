@@ -22,11 +22,16 @@ namespace Stroika::Foundation::Execution {
     constexpr LazyInitialized<T>::LazyInitialized (const T& v)
         : fValue_{v}
     {
+        #if qCompilerAndStdLib_lazyunion_Buggy
+        call_once (fOnceFlag_, [&] () {  });
+        #else
         call_once (fOnceFlag_, [&] () { destroy_at (&fOneTimeGetter_); }); // nothing todo but prevent call_once from invoking again
+        #endif
     }
     template <typename T>
     constexpr LazyInitialized<T>::~LazyInitialized ()
     {
+        #if !qCompilerAndStdLib_lazyunion_Buggy
         bool wasCallOnceInvoked = false;
         call_once (fOnceFlag_, [&] () { wasCallOnceInvoked = true; });
         if (wasCallOnceInvoked) {
@@ -35,6 +40,7 @@ namespace Stroika::Foundation::Execution {
         else {
             destroy_at (&fOneTimeGetter_);
         }
+        #endif
     }
     template <typename T>
     constexpr LazyInitialized<T>::operator const T () const
@@ -62,10 +68,18 @@ namespace Stroika::Foundation::Execution {
         call_once (fOnceFlag_, [&] () {
             // because of union, be careful about overwriting function pointer during function invocation
             auto tmp = fOneTimeGetter_ ();
+            #if qCompilerAndStdLib_lazyunion_Buggy
+            fValue_ = tmp;
+            #else
             destroy_at (&fOneTimeGetter_);
             construct_at (&fValue_, move (tmp));
+            #endif
         });
+        #if qCompilerAndStdLib_lazyunion_Buggy
+        return *fValue_;
+        #else
         return fValue_;
+        #endif
     }
     template <typename T>
     inline const T& LazyInitialized<T>::Getter_ () const
@@ -73,10 +87,18 @@ namespace Stroika::Foundation::Execution {
         call_once (fOnceFlag_, [&] () {
             // because of union, be careful about overwriting function pointer during function invocation
             auto tmp = fOneTimeGetter_ ();
+            #if qCompilerAndStdLib_lazyunion_Buggy
+            fValue_ = tmp;
+            #else
             destroy_at (&fOneTimeGetter_);
             construct_at (&fValue_, move (tmp));
+            #endif
         });
+        #if qCompilerAndStdLib_lazyunion_Buggy
+        return *fValue_;
+        #else
         return fValue_;
+        #endif
     }
 
 }
