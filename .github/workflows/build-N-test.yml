@@ -141,7 +141,7 @@ jobs:
         run: |
           make libraries tools
       - name: Save space
-        if: false
+        if: always()
         run: |
           echo "*************Before save space*************:"
           df -h

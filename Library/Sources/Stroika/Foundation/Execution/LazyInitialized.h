@@ -36,6 +36,9 @@ namespace Stroika::Foundation::Execution {
      * 
      *  @aliases for ConstantProperty, 'virtual constant', VirtualConstant
      * 
+     *  \note If you have an object 'obj' which MAYBE a T, or LazyInitialized<T>, you can convert it to type T
+     *        with static_cast<T> (obj).
+     *
      *  \par Example Usage
      *      \code
      *          // say not legal to call EVP_md5 til you've initialized openssl, and maybe you never will - but still want to declare but
