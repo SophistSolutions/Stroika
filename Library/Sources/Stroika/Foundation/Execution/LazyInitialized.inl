@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Execution {
             fValue_ = rhs;
         }
         else {
-            destroy_at (&fOneTimeGetter_);  // then never called, if set before read
+            destroy_at (&fOneTimeGetter_); // then never called, if set before read
             construct_at (&fValue_, rhs);
         }
         return *this;
