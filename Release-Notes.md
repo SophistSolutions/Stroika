@@ -7,96 +7,130 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### START 3.0d16 REL DRAFT
+### 3.0d16 {2025-02-??????} {[diff](../../compare/3.0d15...3.0d16)}-----NOT READY
 
-- Characters
-  - String
-    - String::Find/FindEachMatch/FindEarchString return Containers::Sequence instead of stdvector (so can be treated as Iterable and use linq-like methods) - uses Concrete::Sequence_stdvector so little cost
+#### TLDR
 
-- Execution
-  - LazyInitialized
-    - deprecated Common::ConstantProperty in favor of improved Execution::LazyInitialized - basically same thing
-    - serveral improvements to LazyInitialized - new methods, and impl uses union to save space
-    - removed several uses of ConstantProperty/LazyInitialized that appeared unneccessary (documented using lambda () directly)
+- Fixed output of performance regression tests
+- Minor cleanups to String API, IO::Network::Transfer (especially exeption messages)
+- Frameworks::OAuth (revocation and refresh supported)
+- Doxygen tweaks (closer to usable/reasonable)
+- Samples/HTMLUI - improved auth support (showing status/details much better, and auto-refresh auth)
 
-- IO
-  - Filesystem
-    -  Added IO::FileSystem::{is_cygwin_symlink,read_cygwin_symlink} if qStroika_Foundation_Common_Platform_Windows to workaround issue that filesystem::is_symlink and filesystem::read_symlink (and other things) dont work with (older) cygwin symbolic links (depends on flags / env vars used in cygwin)
-  - Network
-    - HTTP
-      -  Added Headers::contentDisposition property support
-    - Transfer::Exception
-       change for Exception to strip out html tags in message gen
-       some testing infrastructure for IO/Network/Transfer/Exception message extraction
+#### Upgrade Notes (3.0d15 to 3.0d16)
 
+- deprecated Common::ConstantProperty in favor of improved Execution::LazyInitialized
+
+#### Change Details
+
+- Build System
+  - github actions save space more on linux due to run out of space on one config (Linux (Linux, ubuntu-24.10-clang++-19-c++23-debug, clang++-19, ubuntu-latest)
+  - docker container windows VS_17_13_2
+  - Build Scripts
+    - LinkTime_CopyFilesToEXEDir uses cp --force now since sometimes with parallel link (make -j) can get two copies at the same time
+- Documentation
+  - Doxygen
+    - now main page looks more reasonable
+    - added alias @aliases - and used in source code
+    - Prelim support for samples page
+- Library
+  - Foundation
+    - Characters
+      - String
+        - String::Find/FindEachMatch/FindEarchString return Containers::Sequence instead of stdvector (so can be treated as Iterable and use linq-like methods) - uses Concrete::Sequence_stdvector so little cost
+    - Common
+      - Compiler Bug Workarounds
+        - Compiler bug defines support for _MSC_VER_2k22_17Pt13_ (no changes from 12)
+    - Execution
+      - LazyInitialized
+        - deprecated Common::ConstantProperty in favor of improved Execution::LazyInitialized - basically same thing
+        - serveral improvements to LazyInitialized - new methods, and impl uses union to save space
+        - removed several uses of ConstantProperty/LazyInitialized that appeared unneccessary (documented using lambda () directly)
+      - ThreadPool
+        - fixed AbortAndWaitForDone_ to remove all thread ptr objects and ensure thread list empty (private so no api change)
+    - IO
+      - Filesystem
+        -  Added IO::FileSystem::{is_cygwin_symlink,read_cygwin_symlink} #if qStroika_Foundation_Common_Platform_Windows to workaround issue that filesystem::is_symlink and filesystem::read_symlink (and other things) dont work with (older) cygwin symbolic links (depends on flags / env vars used in cygwin)
+      - Network
+        - HTTP
+          -  Added Headers::contentDisposition property support
+        - Transfer::Exception
+          - change for Exception to strip out html tags in message gen
+          - some testing infrastructure for IO/Network/Transfer/Exception message extraction
+  - Frameworks
+    - Auth/OAuth
+      - support (google maybe somewhat non-standard) - revocation_endpoint - and revocation API
+      - support refreshing refresh_tokens
+      - store openid_configuration_uri without .well-known/openid-configuration and add as needed
+    - SystemPerformance
+      - Capturer: initialize threadpool with zero threads (and give threadpool name), so not removing a bunch of threads soon after adding (sb fine but needlessly costly)
+    - WebServer
+      - added WebServer/Response location property
+    - WebService
+      - Slightly loosen assert in internal WebService/Server/ObjectRequestHandler routine
 - Samples
   - HTMLUI
     - Backend
       - better default for timeout on cache control values
-      - QuasarBasedHTMLApp 
-        - cleanups
-        - HTMLUI sample autoRefreshAuth flag on auth - so auto-refreshes
-        - kSupportRefreshTokenRevocation_ = false BWA until I can test/fix a bit more of this (HTML UI AUTH)
+    - QuasarBasedHTMLApp 
+      - HTMLUI sample autoRefreshAuth flag on auth - so auto-refreshes
+      - kSupportRefreshTokenRevocation_ = false BWA until I can test/fix a bit more of this (HTML UI AUTH)
     - All
       - sample AUTH token improved support - return info about expiry of and value of tokens
       - revocation and automatic refresh token handling
       - HTMLUI tweak settings for vite/quasar http-cache settings (immutable) for hashes
-
-    ThreadPool: Mostly cosmetic cleanups and dbg trace cleanups, but also fixed AbortAndWaitForDone_ to remove all thread ptr objects and ensure thread list empty (private so no api change)
-
-    Frameworks/SystemPerformance/Capturer; initialize threadpool with zero threads (and give threadpool name), so not removing a bunch of threads soon after adding (sb fine but needlessly costly)
-    HTMLUI sample - got revokeTokens (so logout more fully) working - so we should automatically get refresh token when we login again
-
-Frameworks/Auth/OAuth
-   - support (google maybe somewhat non-standard) - revocation_endpoint - and revocation API
-    - OAuth frameowrk: support refreshing refresh_tokens
-    OAuth framework: store openid_configuration_uri without .well-known/openid-configuration and add as needed
-
-- Frameworks
-  - WebServer
-    -     added WebServer/Response location property
-  - WebService
-    -     Slightly loosen assert in internal WebService/Server/ObjectRequestHandler routine
-
-
-fixed regression in performance regression tests - now should be outputting properly
-- Compiler Bug Defines
-  -     Compiler bug defines support for _MSC_VER_2k22_17Pt13_ (no changes from 12)
-
-- Build Scripts
-    LinkTime_CopyFilesToEXEDir uses cp --force now since sometimes with parallel link (make -j) can get two copies at the same time
-
-- RegressionTests
-   - Cleanup String regtests - mostly for change in FindEach... return value
-   - fixed TOTAL_WARNINGS_EXPECTED= computation in RegressionTest script
-   - Workaround issue with awk on cygwin not working from DOS (due to symbolic link) with new FileSystem::is_cygwin_symlink and IO::FileSystem::read_cygwin_symlink utilities
-
-- Doxygen
-    - now main page looks more reasonable
-    - added alias @aliases - and used in source code
-    - Prelim support for samples page
-
+      - got revokeTokens (so logout more fully) working - so we should automatically get refresh token when we login again
+- Tests
+  - fixed regression in performance regression tests - now should be outputting properly
+  - Cleanup String regtests - mostly for change in FindEach... return value
+  - fixed TOTAL_WARNINGS_EXPECTED= computation in RegressionTest script
+  - Workaround issue with awk on cygwin not working from DOS (due to symbolic link) with new FileSystem::is_cygwin_symlink and IO::FileSystem::read_cygwin_symlink utilities
 - ThirdPartyComponents
-     sqlite
-      3490100
-    openssl 
-      3.4.1
-    libxml2 2.13.6
-    curl
-       8.12.1
-    perl 
-      5.40.0.1
-      - makefile tweaks
-    GOOGLETEST_VERSION_
-      =1.16.0
+  - curl
+    - 8.12.1
+  - googletest
+    - 1.16.0
+  - libxml2
+    - 2.13.6
+  - openssl 
+    - 3.4.1
+  - perl 
+    - 5.40.0.1
+    - makefile tweaks
+  - sqlite
+    - 3490100
 
-- Build System
+#### Release-Validation
 
-    github actions save space more on linux due to run out of space on one config (Linux (Linux, ubuntu-24.10-clang++-19-c++23-debug, clang++-19, ubuntu-latest)
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
+  - MSVC: { 17.13.2 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-    docker container windows = VS_17_13_2
-
-
+---
 
 ### 3.0d15 {2025-02-13} {[diff](../../compare/3.0d14...3.0d15)}
 
@@ -427,7 +461,7 @@ fixed regression in performance regression tests - now should be outputting prop
         - Range
           - Range::ToString()... with lb=kLowerBound or ub == kUpperBound shown as '' in ... range display - so appears more open-ended, and other Range print cleanups
           - Added Range::ReplaceStart, and Range::ReplaceEnd() methods
-          - fixed missing traits on Traversal::RangeTraits specializations for DurationSeconds, TimePointSeconds, and chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>
+          - fixed missing traits on Traversal::RangeTraits specializations for DurationSeconds, TimePointSeconds, and chrono::time_point\<Time::DisplayedRealtimeClock, Time::DurationSeconds>
   - Frameworks
     - WebServer
       - Mostly cosmetic cleanups to WebServer Connection code - using const for data members, and restructured ReadAndProcessMessage () - mostly compatibly
@@ -437,7 +471,7 @@ fixed regression in performance regression tests - now should be outputting prop
 - Samples
   - HTMLUI
     - HTMLUI sample - slight restructure of how to talk to WSImpl::WithWebServerCallbackType; and capture way more stats now - and report more in about from ConnectionManager
-    - ConnectionManager and HTMLUI sample uses CommonStatistics<Duration> for a bunch of measurements/stats
+    - ConnectionManager and HTMLUI sample uses CommonStatistics\<Duration> for a bunch of measurements/stats
     - HTMLUI sample app - added debuging/testing connections WSAPI
     - more HMTLUI sample improvemnts (showing helathcehck results)
   - WebServer
