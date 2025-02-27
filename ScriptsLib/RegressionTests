@@ -494,7 +494,7 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 fi
 
 TOTAL_WARNINGS_EXPECTED=0
-TOTAL_WARNINGS_EXPECTED= $(expr $TOTAL_WARNINGS_EXPECTED + $(cat $TEST_OUT_FILE | grep fFailConnectionIfSSLCertificateInvalid | wc -l))
+TOTAL_WARNINGS_EXPECTED=$(expr $TOTAL_WARNINGS_EXPECTED + $(cat $TEST_OUT_FILE | grep fFailConnectionIfSSLCertificateInvalid | wc -l))
 
 if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
