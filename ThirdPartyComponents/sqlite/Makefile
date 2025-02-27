@@ -19,7 +19,8 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 .NOTPARALLEL:
 
 # https://www.sqlite.org/download.html
-VERSION:=3470200
+VERSION:=3490100
+#VERSION:=3470200
 #VERSION:=3470000
 #VERSION:=3460100
 #VERSION:=3460000
