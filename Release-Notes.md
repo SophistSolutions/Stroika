@@ -13,14 +13,21 @@ especially those they need to be aware of when upgrading.
   - String
     - String::Find/FindEachMatch/FindEarchString return Containers::Sequence instead of stdvector (so can be treated as Iterable and use linq-like methods) - uses Concrete::Sequence_stdvector so little cost
 
+- Execution
+  - LazyInitialized
+    - deprecated Common::ConstantProperty in favor of improved Execution::LazyInitialized - basically same thing
+    - serveral improvements to LazyInitialized - new methods, and impl uses union to save space
+    - removed several uses of ConstantProperty/LazyInitialized that appeared unneccessary (documented using lambda () directly)
+
 - IO
   - Filesystem
-    -    Added IO::FileSystem::{is_cygwin_symlink,read_cygwin_symlink} if qStroika_Foundation_Common_Platform_Windows to workaround issue that filesystem::is_symlink and filesystem::read_symlink (and other things) dont work with (older) cygwin symbolic links (depends on flags / env vars used in cygwin)
+    -  Added IO::FileSystem::{is_cygwin_symlink,read_cygwin_symlink} if qStroika_Foundation_Common_Platform_Windows to workaround issue that filesystem::is_symlink and filesystem::read_symlink (and other things) dont work with (older) cygwin symbolic links (depends on flags / env vars used in cygwin)
   - Network
     - HTTP
       -  Added Headers::contentDisposition property support
     - Transfer::Exception
        change for Exception to strip out html tags in message gen
+       some testing infrastructure for IO/Network/Transfer/Exception message extraction
 
 - Samples
   - HTMLUI
@@ -45,6 +52,12 @@ Frameworks/Auth/OAuth
     - OAuth frameowrk: support refreshing refresh_tokens
     OAuth framework: store openid_configuration_uri without .well-known/openid-configuration and add as needed
 
+- Frameworks
+  - WebServer
+    -     added WebServer/Response location property
+  - WebService
+    -     Slightly loosen assert in internal WebService/Server/ObjectRequestHandler routine
+
 
 fixed regression in performance regression tests - now should be outputting properly
 - Compiler Bug Defines
@@ -56,6 +69,7 @@ fixed regression in performance regression tests - now should be outputting prop
 - RegressionTests
    - Cleanup String regtests - mostly for change in FindEach... return value
    - fixed TOTAL_WARNINGS_EXPECTED= computation in RegressionTest script
+   - Workaround issue with awk on cygwin not working from DOS (due to symbolic link) with new FileSystem::is_cygwin_symlink and IO::FileSystem::read_cygwin_symlink utilities
 
 - Doxygen
     - now main page looks more reasonable
@@ -76,129 +90,12 @@ fixed regression in performance regression tests - now should be outputting prop
     GOOGLETEST_VERSION_
       =1.16.0
 
-#if 0
-commit b7207843e395cf51bfda1d5fb763f37e3d0147f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 23 22:55:09 2025 -0500
-
-    Workaround issue with awk on cygwin not working from DOS (due to symbolic link) with new FileSystem::is_cygwin_symlink and IO::FileSystem::read_cygwin_symlink utilities
-
-commit 2c321e0323ee3ecb861934d10d674cbe73c36724
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 24 07:31:01 2025 -0500
-
-    maybe better workaroudn for occasional copy issue on LinkTime_CopyFilesToEXEDir windows (paralelle make)
-
-commit c5ab4d2531b899ac0054bd6dccd548653afd9b85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 24 10:46:10 2025 -0500
-
-    deprecated Common::ConstantProperty in favor of improved (slgihtly) Execution::LazyInitialized - basically same thing; a few minor other cleanups
-
-commit 9b4c0ccca6ad0772d9ed1f249f14fff68e049317
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 07:07:39 2025 -0500
-
-    code cleanups, samples, warnings, deprecated code
-
-commit 75cc773f69d1597b433a75a6a33e8fd7df925977
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Feb 25 07:47:34 2025 -0500
-
-    fixed race in LazyInitialized and made more perofrmant and other clenaups
-
-commit 67d131f6c76e5acd4744cc0555d531f6e58aab75
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 08:12:35 2025 -0500
-
-    remove one uneeded use of LazyInitialized
-
-commit 83b1df30d272e62819507a55e2970c9ae489424f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 08:13:23 2025 -0500
-
-    cleanups and remove more uses (uneeded) of LazyInitialized
-
-commit 2d93eee9177e786875cee88895e74c27dd597913
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 08:18:43 2025 -0500
-
-    make LazyInitialized never default constructible
-
-commit 49f9ee1086b375fae5f4e1923fb81ad4fa52cc31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 10:45:15 2025 -0500
-
-    added WebServer/Response location property
-
-commit e64516eaf559d519ad4ee1f0f70273ac017ae6f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 12:05:24 2025 -0500
-
-    Slightly loosen assert in internal WebService/Server/ObjectRequestHandler routine
-
-commit c20e15f4962557047820804523b97a66aebb69df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 19:53:16 2025 -0500
-
-    fixed typo in ExtractReasonFromResponse_ for IO::Transfer::Exception
-
-commit f7b6dcb2b59bef594c5719abeb71311025531055
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 19:55:59 2025 -0500
-
-    Slightly loosen assert in internal WebService/Server/ObjectRequestHandler routine
-
-commit e22dde333873c39119235e0e486323d16ea598fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 20:37:56 2025 -0500
-
-    draft qCompilerAndStdLib_lazyunion_Buggy bug define and BWA
-
-commit 3a48b79a13b0b013e8f3672b7ff53f9463ca0db0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 20:38:47 2025 -0500
-
-    slight cleanup pf ExtractReasonFromResponse_ in IO::Trasnfer::Excepotion
-
-commit 9c174f3b25e640f2b9e24762fd9d32881244e7e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 25 20:43:12 2025 -0500
-
-    renamed last bug define to qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
-
-commit 1d686b3d6fdeee792ccded2c84573c06cfdc64b1
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Feb 26 07:25:49 2025 -0500
-
-    comments; fixed underlying bug with LazyInitialized, and so lose qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy BWA
-
-commit a7bfa6128cef189c11092ea99d579217c3b8406a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 26 07:44:03 2025 -0500
-
-    Minor cleanups and improvements to LazyInitialized
-
-
-commit 11d594bbce99ed9dd0f95a59eb1fdbda3b09504d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 26 11:05:44 2025 -0500
-
-    fixed (and some testing infrastructure) for IO/Network/Transfer/Exception message extraction
-
-commit edb86b5add1e9f2492c82853ed95de6c83e848ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 26 17:03:26 2025 -0500
+- Build System
 
     github actions save space more on linux due to run out of space on one config (Linux (Linux, ubuntu-24.10-clang++-19-c++23-debug, clang++-19, ubuntu-latest)
 
-commit b8474002b1854ebb54376ff071eb8c9dec5dfae1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 27 07:47:55 2025 -0500
-
     docker container windows = VS_17_13_2
 
-#endif
 
 
 ### 3.0d15 {2025-02-13} {[diff](../../compare/3.0d14...3.0d15)}
