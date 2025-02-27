@@ -7,6 +7,359 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### START 3.0d16 REL DRAFT
+
+- Samples
+  - HTMLUI
+    - Backend
+      - better default for timeout on cache control values
+      - QuasarBasedHTMLApp 
+        - cleanups
+        - HTMLUI sample autoRefreshAuth flag on auth - so auto-refreshes
+    - All
+      - sample AUTH token improved support - return info about expiry of and value of tokens
+
+
+
+    ThreadPool: Mostly cosmetic cleanups and dbg trace cleanups, but also fixed AbortAndWaitForDone_ to remove all thread ptr objects and ensure thread list empty (private so no api change)
+
+    Frameworks/SystemPerformance/Capturer; initialize threadpool with zero threads (and give threadpool name), so not removing a bunch of threads soon after adding (sb fine but needlessly costly)
+
+
+#if 0
+
+commit 69d887f1ac558a937e6badb756e60e5956147bbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 19 13:57:58 2025 -0500
+
+    support (google maybe somewhat non-standard) - revocation_endpoint - and revocation API with Frameworks/Auth/OAuth
+
+commit fe41c3ad3f90aafa96a20093779a99c69ac09fc5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 19 14:19:33 2025 -0500
+
+    OAuth frameowrk: support refreshing refresh_tokens
+
+commit 4280f8bb215a3eb003444780b9eda5fbba31dd5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 19 14:49:43 2025 -0500
+
+    OAuth framework: store openid_configuration_uri without .well-known/openid-configuration and add as needed
+
+commit a1800295562745023c1d4f21a235e7b8643ad8b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 19 16:31:32 2025 -0500
+
+    Sample HTMLUI: progress on revocation and automatic refresh token handling - mostly working but a bit more todo on revocation/logout
+
+commit 3db4a4865e768c31f6dc51d2e5e71b31e9b59d35
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 19 18:12:06 2025 -0500
+
+    HTMLUI sample - got revokeTokens (so logout more fully) working - so we should automatically get refresh token when we login again
+
+commit 47fae80b5d1821e49d22f97413906aec86a3a440
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 19 18:45:50 2025 -0500
+
+    tweak webservcie names so more consistent across stroika in onplace of HTMLUI
+
+commit 27cac43f320b2709a4ca2a9e80e8cd492e01597c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 20 14:07:05 2025 -0500
+
+    kSupportRefreshTokenRevocation_ = false BWA until I can test/fix a bit more of this (HTML UI AUTH)
+
+commit a9add7055feb087a1e61628d8d64e28b2c2d0c5d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 20 14:22:33 2025 -0500
+
+    hopefully fix regression in performance regression tests - now should be outputting properly
+
+commit 1ef417a5ae780b7abb1437b9f188ccc44e0f6c29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 21 08:26:43 2025 -0500
+
+    Added IO::HTTP::Headers::contentDisposition property support
+
+commit cb966a3a8a297383d3489b53e7493f3d6887ce09
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 21 08:27:58 2025 -0500
+
+    cosmetic due to more aggressively broken new clang-format
+
+commit bd247fbc906776f28075ef84469f39c8a1864bae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 21 08:50:03 2025 -0500
+
+    docker - windows - use VS_17_13_1
+
+commit 8fe58f3954ce9c7b2ac51138fd3d60de75e9f176
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 21 09:01:00 2025 -0500
+
+    Compiler bug defines support for _MSC_VER_2k22_17Pt13_ (no changes from 12)
+
+commit ffff67d801b9021438ef06b4d1e5656283015dbe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 21 09:01:49 2025 -0500
+
+    LinkTime_CopyFilesToEXEDir uses cp --force now since sometimes with parallel link (make -j) can get two copies at the same time
+
+commit 2aa5022964f2381d759e909f6d929a4ea1959c2c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 21 09:30:21 2025 -0500
+
+    make format-code with latest clang-format (19)
+
+commit f48f9f64746eb7ed49388f1a23ba100688d50447
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 22 08:20:33 2025 -0500
+
+    String::Find/FindEachMatch/FindEarchString return Containers::Sequence instead of stdvector (so can be treated as Iterable and use linq-like methods) - uses Concrete::Sequence_stdvector so little cost
+
+commit 8eb5088242c20414bf6d6a41a31ec13ffbb17c73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 22 08:47:23 2025 -0500
+
+    Cleanup String regtests - mostly for change in FindEach... return value
+
+commit cc4b6fba2fe24319117e7e8c34e99f62a05346ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 22 08:48:04 2025 -0500
+
+    experimental change for IO/Network/Transfer/Exception to strip out html tags in message gen
+
+commit 375952b64f6b0ec808220ff15594e82130d65f38
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Feb 22 08:54:04 2025 -0500
+
+    minor tweak to performance regtests
+
+commit 59253f3b060a1302c72c0376ac9b7d9b51b14254
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 23 08:22:52 2025 -0500
+
+    Stroika.img
+
+commit a30dbeda88b411112fcadb800658035503f46138
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Feb 23 10:07:30 2025 -0500
+
+    doxygen progress - now main page looks more reasonable
+
+commit c2ebe28717680a618832f77668b56f539b71a8af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 23 21:01:48 2025 -0500
+
+    HTMLUI tweak settings for vite/quasar http-cache settings (immutable) for hashes
+
+commit 311060faa558f8a921270ac3a747082414ce3737
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 23 22:30:30 2025 -0500
+
+    Added IO::FileSystem::{is_cygwin_symlink,read_cygwin_symlink} if qStroika_Foundation_Common_Platform_Windows to workaround issue that filesystem::is_symlink and filesystem::read_symlink (and other things) dont work with (older) cygwin symbolic links (depends on flags / env vars used in cygwin)
+
+commit b7207843e395cf51bfda1d5fb763f37e3d0147f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 23 22:55:09 2025 -0500
+
+    Workaround issue with awk on cygwin not working from DOS (due to symbolic link) with new FileSystem::is_cygwin_symlink and IO::FileSystem::read_cygwin_symlink utilities
+
+commit 2c321e0323ee3ecb861934d10d674cbe73c36724
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 24 07:31:01 2025 -0500
+
+    maybe better workaroudn for occasional copy issue on LinkTime_CopyFilesToEXEDir windows (paralelle make)
+
+commit c5ab4d2531b899ac0054bd6dccd548653afd9b85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 24 10:46:10 2025 -0500
+
+    deprecated Common::ConstantProperty in favor of improved (slgihtly) Execution::LazyInitialized - basically same thing; a few minor other cleanups
+
+commit fc7d1a5d3423f8bc40676775b25dbe5fe603106c
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 24 10:55:11 2025 -0500
+
+    doxygen docs
+
+commit 466414a450d7bded355f73fc4db98fde1fda02c4
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 24 11:43:00 2025 -0500
+
+    doxygen - added alias @aliases - and used in source code
+
+commit ca14e44cef6560c1531bda2066621816f6c2a426
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 24 11:57:27 2025 -0500
+
+    doxgyen - some progress on samples
+
+commit 9b4c0ccca6ad0772d9ed1f249f14fff68e049317
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 07:07:39 2025 -0500
+
+    code cleanups, samples, warnings, deprecated code
+
+commit 75cc773f69d1597b433a75a6a33e8fd7df925977
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Feb 25 07:47:34 2025 -0500
+
+    fixed race in LazyInitialized and made more perofrmant and other clenaups
+
+commit 67d131f6c76e5acd4744cc0555d531f6e58aab75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 08:12:35 2025 -0500
+
+    remove one uneeded use of LazyInitialized
+
+commit 83b1df30d272e62819507a55e2970c9ae489424f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 08:13:23 2025 -0500
+
+    cleanups and remove more uses (uneeded) of LazyInitialized
+
+commit 2d93eee9177e786875cee88895e74c27dd597913
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 08:18:43 2025 -0500
+
+    make LazyInitialized never default constructible
+
+commit bfd1f71cb8ec524ee6d57807fbfc13459413f911
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 08:25:05 2025 -0500
+
+    docs/cleanups
+
+commit 49f9ee1086b375fae5f4e1923fb81ad4fa52cc31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 10:45:15 2025 -0500
+
+    added WebServer/Response location property
+
+commit e64516eaf559d519ad4ee1f0f70273ac017ae6f7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 12:05:24 2025 -0500
+
+    Slightly loosen assert in internal WebService/Server/ObjectRequestHandler routine
+
+commit c20e15f4962557047820804523b97a66aebb69df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 19:53:16 2025 -0500
+
+    fixed typo in ExtractReasonFromResponse_ for IO::Transfer::Exception
+
+commit f7b6dcb2b59bef594c5719abeb71311025531055
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 19:55:59 2025 -0500
+
+    Slightly loosen assert in internal WebService/Server/ObjectRequestHandler routine
+
+commit e22dde333873c39119235e0e486323d16ea598fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 20:37:56 2025 -0500
+
+    draft qCompilerAndStdLib_lazyunion_Buggy bug define and BWA
+
+commit 3a48b79a13b0b013e8f3672b7ff53f9463ca0db0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 20:38:47 2025 -0500
+
+    slight cleanup pf ExtractReasonFromResponse_ in IO::Trasnfer::Excepotion
+
+commit 9c174f3b25e640f2b9e24762fd9d32881244e7e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 25 20:43:12 2025 -0500
+
+    renamed last bug define to qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy
+
+commit 1d686b3d6fdeee792ccded2c84573c06cfdc64b1
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Feb 26 07:25:49 2025 -0500
+
+    comments; fixed underlying bug with LazyInitialized, and so lose qCompilerAndStdLib_UnionConstructDestroyUBSanConfusion_Buggy BWA
+
+commit a7bfa6128cef189c11092ea99d579217c3b8406a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 26 07:44:03 2025 -0500
+
+    Minor cleanups and improvements to LazyInitialized
+
+commit d2ebb9b1df9450c024d4b37937e4cd27751ddfa2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 26 08:13:17 2025 -0500
+
+    maybe fixed +TOTAL_WARNINGS_EXPECTED= comutation in RegressionTest script
+
+commit 11d594bbce99ed9dd0f95a59eb1fdbda3b09504d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 26 11:05:44 2025 -0500
+
+    fixed (and some testing infrastructure) for IO/Network/Transfer/Exception message extraction
+
+commit edb86b5add1e9f2492c82853ed95de6c83e848ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 26 17:03:26 2025 -0500
+
+    github actions save space more on linux due to run out of space on one config (Linux (Linux, ubuntu-24.10-clang++-19-c++23-debug, clang++-19, ubuntu-latest)
+
+commit f5c0d853dbbd84ac29d7f2ae1af892f678f6ac36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 26 20:59:54 2025 -0500
+
+    maybe fix RegressionTest script
+
+commit 617d8c2e15ec2d6b666ec4e6b140d096b5def01e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:44:42 2025 -0500
+
+    sqlite 3490100
+
+commit efd26808f883313b3240313e4c4ed67d980b3328
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:45:12 2025 -0500
+
+    openssl 3.4.1
+
+commit b7f3865ef7c0d797c7f9e4e09f9e08b85450286c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:45:53 2025 -0500
+
+    libxml2 2.13.6
+
+commit 12383f9f3da26a98b8007b630500a0e7bc44f5a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:46:21 2025 -0500
+
+    curl 8.12.1
+
+commit 9f472500a7943e7cc6148b6ba83929c48ae57729
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:46:53 2025 -0500
+
+    perl 5.40.0.1
+
+commit e6efeb96ef01b89fc3bffdbc2f6efc00857a77ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:47:18 2025 -0500
+
+    GOOGLETEST_VERSION_=1.16.0
+
+commit b8474002b1854ebb54376ff071eb8c9dec5dfae1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:47:55 2025 -0500
+
+    docker container windows = VS_17_13_2
+
+commit 77b2f1c315ec97c6733f1c768810d036ef15a994
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 27 07:48:21 2025 -0500
+
+    start 3.0d16
+#endif
+
+
 ### 3.0d15 {2025-02-13} {[diff](../../compare/3.0d14...3.0d15)}
 
 #### TLDR
