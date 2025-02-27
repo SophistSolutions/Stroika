@@ -19,13 +19,15 @@ PERL_VERSION_=5.40.0.1
 #PERL_VERSION_=5.38.2.2
 #PERL_VERSION_=5.32.1.1
 
+COMPRESS_PERL_VERSION_=$(shell echo "${PERL_VERSION_}" | sed "s/\\.//g")
+
 ZIPPED_SOURCES_FILE_=../Origs-Cache/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
 
 FETCHURLS_=
 
-FETCHURLS_+=https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_53822_64bit/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
+FETCHURLS_+=https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_${COMPRESS_PERL_VERSION_}_64bit_UCRT/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
+FETCHURLS_+=https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_${COMPRESS_PERL_VERSION_}_64bit/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
 #FETCHURLS_+=https://strawberryperl.com/download/${PERL_VERSION_}/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
-
 
 ${ZIPPED_SOURCES_FILE_}:
 	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}ScriptsLib/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
