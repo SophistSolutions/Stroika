@@ -15,7 +15,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # CHECK FOR UPDATED VERSIONS https://strawberryperl.com/releases.html
 #	MAYBE BETTER https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases
 #
-PERL_VERSION_=5.38.2.2
+PERL_VERSION_=5.40.0.1
+#PERL_VERSION_=5.38.2.2
 #PERL_VERSION_=5.32.1.1
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
