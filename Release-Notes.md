@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d16 {2025-02-??????} {[diff](../../compare/3.0d15...3.0d16)}-----NOT READY
+### 3.0d16 {2025-03-01} {[diff](../../compare/3.0d15...3.0d16)}
 
 #### TLDR
 
@@ -25,7 +25,7 @@ especially those they need to be aware of when upgrading.
 
 - Build System
   - github actions save space more on linux due to run out of space on one config (Linux (Linux, ubuntu-24.10-clang++-19-c++23-debug, clang++-19, ubuntu-latest)
-  - docker container windows VS_17_13_2
+  - docker container windows uses VS_17_13_2
   - Build Scripts
     - LinkTime_CopyFilesToEXEDir uses cp --force now since sometimes with parallel link (make -j) can get two copies at the same time
 - Documentation
