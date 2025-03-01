@@ -104,14 +104,14 @@ especially those they need to be aware of when upgrading.
 
 - Compilers Tested/Supported
   - g++ { 11, 12, 13, 14 }
-  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0}
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0 }
   - MSVC: { 17.13.2 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 11 version 24H2
     - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
       - cygwin (latest as of build-time from CHOCO)
-      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+      - MSYS (msys2-base-x86_64-20241208.sfx.exe)
     - WSL v2
   - MacOS
     - 15.0.1 - arm64/m1 chip
@@ -129,6 +129,8 @@ especially those they need to be aware of when upgrading.
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+  - windows/cygwin
+    - SSDPClient issues have todo with quirks of windows networking - reboot PC and fine...
 
 ---
 
