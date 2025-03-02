@@ -1,34 +1,31 @@
-import { useConfigurationStore } from './Configuration-Store';
 import { defineStore } from 'pinia';
+import { computed, ComputedRef, ref, Ref } from 'vue';
 
 import { IAbout } from 'src/models/IAbout';
-import {fetchAboutInfo,} from 'src/proxy/API';
+import api from 'src/proxy/API'
 
 
-// @todo perhaps add in 'lasttimerequested' and 'lastTimeSuccessfulResponse' and throttle/dont request
-// (not sure where in model) if outtsanding requests etc) and maybe show in UI if data stale
-interface ILoading {
-  numberOfTimesLoaded: number;
-  numberOfOutstandingLoadRequests: number;
-}
+export const useMainAppStateStore = defineStore('MainApp-State-Store', () => {
 
+  // State
+ const about: Ref< IAbout | undefined> = ref (undefined)
 
-/// DRAFT new WTF app data store  - maybe should be called cached-network-state-store?
+  // Getters (not really sure these are useful anymore...)
+  const getAboutInfo: ComputedRef<IAbout|undefined> = computed(() => {
+    return about.value;
+  });
 
+  // Actions (none for now)
+  async function fetchAboutInfo() {
+    about.value = await api.fetchAboutInfo();
+  }
 
-export const useMainAppStateStore = defineStore('MainApp-State-Store', {
-  state: () => ({
-    about: undefined as IAbout | undefined,
-  }),
-  getters: {
-    getAboutInfo: (state) => {
-      return state.about;
-    },
-  },
-  actions: {
-    async fetchAboutInfo() {
-      const configurationStore = useConfigurationStore();
-      this.about = await fetchAboutInfo();
-    },
-  },
+  // add watchers (none)
+
+  return {
+    about, 
+    getAboutInfo, 
+    fetchAboutInfo
+  };
+
 });

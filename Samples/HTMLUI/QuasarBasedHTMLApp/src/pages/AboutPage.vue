@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, computed } from "vue";
+import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
 import moment from "moment";
 import prettyBytes from "pretty-bytes";
 
 import { kCompileTimeConfiguration } from "src/config/config";
-import { IAbout, IAPIEndpoint, IWebServerStats, IComponent, IDatabase } from "src/models/IAbout";
+import { IAPIEndpoint, IWebServerStats, IComponent, IDatabase } from "src/models/IAbout";
 import { useMainAppStateStore } from "src/stores/MainApp-State-store";
 import { PluralizeNoun } from "src/utils/Linguistics";
 import { useConfigurationStore } from "stores/Configuration-Store";
@@ -26,7 +27,8 @@ const kRefreshFrequencyInSeconds_: number = 10;
 
 const store = useMainAppStateStore();
 
-let aboutData = computed(() => store.getAboutInfo);
+const { about } = storeToRefs(store)
+const aboutData = about;
 
 const configurationStore = useConfigurationStore();
 

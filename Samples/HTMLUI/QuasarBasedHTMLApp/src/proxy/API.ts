@@ -113,3 +113,6 @@ export async function fetchAboutInfo(args?:{apiServer: string}): Promise<IAbout>
   }
 }
 
+
+
+export default  {fetchAboutInfo, fetchUserInfo, revokeTokens, fetchTokens, getOAuthConfigurations}
