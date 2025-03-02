@@ -6,7 +6,7 @@
   "author": "Lewis Pringle <lewis@sophists.com>",
   "private": true,
   "scripts": {
-    "dev": "quasar dev",
+    "dev": "quasar dev --history",
     "build": "quasar build",
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",

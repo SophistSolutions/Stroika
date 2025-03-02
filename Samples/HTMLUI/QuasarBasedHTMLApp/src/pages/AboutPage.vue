@@ -5,7 +5,7 @@ import moment from "moment";
 import prettyBytes from "pretty-bytes";
 
 import { kCompileTimeConfiguration } from "src/config/config";
-import { IAbout, IAPIEndpoint, IComponent, IDatabase } from "src/models/IAbout";
+import { IAbout, IAPIEndpoint, IWebServerStats, IComponent, IDatabase } from "src/models/IAbout";
 import { useMainAppStateStore } from "src/stores/MainApp-State-store";
 import { PluralizeNoun } from "src/utils/Linguistics";
 import { useConfigurationStore } from "stores/Configuration-Store";
@@ -56,31 +56,20 @@ function prettyPrintMSTime(time?: string) {
 }
 function wsAPIMsg(info: IAPIEndpoint, showShort: boolean): string {
   let msg = "";
-  if (!showShort) {
-    msg += `${info.callsCompleted} calls; `;
-  }
-  if (!showShort || info.errors != 0) {
-    msg += `${info.errors} ${PluralizeNoun("error", info.errors)}; `;
-  }
-  if (showShort) {
-    msg += `${info.medianWebServerConnections ?? "?"} connections`;
-    if (info.medianRunningAPITasks && info.medianRunningAPITasks > 0) {
-      msg += `(${info.medianRunningAPITasks ?? "?"} active API calls); `;
-    } else {
-      msg += "; ";
-    }
-  } else {
-    msg += `${info.medianWebServerConnections ?? "?"} Med connections (${info.medianProcessingWebServerConnections ?? "?"
-      } active, and Med ${info.medianRunningAPITasks ?? "?"} active API calls); `;
-  }
-  if (showShort) {
-    msg += `${prettyPrintMSTime(info.callTimes.median)}, max ${prettyPrintMSTime(
-      info.callTimes.max
-    )}`;
-  } else {
-    msg += `Med ${prettyPrintMSTime(
-      info.callTimes.median
-    )} call time,  max ${prettyPrintMSTime(info.callTimes.max)} call time`;
+  msg += `${info.callsCompleted} calls completed; `;
+  msg += `${info.medianRunningAPITasks} running tasks; `;
+  msg += `${info.errors} ${PluralizeNoun("error", info.errors)}; `;
+  msg += `times: ${prettyPrintMSTime(info.callTimes.median)}, max ${prettyPrintMSTime(
+    info.callTimes.max
+  )}`;
+  return msg;
+}
+function webServerMsg_(info: IWebServerStats): string {
+  let msg = "";
+  msg += `threadPool: {size: ${info.threadPool.threads}, queued: ${info.threadPool.tasksStillQueued}, aveRunTime: ${prettyPrintMSTime(info.threadPool.averageTaskRunTime)}}\n`
+  msg += `connections: {open: ${info.connections.open}, active: ${info.connections.active}, openLifetime: ${prettyPrintMSTime(info.connections.openConnectionsLifetime.median)}, openRequestsLifetime: ${prettyPrintMSTime(info.connections.openConnectionsRequests.median)}, activeRequestsLifetime: ${prettyPrintMSTime(info.connections.activeConnectionsRequests.median)}}`
+  if (info.connections.piningForTheFjords != 0) {
+    msg += `piningForTheFjords: ${info.connections.piningForTheFjords},`
   }
   return msg;
 }
@@ -133,7 +122,12 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
 
       <q-card class="pageCard col-11">
         <q-card-section style="margin-left: 2em">
-          Connected to server: <b>{{gRuntimeConfiguration.API_ROOT}}</b>
+          <div class="row">
+            Connected to server: <b>{{gRuntimeConfiguration.API_ROOT}}</b>
+          </div>
+          <div class="row">
+            API Server Docs: <a :href="gRuntimeConfiguration.API_ROOT + '/api'" target="_new">{{gRuntimeConfiguration.API_ROOT}}/api</a>
+          </div>
         </q-card-section>
       </q-card>
 
@@ -221,6 +215,16 @@ Units 1=1 logical core">
                 <div class="col" v-if="aboutData.serverInfo.apiEndpoint"
                   :title="wsAPIMsg(aboutData.serverInfo.apiEndpoint, false)">
                   {{ wsAPIMsg(aboutData.serverInfo.apiEndpoint, true) }}
+                </div>
+              </div>
+              <div class="row" v-if="aboutData">
+                <div class="col-3"
+                  title="Information about app WebServer Stats (median #connections, timing, Q-lengths) over the last 5 minutes">
+                  WebServer
+                </div>
+                <div class="col" v-if="aboutData.serverInfo.webServer"
+                  :title="webServerMsg_(aboutData.serverInfo.webServer, )">
+                  {{ webServerMsg_(aboutData.serverInfo.webServer) }}
                 </div>
               </div>
               <div class="row" v-if="aboutData">

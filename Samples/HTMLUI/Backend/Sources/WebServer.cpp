@@ -64,6 +64,11 @@ namespace {
 }
 
 namespace {
+    // @todo add to configuration file entry for this
+    const unsigned int kDefaultWSThreadPoolSize_ = clamp (thread::hardware_concurrency () * 5u, 5u, 50u);
+}
+
+namespace {
     const FileSystemRequestHandler::Options kStaticSiteHandlerOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> kFSCacheControlSettings_{
             /*
@@ -250,7 +255,7 @@ public:
         , fWSImpl_{ make_shared<WSImpl>(   [this](const WSImpl::WithWebServerCallbackType& f) { f (fConnectionMgr_);}  )}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
                          , kRoutes_
-                         , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = 10,
+                         , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = kDefaultWSThreadPoolSize_,
                                                      .fDefaultResponseHeaders            = kDefaultResponseHeaders_,
                                                      .fCollectStatistics                 = true}}
         , fStatsIntervalTimerAdder_{[this] () {

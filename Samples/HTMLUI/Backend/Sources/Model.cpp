@@ -273,8 +273,6 @@ String About::APIServerInfo::APIEndpoint::ToString () const
     sb << "callsCompleted: "sv << fCallsCompleted;
     sb << ", errors: "sv << fErrors;
     sb << ", callTimes: "sv << fCallTimes;
-    sb << ", medianWebServerConnections: "sv << fMedianWebServerConnections;
-    sb << ", medianProcessingWebServerConnections: "sv << fMedianProcessingWebServerConnections;
     sb << ", medianRunningAPITasks: "sv << fMedianRunningAPITasks;
     sb << "}"sv;
     return sb.str ();
@@ -402,8 +400,6 @@ const ObjectVariantMapper About::kMapper = [] () {
         {"callsCompleted"sv, &About::APIServerInfo::APIEndpoint::fCallsCompleted},
         {"errors"sv, &About::APIServerInfo::APIEndpoint::fErrors},
         {"callTimes"sv, &About::APIServerInfo::APIEndpoint::fCallTimes},
-        {"medianWebServerConnections"sv, &About::APIServerInfo::APIEndpoint::fMedianWebServerConnections},
-        {"medianProcessingWebServerConnections"sv, &About::APIServerInfo::APIEndpoint::fMedianProcessingWebServerConnections},
         {"medianRunningAPITasks"sv, &About::APIServerInfo::APIEndpoint::fMedianRunningAPITasks},
     });
     mapper.AddCommonType<optional<About::APIServerInfo::APIEndpoint>> ();

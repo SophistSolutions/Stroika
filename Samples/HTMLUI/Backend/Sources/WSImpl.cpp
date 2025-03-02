@@ -265,8 +265,6 @@ About WSImpl::about_GET () const
         r.fCallTimes      = CommonStatistics<Duration>{
                                           .fMax = stats.fRecentAPI.fMaxDuration, .fMean = stats.fRecentAPI.fMeanDuration, .fMedian = stats.fRecentAPI.fMedianDuration};
         r.fErrors                               = stats.fRecentAPI.fErrors;
-        r.fMedianWebServerConnections           = stats.fRecentAPI.fMedianWebServerConnections;
-        r.fMedianProcessingWebServerConnections = stats.fRecentAPI.fMedianProcessingWebServerConnections;
         r.fMedianRunningAPITasks                = stats.fRecentAPI.fMedianRunningAPITasks;
         return r;
     }();
