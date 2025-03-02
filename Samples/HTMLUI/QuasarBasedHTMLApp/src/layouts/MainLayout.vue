@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-
+import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router';
 
 import EssentialLink from 'components/EssentialLink.vue';
 import ToolbarBreadcrumbs from 'components/ToolbarBreadcrumbs.vue';
-import { useConfigurationStore } from '../stores/Configuration-Store';
+import { useConfigurationStore } from 'src/stores/Configuration-Store';
 
 const route = useRoute();
 const router = useRouter();
@@ -33,12 +33,10 @@ const linksList = [
   },
 ];
 
-// const leftDrawerOpen = ref(false);
-const leftDrawerOpen = ref(configurationStore.getLeftDrawerOpen);
+const { leftDrawerOpen } = storeToRefs(configurationStore)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
-  configurationStore.setLeftDrawerOpen(leftDrawerOpen.value);
 }
 
 const defaultContextMenu = [
@@ -67,10 +65,6 @@ onMounted(() => {
   breadcrumbs.value = route.meta.breadcrumbs;
   contextMenu.value = route.meta.contextMenu ?? defaultContextMenu;
 });
-
-function phred() {
-  console.log('called phred');
-}
 </script>
 
 <template>
