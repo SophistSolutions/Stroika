@@ -123,7 +123,7 @@ namespace {
         using Options = ConnectionManager::Options;
         constexpr unsigned int kMinThreadCnt_{1u}; // one enough now that we support separate thread doing epoll/select and one read when data avail
         return Math::AtLeast (kMinThreadCnt_, options.fMaxConcurrentlyHandledConnections.value_or (
-                                                  options.fMaxConnections.value_or (Options::kDefault_MaxConnections) / 10));
+                                                  options.fMaxConnections.value_or (Options::kDefault_MaxConnections) / 5));
     }
     inline unsigned int ComputeConnectionBacklog_ (const ConnectionManager::Options& options)
     {
