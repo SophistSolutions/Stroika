@@ -158,6 +158,8 @@ namespace Stroika::Frameworks::WebServer {
             /**
              *  Statistics are available (from the statistics()) property whether this is true or false. But this
              *  controls whether or not extra statistics are collected and made available.
+             * 
+             *  Note collecting statistics costs a modest amount of memory and time.
              */
             bool fCollectStatistics{false};
 
