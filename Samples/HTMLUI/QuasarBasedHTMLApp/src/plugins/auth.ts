@@ -1,5 +1,5 @@
 import { App, ref, Ref, computed } from 'vue';
-import { Router, RouteLocationRaw } from "vue-router";
+import { Router } from "vue-router";
 import {
     AuthorizationRequest,
     AuthorizationNotifier, AuthorizationRequestHandler,
@@ -60,7 +60,7 @@ const kDebugLogging_ = false;
 const kSupportAuthJSBasedRevocation_ = false;
 
 // Generating refresh tokens works better with this, but I've noticed gmail becomes goofy after you
-// do this, so disable it for now 
+// do this, so disable it for now
 // MAYBE just revoke the auth-token, not the refresh token?
 //      --LGP 2025-02-19
 const kSupportRefreshTokenRevocation_ = false;
@@ -121,7 +121,6 @@ export interface IAuthService {
      *  Returns null if not (yet) fully logged in
      */
     user: Ref<IUserInfo | undefined>;
-
 };
 
 const kAuthPluginLocalstorageNamePrefix_ = "stroika-sample-htmlui-vue-"
@@ -134,7 +133,7 @@ const kAuthPluginLocalstorageNamePrefix_ = "stroika-sample-htmlui-vue-"
 class AuthService {
     private fPreserveVarsInPlugin_ = new LocalStorageBackend();
     private fRouter_: Router;
-    private fBackToAfterRedirectRoute_?: RouteLocationRaw;
+    private fBackToAfterRedirectRoute_?: string;
 
     private fNotifier_: AuthorizationNotifier;
     private fAuthorizationHandler_: AuthorizationRequestHandler;
@@ -345,7 +344,7 @@ class AuthService {
         }
         await this.logout();    // else we could leave some data structures with inconsistent values - partialled logged into one and partially another
 
-        this.fBackToAfterRedirectRoute_ = args?.redirectTo || this.fRouter_.currentRoute.value;
+        this.fBackToAfterRedirectRoute_ = args?.redirectTo || this.fRouter_.currentRoute.value.path;
         const useProvider = args?.useProvider || (this.availableProviders.value && this.availableProviders.value[0]);
         if (useProvider === undefined) {
             throw new Error("explicit provider required if no availableProviders");
@@ -356,7 +355,7 @@ class AuthService {
         if (kDebugLogging_) {
             console.log('In login: Setting this.fBackToAfterRedirectRoute_=', this.fBackToAfterRedirectRoute_);
         }
-        await this.preserve_('backToAfterRedirectRoute', this.fBackToAfterRedirectRoute_.path)
+        await this.preserve_('backToAfterRedirectRoute', this.fBackToAfterRedirectRoute_)
 
         const oauthConfig: IOAuthProviderConfig = await this.assureActiveProvider_();
         await this.makeAuthCodeRequest_(oauthConfig);      // even after this await, still just started process
@@ -402,7 +401,7 @@ class AuthService {
         if (tokens2Revoke && configuration && oauthConfig) {
             console.log('revoking token', tokens2Revoke.refreshToken);
             if (kSupportAuthJSBasedRevocation_) {
-                console.log('configuration=', configuration);
+                // console.log('configuration=', configuration);
                 // revoke the token(s) - really only need todo to refresh token OR the access token since doing for refresh token should automatically do both
                 const revocationHandler = new BaseTokenRequestHandler(new FetchRequestor());
                 const result = await revocationHandler.performRevokeTokenRequest(configuration, new RevokeTokenRequest({
@@ -527,7 +526,7 @@ class AuthService {
 export default {
     install: (app: App, options: AuthOptions) => {
         const authService = new AuthService(options);
-        console.log('Installing auth plugin', authService);
+        //console.log('Installing auth plugin', authService);
         app.config.globalProperties.$auth = authService;
         app.provide('auth', authService);
     },
