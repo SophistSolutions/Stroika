@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/HTTP/KeepAlive.h"
 #include "Stroika/Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
@@ -31,6 +32,7 @@ namespace Stroika::Frameworks::WebServer {
     using namespace Stroika::Foundation::IO::Network;
 
     using Characters::String;
+    using Time::TimePointSeconds;
 
     using Stroika::Foundation::IO::Network::HTTP::Headers;
 
@@ -172,16 +174,31 @@ namespace Stroika::Frameworks::WebServer {
             /**
              *  When the connection object was created
              */
-            Time::TimePointSeconds fCreatedAt;
+            TimePointSeconds fCreatedAt;
 
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
             /**
              */
-            optional<Traversal::Range<Time::TimePointSeconds>> fMostRecentMessage;
+            optional<Traversal::Range<TimePointSeconds>> fMostRecentMessage;
 
             /**
              */
             optional<thread::id> fHandlingThread;
+
+            /**
+             *  \brief the address of the client which is talking to the server
+             */
+            optional<SocketAddress> fRemotePeerAddress;
+
+            /**
+             *  \brief last request
+             */
+            optional<String> fRequestWebMethod;
+
+            /**
+             *  \brief last requested URI (always relative uri)
+             */
+            optional<URI> fRequestURI;
 #endif
 
             /**
@@ -263,15 +280,20 @@ namespace Stroika::Frameworks::WebServer {
         const optional<Containers::Set<HTTP::ContentEncoding>> fSupportedCompressionEncodings_;
         const ConnectionOrientedStreamSocket::Ptr              fSocket_;
         Streams::InputOutputStream::Ptr<byte>                  fSocketStream_;
-        const Time::TimePointSeconds                           fConnectionStartedAt_{};
+        const TimePointSeconds                                 fConnectionStartedAt_{};
         unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>                              fRemaining_;
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        // Sigh: atomic doesn't work with time_point, nor optional! - so use double and sentinel
-        static constexpr double kAtomicTimeSentinel_ = -1;
-        atomic<double>          fStartHandleMessage_{kAtomicTimeSentinel_};
-        atomic<double>          fCompletedHandleMessage_{kAtomicTimeSentinel_};
-        atomic<thread::id>      fHandlingThread_; // thread::id{} sentinel
+        struct Stats2Capture_ {
+            optional<TimePointSeconds> fMessageStart;
+            optional<TimePointSeconds> fMessageCompleted;
+            optional<SocketAddress>    fPeer;
+            optional<String>           fWebMethod;
+            optional<URI>              fRequestURI;
+            thread::id                 fHandlingThread; // thread::id{} sentinel
+        };
+        static_assert (is_default_constructible_v<Stats2Capture_>);
+        Execution::Synchronized<Stats2Capture_> fExtraStats_;
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         Streams::OutputStream::Ptr<Character> fLogConnectionState_;

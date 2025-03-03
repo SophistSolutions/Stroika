@@ -169,8 +169,14 @@ String Connection::Stats::ToString () const
             sb << ", handlingThread: " << fHandlingThread;
         }
         else {
-            sb << ", previousThread: " << fHandlingThread;
+            sb << ", thread: " << fHandlingThread;
         }
+    }
+    if (fRequestWebMethod || fRequestURI) {
+        sb << ", " << fRequestWebMethod << " " << fRequestURI;
+    }
+    if (fRemotePeerAddress) {
+        sb << ", from: " << *fRemotePeerAddress;
     }
 #endif
     sb << "}";
@@ -215,22 +221,23 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , stats{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Stats {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
         // NO - INTERNALLY SYNCRHONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-        auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without syncrhonization
+        auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without synchronization
         TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        // all this mishigas is due to atomic<optional<...>> stuff not working - sigh - apparently still not allowed in C++23 (26?)
-        DurationSeconds::rep       b1   = thisObj->fStartHandleMessage_.load ();
-        DurationSeconds::rep       e1   = thisObj->fCompletedHandleMessage_.load ();
-        thread::id                 tid1 = thisObj->fHandlingThread_.load ();
-        optional<TimePointSeconds> b    = b1 != kAtomicTimeSentinel_ ? TimePointSeconds{DurationSeconds{b1}} : optional<TimePointSeconds>{};
-        optional<TimePointSeconds> e    = e1 != kAtomicTimeSentinel_ ? TimePointSeconds{DurationSeconds{e1}} : optional<TimePointSeconds>{};
-        optional<thread::id>       tid  = tid1 == thread::id{} ? optional<thread::id>{} : tid1;
+        Stats2Capture_ statsCapturedDuringMessageProcessing = thisObj->fExtraStats_.load ();
 #endif
-        Stats stats{.fSocketID  = uniqueID,
-                    .fCreatedAt = createdAt,
+        Stats stats{
+            .fSocketID  = uniqueID,
+            .fCreatedAt = createdAt,
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-                    .fMostRecentMessage = (b or e) ? Range<TimePointSeconds>{b, e} : optional<Range<TimePointSeconds>>{},
-                    .fHandlingThread    = tid
+            .fMostRecentMessage = statsCapturedDuringMessageProcessing.fMessageStart
+                                      ? Range<TimePointSeconds>{statsCapturedDuringMessageProcessing.fMessageStart,
+                                                                statsCapturedDuringMessageProcessing.fMessageCompleted}
+                                      : optional<Range<TimePointSeconds>>{},
+            .fHandlingThread    = statsCapturedDuringMessageProcessing.fHandlingThread,
+            .fRemotePeerAddress = statsCapturedDuringMessageProcessing.fPeer,
+            .fRequestWebMethod  = statsCapturedDuringMessageProcessing.fWebMethod,
+            .fRequestURI        = statsCapturedDuringMessageProcessing.fRequestURI,
 #endif
         };
         return stats;
@@ -350,11 +357,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
 
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        fStartHandleMessage_     = Time::GetTickCount ().time_since_epoch ().count ();
-        fCompletedHandleMessage_ = kAtomicTimeSentinel_;
-        fHandlingThread_         = std::this_thread::get_id ();
         [[maybe_unused]] auto&& cleanup2 =
-            Finally ([&] () noexcept { fCompletedHandleMessage_ = Time::GetTickCount ().time_since_epoch ().count (); });
+            Finally ([&] () noexcept { fExtraStats_.rwget ().rwref ().fMessageCompleted = Time::GetTickCount (); });
+        fExtraStats_.store (Stats2Capture_{.fMessageStart   = Time::GetTickCount (),
+                                           .fPeer           = fSocket_.GetPeerAddress (),
+                                           .fWebMethod      = fMessage_->request ().httpMethod (),
+                                           .fRequestURI     = fMessage_->request ().url (),
+                                           .fHandlingThread = std::this_thread::get_id ()});
 #endif
 
         auto applyDefaultsToResponseHeaders = [&] () -> void {
