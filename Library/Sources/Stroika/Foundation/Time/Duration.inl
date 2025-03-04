@@ -16,6 +16,11 @@ namespace Stroika::Foundation::Time {
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
+        if (not is_constant_evaluated ()) {
+            if constexpr (floating_point<DURATION_REP>) {
+                Require (not isnan (d.count ())); // inf is allowed, isnan not yet constexpr as of c++20, fixed in c++23
+            }
+        }
     }
     constexpr Duration::Duration ()
         : inherited{kValueWhenEmptyRenderedAsNumber_}
@@ -84,21 +89,27 @@ namespace Stroika::Foundation::Time {
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
-        //Require (not isnan (duration)); // inf is allowed
+        if  (not is_constant_evaluated ()) {
+            Require (not isnan (durationInSeconds)); // inf is allowed, isnan not yet constexpr as of c++20, fixed in c++23
+        }
     }
     constexpr Duration::Duration (double durationInSeconds)
         : inherited{durationInSeconds}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
-        //Require (not isnan (duration)); // inf is allowed
+        if (not is_constant_evaluated ()) {
+            Require (not isnan (durationInSeconds)); // inf is allowed, isnan not yet constexpr as of c++20, fixed in c++23
+        }
     }
     constexpr Duration::Duration (long double durationInSeconds) noexcept
         : inherited{static_cast<InternalNumericFormatType_> (durationInSeconds)}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
-        //Require (not isnan (duration)); // inf is allowed
+        if (not is_constant_evaluated ()) {
+            Require (not isnan (durationInSeconds)); // inf is allowed, isnan not yet constexpr as of c++20, fixed in c++23
+        }
     }
     inline u8string Duration::AsUTF8 () const
     {

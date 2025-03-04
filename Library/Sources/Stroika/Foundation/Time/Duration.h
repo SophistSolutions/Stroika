@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note constexpr not really working (though declared) - see @todo above
          *
-         *  \note for numeric overloads, require (not isnan (src)) - but allow isinf()
+         *  \note for numeric overloads (includes chrono::duration), require (not isnan (src)) - but allow isinf()
          */
         constexpr Duration ();
         Duration (Duration&& src) noexcept;
