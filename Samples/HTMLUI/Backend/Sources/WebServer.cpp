@@ -218,8 +218,7 @@ public:
                         m.rwResponse ().writeln ("  \"tickCount\": {},"_f (Time::GetTickCount()));
                         m.rwResponse ().writeln ("  \"connections\": ["sv);
                         // show active first
-                        for (auto i : this->fConnectionMgr_.connections ().OrderBy (
-                                 [] (Connection::Stats l, Connection::Stats r) { return l.fActive > r.fActive; })) {
+                        for (auto i : this->fConnectionMgr_.connections ().OrderBy ([] (const Connection::Stats& l, const Connection::Stats& r) { return l.fActive > r.fActive; })) {
                             m.rwResponse ().writeln ("    {},"_f(i));
                         }
                         m.rwResponse ().writeln ("  ]"sv);
