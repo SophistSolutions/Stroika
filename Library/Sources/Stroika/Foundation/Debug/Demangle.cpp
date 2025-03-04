@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdlib> // to force __GLIBCXX__ define reference
+#include <mutex>
 
 #if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
@@ -44,7 +45,14 @@ Characters::String Debug::Demangle (const Characters::String& originalName)
         return Characters::String::FromNarrowSDKString (realname);
     }
 #elif qStroika_Foundation_Common_Platform_Windows
-    char resultBuf[10 * 1024];
+    // From https://learn.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-undecoratesymbolname
+    //      All DbgHelp functions, such as this one, are single threaded. Therefore,
+    //      calls from more than one thread to this function will likely result in
+    //      unexpected behavior or memory corruption. To avoid this, you must synchronize
+    //      all concurrent calls from more than one thread to this function.
+    static mutex sMutex_;
+    lock_guard   critSec{sMutex_};
+    char         resultBuf[10 * 1024];
     if (::UnDecorateSymbolName (originalName.AsNarrowSDKString (Characters::eIgnoreErrors).c_str (), resultBuf, sizeof (resultBuf), UNDNAME_COMPLETE) != 0) {
         return Characters::String::FromNarrowSDKString (resultBuf);
     }
