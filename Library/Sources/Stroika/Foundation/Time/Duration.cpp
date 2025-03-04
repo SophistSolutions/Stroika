@@ -410,6 +410,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}, p={}"_f, t, p};
 #endif
+    Require (not isnan (t));
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
     StringBuilder              result;
