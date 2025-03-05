@@ -319,7 +319,7 @@ For more details on individual release changes, see:
 
 "Getting Started", build instructions, design and other documentation:
 
-&nbsp;&nbsp;&nbsp;&nbsp; [Documentation/](Documentation/)
+&nbsp;&nbsp;&nbsp;&nbsp; [Documentation/](https://sophistsolutions.github.io/Stroika/)
 
 Looking through the samples is also a good way to start:
 
