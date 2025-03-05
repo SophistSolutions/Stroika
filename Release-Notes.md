@@ -7,6 +7,101 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+#if 0
+
+### PREPARE d17 release notes
+
+commit d8791a8bf7ede9adbf87a74fefef2d72ce970677
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 1 07:59:19 2025 -0500
+
+    start 3.0d17x
+
+commit 0f4941486ca71b4da02487aeaed8c3b44075ae6d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 1 20:54:35 2025 -0500
+
+    slightly better default count of threads in WebServer/ConnectionManager based on # maxConnections
+
+commit b129eb7bdddc056ac240aed01dc961c0391ac724
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 2 08:39:02 2025 -0500
+
+    HTMLUI sample: fixups to about page - tracking stats - lose a few that are better captured by webserver stats and show those in about page, and a few other about page cleanups, and kDefaultWSThreadPoolSize_ = clamp...
+
+commit f96c9e55ee8f153b963f6e30390c98d2aaf94080
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 2 12:16:39 2025 -0500
+
+    HTMLUI: lose use of pinia-plugin-persistedstate and instead use setup-style for Configuration-Store so can use watcher to read/write to localstorage and use storeToRefs to simplify usage
+
+commit 80a829db24d8469b23f8d2ce5aa228a3e7d54887
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 2 12:30:45 2025 -0500
+
+    cleanup html of sample htmlui
+
+commit 8b13422438dd5b34c315145eba35e0e8212dd7b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 3 08:09:05 2025 -0500
+
+    minor HTMLUI html cleanups
+
+commit bcbb1d1d3b3e38d7c712d36ea4012b72a934ddda
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 3 10:15:07 2025 -0500
+
+    cosmetic
+
+commit 448377523c672cf1adc5cce2c5257de899c8dc52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 3 10:15:31 2025 -0500
+
+    cosmetic
+
+commit 39958aff826076ebab6945c8831d217882c0886d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 3 11:04:35 2025 -0500
+
+    re-implemented qStroika_Framework_WebServer_Connection_TrackExtraStats stats collection to use Syncrhonized<> instead of atomic<> so we can captu
+    re more stuff like webmethod, uri, and peer-socket-address; and updated HTMLUI webserver sample app to sort connections output so active first (easier to read interesting parts)
+
+commit 08f272a6c72a1de01ba0ce480f1925b50573934c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 4 08:18:57 2025 -0500
+
+    cosmetic
+
+commit 6cd2bbabc923123a594fd9df91de02df766ab236
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 4 08:25:50 2025 -0500
+
+    fixed Debug::Demangle () to be threadsafe on windoze - underlying windows API documented as not threadsafe
+
+commit e091ece860e30ed0db659e428631fc5499f177a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 4 13:04:23 2025 -0500
+
+    Duration classes - attempt to enforce require not arg nan for floating point arguments
+
+commit c8c33657c9a9f1a27c080cf823f097d9c18310a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 4 13:19:55 2025 -0500
+
+    Add require for Duration code
+
+commit 3a64c211f7b7a7faaaf0a37b37aa5a5e04535f8c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 5 13:03:10 2025 -0500
+
+    include doxygen docs reference in top level README.md
+
+
+#endif
+
+
+
 ### 3.0d16 {2025-03-01} {[diff](../../compare/3.0d15...3.0d16)}
 
 #### TLDR
