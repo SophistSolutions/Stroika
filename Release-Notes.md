@@ -8,30 +8,71 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+### 3.0d17 {2025-03-08} {[diff](../../compare/3.0d16...3.0d17)}
 
-### PREPARE d17 release notes
+#### TLDR
 
-- DOCS
-  -     include doxygen docs reference in top level README.md
+- Minor improvements to webserver (stacks tracking mostly) and HTMLUI sample
 
-- Foundation
-  - Debug
-    - fixed Debug::Demangle () to be threadsafe on windoze - underlying windows API documented as not threadsafe (was causing period crashes in HearHE)
-  - Time
-    -     Duration classes -  enforce require not arg nan for floating point arguments
+#### Upgrade Notes (3.0d16 to 3.0d17)
 
-- Frameworks
-  - WebServer
-    - slightly better default count of threads in WebServer/ConnectionManager based on # maxConnections
-    - re-implemented qStroika_Framework_WebServer_Connection_TrackExtraStats stats collection to use Syncrhonized<> instead
-      of atomic<> so we can capture more stuff like webmethod, uri, and peer-socket-address; 
+- this space intentionally left blank
+
+#### Change Details
+
+- Documentation
+  - Doxygen
+    - include doxygen docs reference in top level README.md
+- Library
+  - Foundation
+    - Debug
+      - fixed Debug::Demangle () to be threadsafe on windoze - underlying windows API documented as not threadsafe (was causing period crashes in HearHE)
+    - Time
+      - Duration classes -  enforce require not arg nan for floating point arguments
+  - Frameworks
+    - WebServer
+      - slightly better default count of threads in WebServer/ConnectionManager based on # maxConnections
+      - re-implemented qStroika_Framework_WebServer_Connection_TrackExtraStats stats collection to use Syncrhonized<> instead
+        of atomic<> so we can capture more stuff like webmethod, uri, and peer-socket-address; 
 - Samples
   - HTMLUI
-    -      fixups to about page - tracking stats - lose a few that are better captured by webserver stats and show those in about page, and a few other about page cleanups, and kDefaultWSThreadPoolSize_ = clamp...
+    - fixups to about page - tracking stats 
+    - lose a few that are better captured by webserver stats and show those in about page, and a few other about page cleanups, 
+    - kDefaultWSThreadPoolSize_ = clamp...
     - lose use of pinia-plugin-persistedstate and instead use setup-style for Configuration-Store so can use watcher to read/write to localstorage and use storeToRefs to simplify usage
     minor HTMLUI html cleanups
-    - and updated HTMLUI webserver sample app to sort connections output so active first (easier to read interesting parts)
+    - updated HTMLUI webserver sample app to sort connections output so active first (easier to read interesting parts)
 
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14 }
+  - Clang++ { unix: 15, 16, 17, 18, 19; XCode: 15.2, 15.3, 16.0 }
+  - MSVC: { 17.13.2 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20241208.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
 ---
 
