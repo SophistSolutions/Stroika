@@ -27,6 +27,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
@@ -47,10 +48,10 @@ class Listener::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
-        static constexpr Execution::Activity kConstructingSSDPListener_{"constructing SSDP Listener"sv};
-        Execution::DeclareActivity           activity{&kConstructingSSDPListener_};
-        Socket::BindFlags                    bindFlags = Socket::BindFlags{};
-        bindFlags.fSO_REUSEADDR                        = true;
+        static constexpr Activity kConstructingSSDPListener_{"constructing SSDP Listener"sv};
+        DeclareActivity           activity{&kConstructingSSDPListener_};
+        Socket::BindFlags         bindFlags = Socket::BindFlags{};
+        bindFlags.fSO_REUSEADDR             = true;
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress{Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()}, bindFlags);
@@ -73,7 +74,7 @@ public:
     void Start ()
     {
         static const String kThreadName_ = "SSDP Listener"sv;
-        fThread_                         = Execution::Thread::New ([this] () { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
+        fThread_                         = Thread::New ([this] () { DoRun_ (); }, Thread::eAutoStart, kThreadName_);
     }
     void Stop ()
     {
@@ -85,7 +86,7 @@ public:
     void DoRun_ ()
     {
         // only stopped by thread abort
-        Execution::WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
+        WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (true) {
             for (const ConnectionlessSocket::Ptr& s : readyChecker.Wait ()) {
                 try {
@@ -96,8 +97,8 @@ public:
                     using namespace Streams;
                     ParsePacketAndNotifyCallbacks_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
                 }
-                catch (const Execution::Thread::AbortException&) {
-                    Execution::ReThrow ();
+                catch (const Thread::AbortException&) {
+                    ReThrow ();
                 }
                 catch (...) {
                     // ignore errors - and keep on trucking
@@ -182,7 +183,7 @@ private:
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                 fSockets_;
-    Execution::Thread::CleanupPtr                         fThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    Thread::CleanupPtr                                    fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*
@@ -208,7 +209,7 @@ Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnF
 }
 
 Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart)
-    : Listener (callOnFinds)
+    : Listener{callOnFinds}
 {
     Start ();
 }
