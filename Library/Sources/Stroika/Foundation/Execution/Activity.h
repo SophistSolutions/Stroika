@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Execution {
                 const AsStringObj_* fActivity{};
                 const StackElt_*    fPrev{};
             };
-            thread_local inline const StackElt_* sTop_;
+            thread_local inline const StackElt_* sTop_{nullptr};
         }
     }
 
