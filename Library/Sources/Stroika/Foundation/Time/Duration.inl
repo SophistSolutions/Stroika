@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Time {
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
-        if  (not is_constant_evaluated ()) {
+        if (not is_constant_evaluated ()) {
             Require (not isnan (durationInSeconds)); // inf is allowed, isnan not yet constexpr as of c++20, fixed in c++23
         }
     }
