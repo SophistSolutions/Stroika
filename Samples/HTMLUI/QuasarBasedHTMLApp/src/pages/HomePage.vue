@@ -8,16 +8,6 @@ import {
 } from 'vue';
 import moment from 'moment';
 
-import { IDevice } from '../models/device/IDevice';
-import { INetwork } from '../models/network/INetwork';
-import { PluralizeNoun } from 'src/utils/Linguistics';
-import {
-  GetDeviceIDsInNetwork,
-  GetDevicesForNetworkLink,
-  GetNetworkLink,
-  GetNetworkName,
-} from '../models/network/Utils';
-
 defineComponent({
   components: {
   },
@@ -26,11 +16,6 @@ defineComponent({
 let polling: undefined | NodeJS.Timeout;
 
 const kRefreshFrequencyInSeconds_: number = 15;
-
-// onMounted(() => {
-// });
-// onUnmounted(() => {
-// });
 
 </script>
 

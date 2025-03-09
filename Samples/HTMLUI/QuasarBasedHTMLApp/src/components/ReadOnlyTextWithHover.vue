@@ -26,6 +26,6 @@ var useTitle: Ref<string> = ref('');
 <template>
   <span>
     <span v-if="!link" :title="useTitle">{{ message }}</span>
-    <a v-if="link" :href="link" :title="useTitle">{{ message }}</a>
+    <a v-if="link" :to="link" :title="useTitle">{{ message }}</a>
   </span>
 </template>
