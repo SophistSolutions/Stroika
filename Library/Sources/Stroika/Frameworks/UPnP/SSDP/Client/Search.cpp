@@ -24,6 +24,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
@@ -39,8 +40,8 @@ class Search::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
-        static constexpr Execution::Activity kConstructingSSDPSearcher_{"constructing SSDP searcher"sv};
-        Execution::DeclareActivity           activity{&kConstructingSSDPSearcher_};
+        static constexpr Activity kConstructingSSDPSearcher_{"constructing SSDP searcher"sv};
+        DeclareActivity           activity{&kConstructingSSDPSearcher_};
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             fSockets_.Add (s);
@@ -64,8 +65,7 @@ public:
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
         }
-        fThread_ = Execution::Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); },
-                                           Execution::Thread::eAutoStart, "SSDP Searcher"sv);
+        fThread_ = Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Thread::eAutoStart, "SSDP Searcher"sv);
     }
     void Stop ()
     {
@@ -130,7 +130,7 @@ public:
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
-        Execution::WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
+        WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (1) {
             for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (retrySendAt.value_or (Time::TimePointSeconds{Time::kInfinity}))) {
                 try {
@@ -141,8 +141,8 @@ public:
                     using namespace Streams;
                     ReadPacketAndNotifyCallbacks_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
                 }
-                catch (const Execution::Thread::AbortException&) {
-                    Execution::ReThrow ();
+                catch (const Thread::AbortException&) {
+                    ReThrow ();
                 }
                 catch (...) {
                     // ignore errors - and keep on trucking
@@ -208,7 +208,7 @@ private:
     recursive_mutex                                       fCritSection_;
     vector<function<void (const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                 fSockets_;
-    Execution::Thread::CleanupPtr                         fThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    Thread::CleanupPtr                                    fThread_{Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*
