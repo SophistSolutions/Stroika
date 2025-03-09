@@ -462,7 +462,7 @@ class AuthService {
         }
         this.fTokensInfo_.value = tokensInfo
         this.setupAutoRefreshCallback_();
-        const userInfo = await fetchUserInfo({ authToken: tokensInfo.accessToken });
+        const userInfo = await fetchUserInfo({ auth: this });
         this.fUser_.value = userInfo;
         this.preserve_('userInfo', this.fUser_.value);
         return tokensInfo;

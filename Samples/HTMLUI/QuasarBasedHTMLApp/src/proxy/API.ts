@@ -1,8 +1,25 @@
 import { IAbout } from 'src/models/IAbout';
 import { gRuntimeConfiguration } from 'boot/configuration';
 import { Logger } from 'src/utils/Logger';
+import { IAuthService } from "src/plugins/auth";
 
 const kFetchOptions_: RequestInit = {};
+
+
+/*
+ *  Some patterns in API access functions.
+ *
+ *    - take arguments as single args object, so you can use optional, named parameters. This is a convenient
+ *      way to make many things optional but use named params to pick out the ones you are providing/overriding
+ * 
+ *    - optional apiServer argument - but defaults to configured one
+ *    - optional auth (plugin api) object - and if provided, auth-headers injected (if already authorized - doesn't force auth)
+ *    - export individual functions and single 'default' - so either style of import usage works out depending on client needs
+ * 
+ *    - _ in private (unuexporeted) names
+ *
+ */
+
 
 function throwIfError_(response: Response): Response {
   if (response.status >= 400 && response.status < 500) {
@@ -19,6 +36,16 @@ function throwIfError_(response: Response): Response {
   return response;
 }
 
+function buildDefaultFetchOptions_(args: { apiServer?: string, auth?: IAuthService }): RequestInit {
+  const options = { ...kFetchOptions_, }
+  if (args.auth?.authorizationHeader?.value) {
+    options.headers['Authorization'] = args.auth.authorizationHeader.value;
+  }
+  return options;
+}
+
+
+
 export interface IAppOAuthConfiguration {
   applicationID: string;
   scopes: string[];
@@ -32,10 +59,11 @@ export interface IOAuthProviderConfiguration {
   openid_configuration_uri?: string;
 }
 
-export async function getOAuthConfigurations(args?:{apiServer?: string}): Promise<{ clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[] }> {
+export async function getOAuthConfigurations(args?: { apiServer?: string }): Promise<{ clients: IAppOAuthConfiguration[], providers: IOAuthProviderConfiguration[] }> {
   const apiServer = args?.apiServer || gRuntimeConfiguration.API_ROOT;
+  const fetchOptions = buildDefaultFetchOptions_(args);
   try {
-    const response: Response = await fetch(`${apiServer}/api/auth/oauth/configurations`, kFetchOptions_);
+    const response: Response = await fetch(`${apiServer}/api/auth/oauth/configurations`, fetchOptions);
     throwIfError_(response);
     const data = (await response.json()); // could embellish validation here
     return data;
@@ -45,11 +73,12 @@ export async function getOAuthConfigurations(args?:{apiServer?: string}): Promis
   }
 }
 
-export async function fetchTokens(args:{apiServer?: string, params: object}): Promise<object> {
+export async function fetchTokens(args: { apiServer?: string, params: object }): Promise<object> {
   const apiServer = args.apiServer || gRuntimeConfiguration.API_ROOT;
+  const fetchOptions = buildDefaultFetchOptions_(args);
   try {
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/tokens`, {
-      ...kFetchOptions_,
+      ...fetchOptions,
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(args.params)
@@ -65,9 +94,10 @@ export async function fetchTokens(args:{apiServer?: string, params: object}): Pr
 
 export async function revokeTokens(args: { apiServer?: string, provider: string, refreshToken?: string, accessToken?: string }): Promise<void> {
   const apiServer = args.apiServer || gRuntimeConfiguration.API_ROOT;
+  const fetchOptions = buildDefaultFetchOptions_(args);
   try {
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/tokens/revoke`, {
-      ...kFetchOptions_,
+      ...fetchOptions,
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ provider: args.provider, refreshToken: args.refreshToken, accessToken: args.accessToken })
@@ -79,14 +109,12 @@ export async function revokeTokens(args: { apiServer?: string, provider: string,
   }
 }
 
-export async function fetchUserInfo(args:{apiServer?: string, authToken: string}): Promise<object> {
+export async function fetchUserInfo(args: { apiServer?: string, auth: IAuthService }): Promise<object> {
   const apiServer = args.apiServer || gRuntimeConfiguration.API_ROOT;
+  const fetchOptions = buildDefaultFetchOptions_(args);
   try {
     const response: Response = await fetch(`${apiServer}/api/auth/oauth/user_info`, {
-      ...kFetchOptions_,
-      headers: {
-        'Authorization': 'Bearer ' + args.authToken
-      }
+      ...fetchOptions,
     });
     throwIfError_(response);
     const data = (await response.json()); // could embellish validation here
@@ -97,12 +125,13 @@ export async function fetchUserInfo(args:{apiServer?: string, authToken: string}
   }
 }
 
-export async function fetchAboutInfo(args?:{apiServer: string}): Promise<IAbout> {
+export async function fetchAboutInfo(args?: { apiServer: string, auth?: IAuthService }): Promise<IAbout> {
   const apiServer = args?.apiServer || gRuntimeConfiguration.API_ROOT;
+  const fetchOptions = buildDefaultFetchOptions_(args);
   try {
     const response: Response = await fetch(
       `${apiServer}/api/about`,
-      kFetchOptions_
+      fetchOptions
     );
     throwIfError_(response);
     const data = (await response.json()) as IAbout; // could embellish validation here
@@ -114,5 +143,4 @@ export async function fetchAboutInfo(args?:{apiServer: string}): Promise<IAbout>
 }
 
 
-
-export default  {fetchAboutInfo, fetchUserInfo, revokeTokens, fetchTokens, getOAuthConfigurations}
+export default { fetchAboutInfo, fetchUserInfo, revokeTokens, fetchTokens, getOAuthConfigurations }
