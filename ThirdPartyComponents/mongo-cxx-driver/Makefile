@@ -41,14 +41,13 @@ PYTHON_VERSION_= $(shell python --version | awk '{print $$2}')
 CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 endif
 
+#  CMAKE_ARGS+= --target=mongoc_static
 
 
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
-MAYBED_=d
 else
 CMAKE_BUILD_TYPE_=Release
-MAYBED_=
 endif
 
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
@@ -59,7 +58,12 @@ endif
 PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}bson-static-1.0${LIB_SUFFIX}		\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc-static-1.0${LIB_SUFFIX}		\
-
+	${PER_CONFIGURATION_BUILDS_DIR_}include/bsoncxx/v_noabi/bsoncxx/json.hpp			\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libbson-1.0/bson.h							\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0								\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0/mongoc.h						\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc					\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongoc-static-1.0.pc				\
 
 all:
 ifeq (${CONFIGURATION},)
@@ -93,7 +97,7 @@ endif
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_}  > BUILD-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build .  > BUILD-OUT.txt 2>&1
 endif
@@ -101,7 +105,7 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
 else
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . > INSTALL-OUT.txt 2>&1
 endif
 
 
@@ -151,5 +155,5 @@ ifeq (${CONFIGURATION},)
 	# @rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/ThirdPartyComponents/include/{zlib,zconf}.h
 	@rm -rf CURRENT
 else
-	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_} ${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/lib/{bson*,mongo*} ${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/include/{bsoncxx,libbson-1.0,libmongoc-1.0,mongocxx} 
 endif
