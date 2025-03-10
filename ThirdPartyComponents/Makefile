@@ -20,6 +20,7 @@ AllSubDirs_= \
 	boost \
 	curl \
 	fmtlib \
+	mongo-cxx-driver \
 	GoogleTest \
 	lzma \
 	openssl \
@@ -51,6 +52,9 @@ ifeq ($(qFeatureFlag_GoogleTest), use)
 endif
 ifeq ($(qFeatureFlag_OpenSSL), use)
 	BUILD_openssl=1
+endif
+ifeq ($(qFeatureFlag_mongocxxdriver), use)
+	BUILD_mongocxxdriver=1
 endif
 ifeq ($(qFeatureFlag_sqlite), use)
 	BUILD_sqlite=1
@@ -90,6 +94,9 @@ ifeq ($(BUILD_lzma), 1)
 endif
 ifeq ($(BUILD_openssl), 1)
 	SubDirs+= openssl
+endif
+ifeq ($(BUILD_mongocxxdriver), 1)
+	SubDirs+= mongo-cxx-driver
 endif
 ifeq ($(BUILD_sqlite), 1)
 	SubDirs+= sqlite
@@ -134,6 +141,15 @@ endif
 ifeq ($(BUILD_curl), 1)
 ifeq ($(BUILD_openssl), 1)
 curl:		openssl
+endif
+endif
+
+ifeq ($(BUILD_mongocxxdriver), 1)
+ifeq ($(BUILD_openssl), 1)
+mongo-cxx-driver:		openssl
+endif
+ifeq ($(BUILD_zlib), 1)
+mongo-cxx-driver:		zlib
 endif
 endif
 

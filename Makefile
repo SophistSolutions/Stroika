@@ -463,6 +463,7 @@ DEFAULT_CONFIGURATION_ADD2ALL=
 # DEFAULT_CONFIGURATION_ADD2ALL+= --boost no --openssl no
 # DEFAULT_CONFIGURATION_ADD2ALL+= --all-available-third-party-components
 # DEFAULT_CONFIGURATION_ADD2ALL+= --no-third-party-components
+#		EG		 make DEFAULT_CONFIGURATION_ADD2ALL=--all-available-third-party-components default-configurations
 
 default-configurations:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"

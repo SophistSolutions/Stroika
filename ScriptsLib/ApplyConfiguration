@@ -175,6 +175,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_GoogleTest = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_GoogleTest");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ZLib");
 	$FEATUREFLAG_sqlite = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_sqlite");
+	$FEATUREFLAG_mongocxxdriver = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_mongocxxdriver");
 	$FEATUREFLAG_boost = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_boost");
 	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
 	$FEATUREFLAG_fmtlib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_fmtlib");
@@ -316,6 +317,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL_ExtraArgs");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_sqlite");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_mongocxxdriver");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_WinHTTP");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_WIX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_Xerces");

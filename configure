@@ -171,6 +171,7 @@ my $FEATUREFLAG_Xerces = undef;
 my $FEATUREFLAG_libxml2 = undef;
 my $FEATUREFLAG_GoogleTest = undef;
 my $FEATUREFLAG_ZLib = undef;
+my $FEATUREFLAG_mongocxxdriver = undef;
 my $FEATUREFLAG_sqlite = undef;
 my $FEATUREFLAG_LZMA = undef;
 my $FEATUREFLAG_fmtlib = undef;
@@ -232,11 +233,16 @@ sub	DoSetThirdPartyComponents_
 {
 	my $x = shift(@_);
 	if ($x eq "all-available") {
-		## Basically the same as fill-in-defaults, except for xerces is included now
+		## Basically the same as fill-in-defaults, except for those that default off (maybe more soon)
+		## and except fmtlib which is basically a pollyfill
 		my $xercesAlreadySet = defined($FEATUREFLAG_Xerces);
+		my $mongoAlreadySet = defined($FEATUREFLAG_mongocxxdriver);
 		DoSetThirdPartyComponents_('fill-in-defaults');
 		if (!$xercesAlreadySet) {
 			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!$mongoAlreadySet) {
+			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 	}
 	elsif ($x eq "default") {
@@ -249,6 +255,7 @@ sub	DoSetThirdPartyComponents_
 		$FEATUREFLAG_fmtlib = undef;
 		$FEATUREFLAG_OpenSSL = undef;
 		$FEATUREFLAG_sqlite = undef;
+		$FEATUREFLAG_mongocxxdriver = undef;
 		$FEATUREFLAG_WinHTTP = undef;
 		$FEATUREFLAG_ZLib = undef;
 		$FEATUREFLAG_GoogleTest = undef;
@@ -306,6 +313,10 @@ sub	DoSetThirdPartyComponents_
 		if (!defined $FEATUREFLAG_sqlite) {
 			$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 		}
+		if (!defined $FEATUREFLAG_mongocxxdriver) {
+			# Defaults off - probably start defaulting more stuff off
+			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
+		}
 		if (!defined $FEATUREFLAG_WinHTTP) {
 			if ("$^O" eq "cygwin" or "$^O" eq "msys") {
 				$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
@@ -348,6 +359,9 @@ sub	DoSetThirdPartyComponents_
 		}
 		if (!defined $FEATUREFLAG_sqlite) {
 			$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_mongocxxdriver) {
+			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
 		}
 		if (!defined $FEATUREFLAG_WinHTTP) {
 			$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
@@ -410,7 +424,7 @@ sub	DoHelp_
 		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
 		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
 		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
-		print("	    --all-available-third-party-components          /* equivilent to --Xerces (etc) use - for all that are available on this platform   */\n");
+		print("	    --all-available-third-party-components          /* equivilent to --Xerces (etc) use - for all that are available on this platform (except polyfill components like fmtlib) */\n");
 		print("	    --default-third-party-components                /* reset third party settings to their default value (maybe less than all-available-third-party-components) */\n");
 		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no ...  */\n");
 		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
@@ -641,6 +655,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_mongocxxdriver eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
@@ -674,6 +689,7 @@ sub     FillDefaultLibsPathIfNeeded_
 			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_mongocxxdriver eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
@@ -781,6 +797,10 @@ sub     FillDefaultLibDependencies_
 		}
 		if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
 			PortablyAddLibToLibDependencies_("sqlite");
+		}
+		if ($FEATUREFLAG_mongocxxdriver ne $LIBFEATUREFLAG_No) {
+			PortablyAddLibToLibDependencies_("bson-1.0");
+			PortablyAddLibToLibDependencies_("mongoc-static-1.0");
 		}
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
 			if ($BuildPlatform =~ /^VisualStudio.Net/) {
@@ -1780,6 +1800,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$FEATUREFLAG_GoogleTest = $var;
 		}
+		elsif ((lc ($var) eq "-mongocxxdriver") or (lc ($var) eq "--mongocxxdriver")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_mongocxxdriver = $var;
+		}
 		elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
 			$i++;
 			$var = $args[$i];
@@ -2412,6 +2437,7 @@ sub GetDefaultCZZFLAGS_flags_
 			push @flags, $dashFlag . "qStroika_HasComponent_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qStroika_HasComponent_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qStroika_HasComponent_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_mongocxxdriver=" . ZERO_OR_1_ (($FEATUREFLAG_mongocxxdriver eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_mongocxxdriver eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qStroika_HasComponent_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
 			push @flags, $dashFlag . "qStroika_HasComponent_xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qStroika_HasComponent_libxml2=" . ZERO_OR_1_ (($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseSystem));
@@ -2980,6 +3006,7 @@ sub	WriteConfigFile_
 		}
 	}
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
+	print (OUT "    <qFeatureFlag_mongocxxdriver>$FEATUREFLAG_mongocxxdriver</qFeatureFlag_mongocxxdriver>\n");
 	print (OUT "    <qFeatureFlag_StrawberryPerl>$FEATUREFLAG_StrawberryPerl</qFeatureFlag_StrawberryPerl>\n");
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
 	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");

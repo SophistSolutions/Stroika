@@ -175,6 +175,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_sqlite'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_mongocxxdriver>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_mongocxxdriver'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_LZMA>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_LZMA'} = $pps;
