@@ -51,10 +51,14 @@ CMAKE_BUILD_TYPE_=Release
 MAYBED_=
 endif
 
+ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+LIBPREFIX_=lib
+endif
+
 
 PRODUCED_OUTPUT_ARTIFACTS_=	\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/bson-static-1.0${LIB_SUFFIX}		\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/mongoc-static-1.0${LIB_SUFFIX}		\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}bson-static-1.0${LIB_SUFFIX}		\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc-static-1.0${LIB_SUFFIX}		\
 
 
 all:
@@ -121,7 +125,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Checking Prerequisite tools ... "
-	@type python > /dev/null 2>&1 || ($(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool python && exit 1)
+	@type python3 > /dev/null 2>&1 || ($(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool python3 && exit 1)
 	@$(ECHO) "done";
 
 
