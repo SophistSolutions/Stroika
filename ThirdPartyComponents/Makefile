@@ -20,9 +20,9 @@ AllSubDirs_= \
 	boost \
 	curl \
 	fmtlib \
-	mongo-cxx-driver \
 	GoogleTest \
 	lzma \
+	mongo-cxx-driver \
 	openssl \
 	sqlite \
 	StrawberryPerl \
@@ -92,11 +92,11 @@ endif
 ifeq ($(BUILD_lzma), 1)
 	SubDirs+= lzma
 endif
-ifeq ($(BUILD_openssl), 1)
-	SubDirs+= openssl
-endif
 ifeq ($(BUILD_mongocxxdriver), 1)
 	SubDirs+= mongo-cxx-driver
+endif
+ifeq ($(BUILD_openssl), 1)
+	SubDirs+= openssl
 endif
 ifeq ($(BUILD_sqlite), 1)
 	SubDirs+= sqlite

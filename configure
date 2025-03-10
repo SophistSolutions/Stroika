@@ -160,23 +160,23 @@ my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to 
 
 my $BuildByDefault = "always";	# for now default to always...
 
-my $FEATUREFLAG_StrawberryPerl = undef;
-my $FEATUREFLAG_LIBCURL = undef;
 my $FEATUREFLAG_boost = undef;
+my $FEATUREFLAG_LIBCURL = undef;
+my $FEATUREFLAG_fmtlib = undef;
 my $FEATUREFLAG_OpenSSL = undef;
 my $FEATUREFLAG_OpenSSLExtraArgs = "";
-my $FEATUREFLAG_WinHTTP = undef;
 my $FEATUREFLAG_ATLMFC = undef;
 my $FEATUREFLAG_Xerces = undef;
-my $FEATUREFLAG_libxml2 = undef;
 my $FEATUREFLAG_GoogleTest = undef;
-my $FEATUREFLAG_ZLib = undef;
+my $FEATUREFLAG_LZMA = undef;
 my $FEATUREFLAG_mongocxxdriver = undef;
 my $FEATUREFLAG_sqlite = undef;
-my $FEATUREFLAG_LZMA = undef;
-my $FEATUREFLAG_fmtlib = undef;
+my $FEATUREFLAG_StrawberryPerl = undef;
 my $FEATUREFLAG_librt = undef;
+my $FEATUREFLAG_WinHTTP = undef;
 my $FEATUREFLAG_WIX = undef;
+my $FEATUREFLAG_libxml2 = undef;
+my $FEATUREFLAG_ZLib = undef;
 my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
 my $qCompiler_ValgrindLTO_Buggy = undef;
@@ -411,19 +411,19 @@ sub	DoHelp_
 		print("	    --MACOSX_DEPLOYMENT_TARGET { #|default|none }   /* set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific) */\n");
 		print("	    --cppstd-version {FLAG}                         /* Sets can be c++20, c++2a, c++2b, c++23 */\n");
 		print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
-		print("	    --StrawberryPerl {use|no}                       /* Enables/disables use of StrawberryPerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
-		print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
+		print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
 		print("	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */\n");
+		print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
 		print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
 		print("	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
+		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
+		print("	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */\n");
+		print("	    --StrawberryPerl {use|no}                       /* Enables/disables use of StrawberryPerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
+		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
 		print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
-		print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
 		print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
 		print("	    --libxml2 {build-only|use|use-system|no}        /* Enables/disables use of libxml2 for this configuration [default use] */\n");
-		print("	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */\n");
 		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
-		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
-		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
 		print("	    --all-available-third-party-components          /* equivilent to --Xerces (etc) use - for all that are available on this platform (except polyfill components like fmtlib) */\n");
 		print("	    --default-third-party-components                /* reset third party settings to their default value (maybe less than all-available-third-party-components) */\n");
 		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no ...  */\n");
@@ -2996,6 +2996,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_fmtlib>$FEATUREFLAG_fmtlib</qFeatureFlag_fmtlib>\n");
 	print (OUT "    <qFeatureFlag_GoogleTest>$FEATUREFLAG_GoogleTest</qFeatureFlag_GoogleTest>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
+	print (OUT "    <qFeatureFlag_mongocxxdriver>$FEATUREFLAG_mongocxxdriver</qFeatureFlag_mongocxxdriver>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
 		if ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) {
@@ -3006,7 +3007,6 @@ sub	WriteConfigFile_
 		}
 	}
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
-	print (OUT "    <qFeatureFlag_mongocxxdriver>$FEATUREFLAG_mongocxxdriver</qFeatureFlag_mongocxxdriver>\n");
 	print (OUT "    <qFeatureFlag_StrawberryPerl>$FEATUREFLAG_StrawberryPerl</qFeatureFlag_StrawberryPerl>\n");
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
 	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");

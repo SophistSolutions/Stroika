@@ -307,17 +307,17 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_HasNoMisleadingIndentation_Flag");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_ValgrindLTO_Buggy");
 
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_StrawberryPerl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ATLMFC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_boost");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_fmtlib");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_GoogleTest");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LibCurl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LZMA");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_fmtlib");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_mongocxxdriver");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL_ExtraArgs");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_sqlite");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_mongocxxdriver");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_StrawberryPerl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_WinHTTP");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_WIX");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_Xerces");
