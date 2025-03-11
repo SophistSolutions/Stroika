@@ -107,9 +107,12 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . > INSTALL-OUT.txt 2>&1
 endif
-# ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-# 	sed -i 's/^prefix=.*$/prefix=\${pcfiledir}\/..\/../g' ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc
-# endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
+	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
+	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libbson-static-1.0.pc"
+	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libmongoc-static-1.0.pc"
+endif
 
 
 ${ZIPPED_SOURCES_FILE_}:
