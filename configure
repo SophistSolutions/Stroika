@@ -237,6 +237,13 @@ sub	DoSetThirdPartyComponents_
 		## and except fmtlib which is basically a pollyfill
 		my $xercesAlreadySet = defined($FEATUREFLAG_Xerces);
 		my $mongoAlreadySet = defined($FEATUREFLAG_mongocxxdriver);
+
+		## TMPHACK - cuz we require python to build...
+		`python3 > /dev/null 2>/dev/null < /dev/null`;
+		if (!($? eq 0)) {
+			$mongoAlreadySet = true;
+		}
+
 		DoSetThirdPartyComponents_('fill-in-defaults');
 		if (!$xercesAlreadySet) {
 			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
