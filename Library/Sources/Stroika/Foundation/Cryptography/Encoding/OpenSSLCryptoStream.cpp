@@ -30,19 +30,6 @@ using Memory::BLOB;
 
 // @todo examine/test https://github.com/saju/misc/blob/master/misc/openssl_aes.c
 
-#if qStroika_HasComponent_OpenSSL && defined(_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if OPENSSL_VERSION_NUMBER < 0x1010000fL
-#pragma comment(lib, "libeay32.lib")
-#pragma comment(lib, "ssleay32.lib")
-#else
-#pragma comment(lib, "libcrypto.lib")
-#pragma comment(lib, "libssl.lib")
-#pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "crypt32.lib")
-#endif
-#endif
-
 //// VERY ROUGH DRAFT - NOT VERY CLOSE TO CORRECT FOR ALL ALGORITHSM
 //// SEE http://www.openssl.org/docs/crypto/EVP_EncryptInit.html
 /// SEE https://wiki.openssl.org/index.php/EVP_Symmetric_Encryption_and_Decryption

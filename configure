@@ -766,12 +766,7 @@ sub     FillDefaultLibDependencies_
 		#		which produces
 		#			-lssl -ldl -lcrypto -ldl
 		if ($FEATUREFLAG_OpenSSL ne $LIBFEATUREFLAG_No) {
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				#???dont thnik needed cuz of pragma comment link...
-			}
-			else {
-				push (@packageCfgNames, "openssl");
-			}
+			push (@packageCfgNames, "openssl");
 		}
 
 
@@ -792,12 +787,9 @@ sub     FillDefaultLibDependencies_
 		if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
 			PortablyAddLibToLibDependencies_("sqlite");
 		}
-		# if ($FEATUREFLAG_mongocxxdriver ne $LIBFEATUREFLAG_No) {
-		# 	PortablyAddLibToLibDependencies_("bson-static-1.0");
-		# 	PortablyAddLibToLibDependencies_("mongoc-static-1.0");
-		# }
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
 			if ($BuildPlatform =~ /^VisualStudio.Net/) {
+				# Static libs not referenced in zlib.pc (on windows at least) --LGP 2025-03-11
 				if ($gAssertionsEnabled) {
 					PortablyAddLibToLibDependencies_("zlibstaticd");
 				}
@@ -810,13 +802,7 @@ sub     FillDefaultLibDependencies_
 			}
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
-			# if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			# 	PortablyAddLibToLibDependencies_("zlibstatic");
-			# }
-			# else {
-				### @todo lets see if thsi works on windows
-				push (@packageCfgNames, "gtest");
-			# }
+			push (@packageCfgNames, "gtest");
 		}
 	}
 
