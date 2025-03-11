@@ -364,17 +364,11 @@ sub WriteStroikaConfigMakeHeader
 	if (not (trim($PkgConfigNames) eq "")) {
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
 			print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --msvc-syntax --static --libs $PkgConfigNames`\n");
-
-
-
 		}
 		else {
 			print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs $PkgConfigNames`\n");
-				# print (OUT "CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config   --cflags-only-other $PkgConfigNames`\n");
 		}
 
-		# print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\${PREFIX_}lib/pkgconfig pkg-config $extraPkgConfigArgs --static --libs $PkgConfigNames`\n");
-		# print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\${PREFIX1_}lib/pkgconfig pkg-config --define-variable=prefix=\${PREFIX2_} --static --libs $PkgConfigNames`\n");
 		# Do likewise --cflags-only-I for CPPFLAGS???
 		# (pkg-config doesn't distinguish cppflags/cflags?)
 		# so maybe here should just append CFLAGS?
