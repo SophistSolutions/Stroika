@@ -99,10 +99,6 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaRoot}ScriptsLib/SubstituteBackVariables "GoogleTest ${GOOGLETEST_VERSION_} - Patching ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/gtest.pc ..."`
-	@sed -i 's/Libs: -L$${libdir} -lgtest/Libs: -LIBPATH:"$${libdir}" gtest.lib /g' ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/gtest.pc
-endif
 
 
 ${ZIPPED_SOURCES_FILE_}:

@@ -779,21 +779,11 @@ sub     FillDefaultLibDependencies_
 		#		which produces
 		#			-L/mnt/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib -lcurl -lssl -lcrypto -lssl -lcrypto -ldl -lpthread
 		if ($FEATUREFLAG_LIBCURL ne $LIBFEATUREFLAG_No) {
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				#???dont thnik needed cuz of pragma comment link...
-			}
-			else {
-				push (@packageCfgNames, "libcurl");
-			}
+			push (@packageCfgNames, "libcurl");
 		}
 
 		if ($FEATUREFLAG_fmtlib ne $LIBFEATUREFLAG_No) {
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				#???dont thnik needed cuz of pragma comment link...
-			}
-			else {
-				push (@packageCfgNames, "fmt");
-			}
+			push (@packageCfgNames, "fmt");
 		}
 
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
@@ -817,7 +807,6 @@ sub     FillDefaultLibDependencies_
 			}
 			else {
 				push (@packageCfgNames, "zlib");
-				#PortablyAddLibToLibDependencies_("z");
 			}
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
@@ -827,7 +816,6 @@ sub     FillDefaultLibDependencies_
 			# else {
 				### @todo lets see if thsi works on windows
 				push (@packageCfgNames, "gtest");
-				#PortablyAddLibToLibDependencies_("z");
 			# }
 		}
 	}

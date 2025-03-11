@@ -107,6 +107,9 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . > INSTALL-OUT.txt 2>&1
 endif
+# ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+# 	sed -i 's/^prefix=.*$/prefix=\${pcfiledir}\/..\/../g' ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc
+# endif
 
 
 ${ZIPPED_SOURCES_FILE_}:
