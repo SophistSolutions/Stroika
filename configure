@@ -2798,7 +2798,7 @@ sub PostProcessOptions_ ()
 	}
 	foreach (@INCLUDES_PATH) {
 		if ($isVisualStudio) {
-			my $wpath = trim (`cygpath --mixed \"$_\"`);		# c:/foo as opposed to c:\foo
+			my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo
 			push @CPPFLAGS, "-I\"$wpath\"";
 		}
 		else {
