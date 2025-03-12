@@ -78,6 +78,7 @@ my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $LinkerArgs_ExtraPrefix = "";
 my $LinkerArgs_ExtraSuffix = "";
+my $CPPFLAGS_NOTINCLUDES = "";
 my $CPPFLAGS = "";
 my $CXXFLAGS = "";
 
@@ -160,6 +161,7 @@ sub	ReadConfiguration_
 	$AR = GetConfigurationParameter($activeConfiguration, "AR");
 	$LIBTOOL = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
+	$CPPFLAGS_NOTINCLUDES = GetConfigurationParameter($activeConfiguration, "CPPFLAGS_NOTINCLUDES");
 	$CPPFLAGS = GetConfigurationParameter($activeConfiguration, "CPPFLAGS");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "CXXFLAGS");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
@@ -181,6 +183,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_fmtlib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_fmtlib");
 	$gAssertionsEnabled = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "AssertionsEnabled"));
 	$INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
+	$VSVARS_PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "VSVARS_PLATFORM_INCLUDES_PATH");
 	$LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibPath");
 	$LinkerArgs_LibDependencies = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibDependencies");
 
@@ -283,9 +286,12 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkerArgs_LibPath");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkTime_CopyFilesToEXEDir");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("INCLUDES_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_PLATFORM_INCLUDES_PATH");
+
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS_NOTINCLUDES");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXXFLAGS");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
 
 	print (OUT "\n");
 

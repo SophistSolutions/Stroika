@@ -239,6 +239,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'STRIP'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<CPPFLAGS_NOTINCLUDES>");
+		if (defined $pps) {
+			$configuration {'CPPFLAGS_NOTINCLUDES'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CPPFLAGS>");
 		if (defined $pps) {
 			$configuration {'CPPFLAGS'} = $pps;
@@ -254,6 +258,10 @@ sub	ReadConfigFile_ {
 		my $pps = ReadValue_($line, "<EXTRA_COMPILER_ARGS>");
 		if (defined $pps) {
 			$configuration {'EXTRA_COMPILER_ARGS'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<VSVARS_PLATFORM_INCLUDES_PATH>");
+		if (defined $pps) {
+			$configuration {'VSVARS_PLATFORM_INCLUDES_PATH'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<INCLUDES_PATH>");
 		if (defined $pps) {

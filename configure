@@ -87,6 +87,7 @@ my @useExtraCDefines;
 my @useExtraMakeDefines;
 my @packageCfgNames;
 
+my @CPPFLAGS_B4Includes = qw ();		# anything called --append CPPFLAGS here! - not including STK_INCLUDES
 my @CPPFLAGS = qw ();
 my @CPPFLAGS2Remove = qw ();
 my $CPPFLAGS_Overridden = false;
@@ -205,6 +206,7 @@ my $LinkerArgs_ExtraSuffix = "";
 my $RunPrefix = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;		## Looks for BOTH compiler and assocaited stdlib if std=libc++
+my @PLATFORM_INCLUDES_PATH = qw();
 my @INCLUDES_PATH = qw();
 my $INCLUDES_PATH_SET = false;
 my @INCLUDES_PATH_ADD  = qw();
@@ -671,9 +673,14 @@ sub     FillDefaultIncludesPathIfNeeded_
 		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
 		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
 		@INCLUDES_PATH = qw ();
+
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			@PLATFORM_INCLUDES_PATH = qw ();
 			my $x = GetMSVCVarName_ ("INCLUDE");
 			for my $i (split /;/, $x) {
+				push @PLATFORM_INCLUDES_PATH, $i;
+			}
+			for my $i (@PLATFORM_INCLUDES_PATH) {
 				push @INCLUDES_PATH, $i;
 			}
 		}
@@ -757,8 +764,8 @@ sub     FillDefaultLibDependencies_
 			else {
 				PortablyAddLibToLibDependencies_("xerces-c");
 			}
-			push @CPPFLAGS, '-DXML_LIBRARY=1';				# cannot use pkg-config for this because then wouldn't be seen in .vscode etc
-			push @CPPFLAGS, '-DXERCES_STATIC_LIBRARY=1';	# ""
+			push @CPPFLAGS_B4Includes, '-DXML_LIBRARY=1';				# cannot use pkg-config for this because then wouldn't be seen in .vscode etc
+			push @CPPFLAGS_B4Includes, '-DXERCES_STATIC_LIBRARY=1';	# ""
  		}
 
 		if ($FEATUREFLAG_libxml2 ne $LIBFEATUREFLAG_No) {
@@ -1343,8 +1350,8 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
 	if (IsMSVCCompiler_($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) >= 192930037 && IsTargettingSanitizer_ ('address')) {
 		## Workaround issue which started in 17.6 compiler
-		push @CPPFLAGS, '-D_DISABLE_VECTOR_ANNOTATION';
-		push @CPPFLAGS, '-D_DISABLE_STRING_ANNOTATION';
+		push @CPPFLAGS_B4Includes, '-D_DISABLE_VECTOR_ANNOTATION';
+		push @CPPFLAGS_B4Includes, '-D_DISABLE_STRING_ANNOTATION';
 	}
 
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (GetGCCVersion_ ($COMPILER_DRIVER) >= 11.0)) {
@@ -1894,7 +1901,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-CPPFLAGS")) {
 			$i++;
 			$var = $args[$i];
-			push @CPPFLAGS, $var;
+			push @CPPFLAGS_B4Includes, $var;
 		}
 		elsif ((lc ($var) eq "-remove-CPPFLAGS") or (lc ($var) eq "--remove-CPPFLAGS")) {
 			$i++;
@@ -1905,7 +1912,7 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			for my $i (split / /, $var) {
-				push @CPPFLAGS, "$i";
+				push @CPPFLAGS_B4Includes, "$i";
 			}
 			$CPPFLAGS_Overridden = true;
 		}
@@ -1948,7 +1955,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-cppflags")) {
 			$i++;
 			$var = $args[$i];
-			push @CPPFLAGS, $var;
+			push @CPPFLAGS_B4Includes, $var;
 		}
 		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
 			$i++;
@@ -2296,17 +2303,6 @@ sub GetDefaultCZZFLAGS_flags_
 		}
 	}
 
-	if ($doCFLAGS eq 0) {
-		foreach (@INCLUDES_PATH) {
-			if ($isVisualStudio) {
-				my $wpath = trim (`cygpath --mixed \"$_\"`);		# c:/foo as opposed to c:\foo
-				push @flags, "-I\"$wpath\"";
-			}
-			else {
-				push @flags, "-I$_";
-			}
-		}
-	}
 	if ($doCFLAGS eq 2) {
 		if (not ($CXXWARNING_FLAGS eq "")) {
 			### @todo - need separate flags for C and CXX
@@ -2782,9 +2778,9 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($CPPFLAGS_Overridden eq false) {
-		@GetDefaultCZZFLAGS_flags_flags = @CPPFLAGS;
+		@GetDefaultCZZFLAGS_flags_flags = @CPPFLAGS_B4Includes;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CPPFLAGS2Remove;
-		@CPPFLAGS = GetDefaultCZZFLAGS_flags_ (0);
+		@CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0);
 	}
 	if ($CFLAGS_Overridden eq false) {
 		@GetDefaultCZZFLAGS_flags_flags = @CFLAGS;
@@ -2795,6 +2791,19 @@ sub PostProcessOptions_ ()
 		@GetDefaultCZZFLAGS_flags_flags = @CXXFLAGS;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CXXFLAGS2Remove;
 		@CXXFLAGS = GetDefaultCZZFLAGS_flags_ (2);
+	}
+
+	for my $v (@CPPFLAGS_B4Includes) {
+		push @CPPFLAGS, $v;
+	}
+	foreach (@INCLUDES_PATH) {
+		if ($isVisualStudio) {
+			my $wpath = trim (`cygpath --mixed \"$_\"`);		# c:/foo as opposed to c:\foo
+			push @CPPFLAGS, "-I\"$wpath\"";
+		}
+		else {
+			push @CPPFLAGS, "-I$_";
+		}
 	}
 
 	# Append these last so they can be used to override earlier options
@@ -2886,6 +2895,10 @@ sub	WriteConfigFile_
 		for my $i (0 .. $#INCLUDES_PATH)
 		{
 			$INCLUDES_PATH[$i] = trim (`cygpath --mixed "$INCLUDES_PATH[$i]"`);
+		}
+		for my $i (0 .. $#PLATFORM_INCLUDES_PATH)
+		{
+			$PLATFORM_INCLUDES_PATH[$i] = trim (`cygpath --mixed "$PLATFORM_INCLUDES_PATH[$i]"`);
 		}
 		for my $i (0 .. $#LinkerArgs_LibPath)
 		{
@@ -3052,11 +3065,28 @@ sub	WriteConfigFile_
 	if (defined $TOOLS_PATH_ADDITIONS) {
 		print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	}
+	if ($#PLATFORM_INCLUDES_PATH != 0) {
+		my $platformIncludesPathStr = join ($PATH_SEPERATOR, @PLATFORM_INCLUDES_PATH);
+		print (OUT "    <VSVARS_PLATFORM_INCLUDES_PATH>$platformIncludesPathStr</VSVARS_PLATFORM_INCLUDES_PATH>\n");
+	}
 
 	print (OUT "\n    <!--Compiling-->\n");
 	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
 	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
+
 	my $firstTime = true;
+	print (OUT "    <CPPFLAGS_NOTINCLUDES>");
+		foreach my $var (@CPPFLAGS_B4Includes) {
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</CPPFLAGS_NOTINCLUDES>\n");
+
 	print (OUT "    <CPPFLAGS>");
 		foreach my $var (@CPPFLAGS) {
 			if ($firstTime) {
