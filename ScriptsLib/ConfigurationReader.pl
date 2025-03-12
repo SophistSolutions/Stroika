@@ -243,10 +243,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CPPFLAGS_NOTINCLUDES'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CPPFLAGS>");
-		if (defined $pps) {
-			$configuration {'CPPFLAGS'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<CFLAGS>");
 		if (defined $pps) {
 			$configuration {'CFLAGS'} = $pps;

@@ -81,6 +81,7 @@ my $LinkerArgs_ExtraSuffix = "";
 my $CPPFLAGS_NOTINCLUDES = "";
 my $CPPFLAGS = "";
 my $CXXFLAGS = "";
+my @INCLUDES_PATH = qw();
 
 
 #quite unclear why this is needed - or even if it is - but it appears to be that
@@ -162,7 +163,6 @@ sub	ReadConfiguration_
 	$LIBTOOL = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
 	$CPPFLAGS_NOTINCLUDES = GetConfigurationParameter($activeConfiguration, "CPPFLAGS_NOTINCLUDES");
-	$CPPFLAGS = GetConfigurationParameter($activeConfiguration, "CPPFLAGS");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "CXXFLAGS");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
 	$LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "LinkerArgs_ExtraPrefix");
@@ -192,13 +192,34 @@ sub	ReadConfiguration_
 
 	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "STATIC_LINK_GCCRUNTIME"));
 
-	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
-		push (@useExtraMakeDefines, $mdef);
-	}
-
 	$PkgConfigNames = GetConfigurationParameter($activeConfiguration, "PkgConfigNames");
 
 	#print "BuildPlatform = $BuildPlatform\n";
+
+	## PostProcess some read values
+	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
+		push (@useExtraMakeDefines, $mdef);
+	}
+	{
+		$CPPFLAGS = $CPPFLAGS_NOTINCLUDES;
+		foreach (split /$PATH_SEPERATOR/, $INCLUDES_PATH) {
+			if (not ($CPPFLAGS eq '')) {
+				$CPPFLAGS .= ' ';
+			}
+			if ($BuildPlatform =~ /^VisualStudio.Net/) {
+				##
+				## From https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170
+				## 		CL accepts filenames separated either by backslashes (\) or forward slashes (/). 
+				##		Filenames that contain spaces must be surrounded by double quote characters
+				##
+				my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo, and wrap in double-quotes cuz often with spaces (and cl doesnt like single quotes)
+				$CPPFLAGS .= "-I\"$wpath\"";
+			}
+			else {
+				$CPPFLAGS .= "-I$_";
+			}
+		}
+	}
 }
 
 
@@ -289,7 +310,12 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_PLATFORM_INCLUDES_PATH");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS_NOTINCLUDES");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
+	###WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
+	{
+		print (OUT "#COMBINATION of CPPFLAGS_NOTINCLUDES and processed INCLUDES_PATH\n");
+		print (OUT "CPPFLAGS := $CPPFLAGS\n");
+		print (OUT "\n");
+	}
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXXFLAGS");
 

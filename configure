@@ -88,7 +88,7 @@ my @useExtraMakeDefines;
 my @packageCfgNames;
 
 my @CPPFLAGS_B4Includes = qw ();		# anything called --append CPPFLAGS here! - not including STK_INCLUDES
-my @CPPFLAGS = qw ();
+# my @CPPFLAGS = qw ();
 my @CPPFLAGS2Remove = qw ();
 my $CPPFLAGS_Overridden = false;
 my @CFLAGS = qw ();
@@ -2794,19 +2794,6 @@ sub PostProcessOptions_ ()
 		@CXXFLAGS = GetDefaultCZZFLAGS_flags_ (2);
 	}
 
-	for my $v (@CPPFLAGS_B4Includes) {
-		push @CPPFLAGS, $v;
-	}
-	foreach (@INCLUDES_PATH) {
-		if ($isVisualStudio) {
-			my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo
-			push @CPPFLAGS, "-I\"$wpath\"";
-		}
-		else {
-			push @CPPFLAGS, "-I$_";
-		}
-	}
-
 	# Append these last so they can be used to override earlier options
 	# 
 	for my $r (@CXXFLAGS2Append) {
@@ -3087,18 +3074,6 @@ sub	WriteConfigFile_
 			print (OUT "$var");
 		}
 	print (OUT "</CPPFLAGS_NOTINCLUDES>\n");
-
-	print (OUT "    <CPPFLAGS>");
-		foreach my $var (@CPPFLAGS) {
-			if ($firstTime) {
-				$firstTime = false;
-			}
-			else {
-				print (OUT " ");
-			}
-			print (OUT "$var");
-		}
-	print (OUT "</CPPFLAGS>\n");
 
 	$firstTime = true;
 	print (OUT "    <CFLAGS>");
