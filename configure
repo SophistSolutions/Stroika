@@ -322,8 +322,14 @@ sub	DoSetThirdPartyComponents_
 			$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 		if (!defined $FEATUREFLAG_mongocxxdriver) {
-			# Defaults off - probably start defaulting more stuff off
-			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
+			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
+			`python > /dev/null 2>/dev/null < /dev/null`;
+			if ($? eq 0) {
+				$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
+			}
+			else {
+				$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
+			}
 		}
 		if (!defined $FEATUREFLAG_WinHTTP) {
 			if ("$^O" eq "cygwin" or "$^O" eq "msys") {
