@@ -240,17 +240,16 @@ sub	DoSetThirdPartyComponents_
 		my $xercesAlreadySet = defined($FEATUREFLAG_Xerces);
 		my $mongoAlreadySet = defined($FEATUREFLAG_mongocxxdriver);
 
-		## TMPHACK - cuz we require python to build...
-		`python3 > /dev/null 2>/dev/null < /dev/null`;
-		if (!($? eq 0)) {
-			$mongoAlreadySet = true;
-		}
-
 		DoSetThirdPartyComponents_('fill-in-defaults');
 		if (!$xercesAlreadySet) {
 			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 		if (!$mongoAlreadySet) {
+			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
+			`python > /dev/null 2>/dev/null < /dev/null`;
+			if (!($? eq 0)) {
+				$mongoAlreadySet = true;
+			}
 			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 	}
