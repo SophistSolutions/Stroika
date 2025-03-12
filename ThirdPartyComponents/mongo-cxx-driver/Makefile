@@ -37,7 +37,7 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 ## Crazy but mongo build script depends on python, needs to know version, and provides very long elaborate script to find the
 ## version, but it doesn't work --LGP 2025-03-10
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-PYTHON_VERSION_= $(shell python3 --version | awk '{print $$2}')
+PYTHON_VERSION_= $(shell python --version | awk '{print $$2}')
 CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 endif
 
@@ -110,8 +110,8 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libbson-static-1.0.pc"
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
+	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
 endif
 
 
