@@ -37,7 +37,7 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 ## Crazy but mongo build script depends on python, needs to know version, and provides very long elaborate script to find the
 ## version, but it doesn't work --LGP 2025-03-10
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-PYTHON_VERSION_= $(shell python --version | awk '{print $$2}')
+PYTHON_VERSION_= $(shell python3 --version | awk '{print $$2}')
 CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 endif
 
