@@ -375,18 +375,6 @@ sub WriteStroikaConfigMakeHeader
 			print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs $PkgConfigNames`\n");
 		}
 
-		# Do likewise --cflags-only-I for CPPFLAGS???
-		# (pkg-config doesn't distinguish cppflags/cflags?)
-		# so maybe here should just append CFLAGS?
-		## Also - sadly - PKG_CONFIG_PATH doesn't work right with MSYS, so don't do that way  (vaguely related to https://stroika.atlassian.net/browse/STK-1005 )
-		#		Cannot use c:/Sandbox... path in PKG_CONFIG, and using /c/... path works, but then produces something that wont work with visual studio.
-		#		--LGP 2024-05-31
-		#print (OUT "CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags $PkgConfigNames`\n");
-		# print (OUT "CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags-only-other $PkgConfigNames`\n");
-		
-
-		# print (OUT "CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags-only-other $PkgConfigNames`\n");
-		
 		#NOT GREAT but perhaps workable... --LGP 2025-03-12
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
 			print (OUT "CPPFLAGS +=\$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags $PkgConfigNames))\n");
@@ -394,12 +382,6 @@ sub WriteStroikaConfigMakeHeader
 		else {
 			print (OUT "CPPFLAGS +=\$\$(PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags $PkgConfigNames)\n");
 		}	
-		## NOT SURE WHY WE CANNOT JUST DO THIS??? UNCONDITNALLLY
-		# print (OUT "CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags $PkgConfigNames`\n");
-		# if (index ($PkgConfigNames, "libxml-2.0") != -1) {
-		# 	print (OUT "CPPFLAGS += -I\"\$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,\${StroikaRoot})/Builds/$activeConfiguration/ThirdPartyComponents/include/libxml2\"\n");
-		# 	print (OUT "CPPFLAGS += -DLIBXML_STATIC\n");
-		# }
 	}
 
 	print (OUT "\n\n#File Suffixes");
