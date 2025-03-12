@@ -752,6 +752,8 @@ sub     FillDefaultLibDependencies_
 
 	if ($includeAutomaticLibDependencies) {
 		if ($FEATUREFLAG_Xerces ne $LIBFEATUREFLAG_No) {
+			# @todo could fix xerces.pc file so this isn't necessary, but low priority since I really dont use
+			# Xerces much anymore... --LGP 2025-03-12
 			if ($BuildPlatform =~ /^VisualStudio.Net/) {
 				if ($gAssertionsEnabled) {
 					PortablyAddLibToLibDependencies_("xerces-c_3D");
