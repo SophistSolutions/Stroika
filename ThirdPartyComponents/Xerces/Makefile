@@ -58,6 +58,23 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 
 
 
+#
+# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
+# No matter - set them all to the same thing
+#
+#	With Xerces, we get link errors if we don't include the _DEBUG and _RELEASE versions
+#		-- LGP 2022-01-19
+#
+#	With other cmake based projects, that doesn't appear to be a problem
+#	So moved here to be specific to xerces --LGP 2025-03-12
+#
+ifeq ($(BuildPlatform),VisualStudio.Net-2022)
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="$(CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="$(CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="$(CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="$(CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+endif
+
 FETCHURLS=
 #
 #ARCHIVE sites have old versions which matters when you are building an
