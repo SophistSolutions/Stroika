@@ -21,7 +21,6 @@ using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Providers::OpenSSL;
 using namespace Stroika::Foundation::Memory;
 
-
 using Execution::Synchronized;
 
 #if qStroika_HasComponent_OpenSSL
