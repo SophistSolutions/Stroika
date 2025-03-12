@@ -97,7 +97,7 @@ help:
 	@$(ECHO) "    TEST_FAILURES_CAUSE_FAILED_MAKE=0"
 	@$(ECHO) "                                      only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)"
 
-	@$(ECHO) "    EXTRA_CONFIGURE_ARGS=        -    really proceeded by configure (only when its invoked); but handy to override values"
+	@$(ECHO) "    EXTRA_CONFIGURE_ARGS=        -    really proceeded by configure (only when its invoked); but handy to override values (eg --all-available-third-party-components --boost no)"
 
 
 
