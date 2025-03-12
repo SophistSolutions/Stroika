@@ -60,6 +60,10 @@ RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip
 COPY Windows-Cygwin/Getting-Started-With-Stroika.md ./tools/cygwin/home
 COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
 
+# Needed for mongodb for example
+ARG INSTALL_PYTHON=0
+SHELL ["cmd", "/S", "/C"]
+RUN IF %INSTALL_PYTHON%==1 ( choco install -y --force python )
 
 ARG INSTALL_QUASAR=0
 SHELL ["cmd", "/S", "/C"]
