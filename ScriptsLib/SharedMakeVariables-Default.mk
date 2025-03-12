@@ -54,7 +54,7 @@ ECHO_BUILD_LINES	?=	0
 
 	###AND TPP_PKG_CONFIG_PATH goes into config (as above)
 
-#### @todo SOON MAKE THIS OBSOLETE - removed in Stroika 3.0d18 --LGP 2025-03-11
+#### @todo SOON MAKE THIS OBSOLETE - removed in Stroika 3.0d18 --LGP 2025-03-11 DEPRECATED
 # ifndef StroikaFoundationSupportLibs
 # 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 # 	StroikaFoundationSupportLibs	=
