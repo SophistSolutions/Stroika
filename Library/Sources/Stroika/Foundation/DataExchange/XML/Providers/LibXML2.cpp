@@ -75,7 +75,7 @@ namespace {
         ~RegisterResolver_ ()
         {
             sCurrent_ = nullptr;
-            // don't bother unregistering (xmlCleanupInputCallbacks ) cuz more likely to cause re-entrancy problems than solve them...
+            // don't bother unregistering (xmlCleanupInputCallbacks) cuz more likely to cause re-entrancy problems than solve them...
         }
 
         /*
