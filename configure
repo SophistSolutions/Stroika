@@ -822,7 +822,7 @@ sub     FillDefaultLibDependencies_
 			}
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "gtest");
+			push (@packageCfgNames, "gtest_main");
 		}
 	}
 

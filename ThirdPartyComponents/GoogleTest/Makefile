@@ -99,6 +99,11 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@sed -i "s/^libdir=.*\$$/libdir=\$${pcfiledir}\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/gtest_main.pc"
+	@sed -i "s/^includedir=.*\$$/includedir=\$${pcfiledir}\/..\/..\/include/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/gtest_main.pc"
+endif
+
 
 
 ${ZIPPED_SOURCES_FILE_}:
