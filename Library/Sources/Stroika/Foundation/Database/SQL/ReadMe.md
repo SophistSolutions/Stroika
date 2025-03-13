@@ -12,7 +12,7 @@ This folder contains all the Stroika Library Foundation::[Database](../)::SQL so
 
 - Concrete
 
-  - [ODBCClient.h](ODBCClient.h) - Concrete ODBC client (implements abstract Connection etc interfaces)
+  - [ODBC.h](ODBC.h) - Concrete ODBC client (implements abstract Connection etc interfaces)
   - [SQLite.h](SQLite.h)- Concrete SQLite client (implements abstract Connection etc interfaces)
 
 - Other
