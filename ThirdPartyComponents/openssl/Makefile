@@ -395,13 +395,13 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
 	@mkdir -p ${BUILDS_OUTPUT_DIR}/lib/pkgconfig
 	@cd ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}; cp *.pc ${BUILDS_OUTPUT_DIR}/lib/pkgconfig
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libcrypto.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libcrypto.pc"
 	@sed -i "s/-lcrypto/-llibcrypto/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libcrypto.pc
 	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libcrypto.pc
 	@sed -i "s/ws2_32\.lib/-lws2_32/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libcrypto.pc
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libssl.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libssl.pc"
 	@sed -i "s/-lssl/-llibssl/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libssl.pc
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/openssl.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/openssl.pc"
 endif
 	@
 	@
