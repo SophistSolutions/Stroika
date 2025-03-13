@@ -25,8 +25,6 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 VERSION=8.12.1
 #VERSION=8.11.1
 #VERSION=8.11.0
-#VERSION=8.10.1
-#VERSION=8.9.1
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -38,7 +36,7 @@ FETCHURLS=
 FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
+PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl)/
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
@@ -51,11 +49,11 @@ endif
 
 ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libcurl.a				\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/curl/curl.h
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libcurl.a				\
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/curl/curl.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/curl/curl.h
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/curl/curl.h
 endif
 
 
@@ -156,7 +154,7 @@ endif
 ifeq ($(qFeatureFlag_ZLib), no)
 LIBCURL_CONFIGURE += --without-zlib
 else
-#LIBCURL_CONFIGURE += --with-zlib=$(PER_CONFIGURATION_BUILDS_DIR)
+#LIBCURL_CONFIGURE += --with-zlib=$(PER_CONFIGURATION_BUILDS_DIR_)
 #finds right one through PKG_CONFIG_PATH
 LIBCURL_CONFIGURE += --with-zlib
 endif
@@ -261,8 +259,8 @@ ifeq (Unix,$(BuildPlatform))
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Build configure tools (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-CONF-TOOLS-OUT.txt) ... "`
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_);autoreconf -fi > BUILD-CONF-TOOLS-OUT.txt 2>&1
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME}CONFIGURE-OUT.txt) ... "`
-	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
+	@$(ECHO) "$(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR_) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)CONFIGURE-OUT.txt
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && ($(ENVIRONMENT_CONFIGURE_PREFIX) ./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR_) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE-OUT.txt
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl $(VERSION) - Compiling (see ${OUTPUT_WORKDIR_PRETTYNAME}BUILD-OUT.txt) ... "`
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
@@ -316,5 +314,5 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGs
 	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{libcurl}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/curl
 else
-	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/curl
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/curl
 endif

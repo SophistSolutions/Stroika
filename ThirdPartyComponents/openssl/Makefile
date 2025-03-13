@@ -27,14 +27,12 @@ VERSION:=3.4.1
 #VERSION:=3.4.0
 #VERSION:=3.3.2
 #VERSION:=3.3.1
-#VERSION:=3.3.0
-#VERSION:=3.2.1
 
 BASENAME:=openssl-$(VERSION)
 EXTRACTED_DIRNAME:=$(BASENAME)
 
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
+PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/openssl)/
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
@@ -53,6 +51,8 @@ FETCHURLS+=https://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/3.1/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/3.2/$(BASENAME).tar.gz
+FETCHURLS+=http://www.openssl.org/source/old/3.3/$(BASENAME).tar.gz
+FETCHURLS+=http://www.openssl.org/source/old/3.4/$(BASENAME).tar.gz
 FETCHURLS+=ftp://mirror.switch.ch/mirror/openssl/source/$(BASENAME).tar.gz
 FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
@@ -82,16 +82,17 @@ CONFIG_ARGS+=	-DPURIFY
 endif
 
 
-BUILDS_OUTPUT_DIR=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyComponents/
+# BUILDS_OUTPUT_DIR=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyComponents/
+PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/${CONFIGURATION}/ThirdPartyComponents)/
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH=$(shell cygpath --mixed $(BUILDS_OUTPUT_DIR))
+PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR_))
 endif
 
 ifeq (Unix,$(BuildPlatform))
-CONFIG_ARGS+=	--prefix=$(BUILDS_OUTPUT_DIR)
+CONFIG_ARGS+=	--prefix=$(PER_CONFIGURATION_BUILDS_DIR_)
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-CONFIG_ARGS+=	--prefix=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)
+CONFIG_ARGS+=	--prefix=$(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH)
 endif
 
 
@@ -123,20 +124,20 @@ WIN_SSL_LIB_BASENAME=libssl
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/openssl/aes.h
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/openssl/aes.h
 ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libcrypto.a							\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libssl.a								\
-	$(PER_CONFIGURATION_BUILDS_DIR)bin/openssl
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libcrypto.a							\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libssl.a								\
+	$(PER_CONFIGURATION_BUILDS_DIR_)bin/openssl
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(WIN_CRYPTO_LIB_BASENAME).lib		\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(WIN_SSL_LIB_BASENAME).lib			\
-	$(PER_CONFIGURATION_BUILDS_DIR)bin/openssl.exe							\
-	$(PER_CONFIGURATION_BUILDS_DIR)bin/openssl.pdb							\
-	$(PER_CONFIGURATION_BUILDS_DIR)bin/c_rehash.pl
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(WIN_CRYPTO_LIB_BASENAME).lib		\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(WIN_SSL_LIB_BASENAME).lib			\
+	$(PER_CONFIGURATION_BUILDS_DIR_)bin/openssl.exe							\
+	$(PER_CONFIGURATION_BUILDS_DIR_)bin/openssl.pdb							\
+	$(PER_CONFIGURATION_BUILDS_DIR_)bin/c_rehash.pl
 endif
 
 
@@ -188,7 +189,7 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
 	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{libcrypto,libssl}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/openssl $(StroikaRoot)Builds/*/ThirdPartyComponents/bin/openssl
 else
-	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/openssl
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/openssl
 endif
 
 
@@ -379,29 +380,29 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@$(ECHO) 'cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && \
 	 ((env --unset=MFLAGS --unset=MAKEFLAGS \
 	  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \
-	   nmake $(INSTALL_TARGET) INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)\
+	   nmake $(INSTALL_TARGET) INSTALLTOP=$(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH)\
 	  ) 2>&1)' >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL-OUT.txt
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && \
 	 ((env --unset=MFLAGS --unset=MAKEFLAGS \
 	  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) \
-	   nmake $(INSTALL_TARGET) INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)\
+	   nmake $(INSTALL_TARGET) INSTALLTOP=$(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH)\
 	  ) 2>&1) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL-OUT.txt
-	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)ossl_static.pdb $(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)/lib/ossl_static.pdb
+	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)ossl_static.pdb $(PER_CONFIGURATION_BUILDS_DIR_AS_WINDOWS_PATH)/lib/ossl_static.pdb
 	@# openssl for windows - doesn't appear to produce (install) .pc files, which probably has something todo with the fact that
 	@# that the ones it contains - are pretty broken for windows --LGP 2025-03-11
 	@# Instead of ignoring them, fix them with tiny sed script
 	@# keep existing filenames emitted, and just adjust the .pc file so works with pkgconfig --msvc-syntax
 	@#The prefix= line is windows format and refers to intermediatefiles - so not good - replace it with pcfiledir relative name
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@mkdir -p ${BUILDS_OUTPUT_DIR}/lib/pkgconfig
-	@cd ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}; cp *.pc ${BUILDS_OUTPUT_DIR}/lib/pkgconfig
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libcrypto.pc"
-	@sed -i "s/-lcrypto/-llibcrypto/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libcrypto.pc
-	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libcrypto.pc
-	@sed -i "s/ws2_32\.lib/-lws2_32/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libcrypto.pc
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/libssl.pc"
-	@sed -i "s/-lssl/-llibssl/g" "${BUILDS_OUTPUT_DIR}"/lib/pkgconfig/libssl.pc
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${BUILDS_OUTPUT_DIR}/lib/pkgconfig/openssl.pc"
+	@mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig
+	@cd ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}; cp *.pc ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libcrypto.pc"
+	@sed -i "s/-lcrypto/-llibcrypto/g" "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/libcrypto.pc
+	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/libcrypto.pc
+	@sed -i "s/ws2_32\.lib/-lws2_32/g" "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/libcrypto.pc
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libssl.pc"
+	@sed -i "s/-lssl/-llibssl/g" "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/libssl.pc
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/openssl.pc"
 endif
 	@
 	@

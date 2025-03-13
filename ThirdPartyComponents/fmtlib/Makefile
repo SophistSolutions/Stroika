@@ -33,7 +33,7 @@ FETCHURLS:=
 FETCHURLS+=https://github.com/fmtlib/fmt/archive/refs/tags/${VERSION}.zip
 
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
+PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/fmtlib)/
 
 OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
@@ -66,9 +66,9 @@ endif
 ObjDir:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/fmt/core.h	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/$(FMTLIB)		\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/pkgconfig/fmt.pc
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/fmt/core.h	\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(FMTLIB)		\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/pkgconfig/fmt.pc
 
 $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
@@ -137,7 +137,7 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
 	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/fmtlib $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/libfmt.*
 else
-	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/fmt
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/fmt
 endif
 
 

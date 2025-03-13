@@ -52,7 +52,7 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
+PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)/
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
@@ -93,20 +93,20 @@ FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/xercesc/dom/DOM.hpp
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/xercesc/dom/DOM.hpp
 
 ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libxerces-c.a
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libxerces-c.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 ifeq (Debug,$(CMAKE_CONFIGURATION))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/xerces-c_3D.lib
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/xerces-c_3D.lib
 endif
 ifeq (Release,$(CMAKE_CONFIGURATION))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/xerces-c_3.lib
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/xerces-c_3.lib
 endif
 endif
 
@@ -181,7 +181,7 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*xerces* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/*xerces*
 	@rm -rf CURRENT
 else
-	@rm -fr $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR)include/xercesc
+	@rm -fr $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/xercesc
 endif
 
 
@@ -264,8 +264,8 @@ doBuilds_:
 	@+cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL.OUT 2>&1
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@#We get warnings about a missing pdb file when linking otherwise...(not sure why since symbol info sb in the .lib)
-	@$(ECHO) "cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR}lib/ 2>/dev/null || :" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL.OUT
-	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR}lib/ 2>/dev/null || :
+	@$(ECHO) "cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR_}lib/ 2>/dev/null || :" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL.OUT
+	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR_}lib/ 2>/dev/null || :
 endif
 
 

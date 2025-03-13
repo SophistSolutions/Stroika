@@ -26,7 +26,7 @@ SHELL=/bin/bash
 
 .PHONY:	all clean clobber check bootstrap_ configureAndBuild_
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
+PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")/"
 
@@ -93,13 +93,13 @@ FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOT
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/config.hpp				\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/process.hpp			\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/type_traits.hpp
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config.hpp				\
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/process.hpp			\
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/type_traits.hpp
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_date_time$(LIB_SUFFIX)	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_filesystem$(LIB_SUFFIX)	\
-	$(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_system$(LIB_SUFFIX)
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_date_time$(LIB_SUFFIX)	\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_filesystem$(LIB_SUFFIX)	\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_system$(LIB_SUFFIX)
 
 
 $(ZIPPEDFILE):
@@ -131,9 +131,9 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/share/boost-build
 	@rm -rf CURRENT
 else
-	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR)include/boost
-	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)lib/libboost_*
-	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR)share/boost-build
+	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR_)include/boost
+	@rm -f $(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_*
+	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR_)share/boost-build
 	@rm -rf $(B2FullPath)
 endif
 
@@ -206,10 +206,10 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@#NOTE as of 2025-02-06 - seeing this not always work for HearHE app on Windoze... Will need to debug further - but not reliably failing there either
 	@#					      failures seem worse the more -jN flag given, and if vscode running/watching, and maybe if I left app running when rebuilding/clobber???
 	@if [ ! -e "${B2FullPath}" ]; then cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build/src/engine/b2.exe ${B2FullPath}; fi
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) ".\b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))" >> ../../BOOTSTRAP-OUT.txt 2>&1)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/tools/build && (${ScriptsLibPath}/RunArgumentsWithCommonBuildVars $(CONFIGURATION) ".\b2 install --prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR_))" >> ../../BOOTSTRAP-OUT.txt 2>&1)
 else
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP-OUT.txt)
-	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP-OUT.txt 2>&1)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR_)" > BOOTSTRAP-OUT.txt)
+	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR_) >> BOOTSTRAP-OUT.txt 2>&1)
 endif
 	@if [ ! -e "${B2FullPath}" ]; then $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "${B2FullPath} not found - so bootstrap failed"; exit 1; fi
 
@@ -272,7 +272,7 @@ B2_CONFIGURATION_ARGS +=	--hash
 B2_CONFIGURATION_ARGS +=	-d2
 #SHOW VARIABLES - B2_CONFIGURATION_ARGS +=	-d7
 
-B2_CONFIGURATION_ARGS +=	--prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR))
+B2_CONFIGURATION_ARGS +=	--prefix=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(PER_CONFIGURATION_BUILDS_DIR_))
 ifeq (0,$(AssertionsEnabled))
 B2_CONFIGURATION_ARGS += variant=release
 else
@@ -341,9 +341,9 @@ endif
 	@#we built boost with --layout=system
 	@#Include this logic on ALL platforms because on ALL platforms we explicitly set --layout=system
 	@#
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Patching $(PER_CONFIGURATION_BUILDS_DIR)include/boost/config/user.hpp"`
-	@$(ECHO) Patching $(PER_CONFIGURATION_BUILDS_DIR)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
-	@$(ECHO) "// GENERATED BY STROIKA MAKEFILE" >> $(PER_CONFIGURATION_BUILDS_DIR)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
-	@$(ECHO) "#define BOOST_AUTO_LINK_SYSTEM 1" >> $(PER_CONFIGURATION_BUILDS_DIR)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
-	@$(ECHO) "// GENERATED BY STROIKA MAKEFILE" >> $(PER_CONFIGURATION_BUILDS_DIR)include/boost/config/user.hpp
-	@$(ECHO) "#define BOOST_AUTO_LINK_SYSTEM 1" >> $(PER_CONFIGURATION_BUILDS_DIR)include/boost/config/user.hpp
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Patching $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp"`
+	@$(ECHO) Patching $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
+	@$(ECHO) "// GENERATED BY STROIKA MAKEFILE" >> $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
+	@$(ECHO) "#define BOOST_AUTO_LINK_SYSTEM 1" >> $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/ConfigureAndBuild-OUT.txt
+	@$(ECHO) "// GENERATED BY STROIKA MAKEFILE" >> $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp
+	@$(ECHO) "#define BOOST_AUTO_LINK_SYSTEM 1" >> $(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config/user.hpp

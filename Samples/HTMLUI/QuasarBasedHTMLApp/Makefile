@@ -12,7 +12,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGETDIR		:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/
 
-PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing $(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/html)/
+PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing $(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/html)/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)/
 
 NEED_GNU_MAKE_ := 4.0.0
@@ -29,7 +29,7 @@ else
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/TOOLS_CHECKED
-	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ${PER_CONFIGURATION_BUILDS_DIR}
+	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ${PER_CONFIGURATION_BUILDS_DIR_}
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
@@ -42,7 +42,7 @@ ifneq ($(CONFIGURATION),)
 	@#rm -f src/*.js
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 	@if [ "$@"=="clobber" ] ; then \
-		rm -rf $(PER_CONFIGURATION_BUILDS_DIR);\
+		rm -rf $(PER_CONFIGURATION_BUILDS_DIR_);\
 	fi
 endif
 
@@ -52,15 +52,15 @@ check-prerequisites:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type node 2> /dev/null) || ($(StroikaRoot)/ScriptsLib/GetMessageForMissingTool node && exit 1)"
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type npm 2> /dev/null) || ($(StroikaRoot)ScriptsLib/GetMessageForMissingTool npm && exit 1)"
 
-${PER_CONFIGURATION_BUILDS_DIR}: $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
+${PER_CONFIGURATION_BUILDS_DIR_}: $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "npm install ( log2 ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}NPM-Install.txt ) ..."`
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm i > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/NPM-Install.txt 2>&1
 	@# note - this build ignores .env file; used only for test/dev builds (maybe overwrite .env file with one form CONFIGURATION?)
 	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_).env
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Building ( log2 ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}Build.txt ) ..."`
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_) && npm run build > ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}/Build.txt 2>&1
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Copying to ${PER_CONFIGURATION_BUILDS_DIR} ..."`
-	@rm -rf ${PER_CONFIGURATION_BUILDS_DIR} && mkdir -p ${PER_CONFIGURATION_BUILDS_DIR} && cp -r $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/dist/spa/* ${PER_CONFIGURATION_BUILDS_DIR}
+	@$(StroikaRoot)ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Copying to ${PER_CONFIGURATION_BUILDS_DIR_} ..."`
+	@rm -rf ${PER_CONFIGURATION_BUILDS_DIR_} && mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_} && cp -r $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)/dist/spa/* ${PER_CONFIGURATION_BUILDS_DIR_}
 
 
 SRC_FILES2Link_:=
