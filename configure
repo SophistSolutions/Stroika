@@ -257,16 +257,15 @@ sub	DoSetThirdPartyComponents_
 		$FEATUREFLAG_ATLMFC = undef;
 		$FEATUREFLAG_boost = undef;
 		$FEATUREFLAG_LIBCURL = undef;
-		$FEATUREFLAG_libxml2 = undef;
-		$FEATUREFLAG_Xerces = undef;
-		$FEATUREFLAG_LZMA = undef;
 		$FEATUREFLAG_fmtlib = undef;
+		$FEATUREFLAG_GoogleTest = undef;
+		$FEATUREFLAG_LZMA = undef;
+		$FEATUREFLAG_mongocxxdriver = undef;
 		$FEATUREFLAG_OpenSSL = undef;
 		$FEATUREFLAG_sqlite = undef;
-		$FEATUREFLAG_mongocxxdriver = undef;
 		$FEATUREFLAG_WinHTTP = undef;
-		$FEATUREFLAG_ZLib = undef;
-		$FEATUREFLAG_GoogleTest = undef;
+		$FEATUREFLAG_libxml2 = undef;
+		$FEATUREFLAG_Xerces = undef;
 	}
 	elsif ($x eq "fill-in-defaults") {
 		# Called late enuf that other variables have been filled in...

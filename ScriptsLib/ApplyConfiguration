@@ -787,14 +787,25 @@ sub WriteVSCodeCPPExtensionConfigFile
 			$newCfgObj .= " , ";
 			$newCfgObj .= "\\\"$element\\\"";
 		}
-		# # WORKAROUND til we have https://stroika.atlassian.net/browse/STK-1005 addressed
-		if (index ($PkgConfigNames, "libxml-2.0") != -1) {
-			$newCfgObj .= " , ";
-			my $element = trim (`realpath --canonicalize-missing Builds/$activeConfiguration/ThirdPartyComponents/include/libxml2`) . "/";
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				$element = trim ("`cygpath --mixed --path \"$element\"`");
+		if (not (trim($PkgConfigNames) eq "")) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/ThirdPartyComponents/lib/pkgconfig pkg-config --cflags-only-I $PkgConfigNames 2>/dev/null`) {
+				if (index ($element, "-I") == 0) {
+					local $v = trim (substr($element, 2));
+					if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+						$v = trim (`cygpath --mixed '$v'`)
+					}
+					my $y  = index ($newCfgObj, "$v");
+					if (index ($newCfgObj, "$v") == -1) {
+						if ($first) {
+							$first = false;
+						}
+						else {
+							$newCfgObj .= " , ";
+						}
+						$newCfgObj .= "\\\"$v\\\"";
+					}
+				}
 			}
-			$newCfgObj .= "\\\"$element\\\"";
 		}
 		$newCfgObj .= "]";
 	}
@@ -813,15 +824,19 @@ sub WriteVSCodeCPPExtensionConfigFile
 				$newCfgObj .= "\\\"$v\\\"";
 			}
 		}
-		# # WORKAROUND til we have https://stroika.atlassian.net/browse/STK-1005 addressed
-		if (index ($PkgConfigNames, "libxml-2.0") != -1) {
-			if ($first) {
-				$first = false;
+		if (not (trim($PkgConfigNames) eq "")) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/ThirdPartyComponents/lib/pkgconfig pkg-config --cflags-only-other $PkgConfigNames 2>/dev/null`) {
+				if (index ($element, "-D") == 0) {
+					if ($first) {
+						$first = false;
+					}
+					else {
+						$newCfgObj .= " , ";
+					}
+					local $v = trim (substr($element, 2));
+					$newCfgObj .= "\\\"$v\\\"";
+				}
 			}
-			else {
-				$newCfgObj .= " , ";
-			}
-			$newCfgObj .= "\\\"LIBXML_STATIC\\\"";	# cannot use pkg-config for this because then wouldn't be seen in .vscode etc
 		}
 		$newCfgObj .= "]";
 	}

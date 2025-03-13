@@ -441,7 +441,7 @@ apply-configurations-if-needed:
 	done
 
 
-IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIGURATION).xml
+IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIGURATION).xml $(wildcard Builds/${CONFIGURATION}/ThirdPartyComponents/lib/pkgconfig/*.pc)
 	@$(MAKE) --no-print-directory apply-configuration
 	
 
