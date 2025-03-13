@@ -199,6 +199,7 @@ libraries:
 	else\
 		$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION); \
 		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components; \
+		$(MAKE) --no-print-directory --silent .vscode/c_cpp_properties.json;\
 		$(MAKE) --directory Library --no-print-directory all; \
 	fi
 else
@@ -220,6 +221,7 @@ else
 third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all
+	@$(MAKE) --no-print-directory --silent .vscode/c_cpp_properties.json
 endif
 
 
@@ -402,7 +404,7 @@ endif
 apply-configuration-if-needed_:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 ifneq ($(CONFIGURATION),)
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/Configuration.mk .vscode/c_cpp_properties.json
 endif
 
 
@@ -437,13 +439,21 @@ apply-configurations:
 
 apply-configurations-if-needed:
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory --silent IntermediateFiles/$$i/Configuration.mk CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory --silent IntermediateFiles/$$i/Configuration.mk .vscode/c_cpp_properties.json CONFIGURATION=$$i;\
 	done
 
 
-IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIGURATION).xml $(wildcard Builds/${CONFIGURATION}/ThirdPartyComponents/lib/pkgconfig/*.pc)
+IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIGURATION).xml
 	@$(MAKE) --no-print-directory apply-configuration
 	
+.vscode/c_cpp_properties.json:	 $(wildcard Builds/${CONFIGURATION}/ThirdPartyComponents/lib/pkgconfig/*.pc)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
+	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
+	@$(StroikaRoot)ScriptsLib/ApplyConfiguration $(CONFIGURATION) --only-vscode 
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\" ... "
+	@$(StroikaRoot)ScriptsLib/MakeVersionFile STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
+	@echo "done"
 
 apply-configuration:
 ifeq ($(CONFIGURATION),)
