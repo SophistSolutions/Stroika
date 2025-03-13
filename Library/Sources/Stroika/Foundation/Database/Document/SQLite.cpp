@@ -15,6 +15,7 @@
 using namespace Stroika::Foundation;
 
 using namespace Characters;
+using namespace Containers;
 using namespace Debug;
 using namespace Database;
 using namespace Database::Document::SQLite;
@@ -49,61 +50,61 @@ namespace {
         switch (errCode) {
             case SQLITE_BUSY: {
                 DbgTrace ("SQLITE_BUSY"_f); //  The database file is locked
-                Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+                Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_LOCKED: {
                 DbgTrace ("SQLITE_LOCKED"_f); //  A table in the database is locked
-                Execution::Throw (system_error{make_error_code (errc::device_or_resource_busy)});
+                Throw (system_error{make_error_code (errc::device_or_resource_busy)});
             } break;
             case SQLITE_CONSTRAINT: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{"SQLITE_CONSTRAINT: {}"_f(errMsgDetails)});
+                    Throw (Exception{"SQLITE_CONSTRAINT: {}"_f(errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_CONSTRAINT"sv};
-                    Execution::Throw (kEx_);
+                    Throw (kEx_);
                 }
             } break;
             case SQLITE_TOOBIG: {
                 static const auto kEx_ = Exception{"SQLITE_TOOBIG"sv};
-                Execution::Throw (kEx_);
+                Throw (kEx_);
             } break;
             case SQLITE_FULL: {
                 DbgTrace ("SQLITE_FULL"_f);
-                Execution::Throw (system_error{make_error_code (errc::no_space_on_device)});
+                Throw (system_error{make_error_code (errc::no_space_on_device)});
             } break;
             case SQLITE_READONLY: {
                 static const auto kEx_ = Exception{"SQLITE_READONLY"sv};
-                Execution::Throw (kEx_);
+                Throw (kEx_);
             } break;
             case SQLITE_MISUSE: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{"SQLITE_MISUSE: {}"_f(errMsgDetails)});
+                    Throw (Exception{"SQLITE_MISUSE: {}"_f(errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_MISUSE"sv};
-                    Execution::Throw (kEx_);
+                    Throw (kEx_);
                 }
             } break;
             case SQLITE_ERROR: {
                 if (errMsgDetails) {
-                    Execution::Throw (Exception{"SQLITE_ERROR: {}"_f(errMsgDetails)});
+                    Throw (Exception{"SQLITE_ERROR: {}"_f(errMsgDetails)});
                 }
                 else {
                     static const auto kEx_ = Exception{"SQLITE_ERROR"sv};
-                    Execution::Throw (kEx_);
+                    Throw (kEx_);
                 }
             } break;
             case SQLITE_NOMEM: {
                 DbgTrace ("SQLITE_NOMEM translated to bad_alloc"_f);
-                Execution::Throw (bad_alloc{});
+                Throw (bad_alloc{});
             } break;
         }
         if (errMsgDetails) {
-            Execution::Throw (Exception{"SQLite Error: {} (code {})"_f(errMsgDetails, errCode)});
+            Throw (Exception{"SQLite Error: {} (code {})"_f(errMsgDetails, errCode)});
         }
         else {
-            Execution::Throw (Exception{"SQLite Error: {}"_f(errCode)});
+            Throw (Exception{"SQLite Error: {}"_f(errCode)});
         }
     }
     void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)
@@ -255,7 +256,20 @@ namespace {
             static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
             return kProps_;
         }
+        virtual Set<String> GetCollections () const override
+        {
+            return {};
+        }
+        virtual void CreateCollection (const String& name) 
+        {
+            AssertNotImplemented ();
+        }
+        virtual void DropCollection (const String& name) 
+        {
+            AssertNotImplemented ();
+        }
         virtual Document::Transaction mkTransaction () override
+
         {
             Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
             return Database::Document::SQLite::Transaction{conn};

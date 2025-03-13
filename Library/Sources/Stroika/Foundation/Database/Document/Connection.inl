@@ -44,10 +44,6 @@ namespace Stroika::Foundation::Database::Document::Connection {
     {
         return _fRep.get () == nullptr;
     }
-    inline void Ptr::Exec (const String& sql) const
-    {
-        _fRep->Exec (sql);
-    }
     inline String Ptr::ToString () const
     {
         using namespace Characters;

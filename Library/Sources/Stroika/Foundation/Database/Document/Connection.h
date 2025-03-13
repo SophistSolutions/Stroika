@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
@@ -25,6 +26,7 @@
 namespace Stroika::Foundation::Database::Document {
 
     using Characters::String;
+    using Containers::Set;
 
     class Transaction;
     class EngineProperties;
@@ -79,14 +81,6 @@ namespace Stroika::Foundation::Database::Document {
 
         public:
             /**
-             *  This returns nothing, but raises exceptions on errors.
-             *
-             *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
-             */
-            nonvirtual void Exec (const String& sql) const;
-
-        public:
-            /**
              *  @see Characters::ToString ()
              */
             nonvirtual String ToString () const;
@@ -123,6 +117,15 @@ namespace Stroika::Foundation::Database::Document {
             /**
              */
             virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
+
+            public:
+            virtual Set<String> GetCollections () const = 0;
+
+            public:
+            virtual void CreateCollection (const String& name)  = 0;
+
+            public:
+            virtual void DropCollection (const String& name)  = 0;
 
         public:
             /**
