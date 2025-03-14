@@ -86,3 +86,30 @@ endif
 
 CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+
+
+
+#
+# A bit confusing how cmake uses the _DEBUG and _RELEASE flags on windows but not unix
+# No matter - set them all to the same thing
+#
+#	With Xerces, we get link errors if we don't include the _DEBUG and _RELEASE versions
+#		-- LGP 2022-01-19
+#
+#	With zlib and xml2 and gtest we get:
+#		libstaticd.lib(trees.obj) : warning LNK4099: PDB '' was not found with 'zlibstaticd.lib(trees.obj)' or at ''; linking object as if no debug info
+#		zlibstaticd.lib(inftrees.obj) : warning LNK4099: PDB '' was not found with 'zlibstaticd.lib(inftrees.obj)' or at ''; linking object as if no debug info
+#		zlibstaticd.lib(inffast.obj) : warning LNK4099: PDB '' was not found with 'zlibstaticd.lib(inffast.obj)' or at ''; linking object as if no debug info
+#		xml2.lib(parserInternals.obj) : warning LNK4099: PDB '' was not found with 'xml2.lib(parserInternals.obj)' or at ''; linking object as if no debug info
+#		xml2.lib(tree.obj) : warning LNK4099: PDB '' was not found with 'xml2.lib(tree.obj)' or at ''; linking object as if no debug info
+#		xml2.lib(xmlsave.obj) : warning LNK4099: PDB '' was not found with 'xml2.lib(xmlsave.obj)' or at ''; linking object as if no debug info
+#		gtest.lib(gtest-all.obj) : warning LNK4099: PDB '' was not found with 'gtest.lib(gtest-all.obj)' or at ''; linking
+#
+#	With other cmake based projects, that doesn't appear to be a problem
+#
+ifeq ($(BuildPlatform),VisualStudio.Net-2022)
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_DEBUG="$(CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
+CMAKE_ARGS+= -DCMAKE_C_FLAGS_RELEASE="$(CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="$(CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="$(CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
+endif
