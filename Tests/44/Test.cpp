@@ -332,7 +332,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
                 Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
 #endif
@@ -355,7 +355,7 @@ namespace {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
-            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
+            DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
             Execution::ReThrow ();
 #endif
