@@ -41,8 +41,6 @@ PYTHON_VERSION_= $(shell (python --version 2>/dev/null|| python3 --version) | aw
 CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 endif
 
-#  CMAKE_ARGS+= --target=mongoc_static
-
 
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
