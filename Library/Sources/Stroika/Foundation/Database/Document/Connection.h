@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 /**
@@ -118,14 +118,14 @@ namespace Stroika::Foundation::Database::Document {
              */
             virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
 
-            public:
+        public:
             virtual Set<String> GetCollections () const = 0;
 
-            public:
-            virtual void CreateCollection (const String& name)  = 0;
+        public:
+            virtual void CreateCollection (const String& name) = 0;
 
-            public:
-            virtual void DropCollection (const String& name)  = 0;
+        public:
+            virtual void DropCollection (const String& name) = 0;
 
         public:
             /**

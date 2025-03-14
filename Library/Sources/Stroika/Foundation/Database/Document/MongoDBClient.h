@@ -6,6 +6,14 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if qStroika_HasComponent_mongocxxdriver
+#include <bsoncxx/json.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/exception/exception.hpp>
+#include <mongocxx/instance.hpp>
+#include <mongocxx/uri.hpp>
+#endif
+
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/EngineProperties.h"
 #include "Stroika/Foundation/Database/Document/Transaction.h"
