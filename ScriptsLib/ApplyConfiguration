@@ -298,6 +298,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "#\n");
 	print (OUT "# PKG-CONFIG support\n");
 	print (OUT "PKG_CONFIG_PATH :=	\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig)\n");
+	print (OUT "#\n");
 	print (OUT "export PKG_CONFIG_PATH\n");
 	print (OUT "PKG_CONFIG_STROIKA_DEPENDS_ON := $PkgConfigNames\n");
 

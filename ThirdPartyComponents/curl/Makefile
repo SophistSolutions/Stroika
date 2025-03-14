@@ -98,12 +98,12 @@ else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
 
-PKG_CONFIG_PATH=
-ifeq ($(qFeatureFlag_OpenSSL), use)
-ifeq (Unix,$(BuildPlatform))
-PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
-endif
-endif
+# PKG_CONFIG_PATH=
+# ifeq ($(qFeatureFlag_OpenSSL), use)
+# ifeq (Unix,$(BuildPlatform))
+# PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
+# endif
+# endif
 
 # NOT sure why needed - retest --LGP 2024-10-21 - and better document why if still needed
 ifeq (Unix,$(BuildPlatform))
@@ -119,8 +119,15 @@ LDFLAGS:=$(filter-out --std=%, $(LDFLAGS))
 
 ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
+
+
+#PKG_CONFIG_STROIKA_DEPENDS_ON filter to avoid warnings about missing/incomplete stuff from stuff being built but not ready yet...
+#NB: CFLAGS - for example = depends on PKG_CONFIG_STROIKA_DEPENDS_ON
+# ONLY include in PKG_CONFIG_STROIKA_DEPENDS_ON stuff we use here (zlib and openssl)
+PKG_CONFIG_STROIKA_DEPENDS_ON := $(filter zlib openssl,$(PKG_CONFIG_STROIKA_DEPENDS_ON))
+
 ENVIRONMENT_CONFIGURE_PREFIX=
-ENVIRONMENT_CONFIGURE_PREFIX+= export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
+# ENVIRONMENT_CONFIGURE_PREFIX+= export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
 ENVIRONMENT_CONFIGURE_PREFIX+= export ARCH=$(ARCH);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CC=$(CC);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CXX=$(CXX);
