@@ -63,7 +63,7 @@ sub indexOf
 sub hasPython_
 {
 	## python sometimes called python, sometimes called python3
-	`(python &>/dev/null < /dev/null) || (python3 &>/dev/null < /dev/null)`;
+	`(python 2>/dev/null < /dev/null) || (python3 2>/dev/null < /dev/null)`;
 	return $? eq 0;
 }
 
