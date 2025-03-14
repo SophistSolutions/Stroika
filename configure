@@ -327,8 +327,8 @@ sub	DoSetThirdPartyComponents_
 		}
 		if (!defined $FEATUREFLAG_mongocxxdriver) {
 			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
-			`python > /dev/null 2>/dev/null < /dev/null`;
-			if ($? eq 0) {
+			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
+			if (hasPython_()) {
 				$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
 			}
 			else {
