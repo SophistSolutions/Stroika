@@ -294,6 +294,17 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("BuildToolsRoot", $BuildToolsRoot);
 	print (OUT "\n");
 
+	## NEW
+	print (OUT "#\n");
+	print (OUT "# PKG-CONFIG support\n");
+	print (OUT "PKG_CONFIG_PATH :=	\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig)\n");
+	print (OUT "export PKG_CONFIG_PATH\n");
+	print (OUT "PKG_CONFIG_STROIKA_DEPENDS_ON := $PkgConfigNames\n");
+
+	print (OUT "\n");
+	print (OUT "\n");
+
+
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CMAKE");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("TOOLS_PATH_ADDITIONS");
@@ -395,18 +406,18 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n\n# Extra dynamically computed link(cppflags) lines\n");
 	if (not (trim($PkgConfigNames) eq "")) {
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --msvc-syntax --static --libs $PkgConfigNames`\n");
+			print (OUT "LinkerArgs_LibDependencies += `pkg-config --msvc-syntax --static --libs \${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
 		}
 		else {
-			print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs $PkgConfigNames`\n");
+			print (OUT "LinkerArgs_LibDependencies += `pkg-config --static --libs $PkgConfigNames`\n");
 		}
 
 		#NOT GREAT but perhaps workable... --LGP 2025-03-12
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			print (OUT "CPPFLAGS +=\$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags $PkgConfigNames))\n");
+			print (OUT "CPPFLAGS +=\$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(pkg-config --cflags \${PKG_CONFIG_STROIKA_DEPENDS_ON}))\n");
 		}
 		else {
-			print (OUT "CPPFLAGS +=\$\$(PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags $PkgConfigNames)\n");
+			print (OUT "CPPFLAGS +=\$\$(pkg-config --cflags \${PKG_CONFIG_STROIKA_DEPENDS_ON})\n");
 		}	
 	}
 
@@ -420,7 +431,6 @@ sub WriteStroikaConfigMakeHeader
 
 	print (OUT "#\n");
 	print (OUT "EXTRA_COMPILER_ARGS :=	$EXTRA_COMPILER_ARGS\n");
-
 
 	if ($BuildPlatform =~ /^VisualStudio.Net/) {
 		print (OUT "\n");
