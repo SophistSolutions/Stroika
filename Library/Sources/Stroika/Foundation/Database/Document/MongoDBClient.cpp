@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Database/Exception.h"
+#include "Stroika/Foundation/Debug/Main.h"
 
 #include "MongoDBClient.h"
 
@@ -18,7 +19,8 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::Database::Document::MongoDBClient;
-using namespace Debug;
+using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Debug;
 
 using Database::Document::EngineProperties;
 
@@ -28,7 +30,10 @@ namespace {
     using Connection::Options;
     struct Rep_ final : Stroika::Foundation::Database::Document::MongoDBClient::Connection::IRep {
 
+        mongocxx::client fClient_;
+
         Rep_ (const Options& options)
+            : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}}  // @todo not sure about charset to map to?
         {
             TraceContextBumper ctx{"Document::MongoDBClient::Connection::Rep_::Rep_"};
         }
@@ -65,8 +70,31 @@ namespace {
             Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
             return Transaction{conn};
         }
+
+        virtual void run_command (const VariantValue& v) override
+        {
+           // fClient_.run_command (bsoncxx::from_json (R"({ "ping": 1 })"));
+        }
     };
 }
+
+/*
+ ********************************************************************************
+ ********************* Document::MongoDBClient::Activator ***********************
+ ********************************************************************************
+ */
+#if qStroika_Foundation_Debug_AssertionsChecked
+Document::MongoDBClient::Activator::Activator ()
+{
+    Require (Debug::AppearsDuringMainLifetime ());
+}
+
+Document::MongoDBClient::Activator::~Activator ()
+{
+    Require (Debug::AppearsDuringMainLifetime ());
+}
+#endif
+
 
 /*
  ********************************************************************************

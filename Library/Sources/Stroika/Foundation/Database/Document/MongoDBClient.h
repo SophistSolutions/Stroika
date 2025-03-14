@@ -14,6 +14,7 @@
 #include <mongocxx/uri.hpp>
 #endif
 
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/EngineProperties.h"
 #include "Stroika/Foundation/Database/Document/Transaction.h"
@@ -39,6 +40,24 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
 #if qStroika_HasComponent_mongocxxdriver
 
+    /**
+     *  \brief must be instantiated after main, but before any use of MongoCXX library methods, and destroyed after all such methods
+     * 
+     *  \pre Debug::AppearsDuringMainLifetime ()
+     */
+    struct Activator {
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Activator ();
+        ~Activator ();
+#else
+        Activator ()  = default;
+        ~Activator () = default;
+#endif
+
+    private:
+        mongocxx::instance fMongoInstance_;
+    };
+
     namespace Connection {
 
         using namespace Document::Connection;
@@ -53,7 +72,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         struct Options final {
             /**
              */
-            optional<String> fDSN;
+            String fConnectionString;
         };
 
         /**
@@ -99,6 +118,9 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         class IRep : public Document::Connection::IRep {
         public:
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+
+        public:
+            virtual void run_command (const DataExchange::VariantValue& v) = 0;
 
         private:
             friend class Ptr;
