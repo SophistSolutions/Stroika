@@ -13,6 +13,8 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Common/Version.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/Database/Document/Connection.h"
+#include "Stroika/Foundation/Database/Document/MongoDBClient.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"

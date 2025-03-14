@@ -232,6 +232,9 @@
     <Filter Include="Sources\DataExchange\Variant\FormURLEncoded">
       <UniqueIdentifier>{bc45b02a-c8fc-499c-909c-9b5854cc9c54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Database\Document">
+      <UniqueIdentifier>{3732b1ce-cabf-4c3a-baf0-e9c1bc6cfdef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -911,6 +914,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Reader.cpp">
       <Filter>Sources\DataExchange\Variant\FormURLEncoded</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\Connection.cpp">
+      <Filter>Sources\Database\Document</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.cpp">
+      <Filter>Sources\Database\Document</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.cpp">
+      <Filter>Sources\Database\Document</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2336,6 +2348,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Writer.h">
       <Filter>Sources\DataExchange\Variant\FormURLEncoded</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Connection.h">
+      <Filter>Sources\Database\Document</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\EngineProperties.h">
+      <Filter>Sources\Database\Document</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.h">
+      <Filter>Sources\Database\Document</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.h">
+      <Filter>Sources\Database\Document</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.h">
+      <Filter>Sources\Database\Document</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3855,6 +3882,27 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\FormURLEncoded\Makefile">
       <Filter>Sources\DataExchange\Variant\FormURLEncoded</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Connection.inl">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\EngineProperties.inl">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Makefile">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.inl">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\ReadMe.md">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.inl">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.inl">
+      <Filter>Sources\Database\Document</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

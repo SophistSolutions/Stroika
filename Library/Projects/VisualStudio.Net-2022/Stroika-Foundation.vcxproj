@@ -113,6 +113,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\Connection.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.cpp" />
@@ -485,6 +488,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Connection.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\EngineProperties.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.h" />
@@ -971,6 +979,13 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SocketStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Connection.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\EngineProperties.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.inl" />
