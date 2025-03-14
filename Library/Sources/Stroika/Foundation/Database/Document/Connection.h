@@ -126,12 +126,6 @@ namespace Stroika::Foundation::Database::Document {
 
         public:
             virtual void DropCollection (const String& name) = 0;
-
-        public:
-            /**
-             *  This returns nothing, but raises exceptions on errors.
-             */
-            virtual void Exec (const String& sql) = 0;
         };
 
     }

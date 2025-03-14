@@ -56,6 +56,10 @@ namespace Stroika::Foundation::Database::Document::SQLite {
     {
         return Debug::UncheckedDynamicPointerCast<IRep> (_fRep)->Peek ();
     }
+    inline void Connection::Ptr::Exec (const String& sql)
+    {
+        this->operator->()->Exec (sql);
+    }
 #endif
 
 }

@@ -285,6 +285,11 @@ namespace Stroika::Foundation::Database::Document::SQLite {
              */
             Common::Property<JournalModeType> journalMode;
 
+        public:
+            /**
+             */
+            nonvirtual void Exec (const String& sql);
+
         private:
             friend class Statement;
         };
@@ -341,6 +346,11 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             /**
              */
             virtual void SetJournalMode (JournalModeType journalMode) = 0;
+
+        public:
+            /**
+             */
+            virtual void Exec (const String& sql) = 0;
 
         public:
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;

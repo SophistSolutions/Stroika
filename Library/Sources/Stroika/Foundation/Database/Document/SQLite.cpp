@@ -260,11 +260,11 @@ namespace {
         {
             return {};
         }
-        virtual void CreateCollection (const String& name)
+        virtual void CreateCollection (const String& name) override
         {
             AssertNotImplemented ();
         }
-        virtual void DropCollection (const String& name)
+        virtual void DropCollection (const String& name) override
         {
             AssertNotImplemented ();
         }
