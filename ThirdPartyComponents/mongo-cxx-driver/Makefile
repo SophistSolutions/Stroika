@@ -65,8 +65,17 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0/mongoc.h						\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc					\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongoc-static-1.0.pc				\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx-static.pc							\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx-static.pc						\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx-static.pc					\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx-static.pc					\
+
+
+
+#PKG_CONFIG_STROIKA_DEPENDS_ON filter to avoid warnings about missing/incomplete stuff from stuff being built but not ready yet...
+#NB: CFLAGS - for example = depends on PKG_CONFIG_STROIKA_DEPENDS_ON
+# ONLY include in PKG_CONFIG_STROIKA_DEPENDS_ON stuff we use here (zlib and openssl)
+PKG_CONFIG_STROIKA_DEPENDS_ON := $(filter zlib openssl,$(PKG_CONFIG_STROIKA_DEPENDS_ON))
+
+
 
 all:
 ifeq (${CONFIGURATION},)
