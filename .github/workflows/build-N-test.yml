@@ -113,19 +113,26 @@ jobs:
           mkdir -p \
             "${ARTIFACTS_DIR_BUILDLOGS}" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/sqlite/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/"
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/GoogleTest/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/sqlite/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/sqlite/" || :
