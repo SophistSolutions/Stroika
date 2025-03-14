@@ -409,7 +409,7 @@ sub WriteStroikaConfigMakeHeader
 			print (OUT "LinkerArgs_LibDependencies += `pkg-config --msvc-syntax --static --libs \${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
 		}
 		else {
-			print (OUT "LinkerArgs_LibDependencies += `pkg-config --static --libs $PkgConfigNames`\n");
+			print (OUT "LinkerArgs_LibDependencies += `pkg-config --static --libs \${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
 		}
 
 		#NOT GREAT but perhaps workable... --LGP 2025-03-12
