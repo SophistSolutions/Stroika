@@ -405,20 +405,21 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LINKER");
 
 	print (OUT "\n\n# Extra dynamically computed link(cppflags) lines\n");
+	#NB: delay evaluation of PKG_CONFIG_STROIKA_DEPENDS_ON until last minute, as its value can change (thats why double dollar sign)
 	if (not (trim($PkgConfigNames) eq "")) {
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			print (OUT "LinkerArgs_LibDependencies += `pkg-config --msvc-syntax --static --libs \${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
+			print (OUT "LinkerArgs_LibDependencies += `pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
 		}
 		else {
-			print (OUT "LinkerArgs_LibDependencies += `pkg-config --static --libs \${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
+			print (OUT "LinkerArgs_LibDependencies += `pkg-config --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
 		}
 
 		#NOT GREAT but perhaps workable... --LGP 2025-03-12
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			print (OUT "CPPFLAGS +=\$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(pkg-config --cflags \${PKG_CONFIG_STROIKA_DEPENDS_ON}))\n");
+			print (OUT "CPPFLAGS += \$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}))\n");
 		}
 		else {
-			print (OUT "CPPFLAGS +=\$\$(pkg-config --cflags \${PKG_CONFIG_STROIKA_DEPENDS_ON})\n");
+			print (OUT "CPPFLAGS += \$\$(pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})\n");
 		}	
 	}
 
