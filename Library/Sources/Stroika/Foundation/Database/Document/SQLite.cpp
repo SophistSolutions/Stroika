@@ -274,7 +274,7 @@ namespace {
             Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
             return Database::Document::SQLite::Transaction{conn};
         }
-        nonvirtual void Exec (const String& sql)
+        virtual void Exec (const String& sql) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             [[maybe_unused]] char* db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
