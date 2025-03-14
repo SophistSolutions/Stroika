@@ -42,6 +42,9 @@ CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 endif
 
 
+CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
+
+
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
 else
@@ -62,8 +65,8 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0/mongoc.h						\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc					\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongoc-static-1.0.pc				\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx.pc							\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx.pc						\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx-static.pc							\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx-static.pc						\
 
 all:
 ifeq (${CONFIGURATION},)
@@ -112,8 +115,8 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
 	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
 	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx.pc"
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx.pc"
+	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
+	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
 endif
 
 

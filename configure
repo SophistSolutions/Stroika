@@ -783,10 +783,10 @@ sub     FillDefaultLibDependencies_
 			push (@packageCfgNames, "libxml-2.0");
 		}
 		if ($FEATUREFLAG_mongocxxdriver ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "libbson-static-1.0");
-			push (@packageCfgNames, "libmongoc-static-1.0");
-			push (@packageCfgNames, "libbsoncxx");
-			push (@packageCfgNames, "libmongocxx");
+			# push (@packageCfgNames, "libbson-static-1.0");
+			# push (@packageCfgNames, "libmongoc-static-1.0");
+			# push (@packageCfgNames, "libbsoncxx-static");
+			push (@packageCfgNames, "libmongocxx-static");
 		}
 
 		#	$ pkg-config --static --libs openssl
