@@ -60,6 +60,13 @@ sub indexOf
 	return -1;
 }
 
+sub hasPython_
+{
+	## python sometimes called python, sometimes called python3
+	`(python &>/dev/null < /dev/null) || (python3 &>/dev/null < /dev/null)`;
+	return $? eq 0;
+}
+
 
 my $PATH_SEPERATOR=":";
 if ("$^O" eq "cygwin" or "$^O" eq "msys") {
@@ -246,11 +253,9 @@ sub	DoSetThirdPartyComponents_
 		}
 		if (!$mongoAlreadySet) {
 			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
-			`python > /dev/null 2>/dev/null < /dev/null`;
-			if (!($? eq 0)) {
-				$mongoAlreadySet = true;
+			if (hasPython_()) {
+				$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
 			}
-			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 	}
 	elsif ($x eq "default") {
