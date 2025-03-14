@@ -322,10 +322,34 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_PLATFORM_INCLUDES_PATH");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS_NOTINCLUDES");
-	###WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
+
+	my $CPPFLAGS2WRITE = $CPPFLAGS;
+	my $LinkerArgs_LibDependencies2WRITE = $LinkerArgs_LibDependencies;
 	{
-		print (OUT "#COMBINATION of CPPFLAGS_NOTINCLUDES and processed INCLUDES_PATH\n");
-		print (OUT "CPPFLAGS := $CPPFLAGS\n");
+		#NB: delay evaluation of PKG_CONFIG_STROIKA_DEPENDS_ON until last minute, as its value can change (thats why double dollar sign)
+		if (not (trim($PkgConfigNames) eq "")) {
+			# NOTE intention is pkg-config to be evaluated at the point of use, so any changes to PKG_CONFIG_STROIKA_DEPENDS_ON applied
+			if ($BuildPlatform =~ /^VisualStudio.Net/) {
+				$LinkerArgs_LibDependencies2WRITE .=  " `pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`";
+			}
+			else {
+				$LinkerArgs_LibDependencies2WRITE .=  " `pkg-config --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`";
+			}
+			#NOT GREAT but perhaps workable... --LGP 2025-03-12
+			if ($BuildPlatform =~ /^VisualStudio.Net/) {
+				$CPPFLAGS2WRITE .=  " \$\$(\${StroikaRoot}ScriptsLib/FixupDashIs `pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`)";
+			}
+			else {
+				$CPPFLAGS2WRITE .=  " `pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`";
+			}	
+		}
+	}
+
+
+	{
+		###WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
+		print (OUT "#COMBINATION of CPPFLAGS_NOTINCLUDES and processed INCLUDES_PATH and pkgConfig subst dynamically\n");
+		print (OUT "CPPFLAGS := $CPPFLAGS2WRITE\n");
 		print (OUT "\n");
 	}
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
@@ -394,7 +418,8 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n\n");
 	print (OUT "#Linker flags\n");
 	print (OUT "LinkerArgs_LibPath := $LinkerArgs_LibPath\n");
-	print (OUT "LinkerArgs_LibDependencies := $LinkerArgs_LibDependencies\n");
+	print (OUT "#LinkerArgs_LibDependencies from configfile + pkg-config\n");
+	print (OUT "LinkerArgs_LibDependencies := $LinkerArgs_LibDependencies2WRITE\n");
 	print (OUT "#\n");
 	print (OUT "LinkerArgs_ExtraPrefix :=	$LinkerArgs_ExtraPrefix\n");
 	print (OUT "LinkerArgs_ExtraSuffix :=	$LinkerArgs_ExtraSuffix\n");
@@ -403,25 +428,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "IncludeDebugSymbolsInLibraries :=	$IncludeDebugSymbolsInLibraries\n");
 	print (OUT "#Linker-Driver\n");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LINKER");
-
-	print (OUT "\n\n# Extra dynamically computed link(cppflags) lines\n");
-	#NB: delay evaluation of PKG_CONFIG_STROIKA_DEPENDS_ON until last minute, as its value can change (thats why double dollar sign)
-	if (not (trim($PkgConfigNames) eq "")) {
-		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			print (OUT "LinkerArgs_LibDependencies += `pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
-		}
-		else {
-			print (OUT "LinkerArgs_LibDependencies += `pkg-config --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}`\n");
-		}
-
-		#NOT GREAT but perhaps workable... --LGP 2025-03-12
-		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			print (OUT "CPPFLAGS += \$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}))\n");
-		}
-		else {
-			print (OUT "CPPFLAGS += \$\$(pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})\n");
-		}	
-	}
 
 	print (OUT "\n\n#File Suffixes");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LIB_SUFFIX");
