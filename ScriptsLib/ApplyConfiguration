@@ -330,7 +330,7 @@ sub WriteStroikaConfigMakeHeader
 		if (not (trim($PkgConfigNames) eq "")) {
 			# NOTE intention is pkg-config to be evaluated at the point of use, so any changes to PKG_CONFIG_STROIKA_DEPENDS_ON applied
 			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})`";
+				$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
 			}
 			else {
 				$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
