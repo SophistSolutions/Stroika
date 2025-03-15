@@ -17,6 +17,8 @@ ifneq (${CONFIGURATION},)
 include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
 
+SHELL=/bin/bash
+
 
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/mongodb/mongo-cxx-driver/tags or https://github.com/mongodb/mongo-cxx-driver/releases
@@ -35,11 +37,9 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 ## Crazy but mongo build script depends on python, needs to know version, and provides very long elaborate script to find the
-## version, but it doesn't work --LGP 2025-03-10
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-PYTHON_VERSION_= $(shell (python --version 2>/dev/null|| python3 --version) | awk '{print $$2}')
+## version, but it sometimes doesn't work --LGP 2025-03-10
+PYTHON_VERSION_= $(shell (python --version 2>/dev/null || python3 --version 2>/dev/null) | awk '{print $$2}')
 CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
-endif
 
 
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
@@ -66,7 +66,7 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc					\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongoc-static-1.0.pc				\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx-static.pc					\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx-static.pc					\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx-static.pc
 
 
 
@@ -103,6 +103,7 @@ endif
 	@${MAKE} --silent CURRENT
 
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
+	@if [[ "${PYTHON_VERSION_}" == "" ]] ; then echo "PYTHON_VERSION_ not set"; exit 1; fi
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
 	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
@@ -175,5 +176,8 @@ ifeq (${CONFIGURATION},)
 	# @rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/ThirdPartyComponents/include/{zlib,zconf}.h
 	@rm -rf CURRENT
 else
-	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_} ${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/lib/{bson*,mongo*} ${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/include/{bsoncxx,libbson-1.0,libmongoc-1.0,mongocxx} 
+	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}
+	@rm -rf	${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/lib/{*bson*,*mongo*}
+	@rm -rf	${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/lib/pkgconfig/{*bson*,*mongo*}
+	@rm -rf	${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/include/{*bson*,*mongoc*} 
 endif
