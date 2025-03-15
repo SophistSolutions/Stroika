@@ -131,6 +131,7 @@ jobs:
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/libxml2/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/lzma/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/lzma/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/CMakeCache.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/mongo-cxx-driver/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/openssl/CONFIG-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" || :
