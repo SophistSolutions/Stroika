@@ -60,6 +60,12 @@ CMAKE_PER_TARGET_BUILD_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,
 
 
 CMAKE_ARGS=
+
+# Verbose output to debug cmake processing
+# 		https://stackoverflow.com/questions/57999508/verbose-output-for-cmake-command
+# CMAKE_ARGS+= --trace
+# CMAKE_ARGS+= --debug-output
+
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
 ifeq (Unix,$(BuildPlatform))
 #for reasons I didn't investigate, CMAKE appears to require this to be a full path (CMAKE_C_COMPILER etc...) -- LGP 2019-01-04
@@ -82,8 +88,13 @@ else
 $(error "unsupported version of visual studio.net")
 endif
 endif
-
-
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+ifeq (1,$(AssertionsEnabled))
+CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDebug
+else
+CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+endif
+endif
 CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
 
