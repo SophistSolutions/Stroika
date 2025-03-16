@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         /**
          *  Connection provides an API for accessing an MongoDBClient database.
          * 
-         *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
+         *  Typically don't use this directly, but use Connection::Ptr, a smart ptr wrapper on this interface.
          */
         class IRep : public Document::Connection::IRep {
         public:
