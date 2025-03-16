@@ -40,6 +40,7 @@ using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
@@ -759,6 +760,27 @@ namespace {
             PRIVATE_::ThreadTest_ (Connection::Options{.fDBPath = dbPath, .fThreadingMode = Connection::Options::ThreadingMode::eMultiThread});
         }
     }
+}
+#endif
+
+#if qStroika_HasComponent_mongocxxdriver
+GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
+{
+    TraceContextBumper ctx{"SimpleMongoDBClientTest_"};
+    static const String   kTestConnectionString_ = "mongodb://localhost:27017";
+    using namespace Database::Document::MongoDBClient;
+
+    Activator activator;    // must exist while using this library
+
+    try {
+        Connection::Ptr p = Connection::New (Connection::Options{.fConnectionString = kTestConnectionString_});
+        Set<String> c = p->GetCollections ();
+        DbgTrace ("c={}"_f, c);
+    }
+    catch (...) {
+        // test warning no mongo on address X so test skipped
+    }
+
 }
 #endif
 
