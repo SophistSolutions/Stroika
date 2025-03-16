@@ -20,6 +20,12 @@ endif
 SHELL=/bin/bash
 
 
+#not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
+# make clobber all you don't want those to happen at the same time. And make libraries samples wouldn't really work since all the libraries
+# have to be built before the samples etc...
+.NOTPARALLEL:
+
+
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/mongodb/mongo-cxx-driver/tags or https://github.com/mongodb/mongo-cxx-driver/releases
 #
@@ -123,10 +129,13 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
-	@sed -i "s/^prefix=.*\$$/\prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
 endif
 
 
