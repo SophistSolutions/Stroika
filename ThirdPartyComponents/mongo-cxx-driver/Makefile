@@ -178,6 +178,7 @@ ifeq (${CONFIGURATION},)
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}
 	@rm -rf	${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/lib/{*bson*,*mongo*}
+	@rm -rf	${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/lib/cmake/{*bson*,*mongoc*} 
 	@rm -rf	${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/lib/pkgconfig/{*bson*,*mongo*}
 	@rm -rf	${StroikaRoot}Builds/${CONFIGURATION}/ThirdPartyComponents/include/{*bson*,*mongoc*} 
 endif
