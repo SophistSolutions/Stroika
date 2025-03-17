@@ -19,6 +19,7 @@ endif
 vpath %cpp $(SrcDir)
 
 Objs	:=	\
+	$(ObjDir)Collection${OBJ_SUFFIX}\
 	$(ObjDir)Connection${OBJ_SUFFIX}\
 	$(ObjDir)MongoDBClient${OBJ_SUFFIX}\
 	$(ObjDir)SQLite${OBJ_SUFFIX}\

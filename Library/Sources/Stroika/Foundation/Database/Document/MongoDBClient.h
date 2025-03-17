@@ -9,6 +9,7 @@
 #if qStroika_HasComponent_mongocxxdriver
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
+// #include <mongocxx/v_noabi/mongocxx/collection.hpp>
 #include <mongocxx/exception/exception.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
@@ -133,14 +134,14 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
             /**
              *  Connection string does not contain database name. Different from Mongo API, we choose to require a database name
-             *  in the connection options (prohibiting cross database operations - at least for now).
+             *  in the connection options. Use AdminConnection to operate on server itself, not a particular database.
              * 
              */
             String fDatabase;
         };
 
         /**
-         *  Connection provides an API for accessing an ODBC database.
+         *  Connection provides an API for accessing a particular MongoDB database.
          *
          *  A new Connection::Ptr is typically created MongoDBClient::Connection::New()
          */
@@ -170,7 +171,6 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         };
 
         /**
-         *  The dbInitializer is called IFF the New () call results in a newly created database (@todo RECONSIDER).
          */
         Ptr New (const Options& options);
 

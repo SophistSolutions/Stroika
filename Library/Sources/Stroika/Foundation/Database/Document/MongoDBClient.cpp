@@ -59,9 +59,7 @@ namespace {
         {
             TraceContextBumper ctx{"Document::MongoDBClient::AdminConnection::Rep_::Rep_"};
         }
-        ~AdminRep_ ()
-        {
-        }
+        ~AdminRep_ () = default;
 
         // MongoDBClient::Connection::IRep overrides
     public:
@@ -103,9 +101,7 @@ namespace {
                 fDatabase = mongocxx::database{fClient_.database (options.fDatabase.AsUTF8<string> ())};
             }
         }
-        ~ConnectionRep_ ()
-        {
-        }
+        ~ConnectionRep_ () = default;
 
         // Document::Connection::IRep overrides
     public:
@@ -141,6 +137,10 @@ namespace {
         {
             Require (fDatabase); // caller must specify a database in connection options
             fDatabase->collection (name.AsUTF8<string> ()).drop ();
+        }
+        virtual Document::Collection::Ptr GetCollection (const String& name) override
+        {
+            return Document::Collection::Ptr{nullptr}; // @todo - implement this!
         }
         virtual Document::Transaction mkTransaction () override
         {

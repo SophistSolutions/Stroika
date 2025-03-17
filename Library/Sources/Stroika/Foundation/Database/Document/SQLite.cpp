@@ -268,6 +268,10 @@ namespace {
         {
             AssertNotImplemented ();
         }
+        virtual Document::Collection::Ptr GetCollection (const String& name) override
+        {
+            return Document::Collection::Ptr{nullptr}; // @todo - implement this!
+        }
         virtual Document::Transaction mkTransaction () override
 
         {

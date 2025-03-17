@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Database/Document/Collection.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 /**
@@ -30,13 +31,13 @@ namespace Stroika::Foundation::Database::Document {
 
     class Transaction;
     class EngineProperties;
-    class Statement;
 
-    namespace Connection {
+}
+namespace Stroika::Foundation::Database::Document::Connection {
 
-        class IRep;
+    class IRep;
 
-        /**
+    /**
          *  Connection::Ptr provides an API for accessing a document database.
          * 
          *  A new Connection::Ptr is typically created with SOME_SERVICE::Connection::New () (e.g. SQLite::Connection::New() or MongoDBClient::Connection::New ())
@@ -48,87 +49,88 @@ namespace Stroika::Foundation::Database::Document {
          *          The Connection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
          *          shared_ptr<IRep> was created.
          */
-        class Ptr {
-        public:
-            /**
+    class Ptr {
+    public:
+        /**
              */
-            Ptr (const Ptr& src);
-            Ptr (const shared_ptr<IRep>& src = nullptr);
+        Ptr (const Ptr& src);
+        Ptr (const shared_ptr<IRep>& src = nullptr);
 
-        public:
-            ~Ptr () = default;
+    public:
+        ~Ptr () = default;
 
-        public:
-            /**
+    public:
+        /**
              */
-            nonvirtual Ptr& operator= (const Ptr& src);
-            nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+        nonvirtual Ptr& operator= (const Ptr& src);
+        nonvirtual Ptr& operator= (Ptr&& src) noexcept;
 
-        public:
-            /**
+    public:
+        /**
              */
-            nonvirtual IRep* operator->() const noexcept;
+        nonvirtual IRep* operator->() const noexcept;
 
-        public:
-            /**
+    public:
+        /**
              *  Transaction object factory
              * 
              *  The reason you might use this instead of SQLite::Transaction{} - is in writing generic code
              *  that doesn't depend on the particular kind of SQL database you are connected to (e.g. that
              *  might be used for ODBC or SQLite).
              */
-            nonvirtual Transaction mkTransaction ();
+        nonvirtual Transaction mkTransaction ();
 
-        public:
-            /**
+    public:
+        /**
              *  @see Characters::ToString ()
              */
-            nonvirtual String ToString () const;
+        nonvirtual String ToString () const;
 
-        public:
-            nonvirtual auto operator== (const Ptr& rhs) const;
-            nonvirtual bool operator== (nullptr_t) const noexcept;
+    public:
+        nonvirtual auto operator== (const Ptr& rhs) const;
+        nonvirtual bool operator== (nullptr_t) const noexcept;
 
-        public:
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+    public:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
 
-        protected:
-            shared_ptr<IRep> _fRep;
-        };
+    protected:
+        shared_ptr<IRep> _fRep;
+    };
 
-        /**
+    /**
          *  Connection::IRep provides an (abstract) API for accessing an SQL database.
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
          */
-        class IRep : public enable_shared_from_this<IRep> {
-        public:
-            /**
+    class IRep : public enable_shared_from_this<IRep> {
+    public:
+        /**
              */
-            virtual ~IRep () = default;
+        virtual ~IRep () = default;
 
-        public:
-            /**
+    public:
+        /**
              *  Transaction object factory
              */
-            virtual Transaction mkTransaction () = 0;
+        virtual Transaction mkTransaction () = 0;
 
-        public:
-            /**
+    public:
+        /**
              */
-            virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
+        virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
 
-        public:
-            virtual Set<String> GetCollections () const = 0;
+    public:
+        virtual Set<String> GetCollections () const = 0;
 
-        public:
-            virtual void CreateCollection (const String& name) = 0;
+    public:
+        virtual void CreateCollection (const String& name) = 0;
 
-        public:
-            virtual void DropCollection (const String& name) = 0;
-        };
+    public:
+        virtual void DropCollection (const String& name) = 0;
 
-    }
+    public:
+        virtual Collection::Ptr GetCollection (const String& name) = 0;
+    };
 
 }
 

@@ -1,0 +1,121 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
+ */
+#ifndef _Stroika_Foundation_Database_Document_Collection_h_
+#define _Stroika_Foundation_Database_Document_Collection_h_ 1
+
+#include "Stroika/Foundation/StroikaPreComp.h"
+
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+
+/**
+ *  \file
+ * 
+ *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ */
+
+namespace Stroika::Foundation::Database::Document {
+
+    using Characters::String;
+    using Containers::Set;
+    using DataExchange::VariantValue;
+    using Traversal::Iterable;
+
+}
+
+namespace Stroika::Foundation::Database::Document::Collection {
+
+    class IRep;
+
+    /**
+     *  Connection::Ptr provides an API for accessing a document database.
+     * 
+     *  A new Connection::Ptr is typically created with SOME_SERVICE::Connection::New () (e.g. SQLite::Connection::New() or MongoDBClient::Connection::New ())
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
+     *          threadsafe (even if accessed across processes).
+     *
+     *          The Collection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
+     *          shared_ptr<IRep> was created.
+     */
+    class Ptr : shared_ptr<IRep> {
+    private:
+        using inherited = shared_ptr<IRep>;
+
+    public:
+        /**
+             */
+        Ptr (const Ptr& src) = default;
+        Ptr (const shared_ptr<IRep>& src);
+
+    public:
+        ~Ptr () = default;
+
+    public:
+        /**
+             */
+        nonvirtual Ptr& operator= (const Ptr& src);
+        nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+
+    public:
+        /**
+             */
+        nonvirtual IRep* operator->() const noexcept;
+
+    public:
+        /**
+             *  @see Characters::ToString ()
+             */
+        nonvirtual String ToString () const;
+
+    public:
+        nonvirtual auto operator== (const Ptr& rhs) const;
+        nonvirtual bool operator== (nullptr_t) const noexcept;
+
+    public:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+    };
+
+    /**
+         *  Collection::IRep provides an (abstract) API for accessing a collection (aka table) of a document database.
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
+         */
+    class IRep : public enable_shared_from_this<IRep> {
+    public:
+        /**
+             */
+        virtual ~IRep () = default;
+
+    public:
+        virtual void AddDocument (const optional<String>& id, const VariantValue& v) = 0;
+
+    public:
+        /**
+         * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
+         */
+        virtual VariantValue GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
+                                          const optional<Iterable<String>>& omitTheseFields) = 0;
+
+    public:
+        virtual void UpdateDocument (const String& id, const VariantValue& newV, const optional<Iterable<String>>& onlyTheseFields) = 0;
+
+    public:
+        virtual void DeleteDocument (const String& id) = 0;
+    };
+
+}
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include "Collection.inl"
+
+#endif /*_Stroika_Foundation_Database_Document_Collection_h_*/
