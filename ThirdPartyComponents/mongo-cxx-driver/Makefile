@@ -51,6 +51,11 @@ CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 
 
+# NOT getting asan errors on windows - til we have basic function working - try disabling
+CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
+
+
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
 else
