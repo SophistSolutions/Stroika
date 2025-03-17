@@ -58,6 +58,63 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         mongocxx::instance fMongoInstance_;
     };
 
+    namespace AdminConnection {
+        class IRep;
+
+        /**
+         */
+        class Ptr : public shared_ptr<IRep> {
+        private:
+            using inherited = shared_ptr<IRep>;
+
+        public:
+            /**
+             */
+            Ptr (const Ptr& src) noexcept = default;
+            Ptr (const shared_ptr<IRep>& src = nullptr) noexcept;
+
+        public:
+            ~Ptr () noexcept = default;
+        };
+
+        /**
+         */
+        class IRep {
+        public:
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+
+        public:
+            virtual DataExchange::VariantValue run_command (const DataExchange::VariantValue& v) = 0;
+
+        public:
+            virtual Set<String> GetDatabases () = 0;
+
+        public:
+            virtual void DropDatabase (const String& dbName) = 0;
+
+        public:
+            virtual void CreateDatabase (const String& dbName) = 0;
+
+        private:
+            friend class Ptr;
+        };
+
+        /**
+         *  These are options used to create a database Connection::Ptr object (with Connection::New).
+         *
+         *  Since this is also how you create a database, in a sense, its those options too.
+         */
+        struct Options final {
+            /**
+             */
+            String fConnectionString;
+        };
+
+        /**
+         */
+        Ptr New (const Options& options);
+    }
+
     namespace Connection {
 
         using namespace Document::Connection;
@@ -73,6 +130,13 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
             /**
              */
             String fConnectionString;
+
+            /**
+             *  Connection string does not contain database name. Different from Mongo API, we choose to require a database name
+             *  in the connection options (prohibiting cross database operations - at least for now).
+             * 
+             */
+            String fDatabase;
         };
 
         /**
@@ -101,7 +165,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
         public:
             /**
-         */
+             */
             nonvirtual IRep* operator->() const noexcept;
         };
 
@@ -116,11 +180,6 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          *  Typically don't use this directly, but use Connection::Ptr, a smart ptr wrapper on this interface.
          */
         class IRep : public Document::Connection::IRep {
-        public:
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
-
-        public:
-            virtual void run_command (const DataExchange::VariantValue& v) = 0;
 
         private:
             friend class Ptr;

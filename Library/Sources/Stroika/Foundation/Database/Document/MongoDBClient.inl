@@ -9,6 +9,16 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 #if qStroika_HasComponent_mongocxxdriver
     /*
      ********************************************************************************
+     **************** Document::MongoDBClient::AdminConnection::Ptr *****************
+     ********************************************************************************
+     */
+    inline AdminConnection::Ptr::Ptr (const shared_ptr<IRep>& src) noexcept
+        : inherited{src}
+    {
+    }
+
+    /*
+     ********************************************************************************
      ******************* Document::MongoDBClient::Connection::Ptr *******************
      ********************************************************************************
      */

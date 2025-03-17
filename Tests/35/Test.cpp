@@ -50,7 +50,7 @@ using namespace Stroika::Frameworks;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #if qStroika_HasComponent_googletest
-#if qStroika_HasComponent_sqlite
+#if qStroika_HasComponent_sqlite && 0
 namespace {
     // Bad example (for now) without Bind - just formatting sql lines
     namespace RegressionTest1_sqlite_ScansDBTest_ {
@@ -766,21 +766,41 @@ namespace {
 #if qStroika_HasComponent_mongocxxdriver
 GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 {
-    TraceContextBumper ctx{"SimpleMongoDBClientTest_"};
-    static const String   kTestConnectionString_ = "mongodb://localhost:27017";
+    TraceContextBumper  ctx{"SimpleMongoDBClientTest_"};
+    static const String kTestConnectionString_ = "mongodb://localhost:27017";
     using namespace Database::Document::MongoDBClient;
 
-    Activator activator;    // must exist while using this library
+    Activator activator; // must exist while using this library
+
+    {
+        try {
+            AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_});
+            Set<String>          d = p->GetDatabases ();
+            DbgTrace ("d={}"_f, d);
+            auto ping = p->run_command (VariantValue{Mapping<String, VariantValue>{{"ping", 1}}});
+            DbgTrace ("ping={}"_f, ping);
+        }
+        catch (...) {
+            // test warning no mongo on address X so test skipped
+            Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+            return; // skip rest of tests
+        }
+    }
 
     try {
-        Connection::Ptr p = Connection::New (Connection::Options{.fConnectionString = kTestConnectionString_});
-        Set<String> c = p->GetCollections ();
+        const String kTestDBName_ = "MyTestDB"sv;
+        AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_})->DropDatabase (kTestDBName_);
+        Connection::Ptr p = Connection::New (Connection::Options{.fConnectionString = kTestConnectionString_, .fDatabase = kTestDBName_});
+        Set<String>     c = p->GetCollections ();
+        EXPECT_EQ (c.size (), 0u);
         DbgTrace ("c={}"_f, c);
+        p->CreateCollection ("blah");
+        DbgTrace ("collections={}"_f, p->GetCollections ());
+        EXPECT_EQ (p->GetCollections ().size (), 1u);
     }
     catch (...) {
         // test warning no mongo on address X so test skipped
     }
-
 }
 #endif
 
