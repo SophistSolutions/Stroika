@@ -93,7 +93,10 @@ namespace Stroika::Foundation::Database::Document::Collection {
         virtual ~IRep () = default;
 
     public:
-        virtual void AddDocument (const optional<String>& id, const VariantValue& v) = 0;
+        /**
+     * returns ID
+     */
+        virtual String AddDocument (const optional<String>& id, const VariantValue& v) = 0;
 
     public:
         /**

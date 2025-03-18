@@ -924,6 +924,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.cpp">
       <Filter>Sources\Database\Document</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\Collection.cpp">
+      <Filter>Sources\Database\Document</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2362,6 +2365,9 @@
       <Filter>Sources\Database\Document</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.h">
+      <Filter>Sources\Database\Document</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Collection.h">
       <Filter>Sources\Database\Document</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3902,6 +3908,9 @@
       <Filter>Sources\Database\Document</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.inl">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Collection.inl">
       <Filter>Sources\Database\Document</Filter>
     </None>
   </ItemGroup>

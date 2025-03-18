@@ -4,8 +4,19 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_mongocxxdriver
-#include <mongocxx/collection-fwd.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/string/to_string.hpp>
+#include <bsoncxx/types.hpp>
+#include <bsoncxx/types/bson_value/view.hpp>
+#include <bsoncxx/v_noabi/bsoncxx/document/value.hpp>
+#include <bsoncxx/v_noabi/bsoncxx/types/bson_value/value.hpp>
+#include <bsoncxx/v_noabi/bsoncxx/view_or_value.hpp>
+#include <mongocxx/collection.hpp>
+#include <mongocxx/exception/exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
+#include <mongocxx/uri.hpp>
+
 #endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -24,6 +35,7 @@ using namespace Stroika::Foundation::Database;
 using namespace Stroika::Foundation::Database::Document::MongoDBClient;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
+using namespace Stroika::Foundation::Execution;
 
 using Database::Document::EngineProperties;
 
@@ -35,7 +47,31 @@ using Database::Document::EngineProperties;
 
 #if qStroika_HasComponent_mongocxxdriver
 
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::make_array;
+using bsoncxx::builder::basic::make_document;
+
 namespace {
+    String bson_value_to_string_ (const bsoncxx::v_noabi::types::bson_value::view& value)
+    {
+        switch (value.type ()) {
+            case bsoncxx::v_noabi::type::k_string:
+                return String::FromUTF8 (span<const char8_t>{reinterpret_cast<const char8_t*> (value.get_string ().value.data ()),
+                                                             value.get_string ().value.size ()});
+            case bsoncxx::v_noabi::type::k_oid:
+                return String{value.get_oid ().value.to_string ()};
+            case bsoncxx::v_noabi::type::k_bool:
+                return value.get_bool () ? "true"_k : "false"_k;
+            case bsoncxx::v_noabi::type::k_int32:
+                return "{}"_f(value.get_int32 ());
+            case bsoncxx::v_noabi::type::k_int64:
+                return "{}"_f(value.get_int64 ());
+            case bsoncxx::v_noabi::type::k_double:
+                return "{}"_f(value.get_double ());
+            default:
+                throw std::invalid_argument ("Unsupported BSON type for string conversion");
+        }
+    }
     VariantValue FromBSON_ (const bsoncxx::v_noabi::document::value& b)
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
@@ -63,6 +99,10 @@ namespace {
 
         // MongoDBClient::Connection::IRep overrides
     public:
+        virtual mongocxx::client* get_client () override
+        {
+            return &fClient_;
+        }
         virtual VariantValue run_command (const VariantValue& v) override
         {
             mongocxx::database adminDB_;
@@ -89,17 +129,57 @@ namespace {
 
 namespace {
     struct ConnectionRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::Connection::IRep {
+        struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex; // @todo these fAssert... guys all muyst be linked togetoher since have internal pointers into each other
+            mongocxx::collection fCollection;
+
+            CollectionRep_ (ConnectionRep_& connectionRep, const String& collectionName)
+                : fCollection{connectionRep.fDatabase.collection (collectionName.AsUTF8<string> ())}
+            {
+            }
+            virtual String AddDocument (const optional<String>& id, const VariantValue& v) override
+            {
+                // auto insert_one_result = fCollection.insert_one(make_document(kvp("i", 0)));
+                if (auto insert_one_result = fCollection.insert_one (ToBSON_ (v))) {
+                    return bson_value_to_string_ (insert_one_result->inserted_id ());
+                }
+                Throw (RuntimeErrorException{"failed to add doc"});
+            }
+            virtual VariantValue GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
+                                              const optional<Iterable<String>>& omitTheseFields) override
+            {
+                bsoncxx::builder::basic::document filter_doc;
+                filter_doc.append (kvp ("_id", id.AsUTF8<string> ()));
+                auto result = fCollection.find_one (filter_doc.view ());
+                if (result) {
+                    return FromBSON_ (*result);
+                }
+                return VariantValue{};
+            }
+            virtual void UpdateDocument (const String& id, const VariantValue& newV, const optional<Iterable<String>>& onlyTheseFields) override
+            {
+                AssertNotImplemented ();
+            }
+            virtual void DeleteDocument (const String& id) override
+            {
+                bsoncxx::builder::basic::document filter_doc;
+                filter_doc.append (kvp ("_id", id.AsUTF8<string> ()));
+                auto result = fCollection.delete_one (filter_doc.view ());
+                // if (result && result->deleted_count() == 0) {
+                //     Throw (RuntimeErrorException{"failed to delete doc"});
+                // }
+            }
+        };
+
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
         mongocxx::client                                               fClient_;
-        mutable optional<mongocxx::database>                           fDatabase;
+        mongocxx::database                                             fDatabase;
 
         ConnectionRep_ (const Connection::Options& options)
             : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}} // @todo not sure about charset to map to?
+            , fDatabase{fClient_.database (options.fDatabase.AsUTF8<string> ())}
         {
-            TraceContextBumper ctx{"Document::MongoDBClient::Connection::Rep_::Rep_"};
-            if (options.fDatabase) {
-                fDatabase = mongocxx::database{fClient_.database (options.fDatabase.AsUTF8<string> ())};
-            }
+            TraceContextBumper ctx{"Document::MongoDBClient::Connection::ConnectionRep_::ConnectionRep_"};
         }
         ~ConnectionRep_ () = default;
 
@@ -116,11 +196,10 @@ namespace {
             };
             return make_shared<const MyEngineProperties_> (); // dynamic info based on connection/dsn
         }
-        virtual Set<String> GetCollections () const override
+        virtual Set<String> GetCollections () override
         {
-            Require (fDatabase); // caller must specify a database in connection options
             try {
-                vector<string> n = fDatabase->list_collection_names ();
+                vector<string> n = fDatabase.list_collection_names ();
                 return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; });
             }
             catch (const mongocxx::v_noabi::operation_exception& e) {
@@ -130,17 +209,15 @@ namespace {
         }
         virtual void CreateCollection (const String& name) override
         {
-            Require (fDatabase); // caller must specify a database in connection options
-            fDatabase->create_collection (name.AsUTF8<string> ());
+            fDatabase.create_collection (name.AsUTF8<string> ());
         }
         virtual void DropCollection (const String& name) override
         {
-            Require (fDatabase); // caller must specify a database in connection options
-            fDatabase->collection (name.AsUTF8<string> ()).drop ();
+            fDatabase.collection (name.AsUTF8<string> ()).drop ();
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
-            return Document::Collection::Ptr{nullptr}; // @todo - implement this!
+            return Document::Collection::Ptr{make_shared<CollectionRep_> (*this, name)};
         }
         virtual Document::Transaction mkTransaction () override
         {
@@ -151,6 +228,10 @@ namespace {
 
         // MongoDBClient::Connection::IRep overrides
     public:
+        virtual mongocxx::client* get_client () override
+        {
+            return &fClient_;
+        }
     };
 }
 

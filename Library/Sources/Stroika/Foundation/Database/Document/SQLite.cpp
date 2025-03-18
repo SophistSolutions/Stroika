@@ -256,7 +256,7 @@ namespace {
             static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
             return kProps_;
         }
-        virtual Set<String> GetCollections () const override
+        virtual Set<String> GetCollections () override
         {
             return {};
         }

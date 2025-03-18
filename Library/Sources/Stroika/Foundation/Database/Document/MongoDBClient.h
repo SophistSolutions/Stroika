@@ -7,12 +7,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_mongocxxdriver
-#include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
-// #include <mongocxx/v_noabi/mongocxx/collection.hpp>
-#include <mongocxx/exception/exception.hpp>
 #include <mongocxx/instance.hpp>
-#include <mongocxx/uri.hpp>
 #endif
 
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
@@ -86,6 +82,9 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
         public:
             virtual DataExchange::VariantValue run_command (const DataExchange::VariantValue& v) = 0;
+
+        public:
+            virtual mongocxx::client* get_client () = 0;
 
         public:
             virtual Set<String> GetDatabases () = 0;
@@ -180,7 +179,10 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          *  Typically don't use this directly, but use Connection::Ptr, a smart ptr wrapper on this interface.
          */
         class IRep : public Document::Connection::IRep {
+        public:
+            virtual mongocxx::client* get_client () = 0;
 
+        public:
         private:
             friend class Ptr;
         };

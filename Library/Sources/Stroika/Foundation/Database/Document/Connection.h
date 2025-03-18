@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
 
     public:
-        virtual Set<String> GetCollections () const = 0;
+        virtual Set<String> GetCollections () = 0;
 
     public:
         virtual void CreateCollection (const String& name) = 0;
