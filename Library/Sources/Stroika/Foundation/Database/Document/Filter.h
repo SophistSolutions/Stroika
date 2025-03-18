@@ -54,6 +54,8 @@ namespace Stroika::Foundation::Database::Document {
          */
         using Operatation = variant<Equals>;
 
+        bool Matches (const Operatation& op, const Database::Document::Document& doc);
+
     }
 
     /**

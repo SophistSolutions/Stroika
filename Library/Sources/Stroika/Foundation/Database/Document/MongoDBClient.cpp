@@ -95,10 +95,14 @@ namespace {
      * @param filter 
      * @return tuple<bsoncxx::document,Filter> 
      */
-    tuple<bsoncxx::document::value, optional<Filter>> Parse_ (const Filter& filter)
+    tuple<optional<bsoncxx::document::value>, optional<Filter>> Parse_ (const optional<Filter>& filter)
     {
-        // NYI - just return empty for now
-        return make_tuple (make_document (), filter);
+        if (filter) {
+            // NYI - just return empty for now
+            // make_document ()
+            return make_tuple (nullopt, filter);
+        }
+        return make_tuple (nullopt, nullopt);
     }
 }
 
@@ -107,15 +111,18 @@ namespace {
      * Break the given Stroika filter into parts that can be remoted to MongoDB, and parts that must be handled locally
      * 
      * @param filter 
-     * @return tuple<bsoncxx::document,Filter> 
+     * @return tuple<optional<bsoncxx::document::value>, optional<Projection>> 
      * 
      * 
      * SEE https://stackoverflow.com/questions/62704615/mongodb-projection-on-c
      */
-    tuple<bsoncxx::document::value, optional<Projection>> Parse_ (const Projection& p)
+    tuple<optional<bsoncxx::document::value>, optional<Projection>> Parse_ (const optional<Projection>& p)
     {
         // NYI - just return empty for now
-        return make_tuple (make_document (), p);
+        if (p) {
+            return make_tuple (nullopt, p);
+        }
+        return make_tuple (nullopt, nullopt);
     }
 }
 
@@ -184,14 +191,22 @@ namespace {
                 bsoncxx::builder::basic::document filter_doc;
                 filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
                 //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
+                auto [mongoProjection, myProjection] = Parse_ (projection);
+                // @todo support mongoProjection - {{a: 1, b:0}} etc...
                 auto result = fCollection.find_one (filter_doc.view ());
                 if (result) {
-                    return FromBSON_ (*result);
+                    auto rr = FromBSON_ (*result);
+                    if (myProjection) {
+                        rr = myProjection->Apply (rr);
+                    }
+                    return rr;
                 }
                 return nullopt;
             }
             virtual Sequence<Document::Document> GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
+                auto [mongoFilter, myFilter]         = Parse_ (filter);
+                auto [mongoProjection, myProjection] = Parse_ (projection);
                 bsoncxx::builder::basic::document filter_doc;
                 //filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
                 //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
