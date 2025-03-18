@@ -50,6 +50,8 @@ using Database::Document::EngineProperties;
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_array;
 using bsoncxx::builder::basic::make_document;
+using bsoncxx::builder::basic::sub_array;
+using bsoncxx::builder::basic::sub_document;
 
 namespace {
     String bson_value_to_string_ (const bsoncxx::v_noabi::types::bson_value::view& value)
@@ -137,7 +139,7 @@ namespace {
                 : fCollection{connectionRep.fDatabase.collection (collectionName.AsUTF8<string> ())}
             {
             }
-            virtual String AddDocument (const optional<String>& id, const VariantValue& v) override
+            virtual String AddDocument (const VariantValue& v) override
             {
                 // auto insert_one_result = fCollection.insert_one(make_document(kvp("i", 0)));
                 if (auto insert_one_result = fCollection.insert_one (ToBSON_ (v))) {
@@ -145,16 +147,28 @@ namespace {
                 }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
-            virtual VariantValue GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
-                                              const optional<Iterable<String>>& omitTheseFields) override
+            virtual optional<VariantValue> GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
+                                                        const optional<Iterable<String>>& omitTheseFields) override
             {
                 bsoncxx::builder::basic::document filter_doc;
-                filter_doc.append (kvp ("_id", id.AsUTF8<string> ()));
+                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
+                //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
                 auto result = fCollection.find_one (filter_doc.view ());
                 if (result) {
                     return FromBSON_ (*result);
                 }
-                return VariantValue{};
+                return nullopt;
+            }
+            virtual Sequence<VariantValue> GetDocuments (const optional<Iterable<String>>& onlyTheseFields,
+                                                         const optional<Iterable<String>>& omitTheseFields) override
+            {
+                bsoncxx::builder::basic::document filter_doc;
+                //filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
+                //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
+                Sequence<VariantValue> result;
+                auto                   rresult = fCollection.find (filter_doc.view ());
+                // NYI
+                return result;
             }
             virtual void UpdateDocument (const String& id, const VariantValue& newV, const optional<Iterable<String>>& onlyTheseFields) override
             {
@@ -163,11 +177,11 @@ namespace {
             virtual void DeleteDocument (const String& id) override
             {
                 bsoncxx::builder::basic::document filter_doc;
-                filter_doc.append (kvp ("_id", id.AsUTF8<string> ()));
+                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
                 auto result = fCollection.delete_one (filter_doc.view ());
-                // if (result && result->deleted_count() == 0) {
-                //     Throw (RuntimeErrorException{"failed to delete doc"});
-                // }
+                if (result && result->deleted_count () == 0) {
+                    Throw (RuntimeErrorException{"failed to delete doc"});
+                }
             }
         };
 

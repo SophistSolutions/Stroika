@@ -768,6 +768,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 {
     TraceContextBumper  ctx{"SimpleMongoDBClientTest_"};
     static const String kTestConnectionString_ = "mongodb://localhost:27017";
+    using namespace Database::Document;
     using namespace Database::Document::MongoDBClient;
 
     Activator activator; // must exist while using this library
@@ -790,13 +791,19 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
     try {
         const String kTestDBName_ = "MyTestDB"sv;
         AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_})->DropDatabase (kTestDBName_);
-        Connection::Ptr p = Connection::New (Connection::Options{.fConnectionString = kTestConnectionString_, .fDatabase = kTestDBName_});
-        Set<String>     c = p->GetCollections ();
-        EXPECT_EQ (c.size (), 0u);
-        DbgTrace ("c={}"_f, c);
+        Document::Connection::Ptr p = MongoDBClient::Connection::New (
+            MongoDBClient::Connection::Options{.fConnectionString = kTestConnectionString_, .fDatabase = kTestDBName_});
+        EXPECT_EQ (p->GetCollections ().size (), 0u);
         p->CreateCollection ("blah");
         DbgTrace ("collections={}"_f, p->GetCollections ());
-        EXPECT_EQ (p->GetCollections ().size (), 1u);
+        EXPECT_EQ (p->GetCollections (), Set<String>{"blah"});
+        Document::Collection::Ptr blah       = p->GetCollection ("blah");
+        const VariantValue        kTestObj1_ = VariantValue{Mapping<String, VariantValue>{{"x", 7}}};
+        auto                      id         = blah->AddDocument (kTestObj1_);
+        DbgTrace ("Added doc {}"_f, id);
+        VariantValue roundTripped = blah->GetDocument (id, nullopt, nullopt).value_or (VariantValue{});
+        DbgTrace ("roundTripped  get value={}"_f, roundTripped);
+        //EXPECT_EQ (kTestObj1_, roundTripped);
     }
     catch (...) {
         // test warning no mongo on address X so test skipped

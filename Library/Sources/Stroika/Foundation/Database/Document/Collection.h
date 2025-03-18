@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
@@ -21,6 +22,7 @@
 namespace Stroika::Foundation::Database::Document {
 
     using Characters::String;
+    using Containers::Sequence;
     using Containers::Set;
     using DataExchange::VariantValue;
     using Traversal::Iterable;
@@ -94,18 +96,29 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-     * returns ID
-     */
-        virtual String AddDocument (const optional<String>& id, const VariantValue& v) = 0;
+         * returns ID
+         */
+        virtual String AddDocument (const VariantValue& v) = 0;
 
     public:
         /**
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
+         * overload with id returns exactly that one, or nullopt if missing.
          */
-        virtual VariantValue GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
-                                          const optional<Iterable<String>>& omitTheseFields) = 0;
+        virtual optional<VariantValue> GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
+                                                    const optional<Iterable<String>>& omitTheseFields) = 0;
 
     public:
+        /**
+         * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
+         * overload with no id returns all.
+         */
+        virtual Sequence<VariantValue> GetDocuments (const optional<Iterable<String>>& onlyTheseFields,
+                                                     const optional<Iterable<String>>& omitTheseFields) = 0;
+
+    public:
+        /**
+         */
         virtual void UpdateDocument (const String& id, const VariantValue& newV, const optional<Iterable<String>>& onlyTheseFields) = 0;
 
     public:
