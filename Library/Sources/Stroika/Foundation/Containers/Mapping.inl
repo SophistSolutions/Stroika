@@ -267,7 +267,6 @@ namespace Stroika::Foundation::Containers {
     inline size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE&& start, ITERATOR_OF_KEY_OR_ADDABLE2&& end)
     {
         using ITEM_T = iter_value_t<ITERATOR_OF_KEY_OR_ADDABLE>;
-        //        using ITEM_T = ranges::range_value_t<ITERATOR_OF_KEY_OR_ADDABLE>;
         static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or
                        is_convertible_v<ITEM_T, KeyValuePair<key_type, mapped_type>>);
         size_t cnt{};
