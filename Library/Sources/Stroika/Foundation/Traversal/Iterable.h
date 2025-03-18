@@ -288,7 +288,8 @@ namespace Stroika::Foundation::Traversal {
          */
         template <IIterableOfTo<T> CONTAINER_OF_T>
         explicit Iterable (CONTAINER_OF_T&& from)
-            requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>>)
+            requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>> and
+                      (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>))
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep} {}
 #endif
@@ -1411,7 +1412,8 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         template <typename CONTAINER_OF_T>
-        static Iterable<T> mk_ (CONTAINER_OF_T&& from);
+        static Iterable<T> mk_ (CONTAINER_OF_T&& from)
+            requires (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>);
 
     protected:
         /**

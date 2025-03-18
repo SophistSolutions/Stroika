@@ -247,7 +247,8 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <IIterableOfTo<T> CONTAINER_OF_T>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
-        requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>>)
+        requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>> and
+                  (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>))
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
     }
@@ -270,6 +271,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <typename CONTAINER_OF_T>
     Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
+        requires (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>)
     {
         using DECAYED_CONTAINER = remove_cvref_t<CONTAINER_OF_T>;
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
