@@ -50,7 +50,7 @@ using namespace Stroika::Frameworks;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #if qStroika_HasComponent_googletest
-#if qStroika_HasComponent_sqlite && 0
+#if qStroika_HasComponent_sqlite
 namespace {
     // Bad example (for now) without Bind - just formatting sql lines
     namespace RegressionTest1_sqlite_ScansDBTest_ {
