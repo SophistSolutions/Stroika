@@ -28,6 +28,7 @@ namespace Stroika::Foundation::Database::Document {
          */
         struct FieldName : String {
             using String::String;
+            bool operator== (const FieldName&) const = default;
         };
 
         /**
@@ -41,12 +42,16 @@ namespace Stroika::Foundation::Database::Document {
           */
         struct Value : VariantValue {
             using VariantValue::VariantValue;
+
+            bool operator== (const Value&) const = default;
         };
 
         struct Equals { // equals operator
             FieldName                 fLHS;
             variant<FieldName, Value> fRHS;
             bool                      Matches (const Database::Document::Document& doc) const;
+
+            bool operator== (const Equals&) const = default;
         };
 
         /**
@@ -69,16 +74,23 @@ namespace Stroika::Foundation::Database::Document {
      *  would be mapped to a mongo filter, and the remainder computed client side if needed.
      * 
      */
-    struct Filter {
+    class Filter {
+    public:
+        /**
+         */
+        Filter (const Sequence<FilterElements::Operatation>& andedOperations);
+
+    public:
+        /**
+         */
+        nonvirtual bool Matches (const Database::Document::Document& doc) const;
+
+    private:
         // todo list of function objects - or operator, arglist, with predefined constant functions for equals, and a few others
         // hardwired ones can be passed to mongo, and others applied ex-post-facto
 
         // conjunctive normal form (CNF)
-        Sequence<FilterElements::Operatation> fAndedOperations;
-
-        /**
-         */
-        bool Matches (const Database::Document::Document& doc) const;
+        Sequence<FilterElements::Operatation> fAndedOperations_;
     };
 
 }

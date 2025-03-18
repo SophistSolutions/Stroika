@@ -3,9 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Transaction.h"
-
-#include "Connection.h"
+#include "Filter.h"
 
 using namespace Stroika::Foundation;
 
@@ -21,7 +19,7 @@ bool FilterElements::Equals::Matches (const Database::Document::Document& doc) c
 {
     if (optional<VariantValue> elt = doc.Lookup (fLHS)) {
         // RHS could be value, or another lookup
-        optional<VariantValue> rhsValue = get_if<VariantValue> (&fRHS);
+        optional<VariantValue> rhsValue = get_if<Value> (&fRHS);    // intentionally object slice
         if (!rhsValue) {
             // then fetch from document
             rhsValue = doc.Lookup (get<FieldName> (fRHS));
@@ -52,7 +50,7 @@ bool FilterElements::Matches (const Operatation& op, const Database::Document::D
  */
 bool Filter::Matches (const Database::Document::Document& doc) const
 {
-    for (auto op : fAndedOperations) {
+    for (FilterElements::Operatation op : fAndedOperations_) {
         if (not FilterElements::Matches (op, doc)) {
             return false;
         }
