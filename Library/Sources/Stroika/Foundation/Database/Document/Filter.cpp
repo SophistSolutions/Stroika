@@ -19,7 +19,7 @@ bool FilterElements::Equals::Matches (const Database::Document::Document& doc) c
 {
     if (optional<VariantValue> elt = doc.Lookup (fLHS)) {
         // RHS could be value, or another lookup
-        optional<VariantValue> rhsValue = get_if<Value> (&fRHS);    // intentionally object slice
+        optional<VariantValue> rhsValue = get_if<Value> (&fRHS); // intentionally object slice
         if (!rhsValue) {
             // then fetch from document
             rhsValue = doc.Lookup (get<FieldName> (fRHS));
@@ -34,7 +34,7 @@ bool FilterElements::Equals::Matches (const Database::Document::Document& doc) c
  ********************** Document::FilterElements::Matches ***********************
  ********************************************************************************
  */
-bool FilterElements::Matches (const Operatation& op, const Database::Document::Document& doc)
+bool FilterElements::Matches (const Operation& op, const Database::Document::Document& doc)
 {
     if (auto ei = get_if<Equals> (&op)) {
         return ei->Matches (doc);
@@ -50,7 +50,7 @@ bool FilterElements::Matches (const Operatation& op, const Database::Document::D
  */
 bool Filter::Matches (const Database::Document::Document& doc) const
 {
-    for (FilterElements::Operatation op : fAndedOperations_) {
+    for (FilterElements::Operation op : fAndedOperations_) {
         if (not FilterElements::Matches (op, doc)) {
             return false;
         }

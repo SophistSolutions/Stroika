@@ -804,6 +804,8 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
         Database::Document::Document roundTripped = blah->GetDocument (id, nullopt).value_or (Database::Document::Document{});
         DbgTrace ("roundTripped  get value={}"_f, roundTripped);
         //EXPECT_EQ (kTestObj1_, roundTripped);
+        auto rrs = blah->GetDocuments (nullopt, nullopt);
+        DbgTrace ("rrs  get value={}"_f, rrs);
     }
     catch (...) {
         // test warning no mongo on address X so test skipped

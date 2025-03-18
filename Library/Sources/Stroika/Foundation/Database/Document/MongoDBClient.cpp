@@ -211,7 +211,10 @@ namespace {
                 //filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
                 //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
                 Sequence<Document::Document> result;
-                auto                         rresult = fCollection.find (filter_doc.view ());
+                auto                         cursor = fCollection.find (filter_doc.view ());
+                for (auto&& doc : cursor) {
+                    std::cout << bsoncxx::to_json(doc) << std::endl;
+                }
                 // NYI
                 return result;
             }

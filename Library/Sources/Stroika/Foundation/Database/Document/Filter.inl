@@ -9,11 +9,11 @@ namespace Stroika::Foundation::Database::Document {
      ******************************* Document::Filter *******************************
      ********************************************************************************
      */
-    inline Filter::Filter (const Sequence<FilterElements::Operatation>& andedOperations)
+    inline Filter::Filter (const Sequence<FilterElements::Operation>& andedOperations)
         : fAndedOperations_{andedOperations}
     {
     }
-    inline Sequence<FilterElements::Operatation> Filter::GetConjunctionOperations() const
+    inline Sequence<FilterElements::Operation> Filter::GetConjunctionOperations () const
     {
         return fAndedOperations_;
     }

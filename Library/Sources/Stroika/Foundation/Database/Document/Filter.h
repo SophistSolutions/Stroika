@@ -57,9 +57,12 @@ namespace Stroika::Foundation::Database::Document {
         /**
          *  \todo support a bunch more operators, like Less, and maybe arbitrary function (which obviously runs client side)
          */
-        using Operatation = variant<Equals>;
+        using Operation = variant<Equals>;
 
-        bool Matches (const Operatation& op, const Database::Document::Document& doc);
+        /**
+         *  Call the .Matches() method of the appropriate variant.
+         */
+        bool Matches (const Operation& op, const Database::Document::Document& doc);
 
     }
 
@@ -78,7 +81,7 @@ namespace Stroika::Foundation::Database::Document {
     public:
         /**
          */
-        Filter (const Sequence<FilterElements::Operatation>& andedOperations);
+        Filter (const Sequence<FilterElements::Operation>& andedOperations);
 
     public:
         /**
@@ -86,14 +89,14 @@ namespace Stroika::Foundation::Database::Document {
         nonvirtual bool Matches (const Database::Document::Document& doc) const;
 
     public:
-        nonvirtual Sequence<FilterElements::Operatation> GetConjunctionOperations () const;
+        nonvirtual Sequence<FilterElements::Operation> GetConjunctionOperations () const;
 
     private:
         // todo list of function objects - or operator, arglist, with predefined constant functions for equals, and a few others
         // hardwired ones can be passed to mongo, and others applied ex-post-facto
 
         // conjunctive normal form (CNF)
-        Sequence<FilterElements::Operatation> fAndedOperations_;
+        Sequence<FilterElements::Operation> fAndedOperations_;
     };
 
 }
