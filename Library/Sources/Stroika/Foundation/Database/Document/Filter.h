@@ -85,6 +85,9 @@ namespace Stroika::Foundation::Database::Document {
          */
         nonvirtual bool Matches (const Database::Document::Document& doc) const;
 
+    public:
+        nonvirtual Sequence<FilterElements::Operatation> GetConjunctionOperations () const;
+
     private:
         // todo list of function objects - or operator, arglist, with predefined constant functions for equals, and a few others
         // hardwired ones can be passed to mongo, and others applied ex-post-facto

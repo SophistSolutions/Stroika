@@ -13,5 +13,9 @@ namespace Stroika::Foundation::Database::Document {
         : fAndedOperations_{andedOperations}
     {
     }
+    inline Sequence<FilterElements::Operatation> Filter::GetConjunctionOperations() const
+    {
+        return fAndedOperations_;
+    }
 
 }
