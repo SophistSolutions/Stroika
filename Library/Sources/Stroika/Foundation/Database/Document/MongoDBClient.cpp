@@ -57,19 +57,19 @@ namespace {
     String bson_value_to_string_ (const bsoncxx::v_noabi::types::bson_value::view& value)
     {
         switch (value.type ()) {
-            case bsoncxx::v_noabi::type::k_string:
+            case bsoncxx::type::k_string:
                 return String::FromUTF8 (span<const char8_t>{reinterpret_cast<const char8_t*> (value.get_string ().value.data ()),
                                                              value.get_string ().value.size ()});
-            case bsoncxx::v_noabi::type::k_oid:
+            case bsoncxx::type::k_oid:
                 return String{value.get_oid ().value.to_string ()};
-            case bsoncxx::v_noabi::type::k_bool:
+            case bsoncxx::type::k_bool:
                 return value.get_bool () ? "true"_k : "false"_k;
-            case bsoncxx::v_noabi::type::k_int32:
-                return "{}"_f(value.get_int32 ());
-            case bsoncxx::v_noabi::type::k_int64:
-                return "{}"_f(value.get_int64 ());
-            case bsoncxx::v_noabi::type::k_double:
-                return "{}"_f(value.get_double ());
+            case bsoncxx::type::k_int32:
+                return "{}"_f(value.get_int32 ().value);
+            case bsoncxx::type::k_int64:
+                return "{}"_f(value.get_int64 ().value);
+            case bsoncxx::type::k_double:
+                return "{}"_f(value.get_double ().value);
             default:
                 throw std::invalid_argument ("Unsupported BSON type for string conversion");
         }
