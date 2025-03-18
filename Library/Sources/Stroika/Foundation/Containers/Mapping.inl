@@ -252,23 +252,24 @@ namespace Stroika::Foundation::Containers {
     {
         using ITEM_T = ranges::range_value_t<ITERABLE_OF_KEY_OR_ADDABLE>;
         static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or
-                       is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
-        if (this == &items) { // avoid modifying container while iterating over it
-            size_t result = this->size ();
-            RemoveAll ();
-            return result;
+                       is_convertible_v<ITEM_T, KeyValuePair<key_type, mapped_type>>);
+        if constexpr (convertible_to<const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*, const ITERABLE_OF_KEY_OR_ADDABLE*>) {
+            if (this == &items) { // avoid modifying container while iterating over it
+                size_t result = this->size ();
+                RemoveAll ();
+                return result;
+            }
         }
-        else {
-            return RemoveAll (begin (items), end (items));
-        }
+        return this->RemoveAll (begin (items), end (items));
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename ITERATOR_OF_KEY_OR_ADDABLE>
-    inline size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE start, ITERATOR_OF_KEY_OR_ADDABLE end)
+    template <typename ITERATOR_OF_KEY_OR_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_KEY_OR_ADDABLE>> ITERATOR_OF_KEY_OR_ADDABLE2>
+    inline size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE&& start, ITERATOR_OF_KEY_OR_ADDABLE2&& end)
     {
-        using ITEM_T = ranges::range_value_t<ITERATOR_OF_KEY_OR_ADDABLE>;
+        using ITEM_T = iter_value_t<ITERATOR_OF_KEY_OR_ADDABLE>;
+        //        using ITEM_T = ranges::range_value_t<ITERATOR_OF_KEY_OR_ADDABLE>;
         static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or
-                       is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
+                       is_convertible_v<ITEM_T, KeyValuePair<key_type, mapped_type>>);
         size_t cnt{};
         for (auto i = start; i != end; ++i) {
             if constexpr (is_convertible_v<ITEM_T, key_type>) {
@@ -281,7 +282,7 @@ namespace Stroika::Foundation::Containers {
                     ++cnt;
                 }
             }
-            else if constexpr (is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>) {
+            else if constexpr (is_convertible_v<ITEM_T, KeyValuePair<key_type, mapped_type>>) {
                 if (RemoveIf (i->fKey)) {
                     ++cnt;
                 }
