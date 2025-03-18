@@ -396,7 +396,7 @@ namespace Stroika::Foundation::Common {
      *  then one instance is as good as another, and it need not be passed anywhere, opening an optimization opportunity.
      */
     template <typename T>
-    concept IEqualToOptimizable = Private_::HasUsableEqualToOptimization<T> ();
+    concept IEqualToOptimizable = equality_comparable<T> and Private_::HasUsableEqualToOptimization<T> ();
 
     /**
      *  \brief Concept checks if the given type T has a value_type (type) member
