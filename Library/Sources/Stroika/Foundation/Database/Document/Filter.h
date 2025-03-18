@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Database/Document/Document.h"
 
 /**
  *  \file
@@ -17,9 +18,8 @@
  */
 
 namespace Stroika::Foundation::Database::Document {
-    using Characters::String;
+
     using Containers::Sequence;
-    using DataExchange::VariantValue;
 
     namespace FilterElements {
 
@@ -46,9 +46,12 @@ namespace Stroika::Foundation::Database::Document {
         struct Equals { // equals operator
             FieldName                 fLHS;
             variant<FieldName, Value> fRHS;
-            bool                      Matches (const Mapping<String, VariantValue>& doc) const;
+            bool                      Matches (const Database::Document::Document& doc) const;
         };
 
+        /**
+         *  \todo support a bunch more operators, like Less, and maybe arbitrary function (which obviously runs client side)
+         */
         using Operatation = variant<Equals>;
 
     }
@@ -56,12 +59,12 @@ namespace Stroika::Foundation::Database::Document {
     /**
      * VERY INCOMPLETE
      * 
-     * But basic idea is conjuntive normal form.
+     * But basic idea is conjunctive normal form.
      * 
      * And elements are the data needed to compute filter value.
      * 
      *  And KEY ones - are ones that can be identified at query time and MAPPED to mongodb query operators, like equal {fieldname, value} - that
-     *  would be mapped to a mongo filter, and the remaider computed client side if needed.
+     *  would be mapped to a mongo filter, and the remainder computed client side if needed.
      * 
      */
     struct Filter {
@@ -73,7 +76,7 @@ namespace Stroika::Foundation::Database::Document {
 
         /**
          */
-        bool Matches (const Mapping<String, VariantValue>& doc) const;
+        bool Matches (const Database::Document::Document& doc) const;
     };
 
 }

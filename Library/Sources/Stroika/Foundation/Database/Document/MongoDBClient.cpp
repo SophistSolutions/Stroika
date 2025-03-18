@@ -190,7 +190,7 @@ namespace {
                 }
                 return nullopt;
             }
-            virtual Sequence<Document::Document> GetDocuments (const optional<Projection>& projection) override
+            virtual Sequence<Document::Document> GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
                 bsoncxx::builder::basic::document filter_doc;
                 //filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));

@@ -38,17 +38,17 @@ namespace Stroika::Foundation::Database::Document::Connection {
     class IRep;
 
     /**
-         *  Connection::Ptr provides an API for accessing a document database.
-         * 
-         *  A new Connection::Ptr is typically created with SOME_SERVICE::Connection::New () (e.g. SQLite::Connection::New() or MongoDBClient::Connection::New ())
-         *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
-         *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-         *          threadsafe (even if accessed across processes).
-         *
-         *          The Connection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
-         *          shared_ptr<IRep> was created.
-         */
+     *  Connection::Ptr provides an API for accessing a document database.
+     * 
+     *  A new Connection::Ptr is typically created with SOME_SERVICE::Connection::New () (e.g. SQLite::Connection::New() or MongoDBClient::Connection::New ())
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
+     *          threadsafe (even if accessed across processes).
+     *
+     *          The Connection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
+     *          shared_ptr<IRep> was created.
+     */
     class Ptr {
     public:
         /**
@@ -61,13 +61,13 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
-             */
+         */
         nonvirtual Ptr& operator= (const Ptr& src);
         nonvirtual Ptr& operator= (Ptr&& src) noexcept;
 
     public:
         /**
-             */
+         */
         nonvirtual IRep* operator->() const noexcept;
 
     public:
@@ -82,8 +82,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
-             *  @see Characters::ToString ()
-             */
+         *  @see Characters::ToString ()
+         */
         nonvirtual String ToString () const;
 
     public:
@@ -98,10 +98,10 @@ namespace Stroika::Foundation::Database::Document::Connection {
     };
 
     /**
-         *  Connection::IRep provides an (abstract) API for accessing an SQL database.
-         *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
-         */
+     *  Connection::IRep provides an (abstract) API for accessing an SQL database.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
+     */
     class IRep : public enable_shared_from_this<IRep> {
     public:
         /**
@@ -110,8 +110,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
-             *  Transaction object factory
-             */
+         *  Transaction object factory
+         */
         virtual Transaction mkTransaction () = 0;
 
     public:
