@@ -11,6 +11,9 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
+#include "Stroika/Foundation/Database/Document/Document.h"
+#include "Stroika/Foundation/Database/Document/Filter.h"
+#include "Stroika/Foundation/Database/Document/Projection.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 
 /**
@@ -84,42 +87,40 @@ namespace Stroika::Foundation::Database::Document::Collection {
     };
 
     /**
-         *  Collection::IRep provides an (abstract) API for accessing a collection (aka table) of a document database.
-         *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
-         */
+     *  Collection::IRep provides an (abstract) API for accessing a collection (aka table) of a document database.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
+     */
     class IRep : public enable_shared_from_this<IRep> {
     public:
         /**
-             */
+         */
         virtual ~IRep () = default;
 
     public:
         /**
          * returns ID
          */
-        virtual String AddDocument (const VariantValue& v) = 0;
+        virtual String AddDocument (const Document& v) = 0;
 
     public:
         /**
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with id returns exactly that one, or nullopt if missing.
          */
-        virtual optional<VariantValue> GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
-                                                    const optional<Iterable<String>>& omitTheseFields) = 0;
+        virtual optional<Document> GetDocument (const String& id, const optional<Projection>& projection) = 0;
 
     public:
         /**
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with no id returns all.
          */
-        virtual Sequence<VariantValue> GetDocuments (const optional<Iterable<String>>& onlyTheseFields,
-                                                     const optional<Iterable<String>>& omitTheseFields) = 0;
+        virtual Sequence<Document> GetDocuments (const optional<Projection>& projection) = 0;
 
     public:
         /**
          */
-        virtual void UpdateDocument (const String& id, const VariantValue& newV, const optional<Iterable<String>>& onlyTheseFields) = 0;
+        virtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields) = 0;
 
     public:
         virtual void DeleteDocument (const String& id) = 0;

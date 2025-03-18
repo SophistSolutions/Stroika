@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
 
         public:
-            virtual DataExchange::VariantValue run_command (const DataExchange::VariantValue& v) = 0;
+            virtual Document run_command (const Document& v) = 0;
 
         public:
             virtual mongocxx::client* get_client () = 0;
@@ -106,6 +106,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          */
         struct Options final {
             /**
+             * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */
             String fConnectionString;
         };
@@ -117,7 +118,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
     namespace Connection {
 
-        using namespace Document::Connection;
+        using namespace Database::Document::Connection;
 
         class IRep;
 
@@ -128,13 +129,13 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          */
         struct Options final {
             /**
+             * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */
             String fConnectionString;
 
             /**
              *  Connection string does not contain database name. Different from Mongo API, we choose to require a database name
              *  in the connection options. Use AdminConnection to operate on server itself, not a particular database.
-             * 
              */
             String fDatabase;
         };
@@ -144,9 +145,9 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          *
          *  A new Connection::Ptr is typically created MongoDBClient::Connection::New()
          */
-        class Ptr : public Document::Connection::Ptr {
+        class Ptr : public Database::Document::Connection::Ptr {
         private:
-            using inherited = Document::Connection::Ptr;
+            using inherited = Database::Document::Connection::Ptr;
 
         public:
             /**
@@ -178,7 +179,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          * 
          *  Typically don't use this directly, but use Connection::Ptr, a smart ptr wrapper on this interface.
          */
-        class IRep : public Document::Connection::IRep {
+        class IRep : public Database::Document::Connection::IRep {
         public:
             virtual mongocxx::client* get_client () = 0;
 
@@ -191,9 +192,9 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
     /**
      */
-    class Transaction : public Document::Transaction {
+    class Transaction : public Database::Document::Transaction {
     private:
-        using inherited = Document::Transaction;
+        using inherited = Database::Document::Transaction;
 
     public:
         /**

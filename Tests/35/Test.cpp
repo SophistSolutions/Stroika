@@ -778,7 +778,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
             AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_});
             Set<String>          d = p->GetDatabases ();
             DbgTrace ("d={}"_f, d);
-            auto ping = p->run_command (VariantValue{Mapping<String, VariantValue>{{"ping", 1}}});
+            auto ping = p->run_command (Mapping<String, VariantValue>{{"ping", 1}});
             DbgTrace ("ping={}"_f, ping);
         }
         catch (...) {
@@ -791,17 +791,17 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
     try {
         const String kTestDBName_ = "MyTestDB"sv;
         AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_})->DropDatabase (kTestDBName_);
-        Document::Connection::Ptr p = MongoDBClient::Connection::New (
+        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
             MongoDBClient::Connection::Options{.fConnectionString = kTestConnectionString_, .fDatabase = kTestDBName_});
         EXPECT_EQ (p->GetCollections ().size (), 0u);
         p->CreateCollection ("blah");
         DbgTrace ("collections={}"_f, p->GetCollections ());
         EXPECT_EQ (p->GetCollections (), Set<String>{"blah"});
-        Document::Collection::Ptr blah       = p->GetCollection ("blah");
-        const VariantValue        kTestObj1_ = VariantValue{Mapping<String, VariantValue>{{"x", 7}}};
-        auto                      id         = blah->AddDocument (kTestObj1_);
+        Database::Document::Collection::Ptr blah       = p->GetCollection ("blah");
+        const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
+        auto                                id         = blah->AddDocument (kTestObj1_);
         DbgTrace ("Added doc {}"_f, id);
-        VariantValue roundTripped = blah->GetDocument (id, nullopt, nullopt).value_or (VariantValue{});
+        Database::Document::Document roundTripped = blah->GetDocument (id, nullopt).value_or (Database::Document::Document{});
         DbgTrace ("roundTripped  get value={}"_f, roundTripped);
         //EXPECT_EQ (kTestObj1_, roundTripped);
     }

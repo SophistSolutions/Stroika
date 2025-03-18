@@ -5,18 +5,17 @@
 
 #if qStroika_HasComponent_mongocxxdriver
 #include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/document/value.hpp>
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/string/to_string.hpp>
 #include <bsoncxx/types.hpp>
+#include <bsoncxx/types/bson_value/value.hpp>
 #include <bsoncxx/types/bson_value/view.hpp>
-#include <bsoncxx/v_noabi/bsoncxx/document/value.hpp>
-#include <bsoncxx/v_noabi/bsoncxx/types/bson_value/value.hpp>
-#include <bsoncxx/v_noabi/bsoncxx/view_or_value.hpp>
+#include <bsoncxx/view_or_value.hpp>
 #include <mongocxx/collection.hpp>
 #include <mongocxx/exception/exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
 #include <mongocxx/uri.hpp>
-
 #endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -38,6 +37,8 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 
 using Database::Document::EngineProperties;
+using Database::Document::Filter;
+using Database::Document::Projection;
 
 /**
  *  Character set Docx
@@ -74,16 +75,47 @@ namespace {
                 throw std::invalid_argument ("Unsupported BSON type for string conversion");
         }
     }
-    VariantValue FromBSON_ (const bsoncxx::v_noabi::document::value& b)
+    Document::Document FromBSON_ (const bsoncxx::v_noabi::document::value& b)
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
-        return Variant::JSON::Reader{}.Read (String::FromUTF8 (bsoncxx::to_json (b.view ())));
+        return Variant::JSON::Reader{}.Read (String::FromUTF8 (bsoncxx::to_json (b.view ()))).As<Mapping<String, VariantValue>> ();
     }
-    bsoncxx::v_noabi::document::value ToBSON_ (const VariantValue& vv)
+    bsoncxx::v_noabi::document::value ToBSON_ (const Document::Document& vv)
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
         //        return bsoncxx::from_json (R"({ "ping": 1 })");
-        return bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (vv).AsUTF8<string> ());
+        return bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vv}).AsUTF8<string> ());
+    }
+}
+
+namespace {
+    /**
+     * Break the given Stroika filter into parts that can be remoted to MongoDB, and parts that must be handled locally
+     * 
+     * @param filter 
+     * @return tuple<bsoncxx::document,Filter> 
+     */
+    tuple<bsoncxx::document::value, optional<Filter>> Parse_ (const Filter& filter)
+    {
+        // NYI - just return empty for now
+        return make_tuple (make_document (), filter);
+    }
+}
+
+namespace {
+    /**
+     * Break the given Stroika filter into parts that can be remoted to MongoDB, and parts that must be handled locally
+     * 
+     * @param filter 
+     * @return tuple<bsoncxx::document,Filter> 
+     * 
+     * 
+     * SEE https://stackoverflow.com/questions/62704615/mongodb-projection-on-c
+     */
+    tuple<bsoncxx::document::value, optional<Projection>> Parse_ (const Projection& p)
+    {
+        // NYI - just return empty for now
+        return make_tuple (make_document (), p);
     }
 }
 
@@ -105,7 +137,7 @@ namespace {
         {
             return &fClient_;
         }
-        virtual VariantValue run_command (const VariantValue& v) override
+        virtual Document::Document run_command (const Document::Document& v) override
         {
             mongocxx::database adminDB_;
             return FromBSON_ (fClient_.database ("admin").run_command (ToBSON_ (v)));
@@ -139,7 +171,7 @@ namespace {
                 : fCollection{connectionRep.fDatabase.collection (collectionName.AsUTF8<string> ())}
             {
             }
-            virtual String AddDocument (const VariantValue& v) override
+            virtual String AddDocument (const Document::Document& v) override
             {
                 // auto insert_one_result = fCollection.insert_one(make_document(kvp("i", 0)));
                 if (auto insert_one_result = fCollection.insert_one (ToBSON_ (v))) {
@@ -147,8 +179,7 @@ namespace {
                 }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
-            virtual optional<VariantValue> GetDocument (const String& id, const optional<Iterable<String>>& onlyTheseFields,
-                                                        const optional<Iterable<String>>& omitTheseFields) override
+            virtual optional<Document::Document> GetDocument (const String& id, const optional<Projection>& projection) override
             {
                 bsoncxx::builder::basic::document filter_doc;
                 filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
@@ -159,18 +190,17 @@ namespace {
                 }
                 return nullopt;
             }
-            virtual Sequence<VariantValue> GetDocuments (const optional<Iterable<String>>& onlyTheseFields,
-                                                         const optional<Iterable<String>>& omitTheseFields) override
+            virtual Sequence<Document::Document> GetDocuments (const optional<Projection>& projection) override
             {
                 bsoncxx::builder::basic::document filter_doc;
                 //filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
                 //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
-                Sequence<VariantValue> result;
-                auto                   rresult = fCollection.find (filter_doc.view ());
+                Sequence<Document::Document> result;
+                auto                         rresult = fCollection.find (filter_doc.view ());
                 // NYI
                 return result;
             }
-            virtual void UpdateDocument (const String& id, const VariantValue& newV, const optional<Iterable<String>>& onlyTheseFields) override
+            virtual void UpdateDocument (const String& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
                 AssertNotImplemented ();
             }

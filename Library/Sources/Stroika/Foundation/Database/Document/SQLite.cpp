@@ -438,7 +438,7 @@ auto Document::SQLite::Connection::New (const Options& options) -> Ptr
  ******************************* SQLite::Transaction ****************************
  ********************************************************************************
  */
-struct Transaction::MyRep_ : public Document::Transaction::IRep {
+struct Transaction::MyRep_ : public Database::Document::Transaction::IRep {
     MyRep_ (const Connection::Ptr& db, Flag f)
         : fConnectionPtr_{db}
     {

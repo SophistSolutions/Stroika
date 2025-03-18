@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
      */
     namespace Connection {
 
-        using namespace Document::Connection;
+        using namespace Database::Document::Connection;
 
         class IRep;
 
@@ -239,13 +239,13 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *          @see https://www.sqlite.org/threadsafe.html
          *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
          * 
-         *          NOTE - two Connection::Ptr objects refering to the same underlying REP is NOT (probably) safe with SQLITE. But referring
+         *          NOTE - two Connection::Ptr objects referring to the same underlying REP is NOT (probably) safe with SQLITE. But referring
          *          to the same database is safe.
          *
          */
-        class Ptr : public Document::Connection::Ptr {
+        class Ptr : public Database::Document::Connection::Ptr {
         private:
-            using inherited = Document::Connection::Ptr;
+            using inherited = Database::Document::Connection::Ptr;
 
         public:
             /**
@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *          But sqlite docs not super clear. Maybe I need to use thier locking APIs myself internally to use
          *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
-        class IRep : public Document::Connection::IRep {
+        class IRep : public Database::Document::Connection::IRep {
         public:
             /**
              *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
@@ -372,9 +372,9 @@ namespace Stroika::Foundation::Database::Document::SQLite {
      * 
      *  \todo Consider supporting SQLITE SAVEPOINT (like nested transaction)
      */
-    class Transaction : public Document::Transaction {
+    class Transaction : public Database::Document::Transaction {
     private:
-        using inherited = Document::Transaction;
+        using inherited = Database::Document::Transaction;
 
     public:
         enum Flag {
