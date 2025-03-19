@@ -66,6 +66,11 @@ CMAKE_ARGS=
 # CMAKE_ARGS+= --trace
 # CMAKE_ARGS+= --debug-output
 
+## EXPERIEMNT - I THOUGHT this may fix passing -j arg to cmake submakes...but it didn't help--LGP 2025-03-19
+# CMAKE_ARGS+= -DCMAKE_MAKE_PROGRAM='$(shell which $(MAKE)) ${MFLAGS} OR $(MAKEFLAGS)'
+# export MFLAGS
+# export MAKEFLAGS
+
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
 ifeq (Unix,$(BuildPlatform))
 #for reasons I didn't investigate, CMAKE appears to require this to be a full path (CMAKE_C_COMPILER etc...) -- LGP 2019-01-04
