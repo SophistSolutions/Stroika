@@ -55,6 +55,22 @@ CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
 
+# [ 72%] [32mBuilding CXX object src/bsoncxx/CMakeFiles/bsoncxx_static.dir/lib/bsoncxx/v_noabi/bsoncxx/array/element.cpp.o[0m
+#... 88 |     static const strong_ordering less;
+#       |                                  ^~~~
+# /Sandbox/Stroika-Dev/ThirdPartyComponents/mongo-cxx-driver/CURRENT/src/bsoncxx/include/bsoncxx/v_noabi/bsoncxx/stdx/operators.hpp:89:34: error: ‘bsoncxx::detail::strong_ordering::greater’ declared weak after being used
+#    89 |     static const strong_ordering greater;
+#       |                                  ^~~~~~~
+# gmake[7]: *** [src/bsoncxx/CMakeFiles/bsoncxx_static.dir/build.make:76: src/bsoncxx/CMakeFiles/bsoncxx_static.dir/lib/bsoncxx/v_noabi/bsoncxx/array/element.cpp.o] Error 1
+# gmake[6]: *** [CMakeFiles/Makefile2:2685: src/bsoncxx/CMakeFiles/bsoncxx_static.dir/all] Error 2
+# $(info GCC Version is $(shell ${StroikaRoot}ScriptsLib/GetGCCVersion ${CC}))
+# $(info COMPARE is $(shell expr $(shell ${StroikaRoot}ScriptsLib/GetGCCVersion ${CC}) \< 12))
+ifneq ($(shell ${StroikaRoot}ScriptsLib/GetGCCVersion ${CC}),)
+ifeq ($(shell expr "$(shell ${StroikaRoot}ScriptsLib/GetGCCVersion ${CC})" \< 12),1)
+CFLAGS:=$(filter-out -fsanitize=undefined, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=undefined, $(CXXFLAGS))
+endif
+endif
 
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
