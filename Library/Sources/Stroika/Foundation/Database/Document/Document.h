@@ -27,6 +27,12 @@ namespace Stroika::Foundation::Database::Document {
      */
     using Document = Mapping<String, VariantValue>;
 
+    /**
+      * \note this special value kID is used to identify the ID field in a document. Its value is "_id" (in mongodb, but in this API, its "id")
+      * ?????? dont want to hardwire queer choice of mongodb, but dont wnat to have todo alot of needless mapping/translation later. RETHINK!!!
+      */
+    static inline const String kID = "id"sv;
+
 }
 
 /*

@@ -72,12 +72,12 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
-             *  Transaction object factory
-             * 
-             *  The reason you might use this instead of SQLite::Transaction{} - is in writing generic code
-             *  that doesn't depend on the particular kind of SQL database you are connected to (e.g. that
-             *  might be used for ODBC or SQLite).
-             */
+          *  Transaction object factory
+          * 
+          *  The reason you might use this instead of SQLite::Transaction{} - is in writing generic code
+          *  that doesn't depend on the particular kind of SQL database you are connected to (e.g. that
+          *  might be used for ODBC or SQLite).
+          */
         nonvirtual Transaction mkTransaction ();
 
     public:

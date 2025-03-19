@@ -18,10 +18,10 @@ using namespace Database::Document;
 Database::Document::Document Projection::Apply (const Database::Document::Document& d) const
 {
     Mapping<String, VariantValue> vv = d;
-    if (const Set<String>* i0 = get_if<0> (&this->fFields)) {
+    if (const Set<String>* i0 = get_if<0> (&this->fFields_)) {
         vv.RetainAll (*i0);
     }
-    else if (const Set<String>* i1 = get_if<1> (&this->fFields)) {
+    else if (const Set<String>* i1 = get_if<1> (&this->fFields_)) {
         vv.RemoveAll (*i1);
     }
     return vv;

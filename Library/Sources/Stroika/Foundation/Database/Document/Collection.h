@@ -63,19 +63,19 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-             */
+         */
         nonvirtual Ptr& operator= (const Ptr& src);
         nonvirtual Ptr& operator= (Ptr&& src) noexcept;
 
     public:
         /**
-             */
+         */
         nonvirtual IRep* operator->() const noexcept;
 
     public:
         /**
-             *  @see Characters::ToString ()
-             */
+         *  @see Characters::ToString ()
+         */
         nonvirtual String ToString () const;
 
     public:

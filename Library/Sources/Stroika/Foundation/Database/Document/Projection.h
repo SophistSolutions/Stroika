@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Database::Document {
     class Projection {
     private:
         // use optional<Projection> so no need for monostate/default-constuctible Projection
-        using MyVariant_ = variant</*monostate,*/ Set<String>, Set<String>>;
+        using MyVariant_ = variant<Set<String>, Set<String>>;
 
     public:
         enum Flag {
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Database::Document {
          *  get<0> are fields that are used, and get<1> are fields that are omitted.
          *  ONLY specify one or the other.
          */
-        MyVariant_ fFields;
+        MyVariant_ fFields_;
     };
 
 }

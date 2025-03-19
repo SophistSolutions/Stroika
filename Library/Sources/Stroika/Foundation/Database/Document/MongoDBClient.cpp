@@ -55,6 +55,16 @@ using bsoncxx::builder::basic::sub_array;
 using bsoncxx::builder::basic::sub_document;
 
 namespace {
+    const String kMongoID_ = "_id"sv;
+}
+
+#if qStroika_Foundation_Debug_AssertionsChecked
+namespace {
+    unsigned int sActivatorLiveCnt_{0};
+}
+#endif
+
+namespace {
     String bson_value_to_string_ (const bsoncxx::v_noabi::types::bson_value::view& value)
     {
         switch (value.type ()) {
@@ -72,19 +82,37 @@ namespace {
             case bsoncxx::type::k_double:
                 return "{}"_f(value.get_double ().value);
             default:
-                throw std::invalid_argument ("Unsupported BSON type for string conversion");
+                throw std::invalid_argument{"Unsupported BSON type for string conversion"};
         }
     }
-    Document::Document FromBSON_ (const bsoncxx::v_noabi::document::value& b)
+    Document::Document FromBSON_ (const bsoncxx::v_noabi::document::view_or_value& b)
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
-        return Variant::JSON::Reader{}.Read (String::FromUTF8 (bsoncxx::to_json (b.view ()))).As<Mapping<String, VariantValue>> ();
+        Mapping<String, VariantValue> result =
+            Variant::JSON::Reader{}.Read (String::FromUTF8 (bsoncxx::to_json (b.view ()))).As<Mapping<String, VariantValue>> ();
+        if (result.ContainsKey (kMongoID_)) {
+            // patch 'id' <-> '_id' and value
+            VariantValue idValue = result[kMongoID_]; // {id: {$oid -> 67da17b30c4265ac0302f483}}
+            idValue              = idValue.As<Mapping<String, VariantValue>> ()["$oid"];
+            result.Remove (kMongoID_);
+            result.Add (Database::Document::kID, idValue);
+        }
+        return result;
     }
     bsoncxx::v_noabi::document::value ToBSON_ (const Document::Document& vv)
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
-        //        return bsoncxx::from_json (R"({ "ping": 1 })");
-        return bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vv}).AsUTF8<string> ());
+        if (vv.ContainsKey (Database::Document::kID)) {
+            // patch 'id' <-> '_id' and value
+            Document::Document vvv     = vv;
+            auto               idValue = vv[Database::Document::kID];
+            vvv.Remove (Database::Document::kID);
+            vvv.Add (kMongoID_, VariantValue{Mapping<String, VariantValue>{{"$oid", idValue}}});
+            return bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vvv}).AsUTF8<string> ());
+        }
+        else {
+            return bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vv}).AsUTF8<string> ());
+        }
     }
 }
 
@@ -120,6 +148,7 @@ namespace {
     {
         // NYI - just return empty for now
         if (p) {
+            // @todo support mongoProjection - {{a: 1, b:0}} etc...
             return make_tuple (nullopt, p);
         }
         return make_tuple (nullopt, nullopt);
@@ -134,7 +163,7 @@ namespace {
         AdminRep_ (const AdminConnection::Options& options)
             : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}} // @todo not sure about charset to map to?
         {
-            TraceContextBumper ctx{"Document::MongoDBClient::AdminConnection::Rep_::Rep_"};
+            TraceContextBumper ctx{"Document::MongoDBClient::AdminConnection::Rep_::CTOR"};
         }
         ~AdminRep_ () = default;
 
@@ -189,13 +218,12 @@ namespace {
             virtual optional<Document::Document> GetDocument (const String& id, const optional<Projection>& projection) override
             {
                 bsoncxx::builder::basic::document filter_doc;
-                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
-                //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
+                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));    //kMongoID
                 auto [mongoProjection, myProjection] = Parse_ (projection);
                 // @todo support mongoProjection - {{a: 1, b:0}} etc...
                 auto result = fCollection.find_one (filter_doc.view ());
                 if (result) {
-                    auto rr = FromBSON_ (*result);
+                    auto rr = FromBSON_ (bsoncxx::document::view_or_value{*result});
                     if (myProjection) {
                         rr = myProjection->Apply (rr);
                     }
@@ -207,15 +235,21 @@ namespace {
             {
                 auto [mongoFilter, myFilter]         = Parse_ (filter);
                 auto [mongoProjection, myProjection] = Parse_ (projection);
-                bsoncxx::builder::basic::document filter_doc;
-                //filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
-                //filter_doc.append (kvp ("_id", [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
+                //bsoncxx::builder::basic::document filter_doc;
+                //filter_doc.append (kvp (kMongoID_, bsoncxx::oid{id.AsUTF8<string> ()}));
+                //filter_doc.append (kvp (kMongoID_, [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
                 Sequence<Document::Document> result;
-                auto                         cursor = fCollection.find (filter_doc.view ());
+                //auto                         cursor = fCollection.find (filter_doc.view ());
+                auto cursor = fCollection.find (mongoFilter? mongoFilter->view () : bsoncxx::builder::basic::document{}.view ());
                 for (auto&& doc : cursor) {
-                    std::cout << bsoncxx::to_json(doc) << std::endl;
+                    auto rr = FromBSON_ (doc);
+                    if (myProjection) {
+                        rr = myProjection->Apply (rr);
+                    }
+                    if (not filter or filter->Matches (rr)) {
+                        result += rr;
+                    }
                 }
-                // NYI
                 return result;
             }
             virtual void UpdateDocument (const String& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
@@ -225,7 +259,7 @@ namespace {
             virtual void DeleteDocument (const String& id) override
             {
                 bsoncxx::builder::basic::document filter_doc;
-                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));
+                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));    // kMongoID_
                 auto result = fCollection.delete_one (filter_doc.view ());
                 if (result && result->deleted_count () == 0) {
                     Throw (RuntimeErrorException{"failed to delete doc"});
@@ -241,7 +275,7 @@ namespace {
             : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}} // @todo not sure about charset to map to?
             , fDatabase{fClient_.database (options.fDatabase.AsUTF8<string> ())}
         {
-            TraceContextBumper ctx{"Document::MongoDBClient::Connection::ConnectionRep_::ConnectionRep_"};
+            TraceContextBumper ctx{"Document::MongoDBClient::Connection::ConnectionRep_::CTOR"};
         }
         ~ConnectionRep_ () = default;
 
@@ -306,11 +340,14 @@ namespace {
 Document::MongoDBClient::Activator::Activator ()
 {
     Require (Debug::AppearsDuringMainLifetime ());
+    ++sActivatorLiveCnt_;
 }
 
 Document::MongoDBClient::Activator::~Activator ()
 {
     Require (Debug::AppearsDuringMainLifetime ());
+    Require (sActivatorLiveCnt_ > 0);
+    --sActivatorLiveCnt_;
 }
 #endif
 
@@ -337,6 +374,9 @@ Document::MongoDBClient::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto Document::MongoDBClient::AdminConnection::New (const AdminConnection::Options& options) -> Ptr
 {
+#if qStroika_Foundation_Debug_AssertionsChecked
+    Require (sActivatorLiveCnt_ > 0);
+#endif
     return Ptr{make_shared<AdminRep_> (options)};
 }
 
@@ -347,6 +387,9 @@ auto Document::MongoDBClient::AdminConnection::New (const AdminConnection::Optio
  */
 auto Document::MongoDBClient::Connection::New (const Connection::Options& options) -> Ptr
 {
+#if qStroika_Foundation_Debug_AssertionsChecked
+    Require (sActivatorLiveCnt_ > 0);
+#endif
     return Ptr{make_shared<ConnectionRep_> (options)};
 }
 
