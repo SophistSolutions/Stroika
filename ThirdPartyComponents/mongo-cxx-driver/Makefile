@@ -50,6 +50,12 @@ CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 
+# If we have zlib, use it, instead of the one included in the mongo-cxx-driver
+# makes sense todo, but triggered linker errors for me, so disbale for now...--LGP 2025-03-19
+# ifneq (${qFeatureFlag_ZLib}, no)
+# CMAKE_ARGS+= -DENABLE_ZLIB=SYSTEM
+# endif
+
 
 # NOT getting asan errors on windows - til we have basic function working - try disabling
 CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
