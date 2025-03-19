@@ -218,7 +218,7 @@ namespace {
             virtual optional<Document::Document> GetDocument (const String& id, const optional<Projection>& projection) override
             {
                 bsoncxx::builder::basic::document filter_doc;
-                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));    //kMongoID
+                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
                 auto [mongoProjection, myProjection] = Parse_ (projection);
                 // @todo support mongoProjection - {{a: 1, b:0}} etc...
                 auto result = fCollection.find_one (filter_doc.view ());
@@ -240,7 +240,7 @@ namespace {
                 //filter_doc.append (kvp (kMongoID_, [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
                 Sequence<Document::Document> result;
                 //auto                         cursor = fCollection.find (filter_doc.view ());
-                auto cursor = fCollection.find (mongoFilter? mongoFilter->view () : bsoncxx::builder::basic::document{}.view ());
+                auto cursor = fCollection.find (mongoFilter ? mongoFilter->view () : bsoncxx::builder::basic::document{}.view ());
                 for (auto&& doc : cursor) {
                     auto rr = FromBSON_ (doc);
                     if (myProjection) {
@@ -259,7 +259,7 @@ namespace {
             virtual void DeleteDocument (const String& id) override
             {
                 bsoncxx::builder::basic::document filter_doc;
-                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()}));    // kMongoID_
+                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); // kMongoID_
                 auto result = fCollection.delete_one (filter_doc.view ());
                 if (result && result->deleted_count () == 0) {
                     Throw (RuntimeErrorException{"failed to delete doc"});
