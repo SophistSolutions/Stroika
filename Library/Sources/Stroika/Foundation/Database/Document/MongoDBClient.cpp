@@ -65,7 +65,7 @@ namespace {
 #endif
 
 namespace {
-    String bson_value_to_string_ (const bsoncxx::v_noabi::types::bson_value::view& value)
+    String bson_value_to_string_ (const bsoncxx::types::bson_value::view& value)
     {
         switch (value.type ()) {
             case bsoncxx::type::k_string:
@@ -85,7 +85,7 @@ namespace {
                 throw std::invalid_argument{"Unsupported BSON type for string conversion"};
         }
     }
-    Document::Document FromBSON_ (const bsoncxx::v_noabi::document::view_or_value& b)
+    Document::Document FromBSON_ (const bsoncxx::document::view_or_value& b)
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
         Mapping<String, VariantValue> result =
@@ -99,7 +99,7 @@ namespace {
         }
         return result;
     }
-    bsoncxx::v_noabi::document::value ToBSON_ (const Document::Document& vv)
+    bsoncxx::document::value ToBSON_ (const Document::Document& vv)
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
         if (vv.ContainsKey (Database::Document::kID)) {
@@ -157,7 +157,7 @@ namespace {
 
 namespace {
     struct AdminRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::AdminConnection::IRep {
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
         mongocxx::client                                               fClient_;
 
         AdminRep_ (const AdminConnection::Options& options)
@@ -169,9 +169,9 @@ namespace {
 
         // MongoDBClient::Connection::IRep overrides
     public:
-        virtual mongocxx::client* get_client () override
+        virtual mongocxx::client& GetClientRef () override
         {
-            return &fClient_;
+            return fClient_;
         }
         virtual Document::Document run_command (const Document::Document& v) override
         {
@@ -200,28 +200,34 @@ namespace {
 namespace {
     struct ConnectionRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::Connection::IRep {
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex; // @todo these fAssert... guys all muyst be linked togetoher since have internal pointers into each other
-            mongocxx::collection fCollection;
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // @todo these fAssert... guys all muyst be linked togetoher since have internal pointers into each other
+            mongocxx::collection fCollection_;
 
             CollectionRep_ (ConnectionRep_& connectionRep, const String& collectionName)
-                : fCollection{connectionRep.fDatabase.collection (collectionName.AsUTF8<string> ())}
+                : fCollection_{connectionRep.fDatabase_.collection (collectionName.AsUTF8<string> ())}
             {
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+                fAssertExternallySynchronizedMutex_.SetAssertExternallySynchronizedMutexContext (
+                    connectionRep.fAssertExternallySynchronizedMutex_.GetSharedContext ());
+#endif
             }
             virtual String AddDocument (const Document::Document& v) override
             {
-                // auto insert_one_result = fCollection.insert_one(make_document(kvp("i", 0)));
-                if (auto insert_one_result = fCollection.insert_one (ToBSON_ (v))) {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
+                if (auto insert_one_result = fCollection_.insert_one (ToBSON_ (v))) {
                     return bson_value_to_string_ (insert_one_result->inserted_id ());
                 }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
             virtual optional<Document::Document> GetDocument (const String& id, const optional<Projection>& projection) override
             {
-                bsoncxx::builder::basic::document filter_doc;
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                bsoncxx::builder::basic::document                      filter_doc;
                 filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
                 auto [mongoProjection, myProjection] = Parse_ (projection);
                 // @todo support mongoProjection - {{a: 1, b:0}} etc...
-                auto result = fCollection.find_one (filter_doc.view ());
+                auto result = fCollection_.find_one (filter_doc.view ());
                 if (result) {
                     auto rr = FromBSON_ (bsoncxx::document::view_or_value{*result});
                     if (myProjection) {
@@ -233,14 +239,15 @@ namespace {
             }
             virtual Sequence<Document::Document> GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 auto [mongoFilter, myFilter]         = Parse_ (filter);
                 auto [mongoProjection, myProjection] = Parse_ (projection);
                 //bsoncxx::builder::basic::document filter_doc;
                 //filter_doc.append (kvp (kMongoID_, bsoncxx::oid{id.AsUTF8<string> ()}));
                 //filter_doc.append (kvp (kMongoID_, [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
                 Sequence<Document::Document> result;
-                //auto                         cursor = fCollection.find (filter_doc.view ());
-                auto cursor = fCollection.find (mongoFilter ? mongoFilter->view () : bsoncxx::builder::basic::document{}.view ());
+                //auto                         cursor = fCollection_.find (filter_doc.view ());
+                auto cursor = fCollection_.find (mongoFilter ? mongoFilter->view () : bsoncxx::builder::basic::document{}.view ());
                 for (auto&& doc : cursor) {
                     auto rr = FromBSON_ (doc);
                     if (myProjection) {
@@ -254,26 +261,43 @@ namespace {
             }
             virtual void UpdateDocument (const String& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
-                AssertNotImplemented ();
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
+                Document::Document uploadDoc = newV;
+                if (onlyTheseFields) {
+                    uploadDoc.RetainAll (*onlyTheseFields);
+                }
+                uploadDoc.Remove ("id");
+                bsoncxx::document::value bsonDoc = ToBSON_ (uploadDoc);
+                if (auto o = fCollection_.update_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})),
+                                                      make_document (kvp ("$set", bsonDoc.view ())))) {
+                    if (o->modified_count () == 0) {
+                        Throw (RuntimeErrorException{"failed to update doc"});
+                    }
+                }
+                else {
+                    Throw (RuntimeErrorException{"failed to update doc"});
+                }
             }
             virtual void DeleteDocument (const String& id) override
             {
-                bsoncxx::builder::basic::document filter_doc;
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                bsoncxx::builder::basic::document                      filter_doc;
                 filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); // kMongoID_
-                auto result = fCollection.delete_one (filter_doc.view ());
+                auto result = fCollection_.delete_one (filter_doc.view ());
                 if (result && result->deleted_count () == 0) {
                     Throw (RuntimeErrorException{"failed to delete doc"});
                 }
             }
         };
 
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
         mongocxx::client                                               fClient_;
-        mongocxx::database                                             fDatabase;
+        mongocxx::database                                             fDatabase_;
 
         ConnectionRep_ (const Connection::Options& options)
-            : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}} // @todo not sure about charset to map to?
-            , fDatabase{fClient_.database (options.fDatabase.AsUTF8<string> ())}
+            : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}}
+            , fDatabase_{fClient_.database (options.fDatabase.AsUTF8<string> ())}
         {
             TraceContextBumper ctx{"Document::MongoDBClient::Connection::ConnectionRep_::CTOR"};
         }
@@ -283,19 +307,19 @@ namespace {
     public:
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
         {
-            AssertNotImplemented ();
             struct MyEngineProperties_ final : EngineProperties {
                 virtual String GetEngineName () const override
                 {
-                    return "MongoDBClient"sv; // must indirect to connection to get more info (from dns at least? not clear)
+                    return "mongo-cxx-driver"sv; // must indirect to connection to get more info (from dns at least? not clear)
                 }
             };
             return make_shared<const MyEngineProperties_> (); // dynamic info based on connection/dsn
         }
         virtual Set<String> GetCollections () override
         {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             try {
-                vector<string> n = fDatabase.list_collection_names ();
+                vector<string> n = fDatabase_.list_collection_names ();
                 return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; });
             }
             catch (const mongocxx::v_noabi::operation_exception& e) {
@@ -305,28 +329,31 @@ namespace {
         }
         virtual void CreateCollection (const String& name) override
         {
-            fDatabase.create_collection (name.AsUTF8<string> ());
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            fDatabase_.create_collection (name.AsUTF8<string> ());
         }
         virtual void DropCollection (const String& name) override
         {
-            fDatabase.collection (name.AsUTF8<string> ()).drop ();
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            fDatabase_.collection (name.AsUTF8<string> ()).drop ();
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             return Document::Collection::Ptr{make_shared<CollectionRep_> (*this, name)};
         }
         virtual Document::Transaction mkTransaction () override
         {
-            Require (fDatabase); // caller must specify a database in connection options
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
             return Transaction{conn};
         }
 
         // MongoDBClient::Connection::IRep overrides
     public:
-        virtual mongocxx::client* get_client () override
+        virtual mongocxx::client& GetClientRef () override
         {
-            return &fClient_;
+            return fClient_;
         }
     };
 }
@@ -359,12 +386,6 @@ Document::MongoDBClient::Activator::~Activator ()
 Document::MongoDBClient::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     : inherited{src}
 {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-    if (src != nullptr) {
-        // @todo fix... - cast...
-        //       fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
-    }
-#endif
 }
 
 /*

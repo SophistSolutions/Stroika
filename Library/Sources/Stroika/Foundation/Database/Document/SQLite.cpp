@@ -418,7 +418,7 @@ Document::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
 {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     if (src != nullptr) {
-        fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
+        // _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->_fAssertExternallySynchronizedMutex.GetSharedContext ());
     }
 #endif
 }

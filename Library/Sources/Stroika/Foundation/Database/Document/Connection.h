@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
     class Ptr {
     public:
         /**
-             */
+         */
         Ptr (const Ptr& src);
         Ptr (const shared_ptr<IRep>& src = nullptr);
 
@@ -90,8 +90,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
         nonvirtual auto operator== (const Ptr& rhs) const;
         nonvirtual bool operator== (nullptr_t) const noexcept;
 
-    public:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+    protected:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
 
     protected:
         shared_ptr<IRep> _fRep;
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
-             */
+         */
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
 
     public:

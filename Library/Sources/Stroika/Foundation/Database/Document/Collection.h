@@ -74,6 +74,34 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
+         * returns ID
+         */
+        nonvirtual String AddDocument (const Document& v);
+
+    public:
+        /**
+         * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
+         * overload with id returns exactly that one, or nullopt if missing.
+         */
+        nonvirtual optional<Document> GetDocument (const String& id, const optional<Projection>& projection = nullopt);
+
+    public:
+        /**
+         * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
+         * overload with no id returns all.
+         */
+        nonvirtual Sequence<Document> GetDocuments (const optional<Filter>& filter = nullopt, const optional<Projection>& projection = nullopt);
+
+    public:
+        /**
+         */
+        nonvirtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields = nullopt);
+
+    public:
+        nonvirtual void DeleteDocument (const String& id);
+
+    public:
+        /**
          *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;

@@ -27,7 +27,7 @@
 
 /*
 @CONFIGVAR:     DqStroika_HasComponent_mongocxxdriver
-@DESCRIPTION:   <p>Defines if Stroika is built supporting MongoDBClient (only do if ODBC headers in -I path)/p>
+@DESCRIPTION:   Defines if Stroika is built supporting mongo-cxx-driver
 */
 #ifndef qStroika_HasComponent_mongocxxdriver
 #error "qStroika_HasComponent_mongocxxdriver should normally be defined indirectly by StroikaConfig.h"
@@ -72,6 +72,26 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
         public:
             ~Ptr () noexcept = default;
+
+        public:
+            /**
+             */
+            nonvirtual mongocxx::client& GetClientRef ();
+
+        public:
+            /**
+             */
+            nonvirtual Set<String> GetDatabases ();
+
+        public:
+            /**
+             */
+            nonvirtual void DropDatabase (const String& dbName);
+
+        public:
+            /**
+             */
+            nonvirtual void CreateDatabase (const String& dbName);
         };
 
         /**
@@ -84,7 +104,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
             virtual Document run_command (const Document& v) = 0;
 
         public:
-            virtual mongocxx::client* get_client () = 0;
+            virtual mongocxx::client& GetClientRef () = 0;
 
         public:
             virtual Set<String> GetDatabases () = 0;
@@ -168,6 +188,11 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
             /**
              */
             nonvirtual IRep* operator->() const noexcept;
+
+        public:
+            /**
+             */
+            nonvirtual mongocxx::client& GetClientRef ();
         };
 
         /**
@@ -181,9 +206,8 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          */
         class IRep : public Database::Document::Connection::IRep {
         public:
-            virtual mongocxx::client* get_client () = 0;
+            virtual mongocxx::client& GetClientRef () = 0;
 
-        public:
         private:
             friend class Ptr;
         };

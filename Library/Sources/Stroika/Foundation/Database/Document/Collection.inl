@@ -41,5 +41,25 @@ namespace Stroika::Foundation::Database::Document::Collection {
         using namespace Characters;
         return Format ("{}"_f, static_cast<const void*> (this->get ()));
     }
+    inline String Ptr::AddDocument (const Document& v)
+    {
+        return this->get ()->AddDocument (v);
+    }
+    inline optional<Document> Ptr::GetDocument (const String& id, const optional<Projection>& projection)
+    {
+        return this->get ()->GetDocument (id, projection);
+    }
+    inline Sequence<Document> Ptr::GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection)
+    {
+        return this->get ()->GetDocuments (filter, projection);
+    }
+    inline void Ptr::UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields)
+    {
+        this->get ()->UpdateDocument (id, newV, onlyTheseFields);
+    }
+    inline void Ptr::DeleteDocument (const String& id)
+    {
+        this->get ()->DeleteDocument (id);
+    }
 
 }

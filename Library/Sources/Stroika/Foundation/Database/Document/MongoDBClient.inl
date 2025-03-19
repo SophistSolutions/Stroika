@@ -16,6 +16,22 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         : inherited{src}
     {
     }
+    inline mongocxx::client& AdminConnection::Ptr::GetClientRef ()
+    {
+        return get ()->GetClientRef ();
+    }
+    inline Set<String> AdminConnection::Ptr::GetDatabases ()
+    {
+        return get ()->GetDatabases ();
+    }
+    inline void AdminConnection::Ptr::DropDatabase (const String& dbName)
+    {
+        get ()->DropDatabase (dbName);
+    }
+    inline void AdminConnection::Ptr::CreateDatabase (const String& dbName)
+    {
+        get ()->CreateDatabase (dbName);
+    }
 
     /*
      ********************************************************************************
