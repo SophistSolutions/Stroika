@@ -44,6 +44,22 @@ namespace Stroika::Foundation::Database::Document::Connection {
     {
         return _fRep.get () == nullptr;
     }
+    inline Set<String> Ptr::GetCollections ()
+    {
+        return _fRep->GetCollections ();
+    }
+    inline void Ptr::CreateCollection (const String& name)
+    {
+        _fRep.get ()->CreateCollection (name);
+    }
+    inline void Ptr::DropCollection (const String& name)
+    {
+        _fRep.get ()->DropCollection (name);
+    }
+    inline Collection::Ptr Ptr::GetCollection (const String& name)
+    {
+        return _fRep.get ()->GetCollection (name);
+    }
     inline String Ptr::ToString () const
     {
         using namespace Characters;

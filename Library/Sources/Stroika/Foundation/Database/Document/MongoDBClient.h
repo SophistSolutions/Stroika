@@ -76,6 +76,11 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         public:
             /**
              */
+            nonvirtual Document run_command (const Document& v);
+
+        public:
+            /**
+             */
             nonvirtual mongocxx::client& GetClientRef ();
 
         public:

@@ -778,7 +778,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
             AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_});
             Set<String>          d = p->GetDatabases ();
             DbgTrace ("d={}"_f, d);
-            auto ping = p->run_command (Mapping<String, VariantValue>{{"ping", 1}});
+            auto ping = p.run_command ({{"ping", 1}});
             DbgTrace ("ping={}"_f, ping);
         }
         catch (...) {
@@ -793,18 +793,18 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
         AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_})->DropDatabase (kTestDBName_);
         Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
             MongoDBClient::Connection::Options{.fConnectionString = kTestConnectionString_, .fDatabase = kTestDBName_});
-        EXPECT_EQ (p->GetCollections ().size (), 0u);
+        EXPECT_EQ (p.GetCollections ().size (), 0u);
         p->CreateCollection ("blah");
         DbgTrace ("collections={}"_f, p->GetCollections ());
-        EXPECT_EQ (p->GetCollections (), Set<String>{"blah"});
-        Database::Document::Collection::Ptr blah       = p->GetCollection ("blah");
+        EXPECT_EQ (p.GetCollections (), Set<String>{"blah"});
+        Database::Document::Collection::Ptr blah       = p.GetCollection ("blah");
         const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
-        auto                                id         = blah->AddDocument (kTestObj1_);
+        auto                                id         = blah.AddDocument (kTestObj1_);
         DbgTrace ("Added doc {}"_f, id);
-        Database::Document::Document roundTripped = blah->GetDocument (id, nullopt).value_or (Database::Document::Document{});
+        Database::Document::Document roundTripped = blah.GetDocument (id).value_or (Database::Document::Document{});
         DbgTrace ("roundTripped  get value={}"_f, roundTripped);
         //EXPECT_EQ (kTestObj1_, roundTripped);
-        auto rrs = blah->GetDocuments (nullopt, nullopt);
+        auto rrs = blah.GetDocuments ();
         DbgTrace ("rrs  get value={}"_f, rrs);
     }
     catch (...) {

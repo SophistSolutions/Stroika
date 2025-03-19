@@ -16,6 +16,10 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         : inherited{src}
     {
     }
+    inline Document AdminConnection::Ptr::run_command (const Document& v)
+    {
+        return get ()->run_command (v);
+    }
     inline mongocxx::client& AdminConnection::Ptr::GetClientRef ()
     {
         return get ()->GetClientRef ();

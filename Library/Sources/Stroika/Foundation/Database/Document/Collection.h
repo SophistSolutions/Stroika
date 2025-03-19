@@ -87,8 +87,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-         * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
-         * overload with no id returns all.
+         *  Return all 'documents' in this collection. Optionally subset them with a filter; optionally project (subset of fields) with an argument projection.
          */
         nonvirtual Sequence<Document> GetDocuments (const optional<Filter>& filter = nullopt, const optional<Projection>& projection = nullopt);
 

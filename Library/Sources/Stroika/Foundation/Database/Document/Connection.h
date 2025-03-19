@@ -71,6 +71,18 @@ namespace Stroika::Foundation::Database::Document::Connection {
         nonvirtual IRep* operator->() const noexcept;
 
     public:
+        nonvirtual Set<String> GetCollections ();
+
+    public:
+        nonvirtual void CreateCollection (const String& name);
+
+    public:
+        nonvirtual void DropCollection (const String& name);
+
+    public:
+        nonvirtual Collection::Ptr GetCollection (const String& name);
+
+    public:
         /**
           *  Transaction object factory
           * 
