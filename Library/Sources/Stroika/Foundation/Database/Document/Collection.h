@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-             */
+         */
         Ptr (const Ptr& src) = default;
         Ptr (const shared_ptr<IRep>& src);
 
@@ -83,18 +83,24 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with id returns exactly that one, or nullopt if missing.
          */
-        nonvirtual optional<Document> GetDocument (const String& id, const optional<Projection>& projection = nullopt);
+        nonvirtual optional<Document> GetDocument (const String& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        nonvirtual Document GetDocumentOrThrow (const String& id, const optional<Projection>& projection = nullopt);
+        nonvirtual Document GetDocumentOrThrow (const String& id, const optional<Projection>& projection = {});
 
     public:
         /**
          *  Return all 'documents' in this collection. Optionally subset them with a filter; optionally project (subset of fields) with an argument projection.
          */
-        nonvirtual Sequence<Document> GetDocuments (const optional<Filter>& filter = nullopt, const optional<Projection>& projection = nullopt);
+        nonvirtual Sequence<Document> GetDocuments (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
+
+    public:
+        /**
+         *  Same as GetDocuments (filter, projection=kOnlyIDs) - except for mapping the return type to pick out the id and move it out of a variant object into just a string value
+         */
+        nonvirtual Sequence<String> GetDocumentIDs (const optional<Filter>& filter = {});
 
     public:
         /**
@@ -113,7 +119,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
          *  \see also ReplaceDocument to replace the entire object
          */
         nonvirtual void UpdateDocument (const String& id, const Document& newV);
-        nonvirtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields);
+        nonvirtual void UpdateDocument (const String& id, const Document& newV, const Set<String>& onlyTheseFields);
 
     public:
         nonvirtual void DeleteDocument (const String& id);

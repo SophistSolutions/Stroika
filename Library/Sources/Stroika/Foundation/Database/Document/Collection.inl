@@ -58,6 +58,13 @@ namespace Stroika::Foundation::Database::Document::Collection {
     {
         return this->get ()->GetDocuments (filter, projection);
     }
+    inline Sequence<String> Ptr::GetDocumentIDs (const optional<Filter>& filter)
+    {
+        return this->GetDocuments (filter, kOnlyIDs).Map<Sequence<String>> ([] (const Document& d) -> String {
+            static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"};
+            return d.LookupChecked ("id", kExcept_).As<String> ();
+        });
+    }
     inline void Ptr::ReplaceDocument (const String& id, const Document& newV)
     {
         this->get ()->UpdateDocument (id, newV, nullopt);
@@ -66,7 +73,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
     {
         this->get ()->UpdateDocument (id, newV, Set<String>{newV.Keys ()});
     }
-    inline void Ptr::UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields)
+    inline void Ptr::UpdateDocument (const String& id, const Document& newV, const Set<String>& onlyTheseFields)
     {
         this->get ()->UpdateDocument (id, newV, onlyTheseFields);
     }
