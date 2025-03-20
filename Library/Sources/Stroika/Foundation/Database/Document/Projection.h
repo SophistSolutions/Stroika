@@ -65,6 +65,14 @@ namespace Stroika::Foundation::Database::Document {
         MyVariant_ fFields_;
     };
 
+    /**
+     */
+    inline const Projection kOmitIDs = Projection{Projection::eOmit, {"id"sv}};
+
+    /**
+     */
+    inline const Projection kOnlyIDs = Projection{Projection::eInclude, {"id"sv}};
+
 }
 
 /*

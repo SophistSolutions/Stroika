@@ -56,7 +56,7 @@ using namespace Stroika::Frameworks;
 
 namespace {
     optional<String> sMongoConnectionString_;
-    const String     kDefaultMongoConnectionString_ = "mongodb://localhost:17017";
+    const String     kDefaultMongoConnectionString_ = "mongodb://localhost:27017";
 }
 
 #if qStroika_HasComponent_googletest
@@ -842,14 +842,20 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
         p->CreateCollection (kCollectionName_);
         EXPECT_EQ (p.GetCollections (), Set<String>{kCollectionName_});
         Database::Document::Collection::Ptr blah       = p.GetCollection (kCollectionName_);
-        const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
+        const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
         String                              id         = blah.AddDocument (kTestObj1_);
-        Database::Document::Document        roundTripped =
-            blah.GetDocument (id, Projection{Projection::eOmit, {"id"_k}}).value_or (Database::Document::Document{});
+        Database::Document::Document        roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
         EXPECT_EQ (kTestObj1_, roundTripped);
         using DOC_         = Database::Document::Document;
         Sequence<DOC_> rrs = blah.GetDocuments (nullopt, Projection{Projection::eInclude, {"id"_k}});
         EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{"id", id}}}));
+        const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue> {{"x", 8}, {"z", "z"}};
+        blah.UpdateDocument (id, kTestObj1_Updated_);
+        roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
+        EXPECT_EQ (roundTripped["y"], 7);
+        blah.ReplaceDocument (id, kTestObj1_Updated_);
+        roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
+        EXPECT_EQ (kTestObj1_Updated_, roundTripped);
     };
 
 #if qStroika_HasComponent_mongocxxdriver

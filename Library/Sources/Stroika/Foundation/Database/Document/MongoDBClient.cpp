@@ -265,16 +265,29 @@ namespace {
                 if (onlyTheseFields) {
                     uploadDoc.RetainAll (*onlyTheseFields);
                 }
-                uploadDoc.Remove ("id");
+                uploadDoc.RemoveIf ("id");
                 bsoncxx::document::value bsonDoc = ToBSON_ (uploadDoc);
-                if (auto o = fCollection_.update_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})),
-                                                      make_document (kvp ("$set", bsonDoc.view ())))) {
-                    if (o->modified_count () == 0) {
+                if (onlyTheseFields) {
+                    if (auto o = fCollection_.update_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})),
+                                                          make_document (kvp ("$set", bsonDoc.view ())))) {
+                        if (o->modified_count () == 0) {
+                            Throw (RuntimeErrorException{"failed to update doc - not modified"});
+                        }
+                    }
+                    else {
                         Throw (RuntimeErrorException{"failed to update doc"});
                     }
                 }
                 else {
-                    Throw (RuntimeErrorException{"failed to update doc"});
+                    if (auto o = fCollection_.replace_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})),
+                                                          bsonDoc.view ())) {
+                        if (o->modified_count () == 0) {
+                            Throw (RuntimeErrorException{"failed to replace doc - not modified"});
+                        }
+                    }
+                    else {
+                        Throw (RuntimeErrorException{"failed to replace doc"});
+                    }
                 }
             }
             virtual void DeleteDocument (const String& id) override

@@ -87,14 +87,33 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
+         */
+        nonvirtual Document GetDocumentOrThrow (const String& id, const optional<Projection>& projection = nullopt);
+
+    public:
+        /**
          *  Return all 'documents' in this collection. Optionally subset them with a filter; optionally project (subset of fields) with an argument projection.
          */
         nonvirtual Sequence<Document> GetDocuments (const optional<Filter>& filter = nullopt, const optional<Projection>& projection = nullopt);
 
     public:
         /**
+         *  \brief except for issues of timing, equivalent to remove, and then add newV using id
+         * 
+         *  \see also UpdateDocument
          */
-        nonvirtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields = nullopt);
+        nonvirtual void ReplaceDocument (const String& id, const Document& newV);
+
+    public:
+        /**
+         *  \brief Update the document named by 'id' - just updating fields in newV (all or ones given in argument onlyTheseFields)
+         * 
+         *  This does NOT modify other fields of the object.
+         * 
+         *  \see also ReplaceDocument to replace the entire object
+         */
+        nonvirtual void UpdateDocument (const String& id, const Document& newV);
+        nonvirtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields );
 
     public:
         nonvirtual void DeleteDocument (const String& id);
@@ -146,6 +165,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
+         *  if onlyTheseFields, does a ReplaceDocument, and if present, does 'Retain()' on newV for the argument fields.
          */
         virtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields) = 0;
 

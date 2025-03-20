@@ -49,9 +49,22 @@ namespace Stroika::Foundation::Database::Document::Collection {
     {
         return this->get ()->GetDocument (id, projection);
     }
+    inline Document Ptr::GetDocumentOrThrow (const String& id, const optional<Projection>& projection)
+    {
+        static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"};
+        return Memory::ValueOfOrThrow (GetDocument (id, projection), kExcept_);
+    }
     inline Sequence<Document> Ptr::GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection)
     {
         return this->get ()->GetDocuments (filter, projection);
+    }
+    inline void Ptr::ReplaceDocument (const String& id, const Document& newV)
+    {
+        this->get ()->UpdateDocument (id, newV, nullopt);
+    }
+    inline void Ptr::UpdateDocument (const String& id, const Document& newV)
+    {
+        this->get ()->UpdateDocument (id, newV, Set<String>{newV.Keys ()});
     }
     inline void Ptr::UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields)
     {
