@@ -2385,6 +2385,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Document.h">
       <Filter>Sources\Database\Document</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\ObjectCollection.h">
+      <Filter>Sources\Database\Document</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3935,6 +3938,9 @@
       <Filter>Sources\Database\Document</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Document.inl">
+      <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\ObjectCollection.inl">
       <Filter>Sources\Database\Document</Filter>
     </None>
   </ItemGroup>

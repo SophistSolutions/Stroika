@@ -497,6 +497,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\EngineProperties.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Filter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\ObjectCollection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Projection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.h" />
@@ -993,6 +994,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Filter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\ObjectCollection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Projection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.inl" />
