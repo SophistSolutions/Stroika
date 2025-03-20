@@ -9,7 +9,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
      ********************* Document::ObjectCollection::Ptr **************************
      ********************************************************************************
      */
-    inline Ptr::Ptr (const Database::Document::ObjectCollection::Ptr& underlyingCollection, const ObjectVariantMapper& mapper)
+    inline Ptr::Ptr (const Database::Document::Collection::Ptr& underlyingCollection, const ObjectVariantMapper& mapper)
         : inherited{underlyingCollection}
         , fMapper_{mapper}
     {

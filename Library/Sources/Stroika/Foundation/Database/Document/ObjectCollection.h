@@ -17,7 +17,7 @@
 
 namespace Stroika::Foundation::Database::Document::ObjectCollection {
 
-    using namespace Database::Document::ObjectCollection;
+    using namespace Database::Document::Collection;
     using DataExchange::ObjectVariantMapper;
 
     /**

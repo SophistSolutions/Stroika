@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
+#include "Stroika/Foundation/Database/Document/ObjectCollection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
@@ -59,12 +60,7 @@ namespace {
      *  docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
      */
     optional<String> sMongoConnectionString_;
-    // Auth doesn't work on windows native mongodb docker container for reasons which elude me
-#if qStroika_Foundation_Common_Platform_Windows
-    const String kDefaultMongoConnectionString_ = "mongodb://localhost:27017";
-#else
     const String kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017";
-#endif
 }
 
 #if qStroika_HasComponent_googletest
