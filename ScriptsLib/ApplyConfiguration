@@ -666,7 +666,7 @@ sub WriteVS2kIntellisenseConfigFile
 				if ($defs2Print ne "") {
 					$defs2Print .= ';'
 				}
-				$defs2Print .= substr ($element, 2);
+				$defs2Print .= trim (substr ($element, 2));
 			}
 		}
 	}
