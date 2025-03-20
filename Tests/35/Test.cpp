@@ -63,7 +63,7 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
     const String kDefaultMongoConnectionString_ = "mongodb://localhost:27017";
 #else
-    const String     kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017";
+    const String kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017";
 #endif
 }
 
