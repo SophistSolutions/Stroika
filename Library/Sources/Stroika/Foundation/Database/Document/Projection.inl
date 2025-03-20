@@ -21,6 +21,8 @@ namespace Stroika::Foundation::Database::Document {
         if (auto i1 = get_if<1> (&fFields_)) {
             return make_tuple (eInclude, *i1);
         }
+        AssertNotReached ();
+        return make_tuple (eOmit, Set<String>{});
     }
 
 }
