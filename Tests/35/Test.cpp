@@ -7,6 +7,10 @@
 #include <iostream>
 #include <random>
 
+#if qStroika_HasComponent_mongocxxdriver
+#include <mongocxx/exception/operation_exception.hpp>
+#endif
+
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -23,6 +27,7 @@
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/LazyInitialized.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -48,6 +53,11 @@ using namespace Stroika::Frameworks;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+namespace {
+    optional<String> sMongoConnectionString_;
+    const String     kDefaultMongoConnectionString_ = "mongodb://localhost:17017";
+}
 
 #if qStroika_HasComponent_googletest
 #if qStroika_HasComponent_sqlite
@@ -766,16 +776,16 @@ namespace {
 #if qStroika_HasComponent_mongocxxdriver
 GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 {
-    TraceContextBumper  ctx{"SimpleMongoDBClientTest_"};
-    static const String kTestConnectionString_ = "mongodb://localhost:27017";
+    TraceContextBumper ctx{"SimpleMongoDBClientTest_"};
+    String             connectionString = sMongoConnectionString_.value_or (kDefaultMongoConnectionString_);
     using namespace Database::Document;
     using namespace Database::Document::MongoDBClient;
 
-    Activator activator; // must exist while using this library
+    Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
 
     {
         try {
-            AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_});
+            AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
             Set<String>          d = p->GetDatabases ();
             DbgTrace ("d={}"_f, d);
             auto ping = p.run_command ({{"ping", 1}});
@@ -783,16 +793,23 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
         }
         catch (...) {
             // test warning no mongo on address X so test skipped
-            Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+            if (connectionString == kDefaultMongoConnectionString_) {
+                Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
+            }
+            else {
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+            }
             return; // skip rest of tests
         }
     }
 
     try {
         const String kTestDBName_ = "MyTestDB"sv;
-        AdminConnection::New (AdminConnection::Options{.fConnectionString = kTestConnectionString_})->DropDatabase (kTestDBName_);
-        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
-            MongoDBClient::Connection::Options{.fConnectionString = kTestConnectionString_, .fDatabase = kTestDBName_});
+        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+        adminDB.CreateDatabase (kTestDBName_);
+        Database::Document::Connection::Ptr p =
+            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
         EXPECT_EQ (p.GetCollections ().size (), 0u);
         p->CreateCollection ("blah");
         DbgTrace ("collections={}"_f, p->GetCollections ());
@@ -813,10 +830,82 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 }
 #endif
 
+GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
+{
+    TraceContextBumper ctx{"DocumentDBTestBasics_"};
+    using namespace Database::Document;
+    String connectionString = sMongoConnectionString_.value_or (kDefaultMongoConnectionString_);
+
+    auto test1 = [] (Database::Document::Connection::Ptr p) {
+        EXPECT_EQ (p.GetCollections ().size (), 0u);
+        const String kCollectionName_ = "blah"sv;
+        p->CreateCollection (kCollectionName_);
+        EXPECT_EQ (p.GetCollections (), Set<String>{kCollectionName_});
+        Database::Document::Collection::Ptr blah       = p.GetCollection (kCollectionName_);
+        const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
+        String                              id         = blah.AddDocument (kTestObj1_);
+        Database::Document::Document        roundTripped =
+            blah.GetDocument (id, Projection{Projection::eOmit, {"id"_k}}).value_or (Database::Document::Document{});
+        EXPECT_EQ (kTestObj1_, roundTripped);
+        using DOC_         = Database::Document::Document;
+        Sequence<DOC_> rrs = blah.GetDocuments (nullopt, Projection{Projection::eInclude, {"id"_k}});
+        EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{"id", id}}}));
+    };
+
+#if qStroika_HasComponent_mongocxxdriver
+    {
+        // Test against mongo connection (hardwired value or ENV VAR)
+        using namespace Database::Document::MongoDBClient;
+
+        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
+        {
+            try {
+                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+                Set<String>           d    = p->GetDatabases ();
+                [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
+            }
+            catch (...) {
+                if (connectionString == kDefaultMongoConnectionString_) {
+                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
+                }
+                else {
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                }
+                return; // skip rest of tests
+            }
+            const String kTestDBName_ = "MyTestDB"sv;
+            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+            adminDB.CreateDatabase (kTestDBName_);
+            Database::Document::Connection::Ptr p =
+                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+            test1 (p);
+        }
+    }
+#endif
+    {
+        // Test against SQLite
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])
 {
+    const Execution::CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
+
+    try {
+        Execution::CommandLine cmdLine{argc, argv};
+        if (auto o = cmdLine.GetArgument (kMongoConnectionStringOpt_)) {
+            sMongoConnectionString_ = *o;
+        }
+    }
+    catch (...) {
+        auto exc = current_exception ();
+        cerr << "Usage: " << Characters::ToString (exc) << endl;
+        exit (EXIT_FAILURE);
+    }
+
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();

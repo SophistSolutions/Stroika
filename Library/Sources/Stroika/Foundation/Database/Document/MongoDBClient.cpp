@@ -58,11 +58,9 @@ namespace {
     const String kMongoID_ = "_id"sv;
 }
 
-#if qStroika_Foundation_Debug_AssertionsChecked
 namespace {
-    unsigned int sActivatorLiveCnt_{0};
+    atomic<unsigned int> sActivatorLiveCnt_{0};
 }
-#endif
 
 namespace {
     String bson_value_to_string_ (const bsoncxx::types::bson_value::view& value)
@@ -363,20 +361,30 @@ namespace {
  ********************* Document::MongoDBClient::Activator ***********************
  ********************************************************************************
  */
-#if qStroika_Foundation_Debug_AssertionsChecked
 Document::MongoDBClient::Activator::Activator ()
+    : fAllowReactivation_{false}
 {
     Require (Debug::AppearsDuringMainLifetime ());
-    ++sActivatorLiveCnt_;
+    if (sActivatorLiveCnt_.fetch_add (1) == 0) {
+        if (not sMongoInstance_) {
+            sMongoInstance_ = mongocxx::instance{};
+        }
+    }
+}
+Document::MongoDBClient::Activator::Activator (AllowReactivateFlag)
+    : Activator{}
+{
+    fAllowReactivation_ = true;
 }
 
 Document::MongoDBClient::Activator::~Activator ()
 {
     Require (Debug::AppearsDuringMainLifetime ());
     Require (sActivatorLiveCnt_ > 0);
-    --sActivatorLiveCnt_;
+    if (sActivatorLiveCnt_.fetch_sub (1) == 0 and not fAllowReactivation_) {
+        sMongoInstance_.reset ();
+    }
 }
-#endif
 
 /*
  ********************************************************************************

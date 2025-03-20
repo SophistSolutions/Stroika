@@ -41,18 +41,27 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
      *  \brief must be instantiated after main, but before any use of MongoCXX library methods, and destroyed after all such methods
      * 
      *  \pre Debug::AppearsDuringMainLifetime ()
+     * 
+     *  From mongo-cxx-driver source code:
+     *      Exactly one instance must be created in a given program. Not constructing an instance or
+     *      constructing more than one instance in a program are errors, even if the multiple instances have
+     *      non-overlapping lifetimes.
+     * 
+     *  To allow Stroika code to activate and deactivate (rarely but possibly useful) - an optional flag is provided, and
+     *  if set allowReactivation=true, then the underlying mongocxx instance object not destroyed until application end,
+     *  so that you can re-activate. JUST IGNORE this for hte most part and stick with the default!
      */
     struct Activator {
-#if qStroika_Foundation_Debug_AssertionsChecked
+        enum AllowReactivateFlag {
+            eAllowReactivateFlag
+        };
         Activator ();
+        Activator (AllowReactivateFlag);
         ~Activator ();
-#else
-        Activator ()  = default;
-        ~Activator () = default;
-#endif
 
     private:
-        mongocxx::instance fMongoInstance_;
+        bool                                       fAllowReactivation_;
+        static inline optional<mongocxx::instance> sMongoInstance_;
     };
 
     namespace AdminConnection {
