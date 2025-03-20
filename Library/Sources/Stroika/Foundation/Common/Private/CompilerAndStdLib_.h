@@ -478,6 +478,36 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+
+
+/*
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/concepts:153:30: error: substitution into constraint expression resulted in a non-constant expression
+..../usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/type_traits:2386:41: fatal error: recursive template instantiation exceeded maximum depth of 1024
+    auto declval() noexcept -> decltype(__declval<_Tp>(0))
+
+
+/usr/lib/llvm-15/bin/../include/c++/v1/__concepts/constructible.h:28:26: error: substitution into constraint expression resulted in a non-constant expression
+    destructible<_Tp> && is_constructible_v<_Tp, _Args...>;
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+....  constructible_from<_Tp, _Tp> && convertible_to<_Tp, _Tp>;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/lib/llvm-15/bin/../include/c++/v1/__concepts/constructible.h:47:3: note: while checking the satisfaction of concept 'move_constructible<Stroika::Foundation::Traversal::Iterable<int>>' requested here
+  move_constructible<_Tp> &&
+ */
+#ifndef qCompilerAndStdLib_constructible_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_constructible_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#else
+#define qCompilerAndStdLib_constructible_Buggy 0
+#endif
+
+#endif
+
+
+
+
 #ifndef qCompilerAndStdLib_default_initializable_broken_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
