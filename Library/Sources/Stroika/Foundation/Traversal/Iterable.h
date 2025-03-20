@@ -239,10 +239,10 @@ namespace Stroika::Foundation::Traversal {
         // that working
     public:
         static_assert (copy_constructible<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
-        #if !qCompilerAndStdLib_constructible_Buggy
+#if !qCompilerAndStdLib_constructible_Buggy
         static_assert (copyable<T>); // cannot use as type constraint on T cuz fails with String - cuz??? not sure why - something about being evaluated when incomplete type...
-            #endif
-            
+#endif
+
     public:
         /**
          * \brief value_type is an alias for the type iterated over - like vector<T>::value_type
@@ -290,11 +290,11 @@ namespace Stroika::Foundation::Traversal {
          */
         template <IIterableOfTo<T> CONTAINER_OF_T>
         explicit Iterable (CONTAINER_OF_T&& from)
-            requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>> 
-                #if ! qCompilerAndStdLib_constructible_Buggy
-                     and (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>)
-                  #endif
-                    )
+            requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>>
+#if !qCompilerAndStdLib_constructible_Buggy
+                      and (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>)
+#endif
+                          )
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep} {}
 #endif

@@ -279,8 +279,7 @@ namespace {
                     }
                 }
                 else {
-                    if (auto o = fCollection_.replace_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})),
-                                                          bsonDoc.view ())) {
+                    if (auto o = fCollection_.replace_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})), bsonDoc.view ())) {
                         if (o->modified_count () == 0) {
                             Throw (RuntimeErrorException{"failed to replace doc - not modified"});
                         }

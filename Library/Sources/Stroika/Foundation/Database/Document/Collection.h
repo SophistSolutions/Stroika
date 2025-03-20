@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
          *  \see also ReplaceDocument to replace the entire object
          */
         nonvirtual void UpdateDocument (const String& id, const Document& newV);
-        nonvirtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields );
+        nonvirtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields);
 
     public:
         nonvirtual void DeleteDocument (const String& id);

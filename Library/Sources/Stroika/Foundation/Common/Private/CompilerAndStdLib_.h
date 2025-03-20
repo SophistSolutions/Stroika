@@ -478,8 +478,6 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
-
-
 /*
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/concepts:153:30: error: substitution into constraint expression resulted in a non-constant expression
 ..../usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/type_traits:2386:41: fatal error: recursive template instantiation exceeded maximum depth of 1024
@@ -497,16 +495,12 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #ifndef qCompilerAndStdLib_constructible_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constructible_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#define qCompilerAndStdLib_constructible_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_constructible_Buggy 0
 #endif
 
 #endif
-
-
-
 
 #ifndef qCompilerAndStdLib_default_initializable_broken_Buggy
 
