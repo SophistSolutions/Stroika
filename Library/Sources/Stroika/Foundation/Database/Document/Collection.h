@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * 
          *  \see also UpdateDocument
          */
-        nonvirtual void ReplaceDocument (const String& id, const Document& newV);
+        nonvirtual void ReplaceDocument (const IDType& id, const Document& newV);
 
     public:
         /**
