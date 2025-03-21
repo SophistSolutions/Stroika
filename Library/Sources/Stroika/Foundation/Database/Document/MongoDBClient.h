@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
     private:
         bool                                       fAllowReactivation_;
-        static inline unique_ptr<mongocxx::instance> sMongoInstance_;
+        static  unique_ptr<mongocxx::instance> sMongoInstance_;
     };
 
     namespace AdminConnection {

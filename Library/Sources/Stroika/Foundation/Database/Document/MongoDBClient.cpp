@@ -376,6 +376,8 @@ namespace {
  ********************* Document::MongoDBClient::Activator ***********************
  ********************************************************************************
  */
+  unique_ptr<mongocxx::instance> Document::MongoDBClient::Activator::sMongoInstance_;
+
 Document::MongoDBClient::Activator::Activator ()
     : fAllowReactivation_{false}
 {
