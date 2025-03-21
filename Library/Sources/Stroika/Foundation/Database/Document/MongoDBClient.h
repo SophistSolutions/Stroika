@@ -7,8 +7,14 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_mongocxxdriver
-#include <mongocxx/client.hpp>
-#include <mongocxx/instance.hpp>
+namespace mongocxx::v_noabi {
+    class client;
+    class instance;
+}
+namespace mongocxx {
+    using ::mongocxx::v_noabi::client;
+    using ::mongocxx::v_noabi::instance;
+}
 #endif
 
 #include "Stroika/Foundation/DataExchange/VariantValue.h"
@@ -61,7 +67,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
     private:
         bool                                       fAllowReactivation_;
-        static inline optional<mongocxx::instance> sMongoInstance_;
+        static inline unique_ptr<mongocxx::instance> sMongoInstance_;
     };
 
     namespace AdminConnection {

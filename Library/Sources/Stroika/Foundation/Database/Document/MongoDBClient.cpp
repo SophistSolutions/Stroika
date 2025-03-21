@@ -11,6 +11,8 @@
 #include <bsoncxx/types.hpp>
 #include <bsoncxx/types/bson_value/value.hpp>
 #include <bsoncxx/types/bson_value/view.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/instance.hpp>
 #include <bsoncxx/view_or_value.hpp>
 #include <mongocxx/collection.hpp>
 #include <mongocxx/exception/exception.hpp>
@@ -380,7 +382,7 @@ Document::MongoDBClient::Activator::Activator ()
     Require (Debug::AppearsDuringMainLifetime ());
     if (sActivatorLiveCnt_.fetch_add (1) == 0) {
         if (not sMongoInstance_) {
-            sMongoInstance_ = mongocxx::instance{};
+            sMongoInstance_ = make_unique<mongocxx::instance>();
         }
     }
 }
