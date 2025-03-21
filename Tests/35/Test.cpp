@@ -61,6 +61,7 @@ namespace {
      */
     optional<String> sMongoConnectionString_;
     const String     kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017";
+    bool             sAlreadyWarnedFailedMongoDBServer = false;
 }
 
 #if qStroika_HasComponent_googletest
@@ -798,7 +799,10 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
         catch (...) {
             // test warning no mongo on address X so test skipped
             if (connectionString == kDefaultMongoConnectionString_) {
-                Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
+                if (not sAlreadyWarnedFailedMongoDBServer) {
+                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
+                    sAlreadyWarnedFailedMongoDBServer = true;
+                }
             }
             else {
                 Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
@@ -876,7 +880,10 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
             }
             catch (...) {
                 if (connectionString == kDefaultMongoConnectionString_) {
-                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
+                    if (not sAlreadyWarnedFailedMongoDBServer) {
+                        Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
+                        sAlreadyWarnedFailedMongoDBServer = true;
+                    }
                 }
                 else {
                     Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
