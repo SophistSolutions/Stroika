@@ -11,12 +11,12 @@
 #include <bsoncxx/types.hpp>
 #include <bsoncxx/types/bson_value/value.hpp>
 #include <bsoncxx/types/bson_value/view.hpp>
-#include <mongocxx/client.hpp>
-#include <mongocxx/instance.hpp>
 #include <bsoncxx/view_or_value.hpp>
+#include <mongocxx/client.hpp>
 #include <mongocxx/collection.hpp>
 #include <mongocxx/exception/exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
+#include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 #endif
 
@@ -376,7 +376,7 @@ namespace {
  ********************* Document::MongoDBClient::Activator ***********************
  ********************************************************************************
  */
-  unique_ptr<mongocxx::instance> Document::MongoDBClient::Activator::sMongoInstance_;
+unique_ptr<mongocxx::instance> Document::MongoDBClient::Activator::sMongoInstance_;
 
 Document::MongoDBClient::Activator::Activator ()
     : fAllowReactivation_{false}
@@ -384,7 +384,7 @@ Document::MongoDBClient::Activator::Activator ()
     Require (Debug::AppearsDuringMainLifetime ());
     if (sActivatorLiveCnt_.fetch_add (1) == 0) {
         if (not sMongoInstance_) {
-            sMongoInstance_ = make_unique<mongocxx::instance>();
+            sMongoInstance_ = make_unique<mongocxx::instance> ();
         }
     }
 }
