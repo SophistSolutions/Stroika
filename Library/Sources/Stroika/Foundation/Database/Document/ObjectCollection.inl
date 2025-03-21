@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         return AddDocument (fMapper_.FromObject (v));
     }
     template <typename T>
-    inline optional<T> Ptr::GetDocument (const String& id, const optional<Projection>& projection)
+    inline optional<T> Ptr::GetDocument (const IDType& id, const optional<Projection>& projection)
     {
         if (auto o = inherited::GetDocument (id, projection)) {
             return fMapper_.ToObject<T> (*o);
@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         }
     }
     template <typename T>
-    inline T Ptr::GetDocumentOrThrow (const String& id, const optional<Projection>& projection)
+    inline T Ptr::GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection)
     {
         return fMapper_.ToObject<T> (inherited::GetDocument (id, projection));
     }
@@ -40,12 +40,12 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         return inherited::GetDocuments (filter, projection).Map<Sequence<T>> ([this] (const Document& d) { return fMapper_.ToObject<T> (d); });
     }
     template <typename T>
-    inline void Ptr::ReplaceDocument (const String& id, const T& newV)
+    inline void Ptr::ReplaceDocument (const IDType& id, const T& newV)
     {
         ReplaceDocument (id, fMapper_.FromObject (newV));
     }
     template <typename T>
-    inline void Ptr::UpdateDocument (const String& id, const T& newV, const Set<String>& onlyTheseFields)
+    inline void Ptr::UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields)
     {
         UpdateDocument (id, fMapper_.FromObject (newV), onlyTheseFields);
     }

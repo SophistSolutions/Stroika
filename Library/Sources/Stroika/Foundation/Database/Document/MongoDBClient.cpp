@@ -38,6 +38,7 @@ using namespace Stroika::Foundation::Execution;
 
 using Database::Document::EngineProperties;
 using Database::Document::Filter;
+using Database::Document::IDType;
 using Database::Document::Projection;
 
 /**
@@ -209,7 +210,7 @@ namespace {
                     connectionRep.fAssertExternallySynchronizedMutex_.GetSharedContext ());
 #endif
             }
-            virtual String AddDocument (const Document::Document& v) override
+            virtual IDType AddDocument (const Document::Document& v) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
@@ -218,7 +219,7 @@ namespace {
                 }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
-            virtual optional<Document::Document> GetDocument (const String& id, const optional<Projection>& projection) override
+            virtual optional<Document::Document> GetDocument (const IDType& id, const optional<Projection>& projection) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 bsoncxx::builder::basic::document                      filter_doc;
@@ -257,7 +258,7 @@ namespace {
                 }
                 return result;
             }
-            virtual void UpdateDocument (const String& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
+            virtual void UpdateDocument (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
@@ -289,7 +290,7 @@ namespace {
                     }
                 }
             }
-            virtual void DeleteDocument (const String& id) override
+            virtual void DeleteDocument (const IDType& id) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 bsoncxx::builder::basic::document                      filter_doc;

@@ -57,14 +57,14 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
          */
         using inherited::GetDocument;
         template <typename T>
-        nonvirtual optional<T> GetDocument (const String& id, const optional<Projection>& projection = {});
+        nonvirtual optional<T> GetDocument (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
         using inherited::GetDocumentOrThrow;
         template <typename T>
-        nonvirtual T GetDocumentOrThrow (const String& id, const optional<Projection>& projection = {});
+        nonvirtual T GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
@@ -78,14 +78,14 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
          */
         using inherited::ReplaceDocument;
         template <typename T>
-        nonvirtual void ReplaceDocument (const String& id, const T& newV);
+        nonvirtual void ReplaceDocument (const IDType& id, const T& newV);
 
     public:
         /**
          */
         using inherited::UpdateDocument;
         template <typename T>
-        nonvirtual void UpdateDocument (const String& id, const T& newV, const Set<String>& onlyTheseFields);
+        nonvirtual void UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields);
 
     private:
         ObjectVariantMapper fMapper_;

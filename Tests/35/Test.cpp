@@ -60,7 +60,7 @@ namespace {
      *  docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
      */
     optional<String> sMongoConnectionString_;
-    const String kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017";
+    const String     kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017";
 }
 
 #if qStroika_HasComponent_googletest
@@ -847,7 +847,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
         EXPECT_EQ (p.GetCollections (), Set<String>{kCollectionName_});
         Database::Document::Collection::Ptr blah         = p.GetCollection (kCollectionName_);
         const Database::Document::Document  kTestObj1_   = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
-        String                              id           = blah.AddDocument (kTestObj1_);
+        Database::Document::IDType          id           = blah.AddDocument (kTestObj1_);
         Database::Document::Document        roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
         EXPECT_EQ (kTestObj1_, roundTripped);
         using DOC_         = Database::Document::Document;

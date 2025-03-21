@@ -23,14 +23,24 @@ namespace Stroika::Foundation::Database::Document {
     using DataExchange::VariantValue;
 
     /**
-     * In a document database, a document is a mapping of field names to values (slightly differnt than just a variantvalue)
+     * In a document database, a document is a mapping of field names to values (slightly different than just a VariantValue)
      */
     using Document = Mapping<String, VariantValue>;
 
     /**
-      * \note this special value kID is used to identify the ID field in a document. Its value is "_id" (in mongodb, but in this API, its "id")
-      * ?????? dont want to hardwire queer choice of mongodb, but dont wnat to have todo alot of needless mapping/translation later. RETHINK!!!
-      */
+     *  'Type' used for value of 'id' field.
+     * 
+     *  \note - we considered using GUID, but String is more flexible given that different systems (e.g. XML, MongoDB etc) all might
+     *          have different requirements on how to format/size/rules for those IDs. String is lingua-franca.
+     */
+    using IDType = String;
+
+    /**
+     *  \note this special value kID is used to identify the ID field in a document. Its value is "_id" (in mongodb, but in this API, its "id")
+     * 
+     *  \note dont want to hardwire queer choice of mongodb, but dont want to have todo a lot of needless mapping/translation later.
+     *  \note the VALUE associated with this key is of type IDType.
+     */
     static inline const String kID = "id"sv;
 
 }

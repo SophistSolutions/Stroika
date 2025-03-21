@@ -76,19 +76,19 @@ namespace Stroika::Foundation::Database::Document::Collection {
         /**
          * returns ID
          */
-        nonvirtual String AddDocument (const Document& v);
+        nonvirtual IDType AddDocument (const Document& v);
 
     public:
         /**
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with id returns exactly that one, or nullopt if missing.
          */
-        nonvirtual optional<Document> GetDocument (const String& id, const optional<Projection>& projection = {});
+        nonvirtual optional<Document> GetDocument (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        nonvirtual Document GetDocumentOrThrow (const String& id, const optional<Projection>& projection = {});
+        nonvirtual Document GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
         /**
          *  Same as GetDocuments (filter, projection=kOnlyIDs) - except for mapping the return type to pick out the id and move it out of a variant object into just a string value
          */
-        nonvirtual Sequence<String> GetDocumentIDs (const optional<Filter>& filter = {});
+        nonvirtual Sequence<IDType> GetDocumentIDs (const optional<Filter>& filter = {});
 
     public:
         /**
@@ -118,11 +118,11 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * 
          *  \see also ReplaceDocument to replace the entire object
          */
-        nonvirtual void UpdateDocument (const String& id, const Document& newV);
-        nonvirtual void UpdateDocument (const String& id, const Document& newV, const Set<String>& onlyTheseFields);
+        nonvirtual void UpdateDocument (const IDType& id, const Document& newV);
+        nonvirtual void UpdateDocument (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields);
 
     public:
-        nonvirtual void DeleteDocument (const String& id);
+        nonvirtual void DeleteDocument (const IDType& id);
 
     public:
         /**
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with id returns exactly that one, or nullopt if missing.
          */
-        virtual optional<Document> GetDocument (const String& id, const optional<Projection>& projection) = 0;
+        virtual optional<Document> GetDocument (const IDType& id, const optional<Projection>& projection) = 0;
 
     public:
         /**
@@ -172,11 +172,14 @@ namespace Stroika::Foundation::Database::Document::Collection {
     public:
         /**
          *  if onlyTheseFields, does a ReplaceDocument, and if present, does 'Retain()' on newV for the argument fields.
+         * 
+         *  \note newV may or may not contain an 'id' field. It will be automatically implicitly added/replaced with the explicit
+         *        argument 'id'
          */
-        virtual void UpdateDocument (const String& id, const Document& newV, const optional<Set<String>>& onlyTheseFields) = 0;
+        virtual void UpdateDocument (const IDType& id, const Document& newV, const optional<Set<String>>& onlyTheseFields) = 0;
 
     public:
-        virtual void DeleteDocument (const String& id) = 0;
+        virtual void DeleteDocument (const IDType& id) = 0;
     };
 
 }
