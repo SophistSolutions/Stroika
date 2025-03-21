@@ -163,7 +163,7 @@ jobs:
         run: |
           make run-tests
       - name: Save space
-        if: false
+        if: always()
         run: |
           echo "*************Before save space*************:"
           df -h
