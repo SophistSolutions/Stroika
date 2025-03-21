@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     inline optional<T> Ptr::GetDocument (const String& id, const optional<Projection>& projection)
     {
         if (auto o = inherited::GetDocument (id, projection)) {
-            return fMapper_.ToObject (*o);
+            return fMapper_.ToObject<T> (*o);
         }
         else {
             return nullopt;
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline T Ptr::GetDocumentOrThrow (const String& id, const optional<Projection>& projection)
     {
-        return fMapper_.ToObject (inherited::GetDocument (id, projection));
+        return fMapper_.ToObject<T> (inherited::GetDocument (id, projection));
     }
     template <typename T>
     Sequence<T> Ptr::GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection)
