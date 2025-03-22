@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
      ********************************************************************************
      */
     inline Connection::Ptr::Ptr (const Ptr& src)
-        : Ptr{Debug::UncheckedDynamicPointerCast<IRep> (src._fRep)}
+        : Ptr{Debug::UncheckedDynamicPointerCast<IRep> (src)}
     {
     }
     inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
@@ -50,11 +50,11 @@ namespace Stroika::Foundation::Database::Document::SQLite {
     }
     inline Connection::IRep* Connection::Ptr::operator->() const noexcept
     {
-        return Debug::UncheckedDynamicPointerCast<IRep> (_fRep).get ();
+        return Debug::UncheckedDynamicPointerCast<IRep> (*this).get ();
     }
     inline ::sqlite3* Connection::Ptr::Peek () const
     {
-        return Debug::UncheckedDynamicPointerCast<IRep> (_fRep)->Peek ();
+        return Debug::UncheckedDynamicPointerCast<IRep> (*this)->Peek ();
     }
     inline void Connection::Ptr::Exec (const String& sql)
     {

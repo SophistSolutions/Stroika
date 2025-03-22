@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Transaction.h"
+#include "Stroika/Foundation/Database/Document/Transaction.h"
 
 #include "Connection.h"
 
@@ -14,10 +14,10 @@ using namespace Database::Document;
 
 /*
  ********************************************************************************
- ****************************** SQL::Connection::Ptr ****************************
+ ************************* Document::Connection::Ptr ****************************
  ********************************************************************************
  */
 Transaction Connection::Ptr::mkTransaction ()
 {
-    return _fRep->mkTransaction ();
+    return get ()->mkTransaction ();
 }

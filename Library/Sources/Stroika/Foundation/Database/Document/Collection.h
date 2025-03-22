@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
      *          The Collection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
      *          shared_ptr<IRep> was created.
      */
-    class Ptr : shared_ptr<IRep> {
+    class Ptr : public shared_ptr<IRep> {
     private:
         using inherited = shared_ptr<IRep>;
 

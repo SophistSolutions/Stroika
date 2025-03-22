@@ -49,12 +49,16 @@ namespace Stroika::Foundation::Database::Document::Connection {
      *          The Connection::Ptr itself is standardC++ thread safety. The thread-safety of the underlying database depends on how the underlying
      *          shared_ptr<IRep> was created.
      */
-    class Ptr {
+    class Ptr : public shared_ptr<IRep> {
+    private:
+        using inherited = shared_ptr<IRep>;
+
     public:
         /**
          */
-        Ptr (const Ptr& src);
-        Ptr (const shared_ptr<IRep>& src = nullptr);
+        Ptr (const Ptr& src)     = default;
+        Ptr (Ptr&& src) noexcept = default;
+        using inherited::inherited;
 
     public:
         ~Ptr () = default;
@@ -62,8 +66,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
     public:
         /**
          */
-        nonvirtual Ptr& operator= (const Ptr& src);
-        nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+        nonvirtual Ptr& operator= (const Ptr& src)     = default;
+        nonvirtual Ptr& operator= (Ptr&& src) noexcept = default;
 
     public:
         /**
@@ -99,14 +103,11 @@ namespace Stroika::Foundation::Database::Document::Connection {
         nonvirtual String ToString () const;
 
     public:
-        nonvirtual auto operator== (const Ptr& rhs) const;
+        nonvirtual bool operator== (const Ptr& rhs) const = default;
         nonvirtual bool operator== (nullptr_t) const noexcept;
 
     protected:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
-
-    protected:
-        shared_ptr<IRep> _fRep;
     };
 
     /**
