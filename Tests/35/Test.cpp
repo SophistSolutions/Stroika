@@ -60,7 +60,7 @@ namespace {
      *  docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
      */
     optional<String> sMongoConnectionString_;
-    const String     kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017";
+    const String     kDefaultMongoConnectionString_    = "mongodb://admin:pass@localhost:27017";
     bool             sAlreadyWarnedFailedMongoDBServer = false;
 }
 
