@@ -55,19 +55,16 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     public:
         /**
          */
-        using inherited::GetDocument;
         nonvirtual optional<T> GetDocument (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        using inherited::GetDocumentOrThrow;
         nonvirtual T GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        using inherited::GetDocuments;
         nonvirtual Sequence<T> GetDocuments (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
 
     public:
