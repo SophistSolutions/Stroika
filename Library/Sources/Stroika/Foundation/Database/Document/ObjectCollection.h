@@ -24,7 +24,8 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
      * Provide an API similar to Database::Document::Collection::Ptr, but using an ObjectVariantMapper
      * to do IO with the higher level objects directly.
      */
-    class Ptr : Database::Document::Collection::Ptr {
+    template <typename T>
+    class Ptr : public Database::Document::Collection::Ptr {
     private:
         using inherited = Database::Document::Collection::Ptr;
 
@@ -49,42 +50,36 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
          * returns ID
          */
         using inherited::AddDocument;
-        template <typename T>
         nonvirtual String AddDocument (const T& v);
 
     public:
         /**
          */
         using inherited::GetDocument;
-        template <typename T>
         nonvirtual optional<T> GetDocument (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
         using inherited::GetDocumentOrThrow;
-        template <typename T>
         nonvirtual T GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
         using inherited::GetDocuments;
-        template <typename T>
         nonvirtual Sequence<T> GetDocuments (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
 
     public:
         /**
          */
         using inherited::ReplaceDocument;
-        template <typename T>
         nonvirtual void ReplaceDocument (const IDType& id, const T& newV);
 
     public:
         /**
          */
         using inherited::UpdateDocument;
-        template <typename T>
         nonvirtual void UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields);
 
     private:
@@ -93,7 +88,8 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
 
     /**
      */
-    Ptr New (const Database::Document::Collection::Ptr& underlyingCollection, const ObjectVariantMapper& mapper);
+    template <typename T>
+    Ptr<T> New (const Database::Document::Collection::Ptr& underlyingCollection, const ObjectVariantMapper& mapper);
 
 }
 
