@@ -7,6 +7,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_mongocxxdriver
+// forward declare so we can expose these interfaces to code which #includes the appropriate file, but not force
+// its inclusion just to use the MongoDBClient
 namespace mongocxx::v_noabi {
     class client;
     class instance;

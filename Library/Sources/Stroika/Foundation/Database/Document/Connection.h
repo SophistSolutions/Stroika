@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Database/Document/Collection.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
@@ -18,7 +17,7 @@
  *  \file
  * 
  *  The point of this module is to define a Connection abstraction that can be used for different kinds
- *  of connections (e.g. SQLite local database object, and ODBC remote database object). This generic API
+ *  of connections (e.g. SQLite local database object, and mongoDB remote database object). This generic API
  *  can then be used in places where either backend database might be in use.
  *
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
@@ -72,18 +71,21 @@ namespace Stroika::Foundation::Database::Document::Connection {
     public:
         /**
          */
-        nonvirtual IRep* operator->() const noexcept;
-
-    public:
         nonvirtual Set<String> GetCollections ();
 
     public:
+        /**
+         */
         nonvirtual void CreateCollection (const String& name);
 
     public:
+        /**
+         */
         nonvirtual void DropCollection (const String& name);
 
     public:
+        /**
+         */
         nonvirtual Collection::Ptr GetCollection (const String& name);
 
     public:
@@ -103,7 +105,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
         nonvirtual String ToString () const;
 
     public:
-        nonvirtual bool operator== (const Ptr& rhs) const = default;
+        nonvirtual bool operator== (const Ptr& rhs) const noexcept;
         nonvirtual bool operator== (nullptr_t) const noexcept;
 
     protected:
@@ -111,21 +113,15 @@ namespace Stroika::Foundation::Database::Document::Connection {
     };
 
     /**
-     *  Connection::IRep provides an (abstract) API for accessing an SQL database.
+     *  Connection::IRep provides an (abstract) API for accessing a Document database.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype</a>
      */
     class IRep : public enable_shared_from_this<IRep> {
     public:
         /**
-             */
-        virtual ~IRep () = default;
-
-    public:
-        /**
-         *  Transaction object factory
          */
-        virtual Transaction mkTransaction () = 0;
+        virtual ~IRep () = default;
 
     public:
         /**
@@ -133,16 +129,30 @@ namespace Stroika::Foundation::Database::Document::Connection {
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
 
     public:
+        /**
+         */
         virtual Set<String> GetCollections () = 0;
 
     public:
+        /**
+         */
         virtual void CreateCollection (const String& name) = 0;
 
     public:
+        /**
+         */
         virtual void DropCollection (const String& name) = 0;
 
     public:
+        /**
+         */
         virtual Collection::Ptr GetCollection (const String& name) = 0;
+
+    public:
+        /**
+         *  Transaction object factory
+         */
+        virtual Transaction mkTransaction () = 0;
     };
 
 }

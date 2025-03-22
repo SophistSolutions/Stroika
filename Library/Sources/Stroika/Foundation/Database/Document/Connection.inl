@@ -10,6 +10,10 @@ namespace Stroika::Foundation::Database::Document::Connection {
      ************************* Document::Connection::Ptr ****************************
      ********************************************************************************
      */
+    inline bool Ptr::operator== (const Ptr& rhs) const noexcept
+    {
+        return this->get () == rhs.get ();
+    }
     inline bool Ptr::operator== (nullptr_t) const noexcept
     {
         return this->get () == nullptr;
