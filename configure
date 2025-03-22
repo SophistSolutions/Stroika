@@ -337,11 +337,18 @@ sub	DoSetThirdPartyComponents_
 		if (!defined $FEATUREFLAG_mongocxxdriver) {
 			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
 			## python required, so if not explicitly listed on command-line, only default-on if will build successfully
+			$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
 			if (hasPython_()) {
-				$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
-			}
-			else {
-				$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_No;
+				if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+					my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER);
+					# Builtin supports works for gcc as of gcc 13
+					if ($itsVersion >= 12.0) {
+						$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
+					}
+				}
+				else {
+					$FEATUREFLAG_mongocxxdriver = $LIBFEATUREFLAG_UseStaticTPP;
+				}
 			}
 		}
 		if (!defined $FEATUREFLAG_WinHTTP) {
