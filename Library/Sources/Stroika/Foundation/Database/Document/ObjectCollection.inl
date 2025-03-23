@@ -18,13 +18,13 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline String Ptr<T>::AddDocument (const T& v)
     {
-        return inherited::AddDocument (fMapper_.FromObject (v));
+        return inherited::AddDocument (fMapper_.FromObject (v).As<Mapping<String, VariantValue>> ());
     }
     template <typename T>
     inline optional<T> Ptr<T>::GetDocument (const IDType& id, const optional<Projection>& projection)
     {
-        if (auto o = inherited::GetDocument (id, projection)) {
-            return fMapper_.ToObject<T> (*o);
+        if (optional<Document> o = inherited::GetDocument (id, projection)) {
+            return fMapper_.ToObject<T> (VariantValue{*o});
         }
         else {
             return nullopt;
@@ -33,13 +33,13 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline T Ptr<T>::GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection)
     {
-        return fMapper_.ToObject<T> (inherited::GetDocument (id, projection));
+        return fMapper_.ToObject<T> (VariantValue{inherited::GetDocument (id, projection)});
     }
     template <typename T>
     Sequence<T> Ptr<T>::GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection)
     {
         return inherited::GetDocuments (filter, projection).template Map<Sequence<T>> ([this] (const Document& d) {
-            return fMapper_.ToObject<T> (d);
+            return fMapper_.ToObject<T> (VariantValue{d});
         });
     }
     template <typename T>
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline void Ptr<T>::UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields)
     {
-        UpdateDocument (id, fMapper_.FromObject (newV), onlyTheseFields);
+        UpdateDocument (id, fMapper_.FromObject (newV).As<Mapping<String, VariantValue>> (), onlyTheseFields);
     }
 
     /*
