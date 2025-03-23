@@ -905,6 +905,100 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
     }
 }
 
+namespace {
+    namespace DocumentDBTestObjectCollection_Private_ {
+
+        using IDType = String;
+
+        struct User {
+            optional<IDType>  fID;
+            optional<String>  fName;
+            optional<String>  fEmail;
+            optional<String>  fPhoneNumber;
+            auto              operator<=> (const User&) const = default;
+            bool              operator== (const User&) const  = default;
+            nonvirtual String ToString () const
+            {
+                StringBuilder sb;
+                return sb;
+            }
+            static inline const ObjectVariantMapper kMapper = [] () {
+                ObjectVariantMapper mapper;
+                mapper.AddCommonType<IDType> ();
+                mapper.AddCommonType<optional<IDType>> ();
+                mapper.AddCommonType<optional<String>> ();
+                mapper.AddClass<User> ({
+                    {"id"sv, &User::fID},
+                    {"email"sv, &User::fEmail},
+                    {"name"sv, &User::fName},
+                    {"phoneNumber"sv, &User::fPhoneNumber},
+                });
+                return mapper;
+            }();
+        };
+    }
+}
+
+GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
+{
+    TraceContextBumper ctx{"DocumentDBTestObjectCollection_"};
+    using namespace Database::Document;
+    String connectionString = sMongoConnectionString_.value_or (kDefaultMongoConnectionString_);
+
+    [[maybe_unused]] auto test1 = [] (Database::Document::Connection::Ptr p) {
+        EXPECT_EQ (p.GetCollections ().size (), 0u);
+        p->CreateCollection ("Users");
+        EXPECT_EQ (p.GetCollections (), Set<String>{"Users"});
+        using namespace DocumentDBTestObjectCollection_Private_;
+        auto userCollection = Database::Document::ObjectCollection::New<User> (p.GetCollection ("Users"), User::kMapper);
+        EXPECT_EQ (userCollection.GetDocuments ().size (), 0u);
+        String userIDAdded = userCollection.AddDocument (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
+        EXPECT_EQ (userCollection.GetDocuments ().size (), 1u);
+        EXPECT_EQ (userCollection.GetDocument (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
+        userCollection.UpdateDocument (userIDAdded, User{ .fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
+        EXPECT_EQ (userCollection.GetDocument (userIDAdded),
+                   (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
+    };
+
+#if qStroika_HasComponent_mongocxxdriver
+    {
+        // Test against mongo connection (hardwired value or ENV VAR)
+        using namespace Database::Document::MongoDBClient;
+
+        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
+        {
+            try {
+                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+                Set<String>           d    = p->GetDatabases ();
+                [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
+            }
+            catch (...) {
+                if (connectionString == kDefaultMongoConnectionString_) {
+                    if (not sAlreadyWarnedFailedMongoDBServer) {
+                        Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
+                        sAlreadyWarnedFailedMongoDBServer = true;
+                    }
+                }
+                else {
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                }
+                return; // skip rest of tests
+            }
+            const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
+            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+            adminDB.CreateDatabase (kTestDBName_);
+            Database::Document::Connection::Ptr p =
+                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+            test1 (p);
+        }
+    }
+#endif
+    {
+        // Test against SQLite
+    }
+}
+
 #endif
 
 int main (int argc, const char* argv[])
