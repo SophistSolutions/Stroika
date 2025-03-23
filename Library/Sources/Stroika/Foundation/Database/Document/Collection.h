@@ -55,11 +55,12 @@ namespace Stroika::Foundation::Database::Document::Collection {
     public:
         /**
          */
-        Ptr (const Ptr& ) = default;
-        Ptr ( Ptr&& ) noexcept = default;
+        Ptr (const Ptr&)     = default;
+        Ptr (Ptr&&) noexcept = default;
         Ptr (const shared_ptr<IRep>& src);
-        Ptr () noexcept          = default;
+        Ptr () noexcept = default;
         using inherited::inherited;
+
     public:
         ~Ptr () = default;
 
