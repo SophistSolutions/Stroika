@@ -24,10 +24,6 @@ namespace Stroika::Foundation::Database::Document::Collection {
         inherited::operator= (src);
         return *this;
     }
-    inline IRep* Ptr::operator->() const noexcept
-    {
-        return inherited::operator->();
-    }
     inline auto Ptr::operator== (const Ptr& rhs) const
     {
         return get () == rhs.get ();
