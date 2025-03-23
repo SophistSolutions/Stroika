@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline T Ptr<T>::GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection)
     {
-        return fMapper_.ToObject<T> (VariantValue{inherited::GetDocument (id, projection)});
+        return fMapper_.ToObject<T> (VariantValue{inherited::GetDocumentOrThrow (id, projection)});
     }
     template <typename T>
     Sequence<T> Ptr<T>::GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection)
