@@ -92,7 +92,7 @@ namespace {
         Mapping<String, VariantValue> result =
             Variant::JSON::Reader{}.Read (String::FromUTF8 (bsoncxx::to_json (b.view ()))).As<Mapping<String, VariantValue>> ();
         if (result.ContainsKey (kMongoID_)) {
-            // patch 'id' <-> '_id' and value
+            // patch '_id':oid => 'id':string
             VariantValue idValue = result[kMongoID_]; // {id: {$oid -> 67da17b30c4265ac0302f483}}
             idValue              = idValue.As<Mapping<String, VariantValue>> ()["$oid"];
             result.Remove (kMongoID_);
@@ -104,7 +104,7 @@ namespace {
     {
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
         if (vv.ContainsKey (Database::Document::kID)) {
-            // patch 'id' <-> '_id' and value
+            // patch 'id':string => '_id':oid
             Document::Document vvv     = vv;
             auto               idValue = vv[Database::Document::kID];
             vvv.Remove (Database::Document::kID);
@@ -224,11 +224,11 @@ namespace {
             virtual optional<Document::Document> GetDocument (const IDType& id, const optional<Projection>& projection) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                bsoncxx::builder::basic::document                      filter_doc;
-                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
+                bsoncxx::builder::basic::document                      filterDoc;
+                filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
                 auto [mongoProjection, myProjection] = Parse_ (projection);
                 // @todo support mongoProjection - {{a: 1, b:0}} etc...
-                auto result = fCollection_.find_one (filter_doc.view ());
+                auto result = fCollection_.find_one (filterDoc.view ());
                 if (result) {
                     auto rr = FromBSON_ (bsoncxx::document::view_or_value{*result});
                     if (myProjection) {
@@ -295,9 +295,9 @@ namespace {
             virtual void DeleteDocument (const IDType& id) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                bsoncxx::builder::basic::document                      filter_doc;
-                filter_doc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); // kMongoID_
-                auto result = fCollection_.delete_one (filter_doc.view ());
+                bsoncxx::builder::basic::document                      filterDoc;
+                filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); // kMongoID_
+                auto result = fCollection_.delete_one (filterDoc.view ());
                 if (result && result->deleted_count () == 0) {
                     Throw (RuntimeErrorException{"failed to delete doc"});
                 }
