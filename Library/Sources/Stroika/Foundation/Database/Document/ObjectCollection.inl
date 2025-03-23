@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline String Ptr<T>::AddDocument (const T& v)
     {
-        return inherited::AddDocument (fMapper_.FromObject (v).As<Mapping<String, VariantValue>> ());
+        return inherited::AddDocument (fMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
     }
     template <typename T>
     inline optional<T> Ptr<T>::GetDocument (const IDType& id, const optional<Projection>& projection)
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline void Ptr<T>::UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields)
     {
-        UpdateDocument (id, fMapper_.FromObject (newV).As<Mapping<String, VariantValue>> (), onlyTheseFields);
+        UpdateDocument (id, fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> (), onlyTheseFields);
     }
 
     /*
