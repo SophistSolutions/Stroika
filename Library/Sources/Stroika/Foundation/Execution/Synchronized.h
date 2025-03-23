@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <compare>
+#include <concepts>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -262,7 +263,8 @@ namespace Stroika::Foundation::Execution {
          *  the lock means).
          */
         template <typename... ARGUMENT_TYPES>
-        Synchronized (ARGUMENT_TYPES&&... args);
+        Synchronized (ARGUMENT_TYPES&&... args)
+            requires (constructible_from<T, ARGUMENT_TYPES...>);
         Synchronized (const Synchronized& src);
 
     public:
@@ -605,7 +607,7 @@ namespace Stroika::Foundation::Execution {
 
     protected:
         /**
-         *  Can construct ReadableReference with nullptr_t mutex, in which case its the subclasses responsability to manage locking
+         *  Can construct ReadableReference with nullptr_t mutex, in which case its the subclasses responsibility to manage locking
          *
          *  \pre t != nullptr, and this class holds onto that pointer.
          */

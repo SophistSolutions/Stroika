@@ -28,6 +28,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     template <typename... ARGUMENT_TYPES>
     inline Synchronized<T, TRAITS>::Synchronized (ARGUMENT_TYPES&&... args)
+        requires (constructible_from<T, ARGUMENT_TYPES...>)
         : fProtectedValue_ (forward<ARGUMENT_TYPES> (args)...) // use () not {} so works with T with explicit CTOR (empirically has trouble - not sure why)
     {
     }
