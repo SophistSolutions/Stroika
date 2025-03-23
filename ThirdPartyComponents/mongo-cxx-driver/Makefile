@@ -118,25 +118,29 @@ endif
 	@${StroikaRoot}ScriptsLib/CheckValidConfiguration ${CONFIGURATION}
 	@#make ZIPPED_SOURCES_FILE_ even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@${MAKE} --no-print-directory --silent ${ZIPPED_SOURCES_FILE_}
-	@${MAKE} --no-print-directory --silent CURRENT
 	@${MAKE} --no-print-directory --silent ${PRODUCED_OUTPUT_ARTIFACTS_}
+ifneq ($(QUICK_BUILD), 1)
+	@${MAKE} --no-print-directory --silent CURRENT
+endif
 	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) check
 
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
 #multiple tries to run the same rule. So remap all to making the first.
-$(wordlist 2, 9999, ${PRODUCED_OUTPUT_ARTIFACTS_}):	$(word 1,${PRODUCED_OUTPUT_ARTIFACTS_}) CURRENT
+$(wordlist 2, 9999, ${PRODUCED_OUTPUT_ARTIFACTS_}):	$(word 1,${PRODUCED_OUTPUT_ARTIFACTS_})
 
 $(word 1,${PRODUCED_OUTPUT_ARTIFACTS_}):
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
+	@${MAKE} --silent CURRENT
+
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
 	@if [[ "${PYTHON_VERSION_}" == "" ]] ; then echo "PYTHON_VERSION_ not set"; exit 1; fi
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
 	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} -S ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} -B ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_} >> CONFIGURE-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
@@ -205,10 +209,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	@rm -rf	${StroikaRoot}Builds/*/ThirdPartyComponents/lib/{*bson*,*mongo*}
-	@rm -rf	${StroikaRoot}Builds/*/ThirdPartyComponents/lib/cmake/{*bson*,*mongoc*} 
-	@rm -rf	${StroikaRoot}Builds/*/ThirdPartyComponents/lib/pkgconfig/{*bson*,*mongo*}
-	@rm -rf	${StroikaRoot}Builds/*/ThirdPartyComponents/include/{*bson*,*mongoc*} 
+	# @rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/ThirdPartyComponents/include/{zlib,zconf}.h
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}
