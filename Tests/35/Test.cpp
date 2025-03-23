@@ -955,7 +955,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
         String userIDAdded = userCollection.AddDocument (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
         EXPECT_EQ (userCollection.GetDocuments ().size (), 1u);
         EXPECT_EQ (userCollection.GetDocument (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
-        userCollection.UpdateDocument (userIDAdded, User{ .fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
+        userCollection.UpdateDocument (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
         EXPECT_EQ (userCollection.GetDocument (userIDAdded),
                    (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
     };
