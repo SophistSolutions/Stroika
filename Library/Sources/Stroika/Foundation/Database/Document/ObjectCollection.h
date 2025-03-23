@@ -32,9 +32,11 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     public:
         /**
          */
-        Ptr (const Ptr& src) = default;
-        Ptr (Ptr&& src)      = default;
+        Ptr (const Ptr& src)     = default;
+        Ptr (Ptr&& src) noexcept = default;
+        Ptr () noexcept          = default;
         Ptr (const Database::Document::Collection::Ptr& underlyingCollection, const ObjectVariantMapper& mapper);
+        using inherited::inherited;
 
     public:
         ~Ptr () = default;

@@ -55,9 +55,11 @@ namespace Stroika::Foundation::Database::Document::Collection {
     public:
         /**
          */
-        Ptr (const Ptr& src) = default;
+        Ptr (const Ptr& ) = default;
+        Ptr ( Ptr&& ) noexcept = default;
         Ptr (const shared_ptr<IRep>& src);
-
+        Ptr () noexcept          = default;
+        using inherited::inherited;
     public:
         ~Ptr () = default;
 
@@ -66,11 +68,6 @@ namespace Stroika::Foundation::Database::Document::Collection {
          */
         nonvirtual Ptr& operator= (const Ptr& src);
         nonvirtual Ptr& operator= (Ptr&& src) noexcept;
-
-    public:
-        /**
-         */
-        nonvirtual IRep* operator->() const noexcept;
 
     public:
         /**
