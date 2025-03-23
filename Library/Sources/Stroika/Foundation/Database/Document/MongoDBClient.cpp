@@ -201,15 +201,17 @@ namespace {
 namespace {
     struct ConnectionRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::Connection::IRep {
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // @todo these fAssert... guys all muyst be linked togetoher since have internal pointers into each other
-            mongocxx::collection fCollection_;
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsyncrhonized connection, share its context
+            shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
+            mongocxx::collection       fCollection_;
 
-            CollectionRep_ (ConnectionRep_& connectionRep, const String& collectionName)
-                : fCollection_{connectionRep.fDatabase_.collection (collectionName.AsUTF8<string> ())}
+            CollectionRep_ (const shared_ptr<ConnectionRep_>& connectionRep, const String& collectionName)
+                : fConnectionRep_{connectionRep}
+                , fCollection_{connectionRep->fDatabase_.collection (collectionName.AsUTF8<string> ())}
             {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
                 fAssertExternallySynchronizedMutex_.SetAssertExternallySynchronizedMutexContext (
-                    connectionRep.fAssertExternallySynchronizedMutex_.GetSharedContext ());
+                    connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
 #endif
             }
             virtual IDType AddDocument (const Document::Document& v) override
@@ -353,7 +355,8 @@ namespace {
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            return Document::Collection::Ptr{make_shared<CollectionRep_> (*this, name)};
+            return Document::Collection::Ptr{
+                make_shared<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
         }
         virtual Document::Transaction mkTransaction () override
         {
