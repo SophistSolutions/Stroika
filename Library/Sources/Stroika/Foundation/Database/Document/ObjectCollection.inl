@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline String Ptr<T>::AddDocument (const T& v)
     {
-        return AddDocument (fMapper_.FromObject (v));
+        return inherited::AddDocument (fMapper_.FromObject (v));
     }
     template <typename T>
     inline optional<T> Ptr<T>::GetDocument (const IDType& id, const optional<Projection>& projection)
