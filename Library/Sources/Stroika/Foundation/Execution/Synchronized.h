@@ -278,11 +278,10 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Synonym for load ()
          *
-         *  \note   Tentatively (as of v2.0a155) - decided to do with non-explicit. This makes usage more terse
+         *  \note   Do with non-explicit. This makes usage more terse
          *          for cases like:
          *              Synchronized<T> sX_;
          *              T Accessor ()  { return sX_; }
-         *          and so far has caused no obvious problems.
          *
          *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
          *          feature (say with RWSynchronized) - use cget ().load ();
