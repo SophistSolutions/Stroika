@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline void Ptr<T>::ReplaceDocument (const IDType& id, const T& newV)
     {
-        inherited::ReplaceDocument (id, fMapper_.FromObject (newV));
+        inherited::ReplaceDocument (id, fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> ());
     }
     template <typename T>
     inline void Ptr<T>::UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields)
