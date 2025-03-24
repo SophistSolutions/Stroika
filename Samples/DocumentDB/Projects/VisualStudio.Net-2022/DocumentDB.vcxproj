@@ -36,7 +36,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectGuid>{D6301E5A-7A66-4929-9367-7F4EDA95730F}</ProjectGuid>
+    <ProjectGuid>{BE935FEC-0086-4C5C-9EDD-3FCC6A2A436D}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
@@ -55,8 +55,8 @@
   <PropertyGroup>
     <NMakeBuildCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) $(JOBS_FLAG) --silent all</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>make --directory $(ProjectDir)\..\..\ CONFIGURATION=$(CONFIGURATION) clean --silent</NMakeCleanCommandLine>
-    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-SQL\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-SQL\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\..\Builds\$(Configuration)\Samples-DocumentDB\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\..\IntermediateFiles\$(Configuration)\Samples-DocumentDB\</IntDir>
     <ExecutablePath>$(StroikaBuildToolsExtraPath);$(CommonExecutablePath)</ExecutablePath>
     <NMakeIncludeSearchPath>$(ProjectDir)\..\..\;$(ProjectDir)\..\..\..\..\Library\Sources\;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
@@ -67,16 +67,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ComputerNetwork.cpp" />
+    <ClCompile Include="..\..\Sources\EmployeesDB.cpp" />
     <ClCompile Include="..\..\Sources\Main.cpp" />
-    <ClCompile Include="..\..\Sources\ORMEmployeesDB.cpp" />
-    <ClCompile Include="..\..\Sources\DirectEmployeesDB.cpp" />
-    <ClCompile Include="..\..\Sources\ThreadTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\ComputerNetwork.h" />
-    <ClInclude Include="..\..\Sources\ORMEmployeesDB.h" />
-    <ClInclude Include="..\..\Sources\DirectEmployeesDB.h" />
-    <ClInclude Include="..\..\Sources\ThreadTest.h" />
+    <ClInclude Include="..\..\Sources\EmployeesDB.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

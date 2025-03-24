@@ -19,33 +19,21 @@
     <None Include="..\..\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\DirectEmployeesDB.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\ThreadTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\ComputerNetwork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\ORMEmployeesDB.cpp">
+    <ClCompile Include="..\..\Sources\EmployeesDB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\DirectEmployeesDB.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\ThreadTest.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\ComputerNetwork.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\ORMEmployeesDB.h">
+    <ClInclude Include="..\..\Sources\EmployeesDB.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
