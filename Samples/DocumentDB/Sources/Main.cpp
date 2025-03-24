@@ -23,6 +23,26 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     using namespace Stroika::Samples::Document;
 
+
+    #if qStroika_HasComponent_mongocxxdriver
+    {
+        using namespace Stroika::Foundation::Database::Document::MongoDBClient;
+        const String kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017"sv;
+        String connectionString               = kDefaultMongoConnectionString_; // check cmdline
+        Activator activator{Activator::eAllowReactivateFlag};               // must exist while using this library
+
+        const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
+        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+        adminDB.CreateDatabase (kTestDBName_);
+        Database::Document::Connection::Ptr p =
+            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+        ComputerNetworksModel ([=] () {
+            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+        });
+    }
+    #endif
+
     {
 #if qStroika_HasComponent_sqlite && 0
         auto connectionFactory = [=] () {

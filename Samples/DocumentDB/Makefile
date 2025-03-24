@@ -9,10 +9,10 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir			:=	$(StroikaRoot)Samples/DocumentDB/
-ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/DocumentDB/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-DocumentDB/
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/DocumentDB/
+TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-DocumentDB/
 TARGETEXE		:=	$(TARGETDIR)DocumentDB${EXE_SUFFIX}
 
 Objs	:=	\
