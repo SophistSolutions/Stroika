@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Characters {
      *      o   static_assert (totally_ordered<String>);
      *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
      */
-    class [[nodiscard]] String : public Traversal::Iterable<Character> {
+    class String : public Traversal::Iterable<Character> {
     private:
         using inherited = Iterable<Character>;
 
