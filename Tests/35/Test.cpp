@@ -17,6 +17,8 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Common/Version.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
 #include "Stroika/Foundation/Database/Document/ObjectCollection.h"
@@ -864,6 +866,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
         blah.ReplaceDocument (id, kTestObj1_Updated_);
         roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
         EXPECT_EQ (kTestObj1_Updated_, roundTripped);
+
     };
 
 #if qStroika_HasComponent_mongocxxdriver
@@ -915,15 +918,20 @@ namespace {
             optional<String>  fName;
             optional<String>  fEmail;
             optional<String>  fPhoneNumber;
-            auto              operator<=> (const User&) const = default;
+            optional<TypedBLOB> fImage;
+            optional<DateTime> fDateTime;
+            auto                operator<=> (const User&) const = default;
             bool              operator== (const User&) const  = default;
             nonvirtual String ToString () const
             {
-                StringBuilder sb;
-                return sb;
+                return kMapper.FromObject (*this).ToString ();
             }
             static inline const ObjectVariantMapper kMapper = [] () {
                 ObjectVariantMapper mapper;
+                mapper.AddCommonType<TypedBLOB> ();
+                mapper.AddCommonType<optional<TypedBLOB>> ();
+                mapper.AddCommonType<DateTime> ();
+                mapper.AddCommonType<optional<DateTime>> ();
                 mapper.AddCommonType<IDType> ();
                 mapper.AddCommonType<optional<IDType>> ();
                 mapper.AddCommonType<optional<String>> ();
@@ -932,6 +940,8 @@ namespace {
                     {"email"sv, &User::fEmail},
                     {"name"sv, &User::fName},
                     {"phoneNumber"sv, &User::fPhoneNumber},
+                    {"image"sv, &User::fImage},
+                    {"dateTime"sv, &User::fDateTime},
                 });
                 return mapper;
             }();
@@ -958,6 +968,11 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
         userCollection.UpdateDocument (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
         EXPECT_EQ (userCollection.GetDocument (userIDAdded),
                    (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
+        User u = userCollection.GetDocumentOrThrow (userIDAdded);
+        u.fImage = TypedBLOB{.fData = Memory::BLOB{0x1, 0x2, 0x3, 0x4}, .fType = InternetMediaTypes::kAudioMP3};
+        u.fDateTime = Time::DateTime::Now ();
+        userCollection.ReplaceDocument (userIDAdded, u);
+        EXPECT_EQ (userCollection.GetDocument (userIDAdded), u);
     };
 
 #if qStroika_HasComponent_mongocxxdriver

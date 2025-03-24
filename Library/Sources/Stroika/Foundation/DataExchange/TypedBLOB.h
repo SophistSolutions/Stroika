@@ -52,6 +52,9 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         nonvirtual String ToString () const;
+
+    public:
+        bool operator== (const TypedBLOB&) const = default;
     };
 
 }
