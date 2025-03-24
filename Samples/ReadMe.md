@@ -17,6 +17,9 @@
 * [Containers](Containers/)
   demonstrates the basic ideas of the Stroika container class library
 
+* [DocumentDB](DocumentDB/)
+  demonstrates persistence via the DocumentDB database layer (via mongodb, or sqlite)
+
 * [HTMLUI](HTMLUI/)
   **very good place to start**
 
