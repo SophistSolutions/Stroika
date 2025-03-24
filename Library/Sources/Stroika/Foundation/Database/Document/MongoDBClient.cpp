@@ -86,8 +86,93 @@ namespace {
                 throw std::invalid_argument{"Unsupported BSON type for string conversion"};
         }
     }
+    template <Common::IAnyOf<bsoncxx::types::bson_value::view, bsoncxx::document::element, bsoncxx::array::element> T>
+    VariantValue BSON2VV_ (const T& value)
+    {
+        switch (value.type ()) {
+            case bsoncxx::type::k_double:
+                return value.get_double ().value;
+            case bsoncxx::type::k_string:
+                return String::FromUTF8 (
+                    span{reinterpret_cast<const char8_t*> (value.get_string ().value.data ()), value.get_string ().value.size ()});
+            case bsoncxx::type::k_document: {
+                Mapping<String, VariantValue>     vvResult;
+                const bsoncxx::types::b_document& thisDoc = value.get_document ();
+                for (auto di : thisDoc.value) {
+                    vvResult.Add (String::FromUTF8 (span{di.key ()}), BSON2VV_ (di));
+                }
+                return VariantValue{vvResult};
+            }
+            case bsoncxx::type::k_array: {
+                Sequence<VariantValue>         vvResult;
+                const bsoncxx::types::b_array& thisArray = value.get_array ();
+                for (auto ai : thisArray.value) {
+                    vvResult += BSON2VV_ (ai);
+                }
+                return VariantValue{vvResult};
+            }
+            case bsoncxx::type::k_binary:
+                return Memory::BLOB{span{value.get_binary ().bytes, static_cast<size_t> (value.get_binary ().size)}};
+            case bsoncxx::type::k_undefined:
+                return VariantValue{nullptr}; // Stroika VariantValue doesn't distinguish between null and undefined
+            case bsoncxx::type::k_oid:
+                return String{value.get_oid ().value.to_string ()};
+            case bsoncxx::type::k_bool:
+                return static_cast<bool> (value.get_bool ());
+            case bsoncxx::type::k_date:
+                // @todo FIX - UNSURE of right clock to use
+                return Time::DateTime{chrono::time_point<chrono::system_clock>{value.get_date ().value}}; ///< UTC datetime.
+            case bsoncxx::type::k_null:
+                return VariantValue{nullptr};
+            case bsoncxx::type::k_regex:
+                return String::FromUTF8 (
+                    span{reinterpret_cast<const char8_t*> (value.get_string ().value.data ()), value.get_string ().value.size ()});
+            case bsoncxx::type::k_dbpointer:
+                WeakAssertNotReached (); ///< DBPointer. @deprecated
+                return VariantValue{};
+            case bsoncxx::type::k_code:
+                WeakAssertNotReached ();
+                return VariantValue{};
+            case bsoncxx::type::k_symbol:
+                WeakAssertNotReached (); ///< Symbol. @deprecated
+                return VariantValue{};
+            case bsoncxx::type::k_codewscope:
+                WeakAssertNotReached ();
+                return VariantValue{};
+            case bsoncxx::type::k_int32:
+                return value.get_int32 ().value;
+            case bsoncxx::type::k_timestamp:
+                WeakAssertNotReached (); // not sure how to translate/interpret
+                return VariantValue{};
+            case bsoncxx::type::k_int64:
+                return value.get_int64 ().value;
+            case bsoncxx::type::k_decimal128:
+                WeakAssertNotReached (); // ///< 128-bit decimal floating point. == not sure what todo
+                return VariantValue{};
+            case bsoncxx::type::k_maxkey:
+            case bsoncxx::type::k_minkey:
+                WeakAssertNotReached (); // not sure what todo
+                return VariantValue{};
+            default:
+                WeakAssertNotReached (); // not sure what todo
+                return VariantValue{};
+        }
+    }
+
     Document::Document FromBSON_ (const bsoncxx::document::view_or_value& b)
     {
+#if 1
+        Mapping<String, VariantValue> result;
+        for (const bsoncxx::document::element& di : b.view ()) {
+            result.Add (String::FromUTF8 (span{di.key ()}), BSON2VV_ (di));
+        }
+        if (result.ContainsKey (kMongoID_)) {
+            // patch '_id':oid => 'id':string
+            VariantValue idValue = result[kMongoID_]; // {id: {$oid -> 67da17b30c4265ac0302f483}}
+            result.Remove (kMongoID_);
+            result.Add (Database::Document::kID, idValue);
+        }
+#else
         // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
         Mapping<String, VariantValue> result =
             Variant::JSON::Reader{}.Read (String::FromUTF8 (bsoncxx::to_json (b.view ()))).As<Mapping<String, VariantValue>> ();
@@ -98,6 +183,7 @@ namespace {
             result.Remove (kMongoID_);
             result.Add (Database::Document::kID, idValue);
         }
+#endif
         return result;
     }
     bsoncxx::document::value ToBSON_ (const Document::Document& vv)
