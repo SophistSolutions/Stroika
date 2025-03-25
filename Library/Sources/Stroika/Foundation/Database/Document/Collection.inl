@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 namespace Stroika::Foundation::Database::Document::Collection {
 
@@ -37,45 +38,57 @@ namespace Stroika::Foundation::Database::Document::Collection {
         using namespace Characters;
         return Format ("{}"_f, static_cast<const void*> (this->get ()));
     }
-    inline IDType Ptr::AddDocument (const Document& v)
+    inline IDType Ptr::Add (const Document& v)
     {
-        return this->get ()->AddDocument (v);
+        return this->get ()->Add (v);
     }
-    inline optional<Document> Ptr::GetDocument (const IDType& id, const optional<Projection>& projection)
+    inline optional<Document> Ptr::GetOne (const IDType& id, const optional<Projection>& projection)
     {
-        return this->get ()->GetDocument (id, projection);
+        return this->get ()->GetOne (id, projection);
     }
-    inline Document Ptr::GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection)
+    inline Document Ptr::GetOneOrThrow (const IDType& id, const optional<Projection>& projection)
     {
         static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"};
-        return Memory::ValueOfOrThrow (GetDocument (id, projection), kExcept_);
+        return Memory::ValueOfOrThrow (GetOne (id, projection), kExcept_);
     }
-    inline Sequence<Document> Ptr::GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection)
+    inline Sequence<Document> Ptr::GetAll (const optional<Filter>& filter, const optional<Projection>& projection)
     {
-        return this->get ()->GetDocuments (filter, projection);
+        return this->get ()->GetAll (filter, projection);
     }
-    inline Sequence<IDType> Ptr::GetDocumentIDs (const optional<Filter>& filter)
+    inline Sequence<IDType> Ptr::GetAllIDs (const optional<Filter>& filter)
     {
-        return this->GetDocuments (filter, kOnlyIDs).Map<Sequence<IDType>> ([] (const Document& d) -> IDType {
+        return this->GetAll (filter, kOnlyIDs).Map<Sequence<IDType>> ([] (const Document& d) -> IDType {
             static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"};
             return d.LookupChecked ("id", kExcept_).As<String> ();
         });
     }
-    inline void Ptr::ReplaceDocument (const IDType& id, const Document& newV)
+    inline void Ptr::Replace (const Document& newV)
     {
-        this->get ()->UpdateDocument (id, newV, nullopt);
+        Replace (Memory::ValueOf (newV.Lookup (kID)).As<String> (), newV);
     }
-    inline void Ptr::UpdateDocument (const IDType& id, const Document& newV)
+    inline void Ptr::Replace (const IDType& id, const Document& newV)
     {
-        this->get ()->UpdateDocument (id, newV, Set<String>{newV.Keys ()});
+        this->get ()->Update (id, newV, nullopt);
     }
-    inline void Ptr::UpdateDocument (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields)
+    inline void Ptr::Update (const Document& newV)
     {
-        this->get ()->UpdateDocument (id, newV, onlyTheseFields);
+        Update (Memory::ValueOf (newV.Lookup (kID)).As<String> (), newV, Set<String>{newV.Keys ()});
     }
-    inline void Ptr::DeleteDocument (const IDType& id)
+    inline void Ptr::Update (const Document& newV, const Set<String>& onlyTheseFields)
     {
-        this->get ()->DeleteDocument (id);
+        Update (Memory::ValueOf (newV.Lookup (kID)).As<String> (), newV, onlyTheseFields);
+    }
+    inline void Ptr::Update (const IDType& id, const Document& newV)
+    {
+        this->get ()->Update (id, newV, Set<String>{newV.Keys ()});
+    }
+    inline void Ptr::Update (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields)
+    {
+        this->get ()->Update (id, newV, onlyTheseFields);
+    }
+    inline void Ptr::Remove (const IDType& id)
+    {
+        this->get ()->Remove (id);
     }
 
 }

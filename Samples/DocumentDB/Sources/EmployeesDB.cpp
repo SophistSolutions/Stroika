@@ -105,13 +105,13 @@ namespace {
         ObjectCollection::Ptr<Employee> employeeCollection = ObjectCollection::New<Employee> (conn.GetCollection ("Employees"), kDBObjectMapper_);
 
         // Add Initial Employees
-        employeeCollection.AddDocument (Employee{.fName = "Paul", .fAge = 32, .fAddress = "California", .fSalary = 20000.00, .fStillEmployed = true});
-        employeeCollection.AddDocument (Employee{.fName = "Allen", .fAge = 25, .fAddress = "Texas", .fSalary = 15000.00, .fStillEmployed = true});
-        employeeCollection.AddDocument (Employee{.fName = "Teddy", .fAge = 23, .fAddress = "Norway", .fSalary = 20000.00, .fStillEmployed = true});
-        employeeCollection.AddDocument (Employee{.fName = "Mark", .fAge = 25, .fAddress = "Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});
-        employeeCollection.AddDocument (Employee{.fName = "David", .fAge = 27, .fAddress = "Texas", .fSalary = 85000.00, .fStillEmployed = true});
-        employeeCollection.AddDocument (Employee{.fName = "Kim", .fAge = 22, .fAddress = "South-Hall", .fSalary = 45000.00, .fStillEmployed = true});
-        employeeCollection.AddDocument (Employee{.fName = "James", .fAge = 24, .fAddress = "Houston", .fSalary = 10000.00, .fStillEmployed = true});
+        employeeCollection.Add (Employee{.fName = "Paul", .fAge = 32, .fAddress = "California", .fSalary = 20000.00, .fStillEmployed = true});
+        employeeCollection.Add (Employee{.fName = "Allen", .fAge = 25, .fAddress = "Texas", .fSalary = 15000.00, .fStillEmployed = true});
+        employeeCollection.Add (Employee{.fName = "Teddy", .fAge = 23, .fAddress = "Norway", .fSalary = 20000.00, .fStillEmployed = true});
+        employeeCollection.Add (Employee{.fName = "Mark", .fAge = 25, .fAddress = "Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});
+        employeeCollection.Add (Employee{.fName = "David", .fAge = 27, .fAddress = "Texas", .fSalary = 85000.00, .fStillEmployed = true});
+        employeeCollection.Add (Employee{.fName = "Kim", .fAge = 22, .fAddress = "South-Hall", .fSalary = 45000.00, .fStillEmployed = true});
+        employeeCollection.Add (Employee{.fName = "James", .fAge = 24, .fAddress = "Houston", .fSalary = 10000.00, .fStillEmployed = true});
 
         default_random_engine         generator;
         uniform_int_distribution<int> distribution{1, 6};
@@ -133,19 +133,19 @@ namespace {
                     case 1: {
                         String name = kNames_[namesDistr (generator)];
                         cout << "Adding employee {}"_f(name) << endl;
-                        employeeCollection.AddDocument (Employee{nullopt, name, ageDistr (generator),
-                                                                 kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
+                        employeeCollection.Add (Employee{nullopt, name, ageDistr (generator), kAddresses[addressesDistr (generator)],
+                                                         salaryDistr (generator), true});
                     } break;
                     case 2: {
                         // Look somebody up, and fire them
-                        auto activeEmps = employeeCollection.GetDocuments ();
+                        auto activeEmps = employeeCollection.GetAll ();
                         if (not activeEmps.empty ()) {
                             uniform_int_distribution<int> empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             Employee                      killMe = activeEmps[empDistr (generator)];
                             Assert (killMe.ID.has_value ());
                             cout << "Firing employee: {}, {}"_f(*killMe.ID, killMe.fName) << endl;
                             killMe.fStillEmployed = false;
-                            employeeCollection.ReplaceDocument (*killMe.ID, killMe);
+                            employeeCollection.Replace (*killMe.ID, killMe);
                             // employeeTableConnection->Update (killMe);
                         }
                     } break;
@@ -173,10 +173,10 @@ namespace {
 
         while (true) {
             try {
-                for (const auto& employee : employeeCollection.GetDocuments ()) {
+                for (const auto& employee : employeeCollection.GetAll ()) {
                     Assert (employee.ID != nullopt);
                     cout << "Writing paycheck for employee #{} ({}) amount {}"_f(*employee.ID, employee.fName, employee.fSalary) << endl;
-                    paycheckCollection.AddDocument (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
+                    paycheckCollection.Add (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
                 }
             }
             catch (...) {

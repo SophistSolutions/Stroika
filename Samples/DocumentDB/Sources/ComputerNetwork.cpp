@@ -82,7 +82,7 @@ void Stroika::Samples::Document::ComputerNetworksModel (const function<Connectio
     dbConnection.CreateCollection ("Networks");
     ObjectCollection::Ptr<Device> deviceConnection = ObjectCollection::New<Device> (dbConnection.GetCollection ("Networks"), Device::kMapper);
 
-    if (not deviceConnection.GetDocuments ().empty ()) {
+    if (not deviceConnection.GetAll ().empty ()) {
         Execution::Throw (Execution::RuntimeErrorException{"database should start empty"});
     }
 
@@ -91,10 +91,10 @@ void Stroika::Samples::Document::ComputerNetworksModel (const function<Connectio
      */
     Device device1_ = Device{.openPorts = {33}, .name = "myLaptop"sv, .hardwareAddresses = {"ff:33:aa:da:ff:33"_k}};
     Device device2_ = Device{.openPorts = {123, 145}, .name = "some machine"sv, .hardwareAddresses = {"33:aa:dd:ad:af:11"_k}};
-    device1_.id     = deviceConnection.AddDocument (device1_);
-    device2_.id     = deviceConnection.AddDocument (device2_);
+    device1_.id     = deviceConnection.Add (device1_);
+    device2_.id     = deviceConnection.Add (device2_);
     {
-        auto devices = deviceConnection.GetDocuments ();
+        auto devices = deviceConnection.GetAll ();
         if (devices.size () != 2) {
             Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added"sv});
         }
@@ -105,9 +105,9 @@ void Stroika::Samples::Document::ComputerNetworksModel (const function<Connectio
             Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added{2}"sv});
         }
     }
-    deviceConnection.DeleteDocument (Memory::ValueOf (device2_.id));
+    deviceConnection.Remove (Memory::ValueOf (device2_.id));
     {
-        auto devices = deviceConnection.GetDocuments ();
+        auto devices = deviceConnection.GetAll ();
         if (devices.size () != 1) {
             Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added"});
         }

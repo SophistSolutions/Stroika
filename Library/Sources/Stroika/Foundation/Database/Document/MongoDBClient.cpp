@@ -45,6 +45,9 @@ using Database::Document::Filter;
 using Database::Document::IDType;
 using Database::Document::Projection;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 /**
  *  Character set Docx
  *      Haven't found clear docs about characterset (apis all take 'string') - but it appears (search through docs for
@@ -280,7 +283,7 @@ namespace {
     {
         if (p) {
             /*
-             *  support mongoProjection - {{a: 1, b:0}} etc...
+             *  support mongoProjection - e.g. {{a: 1, b:0}} etc...
              */
             tuple<Document::Projection::Flag, Set<String>> fields = p->GetFields ();
             Require (get<1> (fields).size () >= 1); // cannot (usefully) project to null-space
@@ -306,7 +309,7 @@ namespace {
         AdminRep_ (const AdminConnection::Options& options)
             : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}} // @todo not sure about charset to map to?
         {
-            TraceContextBumper ctx{"Document::MongoDBClient::AdminConnection::Rep_::CTOR"};
+            TraceContextBumper ctx{"MongoDBClient:::AdminConnection::Rep_::CTOR"};
         }
         ~AdminRep_ () = default;
 
@@ -318,6 +321,9 @@ namespace {
         }
         virtual Document::Document run_command (const Document::Document& v) override
         {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            TraceContextBumper ctx{"MongoDBClient::AdminRep_::run_command"};
+#endif
             mongocxx::database adminDB_;
             return FromBSON_ (fClient_.database ("admin").run_command (ToBSON_ (v)));
         }
@@ -356,8 +362,11 @@ namespace {
                     connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
 #endif
             }
-            virtual IDType AddDocument (const Document::Document& v) override
+            virtual IDType Add (const Document::Document& v) override
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::Add()"};
+#endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
                 if (auto insert_one_result = fCollection_.insert_one (ToBSON_ (v))) {
@@ -365,8 +374,11 @@ namespace {
                 }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
-            virtual optional<Document::Document> GetDocument (const IDType& id, const optional<Projection>& projection) override
+            virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::GetOne()"};
+#endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 bsoncxx::builder::basic::document                      filterDoc;
                 filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
@@ -385,8 +397,11 @@ namespace {
                 }
                 return nullopt;
             }
-            virtual Sequence<Document::Document> GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection) override
+            virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::GetAll()"};
+#endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 auto [mongoFilter, myFilter]         = Parse_ (filter);
                 auto [mongoProjection, myProjection] = Parse_ (projection);
@@ -407,8 +422,11 @@ namespace {
                 }
                 return result;
             }
-            virtual void UpdateDocument (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
+            virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::Update()"};
+#endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
                 Document::Document uploadDoc = newV;
@@ -439,8 +457,11 @@ namespace {
                     }
                 }
             }
-            virtual void DeleteDocument (const IDType& id) override
+            virtual void Remove (const IDType& id) override
             {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::Remove()"};
+#endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 bsoncxx::builder::basic::document                      filterDoc;
                 filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); // kMongoID_
@@ -459,7 +480,7 @@ namespace {
             : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}}
             , fDatabase_{fClient_.database (options.fDatabase.AsUTF8<string> ())}
         {
-            TraceContextBumper ctx{"Document::MongoDBClient::Connection::ConnectionRep_::CTOR"};
+            TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::CTOR"};
         }
         ~ConnectionRep_ () = default;
 
@@ -489,11 +510,17 @@ namespace {
         }
         virtual void CreateCollection (const String& name) override
         {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            TraceContextBumper ctx{"mongocxx::CreateCollection()"};
+#endif
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             fDatabase_.create_collection (name.AsUTF8<string> ());
         }
         virtual void DropCollection (const String& name) override
         {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            TraceContextBumper ctx{"mongocxx::DropCollection()"};
+#endif
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             fDatabase_.collection (name.AsUTF8<string> ()).drop ();
         }

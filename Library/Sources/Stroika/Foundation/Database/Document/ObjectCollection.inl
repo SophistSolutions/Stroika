@@ -16,14 +16,14 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     {
     }
     template <typename T>
-    inline String Ptr<T>::AddDocument (const T& v)
+    inline String Ptr<T>::Add (const T& v)
     {
-        return inherited::AddDocument (fMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
+        return inherited::Add (fMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
     }
     template <typename T>
-    inline optional<T> Ptr<T>::GetDocument (const IDType& id, const optional<Projection>& projection)
+    inline optional<T> Ptr<T>::GetOne (const IDType& id, const optional<Projection>& projection)
     {
-        if (optional<Document> o = inherited::GetDocument (id, projection)) {
+        if (optional<Document> o = inherited::GetOne (id, projection)) {
             return fMapper_.ToObject<T> (VariantValue{*o});
         }
         else {
@@ -31,26 +31,36 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         }
     }
     template <typename T>
-    inline T Ptr<T>::GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection)
+    inline T Ptr<T>::GetOneOrThrow (const IDType& id, const optional<Projection>& projection)
     {
-        return fMapper_.ToObject<T> (VariantValue{inherited::GetDocumentOrThrow (id, projection)});
+        return fMapper_.ToObject<T> (VariantValue{inherited::GetOneOrThrow (id, projection)});
     }
     template <typename T>
-    Sequence<T> Ptr<T>::GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection)
+    Sequence<T> Ptr<T>::GetAll (const optional<Filter>& filter, const optional<Projection>& projection)
     {
-        return inherited::GetDocuments (filter, projection).template Map<Sequence<T>> ([this] (const Document& d) {
+        return inherited::GetAll (filter, projection).template Map<Sequence<T>> ([this] (const Document& d) {
             return fMapper_.ToObject<T> (VariantValue{d});
         });
     }
     template <typename T>
-    inline void Ptr<T>::ReplaceDocument (const IDType& id, const T& newV)
+    inline void Ptr<T>::Replace (const T& newV)
     {
-        inherited::ReplaceDocument (id, fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> ());
+        inherited::Replace (fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> ());
     }
     template <typename T>
-    inline void Ptr<T>::UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields)
+    inline void Ptr<T>::Replace (const IDType& id, const T& newV)
     {
-        inherited::UpdateDocument (id, fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> (), onlyTheseFields);
+        inherited::Replace (id, fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> ());
+    }
+    template <typename T>
+    inline void Ptr<T>::Update (const T& newV, const Set<String>& onlyTheseFields)
+    {
+        inherited::Update (fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> (), onlyTheseFields);
+    }
+    template <typename T>
+    inline void Ptr<T>::Update (const IDType& id, const T& newV, const Set<String>& onlyTheseFields)
+    {
+        inherited::Update (id, fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> (), onlyTheseFields);
     }
 
     /*

@@ -73,40 +73,44 @@ namespace Stroika::Foundation::Database::Document::Collection {
     public:
         /**
          * returns ID
+         * 
+         *      @todo think out/document if v MAY contain ID (typically doesnt - but do we allow specifying? - probably NO)
          */
-        nonvirtual IDType AddDocument (const Document& v);
+        nonvirtual IDType Add (const Document& v);
 
     public:
         /**
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with id returns exactly that one, or nullopt if missing.
          */
-        nonvirtual optional<Document> GetDocument (const IDType& id, const optional<Projection>& projection = {});
+        nonvirtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        nonvirtual Document GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection = {});
+        nonvirtual Document GetOneOrThrow (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          *  Return all 'documents' in this collection. Optionally subset them with a filter; optionally project (subset of fields) with an argument projection.
          */
-        nonvirtual Sequence<Document> GetDocuments (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
+        nonvirtual Sequence<Document> GetAll (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
 
     public:
         /**
-         *  Same as GetDocuments (filter, projection=kOnlyIDs) - except for mapping the return type to pick out the id and move it out of a variant object into just a string value
+         *  Same as GetAll (filter, projection=kOnlyIDs) - except for mapping the return type to pick out the id and move it out of a variant object into just a string value
          */
-        nonvirtual Sequence<IDType> GetDocumentIDs (const optional<Filter>& filter = {});
+        nonvirtual Sequence<IDType> GetAllIDs (const optional<Filter>& filter = {});
 
     public:
         /**
          *  \brief except for issues of timing, equivalent to remove, and then add newV using id
          * 
-         *  \see also UpdateDocument
+         *  \pre for /1 overload, newV.ContainsKey (kID)
+         *  \see also Update
          */
-        nonvirtual void ReplaceDocument (const IDType& id, const Document& newV);
+        nonvirtual void Replace (const Document& newV);
+        nonvirtual void Replace (const IDType& id, const Document& newV);
 
     public:
         /**
@@ -114,13 +118,19 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * 
          *  This does NOT modify other fields of the object.
          * 
-         *  \see also ReplaceDocument to replace the entire object
+         *  \pre for overloads without 'id' argument, newV.ContainsKey (kID)
+         *  \see also Replace to replace the entire object
          */
-        nonvirtual void UpdateDocument (const IDType& id, const Document& newV);
-        nonvirtual void UpdateDocument (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields);
+        nonvirtual void Update (const Document& newV);
+        nonvirtual void Update (const Document& newV, const Set<String>& onlyTheseFields);
+        nonvirtual void Update (const IDType& id, const Document& newV);
+        nonvirtual void Update (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields);
 
     public:
-        nonvirtual void DeleteDocument (const IDType& id);
+        /**
+         * @todo consider if this should return an indicator if found (removeif)
+         */
+        nonvirtual void Remove (const IDType& id);
 
     public:
         /**
@@ -151,33 +161,32 @@ namespace Stroika::Foundation::Database::Document::Collection {
         /**
          * returns ID
          */
-        virtual String AddDocument (const Document& v) = 0;
+        virtual String Add (const Document& v) = 0;
 
     public:
         /**
-         * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with id returns exactly that one, or nullopt if missing.
          */
-        virtual optional<Document> GetDocument (const IDType& id, const optional<Projection>& projection) = 0;
+        virtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection) = 0;
 
     public:
         /**
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with no id returns all.
          */
-        virtual Sequence<Document> GetDocuments (const optional<Filter>& filter, const optional<Projection>& projection) = 0;
+        virtual Sequence<Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) = 0;
 
     public:
         /**
-         *  if onlyTheseFields, does a ReplaceDocument, and if present, does 'Retain()' on newV for the argument fields.
+         *  if onlyTheseFields, does a Replace (), and if present, does 'Retain()' on newV for the argument fields.
          * 
          *  \note newV may or may not contain an 'id' field. It will be automatically implicitly added/replaced with the explicit
          *        argument 'id'
          */
-        virtual void UpdateDocument (const IDType& id, const Document& newV, const optional<Set<String>>& onlyTheseFields) = 0;
+        virtual void Update (const IDType& id, const Document& newV, const optional<Set<String>>& onlyTheseFields) = 0;
 
     public:
-        virtual void DeleteDocument (const IDType& id) = 0;
+        virtual void Remove (const IDType& id) = 0;
     };
 
 }

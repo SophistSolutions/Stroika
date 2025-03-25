@@ -51,35 +51,37 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         /**
          * returns ID
          */
-        using inherited::AddDocument;
-        nonvirtual String AddDocument (const T& v);
+        using inherited::Add;
+        nonvirtual String Add (const T& v);
 
     public:
         /**
          */
-        nonvirtual optional<T> GetDocument (const IDType& id, const optional<Projection>& projection = {});
+        nonvirtual optional<T> GetOne (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        nonvirtual T GetDocumentOrThrow (const IDType& id, const optional<Projection>& projection = {});
+        nonvirtual T GetOneOrThrow (const IDType& id, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        nonvirtual Sequence<T> GetDocuments (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
+        nonvirtual Sequence<T> GetAll (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
 
     public:
         /**
          */
-        using inherited::ReplaceDocument;
-        nonvirtual void ReplaceDocument (const IDType& id, const T& newV);
+        using inherited::Replace;
+        nonvirtual void Replace (const T& newV);
+        nonvirtual void Replace (const IDType& id, const T& newV);
 
     public:
         /**
          */
-        using inherited::UpdateDocument;
-        nonvirtual void UpdateDocument (const IDType& id, const T& newV, const Set<String>& onlyTheseFields);
+        using inherited::Update;
+        nonvirtual void Update (const T& newV, const Set<String>& onlyTheseFields);
+        nonvirtual void Update (const IDType& id, const T& newV, const Set<String>& onlyTheseFields);
 
     private:
         ObjectVariantMapper fMapper_;

@@ -826,12 +826,12 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
         EXPECT_EQ (p.GetCollections (), Set<String>{"blah"});
         Database::Document::Collection::Ptr blah       = p.GetCollection ("blah");
         const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
-        auto                                id         = blah.AddDocument (kTestObj1_);
+        auto                                id         = blah.Add (kTestObj1_);
         DbgTrace ("Added doc {}"_f, id);
-        Database::Document::Document roundTripped = blah.GetDocument (id).value_or (Database::Document::Document{});
+        Database::Document::Document roundTripped = blah.GetOne (id).value_or (Database::Document::Document{});
         DbgTrace ("roundTripped  get value={}"_f, roundTripped);
         //EXPECT_EQ (kTestObj1_, roundTripped);
-        auto rrs = blah.GetDocuments ();
+        auto rrs = blah.GetAll ();
         DbgTrace ("rrs  get value={}"_f, rrs);
     }
     catch (...) {
@@ -853,18 +853,18 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
         EXPECT_EQ (p.GetCollections (), Set<String>{kCollectionName_});
         Database::Document::Collection::Ptr blah         = p.GetCollection (kCollectionName_);
         const Database::Document::Document  kTestObj1_   = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
-        Database::Document::IDType          id           = blah.AddDocument (kTestObj1_);
-        Database::Document::Document        roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
+        Database::Document::IDType          id           = blah.Add (kTestObj1_);
+        Database::Document::Document        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
         EXPECT_EQ (kTestObj1_, roundTripped);
         using DOC_         = Database::Document::Document;
-        Sequence<DOC_> rrs = blah.GetDocuments (nullopt, Projection{Projection::eInclude, {"id"_k}});
+        Sequence<DOC_> rrs = blah.GetAll (nullopt, Projection{Projection::eInclude, {"id"_k}});
         EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{"id", id}}}));
         const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
-        blah.UpdateDocument (id, kTestObj1_Updated_);
-        roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
+        blah.Update (id, kTestObj1_Updated_);
+        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
         EXPECT_EQ (roundTripped["y"], 7);
-        blah.ReplaceDocument (id, kTestObj1_Updated_);
-        roundTripped = blah.GetDocumentOrThrow (id, kOmitIDs);
+        blah.Replace (id, kTestObj1_Updated_);
+        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
         EXPECT_EQ (kTestObj1_Updated_, roundTripped);
     };
 
@@ -960,18 +960,18 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
         EXPECT_EQ (p.GetCollections (), Set<String>{"Users"});
         using namespace DocumentDBTestObjectCollection_Private_;
         auto userCollection = Database::Document::ObjectCollection::New<User> (p.GetCollection ("Users"), User::kMapper);
-        EXPECT_EQ (userCollection.GetDocuments ().size (), 0u);
-        String userIDAdded = userCollection.AddDocument (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
-        EXPECT_EQ (userCollection.GetDocuments ().size (), 1u);
-        EXPECT_EQ (userCollection.GetDocument (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
-        userCollection.UpdateDocument (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
-        EXPECT_EQ (userCollection.GetDocument (userIDAdded),
+        EXPECT_EQ (userCollection.GetAll ().size (), 0u);
+        String userIDAdded = userCollection.Add (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
+        EXPECT_EQ (userCollection.GetAll ().size (), 1u);
+        EXPECT_EQ (userCollection.GetOne (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
+        userCollection.Update (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
+        EXPECT_EQ (userCollection.GetOne (userIDAdded),
                    (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
-        User u      = userCollection.GetDocumentOrThrow (userIDAdded);
+        User u      = userCollection.GetOneOrThrow (userIDAdded);
         u.fImage    = TypedBLOB{.fData = Memory::BLOB{0x1, 0x2, 0x3, 0x4}, .fType = InternetMediaTypes::kAudioMP3};
         u.fDateTime = Time::DateTime::Now ();
-        userCollection.ReplaceDocument (userIDAdded, u);
-        EXPECT_EQ (userCollection.GetDocument (userIDAdded), u);
+        userCollection.Replace (userIDAdded, u);
+        EXPECT_EQ (userCollection.GetOne (userIDAdded), u);
     };
 
 #if qStroika_HasComponent_mongocxxdriver
