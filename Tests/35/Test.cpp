@@ -875,7 +875,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
 
         Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
         {
-            ConnectionPool connectionPool{connectionString};    // test connection-pool based access
+            ConnectionPool connectionPool{connectionString}; // test connection-pool based access
             try {
                 AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
                 Set<String>           d    = p->GetDatabases ();
@@ -920,7 +920,7 @@ namespace {
             optional<String>    fPhoneNumber;
             optional<TypedBLOB> fImage;
             optional<DateTime>  fDateTime;
-            bool                operator== (const User&) const  = default;
+            bool                operator== (const User&) const = default;
             nonvirtual String   ToString () const
             {
                 return kMapper.FromObject (*this).ToString ();
