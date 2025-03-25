@@ -1,6 +1,6 @@
 # Stroika Samples
 
-## SQL
+## DocumentDB
 
 Demonstrates facilities for creating/updating simple database using DocumentDB support
 
@@ -10,3 +10,16 @@ Demonstrates facilities for creating/updating simple database using DocumentDB s
 
 ### Details
 
+#### Running a mongodb instance
+
+One simple way to run mongo (works on windows or UNIX, if you have docker installed)
+
+~~~
+docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
+~~~
+
+#### Examining the mongodb
+
+Either use 
+ - Compoass
+ - Mongo Shell https://www.mongodb.com/docs/v4.4/mongo/#the-mongo-shell

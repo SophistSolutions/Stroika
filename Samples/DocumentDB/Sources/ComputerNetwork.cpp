@@ -52,9 +52,15 @@ namespace {
     const ObjectVariantMapper Model::Device::kMapper = [] () {
         ObjectVariantMapper mapper;
 
+        /*
+         *  Add dependency mappers
+         */
         mapper.AddCommonType<Set<int>> ();
         mapper.AddCommonType<Set<String>> ();
 
+        /*
+         *  Add mapper for our user defined type we will be storing.
+         */
         mapper.AddClass<Device> ({
             {"id"sv, &Device::id},
             {"name"sv, &Device::name},
@@ -69,6 +75,7 @@ namespace {
 void Stroika::Samples::Document::ComputerNetworksModel (const function<Connection::Ptr ()>& connectionFactory)
 {
     /*
+     *  Create a database connection, and then a connection to a particular table (collection).
      */
     using Model::Device;
     auto dbConnection = connectionFactory ();
@@ -79,6 +86,9 @@ void Stroika::Samples::Document::ComputerNetworksModel (const function<Connectio
         Execution::Throw (Execution::RuntimeErrorException{"database should start empty"});
     }
 
+    /*
+     *  Create two c++ objects, perist them, delete 1, and check reading back we get the right results.
+     */
     Device device1_ = Device{.openPorts = {33}, .name = "myLaptop"sv, .hardwareAddresses = {"ff:33:aa:da:ff:33"_k}};
     Device device2_ = Device{.openPorts = {123, 145}, .name = "some machine"sv, .hardwareAddresses = {"33:aa:dd:ad:af:11"_k}};
     device1_.id     = deviceConnection.AddDocument (device1_);
