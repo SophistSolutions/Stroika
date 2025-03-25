@@ -205,7 +205,7 @@ namespace {
     }
     bsoncxx::document::value ToBSON_ (const Document::Document& vv)
     {
-        // more complex, but more performant version of 
+        // more complex, but more performant version of
         //      bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vvv}).AsUTF8<string> ());
         Document::Document newDoc = vv;
         if (vv.ContainsKey (Database::Document::kID)) {
