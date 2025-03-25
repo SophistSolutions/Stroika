@@ -11,11 +11,13 @@
 // its inclusion just to use the MongoDBClient
 namespace mongocxx::v_noabi {
     class client;
+    class pool;
     class instance;
 }
 namespace mongocxx {
     using ::mongocxx::v_noabi::client;
     using ::mongocxx::v_noabi::instance;
+    using ::mongocxx::v_noabi::pool;
 }
 #endif
 
@@ -72,10 +74,35 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         static unique_ptr<mongocxx::instance> sMongoInstance_;
     };
 
+    /**
+     * \brief optionally pool mongodb connections (to a given server). Create the object and pass it
+     *        as 'target' option to Connection::New()...
+     * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     */
+    class ConnectionPool {
+    public:
+        ConnectionPool ()                      = delete;
+        ConnectionPool (const ConnectionPool&) = default;
+        ConnectionPool (shared_ptr<mongocxx::pool>&& poolRep);
+        ConnectionPool (const String& connectionString);
+        ~ConnectionPool () = default;
+
+    public:
+        /**
+         */
+        nonvirtual mongocxx::pool& PeekPool () const;
+
+    private:
+        // shared_ptr is internally synchronized for copies / control block updates (refCnt) - and mongocxx::pool internally syncrhonized
+        shared_ptr<mongocxx::pool> fPool_;
+    };
+
     namespace AdminConnection {
         class IRep;
 
         /**
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
          */
         class Ptr : public shared_ptr<IRep> {
         private:
@@ -117,6 +144,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         };
 
         /**
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
          */
         class IRep {
         public:
@@ -150,10 +178,11 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
             /**
              * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */
-            String fConnectionString;
+            variant<String, ConnectionPool> fConnectionTarget;
         };
 
         /**
+         *  \note produces unsynchonized reps - so must be externally synchronized
          */
         Ptr New (const Options& options);
     }
@@ -173,7 +202,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
             /**
              * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */
-            String fConnectionString;
+            variant<String, ConnectionPool> fConnectionTarget;
 
             /**
              *  Connection string does not contain database name. Different from Mongo API, we choose to require a database name
@@ -218,6 +247,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         };
 
         /**
+         *  \note produces unsynchonized reps - so must be externally synchronized
          */
         Ptr New (const Options& options);
 

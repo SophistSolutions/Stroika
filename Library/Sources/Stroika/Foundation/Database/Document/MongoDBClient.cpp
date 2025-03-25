@@ -17,6 +17,7 @@
 #include <mongocxx/exception/exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
 #include <mongocxx/instance.hpp>
+#include <mongocxx/pool.hpp>
 #include <mongocxx/uri.hpp>
 #endif
 
@@ -68,6 +69,13 @@ namespace {
 
 namespace {
     atomic<unsigned int> sActivatorLiveCnt_{0};
+}
+
+namespace {
+    auto ConnectionString2MongoURI_ (const String& connectionString)
+    {
+        return mongocxx::uri{connectionString.AsUTF8<string> ()};
+    }
 }
 
 namespace {
@@ -304,12 +312,22 @@ namespace {
 namespace {
     struct AdminRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::AdminConnection::IRep {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
-        mongocxx::client                                               fClient_;
+        variant<mongocxx::client, mongocxx::pool::entry>               fClientStorage_;
+        mongocxx::client*                                              fClientPtr_;
 
+        AdminRep_ (const AdminRep_&) = delete;
         AdminRep_ (const AdminConnection::Options& options)
-            : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}} // @todo not sure about charset to map to?
         {
             TraceContextBumper ctx{"MongoDBClient:::AdminConnection::Rep_::CTOR"};
+            if (auto os = get_if<String> (&options.fConnectionTarget)) {
+                fClientStorage_ = mongocxx::client{ConnectionString2MongoURI_ (*os)};
+                fClientPtr_     = get_if<mongocxx::client> (&fClientStorage_);
+            }
+            else if (auto op = get_if<ConnectionPool> (&options.fConnectionTarget)) {
+                fClientStorage_ = op->PeekPool ().acquire ();
+                fClientPtr_     = get<mongocxx::pool::entry> (fClientStorage_).operator->();
+            }
+            EnsureNotNull (fClientPtr_);
         }
         ~AdminRep_ () = default;
 
@@ -317,7 +335,7 @@ namespace {
     public:
         virtual mongocxx::client& GetClientRef () override
         {
-            return fClient_;
+            return *fClientPtr_;
         }
         virtual Document::Document run_command (const Document::Document& v) override
         {
@@ -325,21 +343,21 @@ namespace {
             TraceContextBumper ctx{"MongoDBClient::AdminRep_::run_command"};
 #endif
             mongocxx::database adminDB_;
-            return FromBSON_ (fClient_.database ("admin").run_command (ToBSON_ (v)));
+            return FromBSON_ (fClientPtr_->database ("admin").run_command (ToBSON_ (v)));
         }
         virtual Set<String> GetDatabases () override
         {
-            vector<string> n = fClient_.list_database_names ();
+            vector<string> n = fClientPtr_->list_database_names ();
             return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; });
         }
         virtual void DropDatabase (const String& dbName) override
         {
-            mongocxx::database{fClient_.database (dbName.AsUTF8<string> ())}.drop ();
+            mongocxx::database{fClientPtr_->database (dbName.AsUTF8<string> ())}.drop ();
         }
         virtual void CreateDatabase (const String& dbName) override
         {
             // doesn't appear to be anything todo to create the database except maybe  writing to it
-            mongocxx::database d{fClient_.database (dbName.AsUTF8<string> ())};
+            mongocxx::database d{fClientPtr_->database (dbName.AsUTF8<string> ())};
             d.create_collection ("_junk_");
             d.collection ("_junk_").drop ();
         }
@@ -473,14 +491,24 @@ namespace {
         };
 
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
-        mongocxx::client                                               fClient_;
-        mongocxx::database                                             fDatabase_;
+        variant<mongocxx::client, mongocxx::pool::entry> fClientStorage_; // not directly used, but needed to free the resource when this connection obj goes away - and implicitly stored in database
+        //   mongocxx::client*                                               fClientPtr_;
+        mongocxx::database fDatabase_;
 
         ConnectionRep_ (const Connection::Options& options)
-            : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}}
-            , fDatabase_{fClient_.database (options.fDatabase.AsUTF8<string> ())}
+        //  : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}}
+        //, fDatabase_{fClient_.database (options.fDatabase.AsUTF8<string> ())}
         {
             TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::CTOR"};
+            if (auto os = get_if<String> (&options.fConnectionTarget)) {
+                fClientStorage_ = mongocxx::client{ConnectionString2MongoURI_ (*os)};
+                fDatabase_      = get<mongocxx::client> (fClientStorage_).database (options.fDatabase.AsUTF8<string> ());
+            }
+            else if (auto op = get_if<ConnectionPool> (&options.fConnectionTarget)) {
+                fClientStorage_ = op->PeekPool ().acquire ();
+                fDatabase_      = get<mongocxx::pool::entry> (fClientStorage_)->database (options.fDatabase.AsUTF8<string> ());
+            }
+            Ensure (fDatabase_); // properly constructed
         }
         ~ConnectionRep_ () = default;
 
@@ -541,7 +569,17 @@ namespace {
     public:
         virtual mongocxx::client& GetClientRef () override
         {
-            return fClient_;
+            if (auto oc = get_if<mongocxx::client> (&fClientStorage_)) {
+                return *oc;
+            }
+            else if (auto oe = get_if<mongocxx::pool::entry> (&fClientStorage_)) {
+                return *oe->operator->();
+            }
+            else {
+                AssertNotReached ();
+                static mongocxx::client x;
+                return x;
+            }
         }
     };
 }
@@ -576,6 +614,26 @@ Document::MongoDBClient::Activator::~Activator ()
     if (sActivatorLiveCnt_.fetch_sub (1) == 0 and not fAllowReactivation_) {
         sMongoInstance_.reset ();
     }
+}
+
+/*
+ ********************************************************************************
+ ******************* Document::MongoDBClient::ConnectionPool ********************
+ ********************************************************************************
+ */
+ConnectionPool::ConnectionPool (shared_ptr<mongocxx::pool>&& poolRep)
+    : fPool_{move (poolRep)}
+{
+}
+ConnectionPool::ConnectionPool (const String& connectionString)
+    : ConnectionPool{make_shared<mongocxx::pool> (ConnectionString2MongoURI_ (connectionString))}
+{
+}
+
+mongocxx::pool& ConnectionPool::PeekPool () const
+{
+    AssertNotNull (fPool_);
+    return *fPool_;
 }
 
 /*
