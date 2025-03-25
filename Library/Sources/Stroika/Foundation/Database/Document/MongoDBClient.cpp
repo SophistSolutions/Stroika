@@ -148,6 +148,47 @@ namespace {
                 return VariantValue{};
         }
     }
+    bsoncxx::types::bson_value::value VV2BSONV_ (const VariantValue& vv)
+    {
+        // @todo adequate first draft, but not 100% right conversions --LGP 2025-03-24
+        switch (vv.GetType ()) {
+            case VariantValue::Type::eNull:
+                return bsoncxx::types::bson_value::value{nullptr};
+            case VariantValue::Type::eBLOB:
+                return bsoncxx::types::bson_value::value{vv.As<Memory::BLOB> ().As<vector<uint8_t>> ()};
+            case VariantValue::Type::eBoolean:
+                return bsoncxx::types::bson_value::value{vv.As<bool> ()};
+            case VariantValue::Type::eInteger:
+                return bsoncxx::types::bson_value::value{vv.As<int64_t> ()};
+            case VariantValue::Type::eUnsignedInteger:
+                return bsoncxx::types::bson_value::value{static_cast<int64_t> (vv.As<uint64_t> ())}; // @todo tweak - not quite right
+            case VariantValue::Type::eFloat:
+                return bsoncxx::types::bson_value::value{vv.As<double> ()};
+            case VariantValue::Type::eDate:
+                return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{vv.As<DateTime> ().As<std::chrono::system_clock::time_point> ()}};
+            case VariantValue::Type::eDateTime:
+                return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{vv.As<DateTime> ().As<std::chrono::system_clock::time_point> ()}};
+            case VariantValue::Type::eString:
+                return bsoncxx::types::bson_value::value{vv.As<String> ().AsUTF8<string> ()};
+            case VariantValue::Type::eArray: {
+                bsoncxx::builder::basic::array bsonArr;
+                for (const auto& ai : vv.As<Sequence<VariantValue>> ()) {
+                    bsonArr.append (VV2BSONV_ (ai));
+                }
+                return bsoncxx::types::bson_value::value{bsonArr};
+            }
+            case VariantValue::Type::eMap: {
+                bsoncxx::builder::basic::document bsonDoc;
+                for (const KeyValuePair<String, VariantValue>& ai : vv.As<Mapping<String, VariantValue>> ()) {
+                    bsonDoc.append (kvp (ai.fKey.AsUTF8<string> (), VV2BSONV_ (ai.fValue)));
+                }
+                return bsoncxx::types::bson_value::value{bsonDoc};
+            }
+            default:
+                AssertNotReached (); // not sure what todo
+                return bsoncxx::types::bson_value::value{nullptr};
+        }
+    }
     Document::Document FromBSON_ (const bsoncxx::document::view_or_value& b)
     {
         Mapping<String, VariantValue> result;
@@ -164,18 +205,20 @@ namespace {
     }
     bsoncxx::document::value ToBSON_ (const Document::Document& vv)
     {
-        // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
+        // more complex, but more performant version of 
+        //      bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vvv}).AsUTF8<string> ());
+        Document::Document newDoc = vv;
         if (vv.ContainsKey (Database::Document::kID)) {
             // patch 'id':string => '_id':oid
-            Document::Document vvv     = vv;
-            auto               idValue = vv[Database::Document::kID];
-            vvv.Remove (Database::Document::kID);
-            vvv.Add (kMongoID_, VariantValue{Mapping<String, VariantValue>{{"$oid", idValue}}});
-            return bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vvv}).AsUTF8<string> ());
+            auto idValue = vv[Database::Document::kID];
+            newDoc.Remove (Database::Document::kID);
+            newDoc.Add (kMongoID_, VariantValue{Mapping<String, VariantValue>{{"$oid", idValue}}});
         }
-        else {
-            return bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vv}).AsUTF8<string> ());
+        bsoncxx::builder::basic::document bsonDoc;
+        for (const KeyValuePair<String, VariantValue>& ai : newDoc) {
+            bsonDoc.append (kvp (ai.fKey.AsUTF8<string> (), VV2BSONV_ (ai.fValue)));
         }
+        return bsonDoc.extract ();
     }
 }
 
