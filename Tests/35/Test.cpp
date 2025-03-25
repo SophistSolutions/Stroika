@@ -919,7 +919,6 @@ namespace {
             optional<String>    fPhoneNumber;
             optional<TypedBLOB> fImage;
             optional<DateTime>  fDateTime;
-            auto                operator<=> (const User&) const = default;
             bool                operator== (const User&) const  = default;
             nonvirtual String   ToString () const
             {

@@ -31,13 +31,13 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         Activator    activator{Activator::eAllowReactivateFlag};                      // must exist while using this library
 
         const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
-        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
         IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
         adminDB.CreateDatabase (kTestDBName_);
         Database::Document::Connection::Ptr p =
-            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
         ComputerNetworksModel ([=] () {
-            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
         });
     }
 #endif
