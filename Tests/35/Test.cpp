@@ -792,7 +792,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 
     {
         try {
-            AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+            AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
             Set<String>          d = p->GetDatabases ();
             DbgTrace ("d={}"_f, d);
             auto ping = p.run_command ({{"ping", 1}});
@@ -815,11 +815,11 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 
     try {
         const String kTestDBName_ = "MyTestDB"sv;
-        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
         IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
         adminDB.CreateDatabase (kTestDBName_);
         Database::Document::Connection::Ptr p =
-            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
         EXPECT_EQ (p.GetCollections ().size (), 0u);
         p->CreateCollection ("blah");
         DbgTrace ("collections={}"_f, p->GetCollections ());
@@ -875,8 +875,9 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
 
         Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
         {
+            ConnectionPool connectionPool{connectionString};    // test connection-pool based access
             try {
-                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
                 Set<String>           d    = p->GetDatabases ();
                 [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
             }
@@ -893,11 +894,11 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                 return; // skip rest of tests
             }
             const String kTestDBName_ = "MyTestDB"sv;
-            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
             IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
             adminDB.CreateDatabase (kTestDBName_);
             Database::Document::Connection::Ptr p =
-                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
             test1 (p);
         }
     }
@@ -981,7 +982,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
         Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
         {
             try {
-                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
                 Set<String>           d    = p->GetDatabases ();
                 [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
             }
@@ -998,11 +999,11 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
                 return; // skip rest of tests
             }
             const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
-            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionString = connectionString});
+            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
             IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
             adminDB.CreateDatabase (kTestDBName_);
             Database::Document::Connection::Ptr p =
-                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionString = connectionString, .fDatabase = kTestDBName_});
+                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
             test1 (p);
         }
     }
