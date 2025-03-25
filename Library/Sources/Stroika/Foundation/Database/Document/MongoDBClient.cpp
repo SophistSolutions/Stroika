@@ -26,6 +26,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Database/Exception.h"
 #include "Stroika/Foundation/Debug/Main.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 #include "MongoDBClient.h"
 
@@ -37,6 +38,7 @@ using namespace Stroika::Foundation::Database::Document::MongoDBClient;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Memory;
 
 using Database::Document::EngineProperties;
 using Database::Document::Filter;
@@ -66,24 +68,14 @@ namespace {
 }
 
 namespace {
-    String bson_value_to_string_ (const bsoncxx::types::bson_value::view& value)
+    String ID_2_string_ (const bsoncxx::types::bson_value::view& value)
     {
         switch (value.type ()) {
-            case bsoncxx::type::k_string:
-                return String::FromUTF8 (span<const char8_t>{reinterpret_cast<const char8_t*> (value.get_string ().value.data ()),
-                                                             value.get_string ().value.size ()});
             case bsoncxx::type::k_oid:
                 return String{value.get_oid ().value.to_string ()};
-            case bsoncxx::type::k_bool:
-                return value.get_bool () ? "true"_k : "false"_k;
-            case bsoncxx::type::k_int32:
-                return "{}"_f(value.get_int32 ().value);
-            case bsoncxx::type::k_int64:
-                return "{}"_f(value.get_int64 ().value);
-            case bsoncxx::type::k_double:
-                return "{}"_f(value.get_double ().value);
             default:
-                throw std::invalid_argument{"Unsupported BSON type for string conversion"};
+                AssertNotReached ();
+                return String{};
         }
     }
     template <Common::IAnyOf<bsoncxx::types::bson_value::view, bsoncxx::document::element, bsoncxx::array::element> T>
@@ -93,8 +85,7 @@ namespace {
             case bsoncxx::type::k_double:
                 return value.get_double ().value;
             case bsoncxx::type::k_string:
-                return String::FromUTF8 (
-                    span{reinterpret_cast<const char8_t*> (value.get_string ().value.data ()), value.get_string ().value.size ()});
+                return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{value.get_string ().value}));
             case bsoncxx::type::k_document: {
                 Mapping<String, VariantValue>     vvResult;
                 const bsoncxx::types::b_document& thisDoc = value.get_document ();
@@ -125,8 +116,7 @@ namespace {
             case bsoncxx::type::k_null:
                 return VariantValue{nullptr};
             case bsoncxx::type::k_regex:
-                return String::FromUTF8 (
-                    span{reinterpret_cast<const char8_t*> (value.get_string ().value.data ()), value.get_string ().value.size ()});
+                return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{value.get_string ().value}));
             case bsoncxx::type::k_dbpointer:
                 WeakAssertNotReached (); ///< DBPointer. @deprecated
                 return VariantValue{};
@@ -158,10 +148,8 @@ namespace {
                 return VariantValue{};
         }
     }
-
     Document::Document FromBSON_ (const bsoncxx::document::view_or_value& b)
     {
-#if 1
         Mapping<String, VariantValue> result;
         for (const bsoncxx::document::element& di : b.view ()) {
             result.Add (String::FromUTF8 (span{di.key ()}), BSON2VV_ (di));
@@ -172,18 +160,6 @@ namespace {
             result.Remove (kMongoID_);
             result.Add (Database::Document::kID, idValue);
         }
-#else
-        // @todo - this is a ROUGH approximation - but deal with 'extended json' and make more efficient - especially BLOBS
-        Mapping<String, VariantValue> result =
-            Variant::JSON::Reader{}.Read (String::FromUTF8 (bsoncxx::to_json (b.view ()))).As<Mapping<String, VariantValue>> ();
-        if (result.ContainsKey (kMongoID_)) {
-            // patch '_id':oid => 'id':string
-            VariantValue idValue = result[kMongoID_]; // {id: {$oid -> 67da17b30c4265ac0302f483}}
-            idValue              = idValue.As<Mapping<String, VariantValue>> ()["$oid"];
-            result.Remove (kMongoID_);
-            result.Add (Database::Document::kID, idValue);
-        }
-#endif
         return result;
     }
     bsoncxx::document::value ToBSON_ (const Document::Document& vv)
@@ -305,7 +281,7 @@ namespace {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
                 if (auto insert_one_result = fCollection_.insert_one (ToBSON_ (v))) {
-                    return bson_value_to_string_ (insert_one_result->inserted_id ());
+                    return ID_2_string_ (insert_one_result->inserted_id ());
                 }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
