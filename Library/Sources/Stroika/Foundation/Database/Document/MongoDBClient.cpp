@@ -232,8 +232,35 @@ namespace {
     tuple<optional<bsoncxx::document::value>, optional<Filter>> Parse_ (const optional<Filter>& filter)
     {
         if (filter) {
-            // NYI - just return empty for now
-            // make_document ()
+            /*
+             *  For now just look for FIELD EQUALS VALUE expressions in the top level conjunction. These can be done
+             *  server or client side transparently, and moving them server side is more efficient.
+             * 
+             *  Much more could be done, but this is a good cost/benefit start.
+             */
+            Sequence<Document::FilterElements::Operation> clientSideOps;
+            bsoncxx::builder::basic::document             filterDoc;
+            bool                                          anyTransfers = false;
+            for (Document::FilterElements::Operation op : filter->GetConjunctionOperations ()) {
+                bool transfered = false;
+                if (const Document::FilterElements::Equals* eqOp = get_if<Document::FilterElements::Equals> (&op)) {
+                    String useFieldName = eqOp->fLHS == Database::Document::kID ? kMongoID_ : eqOp->fLHS;
+                    if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
+                        // move to server side
+                        filterDoc.append (kvp (useFieldName.AsUTF8<string> (), VV2BSONV_ (*rhsValue)));
+                        transfered   = true;
+                        anyTransfers = true;
+                    }
+                }
+                if (not transfered) {
+                    clientSideOps += op; // keep for client side
+                }
+            }
+            if (anyTransfers) {
+                // if we moved any to server side, then return the filterDoc and the client side ops
+                return make_tuple (filterDoc.extract (), clientSideOps.empty () ? optional<Filter>{} : make_optional (Filter{clientSideOps}));
+            }
+            // else no change
             return make_tuple (nullopt, filter);
         }
         return make_tuple (nullopt, nullopt);
@@ -247,15 +274,25 @@ namespace {
      * @param filter 
      * @return tuple<optional<bsoncxx::document::value>, optional<Projection>> 
      * 
-     * 
      * SEE https://stackoverflow.com/questions/62704615/mongodb-projection-on-c
      */
     tuple<optional<bsoncxx::document::value>, optional<Projection>> Parse_ (const optional<Projection>& p)
     {
-        // NYI - just return empty for now
         if (p) {
-            // @todo support mongoProjection - {{a: 1, b:0}} etc...
-            return make_tuple (nullopt, p);
+            /*
+             *  support mongoProjection - {{a: 1, b:0}} etc...
+             */
+            tuple<Document::Projection::Flag, Set<String>> fields = p->GetFields ();
+            Require (get<1> (fields).size () >= 1); // cannot (usefully) project to null-space
+            bsoncxx::builder::basic::document projectionDoc;
+            for (String f : get<1> (fields)) {
+                String mongoFieldName = f;
+                if (mongoFieldName == Database::Document::kID) {
+                    mongoFieldName = kMongoID_;
+                }
+                projectionDoc.append (kvp (mongoFieldName.AsUTF8<string> (), get<0> (fields) == Document::Projection::Flag::eInclude ? 1 : 0));
+            }
+            return make_tuple (projectionDoc.extract (), nullopt);
         }
         return make_tuple (nullopt, nullopt);
     }
@@ -334,8 +371,11 @@ namespace {
                 bsoncxx::builder::basic::document                      filterDoc;
                 filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
                 auto [mongoProjection, myProjection] = Parse_ (projection);
-                // @todo support mongoProjection - {{a: 1, b:0}} etc...
-                auto result = fCollection_.find_one (filterDoc.view ());
+                mongocxx::options::find o;
+                if (mongoProjection) {
+                    o.projection (mongoProjection->view ());
+                }
+                auto result = fCollection_.find_one (filterDoc.view (), o);
                 if (result) {
                     auto rr = FromBSON_ (bsoncxx::document::view_or_value{*result});
                     if (myProjection) {
@@ -350,12 +390,12 @@ namespace {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 auto [mongoFilter, myFilter]         = Parse_ (filter);
                 auto [mongoProjection, myProjection] = Parse_ (projection);
-                //bsoncxx::builder::basic::document filter_doc;
-                //filter_doc.append (kvp (kMongoID_, bsoncxx::oid{id.AsUTF8<string> ()}));
-                //filter_doc.append (kvp (kMongoID_, [&] (sub_document subdoc) { subdoc.append(kvp ("$oid", id.AsUTF8<string> ())); }));
                 Sequence<Document::Document> result;
-                //auto                         cursor = fCollection_.find (filter_doc.view ());
-                auto cursor = fCollection_.find (mongoFilter ? mongoFilter->view () : bsoncxx::builder::basic::document{}.view ());
+                mongocxx::options::find      o;
+                if (mongoProjection) {
+                    o.projection (mongoProjection->view ());
+                }
+                auto cursor = fCollection_.find (mongoFilter ? mongoFilter->view () : bsoncxx::builder::basic::document{}.view (), o);
                 for (auto&& doc : cursor) {
                     auto rr = FromBSON_ (doc);
                     if (myProjection) {
