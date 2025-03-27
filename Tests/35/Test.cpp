@@ -785,7 +785,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
     TraceContextBumper ctx{"SimpleMongoDBClientTest_"};
     if (sMongoConnectionString_) {
         String connectionString = *sMongoConnectionString_;
-         using namespace Database::Document;
+        using namespace Database::Document;
         using namespace Database::Document::MongoDBClient;
 
         Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
@@ -800,7 +800,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
             }
             catch (...) {
                 // test warning no mongo on address X so test skipped
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
                 return; // skip rest of tests
             }
         }
@@ -875,7 +875,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                 [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
             }
             catch (...) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
             }
             const String kTestDBName_ = "MyTestDB"sv;
             auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
@@ -886,7 +886,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
             test1 (p);
         }
     }
-    
+
 #endif
     {
         // Test against SQLite
@@ -972,7 +972,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
                 [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
             }
             catch (...) {
-                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
             }
             const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
             auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
