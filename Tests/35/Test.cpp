@@ -32,6 +32,7 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/LazyInitialized.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
@@ -62,8 +63,6 @@ namespace {
      *  docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
      */
     [[maybe_unused]] optional<String> sMongoConnectionString_;
-    [[maybe_unused]] const String     kDefaultMongoConnectionString_    = "mongodb://admin:pass@localhost:27017"sv;
-    [[maybe_unused]] bool             sAlreadyWarnedFailedMongoDBServer = false;
 }
 
 #if qStroika_HasComponent_googletest
@@ -784,58 +783,52 @@ namespace {
 GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 {
     TraceContextBumper ctx{"SimpleMongoDBClientTest_"};
-    String             connectionString = sMongoConnectionString_.value_or (kDefaultMongoConnectionString_);
-    using namespace Database::Document;
-    using namespace Database::Document::MongoDBClient;
+    if (sMongoConnectionString_) {
+        String connectionString = *sMongoConnectionString_;
+         using namespace Database::Document;
+        using namespace Database::Document::MongoDBClient;
 
-    Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
+        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
 
-    {
+        {
+            try {
+                AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
+                Set<String>          d = p->GetDatabases ();
+                DbgTrace ("d={}"_f, d);
+                auto ping = p.run_command ({{"ping", 1}});
+                DbgTrace ("ping={}"_f, ping);
+            }
+            catch (...) {
+                // test warning no mongo on address X so test skipped
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                return; // skip rest of tests
+            }
+        }
+
         try {
-            AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-            Set<String>          d = p->GetDatabases ();
-            DbgTrace ("d={}"_f, d);
-            auto ping = p.run_command ({{"ping", 1}});
-            DbgTrace ("ping={}"_f, ping);
+            const String kTestDBName_ = "MyTestDB"sv;
+            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
+            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+            adminDB.CreateDatabase (kTestDBName_);
+            Database::Document::Connection::Ptr p =
+                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
+            EXPECT_EQ (p.GetCollections ().size (), 0u);
+            p->CreateCollection ("blah");
+            DbgTrace ("collections={}"_f, p->GetCollections ());
+            EXPECT_EQ (p.GetCollections (), Set<String>{"blah"});
+            Database::Document::Collection::Ptr blah       = p.GetCollection ("blah");
+            const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
+            auto                                id         = blah.Add (kTestObj1_);
+            DbgTrace ("Added doc {}"_f, id);
+            Database::Document::Document roundTripped = blah.GetOne (id).value_or (Database::Document::Document{});
+            DbgTrace ("roundTripped  get value={}"_f, roundTripped);
+            //EXPECT_EQ (kTestObj1_, roundTripped);
+            auto rrs = blah.GetAll ();
+            DbgTrace ("rrs  get value={}"_f, rrs);
         }
         catch (...) {
             // test warning no mongo on address X so test skipped
-            if (connectionString == kDefaultMongoConnectionString_) {
-                if (not sAlreadyWarnedFailedMongoDBServer) {
-                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
-                    sAlreadyWarnedFailedMongoDBServer = true;
-                }
-            }
-            else {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-            }
-            return; // skip rest of tests
         }
-    }
-
-    try {
-        const String kTestDBName_ = "MyTestDB"sv;
-        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-        adminDB.CreateDatabase (kTestDBName_);
-        Database::Document::Connection::Ptr p =
-            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
-        EXPECT_EQ (p.GetCollections ().size (), 0u);
-        p->CreateCollection ("blah");
-        DbgTrace ("collections={}"_f, p->GetCollections ());
-        EXPECT_EQ (p.GetCollections (), Set<String>{"blah"});
-        Database::Document::Collection::Ptr blah       = p.GetCollection ("blah");
-        const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
-        auto                                id         = blah.Add (kTestObj1_);
-        DbgTrace ("Added doc {}"_f, id);
-        Database::Document::Document roundTripped = blah.GetOne (id).value_or (Database::Document::Document{});
-        DbgTrace ("roundTripped  get value={}"_f, roundTripped);
-        //EXPECT_EQ (kTestObj1_, roundTripped);
-        auto rrs = blah.GetAll ();
-        DbgTrace ("rrs  get value={}"_f, rrs);
-    }
-    catch (...) {
-        // test warning no mongo on address X so test skipped
     }
 }
 #endif
@@ -844,7 +837,6 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
 {
     TraceContextBumper ctx{"DocumentDBTestBasics_"};
     using namespace Database::Document;
-    String connectionString = sMongoConnectionString_.value_or (kDefaultMongoConnectionString_);
 
     [[maybe_unused]] auto test1 = [] (Database::Document::Connection::Ptr p) {
         EXPECT_EQ (p.GetCollections ().size (), 0u);
@@ -869,7 +861,8 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
     };
 
 #if qStroika_HasComponent_mongocxxdriver
-    {
+    if (sMongoConnectionString_) {
+        String connectionString = *sMongoConnectionString_;
         // Test against mongo connection (hardwired value or ENV VAR)
         using namespace Database::Document::MongoDBClient;
 
@@ -882,16 +875,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                 [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
             }
             catch (...) {
-                if (connectionString == kDefaultMongoConnectionString_) {
-                    if (not sAlreadyWarnedFailedMongoDBServer) {
-                        Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
-                        sAlreadyWarnedFailedMongoDBServer = true;
-                    }
-                }
-                else {
                     Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-                }
-                return; // skip rest of tests
             }
             const String kTestDBName_ = "MyTestDB"sv;
             auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
@@ -902,6 +886,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
             test1 (p);
         }
     }
+    
 #endif
     {
         // Test against SQLite
@@ -952,7 +937,6 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
 {
     TraceContextBumper ctx{"DocumentDBTestObjectCollection_"};
     using namespace Database::Document;
-    String connectionString = sMongoConnectionString_.value_or (kDefaultMongoConnectionString_);
 
     [[maybe_unused]] auto test1 = [] (Database::Document::Connection::Ptr p) {
         EXPECT_EQ (p.GetCollections ().size (), 0u);
@@ -975,7 +959,8 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
     };
 
 #if qStroika_HasComponent_mongocxxdriver
-    {
+    if (sMongoConnectionString_) {
+        String connectionString = *sMongoConnectionString_;
         // Test against mongo connection (hardwired value or ENV VAR)
         using namespace Database::Document::MongoDBClient;
 
@@ -987,16 +972,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
                 [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
             }
             catch (...) {
-                if (connectionString == kDefaultMongoConnectionString_) {
-                    if (not sAlreadyWarnedFailedMongoDBServer) {
-                        Stroika::Frameworks::Test::WarnTestIssue ("Skipping mongoDBServer test (default server un-reachable)");
-                        sAlreadyWarnedFailedMongoDBServer = true;
-                    }
-                }
-                else {
                     Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-                }
-                return; // skip rest of tests
             }
             const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
             auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
@@ -1024,6 +1000,7 @@ int main (int argc, const char* argv[])
         if (auto o = cmdLine.GetArgument (kMongoConnectionStringOpt_)) {
             sMongoConnectionString_ = *o;
         }
+        sMongoConnectionString_ = Or_Else (sMongoConnectionString_, [] () { return kEnvironment->Lookup ("MONGO_CONNECTION_STRING"sv); });
     }
     catch (...) {
         auto exc = current_exception ();

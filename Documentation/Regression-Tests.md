@@ -11,6 +11,25 @@ To simply run the regression tests on your system, use (on that sysmtem)
 ./ScriptsLib/RegressionTests
 ```
 
+## Pre-requisites
+
+### MongoDB
+
+If you wish to test against mongodb, a mongo instance can be setup as:
+
+~~~bash
+docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
+~~~
+
+Then pass this ENV variable to the regression tests
+
+~~~bash
+MONGO_CONNECTION_STRING=mongodb://admin:pass@localhost:27017
+~~~
+
+For my home regression tests, I run that on 'hercules', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017
+
+
 ## File Output (for each \$TEST_TARGET)
 
 - PerformanceDump-$TEST_TARGET-$VER.txt
