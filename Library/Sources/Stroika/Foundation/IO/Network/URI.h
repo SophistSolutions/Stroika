@@ -81,7 +81,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        o static_assert (totally_ordered<URI>);
      */
-    class [[nodiscard]] URI {
+    class URI {
     public:
         using Authority = UniformResourceIdentification::Authority;
 

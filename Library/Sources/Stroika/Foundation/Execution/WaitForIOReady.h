@@ -218,6 +218,8 @@ namespace Stroika::Foundation::Execution {
      *          must be provided to map 'T' objects to that SDKPollableType. These are provided by default for most appropriate types.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     *  \note pointless to ever create ObjectVariantMapper and not use, so [[nodiscard]] appropriate
      */
     template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
     class [[nodiscard]] WaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {

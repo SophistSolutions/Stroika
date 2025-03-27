@@ -168,8 +168,8 @@ namespace Stroika::Foundation::Time {
         constexpr DayOfMonth (unsigned int d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, use day{1}")]] static constexpr day  e1{1};
-        [[deprecated ("Since Stroika v3.0d1, use day{2}")]] static constexpr day  e2{2};
+        [[deprecated ("Since Stroika v3.0d1, use day{1} or 1d")]] static constexpr day  e1{1};
+        [[deprecated ("Since Stroika v3.0d1, use day{2} or 2d")]] static constexpr day  e2{2};
         [[deprecated ("Since Stroika v3.0d1, use day{3}")]] static constexpr day  e3{3};
         [[deprecated ("Since Stroika v3.0d1, use day{4}")]] static constexpr day  e4{4};
         [[deprecated ("Since Stroika v3.0d1, use day{5}")]] static constexpr day  e5{5};
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        static_assert (totally_ordered<Date>);
      */
-    class [[nodiscard]] Date {
+    class Date {
     public:
         /*
          *  This refers to Julian Day Number - JDN - https://en.wikipedia.org/wiki/Julian_day
@@ -370,8 +370,8 @@ namespace Stroika::Foundation::Time {
          *  See https://en.wikipedia.org/wiki/Gregorian_calendar
          *      September, 14d, 1752 (even this not sure of, but used this in Stroika v2.1)
          * 
-         *      "Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
-                 * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752"
+         *      "Algorithm 199 from Communications of the ACM, Volume 6, No. 8, (Aug. 1963), p. 444.  
+         *          Gregorian calendar started on Sep. 14, 1752"
          */
         static constexpr ReferencePoint kGregorianCalendarEpoch{1752y / September / 14d, 2361222};
 
@@ -457,7 +457,9 @@ namespace Stroika::Foundation::Time {
          *
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
          *        so equivalent to %Y-%m-%d
+         *
          *  \note this is LOCALE-INDEPENDENT
+         *
          *  \see kMonthDayYearFormat
          * 
          *  \note also used for XML

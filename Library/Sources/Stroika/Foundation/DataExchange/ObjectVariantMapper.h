@@ -263,6 +263,8 @@ namespace Stroika::Foundation::DataExchange {
      * 
      *                  Another variation on this - would be to have for each T/ToObject description - a CONSTRUCTOR function, and a FILL function. Then these
      *                  could be somehow combined for the base class/subclass case?
+     *
+     *  \note pointless to ever create ObjectVariantMapper and not use, so [[nodiscard]] appropriate
      */
     class [[nodiscard]] ObjectVariantMapper {
     public:

@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<Duration>);
      */
-    class [[nodiscard]] Duration final : public chrono::duration<double> {
+    class Duration final : public chrono::duration<double> {
     private:
         using inherited = chrono::duration<double>;
 

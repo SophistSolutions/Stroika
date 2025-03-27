@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers {
      *        o Same as DataHyperRectangle<> comparisons
      */
     template <typename T, typename... INDEXES>
-    class [[nodiscard]] SparseDataHyperRectangle : public DataHyperRectangle<T, INDEXES...> {
+    class SparseDataHyperRectangle : public DataHyperRectangle<T, INDEXES...> {
     private:
         using inherited = DataHyperRectangle<T, INDEXES...>;
 

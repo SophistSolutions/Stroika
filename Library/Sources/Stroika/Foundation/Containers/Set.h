@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers {
      *        overloads which are pretty convenient.
      */
     template <typename T>
-    class [[nodiscard]] Set : public Iterable<T> {
+    class Set : public Iterable<T> {
     private:
         using inherited = Iterable<T>;
 

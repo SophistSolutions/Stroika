@@ -51,7 +51,7 @@ namespace Stroika::Foundation::DataExchange {
      *  TODO:
      *      @todo consider losing empty/clear members, and if they are ever needed, use optional<InternetMediaType>
      */
-    class [[nodiscard]] InternetMediaType {
+    class InternetMediaType {
     public:
         using AtomType = DataExchange::Atom<DataExchange::AtomManager_CaseInsensitive>;
 

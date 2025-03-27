@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Containers {
      *        o using ThreeWayComparer = typename Iterable<T>::template SequentialThreeWayComparer<T_EQUALS_COMPARER>;
      */
     template <typename T>
-    class [[nodiscard]] Sequence : public Iterable<T> {
+    class Sequence : public Iterable<T> {
     private:
         using inherited = Iterable<T>;
 

@@ -45,6 +45,8 @@ namespace Stroika::Foundation::Database::SQL {
      *              return Memory::ValueOf (result);
      *          }
      *      \endcode
+     *
+     *  \note pointless to ever create Transaction and not use, so [[nodiscard]] appropriate
      */
     class [[nodiscard]] Transaction {
     public:

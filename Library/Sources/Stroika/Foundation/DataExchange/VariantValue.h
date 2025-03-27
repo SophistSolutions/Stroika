@@ -167,7 +167,7 @@ namespace Stroika::Foundation::DataExchange {
      *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
      *              warrant a careful review
      */
-    class [[nodiscard]] VariantValue {
+    class VariantValue {
     private:
         /**
          *  Internal format for storing floating point data in a VariantValue.

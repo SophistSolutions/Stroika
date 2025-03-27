@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
      *  if set allowReactivation=true, then the underlying mongocxx instance object not destroyed until application end,
      *  so that you can re-activate. JUST IGNORE this for hte most part and stick with the default!
      */
-    struct Activator {
+    struct Activator final {
         enum AllowReactivateFlag {
             eAllowReactivateFlag
         };
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
-    class ConnectionPool {
+    class ConnectionPool final {
     public:
         ConnectionPool ()                      = delete;
         ConnectionPool (const ConnectionPool&) = default;
@@ -148,9 +148,6 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          */
         class IRep {
         public:
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
-
-        public:
             virtual Document run_command (const Document& v) = 0;
 
         public:
@@ -165,8 +162,11 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         public:
             virtual void CreateDatabase (const String& dbName) = 0;
 
-        private:
-            friend class Ptr;
+            //        private:
+            //          [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
+
+            //        private:
+            //           friend class Ptr;
         };
 
         /**
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         };
 
         /**
-         *  \note produces unsynchonized reps - so must be externally synchronized
+         *  \note produces unsynchronized reps - so must be externally synchronized
          */
         Ptr New (const Options& options);
 
@@ -260,13 +260,14 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         public:
             virtual mongocxx::client& GetClientRef () = 0;
 
-        private:
-            friend class Ptr;
+            //   private:
+            //      friend class Ptr;
         };
 
     };
 
     /**
+    *   @todo NYI
      */
     class Transaction : public Database::Document::Transaction {
     private:

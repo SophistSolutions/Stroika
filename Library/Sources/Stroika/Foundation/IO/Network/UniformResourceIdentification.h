@@ -136,7 +136,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *          o   schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
      */
-    class [[nodiscard]] SchemeType : public String {
+    class SchemeType : public String {
         using inherited = String;
 
     public:
@@ -198,14 +198,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *              note that when comparing hosts, if they are registered names, they are compared case insensitively.
      *              @see https://tools.ietf.org/html/rfc3986#section-6.2.2.1
      */
-    class [[nodiscard]] Host {
+    class Host {
     public:
         static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
         static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
 
     public:
         /**
-         *  Technically accoridng to https://tools.ietf.org/html/rfc3986#section-3.2.2, the registered-name
+         *  Technically according to https://tools.ietf.org/html/rfc3986#section-3.2.2, the registered-name
          *  maybe empty, but for the sake of consistency with the rest of this module, we intead represent
          *  this using optional<Host> and say that the optional host is missing.
          *
@@ -341,7 +341,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *          Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
      *          These are compared as case-senstive strings.
      */
-    class [[nodiscard]] UserInfo {
+    class UserInfo {
     public:
         static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
         static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
@@ -447,7 +447,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    class [[nodiscard]] Authority {
+    class Authority {
     public:
         static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
         static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
@@ -577,7 +577,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      * According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before doing % etc substitution, so support u8string overload.
      */
-    class [[nodiscard]] Query {
+    class Query {
     public:
         /**
          */

@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        static_assert (totally_ordered<TimeOfDay>);
      */
-    class [[nodiscard]] TimeOfDay {
+    class TimeOfDay {
     public:
         /**
          * NB: The maximum value in a TimeOfDay struct is one less than kMaxSecondsPerDay

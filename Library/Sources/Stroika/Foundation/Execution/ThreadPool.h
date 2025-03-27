@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  If as Task in the thread pool raises an exception - this will be IGNORED (except for the
      *  special case of Thread::AbortException which  is used internally to end the threadpool or
-     *  remove some threads). Because of this, your submitted runnables should take care of their own
+     *  remove some threads). Because of this, your submitted runnable should take care of its own
      *  error handling internally.
      *
      *  ThreadPool mainly useful for servicing lost-cost calls/threads, where the overhead
@@ -68,6 +68,8 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *          all methods can be freely used from any thread, and they will block internally as needed.
+     * 
+     *  \note pointless to ever create threadpool and not use, so [[nodiscard]] appropriate
      */
     class [[nodiscard]] ThreadPool {
     public:

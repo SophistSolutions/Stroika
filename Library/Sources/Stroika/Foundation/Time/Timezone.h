@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Time {
      *
      *  @see http://stroika-bugs.sophists.com/browse/STK-636
      */
-    struct [[nodiscard]] TimeZoneInformationType {
+    struct TimeZoneInformationType {
         struct Details {
             optional<Characters::String> fName;
             optional<Characters::String> fAbbreviation;
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Time {
     /**
      *  \brief return a summary of information about the currently configured default timezone on this system.
      */
-    TimeZoneInformationType GetCurrentLocaleTimezoneInfo ();
+    [[nodiscard]] TimeZoneInformationType GetCurrentLocaleTimezoneInfo ();
 
     /**
      *  The Timezone class represents what one would think of as a timezone - mostly.
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Time {
      *          static_assert (totally_ordered<Timezone>);
      *          o   comparison of < not 100% intuitive, but unambiguous, so these can be compared (by numeric value of flags/offsets).
      */
-    class [[nodiscard]] Timezone {
+    class Timezone {
     private:
         enum class TZ_ : uint16_t {
             eLocalTime,

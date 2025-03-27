@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Containers {
      *
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-    class [[nodiscard]] MultiSet : public Iterable<typename TRAITS::CountedValueType> {
+    class MultiSet : public Iterable<typename TRAITS::CountedValueType> {
     private:
         using inherited = Iterable<typename TRAITS::CountedValueType>;
 

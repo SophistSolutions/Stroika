@@ -66,6 +66,8 @@ namespace Stroika::Foundation::Characters {
      *  @see Java StringBuilder - http://docs.oracle.com/javase/7/docs/api/java/lang/StringBuilder.html
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * 
+     *  \note pointless to ever create StringBuilder and not use, so [[nodiscard]] appropriate
      */
     template <typename OPTIONS = StringBuilder_Options<>>
     class [[nodiscard]] StringBuilder {

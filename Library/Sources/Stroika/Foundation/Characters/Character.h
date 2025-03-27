@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Characters {
      *      o   static_assert (totally_ordered<Character>)
      *      o   Character::EqualsComparer and Character::ThreeWayComparer provided with construction parameters to allow case insensitive compares 
      */
-    class [[nodiscard]] Character {
+    class Character {
     public:
         /**
          *  Default constructor produces a zero (null) character.

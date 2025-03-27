@@ -45,7 +45,7 @@ namespace Stroika::Foundation::DataExchange {
      *          return TypedBLOB{.fData = GetData (), .fType = GetContentType ()};
      *      \endcode
      */
-    class [[nodiscard]] TypedBLOB {
+    class TypedBLOB {
     public:
         Memory::BLOB                fData;
         optional<InternetMediaType> fType;

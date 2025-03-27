@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers {
      *      o   Compare sequentially using the associated GetInOrderComparer ()
      */
     template <typename T>
-    class [[nodiscard]] SortedCollection : public Collection<T> {
+    class SortedCollection : public Collection<T> {
     private:
         using inherited = Collection<T>;
 
