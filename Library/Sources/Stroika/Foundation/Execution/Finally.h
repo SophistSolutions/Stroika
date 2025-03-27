@@ -85,6 +85,18 @@ namespace Stroika::Foundation::Execution {
      *      \code
      *          [[maybe_unused]]auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
      *      \endcode
+     * 
+     *  \par Example Usage (more terse version of try/catch to report exception)
+     *      \code
+     *          // Instead of 
+     *          try {X (); } catch (...) { Logger::sThe.Log (Logger::eError, "mongoDB exception: {}"_f, e); }
+     * 
+     *          // You can use
+     *          [[maybe_unused]]auto&& reportOnException  =   Finally ([] () noexcept { if (auto e = current_exception ()) { IgnoreExceptionsForCall (Logger::sThe.Log (Logger::eError, "exception: {}"_f, e)); } });
+     *          X ();
+     * 
+     *          // OK - I know the first example looks shorter, but imagine you have to indent X, and its bigger (many lines)
+     *      \endcode
      */
     template <Common::INoThrowInvocable FUNCTION>
     auto Finally (FUNCTION&& f) -> Private_::FinallySentry<FUNCTION>;
