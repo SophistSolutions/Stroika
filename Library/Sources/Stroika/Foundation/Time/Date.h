@@ -681,11 +681,15 @@ namespace Stroika::Foundation::Time {
          * Defined for
          *      struct tm
          *      year_month_day
+         *      any std::time_point
          * 
          *  Generally constexpr where possible.
+         * 
+         *      @todo understand why on MSVC I need ::tm and tm in the IAnyOf<>
          */
         template <typename T>
-        nonvirtual T As () const;
+        constexpr T As () const
+            requires (Common::IAnyOf<::tm, tm, year_month_day> or Common::ITimePoint<T>);
 
     public:
         using JulianRepType [[deprecated ("Since Stroika v3.0d1 - use JulianDayNumber")]]             = JulianDayNumber;
@@ -731,11 +735,6 @@ namespace Stroika::Foundation::Time {
     };
     static_assert (sizeof (Date) == sizeof (year_month_day)); // generally 4 bytes
     static_assert (totally_ordered<Date>);
-
-    template <>
-    constexpr ::tm Date::As () const;
-    template <>
-    constexpr year_month_day Date::As () const;
 
     class Date::FormatException : public Execution::RuntimeErrorException<> {
     public:

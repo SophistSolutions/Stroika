@@ -266,19 +266,34 @@ namespace Stroika::Foundation::Time {
         : Date{year_month_day{y, m, d}, validationStrategy}
     {
     }
-    template <>
-    constexpr year_month_day Date::As () const
+    template <typename T>
+    constexpr T Date::As () const
+        requires (Common::IAnyOf<::tm, tm, year_month_day> or Common::ITimePoint<T>)
     {
-        return fRep_;
-    }
-    template <>
-    constexpr ::tm Date::As () const
-    {
-        ::tm tm{};
-        tm.tm_year = static_cast<int> (GetYear ()) - kTM_Year_RelativeToYear_;
-        tm.tm_mon  = static_cast<unsigned int> (GetMonth ()) - 1;
-        tm.tm_mday = static_cast<unsigned int> (GetDayOfMonth ());
-        return tm;
+        if constexpr (same_as<T, ::tm>) {
+            ::tm tm{};
+            tm.tm_year = static_cast<int> (GetYear ()) - kTM_Year_RelativeToYear_;
+            tm.tm_mon  = static_cast<unsigned int> (GetMonth ()) - 1;
+            tm.tm_mday = static_cast<unsigned int> (GetDayOfMonth ());
+            return tm;
+        }
+        else if constexpr (same_as<T, year_month_day>) {
+            return fRep_;
+        }
+        else if constexpr (Common::ITimePoint<T>) {
+            // note: only supports UNIX epoch
+            using CLOCK_T    = typename T::clock;
+            using DURATION_T = T::duration;
+            ::tm   asTM      = this->As<::tm> ();
+            time_t thisTimeT = mktime (&asTM);
+            auto   t         = Time::clock_cast<CLOCK_T> (chrono::system_clock::from_time_t (thisTimeT));
+            if constexpr (same_as<DURATION_T, chrono::system_clock::duration>) {
+                return t;
+            }
+            else {
+                return chrono::time_point_cast<DURATION_T> (t);
+            }
+        }
     }
     inline constexpr Date::JulianDayNumber Date::GetJulianRep () const
     {

@@ -178,7 +178,7 @@ String Date::Format (const String& formatPattern) const
 String Date::Format (const locale& l, const String& formatPattern) const
 {
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
-    ::tm                         when = As<::tm> ();
+    ::tm                         when = As<tm> ();
     Memory::StackBuffer<wchar_t> formatBuf;
     auto [formatPatternCStr, formatPatternSV] = formatPattern.c_str (&formatBuf);
     const time_put<wchar_t>& tmput            = use_facet<time_put<wchar_t>> (l);
