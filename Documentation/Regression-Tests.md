@@ -18,7 +18,7 @@ To simply run the regression tests on your system, use (on that sysmtem)
 If you wish to test against mongodb, a mongo instance can be setup as:
 
 ~~~bash
-docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
+docker run --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
 ~~~
 
 Then pass this ENV variable to the regression tests
@@ -57,6 +57,7 @@ checkin from one spot.
 
   ```bash
   USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
+    MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
       ./ScriptsLib/RegressionTests
   ```
 
@@ -68,6 +69,7 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
@@ -81,6 +83,7 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2404_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
@@ -94,6 +97,7 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2410_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
@@ -108,6 +112,7 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
       RASPBERRYPI_REMOTE_MACHINE=192.168.244.159 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
@@ -120,14 +125,16 @@ checkin from one spot.
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
   ```bash
-  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
+  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
   ```
 
   OR alternatively
 
   ```sh
-   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_Cygwin_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
+    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_Cygwin_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
+    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 
 - WSL (tested on Ubuntu 22.04) test
@@ -135,5 +142,5 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
 
   ```bash
-  ScriptsLib/RunLocalWSLRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 ScriptsLib/RunLocalWSLRegressionTests
   ```
