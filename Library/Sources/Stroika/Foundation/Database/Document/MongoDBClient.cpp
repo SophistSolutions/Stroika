@@ -123,7 +123,7 @@ namespace {
                 return static_cast<bool> (value.get_bool ());
             case bsoncxx::type::k_date:
                 // @todo FIX - UNSURE of right clock to use
-                return Time::DateTime{chrono::time_point<chrono::system_clock>{value.get_date ().value}}; ///< UTC datetime.
+                return Time::DateTime{chrono::time_point<chrono::system_clock>{value.get_date ().value}}; // UTC datetime.
             case bsoncxx::type::k_null:
                 return VariantValue{nullptr};
             case bsoncxx::type::k_regex:
@@ -155,7 +155,7 @@ namespace {
                 WeakAssertNotReached (); // not sure what todo
                 return VariantValue{};
             default:
-                WeakAssertNotReached (); // not sure what todo
+                AssertNotReached (); // all cases covered
                 return VariantValue{};
         }
     }
@@ -186,7 +186,8 @@ namespace {
                 }
             case VariantValue::Type::eDateTime:
                 // MongoDB doesn't support dates before 1970, so store as string
-                if (DateTime dt = vv.As<DateTime> (); dt.GetDate () > Date{1970y / January / 1d}) {
+                // only makes sense to store UTC dates in database
+                if (DateTime dt = vv.As<DateTime> ().AsUTC (); dt.GetDate () > Date{1970y / January / 1d}) {
                     return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{dt.As<std::chrono::system_clock::time_point> ()}};
                 }
                 else {
@@ -209,7 +210,7 @@ namespace {
                 return bsoncxx::types::bson_value::value{bsonDoc};
             }
             default:
-                AssertNotReached (); // not sure what todo
+                AssertNotReached (); // all cases covered
                 return bsoncxx::types::bson_value::value{nullptr};
         }
     }
@@ -361,7 +362,7 @@ namespace {
         virtual Set<String> GetDatabases () override
         {
             vector<string> n = fClientPtr_->list_database_names ();
-            return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; });
+            return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String::FromUTF8 (i); });
         }
         virtual void DropDatabase (const String& dbName) override
         {
@@ -545,6 +546,10 @@ namespace {
                 return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; });
             }
             catch (const mongocxx::v_noabi::operation_exception& e) {
+                DbgTrace ("e={}"_f, e);
+                if (e.raw_server_error ()) {
+                    DbgTrace ("e.raw={}"_f, FromBSON_ (e.raw_server_error ()->view ()));
+                }
                 // a specific error here - check for that - and throw others... no such database gets mapped to empty collection list
                 return {};
             }
