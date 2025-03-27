@@ -113,7 +113,8 @@ namespace Stroika::Foundation::Time {
          *      our default interpretation of a FILETIME structure as as UTC.
          *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
          *
-         *  \note DateTime (time_t unixEpochTime) returns a datetime in UTC
+         *  \note DateTime (time_t unixEpochTime) creates a datetime in UTC
+         *  \note DateTime (ITimePoint) creates a datetime in UTC
          *
          *  \note All DateTime constructors REQUIRE valid (in range) arguments.
          * 
