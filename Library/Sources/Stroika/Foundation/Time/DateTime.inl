@@ -97,10 +97,12 @@ namespace Stroika::Foundation::Time {
     template <typename T>
     inline T DateTime::As () const
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
-        requires (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
+        requires (Common::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String
 #if qStroika_Foundation_Common_Platform_Windows
-                  same_as<T, SYSTEMTIME> or
+                                 ,
+                                 SYSTEMTIME
 #endif
+                                 > or
                   Common::ITimePoint<T>)
 #endif
     {
