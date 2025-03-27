@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Time {
         else if constexpr (Common::ITimePoint<T>) {
             // note: only supports UNIX epoch
             using CLOCK_T    = typename T::clock;
-            using DURATION_T = T::duration;
+            using DURATION_T = typename T::duration;
             ::tm   asTM      = this->As<::tm> ();
             time_t thisTimeT = mktime (&asTM);
             auto   t         = Time::clock_cast<CLOCK_T> (chrono::system_clock::from_time_t (thisTimeT));
