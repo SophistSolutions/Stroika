@@ -161,6 +161,7 @@ namespace {
     }
     bsoncxx::types::bson_value::value VV2BSONV_ (const VariantValue& vv)
     {
+        using namespace std::chrono;
         // @todo adequate first draft, but not 100% right conversions --LGP 2025-03-24
         switch (vv.GetType ()) {
             case VariantValue::Type::eNull:
@@ -176,9 +177,21 @@ namespace {
             case VariantValue::Type::eFloat:
                 return bsoncxx::types::bson_value::value{vv.As<double> ()};
             case VariantValue::Type::eDate:
-                return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{vv.As<DateTime> ().As<std::chrono::system_clock::time_point> ()}};
+                // MongoDB doesn't support dates before 1970, so store as string
+                if (Date dt = vv.As<Date> (); dt > Date{1970y / January / 1d}) {
+                    return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{dt.As<std::chrono::system_clock::time_point> ()}};
+                }
+                else {
+                    return dt.Format (Date::kISO8601Format).AsUTF8<string> ();
+                }
             case VariantValue::Type::eDateTime:
-                return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{vv.As<DateTime> ().As<std::chrono::system_clock::time_point> ()}};
+                // MongoDB doesn't support dates before 1970, so store as string
+                if (DateTime dt = vv.As<DateTime> (); dt.GetDate () > Date{1970y / January / 1d}) {
+                    return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{dt.As<std::chrono::system_clock::time_point> ()}};
+                }
+                else {
+                    return dt.Format (DateTime::kISO8601Format).AsUTF8<string> ();
+                }
             case VariantValue::Type::eString:
                 return bsoncxx::types::bson_value::value{vv.As<String> ().AsUTF8<string> ()};
             case VariantValue::Type::eArray: {
