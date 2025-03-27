@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Characters {
         static String FromUTF8 (span<CHAR_T> from)
             requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>);
         template <typename CHAR_T>
-        static String FromUTF8 (basic_string<CHAR_T> from)
+        static String FromUTF8 (const basic_string<CHAR_T>& from)
             requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>);
         template <typename CHAR_T>
         static String FromUTF8 (const CHAR_T* from)

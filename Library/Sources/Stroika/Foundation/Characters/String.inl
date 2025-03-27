@@ -433,10 +433,10 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <typename CHAR_T>
-    inline String String::FromUTF8 (basic_string<CHAR_T> from)
+    inline String String::FromUTF8 (const basic_string<CHAR_T>& from)
         requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>)
     {
-        return FromUTF8 (span{from.c_str (), from.length ()});
+        return FromUTF8 (span{from.data (), from.length ()});
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (const CHAR_T* from)
