@@ -427,6 +427,16 @@ if ("$^O" eq "msys") {
 # So in Stroika 2.1a2 switch default to more standard (and recommended by MSFT docs above) no structured exceptions
 my $Windows_Exceptions_SupportStructuredExceptions = false;
 
+sub	ValidateUseArg_
+{
+	my $var = shift(@_);
+	my $forName = shift(@_);
+	if ($var ne 'build-only' && $var ne 'use' && $var ne 'use-system' && $var ne 'no') {
+		print ("$forName ARG: $var\n");
+		DoHelp_ (1);
+	}
+}
+
 sub	DoHelp_
 {
 	my $x = shift(@_);
@@ -1774,16 +1784,19 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--libcurl');
 			$FEATUREFLAG_LIBCURL = $var;
 		}
 		elsif ((lc ($var) eq "-boost") or (lc ($var) eq "--boost")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--boost');
 			$FEATUREFLAG_boost = $var;
 		}
 		elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--openssl');
 			$FEATUREFLAG_OpenSSL = $var;
 		}
 		elsif ((lc ($var) eq "-openssl-extraargs") or (lc ($var) eq "--openssl-extraargs")) {
@@ -1804,36 +1817,43 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-xerces") or (lc ($var) eq "--xerces")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--xerces');
 			$FEATUREFLAG_Xerces = $var;
 		}
 		elsif ((lc ($var) eq "-libxml2") or (lc ($var) eq "--libxml2")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--libxml2');
 			$FEATUREFLAG_libxml2 = $var;
 		}
 		elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--zlib');
 			$FEATUREFLAG_ZLib = $var;
 		}
 		elsif ((lc ($var) eq "-googletest") or (lc ($var) eq "--googletest")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--googletest');
 			$FEATUREFLAG_GoogleTest = $var;
 		}
 		elsif ((lc ($var) eq "-mongo-cxx-driver") or (lc ($var) eq "--mongo-cxx-driver")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--mongo-cxx-driver');
 			$FEATUREFLAG_mongocxxdriver = $var;
 		}
 		elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--sqlite');
 			$FEATUREFLAG_sqlite = $var;
 		}
 		elsif ((lc ($var) eq "-lzma") or (lc ($var) eq "--lzma")) {
 			$i++;
 			$var = $args[$i];
+			ValidateUseArg_($var, '--lzma');
 			$FEATUREFLAG_LZMA = $var;
 		}
 		elsif ((lc ($var) eq "-fmtlib") or (lc ($var) eq "--fmtlib")) {
@@ -3217,6 +3237,14 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "leak not working in Ubuntu 20.04";
 		}
+	}
+
+	# Really should do similar for anything we say == system and $onlyGenerateIfCompilerExists
+	if ($generate && $FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem) {
+		 if (system("pkg-config --libs zlib 2>/dev/null >/dev/null")) {
+			$generate = false;
+			$generateBecause = "zlib is not installed";
+		 }
 	}
 
 	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
