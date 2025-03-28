@@ -188,7 +188,7 @@ else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
 	@#NOTE - not obvious we want the 'tr -d but makes it a bit more terse'
 ifneq (${qFeatureFlag_mongocxxdriver},no)
-	@if [ "$(MONGO_CONNECTION_STRING)" == "" ] ; then $(ECHO) "${PREFIX_} Note: MONGO_CONNECTION_STRING not set so some tests skipped"; fi
+	@if [ "$(MONGO_CONNECTION_STRING)" = "" ] ; then $(ECHO) "${PREFIX_} Note: MONGO_CONNECTION_STRING not set so some tests skipped"; fi
 endif
 	@if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            $(ECHO) "${PREFIX_}Skiping cuz Cross-Compiling and REMOTE= not specified...";\
