@@ -513,7 +513,7 @@ basic-unix-test-configurations:
 		#Ubuntu 22.04\
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
-		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system; \
+		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system; \
 		# g++-11\
 		./configure g++-11-debug --config-tag Unix --compiler-driver g++-11 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure g++-11-release++2b --config-tag Unix --compiler-driver g++-11 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
@@ -538,7 +538,7 @@ basic-unix-test-configurations:
 	elif [[ `lsb_release -rs 2>/dev/null` == '24.04' ]]; then \
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
-		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system ; \
+		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system ; \
 		# g++-12; \
 		./configure g++-12-debug --config-tag Unix --compiler-driver g++-12 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++20 ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure g++-12-release++2b --config-tag Unix --compiler-driver g++-12 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
@@ -575,7 +575,7 @@ basic-unix-test-configurations:
 		$(MAKE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent default-configurations; \
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
-		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib system ; \
+		./configure only-zlib-system-third-party-component --config-tag Unix --only-if-has-compiler --no-third-party-components --zlib use-system ; \
 		./configure g++-release++2b --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure clang++-debug --config-tag Unix --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure clang++-release --config-tag Unix --compiler-driver clang++ --apply-default-release-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
