@@ -256,7 +256,7 @@ namespace {
      * @param filter 
      * @return tuple<bsoncxx::document,Filter> 
      */
-    tuple<optional<bsoncxx::document::value>, optional<Filter>> Parse_ (const optional<Filter>& filter)
+    tuple<optional<bsoncxx::document::value>, optional<Filter>> Partition_ (const optional<Filter>& filter)
     {
         if (filter) {
             /*
@@ -303,7 +303,7 @@ namespace {
      * 
      * SEE https://stackoverflow.com/questions/62704615/mongodb-projection-on-c
      */
-    tuple<optional<bsoncxx::document::value>, optional<Projection>> Parse_ (const optional<Projection>& p)
+    tuple<optional<bsoncxx::document::value>, optional<Projection>> Partition_ (const optional<Projection>& p)
     {
         if (p) {
             /*
@@ -399,7 +399,7 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::Add()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Add()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
@@ -411,12 +411,12 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::GetOne()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetOne()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 bsoncxx::builder::basic::document                      filterDoc;
                 filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
-                auto [mongoProjection, myProjection] = Parse_ (projection);
+                auto [mongoProjection, myProjection] = Partition_ (projection);
                 mongocxx::options::find o;
                 if (mongoProjection) {
                     o.projection (mongoProjection->view ());
@@ -434,11 +434,11 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::GetAll()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                auto [mongoFilter, myFilter]         = Parse_ (filter);
-                auto [mongoProjection, myProjection] = Parse_ (projection);
+                auto [mongoFilter, myFilter]         = Partition_ (filter);
+                auto [mongoProjection, myProjection] = Partition_ (projection);
                 Sequence<Document::Document> result;
                 mongocxx::options::find      o;
                 if (mongoProjection) {
@@ -459,7 +459,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::Update()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Update()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
@@ -494,7 +494,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::Remove()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Remove()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 bsoncxx::builder::basic::document                      filterDoc;
@@ -508,12 +508,9 @@ namespace {
 
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
         variant<mongocxx::client, mongocxx::pool::entry> fClientStorage_; // not directly used, but needed to free the resource when this connection obj goes away - and implicitly stored in database
-        //   mongocxx::client*                                               fClientPtr_;
         mongocxx::database fDatabase_;
 
         ConnectionRep_ (const Connection::Options& options)
-        //  : fClient_{mongocxx::uri{options.fConnectionString.AsUTF8<string> ()}}
-        //, fDatabase_{fClient_.database (options.fDatabase.AsUTF8<string> ())}
         {
             TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::CTOR"};
             if (auto os = get_if<String> (&options.fConnectionTarget)) {
