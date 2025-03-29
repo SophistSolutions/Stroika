@@ -237,6 +237,9 @@ namespace {
             if (options.fJournalMode) {
                 SetJournalMode (*options.fJournalMode);
             }
+
+          //  Exec ("SELECT load_extension ('/path/to/json1/extension')");
+
             EnsureNotNull (fDB_);
         }
         ~Rep_ ()
@@ -258,22 +261,34 @@ namespace {
         }
         virtual Set<String> GetCollections () override
         {
-            return {};
+            // treat named all tables as collections (maybe just count those with two columns id/json?).
+            Set<String> results;
+            auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+                Set<String>* pResults = reinterpret_cast<Set<String>*> (lamdaArg);
+                AssertNotNull (pResults);
+                Assert (argc == 1);
+                pResults->Add (String::FromUTF8 (argv[0]));
+                return SQLITE_OK;
+            };
+            //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';", callback, &results, nullptr));
+            return results;
         }
         virtual void CreateCollection (const String& name) override
         {
-            AssertNotImplemented ();
+            Exec ("create table {} (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
         }
         virtual void DropCollection (const String& name) override
         {
-            AssertNotImplemented ();
+            Exec ("drop table {};"_f(name));
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             return Document::Collection::Ptr{nullptr}; // @todo - implement this!
+
+            // return table names
         }
         virtual Document::Transaction mkTransaction () override
-
         {
             Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
             return Database::Document::SQLite::Transaction{conn};

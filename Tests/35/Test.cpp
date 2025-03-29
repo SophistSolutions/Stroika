@@ -7,10 +7,6 @@
 #include <iostream>
 #include <random>
 
-// #if qStroika_HasComponent_mongocxxdriver
-// #include <mongocxx/exception/operation_exception.hpp>
-// #endif
-
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -21,6 +17,7 @@
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
+#include "Stroika/Foundation/Database/Document/SQLite.h"
 #include "Stroika/Foundation/Database/Document/ObjectCollection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
@@ -984,9 +981,21 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
         }
     }
 #endif
-    {
+#if qStroika_HasComponent_sqlite
+    try {
         // Test against SQLite
+        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""});
+
+        auto c = p.GetCollections ();
+        DbgTrace ("c={}"_f, c);
+        p.CreateCollection ("Hammy");
+         c = p.GetCollections ();
+        DbgTrace ("c={}"_f, c);
     }
+    catch (...) {
+        DbgTrace ("E={}"_f, current_exception ());
+    }
+#endif
 }
 
 #endif
