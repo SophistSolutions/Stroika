@@ -66,10 +66,16 @@ CMAKE_ARGS=
 # CMAKE_ARGS+= --trace
 # CMAKE_ARGS+= --debug-output
 
+# https://cmake.org/cmake/help/latest/variable/CMAKE_VERBOSE_MAKEFILE.html
+# did to explore windows compiler options but didnt help with that. Leave it in for a bit
+# to see if helpful for UNIX compiler options (but already not much question about those).
+CMAKE_ARGS+= -DCMAKE_VERBOSE_MAKEFILE=1
+
 ## EXPERIEMNT - I THOUGHT this may fix passing -j arg to cmake submakes...but it didn't help--LGP 2025-03-19
 # CMAKE_ARGS+= -DCMAKE_MAKE_PROGRAM='$(shell which $(MAKE)) ${MFLAGS} OR $(MAKEFLAGS)'
 # export MFLAGS
 # export MAKEFLAGS
+
 
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
 ifeq (Unix,$(BuildPlatform))
