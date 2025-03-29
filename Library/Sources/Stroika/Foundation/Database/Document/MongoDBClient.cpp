@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #if qStroika_HasComponent_mongocxxdriver
+DISABLE_COMPILER_MSC_WARNING_START (4166) // avoid warning of buggy usage cdecl on CTOR/DTOR- only shows up on x86 MSVC compilers
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/document/value.hpp>
 #include <bsoncxx/json.hpp>
@@ -19,6 +20,7 @@
 #include <mongocxx/instance.hpp>
 #include <mongocxx/pool.hpp>
 #include <mongocxx/uri.hpp>
+DISABLE_COMPILER_MSC_WARNING_END (4166)
 #endif
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"

@@ -7,9 +7,9 @@
 #include <iostream>
 #include <random>
 
-#if qStroika_HasComponent_mongocxxdriver
-#include <mongocxx/exception/operation_exception.hpp>
-#endif
+// #if qStroika_HasComponent_mongocxxdriver
+// #include <mongocxx/exception/operation_exception.hpp>
+// #endif
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
