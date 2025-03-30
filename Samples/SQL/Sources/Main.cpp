@@ -63,8 +63,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
             // default to 1 second fBusyTimeout for these tests
-            auto conn = SQLite::Connection::New (SQLite::Connection::Options{
-                .fDBPath = dbPath, .fThreadingMode = SQLite::Connection::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
+            auto conn = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath, .fBusyTimeout = 1s});
             Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
             return conn;
         };
@@ -79,8 +78,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
             // default to 1 second fBusyTimeout for these tests
-            auto conn = SQLite::Connection::New (SQLite::Connection::Options{
-                .fDBPath = dbPath, .fThreadingMode = SQLite::Connection::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
+            auto conn = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath, .fBusyTimeout = 1s});
             Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
             return conn;
         };
