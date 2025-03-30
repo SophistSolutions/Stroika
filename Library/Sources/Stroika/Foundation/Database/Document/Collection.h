@@ -82,6 +82,8 @@ namespace Stroika::Foundation::Database::Document::Collection {
         /**
          * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
          * overload with id returns exactly that one, or nullopt if missing.
+         * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
+         *       of the argument projection
          */
         nonvirtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection = {});
 
@@ -166,6 +168,9 @@ namespace Stroika::Foundation::Database::Document::Collection {
     public:
         /**
          * overload with id returns exactly that one, or nullopt if missing.
+         * 
+         *        * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
+         *       of the argument projection
          */
         virtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection) = 0;
 
@@ -178,7 +183,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-         *  if onlyTheseFields, does a Replace (), and if present, does 'Retain()' on newV for the argument fields.
+         *  if onlyTheseFields ==nullopt does a Replace (existing document entirely replaced with newV), and if present, does 'Retain()' on newV for the argument fields and only updates those fields (if missing in newV they are removed from database)
          * 
          *  \note newV may or may not contain an 'id' field. It will be automatically implicitly added/replaced with the explicit
          *        argument 'id'
