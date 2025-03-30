@@ -75,6 +75,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
+         *  Creates the (named) collection (aka table), and does nothing if the table/collection already exists.
          */
         nonvirtual void CreateCollection (const String& name);
 
@@ -135,6 +136,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
+         *  Creates the (named) collection (aka table), and does nothing if the table/collection already exists.
          */
         virtual void CreateCollection (const String& name) = 0;
 

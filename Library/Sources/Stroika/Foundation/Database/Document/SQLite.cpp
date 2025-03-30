@@ -486,7 +486,7 @@ namespace {
         }
         virtual void CreateCollection (const String& name) override
         {
-            Exec ("create table {} (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
+            Exec ("create table if not exists {} (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
         }
         virtual void DropCollection (const String& name) override
         {
