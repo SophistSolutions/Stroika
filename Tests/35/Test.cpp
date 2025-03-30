@@ -33,6 +33,7 @@
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
+#include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -849,9 +850,9 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
         Sequence<DOC_> rrs = blah.GetAll (nullopt, Projection{Projection::eInclude, {"id"_k}});
         EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{"id", id}}}));
         const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
-        blah.Update (id, kTestObj1_Updated_);
+        blah.Update (id, kTestObj1_Updated_); // only modify provided fields
         roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-        EXPECT_EQ (roundTripped["y"], 7);
+        EXPECT_EQ (roundTripped, (Mapping<String, VariantValue>{{"x", 8}, {"y", 7}, {"z", "z"}}));
         blah.Replace (id, kTestObj1_Updated_);
         roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
         EXPECT_EQ (kTestObj1_Updated_, roundTripped);
@@ -885,9 +886,31 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
     }
 
 #endif
-    {
-        // Test against SQLite
+#if qStroika_HasComponent_sqlite
+    // Test against SQLite
+    try {
+        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
+        test1 (p);
     }
+    catch (...) {
+        DbgTrace ("current_exception={}"_f, current_exception ());
+    }
+    try {
+        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
+        test1 (p);
+    }
+    catch (...) {
+        DbgTrace ("current_exception={}"_f, current_exception ());
+    }
+    try {
+        IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
+        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
+        test1 (p);
+    }
+    catch (...) {
+        DbgTrace ("current_exception={}"_f, current_exception ());
+    }
+#endif
 }
 
 namespace {
@@ -982,31 +1005,28 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
     }
 #endif
 #if qStroika_HasComponent_sqlite
+    // Test against SQLite
     try {
-        // Test against SQLite
         Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
-        auto                                c = p.GetCollections ();
-        DbgTrace ("c={}"_f, c);
-        p.CreateCollection ("Hammy");
-        c = p.GetCollections ();
-        DbgTrace ("c={}"_f, c);
-
-        Database::Document::Collection::Ptr collection = p.GetCollection ("Hammy");
-        auto                                allRecs    = collection.GetAll ();
-        DbgTrace ("allRecs={}"_f, allRecs);
-
-        const Database::Document::Document kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
-        Database::Document::IDType         id         = collection.Add (kTestObj1_);
-        DbgTrace ("id={}"_f, id);
-
-        allRecs = collection.GetAll ();
-        DbgTrace ("allRecs={}"_f, allRecs);
-
-        Database::Document::Document roundTripped = collection.GetOneOrThrow (id, kOmitIDs);
-        DbgTrace ("roundTripped={}"_f, roundTripped);
+        test1 (p);
     }
     catch (...) {
-        DbgTrace ("E={}"_f, current_exception ());
+        DbgTrace ("current_exception={}"_f, current_exception ());
+    }
+    try {
+        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
+        test1 (p);
+    }
+    catch (...) {
+        DbgTrace ("current_exception={}"_f, current_exception ());
+    }
+    try {
+        IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
+        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
+        test1 (p);
+    }
+    catch (...) {
+        DbgTrace ("current_exception={}"_f, current_exception ());
     }
 #endif
 }
