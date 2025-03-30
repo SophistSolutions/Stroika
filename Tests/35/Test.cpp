@@ -997,9 +997,13 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
 
         const Database::Document::Document kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
         Database::Document::IDType         id         = collection.Add (kTestObj1_);
+        DbgTrace ("id={}"_f, id);
 
         allRecs = collection.GetAll ();
         DbgTrace ("allRecs={}"_f, allRecs);
+
+        Database::Document::Document roundTripped = collection.GetOneOrThrow (id, kOmitIDs);
+        DbgTrace ("roundTripped={}"_f, roundTripped);
     }
     catch (...) {
         DbgTrace ("E={}"_f, current_exception ());

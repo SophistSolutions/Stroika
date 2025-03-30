@@ -167,26 +167,29 @@ namespace {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
                 optional<IDType> result;
-
-                auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                    Sequence<Document::Document>* pResults = reinterpret_cast<Sequence<Document::Document>*> (lamdaArg);
+                auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+                    optional<IDType>* pResults = reinterpret_cast<optional<IDType>*> (lamdaArg);
                     AssertNotNull (pResults);
                     Assert (argc == 1);
-                    //   pResults->Add (String::FromUTF8 (argv[0]));
-                    /*  VariantValue       vv   = Variant::JSON::Reader{}.Read (String{argv[1]});
-                    Document::Document vDoc = vv.As<Mapping<String, VariantValue>> ();
-                    vDoc.Add ("id", String::FromUTF8 (argv[0]));
-                    pResults->Append (vDoc);*/
+                    *pResults = String::FromUTF8 (argv[0]);
                     return SQLITE_OK;
                 };
                 // @todo PREPARED STATEMENT!
-                //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
+                // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
+                //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
+                //      start_transactioNn(); insert into db; with r = select_last_insert_rowid(); end_trnasaction; select r;
+                //      SIMONE suggests using GUID, and pre-computing the ID, and using that.
+                //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
+                //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
+                //      (inviestigate)
                 String r = Variant::JSON::Writer{}.WriteAsString (VariantValue{v});
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
                     fConnectionRep_->fDB_,
                     "insert into {} (json) values('{}'); select last_insert_rowid();"_f(fTableName_, r).AsUTF8<string> ().c_str (),
                     callback, &result, nullptr));
-
+                if (result) {
+                    return *result;
+                }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
@@ -195,7 +198,34 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::GetOne()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                return nullopt;
+
+                optional<Document::Document> result;
+                auto                         callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, char** azColName) {
+                    optional<Document::Document>* pResults = reinterpret_cast<optional<Document::Document>*> (lamdaArg);
+                    AssertNotNull (pResults);
+                    Assert (argc >= 1);
+                    Document::Document dr;
+                    for (size_t i = 0; i < argc; ++i) {
+                        dr.Add (String::FromUTF8 (azColName[i]), Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[i])));
+                    }
+                    *pResults = dr;
+                    return SQLITE_OK;
+                };
+                // @todo PREPARED STATEMENT!
+                // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
+                //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
+                //      start_transactioNn(); insert into db; with r = select_last_insert_rowid(); end_trnasaction; select r;
+                //      SIMONE suggests using GUID, and pre-computing the ID, and using that.
+                //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
+                //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
+                //      (inviestigate)
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
+                                                          "select * from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
+                                                          callback, &result, nullptr));
+                if (projection and result) {
+                    result = projection->Apply (*result);
+                }
+                return result;
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -243,6 +273,21 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Remove()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                auto callback = [] ([[maybe_unused]] void* lamdaArg, [[maybe_unused]] int argc, [[maybe_unused]] char** argv,
+                                    [[maybe_unused]] char** azColName) {
+                    return SQLITE_OK;
+                };
+                // @todo PREPARED STATEMENT!
+                // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
+                //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
+                //      start_transactioNn(); insert into db; with r = select_last_insert_rowid(); end_trnasaction; select r;
+                //      SIMONE suggests using GUID, and pre-computing the ID, and using that.
+                //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
+                //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
+                //      (inviestigate)
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
+                                                          "delete from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
+                                                          callback,nullptr, nullptr));
             }
         };
 
