@@ -22,17 +22,17 @@ using namespace Stroika::Foundation::Traversal;
  ******************* Execution::InvalidCommandLineArgument **********************
  ********************************************************************************
  */
-Execution::InvalidCommandLineArgument::InvalidCommandLineArgument ()
-    : Execution::RuntimeErrorException<>{"Invalid Command Argument"sv}
+InvalidCommandLineArgument::InvalidCommandLineArgument ()
+    : RuntimeErrorException<>{"Invalid Command Argument"sv}
 {
 }
-Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)
-    : Execution::RuntimeErrorException<>{message.As<wstring> ()}
+InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)
+    : RuntimeErrorException<>{message.As<wstring> ()}
     , fMessage{message}
 {
 }
-Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message, const String& argument)
-    : Execution::RuntimeErrorException<> (message.As<wstring> ())
+InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message, const String& argument)
+    : RuntimeErrorException<> (message.As<wstring> ())
     , fMessage{message}
     , fArgument{argument}
 {
@@ -318,6 +318,13 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
 
 void CommandLine::Validate (Iterable<Option> options) const
 {
+    if (auto oe = ValidateQuietly (options)) {
+        Throw (*oe);
+    }
+}
+
+nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (Iterable<Option> options) const
+{
     Set<Option> all{options};
     Set<Option> unused{all};
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
@@ -332,8 +339,9 @@ void CommandLine::Validate (Iterable<Option> options) const
         }
     }
     if (auto o = unused.First ([] (Option o) { return o.fRequired; })) {
-        Execution::Throw (InvalidCommandLineArgument{"Required command line argument "sv + o->GetArgumentDescription () + " was not provided"sv});
+        return InvalidCommandLineArgument{"Required command line argument "sv + o->GetArgumentDescription () + " was not provided"sv};
     }
+    return nullopt;
 }
 
 String CommandLine::GetAppName (bool onlyBaseName) const
@@ -366,10 +374,10 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
         }
     }
     if (o.fRequired and not found and arguments.empty ()) {
-        Execution::Throw (InvalidCommandLineArgument{"Command line argument '{}' required but not provided"_f(o.GetArgumentDescription ())});
+        Throw (InvalidCommandLineArgument{"Command line argument '{}' required but not provided"_f(o.GetArgumentDescription ())});
     }
     if (found and o.fSupportsArgument and o.fIfSupportsArgumentThenRequired and arguments.empty ()) {
-        Execution::Throw (InvalidCommandLineArgument{"Command line argument {} provided, but without required argument"_f(o.GetArgumentDescription ())});
+        Throw (InvalidCommandLineArgument{"Command line argument {} provided, but without required argument"_f(o.GetArgumentDescription ())});
     }
     return make_tuple (found, arguments);
 }
@@ -390,8 +398,7 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
             ++(*argi);
             if ((*argi).Done ()) {
                 if (o.fIfSupportsArgumentThenRequired) {
-                    Execution::Throw (InvalidCommandLineArgument{
-                        "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
+                    Throw (InvalidCommandLineArgument{"Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
                 }
                 return make_pair (true, nullopt);
             }
@@ -416,7 +423,7 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
                 ++(*argi);
                 if ((*argi).Done ()) {
                     if (o.fIfSupportsArgumentThenRequired) {
-                        Execution::Throw (InvalidCommandLineArgument{
+                        Throw (InvalidCommandLineArgument{
                             "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
                     }
                     return make_pair (true, nullopt);

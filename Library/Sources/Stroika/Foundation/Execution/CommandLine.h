@@ -208,6 +208,21 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  \brief like Validate - but return optional< InvalidCommandLineArgument> instead of throwing
+         * 
+         *  \par Example Usage
+         *      \code
+         *          const initializer_list<Execution::CommandLine::Option> kAllOptions_{StandardCommandLineOptions::kHelp, ...others...};
+         *          if (auto error = cmdLine.ValidateQuietly (kAllOptions_)) {
+         *              cerr << "{}"_f (*error) << endl;
+         *              cerr << CommandLine::GenerateUsage ("myApp", kAllOptions_) << endl;
+         *          }
+         *      \endcode
+         */
+        nonvirtual optional<InvalidCommandLineArgument> ValidateQuietly (Iterable<Option> options) const;
+
+    public:
+        /**
          */
         nonvirtual String GenerateUsage (const Iterable<Option>& options) const;
         static String     GenerateUsage (const String& exeName, const Iterable<Option>& options);
