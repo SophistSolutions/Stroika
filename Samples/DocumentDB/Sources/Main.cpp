@@ -4,11 +4,15 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include <cstdlib>
+#include <iostream>
 
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
 #include "Stroika/Foundation/Database/Document/SQLite.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "ComputerNetwork.h"
 #include "EmployeesDB.h"
@@ -16,103 +20,131 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::Execution;
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    using namespace Stroika::Foundation::Database::Document;
+    using namespace Database::Document;
 
     using namespace Stroika::Samples::Document;
 
 #if qStroika_HasComponent_mongocxxdriver
-    {
-        using namespace Stroika::Foundation::Database::Document::MongoDBClient;
-        const String kDefaultMongoConnectionString_ = "mongodb://admin:pass@localhost:27017"sv;
-        String       connectionString               = kDefaultMongoConnectionString_; // check cmdline
-        Activator    activator{Activator::eAllowReactivateFlag};                      // must exist while using this library
+    optional<String> mongoConnectionString;
+#endif
 
+    // handle command-line arguments
+    {
+        using namespace StandardCommandLineOptions;
+        const CommandLine::Option kMongoConnectionStringOption_{
+            .fLongName         = "mongoConnectionString"sv,
+            .fSupportsArgument = true,
+            .fHelpOptionText = "Connect to this mongo database for testing, eg: mongodb://admin:pass@localhost:27017; OR ENV VAR MONGO_CONNECTION_STRING"sv};
+
+        const initializer_list<CommandLine::Option> kAllOptions_{kHelp,
+#if qStroika_HasComponent_mongocxxdriver
+                                                                 kMongoConnectionStringOption_
+#endif
+        };
+
+        CommandLine cmdLine{argc, argv};
+        if (cmdLine.Has (kHelp)) {
+            cerr << CommandLine::GenerateUsage ("documentDB", kAllOptions_);
+            return EXIT_SUCCESS;
+        }
+        if (auto error = cmdLine.ValidateQuietly (kAllOptions_)) {
+            cerr << "{}"_f(*error) << endl;
+            cerr << CommandLine::GenerateUsage ("myApp", kAllOptions_) << endl;
+        }
+#if qStroika_HasComponent_mongocxxdriver
+        mongoConnectionString = Memory::Or_Else (cmdLine.GetArgument (kMongoConnectionStringOption_),
+                                                 [] () { return kEnvironment->Lookup ("MONGO_CONNECTION_STRING"sv); });
+#endif
+    }
+
+#if qStroika_HasComponent_mongocxxdriver
+    Database::Document::MongoDBClient::Activator activator{}; // must exist while using mongocxxclient library
+#endif
+
+#if qStroika_HasComponent_mongocxxdriver
+    if (not mongoConnectionString) {
+        cerr << "Warning: skipping mongodb test because no connection string specified on command-line nor environment variable" << endl;
+    }
+    if (mongoConnectionString) {
+        using namespace Stroika::Foundation::Database::Document::MongoDBClient;
         const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
-        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
+        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
         IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
         adminDB.CreateDatabase (kTestDBName_);
-        Database::Document::Connection::Ptr p =
-            MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
+        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+            MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+        cerr << "Starting mongodb networks sample:" << endl;
         ComputerNetworksModel ([=] () {
-            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
+            cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
+            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
         });
+        cerr << "done." << endl;
+    }
+    if (mongoConnectionString) {
+        using namespace Stroika::Foundation::Database::Document::MongoDBClient;
+        const String kTestDBName_ = "DocumentDB-Sample-Employees"sv;
+        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
+        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+        adminDB.CreateDatabase (kTestDBName_);
+        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+            MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+        cerr << "Starting mongodb employees sample:" << endl;
+        EmployeesDB ([=] () {
+            cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
+            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+        });
+        cerr << "done." << endl;
     }
 #endif
 
+#if qStroika_HasComponent_sqlite
+    // quick tests with in-memory DB
     {
-#if qStroika_HasComponent_sqlite && 0
-        auto connectionFactory = [=] () {
-            // Use InMemory DB
-            return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = u"direct-employees-test"});
-        };
-        DirectEmployeesDB (connectionFactory);
-#endif
+        const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
+        cerr << "Starting sqlite documentdb networks sample:" << endl;
+        ComputerNetworksModel ([=] () {
+            cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
+            return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = kTestDBName_});
+        });
+        cerr << "done." << endl;
     }
-
     {
-#if qStroika_HasComponent_sqlite && 0
-        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "direct-employees-test.db";
-        (void)std::filesystem::remove (dbPath);
-        auto connectionFactory = [=] () {
-            // Same DirectEmployeesDB test, but write to a file so you can explore DB from command-line
+        const String kTestDBName_ = "DocumentDB-Sample-Employees"sv;
+        cerr << "Starting sqlite documentdb employees sample:" << endl;
+        EmployeesDB ([=] () {
+            cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
+            return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = kTestDBName_});
+        });
+        cerr << "done." << endl;
+    }
+    // or run same test on filesystem
+    {
+        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "networks-test.db";
+        remove (dbPath); // test assumes empty db
+        cerr << "Starting sqlite documentdb networks sample:" << endl;
+        ComputerNetworksModel ([=] () {
+            cerr << "\tConnecting to sqlite  db: {}"_f(dbPath) << endl;
             return SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath});
-        };
-        DirectEmployeesDB (connectionFactory);
-#endif
+        });
+        cerr << "done." << endl;
     }
-
-#if qStroika_HasComponent_ODBC && 0
     {
-        // Note - classes structured so you COULD use SQLite or ODBC transparently, but
-        // the ODBC layer NYI (as of 2021-08-08) so commented out...
-        // @todo change this sample so command-line arg grabs dsn from command-line
-        auto connectionFactory = [=] () { return ODBC::Connection::New (ODBC::Connection::Options{"some-dsn"}); };
-        // NYI - DirectEmployeesDB (connectionFactory);
+        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-test.db";
+        remove (dbPath); // test assumes empty db
+        cerr << "Starting sqlite documentdb employees sample:" << endl;
+        EmployeesDB ([=] () {
+            cerr << "\tConnecting to sqlite  db: {}"_f(dbPath) << endl;
+            return SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath});
+        });
+        cerr << "done." << endl;
     }
 #endif
-
-    {
-#if qStroika_HasComponent_sqlite && 0
-        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
-        (void)std::filesystem::remove (dbPath);
-        auto connectionFactory = [=] () {
-            // default to 1 second fBusyTimeout for these tests
-            auto conn = SQLite::Connection::New (SQLite::Connection::Options{
-                .fDBPath = dbPath, .fThreadingMode = SQLite::Connection::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
-            Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
-            return conn;
-        };
-        ThreadTest (connectionFactory);
-#endif
-    }
-
-    {
-        // EmployeesDB test, but using C++ objects and ORM mapping layer (and threads)
-#if qStroika_HasComponent_sqlite && 0
-        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "orm-employees-test.db";
-        (void)std::filesystem::remove (dbPath);
-        auto connectionFactory = [=] () {
-            // default to 1 second fBusyTimeout for these tests
-            auto conn = SQLite::Connection::New (SQLite::Connection::Options{
-                .fDBPath = dbPath, .fThreadingMode = SQLite::Connection::Options::ThreadingMode::eMultiThread, .fBusyTimeout = 1s});
-            Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
-            return conn;
-        };
-        ORMEmployeesDB (connectionFactory);
-#endif
-    }
-
-    {
-#if qStroika_HasComponent_sqlite && 0
-        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "computer-network.db";
-        (void)std::filesystem::remove (dbPath);
-        auto connectionFactory = [=] () { return SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath}); };
-        ComputerNetworksModel (connectionFactory);
-#endif
-    }
 
     return EXIT_SUCCESS;
 }

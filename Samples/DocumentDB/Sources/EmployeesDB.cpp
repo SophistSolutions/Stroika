@@ -132,7 +132,7 @@ namespace {
                     case 0:
                     case 1: {
                         String name = kNames_[namesDistr (generator)];
-                        cout << "Adding employee {}"_f(name) << endl;
+                        cout << "\tAdding employee {}"_f(name) << endl;
                         employeeCollection.Add (Employee{nullopt, name, ageDistr (generator), kAddresses[addressesDistr (generator)],
                                                          salaryDistr (generator), true});
                     } break;
@@ -143,7 +143,7 @@ namespace {
                             uniform_int_distribution<int> empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             Employee                      killMe = activeEmps[empDistr (generator)];
                             Assert (killMe.ID.has_value ());
-                            cout << "Firing employee: {}, {}"_f(*killMe.ID, killMe.fName) << endl;
+                            cout << "\tFiring employee: {}, {}"_f(*killMe.ID, killMe.fName) << endl;
                             killMe.fStillEmployed = false;
                             employeeCollection.Replace (*killMe.ID, killMe);
                             // employeeTableConnection->Update (killMe);
@@ -153,7 +153,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort exception, since Sleep is a cancelation point
-                cout << "Exception processing SQL - this should generally not happen: {}"_f(current_exception ()) << endl;
+                cerr << "\tException processing SQL - this should generally not happen: {}"_f(current_exception ()) << endl;
             }
 
             Sleep (1s); // **cancelation point**
@@ -175,13 +175,13 @@ namespace {
             try {
                 for (const auto& employee : employeeCollection.GetAll ()) {
                     Assert (employee.ID != nullopt);
-                    cout << "Writing paycheck for employee #{} ({}) amount {}"_f(*employee.ID, employee.fName, employee.fSalary) << endl;
+                    cout << "\tWriting paycheck for employee #{} ({}) amount {}"_f(*employee.ID, employee.fName, employee.fSalary) << endl;
                     paycheckCollection.Add (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
                 }
             }
             catch (...) {
-                // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                cout << "Exception processing SQL - this should generally not happen: {}"_f(current_exception ()) << endl;
+                // no need to check for ThreadAbort exception, since Sleep is a cancelation point
+                cout << "\tException processing paychecks - this should generally not happen: {}"_f(current_exception ()) << endl;
             }
             Sleep (2s); // **cancelation point**
         }
