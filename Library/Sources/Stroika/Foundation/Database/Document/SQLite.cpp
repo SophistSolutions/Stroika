@@ -354,22 +354,20 @@ namespace {
             TraceContextBumper ctx{"SQLite::Connection::ConnectionRep_::ConnectionRep_"};
 
             int flags = 0;
-            if (options.fThreadingMode) {
-                // https://www.sqlite.org/threadsafe.html expalins the threadsafety stuff. Not sure I have it right, but hopefully --LGP 2023-09-13
-                switch (*options.fThreadingMode) {
-                    case Options::ThreadingMode::eSingleThread:
-                        break;
-                    case Options::ThreadingMode::eMultiThread:
-                        Require (CompiledOptions::kThe.THREADSAFE);
-                        Require (::sqlite3_threadsafe ());
-                        flags += SQLITE_OPEN_NOMUTEX;
-                        break;
-                    case Options::ThreadingMode::eSerialized:
-                        Require (CompiledOptions::kThe.THREADSAFE);
-                        Require (::sqlite3_threadsafe ());
-                        flags += SQLITE_OPEN_FULLMUTEX;
-                        break;
-                }
+            // https://www.sqlite.org/threadsafe.html explains the thread-safety stuff. Not sure I have it right, but hopefully --LGP 2023-09-13
+            switch (options.fThreadingMode.value_or (Options::kDefault_ThreadingMode)) {
+                case Options::ThreadingMode::eSingleThread:
+                    break;
+                case Options::ThreadingMode::eMultiThread:
+                    Require (CompiledOptions::kThe.THREADSAFE);
+                    Require (::sqlite3_threadsafe ());
+                    flags |= SQLITE_OPEN_NOMUTEX;
+                    break;
+                case Options::ThreadingMode::eSerialized:
+                    Require (CompiledOptions::kThe.THREADSAFE);
+                    Require (::sqlite3_threadsafe ());
+                    flags |= SQLITE_OPEN_FULLMUTEX;
+                    break;
             }
 
             if (options.fImmutable) {
@@ -417,7 +415,6 @@ namespace {
                     uriArg = "file:" + uriArg + "?mode=memory&cache=shared";
                 }
                 // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
-                fTmpHackCreated_ = true;
             }
 
             int e;
@@ -429,7 +426,7 @@ namespace {
                     }
                     if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags,
                                                 options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
-                        fTmpHackCreated_ = true;
+                        ; // if?
                     }
                 }
             }
@@ -457,7 +454,6 @@ namespace {
             AssertNotNull (fDB_);
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
         }
-        bool                                       fTmpHackCreated_{false};
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
         {
             struct MyEngineProperties_ final : EngineProperties {

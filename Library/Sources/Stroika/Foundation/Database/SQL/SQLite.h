@@ -194,6 +194,12 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             optional<ThreadingMode> fThreadingMode;
 
             /**
+             *  I'm quite unsure I have this right, since seems to work so badly (frequent busy timeouts) - but from the docs this seems
+             *  clear to be the best answer (best fit with the rest of how Stroika works).
+             */
+            static inline constexpr auto kDefault_ThreadingMode = ThreadingMode::eMultiThread;
+
+            /**
              *  This can generally be ignored, and primarily affects low level OS interface locking choices.
              *  @see https://www.sqlite.org/vfs.html
              */

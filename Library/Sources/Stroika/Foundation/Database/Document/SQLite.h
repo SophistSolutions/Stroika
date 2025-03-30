@@ -103,8 +103,6 @@ namespace Stroika::Foundation::Database::Document::SQLite {
         eOff
     };
 
-    class Statement;
-
     /**
      *  \brief SQLite::Connection namespace contains SQL::Connection::Ptr subclass, specific to SQLite, and ::New function factory.
      */
@@ -194,6 +192,12 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             optional<ThreadingMode> fThreadingMode;
 
             /**
+             *  I'm quite unsure I have this right, since seems to work so badly (frequent busy timeouts) - but from the docs this seems
+             *  clear to be the best answer (best fit with the rest of how Stroika works).
+             */
+            static inline constexpr auto kDefault_ThreadingMode = ThreadingMode::eMultiThread;
+
+            /**
              *  This can generally be ignored, and primarily affects low level OS interface locking choices.
              *  @see https://www.sqlite.org/vfs.html
              */
@@ -231,7 +235,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
          *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-         *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+         *          threadsafe (even if accessed across processes) - depending on its construction Options::ThreadSafety
          *
          *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
          *          of Options::fThreadingMode when the database is constructed.
@@ -290,9 +294,6 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             /**
              */
             nonvirtual void Exec (const String& sql);
-
-        private:
-            friend class Statement;
         };
 
         /**
@@ -307,7 +308,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
          *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-         *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+         *          threadsafe (even if accessed across processes) - depending on its construction OOptions::ThreadSafety
          *
          *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
          *          of Options::fThreadingMode when the database is constructed.
@@ -316,7 +317,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
          * 
          *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedMutex code / restriction.
-         *          But sqlite docs not super clear. Maybe I need to use thier locking APIs myself internally to use
+         *          But sqlite docs not super clear. Maybe I need to use their locking APIs myself internally to use
          *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
         class IRep : public Database::Document::Connection::IRep {
