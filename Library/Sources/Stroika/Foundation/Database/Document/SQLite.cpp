@@ -7,6 +7,8 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -17,18 +19,19 @@ using namespace Stroika::Foundation;
 using namespace Characters;
 using namespace Containers;
 using namespace Debug;
+using namespace DataExchange;
 using namespace Database;
 using namespace Database::Document::SQLite;
 using namespace Execution;
 using namespace Time;
 
+using Database::Document::EngineProperties;
+using Database::Document::Filter;
+using Database::Document::IDType;
+using Database::Document::Projection;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-#if qStroika_HasComponent_sqlite && defined(_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#pragma comment(lib, "sqlite.lib")
-#endif
 
 using Database::Document::EngineProperties;
 
@@ -138,10 +141,114 @@ namespace {
 
 namespace {
     using Connection::Options;
-    struct Rep_ final : Database::Document::SQLite::Connection::IRep, private Debug::AssertExternallySynchronizedMutex {
-        Rep_ (const Options& options)
+    struct ConnectionRep_ final : Database::Document::SQLite::Connection::IRep {
+
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
+
+        struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsyncrhonized connection, share its context
+            shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
+            String                     fTableName_;
+
+            CollectionRep_ (const shared_ptr<ConnectionRep_>& connectionRep, const String& collectionName)
+                : fConnectionRep_{connectionRep}
+                , fTableName_{collectionName}
+            {
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+                fAssertExternallySynchronizedMutex_.SetAssertExternallySynchronizedMutexContext (
+                    connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
+#endif
+            }
+            virtual IDType Add (const Document::Document& v) override
+            {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"SQLite::CollectionRep_::Add()"};
+#endif
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+
+                optional<IDType> result;
+
+                auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+                    Sequence<Document::Document>* pResults = reinterpret_cast<Sequence<Document::Document>*> (lamdaArg);
+                    AssertNotNull (pResults);
+                    Assert (argc == 1);
+                    //   pResults->Add (String::FromUTF8 (argv[0]));
+                    /*  VariantValue       vv   = Variant::JSON::Reader{}.Read (String{argv[1]});
+                    Document::Document vDoc = vv.As<Mapping<String, VariantValue>> ();
+                    vDoc.Add ("id", String::FromUTF8 (argv[0]));
+                    pResults->Append (vDoc);*/
+                    return SQLITE_OK;
+                };
+                // @todo PREPARED STATEMENT!
+                //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
+                String r = Variant::JSON::Writer{}.WriteAsString (VariantValue{v});
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
+                    fConnectionRep_->fDB_,
+                    "insert into {} (json) values('{}'); select last_insert_rowid();"_f(fTableName_, r).AsUTF8<string> ().c_str (),
+                    callback, &result, nullptr));
+
+                Throw (RuntimeErrorException{"failed to add doc"});
+            }
+            virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
+            {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"SQLite::CollectionRep_::GetOne()"};
+#endif
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                return nullopt;
+            }
+            virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
+            {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll()"};
+#endif
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                /*   auto [mongoFilter, myFilter]         = Partition_ (filter);
+                auto [mongoProjection, myProjection] = Partition_ (projection);*/
+                Sequence<Document::Document> result;
+
+                auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+                    Sequence<Document::Document>* pResults = reinterpret_cast<Sequence<Document::Document>*> (lamdaArg);
+                    AssertNotNull (pResults);
+                    Assert (argc == 2);
+                    //   pResults->Add (String::FromUTF8 (argv[0]));
+                    VariantValue       vv   = Variant::JSON::Reader{}.Read (String{argv[1]});
+                    Document::Document vDoc = vv.As<Mapping<String, VariantValue>> ();
+                    vDoc.Add ("id", String::FromUTF8 (argv[0]));
+                    pResults->Append (vDoc);
+                    return SQLITE_OK;
+                };
+                // @todo PREPARED STATEMENT!
+                //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
+                    fConnectionRep_->fDB_, "SELECT id,json FROM {};"_f(fTableName_).AsUTF8<string> ().c_str (), callback, &result, nullptr));
+
+                return result;
+            }
+            virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
+            {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"SQLite::CollectionRep_::Update()"};
+#endif
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
+                Document::Document uploadDoc = newV;
+                if (onlyTheseFields) {
+                    uploadDoc.RetainAll (*onlyTheseFields);
+                }
+            }
+            virtual void Remove (const IDType& id) override
+            {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"SQLite::CollectionRep_::Remove()"};
+#endif
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            }
+        };
+
+        ConnectionRep_ (const Options& options)
         {
-            TraceContextBumper ctx{"SQLite::Connection::Rep_::Rep_"};
+            TraceContextBumper ctx{"SQLite::Connection::ConnectionRep_::ConnectionRep_"};
 
             int flags = 0;
             if (options.fThreadingMode) {
@@ -238,11 +345,11 @@ namespace {
                 SetJournalMode (*options.fJournalMode);
             }
 
-          //  Exec ("SELECT load_extension ('/path/to/json1/extension')");
+            //  Exec ("SELECT load_extension ('/path/to/json1/extension')");
 
             EnsureNotNull (fDB_);
         }
-        ~Rep_ ()
+        ~ConnectionRep_ ()
         {
             AssertNotNull (fDB_);
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
@@ -263,7 +370,7 @@ namespace {
         {
             // treat named all tables as collections (maybe just count those with two columns id/json?).
             Set<String> results;
-            auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+            auto        callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Set<String>* pResults = reinterpret_cast<Set<String>*> (lamdaArg);
                 AssertNotNull (pResults);
                 Assert (argc == 1);
@@ -284,9 +391,9 @@ namespace {
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
-            return Document::Collection::Ptr{nullptr}; // @todo - implement this!
-
-            // return table names
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            return Document::Collection::Ptr{
+                make_shared<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
         }
         virtual Document::Transaction mkTransaction () override
         {
@@ -295,7 +402,7 @@ namespace {
         }
         virtual void Exec (const String& sql) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             [[maybe_unused]] char* db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
             int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), NULL, 0, &db_err);
             if (e != SQLITE_OK) [[unlikely]] {
@@ -304,12 +411,12 @@ namespace {
         }
         virtual ::sqlite3* Peek () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
             return fDB_;
         }
         virtual Duration GetBusyTimeout () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronizedMutex_};
             optional<int>                                         d;
             auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
@@ -327,7 +434,7 @@ namespace {
         }
         virtual void SetBusyTimeout (const Duration& timeout) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
         }
         virtual JournalModeType GetJournalMode () const override
@@ -369,7 +476,7 @@ namespace {
         }
         virtual void SetJournalMode (JournalModeType journalMode) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             [[maybe_unused]] char*                                 db_err{};
             switch (journalMode) {
                 case JournalModeType::eDelete:
@@ -445,7 +552,7 @@ Document::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto Document::SQLite::Connection::New (const Options& options) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (options)};
+    return Ptr{make_shared<ConnectionRep_> (options)};
 }
 
 /*

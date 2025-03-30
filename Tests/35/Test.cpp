@@ -17,8 +17,8 @@
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
-#include "Stroika/Foundation/Database/Document/SQLite.h"
 #include "Stroika/Foundation/Database/Document/ObjectCollection.h"
+#include "Stroika/Foundation/Database/Document/SQLite.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
@@ -984,13 +984,22 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
 #if qStroika_HasComponent_sqlite
     try {
         // Test against SQLite
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""});
-
-        auto c = p.GetCollections ();
+        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
+        auto                                c = p.GetCollections ();
         DbgTrace ("c={}"_f, c);
         p.CreateCollection ("Hammy");
-         c = p.GetCollections ();
+        c = p.GetCollections ();
         DbgTrace ("c={}"_f, c);
+
+        Database::Document::Collection::Ptr collection = p.GetCollection ("Hammy");
+        auto                                allRecs    = collection.GetAll ();
+        DbgTrace ("allRecs={}"_f, allRecs);
+
+        const Database::Document::Document kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
+        Database::Document::IDType         id         = collection.Add (kTestObj1_);
+
+        allRecs = collection.GetAll ();
+        DbgTrace ("allRecs={}"_f, allRecs);
     }
     catch (...) {
         DbgTrace ("E={}"_f, current_exception ());
