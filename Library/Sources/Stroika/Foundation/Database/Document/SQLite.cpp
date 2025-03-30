@@ -117,6 +117,36 @@ namespace {
             ThrowSQLiteError_ (errCode, sqliteConnection);
         }
     }
+
+    /*
+     *  Simple utility to be able to use lambdas with arbitrary captures more easily with sqlite c API
+     */
+    template <invocable<int, char**, char**> CB>
+    struct SQLiteCallback_ {
+        CB fCallback_;
+
+        using STATIC_FUNCTION_TYPE = int (*) (void*, int, char**, char**);
+
+        SQLiteCallback_ (CB&& cb)
+            : fCallback_{forward<CB> (cb)}
+        {
+        }
+        STATIC_FUNCTION_TYPE GetStaticFunction ()
+        {
+            return STATICFUNC_;
+        }
+        void* GetData ()
+        {
+            return this;
+        }
+
+    private:
+        static int STATICFUNC_ (void* SQLiteCallbackData, int argc, char** argv, char** azColName)
+        {
+            SQLiteCallback_* sqc = reinterpret_cast<SQLiteCallback_*> (SQLiteCallbackData);
+            return sqc->fCallback_ (argc, argv, azColName);
+        }
+    };
 }
 
 /*
@@ -167,13 +197,11 @@ namespace {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
                 optional<IDType> result;
-                auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                    optional<IDType>* pResults = reinterpret_cast<optional<IDType>*> (lamdaArg);
-                    AssertNotNull (pResults);
+                auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                     Assert (argc == 1);
-                    *pResults = String::FromUTF8 (argv[0]);
+                    result = String::FromUTF8 (argv[0]);
                     return SQLITE_OK;
-                };
+                }};
                 // @todo PREPARED STATEMENT!
                 // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
                 //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
@@ -186,7 +214,7 @@ namespace {
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
                     fConnectionRep_->fDB_,
                     "insert into {} (json) values('{}'); select last_insert_rowid();"_f(fTableName_, r).AsUTF8<string> ().c_str (),
-                    callback, &result, nullptr));
+                    callback.GetStaticFunction (), callback.GetData (), nullptr));
                 if (result) {
                     return *result;
                 }
@@ -200,17 +228,25 @@ namespace {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
                 optional<Document::Document> result;
-                auto                         callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, char** azColName) {
-                    optional<Document::Document>* pResults = reinterpret_cast<optional<Document::Document>*> (lamdaArg);
-                    AssertNotNull (pResults);
-                    Assert (argc >= 1);
-                    Document::Document dr;
-                    for (size_t i = 0; i < argc; ++i) {
-                        dr.Add (String::FromUTF8 (azColName[i]), Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[i])));
-                    }
-                    *pResults = dr;
+                //auto                         callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, char** azColName) {
+                //    optional<Document::Document>* pResults = reinterpret_cast<optional<Document::Document>*> (lamdaArg);
+                //    AssertNotNull (pResults);
+                //    Assert (argc == 1);
+                //    *pResults = Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[0])).As<Mapping<String, VariantValue>> ();
+                //    /*Document::Document dr;
+                //    for (size_t i = 0; i < argc; ++i) {
+                //        dr.Add (String::FromUTF8 (azColName[i]), Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[i])));
+                //    }
+                //    *pResults = dr;*/
+                //    return SQLITE_OK;
+                //};
+                //
+                auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+                    Assert (argc == 1);
+                    result = Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[0])).As<Mapping<String, VariantValue>> ();
                     return SQLITE_OK;
-                };
+                }};
+
                 // @todo PREPARED STATEMENT!
                 // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
                 //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
@@ -220,10 +256,16 @@ namespace {
                 //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                 //      (inviestigate)
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
-                                                          "select * from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
-                                                          callback, &result, nullptr));
-                if (projection and result) {
-                    result = projection->Apply (*result);
+                                                          "select json from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
+                                                          callback.GetStaticFunction (), callback.GetData (), nullptr));
+
+                if (result) {
+                    auto dr = *result;
+                    dr.Add (Document::kID, id);
+                    if (projection) {
+                        dr = projection->Apply (dr);
+                    }
+                    result = dr;
                 }
                 return result;
             }
@@ -237,22 +279,27 @@ namespace {
                 auto [mongoProjection, myProjection] = Partition_ (projection);*/
                 Sequence<Document::Document> result;
 
-                auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                    Sequence<Document::Document>* pResults = reinterpret_cast<Sequence<Document::Document>*> (lamdaArg);
-                    AssertNotNull (pResults);
+                auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                     Assert (argc == 2);
-                    //   pResults->Add (String::FromUTF8 (argv[0]));
                     VariantValue       vv   = Variant::JSON::Reader{}.Read (String{argv[1]});
                     Document::Document vDoc = vv.As<Mapping<String, VariantValue>> ();
-                    vDoc.Add ("id", String::FromUTF8 (argv[0]));
-                    pResults->Append (vDoc);
+                    vDoc.Add (Document::kID, String::FromUTF8 (argv[0]));
+                    if (filter) {
+                        // super sloppy slow inefficient impl!!!
+                        if (not filter->Matches (vDoc)) {
+                            return SQLITE_OK; // tell sqlite got it, but we drop it on the floor anyhow
+                        }
+                    }
+                    if (projection) {
+                        vDoc = projection->Apply (vDoc);
+                    }
+                    result.Append (vDoc);
                     return SQLITE_OK;
-                };
+                }};
                 // @todo PREPARED STATEMENT!
                 //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
-                    fConnectionRep_->fDB_, "SELECT id,json FROM {};"_f(fTableName_).AsUTF8<string> ().c_str (), callback, &result, nullptr));
-
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_, "SELECT id,json FROM {};"_f(fTableName_).AsUTF8<string> ().c_str (),
+                                                          callback.GetStaticFunction (), callback.GetData (), nullptr));
                 return result;
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
@@ -261,11 +308,25 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Update()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
-                Document::Document uploadDoc = newV;
+                Document::Document                                     uploadDoc = newV;
                 if (onlyTheseFields) {
                     uploadDoc.RetainAll (*onlyTheseFields);
                 }
+                // POOR IMPLEMENTATION - should use sql update - but tricky for this case, so KISS, and get functionally working so
+                // I can integrate this code in regtests
+                Document::Document d2Update = onlyTheseFields ? Memory::ValueOfOrThrow (this->GetOne (id, nullopt)) : uploadDoc;
+                // any fields listed in onlyTheseFields, but not present in newV need to be removed
+                if (onlyTheseFields) {
+                    d2Update.AddAll (uploadDoc);
+                    Set<String> removeMe = *onlyTheseFields - newV.Keys ();
+                    d2Update.RemoveAll (removeMe);
+                }
+
+                // @todo PREPARED STATEMENT!
+                String r = Variant::JSON::Writer{}.WriteAsString (VariantValue{d2Update});
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
+                                                          "update {} SET json='{}' where id='{}';"_f(fTableName_, r, id).AsUTF8<string> ().c_str (),
+                                                          nullptr, nullptr, nullptr));
             }
             virtual void Remove (const IDType& id) override
             {
@@ -273,10 +334,8 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Remove()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                auto callback = [] ([[maybe_unused]] void* lamdaArg, [[maybe_unused]] int argc, [[maybe_unused]] char** argv,
-                                    [[maybe_unused]] char** azColName) {
-                    return SQLITE_OK;
-                };
+                /* auto callback = [] ([[maybe_unused]] void* lamdaArg, [[maybe_unused]] int argc, [[maybe_unused]] char** argv,
+                                    [[maybe_unused]] char** azColName) { return SQLITE_OK; };*/
                 // @todo PREPARED STATEMENT!
                 // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
                 //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
@@ -285,9 +344,8 @@ namespace {
                 //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
                 //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                 //      (inviestigate)
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
-                                                          "delete from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
-                                                          callback,nullptr, nullptr));
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
+                    fConnectionRep_->fDB_, "delete from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (), nullptr, nullptr, nullptr));
             }
         };
 
