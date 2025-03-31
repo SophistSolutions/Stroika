@@ -150,7 +150,9 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
              *  it is guaranteed unique.
              * 
              *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
-             */
+             * 
+             *  \note using a named in-memory-db allows two separate threads in the same process, to share the same database.
+            */
             optional<String> fInMemoryDB;
 
             /**
@@ -221,6 +223,13 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             /**
              *  This is only useful if the database can be opened by multiple threads of control (multiple threads with connections
              *  within the same app, or multiple applications).
+             * 
+             *  @see also https://www.sqlite.org/c3ref/busy_timeout.html
+             * 
+             *  This seems black magic. I try different values at random, and get inscrutable results when used (or not used).
+             *  Example in sqlite docs says 100ms. It turns out, in my limited testing, that appears to work best. But what makes
+             *  no sense, is that I generally get MORE busy timeout errors if I use a much larger value (like 500ms, or 5000ms).
+             *  Its ALMOST as if the database was holding a lock (one connection) while retrying?
              */
             optional<Duration> fBusyTimeout;
 
