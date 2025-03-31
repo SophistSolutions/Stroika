@@ -107,7 +107,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     // quick tests with in-memory DB
     {
         const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
-        cerr << "Starting sqlite documentdb networks sample:" << endl;
+        cerr << "Starting sqlite document db networks sample:" << endl;
         ComputerNetworksModel ([=] () {
             cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
             return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = kTestDBName_});
@@ -116,9 +116,10 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
     {
         const String kTestDBName_ = "DocumentDB-Sample-Employees"sv;
-        cerr << "Starting sqlite documentdb employees sample:" << endl;
+        cerr << "Starting sqlite document db employees sample:" << endl;
         EmployeesDB ([=] () {
             cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
+            // works poorly with 100ms busyTimeout, but better than any other value - what am I missing!
             return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = kTestDBName_, .fBusyTimeout = 100ms});
         });
         cerr << "done." << endl;
@@ -127,7 +128,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     {
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "networks-test.db";
         remove (dbPath); // test assumes empty db
-        cerr << "Starting sqlite documentdb networks sample:" << endl;
+        cerr << "Starting sqlite document db networks sample:" << endl;
         ComputerNetworksModel ([=] () {
             cerr << "\tConnecting to sqlite  db: {}"_f(dbPath) << endl;
             return SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath});
@@ -137,7 +138,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     {
         auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-test.db";
         remove (dbPath); // test assumes empty db
-        cerr << "Starting sqlite documentdb employees sample:" << endl;
+        cerr << "Starting sqlite document db employees sample:" << endl;
         EmployeesDB ([=] () {
             cerr << "\tConnecting to sqlite  db: {}"_f(dbPath) << endl;
             // works poorly with 100ms busyTimeout, but better than any other value - what am I missing!

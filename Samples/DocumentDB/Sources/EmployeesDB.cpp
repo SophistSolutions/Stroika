@@ -105,13 +105,19 @@ namespace {
         ObjectCollection::Ptr<Employee> employeeCollection = ObjectCollection::New<Employee> (conn.GetCollection ("Employees"), kDBObjectMapper_);
 
         // Add Initial Employees
-        employeeCollection.Add (Employee{.fName = "Paul", .fAge = 32, .fAddress = "California", .fSalary = 20000.00, .fStillEmployed = true});
-        employeeCollection.Add (Employee{.fName = "Allen", .fAge = 25, .fAddress = "Texas", .fSalary = 15000.00, .fStillEmployed = true});
-        employeeCollection.Add (Employee{.fName = "Teddy", .fAge = 23, .fAddress = "Norway", .fSalary = 20000.00, .fStillEmployed = true});
-        employeeCollection.Add (Employee{.fName = "Mark", .fAge = 25, .fAddress = "Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});
-        employeeCollection.Add (Employee{.fName = "David", .fAge = 27, .fAddress = "Texas", .fSalary = 85000.00, .fStillEmployed = true});
-        employeeCollection.Add (Employee{.fName = "Kim", .fAge = 22, .fAddress = "South-Hall", .fSalary = 45000.00, .fStillEmployed = true});
-        employeeCollection.Add (Employee{.fName = "James", .fAge = 24, .fAddress = "Houston", .fSalary = 10000.00, .fStillEmployed = true});
+        try {
+            employeeCollection.Add (Employee{.fName = "Paul", .fAge = 32, .fAddress = "California", .fSalary = 20000.00, .fStillEmployed = true});
+            employeeCollection.Add (Employee{.fName = "Allen", .fAge = 25, .fAddress = "Texas", .fSalary = 15000.00, .fStillEmployed = true});
+            employeeCollection.Add (Employee{.fName = "Teddy", .fAge = 23, .fAddress = "Norway", .fSalary = 20000.00, .fStillEmployed = true});
+            employeeCollection.Add (Employee{.fName = "Mark", .fAge = 25, .fAddress = "Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});
+            employeeCollection.Add (Employee{.fName = "David", .fAge = 27, .fAddress = "Texas", .fSalary = 85000.00, .fStillEmployed = true});
+            employeeCollection.Add (Employee{.fName = "Kim", .fAge = 22, .fAddress = "South-Hall", .fSalary = 45000.00, .fStillEmployed = true});
+            employeeCollection.Add (Employee{.fName = "James", .fAge = 24, .fAddress = "Houston", .fSalary = 10000.00, .fStillEmployed = true});
+        }
+        catch (...) {
+            cerr << "\tException adding initial employees to DB - this should generally not happen: {}"_f(current_exception ()) << endl;
+        }
+        
 
         default_random_engine         generator;
         uniform_int_distribution<int> distribution{1, 6};
@@ -153,7 +159,7 @@ namespace {
             }
             catch (...) {
                 // no need to check for ThreadAbort exception, since Sleep is a cancelation point
-                cerr << "\tException processing SQL - this should generally not happen: {}"_f(current_exception ()) << endl;
+                cerr << "\tException updating database: this should generally not happen: {}"_f(current_exception ()) << endl;
             }
 
             Sleep (1s); // **cancelation point**
