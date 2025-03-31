@@ -113,6 +113,36 @@ namespace {
             ThrowSQLiteError_ (errCode, sqliteConnection);
         }
     }
+
+    /*
+     *  Simple utility to be able to use lambdas with arbitrary captures more easily with sqlite c API
+     */
+    template <invocable<int, char**, char**> CB>
+    struct SQLiteCallback_ {
+        CB fCallback_;
+
+        using STATIC_FUNCTION_TYPE = int (*) (void*, int, char**, char**);
+
+        SQLiteCallback_ (CB&& cb)
+            : fCallback_{forward<CB> (cb)}
+        {
+        }
+        STATIC_FUNCTION_TYPE GetStaticFunction ()
+        {
+            return STATICFUNC_;
+        }
+        void* GetData ()
+        {
+            return this;
+        }
+
+    private:
+        static int STATICFUNC_ (void* SQLiteCallbackData, int argc, char** argv, char** azColName)
+        {
+            SQLiteCallback_* sqc = reinterpret_cast<SQLiteCallback_*> (SQLiteCallbackData);
+            return sqc->fCallback_ (argc, argv, azColName);
+        }
+    };
 }
 
 /*
