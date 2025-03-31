@@ -117,7 +117,6 @@ namespace {
         catch (...) {
             cerr << "\tException adding initial employees to DB - this should generally not happen: {}"_f(current_exception ()) << endl;
         }
-        
 
         default_random_engine         generator;
         uniform_int_distribution<int> distribution{1, 6};
