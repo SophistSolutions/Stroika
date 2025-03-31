@@ -308,7 +308,6 @@ namespace {
                     return SQLITE_OK;
                 }};
                 // @todo PREPARED STATEMENT!
-                //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_, "SELECT id,json FROM {};"_f(fTableName_).AsUTF8<string> ().c_str (),
                                                           callback.GetStaticFunction (), callback.GetData (), nullptr),
                                           fConnectionRep_->fDB_);
@@ -347,16 +346,7 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Remove()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                /* auto callback = [] ([[maybe_unused]] void* lamdaArg, [[maybe_unused]] int argc, [[maybe_unused]] char** argv,
-                                    [[maybe_unused]] char** azColName) { return SQLITE_OK; };*/
                 // @todo PREPARED STATEMENT!
-                // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
-                //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
-                //      start_transactioNn(); insert into db; with r = select_last_insert_rowid(); end_trnasaction; select r;
-                //      SIMONE suggests using GUID, and pre-computing the ID, and using that.
-                //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
-                //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
-                //      (inviestigate)
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
                                                           "delete from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
                                                           nullptr, nullptr, nullptr),
@@ -489,15 +479,15 @@ namespace {
         {
             // treat named all tables as collections (maybe just count those with two columns id/json?).
             Set<String> results;
-            auto        callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                Set<String>* pResults = reinterpret_cast<Set<String>*> (lamdaArg);
-                AssertNotNull (pResults);
+            auto        callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Assert (argc == 1);
-                pResults->Add (String::FromUTF8 (argv[0]));
+                results.Add (String::FromUTF8 (argv[0]));
                 return SQLITE_OK;
-            };
+            }};
             //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';", callback, &results, nullptr), fDB_);
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';",
+                                                      callback.GetStaticFunction (), callback.GetData (), nullptr),
+                                      fDB_);
             return results;
         }
         virtual void CreateCollection (const String& name) override
@@ -522,8 +512,7 @@ namespace {
         virtual void Exec (const String& sql) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            [[maybe_unused]] char* db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
-            int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), NULL, 0, &db_err);
+            int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), nullptr, nullptr, nullptr);
             if (e != SQLITE_OK) [[unlikely]] {
                 ThrowSQLiteErrorIfNotOK_ (e, fDB_);
             }
@@ -537,17 +526,15 @@ namespace {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronizedMutex_};
             optional<int>                                         d;
-            auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
-                AssertNotNull (pd);
+            auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Assert (argc == 1);
                 Assert (::strcmp (azColName[0], "timeout") == 0);
                 int val = ::atoi (argv[0]);
                 Assert (val >= 0);
-                *pd = val;
-                return 0;
-            };
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback, &d, nullptr), fDB_);
+                d = val;
+                return SQLITE_OK;
+            }};
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback.GetStaticFunction (), callback.GetData (), nullptr), fDB_);
             Assert (d);
             return Duration{double (*d) / 1000.0};
         }
@@ -559,15 +546,15 @@ namespace {
         virtual JournalModeType GetJournalMode () const override
         {
             optional<string> d;
-            auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                optional<string>* pd = reinterpret_cast<optional<string>*> (lamdaArg);
-                AssertNotNull (pd);
+            auto             callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Assert (argc == 1);
                 Assert (::strcmp (azColName[0], "journal_mode") == 0);
-                *pd = argv[0];
-                return 0;
-            };
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr), fDB_);
+                int val = ::atoi (argv[0]);
+                Assert (val >= 0);
+                d = argv[0];
+                return SQLITE_OK;
+            }};
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback.GetStaticFunction (), callback.GetData (), nullptr), fDB_);
             Assert (d);
             if (d == "delete"sv) {
                 return JournalModeType::eDelete;
@@ -596,31 +583,30 @@ namespace {
         virtual void SetJournalMode (JournalModeType journalMode) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            [[maybe_unused]] char*                                 db_err{};
             switch (journalMode) {
                 case JournalModeType::eDelete:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err), fDB_);
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, nullptr), fDB_);
                     break;
                 case JournalModeType::eTruncate:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'truncate';", nullptr, 0, &db_err), fDB_);
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'truncate';", nullptr, 0, nullptr), fDB_);
                     break;
                 case JournalModeType::ePersist:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'persist';", nullptr, 0, &db_err), fDB_);
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'persist';", nullptr, 0, nullptr), fDB_);
                     break;
                 case JournalModeType::eMemory:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'memory';", nullptr, 0, &db_err), fDB_);
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'memory';", nullptr, 0, nullptr), fDB_);
                     break;
                 case JournalModeType::eWAL:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, &db_err), fDB_);
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, nullptr), fDB_);
                     break;
                 case JournalModeType::eWAL2:
                     if (GetJournalMode () == JournalModeType::eWAL) {
-                        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err), fDB_);
+                        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, nullptr), fDB_);
                     }
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal2';", nullptr, 0, &db_err), fDB_);
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal2';", nullptr, 0, nullptr), fDB_);
                     break;
                 case JournalModeType::eOff:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, &db_err), fDB_);
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, nullptr), fDB_);
                     break;
             }
         }
