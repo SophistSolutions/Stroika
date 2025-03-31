@@ -43,7 +43,7 @@ namespace {
             Verify (::sqlite3_shutdown () == SQLITE_OK); // mostly pointless but avoids memory leak complaints
         }
     } sModuleShutdown_;
-    [[noreturn]] void ThrowSQLiteError_ (int errCode, sqlite3* sqliteConnection = nullptr)
+    [[noreturn]] void ThrowSQLiteError_ (int errCode, sqlite3* sqliteConnection)
     {
         Require (errCode != SQLITE_OK);
         optional<String> errMsgDetails;
@@ -110,7 +110,7 @@ namespace {
             Throw (Exception{"SQLite Error: {}"_f(errCode)});
         }
     }
-    void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection = nullptr)
+    void ThrowSQLiteErrorIfNotOK_ (int errCode, sqlite3* sqliteConnection)
     {
         static_assert (SQLITE_OK == 0);
         if (errCode != SQLITE_OK) [[unlikely]] {
@@ -147,6 +147,19 @@ namespace {
             return sqc->fCallback_ (argc, argv, azColName);
         }
     };
+
+    sqlite3_stmt* mkPreparedStatement_ (sqlite3* db, const String& statement)
+    {
+        RequireNotNull (db);
+        const char*   pzTail = nullptr;
+        sqlite3_stmt* result{nullptr};
+        string utfStatement = statement.AsUTF8<string> (); // subtle - need explicit named temporary (in debug builds) so we can check assertion after - which points inside utfStatement
+        ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db, utfStatement.c_str (), -1, &result, &pzTail), db);
+        Assert (pzTail != nullptr);
+        Require (*pzTail == '\0'); // else argument string had cruft at the end or was a compound statement, not allowed by sqlite and this api/mechanism
+        EnsureNotNull (result);
+        return result;
+    }
 }
 
 /*
@@ -180,6 +193,9 @@ namespace {
             shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
             String                     fTableName_;
 
+            ::sqlite3_stmt* fAddStatement_{nullptr};
+            ::sqlite3_stmt* fGetOneStatement_{nullptr};
+
             CollectionRep_ (const shared_ptr<ConnectionRep_>& connectionRep, const String& collectionName)
                 : fConnectionRep_{connectionRep}
                 , fTableName_{collectionName}
@@ -189,36 +205,41 @@ namespace {
                     connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
 #endif
             }
+            virtual ~CollectionRep_ ()
+            {
+                if (fAddStatement_ != nullptr) {
+                    (void)::sqlite3_finalize (fAddStatement_);
+                }
+                if (fGetOneStatement_ != nullptr) {
+                    (void)::sqlite3_finalize (fGetOneStatement_);
+                }
+            }
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Add()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-
-                optional<IDType> result;
-                auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                    Assert (argc == 1);
-                    result = String::FromUTF8 (argv[0]);
-                    return SQLITE_OK;
-                }};
-                // @todo PREPARED STATEMENT!
-                // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
-                //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
-                //      start_transactioNn(); insert into db; with r = select_last_insert_rowid(); end_trnasaction; select r;
-                //      SIMONE suggests using GUID, and pre-computing the ID, and using that.
-                //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
-                //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
-                //      (inviestigate)
-                String r = Variant::JSON::Writer{}.WriteAsString (VariantValue{v});
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
-                    fConnectionRep_->fDB_,
-                    "insert into {} (json) values('{}'); select last_insert_rowid();"_f(fTableName_, r).AsUTF8<string> ().c_str (),
-                    callback.GetStaticFunction (), callback.GetData (), nullptr));
-                if (result) {
-                    return *result;
+                /**
+                 *  UNCLEAR if this way of capturing row_id is threadsafe or not.
+                 *  MAYBE OK if not using 'fullmutex' mode on database connection? @todo FIGURE OUT!!!!
+                 * 
+                 * @todo: SIMONE suggests using GUID, and pre-computing the ID, and using that.
+                 *      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
+                 *      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
+                 */
+                if (fAddStatement_ == nullptr) [[unlikely]] {
+                    fAddStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "insert into {} (json) values(?);"_f(fTableName_));
                 }
-                Throw (RuntimeErrorException{"failed to add doc"});
+                string jsonText = Variant::JSON::Writer{}.WriteAsString (VariantValue{v}).AsUTF8<string> ();
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fAddStatement_), fConnectionRep_->fDB_);
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fAddStatement_, 1, jsonText.c_str (), static_cast<int> (jsonText.length ()), SQLITE_TRANSIENT),
+                                          fConnectionRep_->fDB_);
+                int rc = ::sqlite3_step (fAddStatement_);
+                if (rc != SQLITE_DONE) {
+                    ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
+                }
+                return "{}"_f(sqlite3_last_insert_rowid (fConnectionRep_->fDB_));
             }
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
@@ -228,36 +249,26 @@ namespace {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
                 optional<Document::Document> result;
-                //auto                         callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, char** azColName) {
-                //    optional<Document::Document>* pResults = reinterpret_cast<optional<Document::Document>*> (lamdaArg);
-                //    AssertNotNull (pResults);
-                //    Assert (argc == 1);
-                //    *pResults = Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[0])).As<Mapping<String, VariantValue>> ();
-                //    /*Document::Document dr;
-                //    for (size_t i = 0; i < argc; ++i) {
-                //        dr.Add (String::FromUTF8 (azColName[i]), Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[i])));
-                //    }
-                //    *pResults = dr;*/
-                //    return SQLITE_OK;
-                //};
-                //
                 auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                     Assert (argc == 1);
                     result = Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[0])).As<Mapping<String, VariantValue>> ();
                     return SQLITE_OK;
                 }};
 
-                // @todo PREPARED STATEMENT!
-                // @todo maybe need to wrap this in transaction and save lastRowID in variable and return it.
-                //      https://stackoverflow.com/questions/7739444/declare-variable-in-sqlite-and-use-it
-                //      start_transactioNn(); insert into db; with r = select_last_insert_rowid(); end_trnasaction; select r;
-                //      SIMONE suggests using GUID, and pre-computing the ID, and using that.
-                //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
-                //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
-                //      (inviestigate)
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
-                                                          "select json from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
-                                                          callback.GetStaticFunction (), callback.GetData (), nullptr));
+                // @todo figure out how to use json apis to support projection more efficiently
+                if (fGetOneStatement_ == nullptr) {
+                    fGetOneStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_));
+                }
+
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fGetOneStatement_), fConnectionRep_->fDB_);
+                string idAsUTFSTR = id.AsUTF8<string> ();
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fGetOneStatement_, 1, idAsUTFSTR.c_str (),
+                                                               static_cast<int> (idAsUTFSTR.length ()), SQLITE_TRANSIENT),
+                                          fConnectionRep_->fDB_);
+                int rc = ::sqlite3_step (fGetOneStatement_);
+                if (rc != SQLITE_DONE) {
+                    ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
+                }
 
                 if (result) {
                     auto dr = *result;
@@ -299,7 +310,8 @@ namespace {
                 // @todo PREPARED STATEMENT!
                 //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_, "SELECT id,json FROM {};"_f(fTableName_).AsUTF8<string> ().c_str (),
-                                                          callback.GetStaticFunction (), callback.GetData (), nullptr));
+                                                          callback.GetStaticFunction (), callback.GetData (), nullptr),
+                                          fConnectionRep_->fDB_);
                 return result;
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
@@ -326,7 +338,8 @@ namespace {
                 String r = Variant::JSON::Writer{}.WriteAsString (VariantValue{d2Update});
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
                                                           "update {} SET json='{}' where id='{}';"_f(fTableName_, r, id).AsUTF8<string> ().c_str (),
-                                                          nullptr, nullptr, nullptr));
+                                                          nullptr, nullptr, nullptr),
+                                          fConnectionRep_->fDB_);
             }
             virtual void Remove (const IDType& id) override
             {
@@ -344,8 +357,10 @@ namespace {
                 //      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
                 //      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                 //      (inviestigate)
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (
-                    fConnectionRep_->fDB_, "delete from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (), nullptr, nullptr, nullptr));
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
+                                                          "delete from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
+                                                          nullptr, nullptr, nullptr),
+                                          fConnectionRep_->fDB_);
             }
         };
 
@@ -477,7 +492,7 @@ namespace {
                 return SQLITE_OK;
             };
             //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';", callback, &results, nullptr));
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';", callback, &results, nullptr), fDB_);
             return results;
         }
         virtual void CreateCollection (const String& name) override
@@ -527,7 +542,7 @@ namespace {
                 *pd = val;
                 return 0;
             };
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback, &d, nullptr));
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback, &d, nullptr), fDB_);
             Assert (d);
             return Duration{double (*d) / 1000.0};
         }
@@ -547,7 +562,7 @@ namespace {
                 *pd = argv[0];
                 return 0;
             };
-            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr));
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr), fDB_);
             Assert (d);
             if (d == "delete"sv) {
                 return JournalModeType::eDelete;
@@ -579,28 +594,28 @@ namespace {
             [[maybe_unused]] char*                                 db_err{};
             switch (journalMode) {
                 case JournalModeType::eDelete:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err), fDB_);
                     break;
                 case JournalModeType::eTruncate:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'truncate';", nullptr, 0, &db_err));
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'truncate';", nullptr, 0, &db_err), fDB_);
                     break;
                 case JournalModeType::ePersist:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'persist';", nullptr, 0, &db_err));
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'persist';", nullptr, 0, &db_err), fDB_);
                     break;
                 case JournalModeType::eMemory:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'memory';", nullptr, 0, &db_err));
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'memory';", nullptr, 0, &db_err), fDB_);
                     break;
                 case JournalModeType::eWAL:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, &db_err));
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, &db_err), fDB_);
                     break;
                 case JournalModeType::eWAL2:
                     if (GetJournalMode () == JournalModeType::eWAL) {
-                        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));
+                        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err), fDB_);
                     }
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal2';", nullptr, 0, &db_err));
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal2';", nullptr, 0, &db_err), fDB_);
                     break;
                 case JournalModeType::eOff:
-                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, &db_err));
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, &db_err), fDB_);
                     break;
             }
         }

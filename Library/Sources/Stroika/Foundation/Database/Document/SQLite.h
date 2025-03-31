@@ -219,6 +219,10 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             /**
              *  This is only useful if the database can be opened by multiple threads of control (multiple threads with connections
              *  within the same app, or multiple applications).
+             * 
+             *  @see also https://www.sqlite.org/c3ref/busy_timeout.html
+             * 
+             *  This seems black magic. I try different values at random, and get inscrutable results when used (or not used).
              */
             optional<Duration> fBusyTimeout;
 
