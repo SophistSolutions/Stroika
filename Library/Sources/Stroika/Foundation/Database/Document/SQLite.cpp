@@ -419,7 +419,11 @@ namespace {
                 Require (not options.fTemporaryDB->empty ());
             }
             if (options.fInMemoryDB) {
+                // Not super clear why SQLITE_OPEN_URI needed, but the example in docs uses URI, and tracing through the sqlite open code
+                // it appears to require a URI format, but not really documented as near as I can tell...--LGP 2025-03-31
                 flags |= SQLITE_OPEN_MEMORY;
+                flags |= SQLITE_OPEN_URI;
+                flags |= SQLITE_OPEN_SHAREDCACHE;
                 Require (not options.fReadOnly);
                 Require (options.fCreateDBPathIfDoesNotExist);
                 uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
@@ -427,7 +431,8 @@ namespace {
                     uriArg = ":memory";
                 }
                 else {
-                    uriArg = "file:" + uriArg + "?mode=memory&cache=shared";
+                    u8string safeCharURI = IO::Network::UniformResourceIdentification::PCTEncode (u8string{uriArg.begin (), uriArg.end ()}, {});
+                    uriArg = "file:" + string{safeCharURI.begin (), safeCharURI.end ()} + "?mode=memory&cache=shared";
                 }
                 // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
             }
