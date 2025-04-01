@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Containers {
     void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const ITERABLE_OF_KEY_TYPE& items)
     {
         /*
-         *  If items is small, probably best to just remove one or two things from this 
+         *  If items is smaller than this->size(), probably best to just remove one or two things from this 
          *  (small number of lookups, and maybe no changes).
          * 
          *  If items is large, probably best to just create the entire mapping anew (cuz probably
@@ -328,15 +328,16 @@ namespace Stroika::Foundation::Containers {
          *  And both approaches avoid needing to quickly search through items repeatedly (except
          *  when we know items is small so no cost).
          */
+        size_t thisSize = this->size ();
 
         // Small case - just remove a few items
-        bool smallCase = items.size () <= 3;
+        bool fewerLookupsThanAdds = items.size () <= thisSize;
 
         // BWA for https://stroika.atlassian.net/browse/STK-1026
 #if defined(__APPLE__)
-        smallCase = false;
+        fewerLookupsThanAdds = false;
 #endif
-        if (smallCase) {
+        if (fewerLookupsThanAdds) {
             auto keyEqualsComparer = this->GetKeyEqualsComparer ();
             using ITEMS_ITER_TYPE = decltype (items.begin ()); // because of new ranges (c++20) code - sentinel but find_if only templated on one iter parameter
             for (Iterator<value_type> i = this->begin (); i != this->end ();) {
@@ -355,17 +356,23 @@ namespace Stroika::Foundation::Containers {
                 }
             }
         }
-
-        // Fall thru, and just recreate the mapping
-        Mapping result = Mapping{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()};
-        for (auto key2Keep : items) {
-            if (auto l = this->Lookup (key2Keep)) {
-                result.Add (key2Keep, *l);
+        else {
+            // Fall thru, and just recreate the mapping
+            Mapping result = Mapping{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()};
+            size_t  nAdds{0};
+            for (auto key2Keep : items) {
+                if (auto l = this->Lookup (key2Keep)) {
+                    result.Add (key2Keep, *l);
+                    ++nAdds;
+                }
             }
-        }
-        // if nothing changed, we can just make no changes
-        if (this->size () != result.size ()) {
-            *this = result;
+            // if nothing changed, we can just make no changes
+            if (thisSize != nAdds) {
+                *this = result;
+            }
+            else {
+                Assert (*this == result); // so why assign?
+            }
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
