@@ -130,19 +130,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-
-            if (nextI != nullptr) {
-                *nextI = i;
-                ++(*nextI);
-            }
-
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             mir.fIterator.AssertDataMatches (&fData_);
-            (void)fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
+            [[maybe_unused]] typename DataStructureImplType_::UnderlyingIteratorRep n = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
-                nextI->Refresh (); // update to reflect changes made to rep
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, n)};
             }
         }
         virtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) override
