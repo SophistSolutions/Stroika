@@ -31,6 +31,9 @@ using namespace Database::Document;
 
 namespace {
 
+    /*
+     * Sample data to write to the database
+     */
     struct Employee {
         optional<IDType> ID{};
         String           fName;
@@ -41,7 +44,6 @@ namespace {
 
         static const ObjectVariantMapper kMapper;
     };
-
     /*
      *  Define mapping to VariantValues (think JSON)
      */
@@ -59,6 +61,9 @@ namespace {
         return mapper;
     }()};
 
+    /*
+     * Sample data to write to the database
+     */
     struct Paycheck {
         optional<IDType> ID{};
         IDType           fEmployeeRef;
