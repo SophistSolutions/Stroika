@@ -57,8 +57,6 @@ namespace Stroika::Foundation::Database::Document {
          */
         Transaction (Transaction&&)      = default;
         Transaction (const Transaction&) = delete;
-
-    protected:
         Transaction (unique_ptr<IRep>&& rep);
 
     public:

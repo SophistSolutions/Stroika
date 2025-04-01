@@ -95,6 +95,8 @@ namespace Stroika::Foundation::Database::Document::Collection {
     public:
         /**
          *  Return all 'documents' in this collection. Optionally subset them with a filter; optionally project (subset of fields) with an argument projection.
+         * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
+         *       of the argument projection
          */
         nonvirtual Sequence<Document> GetAll (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
 
