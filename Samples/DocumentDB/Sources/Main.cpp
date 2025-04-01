@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
 #include "Stroika/Foundation/Database/Document/SQLite.h"
+#include "Stroika/Foundation/Database/Document/TrivialDocumentDB.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Module.h"
@@ -148,6 +149,25 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "done." << endl;
     }
 #endif
-
+    {
+        cerr << "Starting trivial document db networks sample:" << endl;
+        auto internallySynchronizedDBConnection =
+            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+        ComputerNetworksModel ([=] () {
+            cerr << "\tConnecting to trivial document db: {}" << endl;
+            return internallySynchronizedDBConnection;
+        });
+        cerr << "done." << endl;
+    }
+    {
+        cerr << "Starting trivial document db employees sample:" << endl;
+        auto internallySynchronizedDBConnection =
+            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+        EmployeesDB ([=] () {
+            cerr << "\tConnecting to trivial document db: {}" << endl;
+            return internallySynchronizedDBConnection;
+        });
+        cerr << "done." << endl;
+    }
     return EXIT_SUCCESS;
 }

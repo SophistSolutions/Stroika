@@ -25,6 +25,7 @@ Objs	:=	\
 	$(ObjDir)MongoDBClient${OBJ_SUFFIX}\
 	$(ObjDir)Projection${OBJ_SUFFIX}\
 	$(ObjDir)SQLite${OBJ_SUFFIX}\
+	$(ObjDir)TrivialDocumentDB${OBJ_SUFFIX}\
 
 SubDirs	:=	\
 

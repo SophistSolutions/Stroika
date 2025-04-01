@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
 #include "Stroika/Foundation/Database/Document/ObjectCollection.h"
 #include "Stroika/Foundation/Database/Document/SQLite.h"
+#include "Stroika/Foundation/Database/Document/TrivialDocumentDB.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
@@ -911,6 +912,14 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
         DbgTrace ("current_exception={}"_f, current_exception ());
     }
 #endif
+    try {
+        Database::Document::Connection::Ptr p =
+            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+        test1 (p);
+    }
+    catch (...) {
+        DbgTrace ("current_exception={}"_f, current_exception ());
+    }
 }
 
 namespace {
