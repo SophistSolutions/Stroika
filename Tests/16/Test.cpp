@@ -313,6 +313,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, RetainAllCaseFails_)
     {
+        // See https://stroika.atlassian.net/browse/STK-1026 - and undo hack in RetainAll for smallCase
         // This test IS failing on MACOS XCODE 15.3 (and others)
         Mapping<string, int> mOrig{{"id", 1}, {"y", 7}, {"x", 7}};
         Mapping<string, int> m = mOrig;

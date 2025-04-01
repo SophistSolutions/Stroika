@@ -7,8 +7,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <set> // tmphack for sloppy RetainAll implementation
-
 #include "Stroika/Foundation/Containers/Factory/Mapping_Factory.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -320,30 +318,55 @@ namespace Stroika::Foundation::Containers {
     template <IIterableOfTo<KEY_TYPE> ITERABLE_OF_KEY_TYPE>
     void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const ITERABLE_OF_KEY_TYPE& items)
     {
-        // @see http://stroika-bugs.sophists.com/browse/STK-539
-#if 0
-                Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> { _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().CloneEmpty () };
-                for (auto key2Keep : items) {
-                    if (auto l = this->Lookup (key2Keep)) {
-                        result.Add (key2Keep, *l);
-                    }
+        /*
+         *  If items is small, probably best to just remove one or two things from this 
+         *  (small number of lookups, and maybe no changes).
+         * 
+         *  If items is large, probably best to just create the entire mapping anew (cuz probably
+         *  producing much smaller map).
+         * 
+         *  And both approaches avoid needing to quickly search through items repeatedly (except
+         *  when we know items is small so no cost).
+         */
+
+        // Small case - just remove a few items
+        bool smallCase = items.size () <= 3;
+
+        // BWA for https://stroika.atlassian.net/browse/STK-1026
+#if defined(__APPLE__)
+        smallCase = false;
+#endif
+        if (smallCase) {
+            auto keyEqualsComparer = this->GetKeyEqualsComparer ();
+            using ITEMS_ITER_TYPE = decltype (items.begin ()); // because of new ranges (c++20) code - sentinel but find_if only templated on one iter parameter
+            for (Iterator<value_type> i = this->begin (); i != this->end ();) {
+                if (find_if<ITEMS_ITER_TYPE> (items.begin (), items.end (),
+                                              [&] (const KEY_TYPE& k) { return keyEqualsComparer (i->fKey, k); }) == items.end ()) {
+#if qStroika_Foundation_Debug_AssertionsChecked
+                    [[maybe_unused]] size_t sz = this->size ();
+#endif
+                    i = this->erase (i);
+#if qStroika_Foundation_Debug_AssertionsChecked
+                    Assert (this->size () == sz - 1u);
+#endif
                 }
-                *this = result;
-#else
-        // cannot easily use STL::less because our Mapping class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But don't want cross-dependencies if not needed
-        using ITEMS_ITER_TYPE = decltype (items.begin ());
-        set<KEY_TYPE> tmp{items.begin (), ITEMS_ITER_TYPE{items.end ()}}; // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
-        for (Iterator<value_type> i = this->begin (); i != this->end ();) {
-            if (tmp.find (i->fKey) == tmp.end ()) {
-                [[maybe_unused]] size_t sz = this->size ();
-                i                          = this->erase (i);
-                Assert (this->size () == sz - 1u);
-            }
-            else {
-                ++i;
+                else {
+                    ++i;
+                }
             }
         }
-#endif
+
+        // Fall thru, and just recreate the mapping
+        Mapping result = Mapping{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()};
+        for (auto key2Keep : items) {
+            if (auto l = this->Lookup (key2Keep)) {
+                result.Add (key2Keep, *l);
+            }
+        }
+        // if nothing changed, we can just make no changes
+        if (this->size () != result.size ()) {
+            *this = result;
+        }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename RESULT_CONTAINER, invocable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ELEMENT_MAPPER>
