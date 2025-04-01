@@ -248,15 +248,8 @@ namespace {
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
-                optional<Document::Document> result;
-                auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                    Assert (argc == 1);
-                    result = Variant::JSON::Reader{}.Read (String::FromUTF8 (argv[0])).As<Mapping<String, VariantValue>> ();
-                    return SQLITE_OK;
-                }};
-
                 // @todo figure out how to use json apis to support projection more efficiently
-                if (fGetOneStatement_ == nullptr) {
+                if (fGetOneStatement_ == nullptr) [[unlikely]] {
                     fGetOneStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_));
                 }
 
@@ -265,8 +258,15 @@ namespace {
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fGetOneStatement_, 1, idAsUTFSTR.c_str (),
                                                                static_cast<int> (idAsUTFSTR.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
-                int rc = ::sqlite3_step (fGetOneStatement_);
-                if (rc != SQLITE_DONE) {
+                int                          rc = ::sqlite3_step (fGetOneStatement_);
+                optional<Document::Document> result;
+                if (rc == SQLITE_ROW) [[likely]] {
+                    result = Variant::JSON::Reader{}
+                                 .Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fGetOneStatement_, 0))))
+                                 .As<Mapping<String, VariantValue>> ();
+                    rc = ::sqlite3_step (fGetOneStatement_);
+                }
+                if (rc != SQLITE_DONE) [[unlikely]] {
                     ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
                 }
 
