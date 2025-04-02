@@ -55,10 +55,10 @@ namespace Stroika::Foundation::Containers::Factory {
                 static const auto kDefault_ = Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }
-            else 
+            else
 #endif
-            if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                               default_initializable<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
+                if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
+                              default_initializable<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
                 static const auto kDefault_ = Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }
