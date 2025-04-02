@@ -310,8 +310,8 @@ namespace Stroika::Foundation::Containers {
          *  If items is smaller than this->size(), probably best to just remove one or two things from this 
          *  (small number of lookups, and maybe no changes).
          * 
-         *  If items is large, probably best to just create the entire mapping anew (cuz probably
-         *  producing much smaller map).
+         *  If items is large, probably best to just create the entire association anew (cuz probably
+         *  producing much smaller container).
          * 
          *  And both approaches avoid needing to quickly search through items repeatedly (except
          *  when we know items is small so no cost).
@@ -321,10 +321,6 @@ namespace Stroika::Foundation::Containers {
         // Small case - just remove a few items
         bool fewerLookupsThanAdds = items.size () <= thisSize;
 
-        // BWA for https://stroika.atlassian.net/browse/STK-1026
-#if defined(__APPLE__)
-        fewerLookupsThanAdds = false;
-#endif
         if (fewerLookupsThanAdds) {
             auto keyEqualsComparer = this->GetKeyEqualsComparer ();
             using ITEMS_ITER_TYPE = decltype (items.begin ()); // because of new ranges (c++20) code - sentinel but find_if only templated on one iter parameter
@@ -345,7 +341,7 @@ namespace Stroika::Foundation::Containers {
             }
         }
         else {
-            // Fall thru, and just recreate the association
+            // just recreate the association
             Association result = Association{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()};
             size_t      nAdds{0};
             for (auto key2Keep : items) {

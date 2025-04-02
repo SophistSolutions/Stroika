@@ -315,10 +315,20 @@ namespace {
     {
         // See https://stroika.atlassian.net/browse/STK-1026 - and undo hack in RetainAll for smallCase
         // This test IS failing on MACOS XCODE 15.3 (and others)
-        Mapping<string, int> mOrig{{"id", 1}, {"y", 7}, {"x", 7}};
-        Mapping<string, int> m = mOrig;
-        m.RetainAll (initializer_list<string>{"id"});
-        EXPECT_TRUE (m.Keys ().SetEquals (initializer_list<string>{"id"}));
+        #if qCompilerAndStdLib_stdhashmap_erase_Buggy
+        {
+            Mapping_stdhashmap<string, int> mOrig{{"id", 1}, {"y", 7}, {"x", 7}};
+            Mapping_stdhashmap<string, int> m = mOrig;
+            m.RetainAll (initializer_list<string>{"id"});
+            EXPECT_TRUE (m.Keys ().SetEquals (initializer_list<string>{"id"}));
+        }
+        #endif
+        {
+            Mapping<string, int> mOrig{{"id", 1}, {"y", 7}, {"x", 7}};
+            Mapping<string, int> m = mOrig;
+            m.RetainAll (initializer_list<string>{"id"});
+            EXPECT_TRUE (m.Keys ().SetEquals (initializer_list<string>{"id"}));
+        }
     }
 }
 

@@ -327,6 +327,9 @@ namespace Stroika::Foundation::Containers {
          * 
          *  And both approaches avoid needing to quickly search through items repeatedly (except
          *  when we know items is small so no cost).
+         * 
+         *  NOT too worried about optimizing this code - but really quite unsure about this analysis of which way is faster.
+         *      --LGP 2025-04-01
          */
         size_t thisSize = this->size ();
 
@@ -334,10 +337,11 @@ namespace Stroika::Foundation::Containers {
         bool fewerLookupsThanAdds = items.size () <= thisSize;
 
         // BWA for https://stroika.atlassian.net/browse/STK-1026
-#if defined(__APPLE__)
+#if qCompilerAndStdLib_stdhashmap_erase_Buggy
         fewerLookupsThanAdds = false;
 #endif
         if (fewerLookupsThanAdds) {
+            // Algorithm COMP COMPLEXITY VERY ROUHLTY apx= (O(Items-N) * O(THIS_LEN-N)) bad estimate cuz ignores cost of erases
             auto keyEqualsComparer = this->GetKeyEqualsComparer ();
             using ITEMS_ITER_TYPE = decltype (items.begin ()); // because of new ranges (c++20) code - sentinel but find_if only templated on one iter parameter
             for (Iterator<value_type> i = this->begin (); i != this->end ();) {
@@ -357,6 +361,7 @@ namespace Stroika::Foundation::Containers {
             }
         }
         else {
+            // Algorithm COMP COMPLEXITY apx= O(Items-N) * O(LOG(THIS_LEN-N)) - assuming tree style org for map, or O(1) if hashtable - bad estimate ignores cost of adds
             // Fall thru, and just recreate the mapping
             Mapping result = Mapping{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()};
             size_t  nAdds{0};
