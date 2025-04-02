@@ -254,12 +254,11 @@ namespace {
             } break;
             case json::kind::object: {
                 const auto& o = val.as_object ();
-                Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
-                r.reserve (o.size ());
+                Containers::Concrete::SortedMapping_stdmap<String, VariantValue>::STDMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
                 for (const auto& i : o) {
                     r.insert ({String::FromUTF8 (span{i.key ()}), mk_ (i.value ())});
                 }
-                return VariantValue{Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{std::move (r)}};
+                return VariantValue{Containers::Concrete::SortedMapping_stdmap<String, VariantValue>{std::move (r)}};
             } break;
             default:
                 AssertNotReached ();

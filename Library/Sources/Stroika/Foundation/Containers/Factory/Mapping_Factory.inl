@@ -5,13 +5,10 @@
 
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
     // avoid issue with #include deadly embrace
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping_stdhashmap;
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping_Array;
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -49,16 +46,8 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-#if !qCompilerAndStdLib_stdhashmap_erase_Buggy
             if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                          default_initializable<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>>) {
-                static const auto kDefault_ = Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
-                return kDefault_;
-            }
-            else
-#endif
-                if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                              default_initializable<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
+                          default_initializable<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
                 static const auto kDefault_ = Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }

@@ -15,7 +15,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
@@ -31,7 +31,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Traversal;
 
-using Containers::Concrete::Mapping_stdhashmap;
+using Containers::Concrete::SortedMapping_stdmap;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -252,7 +252,7 @@ namespace {
     // NOTE: THIS STARTS SEEKED JUST PAST OPENING '{'
     VariantValue Reader_Object_ (MyBufferedStreamReader_& in)
     {
-        Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
+        SortedMapping_stdmap<String, VariantValue>::STDMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
 
         // accumulate elements, and check for close-array
         enum LookingFor {
@@ -279,7 +279,7 @@ namespace {
                     Assert (curName == nullopt);
                     if (nextChar == '}') {
                         in.AdvanceOne (); // finished object
-                        return VariantValue{Mapping_stdhashmap<String, VariantValue>{move (result)}};
+                        return VariantValue{SortedMapping_stdmap<String, VariantValue>{move (result)}};
                     }
                     else if (nextChar == '\"') [[likely]] {
                         curName = Reader_String_ (in); // starting a new data member (with a string)
@@ -295,7 +295,7 @@ namespace {
                     Assert (curName == nullopt);
                     if (nextChar == '}') {
                         in.AdvanceOne (); // finished object
-                        return VariantValue{Mapping_stdhashmap<String, VariantValue>{move (result)}};
+                        return VariantValue{SortedMapping_stdmap<String, VariantValue>{move (result)}};
                     }
                     else if (nextChar == ',') [[likely]] {
                         in.AdvanceOne (); // consume it, and look for name next (start of next object member)
@@ -678,7 +678,7 @@ namespace {
                     case Context_::eArray:
                         return VariantValue{move (t.PeekAccumVector_ ())};
                     case Context_::eMap:
-                        return VariantValue{Mapping_stdhashmap<String, VariantValue>{move (t.PeekAccumObj_ ())}};
+                        return VariantValue{SortedMapping_stdmap<String, VariantValue>{move (t.PeekAccumObj_ ())}};
                     case Context_::eSimple:
                         return t.PeekSimpleValue_ ();
                     default:
@@ -718,7 +718,7 @@ namespace {
                         fVV_ = vector<VariantValue>{};
                         break;
                     case eMap:
-                        fVV_ = Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>{};
+                        fVV_ = SortedMapping_stdmap<String, VariantValue>::STDMAP<>{};
                         break;
                 }
                 Ensure (ct == GetContextType ()); // ensure ContextType_ enum in same order as variant<> arguments
@@ -737,10 +737,10 @@ namespace {
                 Require (GetContextType () == eArray);
                 return get<vector<VariantValue>> (fVV_);
             }
-            Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>& PeekAccumObj_ ()
+            SortedMapping_stdmap<String, VariantValue>::STDMAP<>& PeekAccumObj_ ()
             {
                 Require (GetContextType () == eMap);
-                return get<Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>> (fVV_);
+                return get<SortedMapping_stdmap<String, VariantValue>::STDMAP<>> (fVV_);
             }
             VariantValue& PeekSimpleValue_ ()
             {
@@ -749,7 +749,7 @@ namespace {
             }
 
             // use variant to save construct/destruct of unneeded parts
-            variant<VariantValue, vector<VariantValue>, Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>> fVV_;
+            variant<VariantValue, vector<VariantValue>, SortedMapping_stdmap<String, VariantValue>::STDMAP<>> fVV_;
 
             String fKey; // only allowed of context type = eMap (so COULD embed in above variant, but KISS) - also could use optional<String> which would help some things and make others worse...
         };

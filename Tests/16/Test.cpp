@@ -12,7 +12,6 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -37,7 +36,6 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
-using Concrete::Mapping_stdhashmap;
 using Concrete::SortedMapping_SkipList;
 using Concrete::SortedMapping_stdmap;
 
@@ -172,50 +170,6 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_Mapping, Mapping_stdhashmap)
-    {
-        {
-            Mapping_stdhashmap<size_t, size_t> fred{};
-            fred.Add (1, 2);
-            fred.Add (1, 3);
-            EXPECT_EQ (fred.size (), 1u);
-            EXPECT_EQ (fred[1], 3u);
-        }
-        {
-            Mapping_stdhashmap<size_t, size_t> fred{};
-            fred.Add (1, 2);
-            fred.Add (2, 4);
-            fred.Add (3, 9);
-            EXPECT_EQ (fred.size (), 3u);
-            EXPECT_EQ (fred, (Mapping<size_t, size_t>{{1, 2}, {2, 4}, {3, 9}}));
-        }
-        {
-            static_assert (Cryptography::Digest::IHashFunction<std::hash<size_t>, size_t>);
-            Mapping_stdhashmap<size_t, size_t> fred{std::hash<size_t>{}, std::equal_to<size_t>{}};
-            EXPECT_EQ (fred, (Mapping_stdhashmap<size_t, size_t>{}));
-        }
-        {
-            using Characters::String;
-            Mapping_stdhashmap<String, String> m{};
-            m.Add ("d", "delta");
-            m.Add ("c", "gamma");
-            m.Add ("b", "beta");
-            m.Add ("a", "alpha");
-            EXPECT_EQ (m.size (), 4u);
-            EXPECT_EQ (m, (Mapping<String, String>{{"a", "alpha"}, {"b", "beta"}, {"c", "gamma"}, {"d", "delta"}}));
-        }
-
-        DoTestForConcreteContainer_<Mapping_stdhashmap<size_t, size_t>> ();
-        //DoTestForConcreteContainer_<Mapping_stdhashmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> (); // -- wont work cuz not hashable
-#if 0
-            DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-                [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
-                AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-#endif
-    }
-}
-
-namespace {
     GTEST_TEST (Foundation_Containers_Mapping, ExampleCTORS_)
     {
         Debug::TraceContextBumper ctx{"{}::ExampleCTORS_"};
@@ -313,16 +267,6 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, RetainAllCaseFails_)
     {
-// See https://stroika.atlassian.net/browse/STK-1026 - and undo hack in RetainAll for smallCase
-// This test IS failing on MACOS XCODE 15.3 (and others)
-#if qCompilerAndStdLib_stdhashmap_erase_Buggy
-        {
-            Mapping_stdhashmap<string, int> mOrig{{"id", 1}, {"y", 7}, {"x", 7}};
-            Mapping_stdhashmap<string, int> m = mOrig;
-            m.RetainAll (initializer_list<string>{"id"});
-            EXPECT_TRUE (m.Keys ().SetEquals (initializer_list<string>{"id"}));
-        }
-#endif
         {
             Mapping<string, int> mOrig{{"id", 1}, {"y", 7}, {"x", 7}};
             Mapping<string, int> m = mOrig;

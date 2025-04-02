@@ -10,7 +10,6 @@
 
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_stdhashset.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_stdset.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
@@ -98,14 +97,6 @@ namespace {
     {
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_stdhashset)
-    {
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::KeyedCollection_stdhashset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
     }
 }
 
