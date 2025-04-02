@@ -47,7 +47,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return this->find (item) != this->end ();
     }
     template <typename STL_CONTAINER_OF_T>
-    void STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom) const
+    template <invocable<typename STL_CONTAINER_OF_T::const_iterator, typename STL_CONTAINER_OF_T::const_iterator> POINT_TO_SAME_THING>
+    void STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom,
+                                                                              [[maybe_unused]] POINT_TO_SAME_THING&& pointToSameThingTester) const
+        requires (convertible_to<invoke_result_t<POINT_TO_SAME_THING, typename STL_CONTAINER_OF_T::const_iterator, typename STL_CONTAINER_OF_T::const_iterator>, bool>)
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
@@ -60,7 +63,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         [[maybe_unused]] auto newE = this->end ();
         auto                  oldI = movedFrom->begin ();
         [[maybe_unused]] auto oldE = movedFrom->end ();
-        while (oldI != pi->fStdIterator_) {
+        while (not forward<POINT_TO_SAME_THING> (pointToSameThingTester) (oldI, newI)) {
             Assert (newI != newE);
             Assert (oldI != oldE);
             ++newI;

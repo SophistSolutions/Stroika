@@ -83,8 +83,30 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  iterator from 'this' - which points at the same logical position. This requires that this container
          *  was just 'copied' from 'movedFrom' - and is used to produce an equivalent iterator (since iterators are tied to
          *  the container they were iterating over).
+         * 
+         *      // we iterate over old data structure, and new ones at the same time. return true
+         *      // when the newI should be considered to 'match' the old I value. NOTE - the argument lambda MAY use other information, like
+         *      // the passed in pi forward iterator
+         *      bool pointToSameThingTester (oldI, newI)
+         *      {
+         *          return true if newI now matches oldI;
+         *      }
+         * 
+         *      // For example, to move in an INDEX like situation, just count the number of times pointToSameThingTester called
+         *      bool pointToSameThingTester (oldI, newI)
+         *      {
+         *          return oldI == origIterator->GetOSRep();
+         *      }
+         *      // For example, to move in an key equals situation
+         *      bool pointToSameThingTester (oldI, newI)
+         *      {
+         *          return  origIterator->GetOSRep()->fKey == newI->fKey;
+         *      }
          */
-        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom) const;
+        template <invocable<typename STL_CONTAINER_OF_T::const_iterator, typename STL_CONTAINER_OF_T::const_iterator> POINT_TO_SAME_THING>
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper* movedFrom, POINT_TO_SAME_THING&& pointToSameThingTester) const
+            requires (convertible_to<invoke_result_t<POINT_TO_SAME_THING, typename STL_CONTAINER_OF_T::const_iterator, typename STL_CONTAINER_OF_T::const_iterator>, bool>)
+        ;
 
     public:
         nonvirtual bool contains (Common::ArgByValueType<value_type> item) const;
