@@ -244,16 +244,6 @@ Test.cpp:1109:93: error: no viable constructor or deduction guide for deduction 
 
 #endif
 
-#ifndef qCompilerAndStdLib_stdhashmap_erase_Buggy
-
-#if defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_stdhashmap_erase_Buggy (_LIBCPP_VERSION < 16000)
-#else
-#define qCompilerAndStdLib_stdhashmap_erase_Buggy 0
-#endif
-
-#endif
-
 // \TestCommon\CommonTests_MultiSet.h(232): error C2760: syntax error: ';' was unexpected here; expected ')'
 /// error C2760: syntax error: ';' was unexpected here; expected ')
 ///C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(246): error C2760: syntax error: unexpected token ';', expected ')'

@@ -334,12 +334,7 @@ namespace Stroika::Foundation::Containers {
         size_t thisSize = this->size ();
 
         // Small case - just remove a few items
-        bool fewerLookupsThanAdds = items.size () <= thisSize;
-
-        // BWA for https://stroika.atlassian.net/browse/STK-1026
-#if qCompilerAndStdLib_stdhashmap_erase_Buggy
-        fewerLookupsThanAdds = false;
-#endif
+        bool fewerLookupsThanAdds = items.size () <= 2;
         if (fewerLookupsThanAdds) {
             // Algorithm COMP COMPLEXITY VERY ROUHLTY apx= (O(Items-N) * O(THIS_LEN-N)) bad estimate cuz ignores cost of erases
             auto keyEqualsComparer = this->GetKeyEqualsComparer ();
