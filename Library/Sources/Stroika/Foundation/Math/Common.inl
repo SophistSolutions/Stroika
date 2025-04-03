@@ -368,4 +368,18 @@ namespace Stroika::Foundation::Math {
         return true;
     }
 
+    /*
+     ********************************************************************************
+     *************************** Math::PrimeAtLeastThisBig **************************
+     ********************************************************************************
+     */
+    template <integral T>
+    T PrimeAtLeastThisBig (T v)
+    {
+        while (not IsPrime (v)) {
+            ++v;
+        }
+        return v;
+    }
+
 }

@@ -230,6 +230,12 @@ namespace Stroika::Foundation::Math {
     template <integral T>
     bool IsPrime (T v);
 
+    /**
+     *  \brief return argument if prime, or the next larger integer which is prime.
+     */
+    template <integral T>
+    T PrimeAtLeastThisBig (T v);
+
 }
 
 /*
