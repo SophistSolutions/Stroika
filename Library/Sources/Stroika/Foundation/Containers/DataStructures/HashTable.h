@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
             /**
              */
-            using EqualsComparerType = EQUALS_COMPARER;
+            using KeyEqualsComparerType = EQUALS_COMPARER;
 
             /**
             *  separate chaining (for now) - or some probing variation
@@ -88,12 +88,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         template <typename TRAITS, typename KEY_TYPE, typename MAPPED_TYPE>
-        concept IValidTraits = Common::IEqualsComparer<typename TRAITS::EqualsComparerType, KEY_TYPE>
+        concept IValidTraits = Common::IEqualsComparer<typename TRAITS::KeyEqualsComparerType, KEY_TYPE>
 #if 0
             and requires (TRAITS) {
             {  TRAITS::ValueHasherType } -> invocable<typename TRAITS::value_type>;
             /*{ TRAITS::ValueHasherType };
-            { TRAITS::EqualsComparerType };
+            { TRAITS::KeyEqualsComparerType };
             { TRAITS::LayoutType };
             { TRAITS::AlternateFindType };*/
         }
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        using EqualsComparerType = typename TRAITS::EqualsComparerType;
+        using KeyEqualsComparerType = typename TRAITS::KeyEqualsComparerType;
 
     public:
         /**
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         HashTable ();
-        HashTable (size_t bucketCount, const ValueHasherType& hashFunction = {}, const EqualsComparerType& keyComparer = {});
+        HashTable (size_t bucketCount, const ValueHasherType& hashFunction = {}, const KeyEqualsComparerType& keyComparer = {});
         HashTable (HashTable&& src) noexcept = default;
         HashTable (const HashTable& src)     = default;
         ~HashTable ()                        = default;
@@ -164,8 +164,102 @@ namespace Stroika::Foundation::Containers::DataStructures {
         class ForwardIterator;
 
     public:
-        ForwardIterator           begin ();
+        /**
+         */
+        ForwardIterator begin ();
+
+    public:
+        /**
+         */
         constexpr ForwardIterator end ();
+
+    public:
+        /**
+         */
+        nonvirtual void Add (const value_type& t);
+        nonvirtual void Add (const key_type& t)
+            requires (same_as<MAPPED_TYPE, void>);
+        template <same_as<MAPPED_TYPE> MAPPED_TYPE2 = MAPPED_TYPE>
+        nonvirtual void Add (const key_type& t, const MAPPED_TYPE2& m)
+            requires (not same_as<MAPPED_TYPE, void>);
+
+    public:
+        /**
+         */
+        nonvirtual optional<value_type> Lookup (const key_type& t);
+
+    public:
+        /**
+         */
+        nonvirtual void Remove (const key_type& t);
+
+    public:
+        /**
+         */
+        nonvirtual bool RemoveIf (const key_type& t);
+
+    public:
+        /**
+         *  TBD...  NOT same as https://en.cppreference.com/w/cpp/container/unordered_set/rehash
+         * 
+         *  Use ROUGHLY the argument number of hash buckets. Call bucket_count() to find number actually used.
+         * 
+         *  bucket_count never goes below 1, but if you request a number too low, just goes to lowest allowed.
+         * so ReHash(0) can be used to 'compact' as much as possible.
+         */
+        void ReHash (size_t newBucketCount);
+
+    public:
+        /**
+        * This examines load_factor and max_load_factor(), and depending on relationship, makes
+        * a guess as to best size to use in call to ReHash();
+         */
+        void ReHashIfNeeded ();
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      Always: constant
+         */
+        nonvirtual size_t bucket_count () const;
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      Always: constant
+         */
+        nonvirtual size_t bucket_size (size_t bucketIdx) const;
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      Always: constant
+         */
+        nonvirtual size_t size () const;
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      Always: constant
+         */
+        nonvirtual bool empty () const;
+
+    public:
+        /**
+         *  \brief average number of elements per bucket
+         * 
+         *  \see https://en.cppreference.com/w/cpp/container/unordered_set/load_factor
+         */
+        float load_factor () const;
+
+    public:
+        /**
+         *  \brief average number of elements per bucket
+         * 
+         *  \see https://en.cppreference.com/w/cpp/container/unordered_set/load_factor
+         */
+        float max_load_factor () const;
+        void  max_load_factor (float mlf);
 
     private:
         using LayoutType_                                  = TraitsType::LayoutType;
@@ -181,8 +275,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         Memory::InlineBuffer<BucketType_, kBufferedBuckets_> fBuckets_;
 
-        [[no_unique_address]] ValueHasherType    fHasher_;
-        [[no_unique_address]] EqualsComparerType fKeyComparer_;
+        [[no_unique_address]] ValueHasherType       fHasher_;
+        [[no_unique_address]] KeyEqualsComparerType fKeyComparer_;
 
         size_t fCachedSize_{0};
 
@@ -197,175 +291,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
             return Hash_ (v, fBuckets_.size ());
         }
 
-    public:
-        nonvirtual void Add (const value_type& t)
-        {
-            size_t hashVal = Hash_ (t.fKey);
-            if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
-                fBuckets_[hashVal].fElements.push_back (t);
-                ++fCachedSize_;
-                ReHashIfNeeded ();
-            }
-        }
-        nonvirtual void Add (const key_type& t)
-            requires (same_as<mapped_type, void>)
-        {
-            Add (Common::KeyValuePair<key_type, void>{t});
-        }
-        template <same_as<MAPPED_TYPE> MAPPED_TYPE2 = MAPPED_TYPE>
-        nonvirtual void Add (const key_type& t, const MAPPED_TYPE2& m)
-            requires (not same_as<MAPPED_TYPE, void>)
-        {
-            Add (Common::KeyValuePair<key_type, mapped_type>{t, m});
-        }
-
-    public:
-        optional<value_type> Lookup (const key_type& t)
-        {
-            size_t hashVal = Hash_ (t);
-            if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
-                for (auto i : fBuckets_[hashVal].fElements) {
-                    if (i.fKey == t) {
-                        return i;
-                    }
-                }
-            }
-            return nullopt;
-        }
-
-    public:
-        void Remove (const key_type& t)
-        {
-            (void)RemoveIf (t);
-        }
-
-    public:
-        bool RemoveIf (const key_type& t)
-        {
-            size_t hashVal = Hash_ (t);
-            if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
-                for (auto i : fBuckets_[hashVal].fElements) {
-                    if (i.fKey == t) {
-                        /// fBuckets_.erase  NYI
-                    }
-                }
-            }
-            return nullopt;
-        }
-
-    public:
-        /**
-         *  TBD...  NOT same as https://en.cppreference.com/w/cpp/container/unordered_set/rehash
-         * 
-         *  Use ROUGHLY the argument number of hash buckets. Call bucket_count() to find number actually used.
-         * 
-         *  bucket_count never goes below 1, but if you request a number too low, just goes to lowest allowed.
-         * so ReHash(0) can be used to 'compact' as much as possible.
-         */
-        void ReHash (size_t newBucketCount)
-        {
-            size_t useBucketCount = Math::AtLeast (Math::PrimeAtLeastThisBig (newBucketCount), kBufferedBuckets_);
-            if (useBucketCount != fBuckets_.size ()) {
-                Memory::InlineBuffer<BucketType_, kBufferedBuckets_> newBuckets;
-                // fill in by iterating, but for now quick tmphack
-                newBuckets = fBuckets_;
-                newBuckets.resize (newBucketCount);
-
-                // this move is expensive - perhaps better to indirect buckets_ into HEAP object so this is cheaper
-                fBuckets_ = move (newBuckets);
-            }
-        }
-
-    public:
-        /**
-        * This examines load_factor and max_load_factor(), and depending on relationship, makes
-        * a guess as to best size to use in call to ReHash();
-         */
-        void ReHashIfNeeded ()
-        {
-            // @todo redo so less finicky.. - this logic is WRONG/poor
-            float lf = load_factor ();
-
-            float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 4;
-            if (lf < thresholdBelowWhichWeShouldShrink) {
-            }
-            else if (lf > fMaxLoadFactor_) {
-                float  targetLoadFactor  = fMaxLoadFactor_ / 2; // VERY roughly
-                size_t targetBucketCount = static_cast<size_t> (targetLoadFactor * fCachedSize_);
-                ReHash (targetBucketCount);
-            }
-        }
-
-    public:
-        /**
-         *  \note Runtime performance/complexity:
-         *      Always: constant
-         */
-        nonvirtual size_t bucket_count () const
-        {
-            return fBuckets_.size ();
-        }
-
-    public:
-        /**
-         *  \note Runtime performance/complexity:
-         *      Always: constant
-         */
-        nonvirtual size_t bucket_size (size_t bucketIdx) const
-        {
-            Require (bucketIdx < bucket_count ());
-            return fBuckets_[bucketIdx].fElements.size ();
-        }
-
-    public:
-        /**
-         *  \note Runtime performance/complexity:
-         *      Always: constant
-         */
-        nonvirtual size_t size () const
-        {
-            return fCachedSize_;
-        }
-
-    public:
-        /**
-         *  \note Runtime performance/complexity:
-         *      Always: constant
-         */
-        nonvirtual bool empty () const
-        {
-            return fCachedSize_ == 0;
-        }
-
-    public:
-        /**
-         *  \brief average number of elements per bucket
-         * 
-         *  \see https://en.cppreference.com/w/cpp/container/unordered_set/load_factor
-         */
-        float load_factor () const
-        {
-            return static_cast<float> (fCachedSize_) / fBuckets_.size ();
-        }
-
     private:
         float fMaxLoadFactor_{1.0};
-
-    public:
-        /**
-         *  \brief average number of elements per bucket
-         * 
-         *  \see https://en.cppreference.com/w/cpp/container/unordered_set/load_factor
-         */
-        float max_load_factor () const
-        {
-            return fMaxLoadFactor_;
-        }
-        void max_load_factor (float mlf)
-        {
-            Require (mlf > 0.0);
-            fMaxLoadFactor_ = mlf;
-        }
     };
 
     /*
@@ -442,7 +369,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual ForwardIterator& operator++ ();
         nonvirtual ForwardIterator  operator++ (int);
-
 
     private:
         // to make == compares simpler
