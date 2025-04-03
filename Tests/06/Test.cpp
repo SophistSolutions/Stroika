@@ -28,9 +28,12 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_HashTable, Test1)
     {
-        using a = DataStructures::HashTable_Support::DefaultTraits<int>;
+        DataStructures::HashTable<int> ht1;
+        ht1.Add (1);
+        EXPECT_EQ (ht1.size (), 1u);
 
-        // DataStructures::HashTable<size_t> someLL;
+        EXPECT_EQ (ht1.Lookup (2), nullopt);
+        EXPECT_EQ (ht1.Lookup (1), 1);
     }
 
     GTEST_TEST (Foundation_Containers_DataStructures_HashTable, Test2)
