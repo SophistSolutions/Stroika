@@ -549,8 +549,6 @@ namespace {
             auto             callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Assert (argc == 1);
                 Assert (::strcmp (azColName[0], "journal_mode") == 0);
-                int val = ::atoi (argv[0]);
-                Assert (val >= 0);
                 d = argv[0];
                 return SQLITE_OK;
             }};
