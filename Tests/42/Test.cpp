@@ -1,641 +1,314 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::IO::Network
+//  TEST    Foundation::Execution::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/IO/Network/CIDR.h"
-#include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
-#include "Stroika/Foundation/IO/Network/DNS.h"
-#include "Stroika/Foundation/IO/Network/Interface.h"
-#include "Stroika/Foundation/IO/Network/Neighbors.h"
-#include "Stroika/Foundation/IO/Network/SocketStream.h"
-#include "Stroika/Foundation/IO/Network/URI.h"
-#include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Streams/BinaryToText.h"
-#include "Stroika/Foundation/Streams/TextToBinary.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/LazyInitialized.h"
+#include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
+#include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Characters::Literals;
-using namespace Stroika::Foundation::IO;
-using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 
 #if qStroika_HasComponent_googletest
+// must be tested before main, so cannot call directly below
 namespace {
-    namespace Test1_URI_ {
+    int TestAtomicInitializedCoorectly_ ();
+    static int sIgnoredTestValue_ = TestAtomicInitializedCoorectly_ (); // if using static constructors, this will be called before sAtomicBoolNotInitializedTilAfterStaticInitizers_
+
+    atomic<bool> sAtomicBoolNotInitializedTilAfterStaticInitizers_{true}; // for calls before start of or after end of main ()
+    int          TestAtomicInitializedCoorectly_ ()
+    {
+        EXPECT_TRUE (sAtomicBoolNotInitializedTilAfterStaticInitizers_);
+        return 1;
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, Test1_Function_)
+    {
+        // Make sure Function<> works as well as std::function
+        {
+            Function<int (bool)> f = [] ([[maybe_unused]] bool b) -> int { return 3; };
+            EXPECT_TRUE (f (true) == 3);
+            function<int (bool)> ff = f;
+            EXPECT_TRUE (ff (true) == 3);
+        }
+        // Make sure Function<> serves its one purpose - being comparable
+        {
+            Function<int (bool)> f1 = [] ([[maybe_unused]] bool b) -> int { return 3; };
+            Function<int (bool)> f2 = [] ([[maybe_unused]] bool b) -> int { return 3; };
+
+            EXPECT_TRUE (f1 != f2);
+            EXPECT_TRUE (f1 < f2 or f2 < f1); // SEE qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy
+            Function<int (bool)> f3 = f1;
+            EXPECT_TRUE (f3 == f1);
+            EXPECT_TRUE (f3 != f2);
+        }
+        {
+            // http://stroika-bugs.sophists.com/browse/STK-960
+            // In WTF, really in Execution::IntervalTime code - was getting two functions added with same function pointer.
+            // Workaround for http://stroika-bugs.sophists.com/browse/STK-960 addresses that. But not sure why this doesn't trigger
+            // with old code?
+            Function<int ()> f1 = [] () { return 1; };
+            Function<int ()> f2 = [] () { return -1; };
+            EXPECT_TRUE (f1 != f2);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, Test2_CommandLine_)
+    {
+        Debug::TraceContextBumper ctx{"Test2_CommandLine_"};
+        {
+            String           cmdLine = "/bin/sh -c \"a b c\"";
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
+            EXPECT_TRUE (l.size () == 3);
+            EXPECT_TRUE (l[0] == "/bin/sh");
+            EXPECT_TRUE (l[1] == "-c");
+            EXPECT_TRUE (l[2] == "a b c");
+        }
+        {
+            String           cmdLine = "";
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
+            EXPECT_TRUE (l.size () == 0);
+        }
+        {
+            String           cmdLine = "/bin/sh -c \'a b c\'";
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
+            EXPECT_TRUE (l.size () == 3);
+            EXPECT_TRUE (l[0] == "/bin/sh");
+            EXPECT_TRUE (l[1] == "-c");
+            EXPECT_TRUE (l[2] == "a b c");
+        }
+        {
+            String           cmdLine = "/bin/sh\t b c     -d";
+            Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
+            EXPECT_TRUE (l.size () == 4);
+            EXPECT_TRUE (l[0] == "/bin/sh");
+            EXPECT_TRUE (l[1] == "b");
+            EXPECT_TRUE (l[2] == "c");
+            EXPECT_TRUE (l[3] == "-d");
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, Finally)
+    {
+        Debug::TraceContextBumper ctx{"Finally"};
+        {
+            unsigned int cnt = 0;
+            {
+                [[maybe_unused]] auto&& c = Finally ([&cnt] () noexcept { cnt--; });
+                ++cnt;
+            }
+            EXPECT_EQ (cnt, 0u);
+        }
+    }
+}
+
+namespace {
+    namespace Test4_ConstantProperty_ {
         namespace Private_ {
-            void TestHostParsing_ ()
-            {
-                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::TestHostParsing_"};
-                using UniformResourceIdentification::Host;
-                EXPECT_EQ ((Host{Network::V4::kLocalhost}.As<String> (Host::ePCTEncoded)), L"127.0.0.1"sv);
-                EXPECT_EQ ((Host{InternetAddress{169, 254, 0, 1}}.As<String> (Host::ePCTEncoded)), L"169.254.0.1"sv);
-                EXPECT_EQ ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.As<String> (Host::ePCTEncoded)), "[fe80::44de:4247:5b76:ddc9]"sv);
-                EXPECT_EQ ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress ()), (InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
-                EXPECT_EQ ((Host{"www.sophists.com"}.As<String> (Host::ePCTEncoded)), "www.sophists.com"sv);
-                EXPECT_EQ ((Host{"hello mom"}.As<String> (Host::ePCTEncoded)), L"hello%20mom"sv);
-                EXPECT_EQ ((Host::Parse ("hello%20mom")), (Host{"hello mom"}));
+            namespace T1_ {
+                static const String                      x{"3"};
+                const Execution::LazyInitialized<String> kX = [] () { return x; };
+                void                                     DoIt ()
                 {
-                    // negative tests - must throw
-                    try {
-                        (void)Host::Parse ("%%%");
-                        EXPECT_TRUE (false); // must throw
-                    }
-                    catch (const runtime_error&) {
-                    }
-                    try {
-                        (void)Host::Parse (L"%a");
-                        EXPECT_TRUE (false); // must throw
-                    }
-                    catch (const runtime_error&) {
-                    }
-                    try {
-                        (void)Host::Parse (L"%ag");
-                        EXPECT_TRUE (false); // must throw
-                    }
-                    catch (const runtime_error&) {
-                    }
+                    const String a = kX;
                 }
             }
-            void SimpleURITests_ ()
-            {
-                using IO::Network::UniformResourceIdentification::SchemeType;
-                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::SimpleURITests_"};
+            namespace T2_ {
+                const Execution::LazyInitialized<String> kX = [] () { return "6"; };
+                void                                     DoIt ()
                 {
-                    IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
-                    EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "localhost");
-                    EXPECT_TRUE (uri.GetAuthority ()->GetPort () == 1234);
-                    EXPECT_TRUE (uri.As<String> () == "http://localhost:1234");
-                }
-                {
-                    IO::Network::URI uri = IO::Network::URI::Parse ("localhost:1234");
-                    EXPECT_TRUE (not uri.GetAuthority ().has_value ()); // treated as a scheme
-                    EXPECT_TRUE (uri.As<String> () == "localhost:1234");
-                }
-                {
-                    IO::Network::URI uri = IO::Network::URI::Parse ("http://www.ics.uci.edu/pub/ietf/uri/#Related");
-                    EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "www.ics.uci.edu");
-                    DbgTrace ("X={}"_f, uri);
-                    EXPECT_EQ (uri.As<String> (), "http://www.ics.uci.edu/pub/ietf/uri/#Related");
-                }
-                {
-                    IO::Network::URI uri = IO::Network::URI::Parse ("/uri/#Related");
-                    EXPECT_TRUE (not uri.GetAuthority ().has_value ());
-                    EXPECT_EQ (uri.As<String> (), "/uri/#Related");
-                }
-                {
-                    // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
-                    // AT LEAST CLOSE - I THINK I CAN COME UP WITH CHEATSHEET TO MAP NAMES (like GetRElPath to GetPath () - but does it handle leading slash same?)
-                    IO::Network::URI uri = IO::Network::URI::Parse ("dyn:/StyleSheet.css?ThemeName=Cupertino");
-                    EXPECT_TRUE (*uri.GetScheme () == SchemeType{"dyn"sv});
-                    EXPECT_TRUE (not uri.GetAuthority ().has_value ());
-                    EXPECT_TRUE (uri.GetPath () == "/StyleSheet.css");
-                    EXPECT_TRUE (uri.GetQuery<String> () == "ThemeName=Cupertino");
-                    EXPECT_TRUE (uri.GetQuery ()->operator() (L"ThemeName") == "Cupertino");
-                }
-                {
-                    IO::Network::URI uri = IO::Network::URI::Parse ("HTTPS://www.MICROSOFT.com/Path");
-                    EXPECT_TRUE (uri.Normalize ().As<String> () == "https://www.microsoft.com/Path");
-                }
-                {
-                    URI base{"http://www.sophists.com"};
-                    EXPECT_TRUE (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
-                }
-                {
-                    URI base{"http://www.sophists.com/"};
-                    EXPECT_TRUE (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
+                    const String a = kX;
+                    EXPECT_TRUE (a == "6"); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
-            void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
-            {
-                Debug::TraceContextBumper ctx{"Test1_URI_::Private_::Test_Reference_Resolution_Examples_From_RFC_3986_"};
-                // tests from https://tools.ietf.org/html/rfc3986#section-5.4
-                URI base = URI::Parse (L"http://a/b/c/d;p?q");
-
-                // https://tools.ietf.org/html/rfc3986#section-5.4.1
-                EXPECT_TRUE (base.Combine (URI::Parse ("g:h")).As<String> () == L"g:h");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g")).As<String> () == L"http://a/b/c/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./g")).As<String> () == L"http://a/b/c/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("/g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("//g")).As<String> () == L"http://g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("?y")).As<String> () == L"http://a/b/c/d;p?y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y")).As<String> () == L"http://a/b/c/g?y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("#s")).As<String> () == L"http://a/b/c/d;p?q#s");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g#s")).As<String> () == L"http://a/b/c/g#s");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y#s")).As<String> () == L"http://a/b/c/g?y#s");
-                EXPECT_TRUE (base.Combine (URI::Parse (";x")).As<String> () == L"http://a/b/c/;x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g;x")).As<String> () == L"http://a/b/c/g;x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("")).As<String> () == L"http://a/b/c/d;p?q");
-                EXPECT_TRUE (base.Combine (URI::Parse (".")).As<String> () == L"http://a/b/c/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./")).As<String> () == L"http://a/b/c/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("..")).As<String> () == L"http://a/b/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../")).As<String> () == L"http://a/b/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../g")).As<String> () == L"http://a/b/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../..")).As<String> () == L"http://a/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../")).As<String> () == L"http://a/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../g")).As<String> () == L"http://a/g");
-
-                // https://tools.ietf.org/html/rfc3986#section-5.4.2 Abnormal Examples
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../../g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("../../../../g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("/./g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("/../g")).As<String> () == L"http://a/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g.")).As<String> () == L"http://a/b/c/g.");
-                EXPECT_TRUE (base.Combine (URI::Parse (".g")).As<String> () == L"http://a/b/c/.g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g..")).As<String> () == L"http://a/b/c/g..");
-                EXPECT_TRUE (base.Combine (URI::Parse ("..g")).As<String> () == L"http://a/b/c/..g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./../g")).As<String> () == L"http://a/b/g");
-                EXPECT_TRUE (base.Combine (URI::Parse ("./g/.")).As<String> () == L"http://a/b/c/g/");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g/./h")).As<String> () == L"http://a/b/c/g/h");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g/../h")).As<String> () == L"http://a/b/c/h");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/./y")).As<String> () == L"http://a/b/c/g;x=1/y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/../y")).As<String> () == L"http://a/b/c/y");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/./x")).As<String> () == L"http://a/b/c/g?y/./x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/../x")).As<String> () == L"http://a/b/c/g?y/../x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/./x")).As<String> () == L"http://a/b/c/g#s/./x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
-                EXPECT_TRUE (base.Combine (URI::Parse ("http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
-            }
-            void TestEmptyURI_ ()
-            {
-                Debug::TraceContextBumper ctx{"TestEmptyURI_"};
+            namespace T3_ {
+                // @todo get constexpr working - see docs for Execution::LazyInitialized
+                //constexpr Execution::LazyInitialized<int> kX = [] () { return 3; };
+                const Execution::LazyInitialized<int> kX = [] () { return 3; };
+                void                                  DoIt ()
                 {
-                    URI u{};
-                    EXPECT_EQ (u.As<String> (), "");
-                }
-                {
-                    URI u{""};
-                    EXPECT_EQ (u.As<String> (), "");
-                }
-                {
-                    URI u{" "};
-                    EXPECT_EQ (u.As<String> (URI::ePCTEncoded), "%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
-                    EXPECT_EQ (u.As<String> (URI::eDecoded), " ");
-                    EXPECT_EQ (u.GetPath (), " ");
+                    const int a [[maybe_unused]] = kX;
                 }
             }
-            void TestSamplesFromPythonURLParseDocs_ ()
-            {
-                Debug::TraceContextBumper ctx{"TestSamplesFromPythonURLParseDocs_"};
-                using namespace IO::Network::UniformResourceIdentification;
+            namespace T4_ {
+                const Execution::LazyInitialized<int> kX = [] () { return 4; };
+                void                                  DoIt ()
                 {
-                    /*
-                     *  From https://docs.python.org/2/library/urlparse.html
-                     *      from urlparse import urlparse
-                     *      o = urlparse('http://www.cwi.nl:80/%7Eguido/Python.html')
-                     *      o.scheme
-                     *      o.port
-                     *      o.geturl ()
-                     */
-                    auto o = URI{"http://www.cwi.nl:80/%7Eguido/Python.html"};
-                    EXPECT_TRUE (o.GetScheme () == SchemeType{"http"});
-                    EXPECT_TRUE (o.GetAuthority ()->GetPort () == 80);
-                    // NOTE - here python emits '%7Eguido' instead of '~guido'. However, according to
-                    // https://tools.ietf.org/html/rfc3986#section-2.3, '~' - %7E - is an unreserved character, and
-                    // so Stroika does NOT encode it.
-                    EXPECT_TRUE (o.As<string> () == "http://www.cwi.nl:80/~guido/Python.html");
-                }
-                {
-                    /*
-                     *  From https://docs.python.org/2/library/urlparse.html
-                     *      from urlparse import urlparse
-                     *      o = urlparse('//www.cwi.nl:80/%7Eguido/Python.html')
-                     *      o.scheme
-                     *      o.netloc
-                     *      o.path
-                     *      o.query
-                     *      o.fragment
-                     */
-                    auto o = URI{"//www.cwi.nl:80/%7Eguido/Python.html"};
-                    EXPECT_TRUE (o.GetScheme () == nullopt);
-                    EXPECT_TRUE (o.GetAuthority () == Authority::Parse ("www.cwi.nl:80"));
-                    EXPECT_TRUE (o.GetPath () == L"/~guido/Python.html");
-                    EXPECT_TRUE (o.GetQuery () == nullopt);
-                    EXPECT_TRUE (o.GetFragment () == nullopt);
-                    EXPECT_TRUE (o.As<string> () == "//www.cwi.nl:80/~guido/Python.html");
-                }
-                {
-                    /*
-                     *  From https://docs.python.org/2/library/urlparse.html
-                     *      from urlparse import urlparse
-                     *      o = urlparse('www.cwi.nl/%7Eguido/Python.html')
-                     *      o.scheme
-                     *      o.netloc
-                     *      o.path
-                     *      o.query
-                     *      o.fragment
-                     */
-                    auto o = URI{"www.cwi.nl/%7Eguido/Python.html"};
-                    EXPECT_TRUE (o.GetScheme () == nullopt);
-                    EXPECT_TRUE (o.GetAuthority () == nullopt);
-                    EXPECT_TRUE (o.GetPath () == L"www.cwi.nl/~guido/Python.html"); // again, differ from python because our getPath returns decoded string
-                    EXPECT_TRUE (o.GetQuery () == nullopt);
-                    EXPECT_TRUE (o.GetFragment () == nullopt);
-                    EXPECT_TRUE (o.As<string> () == "www.cwi.nl/~guido/Python.html"); // again, differ from python because %7E (~) is unreserved character
-                }
-                {
-                    /*
-                     *  From https://docs.python.org/2/library/urlparse.html
-                     *      from urlparse import urlparse
-                     *      o = urlparse('help/Python.html')
-                     *      o.scheme
-                     *      o.netloc
-                     *      o.path
-                     *      o.query
-                     *      o.fragment
-                     */
-                    auto o = URI{"help/Python.html"};
-                    EXPECT_TRUE (o.GetScheme () == nullopt);
-                    EXPECT_TRUE (o.GetAuthority () == nullopt);
-                    EXPECT_TRUE (o.GetPath () == L"help/Python.html");
-                    EXPECT_TRUE (o.GetQuery () == nullopt);
-                    EXPECT_TRUE (o.GetFragment () == nullopt);
-                    EXPECT_TRUE (o.As<string> () == "help/Python.html");
-                }
-                {
-                    /*
-                     *  From https://docs.python.org/2/library/urlparse.html
-                     *      from urlparse import urljoin
-                     *      urljoin('http://www.cwi.nl/%7Eguido/Python.html', 'FAQ.html')
-                     */
-                    auto o = URI{"http://www.cwi.nl/%7Eguido/Python.html"}.Combine (URI{"FAQ.html"});
-                    EXPECT_TRUE (o.As<string> () == "http://www.cwi.nl/~guido/FAQ.html"); // again, differ from python because %7E (~) is unreserved character
-                }
-                {
-                    /*
-                     *  From https://docs.python.org/2/library/urlparse.html
-                     *      from urlparse import urljoin
-                     *      urljoin('http://www.cwi.nl/%7Eguido/Python.html', '//www.python.org/%7Eguido')
-                     */
-                    auto o = URI{"http://www.cwi.nl/%7Eguido/Python.html"}.Combine (URI{"//www.python.org/%7Eguido"});
-                    EXPECT_TRUE (o.As<string> () == "http://www.python.org/~guido"); // again, differ from python because %7E (~) is unreserved character
-                }
-            }
-            void Test_PatternUsedInHealthFrame_ ()
-            {
-                Debug::TraceContextBumper ctx{"Test_PatternUsedInHealthFrame_"};
-                using namespace IO::Network::UniformResourceIdentification;
-                {
-                    auto o = URI{"dyn:/Reminders/Home.htm"};
-                    EXPECT_TRUE (o.GetScheme () == SchemeType{L"dyn"});
-                    EXPECT_TRUE (o.GetPath () == L"/Reminders/Home.htm");
-                }
-                {
-                    auto o = URI{"dyn:/StyleSheet.css?ThemeName=Cupertino"};
-                    EXPECT_TRUE (o.GetScheme () == SchemeType{L"dyn"});
-                    EXPECT_TRUE (o.GetPath () == L"/StyleSheet.css");
-                    EXPECT_TRUE ((*o.GetQuery<Query> ()) (L"ThemeName") == L"Cupertino");
-                }
-            }
-            void Test_RegressionDueToBugInCompareURIsC20Spaceship_ ()
-            {
-                Debug::TraceContextBumper ctx{"Test_RegressionDueToBugInCompareURIsC20Spaceship_"};
-                URI                       fred = URI{"http://abc.com/bar"};
-                if (fred) {
-                    // make sure operator bool working
-                }
-                else {
-                    EXPECT_TRUE (false);
-                }
-// workaround really only needed if ASAN enabled, but more of a PITA to test that
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                static const auto kInitList_ =
-                    initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}};
-#endif
-                for (URI u :
-#if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                     kInitList_
-#else
-                     {URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}}
-#endif
-                ) {
-                    auto schemeAndAuthority = fred.GetSchemeAndAuthority ();
-                    URI  fURL_              = u;
-                    URI  newURL             = u;
-                    newURL.SetScheme (schemeAndAuthority.GetScheme ());
-                    newURL.SetAuthority (schemeAndAuthority.GetAuthority ());
-                    auto b1 = (fURL_ == newURL);
-                    auto b2 = (fURL_ < newURL);
-                    auto b3 = (fURL_ > newURL);
-                    auto b4 = (fURL_ != newURL);
-                    EXPECT_TRUE (b1 != b4);
-                    EXPECT_TRUE (b2 != b3 or b1);
-                }
-            }
-            void Test_UPNPBadURIIPv6_ ()
-            {
-                // Test case for fix: http://stroika-bugs.sophists.com/browse/STK-957
-                {
-                    using namespace IO::Network::UniformResourceIdentification;
-                    // Sub-problem where original bug lies
-                    try {
-                        optional<Authority> authority = Authority::Parse ("[fe80::354f:9016:fed2:8b9b]:2869"sv);
-                        EXPECT_TRUE (authority->GetPort () == 2869);
-                        EXPECT_TRUE (authority->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
-                    }
-                    catch (...) {
-                        EXPECT_TRUE (false); // not reached - valid parse
-                    }
-                }
-                try {
-                    auto uri = URI::Parse ("http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7"sv);
-                    EXPECT_TRUE (uri.GetAuthority ()->GetPort () == 2869);
-                    EXPECT_TRUE (uri.GetAuthority ()->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
-                    EXPECT_TRUE (uri.GetAbsPath () == "/upnphost/udhisapi.dll"sv);
-                }
-                catch (...) {
-                    EXPECT_TRUE (false); // not reached - valid parse
-                }
-                try {
-                    auto uri = URI::Parse ("http://[fe80::354f:9016:fed2:8b9b"sv);
-                    EXPECT_TRUE (false); // not reached - invalid URL
-                }
-                catch (...) {
-                    // GOOD - sb exception
-                }
-            }
-            void Test_SetScheme_ ()
-            {
-                URI u;
-                u.SetScheme (URI::SchemeType{L"http"});
-            }
-            void Test_roundtrip_IPV6NumericHostname_ ()
-            {
-                String v                 = "http://[::1]:{}/"_f(9080);
-                URI    ShowAsExternalURI = v;
-                EXPECT_EQ (ShowAsExternalURI.As<String> (), "http://[::1]:9080/");
-            }
-            void TestNotPCTEncodingColonOnURLPath_ ()
-            {
-                // From https://www.ietf.org/rfc/rfc2396.txt pchar         = unreserved | escaped | ":" | "@" | "&" | "=" | "+" | "$" | ","
-                {
-                    // uri='https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent'
-                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent"sv};
-                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro:generateContent"sv); // Don't PCT-encode the :
-                }
-                {
-                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro&generateContent"sv};
-                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro&generateContent"sv); // &
-                }
-                {
-                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro+generateContent"sv};
-                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro+generateContent"sv); // +
-                }
-                {
-                    URI u{"https://generativelanguage.googleapis.com/v1/models/gemini-pro$generateContent"sv};
-                    EXPECT_EQ (u.GetAuthorityRelativeResource (), "/v1/models/gemini-pro$generateContent"sv); // $
+                    const int a [[maybe_unused]] = kX;
+                    EXPECT_TRUE (a == 4); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
         }
-    }
-}
 
-GTEST_TEST (Foundation_IO_Network, Test1_URI_)
-{
-    Debug::TraceContextBumper ctx{"Test1_URI_::DoTests"};
-    using namespace Test1_URI_;
-    Private_::TestHostParsing_ ();
-    Private_::SimpleURITests_ ();
-    Private_::Test_Reference_Resolution_Examples_From_RFC_3986_ ();
-    Private_::TestEmptyURI_ ();
-    Private_::TestSamplesFromPythonURLParseDocs_ ();
-    Private_::Test_PatternUsedInHealthFrame_ ();
-    Private_::Test_RegressionDueToBugInCompareURIsC20Spaceship_ ();
-    Private_::Test_UPNPBadURIIPv6_ ();
-    Private_::Test_SetScheme_ ();
-    Private_::Test_roundtrip_IPV6NumericHostname_ ();
-    Private_::TestNotPCTEncodingColonOnURLPath_ ();
-}
-
-GTEST_TEST (Foundation_IO_Network, Test2_InternetAddress_)
-{
-    Debug::TraceContextBumper trcCtx{"Test2_InternetAddress_"};
-    {
-        EXPECT_TRUE ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
-        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
-        EXPECT_TRUE ((InternetAddress{L"1.2.3.4"}).As<String> () == L"1.2.3.4");
-        EXPECT_TRUE ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
     }
+    GTEST_TEST (Foundation_Execution, Test4_ConstantProperty_)
     {
-        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[0] == 1));
-        EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
-    }
-    {
-        auto testRoundtrip = [] (const String& s) {
-            InternetAddress iaddr1{s};
-            InternetAddress iaddr2{s.As<wstring> ()};
-            InternetAddress iaddr3{s.AsASCII ()};
-            EXPECT_TRUE (iaddr1 == iaddr2);
-            EXPECT_TRUE (iaddr2 == iaddr3);
-            EXPECT_TRUE (iaddr1.As<String> () == s);
-            EXPECT_TRUE (iaddr2.As<String> () == s);
-            EXPECT_TRUE (iaddr3.As<String> () == s);
-        };
-        testRoundtrip (L"192.168.131.3");
-        testRoundtrip (L"::");
-        testRoundtrip (L"fec0:0:0:ffff::1");
-        testRoundtrip (L"fe80::44de:4247:5b76:ddc9");
-    }
-    {
-        struct Tester {
-            InternetAddress addr;
-            bool            isLocalHost;
-            bool            isLinkLocal;
-            bool            isMulticast;
-            bool            isPrivate;
-        };
-        const InternetAddress kSamplePrivateAddr_{"192.168.244.121"};
-        const InternetAddress kSSDPAddr_{239, 255, 255, 250};
-        const InternetAddress kSomeIPV4LinkLocalAddr_{"169.254.0.1"};
-        const InternetAddress kSomeIPV6LinkLocalAddr_{"fe80::44de:4247:5b76:ddc9"};
-        const Tester          kTests_[] = {
-            //  ADDR                                    localhost   linklocal   multicast   privateaddr
-            {V4::kAddrAny, false, false, false, false},
-            {V6::kAddrAny, false, false, false, false},
-            {V4::kLocalhost, true, false, false, false},
-            {V6::kLocalhost, true, false, false, false},
-            {kSSDPAddr_, false, false, true, false},
-            {kSomeIPV4LinkLocalAddr_, false, true, false, false},
-            {kSomeIPV6LinkLocalAddr_, false, true, false, false},
-            {kSamplePrivateAddr_, false, false, false, true},
-            {InternetAddress{10, 0, 0, 0}, false, false, false, true},
-            {InternetAddress{10, 255, 255, 255}, false, false, false, true},
-            {InternetAddress{172, 16, 0, 1}, false, false, false, true},
-            {InternetAddress{172, 16, 0, 3}, false, false, false, true},
-            {InternetAddress{172, 31, 255, 255}, false, false, false, true},
-            {InternetAddress{192, 168, 0, 0}, false, false, false, true},
-            {InternetAddress{192, 168, 255, 255}, false, false, false, true},
-        };
-        for (auto i : kTests_) {
-            DbgTrace ("i.addr={}"_f, i.addr);
-            EXPECT_TRUE (i.addr.IsLocalhostAddress () == i.isLocalHost);
-            EXPECT_TRUE (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
-            EXPECT_TRUE (i.addr.IsMulticastAddress () == i.isMulticast);
-            EXPECT_TRUE (i.addr.IsPrivateAddress () == i.isPrivate);
-        }
-    }
-    {
-        EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
-        EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or
-                     ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
-    }
-    {
-        EXPECT_TRUE (InternetAddress{"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
-                     InternetAddress{"2002:C0A8:6301::"});
-        EXPECT_TRUE (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) ==
-                     InternetAddress{"192.168.99.1"});
-    }
-}
-
-GTEST_TEST (Foundation_IO_Network, Test3_NetworkInterfaceList_)
-{
-    Debug::TraceContextBumper trcCtx{"Test3_NetworkInterfaceList_"};
-    for (Interface iFace : SystemInterfacesMgr{}.GetAll ()) {
-        DbgTrace ("iFace: {}"_f, iFace);
-    }
-}
-
-GTEST_TEST (Foundation_IO_Network, Test4_DNS_)
-{
-    Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
-    {
-        DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.sophists.com");
-        EXPECT_TRUE (e.fCanonicalName.Contains (".sophists.com"));
-        EXPECT_TRUE (e.fAddressList.size () >= 1);
-    }
-    {
-        DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.google.com");
-        EXPECT_TRUE (e.fAddressList.size () >= 1);
-    }
-    {
-        DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.cnn.com");
-        EXPECT_TRUE (e.fAddressList.size () >= 1);
-    }
-    {
-        optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress{23, 56, 90, 167});
-        DbgTrace ("reverselookup {}"_f, Memory::NullCoalesce (aaa));
-    }
-}
-
-GTEST_TEST (Foundation_IO_Network, Test5_CIDR_)
-{
-    Debug::TraceContextBumper ctx{"Test5_CIDR_::DoTests_"};
-    {
-        CIDR cidr{"10.70.0.0/15"};
-        auto cidr2 = CIDR{InternetAddress{"10.70.0.0"}, 15};
-        EXPECT_TRUE (cidr == cidr2);
-        EXPECT_TRUE (Characters::ToString (cidr) == "10.70.0.0/15");
-        EXPECT_TRUE (cidr.GetNumberOfSignificantBits () == 15);
-        EXPECT_TRUE ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
-    }
-    {
-        auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};
-        EXPECT_TRUE (Characters::ToString (cidr) == "192.168.56.0/24");
-    }
-    {
-        auto cidr = CIDR{InternetAddress{"172.28.240.1"}, 20};
-        EXPECT_TRUE (Characters::ToString (cidr) == "172.28.240.0/20");
-    }
-    {
-        auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
-        EXPECT_TRUE (Characters::ToString (cidr) == "172.17.185.0/28");
-    }
-    {
-        // fix for http://stroika-bugs.sophists.com/browse/STK-909
-        auto cidr = CIDR{V6::kAddrAny, 64};
-        EXPECT_TRUE (Characters::ToString (cidr) == "in6addr_any/64");
-        EXPECT_TRUE (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form
-    }
-}
-
-GTEST_TEST (Foundation_IO_Network, Test6_Neighbors_)
-{
-    Debug::TraceContextBumper ctx{"Test6_Neighbors_::DoTests_"};
-    {
-        IO::Network::NeighborsMonitor monitor;
-        Time::TimePointSeconds        timeoutAt = (Time::GetTickCount () + Time::Duration{3s});
-        while (Time::GetTickCount () < timeoutAt) {
-            // Note - this try/catch is ONLY needed to workaround bug with MSFT WSL (windows subsystem for linux), and when thats fixed we can remove the try/catch -- LGP 2020-03-20
-            try {
-                for (NeighborsMonitor::Neighbor n : monitor.GetNeighbors ()) {
-                    DbgTrace ("discovered {}"_f, n);
-                }
-            }
-            catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
-#if qStroika_Foundation_Common_Platform_Linux
-                if (e.code () == errc::no_such_file_or_directory) {
-                    Stroika::Frameworks::Test::WarnTestIssue ("Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: {}"_f(
-                        current_exception ())); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
-                    return;
-                }
-#endif
-                Execution::ReThrow ();
-            }
-        }
+        using namespace Test4_ConstantProperty_;
+        Private_::T1_::DoIt ();
+        Private_::T2_::DoIt ();
+        Private_::T3_::DoIt ();
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_IO_Network, SocketStream)
+    namespace Test5_ModuleGetterSetter_ {
+        namespace PRIVATE_ {
+            using namespace DataExchange;
+            using namespace Execution;
+            using namespace Time;
+            static const Duration kMinTime_ = 1s;
+            struct MyData_ {
+                bool               fEnabled = false;
+                optional<DateTime> fLastSynchronizedAt;
+            };
+            struct ModuleGetterSetter_Implementation_MyData_ {
+                ModuleGetterSetter_Implementation_MyData_ ()
+                    : fOptionsFile_{"MyModule",
+                                    [] () -> ObjectVariantMapper {
+                                        ObjectVariantMapper mapper;
+                                        mapper.AddClass<MyData_> ({
+                                            {"Enabled", &MyData_::fEnabled},
+                                            {"Last-Synchronized-At", &MyData_::fLastSynchronizedAt},
+                                        });
+                                        return mapper;
+                                    }(),
+                                    OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here")}
+                    , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
+                {
+                    Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+                }
+                MyData_ Get () const
+                {
+                    return fActualCurrentConfigData_;
+                }
+                void Set (const MyData_& v)
+                {
+                    fActualCurrentConfigData_ = v;
+                    fOptionsFile_.Write (v);
+                }
+
+            private:
+                OptionsFile fOptionsFile_;
+                MyData_     fActualCurrentConfigData_; // automatically initialized just in time, and externally synchronized
+            };
+
+            using Execution::ModuleGetterSetter;
+            ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_> sModuleConfiguration_;
+
+            void TestUse1_ ()
+            {
+                if (sModuleConfiguration_.Get ().fEnabled) {
+                    auto n     = sModuleConfiguration_.Get ();
+                    n.fEnabled = false;
+                    sModuleConfiguration_.Set (n);
+                }
+            }
+            void TestUse2_ ()
+            {
+                sModuleConfiguration_.Update ([] (MyData_ data) {
+                    MyData_ result = data;
+                    if (result.fLastSynchronizedAt.has_value () and *result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) {
+                        result.fLastSynchronizedAt = DateTime::Now ();
+                    }
+                    return result;
+                });
+            }
+            void TestUse3_ ()
+            {
+                if (sModuleConfiguration_.Update ([] (const MyData_& data) -> optional<MyData_> {
+                        if (data.fLastSynchronizedAt.has_value () and *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) {
+                            MyData_ result             = data;
+                            result.fLastSynchronizedAt = DateTime::Now ();
+                            return result;
+                        }
+                        return {};
+                    })) {
+                    // e.g. trigger someone to wakeup and used changes?
+                }
+            }
+        }
+    }
+    GTEST_TEST (Foundation_Execution, ModuleGetterSetter_)
     {
-        Debug::TraceContextBumper ctx{"::SocketStream"};
-        using namespace IO::Network;
-        using namespace Streams;
-
-        // both pairs equal - and can use EITHER as from and either as 'to'
-        auto [writeRawSocket, readRawSocket] = ConnectionOrientedStreamSocket::NewPair (SocketAddress::INET);
-
-        auto writeStrm = SocketStream::New (writeRawSocket); // these are both input/output streams, but we only use one side for this test
-        auto readStrm  = SocketStream::New (readRawSocket);
-
-        // completely symmetric up til now, so pick which to write to and which to read from
-        auto textWriter = TextToBinary::Writer::New (writeStrm);
-        auto textReader = BinaryToText::Reader::New (readStrm);
-
-        textWriter.Write ("Hello");
-        textWriter.Flush ();
-        EXPECT_TRUE (writeRawSocket.IsOpen () and readRawSocket.IsOpen ());
-
-        textWriter.Close (); // this only closes part of the source (enuf but not all) - sends socket shutdown (one sided)
-        EXPECT_TRUE (not textWriter.IsOpen ());
-        EXPECT_TRUE (not writeStrm.IsOpenWrite ());
-        EXPECT_TRUE (writeStrm.IsOpenRead ());
-        EXPECT_TRUE (writeRawSocket.IsOpen ()); // only closed when both ends of socket-stream closed
-
-        // even though write socket is open, its send side is 'shutdown' so this read will complete
-        auto readData = textReader.ReadAll ();
-        EXPECT_EQ (readData, "Hello");
-
-        // now CAN (no need) either close the writeStrm or writeRawSocket, in either order
-        writeRawSocket.Close ();
-        writeStrm.Close ();
-        EXPECT_TRUE (not textWriter.IsOpen ());
-        EXPECT_TRUE (not writeStrm.IsOpenWrite ());
-        EXPECT_TRUE (not writeStrm.IsOpenRead ());
-        EXPECT_TRUE (not writeRawSocket.IsOpen ());
-
-        // reading streams and sockets still wide open
-        // could close them, but no need (done automatically when we return and last reference goes out of scope)
-        EXPECT_TRUE (textReader.IsOpen ());
-        EXPECT_TRUE (readStrm.IsOpenWrite ());
-        EXPECT_TRUE (readStrm.IsOpenRead ());
-        EXPECT_TRUE (readRawSocket.IsOpen ());
-        auto moreData = textReader.ReadAll (); // fine, but will be empty
-        EXPECT_TRUE (moreData.empty ());
+        using namespace Test5_ModuleGetterSetter_;
+        Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
+        PRIVATE_::TestUse1_ ();
+        PRIVATE_::TestUse2_ ();
+        PRIVATE_::TestUse3_ ();
     }
 }
 
+namespace {
+    GTEST_TEST (Foundation_Execution, Environment)
+    {
+        Debug::TraceContextBumper ctx{"Environment"};
+        Mapping<String, String>   env = Execution::kEnvironment;
+        EXPECT_TRUE (env.ContainsKey ("PATH"));
+        DbgTrace ("env={}"_f, env);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, ThrowIfNullCheck)
+    {
+        auto throwFailureCalls = [] () -> void {
+            {
+                void* p = nullptr;
+                ThrowIfNull (p);
+            }
+            {
+                //static_assert (equality_comparable_with<nullopt_t, optional<int>>);
+                optional<int> p;
+                ThrowIfNull (p);
+            }
+        };
+
+        IgnoreExceptionsForCall (throwFailureCalls ());
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Execution, kInnerOuterExceptionStackHandlingWhile)
+    {
+        constexpr Execution::Activity kActivityOuter_{"OUTER"sv};
+        Execution::DeclareActivity    declareActivity{&kActivityOuter_};
+        constexpr Execution::Activity kActivityINNER_{"INNER"sv};
+        Execution::DeclareActivity    declareActivity2{&kActivityINNER_};
+        try {
+            Execution::Throw (Execution::RuntimeErrorException{"oops"});
+        }
+        catch (...) {
+            DbgTrace ("error={}"_f, current_exception ());
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

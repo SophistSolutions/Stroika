@@ -2391,6 +2391,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.h">
       <Filter>Sources\Database\Document</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.h">
+      <Filter>Sources\Containers\DataStructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3945,6 +3948,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.inl">
       <Filter>Sources\Database\Document</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.inl">
+      <Filter>Sources\Containers\DataStructures</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

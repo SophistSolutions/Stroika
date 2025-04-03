@@ -408,6 +408,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\DoublyLinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\STLContainerWrapper.h" />
@@ -893,6 +894,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataHyperRectangle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\DoublyLinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\SkipList.inl" />

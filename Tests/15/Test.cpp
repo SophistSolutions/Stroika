@@ -1,18 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::Containers::KeyedCollection
-//      \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+//  TEST    Foundation::Containers::Deque
+//      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-#include <typeindex>
 
-#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
-#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_SkipList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_stdset.h"
-#include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/Containers/Deque.h"
+
+#include "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -20,7 +17,7 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-#include "../TestCommon/CommonTests_KeyedCollection.h"
+#include "../TestCommon/CommonTests_Queue.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
@@ -28,108 +25,54 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
-using Test::ArchtypeClasses::AsIntsLessComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using namespace CommonTests::KeyedCollectionTests::Test1_Basics_;
-
-//using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
-//using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
-//using T1_Key_Extractor = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Key_Extractor;
+using Concrete::Deque_DoublyLinkedList;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    namespace Test_KeyedCollectionTypeIndexUsesStdSet_ {
-        struct Obj_ {
-            type_index fTypeIndex;  // KEY
-            int        otherData{}; //
-        };
-        using My_Extractor_ = decltype ([] (const Obj_& t) -> type_index { return t.fTypeIndex; });
-        using My_Traits_    = Containers::KeyedCollection_DefaultTraits<Obj_, type_index, My_Extractor_>;
-    }
-    GTEST_TEST (Foundation_Containers_KeyedCollection, Test_KeyedCollectionTypeIndexUsesStdSet_)
-    {
-        using namespace Test_KeyedCollectionTypeIndexUsesStdSet_;
+    namespace Test1_BasicDequeTest_ {
+        template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+        void DoAllTests_ ()
         {
-            Concrete::SortedKeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
-            KeyedCollection<Obj_, type_index, My_Traits_>                        s2;
-            s2.Add (Obj_{typeid (int)});
-            s2.Add (Obj_{typeid (long int)});
-        }
-        {
-            // Or slightly more flexibility, but less efficiently (cuz extractor stored in std::function and invoked through that wrapper)
-            KeyedCollection<Obj_, type_index> s2{My_Extractor_{}};
-            s2.Add (Obj_{typeid (int)});
-            s2.Add (Obj_{typeid (long int)});
+            // test DQUEUE METHODS - NYI
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, FACTORY_DEFAULT)
+    template <typename CONCRETE_CONTAINER, Common::IEqualsComparer<typename CONCRETE_CONTAINER::value_type> EQUALS_COMPARER>
+    void SimpleQueueTest_All_NotRequiringEquals_For_Type ()
     {
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return KeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return KeyedCollection<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics ([] () { return KeyedCollection<T1, int, T1_Traits>{}; },
-                                                                                 [] (auto) {});
+        CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
     }
-}
-namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_Array)
+    template <typename CONCRETE_CONTAINER, Common::IEqualsComparer<typename CONCRETE_CONTAINER::value_type> EQUALS_COMPARER>
+    void SimpleQueueTest_All_For_Type ()
     {
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::KeyedCollection_Array<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-    }
-}
-namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_LinkedList)
-    {
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+        Test1_BasicDequeTest_::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, SortedKeyedCollection_stdset)
+    GTEST_TEST (Foundation_Deque, all)
     {
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-    }
-}
+        using COMPARE_SIZET       = equal_to<size_t>;
+        using COMPARE_SimpleClass = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
 
-namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_SkipList)
-    {
-        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-        {
-            Concrete::SortedKeyedCollection_SkipList<T1, int> x{[] (T1 e) { return e.key; }};
-            x.ReBalance ();
-        }
-    }
-}
+        using COMPARE_OnlyCopyableMoveable = AsIntsEqualsComparer<OnlyCopyableMoveable>;
 
-namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, thoughtISawBugWithThisCopyScenarioButSeemsFine)
-    {
-        struct A {
-            int f;
-        };
-        KeyedCollection<A, int> obj{[] (A e) { return e.f; }};
-        obj.Add (A{.f = 3});
+        SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Deque<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleQueueTest_All_For_Type<Deque<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-        auto objCopy = obj;
-        obj.Add (A{.f = 4});
-        obj = objCopy;
-    }
-}
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
 
-namespace {
-    GTEST_TEST (Foundation_Containers_KeyedCollection, CLEANUP)
-    {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }

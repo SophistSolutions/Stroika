@@ -1,616 +1,297 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::Memory
+//  TEST    Foundation::Math
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 
-#include "Stroika/Foundation/Memory/BLOB.h"
-#include "Stroika/Foundation/Memory/Bits.h"
-#include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
-#include "Stroika/Foundation/Memory/Optional.h"
-#include "Stroika/Foundation/Memory/SharedByValue.h"
+#include "Stroika/Foundation/Math/Angle.h"
+#include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Math/LinearAlgebra/Matrix.h"
+#include "Stroika/Foundation/Math/Optimization/DownhillSimplexMinimization.h"
+#include "Stroika/Foundation/Math/ReBin.h"
+#include "Stroika/Foundation/Math/Statistics.h"
 
-#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-using std::byte;
-
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Characters::Literals;
-using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Math;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::OnlyDefaultConstructibleAndMoveable;
-
 #if qStroika_HasComponent_googletest
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test1_Optional_)
+    GTEST_TEST (Foundation_Math, Test2_Round_)
     {
+        // really could use more cases!!!
         {
-            using Characters::String;
-            optional<String> x;
-            x = String{L"x"};
+            EXPECT_EQ (RoundUpTo (2, 10), 10);
+            EXPECT_EQ (RoundDownTo (2, 10), 0);
+            EXPECT_EQ (RoundUpTo (2, 2), 2);
+            EXPECT_EQ (RoundDownTo (2, 2), 2);
+            EXPECT_EQ (Round<int> (2.2), 2);
+            EXPECT_EQ (Round<int> (numeric_limits<double>::max () * 1000), numeric_limits<int>::max ());
+            EXPECT_EQ (Round<unsigned int> (numeric_limits<double>::max () * 1000), numeric_limits<unsigned int>::max ());
         }
         {
-            optional<int> x;
-            EXPECT_TRUE (not x.has_value ());
-            x = 1;
-            EXPECT_TRUE (x.has_value ());
-            EXPECT_EQ (*x, 1);
-        }
-        {
-            // Careful about self-assignment
-            optional<int> x;
-            x = 3;
-            x = max (*x, 1);
-            EXPECT_EQ (x, 3);
-        }
-        auto testOptionalOfThingNotCopyable = [] () {
-            {
-                optional<OnlyDefaultConstructibleAndMoveable> n1;
-                EXPECT_TRUE (not n1.has_value ());
-                optional<OnlyDefaultConstructibleAndMoveable> n2{OnlyDefaultConstructibleAndMoveable ()}; // use r-value reference to move
-                EXPECT_TRUE (n2.has_value ());
-            }
-            {
-                [[maybe_unused]] optional<OnlyDefaultConstructibleAndMoveable> a;
-                optional<OnlyDefaultConstructibleAndMoveable>                  a1{OnlyDefaultConstructibleAndMoveable ()};
-                a1 = OnlyDefaultConstructibleAndMoveable ();
-            }
-        };
-        testOptionalOfThingNotCopyable ();
-        {
-            optional<int> x;
-            if (x) {
-                EXPECT_TRUE (false);
-            }
-        }
-        {
-            optional<int> x;
-            if (optional<int> y = x) {
-                EXPECT_TRUE (false);
-            }
-        }
-        {
-            optional<int> x = 3;
-            if (optional<int> y = x) {
-                EXPECT_TRUE (y == 3);
-            }
-            else {
-                EXPECT_TRUE (false);
-            }
-        }
-        {
-            float*  d1 = nullptr;
-            double* d2 = nullptr;
-            EXPECT_TRUE (not OptionalFromNullable (d1).has_value ());
-            EXPECT_TRUE (not OptionalFromNullable (d2).has_value ());
-        }
-        {
-            constexpr optional<int> x{1};
-            EXPECT_EQ (x, 1);
-        }
-        {
-            optional<int>                     d;
-            [[maybe_unused]] optional<double> t1 = d;                    // no warnings - this direction OK
-            [[maybe_unused]] optional<double> t2 = optional<double> (d); // ""
-        }
-        {
-            [[maybe_unused]] optional<double> d;
-            //Optional<uint64_t> t1 = d;                      // should generate warning or error
-            // SKIP SINCE SWITCH TO C++ optional - generates warning - optional<uint64_t> t2 = optional<uint64_t> (d); // should not
-        }
-        {
-            optional<int> x = 1;
-            EXPECT_TRUE (Characters::ToString (x) == L"1");
-        }
-        {
-            // empty optional < any other value
-            EXPECT_TRUE (optional<int>{} < -9999);
-            EXPECT_TRUE (optional<int>{-9999} > optional<int>{});
+            using Common::StdCompat::isinf;
+            using Common::StdCompat::isnan;
+            EXPECT_EQ (Round (1.2, 2), 1.2);
+            EXPECT_EQ (Round (1.23, 2), 1.2);
+            EXPECT_EQ (Round (123.0, 2), 120.0);
+            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 6), 3724090.0, 10.1)); // 6 digit rounding of 7 digit # - diff sb within 10(apx)
+            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 7), 3724089.0, 1.1)); // 7 digit rounding of 7 digit # - diff sb within 1(apx)
+            EXPECT_TRUE (Math::NearlyEquals (Round (3724089.418996166, 8), 3724089.4, .11)); // 8 digit rounding of 7 digit # - diff sb within .1(apx)
+            EXPECT_TRUE (isnan (Round (nan (), 3)));
+            EXPECT_TRUE (isinf (Round (Math::infinity (), 9)));
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test2_SharedByValue)
+    GTEST_TEST (Foundation_Math, Test3_Angle_)
     {
-        using Memory::BLOB;
-        // par Example Usage from doc header
-        SharedByValue<vector<byte>> b{BLOB::FromHex ("abcd1245").Repeat (100).As<vector<byte>> ()};
-        SharedByValue<vector<byte>> c = b; // copied by reference until 'c' or 'b' changed values
-        EXPECT_EQ (c.cget (), b.cget ());
+        // really could use more cases!!!
+        EXPECT_TRUE (1.1_rad + 1.1_rad < 2.3_rad);
+        EXPECT_TRUE (1.1_rad + 1.1_rad < 360_deg);
+        EXPECT_TRUE (1.1_rad + 1.1_rad < 180_deg);
+        EXPECT_TRUE (1.1_rad + 1.1_rad > 120_deg);
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test_4_Optional_Of_Mapping_Copy_Problem_)
+    GTEST_TEST (Foundation_Math, Test4_OddEvenPrime_)
     {
-        using namespace Stroika::Foundation::Memory;
-        using namespace Stroika::Foundation::Containers;
-        Mapping<int, float> ml1, ml2;
-        ml1 = ml2;
-
-        optional<Mapping<int, float>> ol1, ol2;
-        if (ol2.has_value ()) {
-            ml1 = *ol2;
-        }
-        ol1 = ml1;
-        optional<Mapping<int, float>> xxxx2 (ml1);
-
-        // fails to compile prior to 2013-09-09
-        optional<Mapping<int, float>> xxxx1 (ol1);
-        // fails to compile prior to 2013-09-09
-        ol1 = ol2;
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Memory_, Test_6_Bits_)
-    {
-        //TEST now if compiler bug gone and works... --LGP 2024-05-25
-        //
-        // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
-        // SB nested inside function where used...
-        //  --LGP 2014-02-26
-        struct X_ {
-            int a = 0;
-        };
-        struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
-            int                   field = 1;
-            shared_ptr<jimStdSP_> doIt ()
-            {
-                return shared_from_this ();
+        EXPECT_TRUE (IsPrime (2));
+        EXPECT_TRUE (IsOdd (3));
+        EXPECT_TRUE (IsEven (4));
+        EXPECT_TRUE (IsPrime (5));
+        for (int i = 1; i < 1000; ++i) {
+            EXPECT_TRUE (IsOdd (i) != IsEven (i));
+            if (IsPrime (i)) {
+                EXPECT_TRUE (i == 2 or IsOdd (i));
             }
-        };
-        struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
-            int                      field = 1;
-            shared_ptr<jimMIXStdSP_> doIt ()
-            {
-                return shared_from_this ();
+            if (IsEven (i)) {
+                EXPECT_TRUE (i == 2 or not IsPrime (i));
             }
-        };
-        {
-            EXPECT_EQ (Bit (0), 0x1u);
-            EXPECT_EQ (Bit (1), 0x2u);
-            EXPECT_EQ (Bit (3), 0x8u);
-            EXPECT_EQ (Bit (15), 0x8000u);
-            EXPECT_EQ (Bit<int> (1, 2), 6);
-            EXPECT_EQ (Bit<int> (1, 2, 15), 0x8006);
-        }
-        {
-            EXPECT_EQ (BitSubstring (0x3, 0, 1), 1);
-            EXPECT_EQ (BitSubstring (0x3, 1, 2), 1);
-            EXPECT_EQ (BitSubstring (0x3, 2, 3), 0);
-            EXPECT_EQ (BitSubstring (0x3, 0, 3), 0x3);
-            EXPECT_EQ (BitSubstring (0xff, 0, 8), 0xff);
-            EXPECT_EQ (BitSubstring (0xff, 8, 16), 0x0);
-            EXPECT_EQ (BitSubstring (0b10101010, 0, 1), 0x0);
-            EXPECT_EQ (BitSubstring (0b10101010, 7, 8), 0x1);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test_7_BLOB_)
+    GTEST_TEST (Foundation_Math, Test5_ReBin_)
     {
+        using ReBin::ReBin;
         {
-            vector<uint8_t> b  = {1, 2, 3, 4, 5};
-            Memory::BLOB    bl = b;
-            EXPECT_TRUE (bl.size () == 5 and b == bl.As<vector<uint8_t>> ());
-            EXPECT_TRUE (bl.size () == 5 and bl.As<vector<uint8_t>> () == b);
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            for (size_t i = 0; i < Memory::NEltsOf (srcBinData); ++i) {
+                EXPECT_EQ (srcBinData[i], resultData[i]);
+            }
         }
         {
-            Memory::BLOB bl{1, 2, 3, 4, 5};
-            EXPECT_TRUE (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[2];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            EXPECT_EQ (8, resultData[0]);
+            EXPECT_EQ (21, resultData[1]);
         }
         {
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-move\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wpragmas\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wself-move\"") // PRAGMA WARNING ON GCC11 (g++ on ubuntu 20.04)but needed on i think g++ 13 and later
-            Memory::BLOB bl{1, 2, 3, 4, 5};
-            bl = bl; // assure self-assign OK
-            bl = move (bl);
-            EXPECT_TRUE (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-move\"")
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wself-move\"")
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wpragmas\"")
+            uint32_t srcBinData[] = {3, 5, 19, 2, 0, 0, 0};
+            double   resultData[4];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            EXPECT_TRUE (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
+            EXPECT_EQ (0, resultData[3]);
         }
         {
-            const char kSrc1_[] = "This is a very good test of a very good test";
-            const char kSrc2_[] = "";
-            const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
-            const char kSrc4_[] = "0123456789";
-
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
-                         Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
-                         Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
-                         Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
-                         Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
-
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
-                         Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
-                         Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
-                         Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
-            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
-                         Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[8];
+            ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
+            EXPECT_TRUE (NearlyEquals (1.5, resultData[0]));
+            EXPECT_TRUE (NearlyEquals (1.5, resultData[1]));
+            EXPECT_TRUE (NearlyEquals (2.5, resultData[2]));
+            EXPECT_TRUE (NearlyEquals (2.5, resultData[3]));
         }
         {
-            using Memory::BLOB;
-            EXPECT_EQ (BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"),
-                       (BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
-            EXPECT_EQ (BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"),
-                       (BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
-            EXPECT_EQ (BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"), (BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
-            EXPECT_EQ (BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"),
-                       (BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            EXPECT_EQ (BLOB::FromHex ("29144adb4ece20450956e813652fe8d6"),
-                       (BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            EXPECT_EQ (BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex (), "29144adb4ece20450956e813652fe8d6");
-        }
-        {
-            using Memory::BLOB;
-            EXPECT_EQ (BLOB::FromBase64 ("aGVsbG8="), (BLOB{'h', 'e', 'l', 'l', 'o'}));
-            EXPECT_EQ ((BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 ()), "aGVsbG8=");
-        }
-        {
-            using Memory::BLOB;
-            constexpr char kRawBytes_[] = "jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAA/45JREFU\r\n"
-                                          "eF5M/XeTpPl1pQlmFcAWM99tbeavWZvtXRsba8EeatUECRIgAEKLKqC0zqpKrTNDeoRrLUNmVoGa\r\n"
-                                          "7Nk12w8wa9PdBOrd5znXAzYkg1Hp4f4qf3/nPffcc+996ezsefNF8/K15pcvXXv55V9c++LlL13j\r\n";
-            auto           b1           = BLOB::FromBase64 (kRawBytes_);
-            auto           b2s          = b1.AsBase64 ();
-            auto           b2           = BLOB::FromBase64 (b2s);
-            EXPECT_EQ (b1, b2);
-        }
-        {
-            using namespace Memory;
-            auto b = "hello"_blob;
-            EXPECT_EQ (b.size (), 5u);
-            EXPECT_EQ (b[0], static_cast<byte> ('h'));
-        }
-        {
-            using namespace Memory;
-            auto b  = "hello"_blob;
-            auto b2 = b.As<Streams::InputStream::Ptr<byte>> ().ReadAll ();
-            EXPECT_EQ (b, b2);
-        }
-        {
-            using namespace Memory;
-            auto                            b   = "hello"_blob;
-            Streams::InputStream::Ptr<byte> b2s = b;
-            auto                            b2  = b2s.ReadAll ();
-            EXPECT_EQ (b, b2);
+            uint32_t srcBinData[] = {3, 5, 19, 2};
+            double   resultData[4];
+            using SRC_DATA_DESCRIPTOR = ReBin::BasicDataDescriptor<double, uint32_t>;
+            using TRG_DATA_DESCRIPTOR = ReBin::UpdatableDataDescriptor<double, double>;
+            SRC_DATA_DESCRIPTOR srcData{begin (srcBinData), end (srcBinData), 0, 10};
+            TRG_DATA_DESCRIPTOR trgData{begin (resultData), end (resultData), 1, 11};
+            trgData.clear ();
+            ReBin (srcData, &trgData);
+            EXPECT_TRUE (NearlyEquals (3.8, resultData[0]));
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test9a_Buffer_)
+    GTEST_TEST (Foundation_Math, Test6_Statistics_)
     {
-        {
-            InlineBuffer<int> x0{0};
-            InlineBuffer<int> x1{x0};
-            x0 = x1;
+        EXPECT_EQ (Math::Mean (vector<int>{1, 3, 5}), 3);
+        EXPECT_EQ (Math::Mean (vector<int>{5, 3, 1}), 3);
+        EXPECT_EQ (Math::Median (vector<int>{1, 3, 5}), 3);
+        const auto v = vector<int>{1, 3, 5};
+        EXPECT_EQ (Math::Median (v), 3);
+        EXPECT_EQ (Math::Median (vector<int>{5, 3, 1}), 3);
+        EXPECT_EQ (Math::Median (vector<int>{5, 3, 19, 1}), 4);
+        EXPECT_EQ (Math::Mean (vector<double> ({5, 3, 19, 1})), 7);
+        EXPECT_TRUE (Math::NearlyEquals (Math::StandardDeviation (vector<double>{5, 3, 19, 1}), 8.164966, .0001));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Math, Test7_NearlyEquals_)
+    {
+        // From Function docs
+        EXPECT_TRUE (NearlyEquals (Math::nan (), Math::nan ()));
+        EXPECT_TRUE (not NearlyEquals (Math::nan (), 3));
+        EXPECT_TRUE (NearlyEquals (Math::infinity (), Math::infinity ()));
+        EXPECT_TRUE (not NearlyEquals (Math::infinity (), -Math::infinity ()));
+        EXPECT_TRUE (not NearlyEquals (Math::infinity (), 3));
+        EXPECT_TRUE (not NearlyEquals (5, 3));
+        EXPECT_TRUE (NearlyEquals (5, 3, 2));
+        EXPECT_TRUE (NearlyEquals (0.0, -0.0));
+
+        EXPECT_TRUE (Math::NearlyEquals (1.0, 1.0 + numeric_limits<double>::epsilon ()));
+        EXPECT_TRUE (Math::NearlyEquals (Math::nan<double> (), Math::nan<double> ()));
+        EXPECT_TRUE (not Math::NearlyEquals (1.0, 1.1));
+        if constexpr (numeric_limits<double>::digits10 > 14) {
+            EXPECT_TRUE (Math::NearlyEquals (1.0e22, 1.000000000000001e22));
         }
+        EXPECT_TRUE (not Math::NearlyEquals (1.0e22, 1.1e22));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Math, Test8_LinearAlgebra_Matrix_)
+    {
+        using namespace LinearAlgebra;
         {
-            // Test using String elements, since those will test construction/reserve logic
-            using Characters::String;
-            InlineBuffer<String> buf1{3};
-            for (int i = 0; i < 1000; i++) {
-                buf1.push_back (String{"hi mom"});
-            }
-            InlineBuffer<String> buf2{buf1};
-            buf1.resize (0);
-        }
-        {
-            InlineBuffer<int> x0{4};
-            InlineBuffer<int> assign2;
-            assign2 = x0;
-            EXPECT_EQ (x0.size (), assign2.size ()); // test regression fixed 2019-03-20
-            EXPECT_EQ (x0.size (), 4u);
+            Matrix<int> m{10, 10};
+            EXPECT_EQ (m[3][3], 0);
+            m.SetAt (3, 3, 5);
+            EXPECT_EQ (m[3][3], 5);
+            // @todo support that sort of assign!!!
+            //m[3][3] = 5;
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test9b_StackBuffer_)
+    GTEST_TEST (Foundation_Math, Test9_Optimization_DownhillSimplexMinimization_)
     {
-        {
-            StackBuffer<int> x0{0};
-        }
-        {
-            // Test using String elements, since those will test construction/reserve logic
-            using Characters::String;
-            StackBuffer<String> buf1{3};
-            for (int i = 0; i < 1000; i++) {
-                buf1.push_back (String{L"hi mom"});
-            }
-            buf1.resize (0);
-        }
-        {
-            StackBuffer<int> x0{4};
-            StackBuffer<int> assign2;
-            EXPECT_EQ (x0.size (), 4u);
-        }
-    }
-}
+        using namespace Math::Optimization;
+        using Characters::String;
+        using Containers::Sequence;
 
-namespace {
-    GTEST_TEST (Foundation_Memory_, Test10_OptionalSelfAssign_)
-    {
         {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
-#endif
-            // ASSIGN
-            {
-                optional<int> x;
-                x = x;
-            }
-            {
-                optional<Characters::String> x;
-                x = x;
-            }
-            {
-                optional<int> x{1};
-                x = x;
-            }
-            {
-                optional<Characters::String> x{L"x"};
-                x = x;
-            }
-        }
-        // note - see http://stroika-bugs.sophists.com/browse/STK-556 - we DON'T support Optional self-move
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
-#endif
-    }
-}
-
-namespace {
-    namespace Private_ {
-        struct X1 {
-            int a;
-            int b;
-        };
-        struct X2 {
-        public:
-            int a;
-
-        private:
-            int b;
-
-        public:
-            void* getBAddr ()
-            {
-                return &b;
-            }
-            static auto getBAddrOffset ()
-            {
-                return &X2::b;
-            }
-
-        private:
-            FRIEND_TEST (Foundation_Memory_, Test11_ObjectFieldUtilities_);
-        };
-    }
-    GTEST_TEST (Foundation_Memory_, Test11_ObjectFieldUtilities_)
-    {
-        {
-            EXPECT_EQ (OffsetOf (&Private_::X1::a), 0u);
-            EXPECT_TRUE (OffsetOf (&Private_::X1::b) >= sizeof (int));
+            //  COMPARE TEST WITH bash -c "python nelder_mead.py"
+            //              [array([ -1.58089710e+00,  -2.39020317e-03,   1.39669799e-06]), -0.99994473460027922]
+            DownhillSimplexMinimization::TargetFunction<double> f = [] (const Traversal::Iterable<double>& x) {
+                return sin (x.Nth (0)) * cos (x.Nth (1)) * 1 / (abs (x.Nth (2)) + 1);
+            };
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {0, 0, 0});
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -1.58089710e+00, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), -2.39020317e-03, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (2), 1.39669799e-06, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fScore, -0.99994473460027922, 1e-5));
         }
         {
-            Private_::X1 t;
-            static_assert (is_standard_layout_v<Private_::X1>);
-            void* aAddr = &t.a;
-            void* bAddr = &t.b;
-            EXPECT_EQ (GetObjectOwningField (aAddr, &Private_::X1::a), &t);
-            EXPECT_EQ (GetObjectOwningField (bAddr, &Private_::X1::b), &t);
-        }
-        {
-            // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
-            Private_::X2 t;
-            static_assert (not is_standard_layout_v<Private_::X2>);
-            void* aAddr = &t.a;
-            void* bAddr = t.getBAddr ();
-            VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
-            VerifyTestResultWarning (GetObjectOwningField (bAddr, Private_::X2::getBAddrOffset ()) == &t);
-        }
-    }
-}
-
-namespace {
-    struct Person {
-        int firstName;
-        int lastName;
-    };
-    struct NotDefaultConstructible {
-        NotDefaultConstructible () = delete;
-        constexpr NotDefaultConstructible (int)
-        {
-        }
-        int firstName{};
-        int lastName{};
-    };
-    GTEST_TEST (Foundation_Memory_, Test12_OffsetOf_)
-    {
-        {
-            [[maybe_unused]] size_t kOffset_ = OffsetOf (&Person::lastName);
-            EXPECT_EQ (OffsetOf (&Person::firstName), 0u);
-        }
-        {
-            [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
-            EXPECT_EQ (OffsetOf (&NotDefaultConstructible::firstName), 0u);
-        }
-#if 0
-            // disabled til we can figure out a way to get this constexpr version of OffsetOf() working...
-            {
-                [[maybe_unused]] constexpr size_t kOffsetx_ = OffsetOf_Constexpr (&Person::lastName);
-                static_assert (OffsetOf_Constexpr (&Person::firstName) == 0);
-            }
-#endif
-    }
-
-}
-
-namespace {
-    GTEST_TEST (Foundation_Memory_, Test13_Resize_)
-    {
-        size_t           currentCapacity = 0;
-        unsigned int     countOfReallocCopies{};
-        constexpr size_t kCountOfResizes_ = 500 * 1024;
-        for (size_t len = 0; len < kCountOfResizes_; ++len) {
-            if (len > currentCapacity) {
-                size_t newCapacity = Containers::Support::ReserveTweaks::GetScaledUpCapacity (len);
-                EXPECT_TRUE (newCapacity >= len);
-                currentCapacity = newCapacity;
-                //DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs, and allocated size=%d", len, log (len), countOfReallocCopies, newCapacity);
-                if (len > 1) {
-                    EXPECT_TRUE (countOfReallocCopies < log (len) * 4); // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
+            DownhillSimplexMinimization::TargetFunction<double> f = [] (const Sequence<double>& x) {
+                double d = x[0];
+                if (d < 0 or d >= numbers::pi) { // avoid falling off ends of ranges - periodic function
+                    return 100.0;
                 }
-                ++countOfReallocCopies;
-            }
+                return -cos (d);
+            };
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {.1});
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
         }
-        DbgTrace (L"For {} ({} its log) resizes, we got {} reallocs"_f, kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
-        VerifyTestResultWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
-    }
-}
-
-namespace {
-    namespace Private_ {
-        struct s {
-            float a;
-            char  b;
-            char  bb;
-            int   c;
-            s () = delete; // no constructor
-        };
-#pragma pack(push, 1)
-        struct s2 {
-            float  a;
-            char   b;
-            char   bb;
-            int    c;
-            double d;
-            char   e;
-        };
-#pragma pack(pop)
-        struct a {
-            int i;
-            int j;
-        };
-        struct b {
-            int i;
-            int k;
-        };
-        struct ab : public a, public b {};
-        DISABLE_COMPILER_MSC_WARNING_START (4121);
-        DISABLE_COMPILER_MSC_WARNING_START (4324);
-        struct alignas (16) al {
-            float a;
-            alignas (8) char b;
-            char bb;
-            char arr[20];
-        };
-#pragma pack(push, 2)
-        struct al2 {
-            char a;
-            int  b;
-            char c;
-        };
-#pragma pack(pop)
-        DISABLE_COMPILER_MSC_WARNING_END (4121);
-        DISABLE_COMPILER_MSC_WARNING_END (4324);
-    }
-
-    GTEST_TEST (Foundation_Memory_, Test14_OffsetOf_)
-    {
-        using namespace Private_;
-        // no constructor, default aligning
-        EXPECT_EQ (OffsetOf (&s::a), 0u);
-        EXPECT_EQ (OffsetOf (&s::b), sizeof (float));
-        EXPECT_EQ (OffsetOf (&s::bb), sizeof (float) + sizeof (char));
-        EXPECT_EQ (OffsetOf (&s::c), alignof (s) * 2); // aligned b with bb
-
-        // no alignment
-        EXPECT_TRUE (OffsetOf (&s2::a) == 0);
-        EXPECT_TRUE (OffsetOf (&s2::b) == sizeof (float));
-        EXPECT_TRUE (OffsetOf (&s2::bb) == sizeof (float) + sizeof (char));
-        EXPECT_TRUE (OffsetOf (&s2::c) == sizeof (float) + sizeof (char) * 2);
-        EXPECT_TRUE (OffsetOf (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
-        EXPECT_TRUE (OffsetOf (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
-        static_assert (is_standard_layout_v<s2>);
-        EXPECT_TRUE (OffsetOf (&s2::a) == offsetof (s2, a));
-        EXPECT_TRUE (OffsetOf (&s2::b) == offsetof (s2, b));
-        EXPECT_TRUE (OffsetOf (&s2::bb) == offsetof (s2, bb));
-        EXPECT_TRUE (OffsetOf (&s2::c) == offsetof (s2, c));
-        EXPECT_TRUE (OffsetOf (&s2::d) == offsetof (s2, d));
-        EXPECT_TRUE (OffsetOf (&s2::e) == offsetof (s2, e));
-
-        // simply
-        EXPECT_EQ (OffsetOf (&a::i), 0u);
-        EXPECT_EQ (OffsetOf (&a::j), sizeof (int));
-        EXPECT_EQ (OffsetOf (&b::i), 0u);
-        EXPECT_EQ (OffsetOf (&b::k), sizeof (int));
-
-        // other based
-        //Assert (OffsetOf(&ab::j) == sizeof (int));
-        //Assert (OffsetOf<ab> (&ab::k) == sizeof (int) * 3);
-
-        // special alignments
-        EXPECT_EQ (OffsetOf (&al::a), 0u);
-        EXPECT_EQ (OffsetOf (&al::b), 8u);
-        EXPECT_EQ (OffsetOf (&al::bb), 9u);
-        // Assert (OffsetOf (&al::arr) == 16);
-
-        EXPECT_EQ (OffsetOf (&al2::a), 0u);
-        EXPECT_EQ (OffsetOf (&al2::b), 2u);
-        EXPECT_EQ (OffsetOf (&al2::c), 6u);
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Memory_, Span_)
-    {
-        Debug::TraceContextBumper ctx{"Span_"};
         {
-            char buf1[1024];
-            char buf2[1024];
-            EXPECT_TRUE (not Intersects (span{buf1}, span{buf2}));
-            EXPECT_TRUE (Intersects (span{buf1}, span{buf1}));
-            EXPECT_TRUE (Intersects (span{buf1}.subspan (3, 10), span{buf1}.subspan (4, 10)));
+            // Sample from Block tuner calibration code
+            constexpr double                                            NominalPhiNeutralAngle = 0.541052;
+            constexpr double                                            NominalGrooveSpacing   = 1.00E-05;
+            static constexpr Common::KeyValuePair<double, unsigned int> kCalData_[]            = {
+                {797.4, 24568}, {800.2, 24714}, {803.1, 24860},  {805.3, 25006},  {808.2, 25152},  {810.5, 25298}, {813, 25444},
+                {815.5, 25590}, {817.9, 25736}, {820.4, 25882},  {823.1, 26028},  {825.5, 26174},  {828.5, 26320}, {831.2, 26466},
+                {833.7, 26612}, {836.2, 26758}, {839.1, 26904},  {842.1, 27050},  {844.6, 27196},  {847.2, 27342}, {850.2, 27488},
+                {853.1, 27634}, {855.6, 27780}, {858.5, 27926},  {861.6, 28072},  {864.2, 28218},  {867.2, 28364}, {870.1, 28510},
+                {872.9, 28656}, {875.7, 28802}, {878.9, 28948},  {881.6, 29094},  {885, 29240},    {887.7, 29386}, {891, 29532},
+                {894, 29678},   {897.3, 29824}, {900.3, 29970},  {903.7, 30116},  {906.7, 30262},  {910.1, 30408}, {913.4, 30554},
+                {916.6, 30700}, {920.2, 30846}, {923.5, 30992},  {926.6, 31138},  {929.9, 31284},  {933.2, 31430}, {936.6, 31576},
+                {940.3, 31722}, {943.9, 31868}, {947.6, 32014},  {951.1, 32160},  {955, 32306},    {958.6, 32452}, {962.4, 32598},
+                {966, 32744},   {969.9, 32890}, {973.3, 33036},  {977.2, 33182},  {981.1, 33328},  {984.8, 33474}, {988.5, 33620},
+                {992.3, 33766}, {996.3, 33912}, {1000.5, 34058}, {1004.5, 34204}, {1008.9, 34350}, {1013, 34496},  {1020.8, 34768},
+            };
+            struct K_Constants_ {
+                double k1;
+                double k2;
+                double tunerInfoD;
+                double tunerInfoM{1};
+                String ToString () const
+                {
+                    using namespace Characters::Literals;
+                    Characters::StringBuilder sb;
+                    sb << "{"sv;
+                    sb << "k1: "sv << "{:.10e}"_f(k1) << ","sv;
+                    sb << "k2: "sv << "{:.10e}"_f(k2) << ","sv;
+                    sb << "tunerInfoD: "sv << "{:.10e}"_f(tunerInfoD) << ","sv;
+                    sb << "tunerInfoM: "sv << "{:.10e}"_f(tunerInfoM);
+                    sb << "}"sv;
+                    return sb;
+                }
+            };
+            static constexpr double kDACcountMax_          = 65536;
+            static constexpr double k32K                   = kDACcountMax_ / 2;
+            auto                    WaveNumber2Wavelength_ = [] (double wn) -> double { return 0.01 / wn; };
+            auto                    MDrive2WaveLength      = [] (const K_Constants_& constants, double mirrorDriveValue) -> double {
+                double signedMDrive = mirrorDriveValue - k32K;
+                return 2 * constants.tunerInfoD / constants.tunerInfoM * sin (constants.k2 + constants.k1 * signedMDrive / k32K);
+            };
+            auto wavelengthModel = [=] (const K_Constants_& parameters, unsigned int mdrive) {
+                constexpr double kMinWaveLengthAllowed_{1.0e-20};
+                return Math::AtLeast (MDrive2WaveLength (parameters, mdrive), kMinWaveLengthAllowed_);
+            };
+            Sequence<double> initialGuess{-4.5 / 210 * 1000 * numbers::pi / 180, NominalPhiNeutralAngle};
+            K_Constants_     mdKConstants = {};
+            mdKConstants.tunerInfoD       = NominalGrooveSpacing;
+            auto fitFun                   = [=] (const K_Constants_& parameters) {
+                double result{};
+                size_t nEntries{Memory::NEltsOf (kCalData_)};
+                for (auto i : kCalData_) {
+                    double computedWavelength = wavelengthModel (parameters, i.fValue);
+                    Assert (computedWavelength > 0);
+                    double calibratedWaveLength = WaveNumber2Wavelength_ (i.fKey);
+                    Assert (pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength >= 0);
+                    result += pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength;
+                }
+                return sqrt (result) / nEntries;
+            };
+            DownhillSimplexMinimization::TargetFunction<double> f = [=] (const Traversal::Iterable<double>& x) -> double {
+                K_Constants_ tmp = mdKConstants;
+                tmp.k1           = x.Nth (0);
+                tmp.k2           = x.Nth (1);
+                return fitFun (tmp);
+            };
+            DownhillSimplexMinimization::Options<double> options;
+            options.fNoImprovementThreshold                     = 1e-12;
+            DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess, options);
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters[0], -0.52946138144, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters[1], 0.54376305163, 1e-5));
+            // Silly to use Nth here, but I used to, and it used to trigger an address sanitizer issue (probably a bug with asan). But still - leave test in -- LGP 2018-09-28
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -0.52946138144, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), 0.54376305163, 1e-5));
         }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Memory_, InlineBufferZeroPreDefined_)
-    {
-        Debug::TraceContextBumper ctx{"InlineBufferZeroPreDefined_"};
-        InlineBuffer<int, 0>      x{};
-        x.push_back (3);
-        EXPECT_EQ (x.size (), 1u);
     }
 }
 #endif

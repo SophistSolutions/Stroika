@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::Containers::DataStructures::LinkedList
+//  TEST    Foundation::Containers::DataStructures::DoublyLinkedList
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
+#include <sstream>
 
 #include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Containers/DataStructures/LinkedList.h"
+#include "Stroika/Foundation/Containers/DataStructures/DoublyLinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -26,22 +26,28 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_LinkedList, Test1)
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, Test1)
     {
-        DataStructures::LinkedList<size_t> someLL;
-        const size_t                       kBigSize = 1001;
+        DataStructures::DoublyLinkedList<size_t> someLL;
+        constexpr size_t                         kBigSize = 1001;
 
         Assert (kBigSize > 100);
-        EXPECT_EQ (someLL.size (), 0u);
-        for (size_t i = 1; i <= kBigSize; i++) {
-            someLL.push_front (0);
+        EXPECT_TRUE (someLL.size () == 0);
+        {
+            for (size_t i = 1; i <= kBigSize; i++) {
+                someLL.push_front (0);
+            }
         }
         someLL.RemoveAll ();
-        for (size_t i = 1; i <= kBigSize; i++) {
-            someLL.push_front (0);
+        {
+            for (size_t i = 1; i <= kBigSize; i++) {
+                someLL.push_front (0);
+            }
         }
-        for (size_t i = 1; i <= kBigSize - 10; i++) {
-            someLL.RemoveFirst ();
+        {
+            for (size_t i = 1; i <= kBigSize - 10; i++) {
+                someLL.RemoveFirst ();
+            }
         }
         someLL.RemoveAll (); //  someLL.SetLength(kBigSize, 0);
         {
@@ -50,93 +56,99 @@ namespace {
             }
         }
 
-        EXPECT_EQ (someLL.size (), kBigSize);
+        EXPECT_TRUE (someLL.size () == kBigSize);
         someLL.SetAt (55, 55);                 //  someLL [55] = 55;
-        EXPECT_EQ (someLL.GetAt (55), 55u);    //  EXPECT_TRUE(someArray [55] == 55);
+        EXPECT_TRUE (someLL.GetAt (55) == 55); //  EXPECT_TRUE(someArray [55] == 55);
         EXPECT_TRUE (someLL.GetAt (55) != 56); //  EXPECT_TRUE(someArray [55] != 56);
         {
             size_t i = 1;
-            for (DataStructures::LinkedList<size_t>::ForwardIterator it{&someLL}; not it.Done (); ++it, ++i) {
-                [[maybe_unused]] auto cur = *it;
+            for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it{&someLL}; not it.Done (); ++it, ++i) {
                 if (i == 100) {
                     someLL.AddAfter (it, 1);
                     break;
                 }
             }
-        }
+        } //   someLL.InsertAt(1, 100);
 
-        EXPECT_EQ (someLL.size (), kBigSize + 1u);
+        EXPECT_TRUE (someLL.size () == kBigSize + 1);
         EXPECT_TRUE (someLL.GetAt (100) == 1); //  EXPECT_TRUE(someArray [100] == 1);
 
-        someLL.SetAt (someLL.GetAt (100) + 5, 101);
+        someLL.SetAt (101, someLL.GetAt (100) + 5);
 
-        EXPECT_EQ (someLL.GetAt (101), 6u);
+        EXPECT_TRUE (someLL.GetAt (101) == 6);
         someLL.RemoveFirst ();
-        EXPECT_EQ (someLL.GetAt (100), 6u);
+        EXPECT_TRUE (someLL.GetAt (100) == 6);
     }
 
-    GTEST_TEST (Foundation_Containers_DataStructures_LinkedList, Test2)
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, Test2)
     {
-        DataStructures::LinkedList<OnlyCopyableMoveableAndTotallyOrdered> someLL;
-        constexpr size_t                                                  kBigSize = 1000;
+        DataStructures::DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered> someLL;
+        const size_t                                                            kBigSize = 1000;
 
-        EXPECT_EQ (someLL.size (), 0u);
+        EXPECT_TRUE (someLL.size () == 0);
 
         Assert (kBigSize > 10);
-        EXPECT_EQ (someLL.size (), 0u);
-        for (size_t i = 1; i <= kBigSize; i++) {
-            someLL.push_front (0);
+        EXPECT_TRUE (someLL.size () == 0);
+        {
+            for (size_t i = 1; i <= kBigSize; i++) {
+                someLL.push_front (0);
+            }
         }
         someLL.RemoveAll ();
-        for (size_t i = 1; i <= kBigSize; i++) {
-            someLL.push_front (0);
+        {
+            for (size_t i = 1; i <= kBigSize; i++) {
+                someLL.push_front (0);
+            }
         }
-        Assert (kBigSize > 10);
-        for (size_t i = 1; i <= kBigSize - 10; i++) {
-            someLL.RemoveFirst ();
+        {
+            for (size_t i = 1; i <= kBigSize - 10; i++) {
+                someLL.RemoveFirst ();
+            }
         }
         someLL.RemoveAll (); //  someLL.SetLength(kBigSize, 0);
-        for (size_t i = 1; i <= kBigSize; i++) {
-            someLL.push_front (0);
+        {
+            for (size_t i = 1; i <= kBigSize; i++) {
+                someLL.push_front (0);
+            }
         }
 
-        EXPECT_EQ (someLL.size (), kBigSize);
+        EXPECT_TRUE (someLL.size () == kBigSize);
 
         someLL.SetAt (55, 55); //  someLL [55] = 55;
-        EXPECT_EQ (someLL.GetAt (55), 55);
+        EXPECT_TRUE (someLL.GetAt (55) == 55);
         EXPECT_TRUE (not(someLL.GetAt (55) == 56));
 
         someLL.RemoveAll ();
-        EXPECT_EQ (someLL.size (), 0u);
+        EXPECT_TRUE (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
-            EXPECT_EQ (someLL.Find (i), nullptr);
+            EXPECT_TRUE (not someLL.Contains (i));
             someLL.push_front (i);
             EXPECT_EQ (someLL.GetFirst (), i);
-            EXPECT_TRUE (someLL.Find (i) != nullptr);
+            EXPECT_TRUE (someLL.Contains (i));
         }
         for (size_t i = 1; i <= kBigSize; ++i) {
-            EXPECT_EQ (someLL.GetFirst (), i);
+            EXPECT_TRUE (someLL.GetFirst () == i);
             someLL.RemoveFirst ();
-            EXPECT_EQ (someLL.Find (i), nullptr);
+            EXPECT_TRUE (not someLL.Contains (i));
         }
-        EXPECT_EQ (someLL.size (), 0u);
+        EXPECT_TRUE (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
             someLL.push_front (i);
         }
         for (size_t i = kBigSize; i >= 1; --i) {
             //cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
-            EXPECT_EQ (someLL.GetAt (i - 1), i);
+            EXPECT_TRUE (someLL.GetAt (i - 1) == i);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_LinkedList, ToString)
+    GTEST_TEST (Foundation_DataStructures_DoublyLinkedList, ToString)
     {
-        Debug::TraceContextBumper       ctx{"ToString"};
-        DataStructures::LinkedList<int> t;
+        Debug::TraceContextBumper             ctx{"ToString"};
+        DataStructures::DoublyLinkedList<int> t;
         t.push_back (1);
         DbgTrace ("t={}"_f, t); // test using ranges support
     }

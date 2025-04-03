@@ -1,15 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::Containers::SortedMultiSet
-//      STATUS  very minimal/incomplete
+//  TEST    Foundation::Containers::SortedMapping
+//      \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
+#include <sstream>
 
-#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_SkipList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
-#include "Stroika/Foundation/Containers/SortedMultiSet.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -17,7 +18,7 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-#include "../TestCommon/CommonTests_MultiSet.h"
+#include "../TestCommon/CommonTests_Mapping.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
@@ -30,81 +31,97 @@ using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using Concrete::SortedMultiSet_SkipList;
-using Concrete::SortedMultiSet_stdmap;
+using Concrete::SortedMapping_SkipList;
+using Concrete::SortedMapping_stdmap;
 
 #if qStroika_HasComponent_googletest
 namespace {
     template <typename CONCRETE_CONTAINER>
-    struct UseBasicTestingSchemas_ : CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER> {
-        static void ApplyToContainerExtraTest (const typename CONCRETE_CONTAINER::ArchetypeContainerType& t)
-        {
-            using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
-            // verify in sorted order
-
-            //            EXPECT_TRUE (t.IsOrderedBy (m.GetKeyInOrderComparer ())); @todo something more like this... but only compare values..
-
-            optional<MultiSetOfElementType> last;
-            using COMPARER_TYPE = less<MultiSetOfElementType>;
-            for (CountedValue<MultiSetOfElementType> i : t) {
-                if (last.has_value ()) {
-                    EXPECT_TRUE (COMPARER_TYPE{}(*last, i.fValue));
-                }
-                last = i.fValue;
-            }
+    void DoTestForConcreteContainer_ ()
+    {
+        using namespace CommonTests::MappingTests;
+        if constexpr (constructible_from<CONCRETE_CONTAINER>) {
+            auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
+            testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+                // verify in sorted order
+                EXPECT_TRUE (m.IsOrderedBy ([&] (auto l, auto r) { return m.GetKeyInOrderComparer () (l.fKey, r.fKey); }));
+            };
+            SimpleMappingTest_All_ (testSchema);
+            SimpleMappingTest_WithDefaultEqComparer_ (testSchema);
         }
-    };
-
-    template <typename CONCRETE_CONTAINER, typename SCHEMA = UseBasicTestingSchemas_<CONCRETE_CONTAINER>>
-    void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
+    }
+    template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
+    void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
     {
-        Debug::TraceContextBumper ctx{"{}::DoTestForConcreteContainer_"};
-        CommonTests::MultiSetTests::All_For_Type (schema);
+        using namespace CommonTests::MappingTests;
+        auto testSchema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+            // verify in sorted order
+            using value_type       = typename CONCRETE_CONTAINER::value_type;
+            using key_type         = typename CONCRETE_CONTAINER::key_type;
+            using INORDER_COMPARER = decltype (m.GetKeyInOrderComparer ());
+            optional<value_type> last;
+            for (value_type i : m) {
+                if (last.has_value ()) {
+                    EXPECT_TRUE ((Common::ThreeWayComparerAdapter<key_type, INORDER_COMPARER>{m.GetKeyInOrderComparer ()}(last->fKey, i.fKey) <= 0));
+                }
+                last = i;
+            }
+        };
+        SimpleMappingTest_All_ (testSchema);
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedMultiSet, FACTORY_DEFAULT)
+    GTEST_TEST (Foundation_Containers_SortedMapping, FACTORY_DEFAULT)
     {
-        DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
-        DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory1 = [] () { return SortedMultiSet<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory1)> (
-                msFactory1));
-        auto msFactory2 = [] () { return SortedMultiSet<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<SortedMultiSet<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory2)> (
-                msFactory2));
+        DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+        DoTestForConcreteContainer_<SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedMultiSet, SortedMultiSet_stdmap)
+    GTEST_TEST (Foundation_Containers_SortedMapping, SortedMapping_stdmap)
     {
-        DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
-        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsLessComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
-                msFactory));
+        DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedMultiSet, SortedMultiSet_SkipList)
+    GTEST_TEST (Foundation_Containers_SortedMapping, SortedMapping_SkipList)
     {
-        DoTestForConcreteContainer_<SortedMultiSet_SkipList<size_t>> ();
-        DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return SortedMultiSet_SkipList<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<OnlyCopyableMoveable>, AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
-                msFactory));
+        DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () {
+                return SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsThreeWayComparer<OnlyCopyableMoveable>{});
+            },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_SortedMultiSet, CLEANUP)
+    GTEST_TEST (Foundation_Containers_SortedMapping, Test3_ConvertMapping2SortedMapping)
+    {
+        Mapping<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
+        SortedMapping<int, int> ms{m};
+        EXPECT_EQ (ms.size (), 2u);
+        EXPECT_EQ (*ms.begin (), (pair<int, int>{1, 2}));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_SortedMapping, CLEANUP)
     {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }

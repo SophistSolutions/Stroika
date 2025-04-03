@@ -1,1064 +1,334 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::Database
+//  TEST    Foundation::DataExchange::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-#include <random>
 
-#include "Stroika/Foundation/Characters/Format.h"
-#include "Stroika/Foundation/Characters/StringBuilder.h"
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Common/Property.h"
-#include "Stroika/Foundation/Common/Version.h"
+#include "Stroika/Foundation/DataExchange/Atom.h"
+#include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
-#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-#include "Stroika/Foundation/DataExchange/TypedBLOB.h"
-#include "Stroika/Foundation/Database/Document/Connection.h"
-#include "Stroika/Foundation/Database/Document/MongoDBClient.h"
-#include "Stroika/Foundation/Database/Document/ObjectCollection.h"
-#include "Stroika/Foundation/Database/Document/SQLite.h"
-#include "Stroika/Foundation/Database/Document/TrivialDocumentDB.h"
-#include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
-#include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
-#include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
-#include "Stroika/Foundation/Database/SQL/SQLite.h"
-#include "Stroika/Foundation/Database/SQL/Utils.h"
-#include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/DataExchange/JSON/JWT.h"
+#include "Stroika/Foundation/DataExchange/OptionsFile.h"
+#include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/CommandLine.h"
-#include "Stroika/Foundation/Execution/LazyInitialized.h"
-#include "Stroika/Foundation/Execution/Module.h"
-#include "Stroika/Foundation/Execution/Sleep.h"
-#include "Stroika/Foundation/Execution/Thread.h"
-#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
-#include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
+#include "Stroika/Foundation/Execution/Logger.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-#include "Stroika/Foundation/Time/Duration.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Containers;
-using namespace Stroika::Foundation::Common;
-using namespace Stroika::Foundation::Database;
+using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::DataExchange;
-using namespace Stroika::Foundation::Debug;
-using namespace Stroika::Foundation::Execution;
-using namespace Stroika::Foundation::IO::Network;
-using namespace Stroika::Foundation::Memory;
-using namespace Stroika::Foundation::Time;
 
 using namespace Stroika::Frameworks;
 
-// Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
-
-namespace {
-    /*
-     *  docker run --rm --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
-     */
-    [[maybe_unused]] optional<String> sMongoConnectionString_;
-}
+using Execution::ModuleGetterSetter;
+using Traversal::Iterable;
 
 #if qStroika_HasComponent_googletest
-#if qStroika_HasComponent_sqlite
 namespace {
-    // Bad example (for now) without Bind - just formatting sql lines
-    namespace RegressionTest1_sqlite_ScansDBTest_ {
-        namespace PRIVATE_ {
-            using namespace Database::SQL::SQLite;
-            enum class ScanKindType_ {
-                Background,
-                Reference,
-                Sample,
-                Stroika_Define_Enum_Bounds (Background, Sample)
-            };
-            using ScanIDType_                 = uint64_t;
-            using SpectrumType_               = Mapping<double, double>;
-            using PersistenceScanAuxDataType_ = Mapping<String, String>;
-            struct DB {
-            public:
-                DB (const filesystem::path& testDBFile)
-                {
-                    try {
-                        fDB_ = Connection::New (Connection::Options{.fDBPath = testDBFile});
-                        InitialSetup_ (fDB_);
-                    }
-                    catch (...) {
-                        DbgTrace ("Error {} experiment DB: {}: {}"_f, L"opening"sv, testDBFile, current_exception ());
-                        Execution::ReThrow ();
-                    }
-                }
-                DB ()
-                {
-                    try {
-                        fDB_ = Connection::New (Connection::Options{.fInMemoryDB = ""sv});
-                        InitialSetup_ (fDB_);
-                    }
-                    catch (...) {
-                        DbgTrace ("Error {} experiment DB: {}: {}"_f, L"opening"sv, L"MEMORY"sv, current_exception ());
-                        Execution::ReThrow ();
-                    }
-                }
-                DB (const DB&)                       = delete;
-                nonvirtual DB& operator= (const DB&) = delete;
-                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel,
-                                                           ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
-                {
-                    // @todo write rawSpectrum isntead o fhardwired string...
-                    constexpr bool kUseBind_ = true;
-                    if (kUseBind_) {
-                        Statement s{fDB_, "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, "
-                                          ":EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
-                        s.Bind (":StartAt"sv, ScanStart.AsUTC ().Format (DateTime::kISO8601Format));
-                        s.Bind (":EndAt"sv, ScanEnd.AsUTC ().Format (DateTime::kISO8601Format));
-                        s.Bind (":ScanTypeIDRef"sv, (int)scanKind);
-                        if (rawSpectrum) {
-                            s.Bind (":RawScanData"sv,
-                                    VariantValue{"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"sv});
-                        }
-                        if (ScanLabel) {
-                            s.Bind (":ScanLabel", VariantValue{*ScanLabel});
-                        }
-                        s.GetNextRow ();
-                    }
-                    else {
-                        String insertSQL = [&] () {
-                            StringBuilder sb;
-                            sb += "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)"sv;
-                            sb += "select "sv;
-                            sb += "'"sv + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
-                            sb += "'"sv + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
-                            sb += "{}"_f((int)scanKind) + ","sv;
-                            if (rawSpectrum) {
-                                sb += "'" + Database::SQL::Utils::QuoteStringForDB ("SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"sv) +
-                                      "',"sv;
-                            }
-                            else {
-                                sb += "NULL,"sv;
-                            }
-                            if (ScanLabel) {
-                                sb += "'"sv + Database::SQL::Utils::QuoteStringForDB (*ScanLabel) + "'"sv;
-                            }
-                            else {
-                                sb += "NULL"sv;
-                            }
-                            sb += ";";
-                            return sb;
-                        }();
-                        fDB_.Exec (insertSQL);
-                    }
-                    Statement s{fDB_, "SELECT MAX(ScanId) FROM Scans;"sv};
-                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
-                    return s.GetNextRow ()->Lookup ("MAX(ScanId)"sv)->As<ScanIDType_> ();
-                }
-                nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
-                {
-                    auto r1 = GetLastScan_Explicit_ (scanKind);
-                    auto r2 = GetLastScan_Bind_ (scanKind);
-                    EXPECT_TRUE (r1 == r2);
-                    return r2;
-                }
-                nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
-                {
-                    Statement s{fDB_, "select MAX(ScanId) from Scans where  ScanTypeIDRef='{}';"_f((int)scanKind)};
-                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
-                    if (optional<Statement::Row> r = s.GetNextRow ()) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("ROW: {}"_f, Characters::ToString (*r));
-#endif
-                        return r->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
-                    }
-                    return nullopt;
-                }
-                nonvirtual optional<ScanIDType_> GetLastScan_Bind_ (ScanKindType_ scanKind)
-                {
-                    Statement s{fDB_, "select MAX(ScanId) from Scans where  ScanTypeIDRef=:ScanKind;"};
-                    s.Bind (":ScanKind", VariantValue{(int)scanKind});
-                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
-                    if (optional<Statement::Row> r = s.GetNextRow ()) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("ROW: {}"_f, *r);
-#endif
-                        return r->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
-                    }
-                    return nullopt;
-                }
-                static void InitialSetup_ (Database::SQL::SQLite::Connection::Ptr db)
-                {
-                    // @todo rewrite this using Bind()
-                    TraceContextBumper ctx{"ScanDB_::DB::InitialSetup_"};
-                    bool               created          = false;
-                    constexpr Version  kCurrentVersion_ = Version{1, 0, VersionStage::Alpha, 0};
-                    SQL::ORM::ProvisionForVersion (
-                        db, kCurrentVersion_,
-                        initializer_list<SQL::ORM::TableProvisioner>{
-                            {"ScanTypes"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Version> v, [[maybe_unused]] Version targetDBVersion) -> void {
-                                 // for now no upgrade support
-                                 if (not v) {
-                                     created = true;
-                                     c.Exec ("create table 'ScanTypes' "
-                                             "("
-                                             "ScanTypeId tinyint Primary Key,"
-                                             "TypeName varchar(255) not null"
-                                             ");");
-                                     c.Exec ("insert into ScanTypes (ScanTypeId, TypeName) select {}, 'Reference';"_f((int)ScanKindType_::Reference));
-                                     c.Exec ("insert into ScanTypes (ScanTypeId, TypeName) select {}, 'Sample';"_f((int)ScanKindType_::Sample));
-                                     c.Exec ("insert into ScanTypes (ScanTypeId, TypeName) select {}, 'Background';"_f((int)ScanKindType_::Background));
-                                 }
-                             }},
-                            {"Scans"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Version> v, [[maybe_unused]] Version targetDBVersion) -> void {
-                                 // for now no upgrade support
-                                 if (not v) {
-                                     created = true;
-                                     c.Exec ("create table 'Scans'"
-                                             "("
-                                             "ScanId integer Primary Key AUTOINCREMENT,"
-                                             "StartAt Datetime not null,"
-                                             "EndAt Datetime not null,"
-                                             "ScanTypeIDRef tinyint not null,"
-                                             "ScanLabel varchar,"
-                                             "Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
-                                             ");");
-                                     c.Exec ("Alter table Scans add column RawScanData BLOB;");
-                                 }
-                             }},
-                            {"ScanSet"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Version> v, [[maybe_unused]] Version targetDBVersion) -> void {
-                                 // for now no upgrade support
-                                 if (not v) {
-                                     created = true;
-                                     c.Exec ("Create table ScanSet"
-                                             "("
-                                             "ScanSetID bigint,"
-                                             "ScanIDRef integer,"
-                                             "Foreign key (ScanIdRef) References Scans(ScanId)"
-                                             ");");
-                                     c.Exec ("Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
-                                 }
-                             }},
-                            {"AuxData"sv,
-                             [&created] (SQL::Connection::Ptr c, optional<Version> v, [[maybe_unused]] Version targetDBVersion) -> void {
-                                 // for now no upgrade support
-                                 if (not v) {
-                                     created = true;
-                                     c.Exec ("Create table AuxData"
-                                             "("
-                                             "ScanSetIDRef bigint Primary Key,"
-                                             "Results varchar,"
-                                             "Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
-                                             ");");
-                                 }
-                             }},
-                        });
-                    if (created) {
-                        DbgTrace ("Initialized new experiment DB: {}"_f, db);
-                    }
-                    else {
-                        DbgTrace ("Opened experiment DB: {}"_f, db);
-                    }
-                }
-                Database::SQL::SQLite::Connection::Ptr fDB_;
-            };
-        }
-
-        GTEST_TEST (Foundation_Database, RegressionTest1_sqlite_ScansDBTest_)
+    GTEST_TEST (Foundation_DataExchange_Other, Atom_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Atom_"};
         {
-            //static const     DateTime   kScanStartTime4Reference_   = DateTime::Now ();
-            static const DateTime kScanStartTime4Reference_ = DateTime{Date{Year{2020}, April, day{1}}, TimeOfDay{4, 0, 0}}; // hardwired data to be able to ccompare DBs
-            using namespace PRIVATE_;
-            TraceContextBumper ctx{"ScanDB::DB::RunTest"};
-            auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
-                db.fDB_->Exec ("select * from ScanTypes;");
-                {
-                    Statement s{db.fDB_, "select * from ScanTypes;"};
-                    DbgTrace ("Statement: {}"_f, Characters::ToString (s));
-                    while (optional<Statement::Row> r = s.GetNextRow ()) {
-                        DbgTrace ("ROW: {}"_f, Characters::ToString (*r));
-                    }
-                }
-                DbgTrace ("Latest Reference={}"_f, db.GetLastScan (ScanKindType_::Reference).value_or (static_cast<ScanIDType_> (-1)));
-                SpectrumType_      spectrum;
-                const unsigned int kNRecordsAddedPerTestCall = 100;
-                for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
-                    DateTime scanStartTime = kScanStartTime4Reference_ - 100ms;
-                    DateTime scanEndTime   = kScanStartTime4Reference_;
-                    ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{"Hi Mom"}, ScanKindType_::Reference, spectrum);
-                    Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
-                    Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("ScanPersistenceAdd returned id={}, and laserScan reported={}"_f, (int)sid,
-                              (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
-#endif
-                }
-            };
-            {
-                // re-open the file several times and assure right number of records present
-                filesystem::path dbFileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "foo.db";
-                (void)remove (dbFileName);
-                for (unsigned int i = 0; i < 5; ++i) {
-                    PRIVATE_::DB db{dbFileName};
-                    test (db, i);
-                }
-            }
-            {
-                PRIVATE_::DB db{};
-                test (db, 0);
-            }
+            Atom<> a = L"d";
+            Atom<> b = "d";
+            EXPECT_EQ (a, b);
+            EXPECT_EQ (a.GetPrintName (), L"d");
+            EXPECT_EQ (a.As<String> (), L"d");
+            EXPECT_EQ (a.As<wstring> (), L"d");
+            EXPECT_TRUE (not a.empty ());
         }
-    }
-
-    namespace RegressionTest2_sqlite_EmployeesDB_with_threads_ {
-
-        using namespace Database::SQL::SQLite;
-
-        namespace PRIVATE_ {
-
-            Connection::Ptr SetupDB_ (const Connection::Options& options)
-            {
-                TraceContextBumper  ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::SetupDB_"};
-                Connection::Options o = options;
-                o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-                auto conn             = Connection::New (o);
-                EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
-                constexpr Version kCurrentVersion_ = Version{1, 0, VersionStage::Alpha, 0};
-                SQL::ORM::ProvisionForVersion (conn, kCurrentVersion_,
-                                               initializer_list<SQL::ORM::TableProvisioner>{
-                                                   {"EMPLOYEES"sv,
-                                                    [] (SQL::Connection::Ptr c, optional<Version> v, [[maybe_unused]] Version targetDBVersion) -> void {
-                                                        // for now no upgrade support
-                                                        if (not v) {
-                                                            c.Exec ("CREATE TABLE EMPLOYEES("
-                                                                    "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                                                    "NAME           TEXT    NOT NULL,"
-                                                                    "AGE            INT     NOT NULL,"
-                                                                    "ADDRESS        CHAR(50),"
-                                                                    "SALARY         REAL,"
-                                                                    "STILL_EMPLOYED INT"
-                                                                    ");");
-                                                        }
-                                                    }},
-                                                   {"PAYCHECKS"sv,
-                                                    [] (SQL::Connection::Ptr c, optional<Version> v, [[maybe_unused]] Version targetDBVersion) -> void {
-                                                        // for now no upgrade support
-                                                        if (not v) {
-                                                            c.Exec ("CREATE TABLE PAYCHECKS("
-                                                                    "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                                                                    "EMPLOYEEREF INT NOT NULL,"
-                                                                    "AMOUNT REAL,"
-                                                                    "DATE TEXT"
-                                                                    ");");
-                                                        }
-                                                    }},
-                                               });
-                return conn;
-            }
-
-            void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
-            {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyUpdateEmployeesTable_"};
-
-                Statement addEmployeeStatement{conn, "INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, "
-                                                     ":ADDRESS, :SALARY, :STILL_EMPLOYED);"};
-
-                // Add Initial Employees
-                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {":NAME", "Paul"},
-                    {":AGE", 32},
-                    {":ADDRESS", "California"},
-                    {":SALARY", 20000.00},
-                    {":STILL_EMPLOYED", 1},
-                });
-                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {":NAME", "Allen"},
-                    {":AGE", 25},
-                    {":ADDRESS", "Texas"},
-                    {":SALARY", 15000.00},
-                    {":STILL_EMPLOYED", 1},
-                });
-                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {":NAME", "Teddy"},
-                    {":AGE", 23},
-                    {":ADDRESS", "Norway"},
-                    {":SALARY", 20000.00},
-                    {":STILL_EMPLOYED", 1},
-                });
-                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {":NAME", "Mark"},
-                    {":AGE", 25},
-                    {":ADDRESS", "Rich-Mond"},
-                    {":SALARY", 65000.00},
-                    {":STILL_EMPLOYED", 1},
-                });
-                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {":NAME", "David"},
-                    {":AGE", 27},
-                    {":ADDRESS", "Texas"},
-                    {":SALARY", 85000.00},
-                    {":STILL_EMPLOYED", 1},
-                });
-                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {":NAME", "Kim"},
-                    {":AGE", 22},
-                    {":ADDRESS", "South-Hall"},
-                    {":SALARY", 45000.00},
-                    {":STILL_EMPLOYED", 1},
-                });
-                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {":NAME", "James"},
-                    {":AGE", 24},
-                    {":ADDRESS"sv, "Houston"},
-                    {":SALARY"sv, 10000.00},
-                    {":STILL_EMPLOYED"sv, 1},
-                });
-
-                default_random_engine         generator;
-                uniform_int_distribution<int> distribution{1, 6};
-
-                Statement getAllActiveEmployees{conn, "Select ID,NAME from EMPLOYEES where STILL_EMPLOYED=1;"};
-
-                Statement fireEmployee{conn, "Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;"};
-
-                // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
-                // can REF in paycheck table
-                while (true) {
-                    static const Sequence<String>    kNames_{"Joe", "Phred", "Barny", "Sue", "Anne"};
-                    uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
-                    uniform_int_distribution<int>    ageDistr{25, 50};
-                    static const Sequence<String>    kAddresses{"Houston", "Pittsburg", "New York", "Paris", "California"};
-                    uniform_int_distribution<int>    addressesDistr{0, static_cast<int> (kAddresses.size () - 1)};
-                    uniform_real_distribution<float> salaryDistr{10000.00, 50000.00};
-
-                    try {
-                        uniform_int_distribution<int> whatTodoDistr{0, 3};
-                        switch (whatTodoDistr (generator)) {
-                            case 0:
-                            case 1: {
-                                String name = kNames_[namesDistr (generator)];
-                                DbgTrace ("Adding employee {}"_f, name);
-                                addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                                    {":NAME"sv, name},
-                                    {":AGE"sv, ageDistr (generator)},
-                                    {":ADDRESS"sv, kAddresses[addressesDistr (generator)]},
-                                    {":SALARY"sv, salaryDistr (generator)},
-                                    {":STILL_EMPLOYED"sv, 1},
-                                });
-                            } break;
-                            case 2: {
-                                // Look somebody up, and fire them
-                                Sequence<tuple<VariantValue, VariantValue>> activeEmps = getAllActiveEmployees.GetAllRows (0, 1);
-                                if (not activeEmps.empty ()) {
-                                    uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
-                                    tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
-                                    DbgTrace ("Firing employee: {}, {}"_f, get<0> (killMe).As<int> (), get<1> (killMe).As<String> ());
-                                    fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{":ID", get<0> (killMe).As<int> ()}});
-                                }
-                            } break;
-                        }
-                    }
-                    catch (...) {
-                        // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, current_exception ());
-                    }
-
-                    Sleep (1s); // **cancelation point**
-                }
-            }
-
-            void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
-            {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
-                Statement          addPaycheckStatement{conn,
-                                               "INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
-                Statement          getAllActiveEmployees{conn, "Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
-
-                while (true) {
-                    try {
-                        for (auto employee : getAllActiveEmployees.GetAllRows (0, 1, 2)) {
-                            int    id     = get<0> (employee).As<int> ();
-                            String name   = get<1> (employee).As<String> ();
-                            double salary = get<2> (employee).As<double> ();
-                            DbgTrace ("Writing paycheck for employee #{} ({}) amount {}"_f, id, name, salary);
-                            addPaycheckStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                                {":EMPLOYEEREF", id},
-                                {":AMOUNT", salary / 12},
-                                {":DATE", DateTime::Now ().Format (DateTime::kISO8601Format)},
-                            });
-                        }
-                    }
-                    catch (...) {
-                        // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, Characters::ToString (current_exception ()));
-                    }
-                    Sleep (2s); // **cancelation point**
-                }
-            }
-
-            void ThreadTest_ (const Connection::Options& options)
-            {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::ThreadTest_"};
-                /*
-                 *  Create threads for each of our activities.
-                 *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
-                 */
-                Connection::Ptr    conn1 = SetupDB_ (options); // serialize construction of connections so no race creating/setting up DB
-                Connection::Ptr    conn2 = SetupDB_ (options);
-                Thread::CleanupPtr updateEmpDBThread{
-                    Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table")};
-                Thread::CleanupPtr writeChecks{
-                    Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks")};
-                Execution::WaitableEvent{}.WaitQuietly (15s);
-            }
-
-        }
-
-        GTEST_TEST (Foundation_Database, RegressionTest2_sqlite_EmployeesDB_with_threads_)
         {
-            if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
-                DbgTrace ("Skipping remaining tests cuz too slow"_f);
-                return;
-            }
-            TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt"};
-            using namespace Database::SQL::SQLite;
-            auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
-            (void)std::filesystem::remove (dbPath);
-            PRIVATE_::ThreadTest_ (Connection::Options{.fDBPath = dbPath, .fThreadingMode = Connection::Options::ThreadingMode::eMultiThread});
+            EXPECT_TRUE (Atom<> ().empty ());
         }
-    }
-
-    namespace RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_ {
-
-        using namespace SQL::ORM;
-        using namespace SQL::SQLite;
-
-        namespace PRIVATE_ {
-
-            struct Employee {
-                optional<int> ID{};
-                String        fName;
-                int           fAge{};
-                String        fAddress;
-                double        fSalary{};
-                bool          fStillEmployed{};
-
-                static const LazyInitialized<ObjectVariantMapper> kMapper;
-            };
-            const LazyInitialized<ObjectVariantMapper> Employee::kMapper{[] () {
-                ObjectVariantMapper mapper;
-                mapper.AddCommonType<optional<int>> ();
-                mapper.AddClass<Employee> (
-                    {
-                        {"id"sv, &Employee::ID},
-                        {"Name"sv, &Employee::fName},
-                        {"Age"sv, &Employee::fAge},
-                        {"Address"sv, &Employee::fAddress},
-                        {"Salary"sv, &Employee::fSalary},
-                        {"Still-Employed"sv, &Employee::fStillEmployed},
-                    },
-                    {.fOmitNullEntriesInFromObject = false});
-                return mapper;
-            }};
-
-            struct Paycheck {
-                optional<int> ID{};
-                int           fEmployeeRef;
-                double        fAmount{};
-                Time::Date    fDate;
-
-                static const LazyInitialized<ObjectVariantMapper> kMapper;
-            };
-            const LazyInitialized<ObjectVariantMapper> Paycheck::kMapper{[] () {
-                ObjectVariantMapper mapper;
-                mapper.AddCommonType<optional<int>> ();
-                mapper.AddClass<Paycheck> (
-                    {
-                        {"id"sv, &Paycheck::ID},
-                        {"Employee-Ref"sv, &Paycheck::fEmployeeRef},
-                        {"Amount"sv, &Paycheck::fAmount},
-                        {"Date"sv, &Paycheck::fDate},
-                    },
-                    {.fOmitNullEntriesInFromObject = false});
-                return mapper;
-            }};
-
-            /**
-             *  Combine all the ObjectVariantMappers for the objects we use in this database into one, and
-             *  AMEND any mappers as needed to accommodate possible changes in the mappings (like representing
-             *  some things as strings vs. BLOBs etc).
-             */
-            const LazyInitialized<ObjectVariantMapper> kDBObjectMapper_{[] () {
-                ObjectVariantMapper mapper;
-                mapper += Employee::kMapper;
-                mapper += Paycheck::kMapper;
-                return mapper;
-            }};
-
-            /*
-             * Define the schema, and how to map between the VariantValue objects and the database
-             * for the EMPLOYEES table.
-             */
-            const Schema::Table kEmployeesTableSchema_{
-                "EMPLOYEES"sv,
-                /*
-                 *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
-                 *  for ID, just as an example.
-                 */
-                // clang-format off
-                Collection<Schema::Field>{
-                {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = "NAME"sv, .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = "AGE"sv, .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}
-                , {.fName = "ADDRESS"sv, .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = "SALARY"sv, .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = "STILL_EMPLOYED"sv, .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
-                },
-                Schema::CatchAllField{}};
-
-            /*
-             * Define the schema, and how to map between the VariantValue objects and the database
-             * for the PAYCHECKS table.
-             */
-            const Schema::Table kPaychecksTableSchema_{
-                "PAYCHECKS"sv,
-                Collection<Schema::Field>{
-                {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = "EMPLOYEEREF"sv, .fVariantValueName = "Employee-Ref"sv, .fRequired = true,  .fVariantValueType = VariantValue::eInteger}
-                , {.fName = "AMOUNT"sv, .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = "DATE"sv, .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}
-             }};
-            // clang-format on
-
-            /*
-             * Create database connection, with hook to establish the database schema,
-             * (and soon to provide database schema upgrades as needed)
-             */
-            Connection::Ptr SetupDB_ (const Connection::Options& options)
-            {
-                TraceContextBumper  ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::SetupDB_"};
-                Connection::Options o = options;
-                o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-                auto conn             = Connection::New (o);
-                EXPECT_TRUE (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
-                constexpr Version kCurrentVersion_ = Version{1, 0, VersionStage::Alpha, 0};
-                SQL::ORM::ProvisionForVersion (conn, kCurrentVersion_,
-                                               Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
-                return conn;
-            }
-
-            /*
-             * Example thread making updates to the employees table.
-             */
-            void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
-            {
-                TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::PeriodicallyUpdateEmployeesTable_"};
-
-                auto employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
-
-                // Add Initial Employees
-                // @todo use __cpp_designated_initializers when we can assume it
-                employeeTableConnection->AddNew (Employee{nullopt, "Paul", 32, "California", 20000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, "Allen", 25, "Texas", 15000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, "Teddy", 23, "Norway", 20000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, "Mark", 25, "Rich-Mond", 65000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, "David", 27, "Texas", 85000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, "Kim", 22, "South-Hall", 45000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, "James", 24, "Houston", 10000.00, true});
-
-                default_random_engine         generator;
-                uniform_int_distribution<int> distribution{1, 6};
-
-                // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
-                // can REF in paycheck table
-                while (true) {
-                    static const Sequence<String>    kNames_{"Joe", "Phred", "Barny", "Sue", "Anne"};
-                    uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
-                    uniform_int_distribution<int>    ageDistr{25, 50};
-                    static const Sequence<String>    kAddresses{"Houston", "Pittsburg", "New York", "Paris", "California"};
-                    uniform_int_distribution<int>    addressesDistr{0, static_cast<int> (kAddresses.size () - 1)};
-                    uniform_real_distribution<float> salaryDistr{10000.00, 50000.00};
-
-                    try {
-                        uniform_int_distribution<int> whatTodoDistr{0, 3};
-                        switch (whatTodoDistr (generator)) {
-                            case 0:
-                            case 1: {
-                                String name = kNames_[namesDistr (generator)];
-                                DbgTrace ("Adding employee {}"_f, name);
-                                employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator),
-                                                                          kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
-                            } break;
-                            case 2: {
-                                // Look somebody up, and fire them
-                                auto activeEmps = employeeTableConnection->GetAll ();
-                                if (not activeEmps.empty ()) {
-                                    uniform_int_distribution<int> empDistr{0, static_cast<int> (activeEmps.size () - 1)};
-                                    Employee                      killMe = activeEmps[empDistr (generator)];
-                                    Assert (killMe.ID.has_value ());
-                                    DbgTrace ("Firing employee: {}, {}"_f, *killMe.ID, killMe.fName);
-                                    killMe.fStillEmployed = false;
-                                    employeeTableConnection->Update (killMe);
-                                }
-                            } break;
-                        }
-                    }
-                    catch (...) {
-                        // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, current_exception ());
-                    }
-
-                    Sleep (1s); // **cancelation point**
-                }
-            }
-
-            /*
-             * Example thread making updates to the paychecks table (while consulting the employees table).
-             */
-            void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
-            {
-                TraceContextBumper ctx{
-                    "RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
-                auto employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
-                auto paycheckTableConnection = make_unique<SQL::ORM::TableConnection<Paycheck>> (conn, kPaychecksTableSchema_, kDBObjectMapper_);
-                while (true) {
-                    try {
-                        for (auto employee : employeeTableConnection->GetAll ()) {
-                            Assert (employee.ID != nullopt);
-                            DbgTrace ("Writing paycheck for employee #{} ({}) amount {}"_f, *employee.ID, employee.fName, employee.fSalary);
-                            paycheckTableConnection->AddNew (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
-                        }
-                    }
-                    catch (...) {
-                        // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace ("Exception processing SQL - this should generally not happen: {}"_f, current_exception ());
-                    }
-                    Sleep (2s); // **cancelation point**
-                }
-            }
-
-            void ThreadTest_ (const Connection::Options& options)
-            {
-                TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::ThreadTest_"};
-                /*
-                 *  Create threads for each of our activities.
-                 *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
-                 */
-                Connection::Ptr    conn1 = SetupDB_ (options); // serialize construction of connections so no race creating/setting up DB
-                Connection::Ptr    conn2 = SetupDB_ (options);
-                Thread::CleanupPtr updateEmpDBThread{
-                    Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table")};
-                Thread::CleanupPtr writeChecks{
-                    Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks")};
-                Execution::WaitableEvent{}.WaitQuietly (15s);
-            }
-        }
-
-        GTEST_TEST (Foundation_Database, RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_)
         {
-            TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt"};
-            if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
-                DbgTrace ("Skipping remaining tests cuz too slow"_f);
-                return;
-            }
-            using namespace Database::SQL::SQLite;
-            auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-and-orm-test.db";
-            (void)std::filesystem::remove (dbPath);
-            PRIVATE_::ThreadTest_ (Connection::Options{.fDBPath = dbPath, .fThreadingMode = Connection::Options::ThreadingMode::eMultiThread});
+            Atom<> a = L"d";
+            Atom<> b = "e";
+            EXPECT_TRUE (a != b);
+            EXPECT_TRUE (not a.empty ());
+            Atom<> c = a;
+            EXPECT_EQ (c, a);
         }
-    }
-}
-#endif
-
-#if qStroika_HasComponent_mongocxxdriver
-GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
-{
-    TraceContextBumper ctx{"SimpleMongoDBClientTest_"};
-    if (sMongoConnectionString_) {
-        String connectionString = *sMongoConnectionString_;
-        using namespace Database::Document;
-        using namespace Database::Document::MongoDBClient;
-
-        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
-
-        {
-            try {
-                AdminConnection::Ptr p = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-                Set<String>          d = p->GetDatabases ();
-                DbgTrace ("d={}"_f, d);
-                auto ping = p.run_command ({{"ping", 1}});
-                DbgTrace ("ping={}"_f, ping);
-            }
-            catch (...) {
-                // test warning no mongo on address X so test skipped
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-                return; // skip rest of tests
-            }
-        }
-
-        try {
-            const String kTestDBName_ = "MyTestDB"sv;
-            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-            adminDB.CreateDatabase (kTestDBName_);
-            Database::Document::Connection::Ptr p =
-                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
-            EXPECT_EQ (p.GetCollections ().size (), 0u);
-            p->CreateCollection ("blah");
-            DbgTrace ("collections={}"_f, p->GetCollections ());
-            EXPECT_EQ (p.GetCollections (), Set<String>{"blah"});
-            Database::Document::Collection::Ptr blah       = p.GetCollection ("blah");
-            const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
-            auto                                id         = blah.Add (kTestObj1_);
-            DbgTrace ("Added doc {}"_f, id);
-            Database::Document::Document roundTripped = blah.GetOne (id).value_or (Database::Document::Document{});
-            DbgTrace ("roundTripped  get value={}"_f, roundTripped);
-            //EXPECT_EQ (kTestObj1_, roundTripped);
-            auto rrs = blah.GetAll ();
-            DbgTrace ("rrs  get value={}"_f, rrs);
-        }
-        catch (...) {
-            // test warning no mongo on address X so test skipped
-        }
-    }
-}
-#endif
-
-GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
-{
-    TraceContextBumper ctx{"DocumentDBTestBasics_"};
-    using namespace Database::Document;
-
-    [[maybe_unused]] auto test1 = [] (Database::Document::Connection::Ptr p) {
-        EXPECT_EQ (p.GetCollections ().size (), 0u);
-        const String kCollectionName_ = "blah"sv;
-        p->CreateCollection (kCollectionName_);
-        EXPECT_EQ (p.GetCollections (), Set<String>{kCollectionName_});
-        Database::Document::Collection::Ptr blah         = p.GetCollection (kCollectionName_);
-        const Database::Document::Document  kTestObj1_   = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
-        Database::Document::IDType          id           = blah.Add (kTestObj1_);
-        Database::Document::Document        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-        EXPECT_EQ (kTestObj1_, roundTripped);
-        using DOC_         = Database::Document::Document;
-        Sequence<DOC_> rrs = blah.GetAll (nullopt, Projection{Projection::eInclude, {"id"_k}});
-        EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{"id", id}}}));
-        const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
-        blah.Update (id, kTestObj1_Updated_); // only modify provided fields
-        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-        EXPECT_EQ (roundTripped, (Mapping<String, VariantValue>{{"x", 8}, {"y", 7}, {"z", "z"}}));
-        blah.Replace (id, kTestObj1_Updated_);
-        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-        EXPECT_EQ (kTestObj1_Updated_, roundTripped);
-    };
-
-#if qStroika_HasComponent_mongocxxdriver
-    if (sMongoConnectionString_) {
-        String connectionString = *sMongoConnectionString_;
-        // Test against mongo connection (hardwired value or ENV VAR)
-        using namespace Database::Document::MongoDBClient;
-
-        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
-        {
-            ConnectionPool connectionPool{connectionString}; // test connection-pool based access
-            try {
-                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
-                Set<String>           d    = p->GetDatabases ();
-                [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
-            }
-            catch (...) {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-            }
-            const String kTestDBName_ = "MyTestDB"sv;
-            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
-            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-            adminDB.CreateDatabase (kTestDBName_);
-            Database::Document::Connection::Ptr p =
-                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
-            test1 (p);
-        }
-    }
-
-#endif
-#if qStroika_HasComponent_sqlite
-    // Test against SQLite
-    try {
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
-        test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
-        test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
-        IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
-        test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-#endif
-    try {
-        Database::Document::Connection::Ptr p =
-            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
-        test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
     }
 }
 
 namespace {
-    namespace DocumentDBTestObjectCollection_Private_ {
-
-        using IDType = String;
-
-        struct User {
-            optional<IDType>    fID;
-            optional<String>    fName;
-            optional<String>    fEmail;
-            optional<String>    fPhoneNumber;
-            optional<TypedBLOB> fImage;
-            optional<DateTime>  fDateTime;
-            bool                operator== (const User&) const = default;
-            nonvirtual String   ToString () const
-            {
-                return kMapper.FromObject (*this).ToString ();
-            }
-            static inline const ObjectVariantMapper kMapper = [] () {
-                ObjectVariantMapper mapper;
-                mapper.AddCommonType<TypedBLOB> ();
-                mapper.AddCommonType<optional<TypedBLOB>> ();
-                mapper.AddCommonType<DateTime> ();
-                mapper.AddCommonType<optional<DateTime>> ();
-                mapper.AddCommonType<IDType> ();
-                mapper.AddCommonType<optional<IDType>> ();
-                mapper.AddCommonType<optional<String>> ();
-                mapper.AddClass<User> ({
-                    {"id"sv, &User::fID},
-                    {"email"sv, &User::fEmail},
-                    {"name"sv, &User::fName},
-                    {"phoneNumber"sv, &User::fPhoneNumber},
-                    {"image"sv, &User::fImage},
-                    {"dateTime"sv, &User::fDateTime},
-                });
-                return mapper;
-            }();
+    GTEST_TEST (Foundation_DataExchange_Other, OptionsFile_)
+    {
+        Debug::TraceContextBumper ctx{"{}::OptionsFile_"};
+        struct MyData_ {
+            bool               fEnabled = false;
+            optional<DateTime> fLastSynchronizedAt;
         };
+        OptionsFile of{"MyModule"sv,
+                       [] () -> ObjectVariantMapper {
+                           ObjectVariantMapper mapper;
+                           mapper.AddClass<MyData_> ({
+                               {"Enabled"sv, &MyData_::fEnabled},
+                               {"Last-Synchronized-At"sv, &MyData_::fLastSynchronizedAt},
+                           });
+                           return mapper;
+                       }(),
+                       OptionsFile::kDefaultUpgrader,
+                       [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                           return IO::FileSystem::WellKnownLocations::GetTemporary () / (moduleName + fileSuffix).As<filesystem::path> ();
+                       }};
+        MyData_     m = of.Read<MyData_> (MyData_{}); // will return default values if file not present
+        of.Write (m);                                 // test writing
     }
 }
 
-GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
-{
-    TraceContextBumper ctx{"DocumentDBTestObjectCollection_"};
-    using namespace Database::Document;
+namespace {
+    struct MyData_ {
+        bool               fEnabled = false;
+        optional<DateTime> fLastSynchronizedAt;
+    };
+    struct ModuleGetterSetter_Implementation_MyData_ {
+        ModuleGetterSetter_Implementation_MyData_ ()
+            : fOptionsFile_{"MyModule"sv,
+                            [] () -> ObjectVariantMapper {
+                                ObjectVariantMapper mapper;
+                                mapper.AddClass<MyData_> ({
+                                    {"Enabled"sv, &MyData_::fEnabled},
+                                    {"Last-Synchronized-At"sv, &MyData_::fLastSynchronizedAt},
+                                });
+                                return mapper;
+                            }(),
+                            OptionsFile::kDefaultUpgrader,
+                            [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                                // for regression tests write to /tmp
+                                return IO::FileSystem::WellKnownLocations::GetTemporary () / (moduleName + fileSuffix).As<filesystem::path> ();
+                            }}
+            , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
+        {
+            Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+        }
+        MyData_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const MyData_& v)
+        {
+            fActualCurrentConfigData_ = v;
+            fOptionsFile_.Write (v);
+        }
 
-    [[maybe_unused]] auto test1 = [] (Database::Document::Connection::Ptr p) {
-        EXPECT_EQ (p.GetCollections ().size (), 0u);
-        p->CreateCollection ("Users");
-        EXPECT_EQ (p.GetCollections (), Set<String>{"Users"});
-        using namespace DocumentDBTestObjectCollection_Private_;
-        auto userCollection = Database::Document::ObjectCollection::New<User> (p.GetCollection ("Users"), User::kMapper);
-        EXPECT_EQ (userCollection.GetAll ().size (), 0u);
-        String userIDAdded = userCollection.Add (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
-        EXPECT_EQ (userCollection.GetAll ().size (), 1u);
-        EXPECT_EQ (userCollection.GetOne (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
-        userCollection.Update (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
-        EXPECT_EQ (userCollection.GetOne (userIDAdded),
-                   (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
-        User u      = userCollection.GetOneOrThrow (userIDAdded);
-        u.fImage    = TypedBLOB{.fData = Memory::BLOB{0x1, 0x2, 0x3, 0x4}, .fType = InternetMediaTypes::kAudioMP3};
-        u.fDateTime = Time::DateTime::Now ();
-        userCollection.Replace (userIDAdded, u);
-        EXPECT_EQ (userCollection.GetOne (userIDAdded), u);
+    private:
+        OptionsFile fOptionsFile_;
+        MyData_     fActualCurrentConfigData_; // automatically initialized just in time, and externally synchronized
     };
 
-#if qStroika_HasComponent_mongocxxdriver
-    if (sMongoConnectionString_) {
-        String connectionString = *sMongoConnectionString_;
-        // Test against mongo connection (hardwired value or ENV VAR)
-        using namespace Database::Document::MongoDBClient;
+    ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_> sModuleConfiguration_;
 
-        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
-        {
-            try {
-                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-                Set<String>           d    = p->GetDatabases ();
-                [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
-            }
-            catch (...) {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-            }
-            const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
-            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-            adminDB.CreateDatabase (kTestDBName_);
-            Database::Document::Connection::Ptr p =
-                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
-            test1 (p);
+    GTEST_TEST (Foundation_DataExchange_Other, Test3_ModuleGetterSetter_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test3_ModuleGetterSetter_"};
+        if (sModuleConfiguration_.Get ().fEnabled) {
+            auto n = sModuleConfiguration_.Get ();
+            sModuleConfiguration_.Set (n);
         }
     }
-#endif
-#if qStroika_HasComponent_sqlite
-    // Test against SQLite
-    try {
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
-        test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
-        test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
-        IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
-        test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-#endif
 }
 
+namespace {
+    GTEST_TEST (Foundation_DataExchange_Other, VariantValue_)
+    {
+        Debug::TraceContextBumper ctx{"{}::VariantValue_"};
+
+        using namespace Containers;
+        using namespace Characters;
+        using namespace Time;
+        {
+            Collection<VariantValue> vc;
+            VariantValue             vv{vc};
+        }
+        {
+            optional<String> x1;
+            optional<Date>   x2;
+            String           representAs1 = VariantValue{x1}.As<String> ();
+            String           representAs2 = VariantValue{x2}.As<String> ();
+            x1                            = VariantValue{representAs1}.As<optional<String>> ();
+            x2                            = VariantValue{representAs2}.As<optional<Date>> ();
+        }
+        {
+            auto roundTrip = [] (auto tValue) {
+                using T               = remove_cvref_t<decltype (tValue)>;
+                String representation = VariantValue{tValue}.As<String> ();
+                return VariantValue{representation}.As<T> ();
+            };
+            EXPECT_EQ (roundTrip ("v"_k), "v");
+            EXPECT_EQ (roundTrip (5), 5);
+            EXPECT_EQ (roundTrip (optional<int>{}), optional<int>{});
+            EXPECT_EQ (roundTrip (optional<Date>{}), optional<Date>{});
+            constexpr DateTime kT1_ = DateTime{Date{January / 3 / 1944}};
+            EXPECT_EQ (roundTrip (kT1_), kT1_);
+
+            // But doesn't work perfectly. Empty string and optional<String>{} get represented as the same so that's ambiguous
+            EXPECT_EQ (roundTrip (String{}), String{});
+            EXPECT_EQ (roundTrip (optional<String>{}), nullopt);
+            EXPECT_EQ (roundTrip (optional<String>{String{}}), nullopt); // oops - but really how could it tell?
+        }
+        DbgTrace ("mapping_vv={}"_f, Mapping<String, VariantValue>{{"a", 3}});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_DataExchange_Other, JWT)
+    {
+        Debug::TraceContextBumper ctx{"{}::JTW"};
+        using namespace DataExchange::JSON;
+        auto encodedJWT =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXUyJ9.eyJpc3MiOiJhdXRoMCIsInNhbXBsZSI6InRlc3QifQ.lQm3N2bVlqt2-1L-FsOjtR6uE-L4E9zJutMWKIe1v1M";
+        JWT jwt{encodedJWT};
+        for ([[maybe_unused]] auto& claim : jwt.GetHeaderClaims ()) {
+            DbgTrace ("header claim: {}"_f, claim);
+        }
+        for ([[maybe_unused]] auto& claim : jwt.GetPayloadClaims ()) {
+            DbgTrace ("payload claim: {}"_f, claim);
+        }
+        if ([[maybe_unused]] auto audience = jwt.GetAudience ()) {
+            DbgTrace ("Audience is {}"_f, *audience);
+        }
+        DbgTrace ("ValidFor={}"_f, jwt.GetValidFor ());
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_DataExchange_Other, InternetMediaType_)
+    {
+        Debug::TraceContextBumper ctx{"{}::InternetMediaType_"};
+        {
+            InternetMediaType ct0{"text/plain"};
+            EXPECT_EQ (ct0.GetType (), "text");
+            EXPECT_EQ (ct0.GetSubType (), "plain");
+            EXPECT_EQ (ct0.GetSuffix (), nullopt);
+
+            InternetMediaType ct1{L"text/plain;charset=ascii"};
+            EXPECT_EQ (ct1.GetParameters (), (Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
+            EXPECT_EQ (ct1.GetSuffix (), nullopt);
+
+            InternetMediaType ct2{"text/plain; charset = ascii"};
+            EXPECT_EQ (ct1, ct2);
+
+            InternetMediaType ct3{"text/plain; charset = \"ascii\""};
+            EXPECT_EQ (ct1, ct3);
+
+            InternetMediaType ct4{"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
+            EXPECT_TRUE (ct1 != ct4);
+
+            InternetMediaType ct5{"application/vnd.ms-excel"};
+            EXPECT_EQ (ct5.GetType (), "application");
+            EXPECT_EQ (ct5.GetSubType (), "vnd.ms-excel");
+            EXPECT_EQ (ct5.GetSuffix (), nullopt);
+
+            InternetMediaType ct6{"application/mathml+xml"};
+            EXPECT_EQ (ct6.GetType (), "application");
+            EXPECT_EQ (ct6.GetSubType (), "mathml");
+            EXPECT_EQ (ct6.GetSuffix (), "xml");
+            EXPECT_EQ (ct6.As<wstring> (), L"application/mathml+xml");
+        }
+        {
+            // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
+            InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
+            InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
+            EXPECT_EQ (ct1, ct2);
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::Wildcards::kText, ct1));
+        }
+        {
+            auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
+                DbgTrace ("SUFFIX({})={}"_f, label.As<wstring> (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)));
+                DbgTrace ("ASSOCFILESUFFIXES({})={}"_f, label.As<wstring> (), Characters::ToString (r.GetAssociatedFileSuffixes (i)));
+                DbgTrace ("GetAssociatedPrettyName({})={}"_f, label, Characters::ToString (r.GetAssociatedPrettyName (i)));
+            };
+            auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::sThe;
+                using namespace Characters;
+                if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
+                    Stroika::Frameworks::Test::WarnTestIssue (Format ("File suffix mismatch for {}: got {}, expected {}"_f, i,
+                                                                      r.GetPreferredAssociatedFileSuffix (i), possibleFileSuffixes));
+                }
+                if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
+                    Stroika::Frameworks::Test::WarnTestIssue (
+                        Format ("GetAssociatedContentType for fileSuffixes {} (expected {}, got {})"_f, possibleFileSuffixes, i,
+                                possibleFileSuffixes
+                                    .Map<Iterable<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
+                                    .As<Set<InternetMediaType>> ()));
+                }
+            };
+            dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
+            checkCT (InternetMediaTypes::kText_PLAIN, {".txt"});
+            dumpCT ("HTML"sv, InternetMediaTypes::kHTML);
+            checkCT (InternetMediaTypes::kHTML, {".html", ".htm"});
+            dumpCT (L"JSON", InternetMediaTypes::kJSON);
+            checkCT (InternetMediaTypes::kJSON, {".json"});
+            dumpCT (L"PNG", InternetMediaTypes::kPNG);
+            checkCT (InternetMediaTypes::kPNG, {".png"});
+            {
+                InternetMediaTypeRegistry registry = InternetMediaTypeRegistry::sThe;
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kImage, InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::Wildcards::kImage, InternetMediaTypes::kJSON));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::kXML, InternetMediaTypes::kXML));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::kXML, InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kXML));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kHTML));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kJSON));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not registry.IsA (InternetMediaTypes::kXML, InternetMediaType{"text/foobar"sv}));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::kXML, InternetMediaType{"text/foobar+xml"sv}));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::kJSON, InternetMediaType{"application/openapi+json"sv}));
+                EXPECT_TRUE (registry.IsA (InternetMediaTypes::Wildcards::kText, InternetMediaType{"application/openapi+json"sv}));
+            }
+        }
+        {
+            Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::sThe->GetMediaTypes()"};
+            // enumerate all content types
+            for (auto ct : InternetMediaTypeRegistry::sThe->GetMediaTypes ()) {
+                DbgTrace ("i={}"_f, ct);
+            }
+        }
+        {
+            Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry - updating"};
+            InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::sThe;
+            InternetMediaTypeRegistry updatedRegistry = origRegistry;
+            const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
+            EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
+            updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{".HPHR"}, ".HPHR"});
+            InternetMediaTypeRegistry::sThe.store (updatedRegistry);
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kXML, kHFType_));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->GetMediaTypes ().Contains (kHFType_));
+            EXPECT_TRUE (not origRegistry.GetMediaTypes ().Contains (kHFType_));
+            EXPECT_TRUE (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
+        }
+        {
+            // Noticed mistake in InternetMediaTypeRegistry::sThe->IsA () -- as=application/x-ccrddd should not match ISA relationship with application/c-ccr
+            const InternetMediaType kCCR{"application/x-ccr"sv};
+            const InternetMediaType kCCR_LegitAlt{"application/x-ccr+xml"sv};
+            const InternetMediaType kCCR_Typo1{"application/x-ccx"sv};
+            const InternetMediaType kCCR_Typo2{"application/x-ccrPLUSEXTRASTUFFATTHEEND"sv};
+            const InternetMediaType kCCR_WRONG_CASE1{"APPLICATION/x-ccr"sv};
+            const InternetMediaType kCCR_WRONG_CASE2{"APPLICATION/X-CCR"sv};
+            EXPECT_EQ (kCCR, kCCR_WRONG_CASE1);
+            EXPECT_EQ (kCCR, kCCR_WRONG_CASE2);
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR));
+            EXPECT_TRUE (InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_LegitAlt));
+            EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_Typo1));
+            EXPECT_TRUE (not InternetMediaTypeRegistry::sThe->IsA (kCCR, kCCR_Typo2));
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])
 {
-    const Execution::CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
-
-    try {
-        Execution::CommandLine cmdLine{argc, argv};
-        if (auto o = cmdLine.GetArgument (kMongoConnectionStringOpt_)) {
-            sMongoConnectionString_ = *o;
-        }
-        sMongoConnectionString_ = Or_Else (sMongoConnectionString_, [] () { return kEnvironment->Lookup ("MONGO_CONNECTION_STRING"sv); });
-    }
-    catch (...) {
-        auto exc = current_exception ();
-        cerr << "Usage: " << Characters::ToString (exc) << endl;
-        exit (EXIT_FAILURE);
-    }
-
+    Execution::Logger::Activator logMgrActivator; // for OptionsFile test
     Test::Setup (argc, argv);
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();

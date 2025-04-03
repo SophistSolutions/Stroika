@@ -1,15 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::Containers::Deque
+//  TEST    Foundation::Containers::DataHyperRectangle
 //      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
-#include "Stroika/Foundation/Containers/Deque.h"
-
-#include "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
+#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
+#include "Stroika/Foundation/Containers/DataHyperRectangle.h"
+#include "Stroika/Foundation/Containers/DenseDataHyperRectangle.h"
+#include "Stroika/Foundation/Containers/SparseDataHyperRectangle.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -17,61 +20,107 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-#include "../TestCommon/CommonTests_Queue.h"
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using Concrete::Deque_DoublyLinkedList;
-
 #if qStroika_HasComponent_googletest
 namespace {
-    namespace Test1_BasicDequeTest_ {
-        template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-        void DoAllTests_ ()
+    namespace Test1_BasicSparseHyperCubeTest_ {
+        void RunTests ()
         {
-            // test DQUEUE METHODS - NYI
+            {
+                SparseDataHyperRectangleN<int, 2> x;
+                EXPECT_TRUE (x.empty ());
+                EXPECT_TRUE (x.GetAt (2, 2) == 0);
+                x.SetAt (2, 2, 4);
+                EXPECT_TRUE (x.GetAt (2, 2) == 4);
+            }
+            {
+                SparseDataHyperRectangleN<int, 3> x;
+                EXPECT_TRUE (x.empty ());
+                EXPECT_TRUE (x.GetAt (1, 2, 3) == 0);
+                x.SetAt (1, 2, 3, 99);
+                EXPECT_TRUE (x.GetAt (1, 2, 3) == 99);
+            }
+            {
+                DataHyperRectangleN<int, 2> x = Concrete::SparseDataHyperRectangle_stdmapN<int, 2>{};
+                Verify (x.GetAt (2, 2) == 0);
+                for ([[maybe_unused]] auto t : x) {
+                }
+                x.SetAt (2, 2, 4);
+                for ([[maybe_unused]] auto t : x) {
+                }
+            }
+            {
+                DataHyperRectangleN<int, 3> x = Concrete::SparseDataHyperRectangle_stdmapN<int, 3>{};
+                Verify (x.GetAt (1, 2, 3) == 0);
+                for ([[maybe_unused]] auto t : x) {
+                }
+                x.SetAt (1, 2, 3, 99);
+                for ([[maybe_unused]] auto t : x) {
+                }
+            }
         }
     }
 }
 
 namespace {
-    template <typename CONCRETE_CONTAINER, Common::IEqualsComparer<typename CONCRETE_CONTAINER::value_type> EQUALS_COMPARER>
-    void SimpleQueueTest_All_NotRequiringEquals_For_Type ()
-    {
-        CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
-    }
-    template <typename CONCRETE_CONTAINER, Common::IEqualsComparer<typename CONCRETE_CONTAINER::value_type> EQUALS_COMPARER>
-    void SimpleQueueTest_All_For_Type ()
-    {
-        CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
-        Test1_BasicDequeTest_::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+    namespace Test2_BasicDenseHyperCubeTest_ {
+        void RunTests ()
+        {
+            {
+                DataHyperRectangleN<int, 2> x = Concrete::DenseDataHyperRectangle_VectorN<int, 2>{3, 4};
+                Verify (x.GetAt (2, 2) == 0);
+                for ([[maybe_unused]] auto t : x) {
+                }
+            }
+        }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Deque, all)
+    namespace Test3_BasicSparseHCTest_ {
+        template <typename CONCRETE_CONTAINER2>
+        void RunTests ()
+        {
+            CONCRETE_CONTAINER2 tmp{};
+            EXPECT_TRUE (tmp.empty ());
+            EXPECT_TRUE (tmp.GetAt (2, 2) == 0);
+            tmp.SetAt (2, 2, 4);
+            EXPECT_TRUE (tmp.GetAt (2, 2) == 4);
+            Verify (tmp.size () == 1);
+            for ([[maybe_unused]] auto t : tmp) {
+            }
+        }
+    }
+}
+
+namespace {
+    namespace Test4_BasicDenseHCTest_ {
+        template <typename CONCRETE_CONTAINER2>
+        void RunTests ()
+        {
+            DataHyperRectangleN<int, 2> x = CONCRETE_CONTAINER2{3, 4};
+            Verify (x.GetAt (2, 2) == 0);
+            for ([[maybe_unused]] auto t : x) {
+            }
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_DataHyperRectangle, all)
     {
-        using COMPARE_SIZET       = equal_to<size_t>;
-        using COMPARE_SimpleClass = equal_to<OnlyCopyableMoveableAndTotallyOrdered>;
-
-        using COMPARE_OnlyCopyableMoveable = AsIntsEqualsComparer<OnlyCopyableMoveable>;
-
-        SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Deque<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-        SimpleQueueTest_All_For_Type<Deque<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveableAndTotallyOrdered>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<OnlyCopyableMoveable>, COMPARE_OnlyCopyableMoveable> ();
+        Test1_BasicSparseHyperCubeTest_::RunTests ();
+        Test2_BasicDenseHyperCubeTest_::RunTests ();
+        Test3_BasicSparseHCTest_::RunTests<SparseDataHyperRectangleN<int, 2>> ();
+        Test3_BasicSparseHCTest_::RunTests<Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>> ();
+        Test4_BasicDenseHCTest_::RunTests<Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>> ();
 
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }

@@ -1,20 +1,20 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-//  TEST    Foundation::Containers::MultiSet
+//  TEST    Foundation::Containers::Mapping
+//      \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 
 #include "Stroika/Foundation/Containers/Collection.h"
 
-#include "Stroika/Foundation/Containers/MultiSet.h"
-
-#include "Stroika/Foundation/Containers/Concrete/MultiSet_Array.h"
-#include "Stroika/Foundation/Containers/Concrete/MultiSet_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_SkipList.h"
-#include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
-
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -22,140 +22,262 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-#include "../TestCommon/CommonTests_MultiSet.h"
+#include "../TestCommon/CommonTests_Mapping.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
-using Concrete::MultiSet_Array;
-using Concrete::MultiSet_LinkedList;
-using Concrete::SortedMultiSet_SkipList;
-using Concrete::SortedMultiSet_stdmap;
-
 using Test::ArchtypeClasses::AsIntsEqualsComparer;
 using Test::ArchtypeClasses::AsIntsLessComparer;
-using Test::ArchtypeClasses::AsIntsThreeWayComparer;
 using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
-using Test::ArchtypeClasses::AsIntsEqualsComparer;
-using Test::ArchtypeClasses::AsIntsLessComparer;
-using Test::ArchtypeClasses::AsIntsThreeWayComparer;
+using Concrete::Mapping_Array;
+using Concrete::Mapping_LinkedList;
+using Concrete::SortedMapping_SkipList;
+using Concrete::SortedMapping_stdmap;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    template <typename CONCRETE_CONTAINER, typename SCHEMA = CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>>
-    void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
+    template <typename CONCRETE_CONTAINER>
+    void DoTestForConcreteContainer_ ()
     {
-        Debug::TraceContextBumper ctx{"{}::DoTestForConcreteContainer_"};
-        CommonTests::MultiSetTests::All_For_Type (schema);
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, ExampleCTORS)
-    {
-        // From MultiSet<> CTOR docs
-        Collection<int>  c;
-        std::vector<int> v;
-
-        MultiSet<int> s1 = {1, 2, 3};
-        MultiSet<int> s2 = s1;
-        MultiSet<int> s3{s1};
-        MultiSet<int> s4{s1.begin (), s1.end ()};
-        MultiSet<int> s5{c};
-        MultiSet<int> s6{v};
-        MultiSet<int> s7{v.begin (), v.end ()};
-        MultiSet<int> s8{move (s1)};
-        MultiSet<int> s9{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, Top_)
-    {
-        {
-            MultiSet<int> test{1, 1, 5, 1, 6, 5};
-            EXPECT_TRUE (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
-            EXPECT_TRUE (test.Top (1).SequentialEquals ({{1, 3}}));
-        }
-        {
-            MultiSet<int> test{1, 1, 5, 1, 6, 5};
-            EXPECT_TRUE (test.TopElements ().SequentialEquals ({1, 5, 6}));
-            EXPECT_TRUE (test.TopElements (1).SequentialEquals ({1}));
+        using namespace CommonTests::MappingTests;
+        if constexpr (constructible_from<CONCRETE_CONTAINER>) {
+            SimpleMappingTest_All_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+            SimpleMappingTest_WithDefaultEqComparer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
         }
     }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, FACTORY_DEFAULTS)
+    template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
+    void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
     {
-        DoTestForConcreteContainer_<MultiSet<size_t>> ();
-        DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return MultiSet<OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<MultiSet<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
-                msFactory));
+        using namespace CommonTests::MappingTests;
+        auto testSchema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        SimpleMappingTest_All_ (testSchema);
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, MultiSet_Array)
+    GTEST_TEST (Foundation_Containers_Mapping, Test2_SimpleBaseClassConversionTraitsConfusion_)
     {
-        DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
-        DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return MultiSet_Array<OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<MultiSet_Array<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
-                msFactory));
+        Debug::TraceContextBumper ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
+        SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float>{};
+        Mapping<int, float>       xxxyy1 = Concrete::SortedMapping_stdmap<int, float>{};
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, MultiSet_LinkedList)
+    namespace Test4_MappingCTOROverloads_ {
+        namespace xPrivate_ {
+            struct A;
+            struct B;
+            struct A {
+                A ()         = default;
+                A (const A&) = default;
+                A (const B&)
+                {
+                }
+            };
+            struct B {
+                B () = default;
+                B (const A&)
+                {
+                }
+                B (const B&) = default;
+            };
+            using Common::KeyValuePair;
+            using KEY_TYPE                = int;
+            using VALUE_TYPE              = B;
+            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
+            using T                       = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
+        }
+    }
+
+    GTEST_TEST (Foundation_Containers_Mapping, Test4_MappingCTOROverloads_)
     {
-        DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
-        DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return MultiSet_LinkedList<OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<MultiSet_LinkedList<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<OnlyCopyableMoveable>, AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
-                msFactory));
+        Debug::TraceContextBumper ctx{"{}::Test4_MappingCTOROverloads_"};
+        using namespace Test4_MappingCTOROverloads_::xPrivate_;
+        Mapping<int, A> from;
+        static_assert (Traversal::IIterableOfTo<Mapping<int, A>, KeyValuePair<int, A>>);
+        static_assert (Traversal::IIterableOfTo<Mapping<int, B>, KeyValuePair<int, B>>);
+        Mapping<int, B> to1;
+        for (auto i : from) {
+            to1.Add (i);
+        }
+        Mapping<int, B> to2{from};
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, SortedMultiSet_stdmap)
+    GTEST_TEST (Foundation_Containers_Mapping, FACTORY_DEFAULT)
     {
-        DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
-        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return SortedMultiSet_stdmap<OnlyCopyableMoveable>{AsIntsLessComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<SortedMultiSet_stdmap<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_stdmap<OnlyCopyableMoveable>, AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (
-                msFactory));
+        DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, SortedMultiSet_SkipList)
+    GTEST_TEST (Foundation_Containers_Mapping, Mapping_Array)
     {
-        DoTestForConcreteContainer_<SortedMultiSet_SkipList<size_t>> ();
-        DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveableAndTotallyOrdered>> ();
-        auto msFactory = [] () { return SortedMultiSet_SkipList<OnlyCopyableMoveable>{AsIntsThreeWayComparer<OnlyCopyableMoveable>{}}; };
-        DoTestForConcreteContainer_<SortedMultiSet_SkipList<OnlyCopyableMoveable>> (
-            CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet_SkipList<OnlyCopyableMoveable>,
-                                                               AsIntsEqualsComparer<OnlyCopyableMoveable>, decltype (msFactory)> (msFactory));
+        DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, SortedMapping_SkipList)
+    {
+        DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () {
+                return SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>{[] (OnlyCopyableMoveable l, OnlyCopyableMoveable r) -> strong_ordering {
+                    return static_cast<size_t> (l) <=> static_cast<size_t> (r);
+                }};
+            },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, Mapping_LinkedList)
+    {
+        DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsEqualsComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, SortedMapping_stdmap)
+    {
+        DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable> (AsIntsLessComparer<OnlyCopyableMoveable>{}); },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, ExampleCTORS_)
+    {
+        Debug::TraceContextBumper ctx{"{}::ExampleCTORS_"};
+        // From Mapping<> CTOR docs
+        Collection<pair<int, int>> c;
+        std::map<int, int>         m;
+
+        Mapping<int, int> m1 = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+        Mapping<int, int> m2 = m1;
+        Mapping<int, int> m3{m1};
+        Mapping<int, int> m4{m1.begin (), m1.end ()};
+        Mapping<int, int> m5{c};
+        Mapping<int, int> m6{m};
+        Mapping<int, int> m7{m.begin (), m.end ()};
+        Mapping<int, int> m8{move (m1)};
+        Mapping<int, int> m9{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; })};
+
         {
-
-            SortedMultiSet_SkipList<size_t> x;
-            x.ReBalance ();
+            using Characters::String;
+            const auto kReference1a_ = Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}}};
+            const auto kReference1b_ =
+                Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}, KeyValuePair<String, String>{"xx", "3"}}};
+            const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{L"Content-Length", "3"}};
+            const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}}};
+            const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}}};
+            const auto kReference2c_ = Mapping<String, String>{pair<String, String>{"Content-Length", "3"}, pair<String, String>{"xx", "3"}};
+            const auto kReference3a_ = Mapping<String, String>{{{"Content-Length", "3"}}};
+            EXPECT_EQ (kReference3a_.size (), 1u);
+            using Characters::operator""_k;
+            const auto kReference3b_ = Mapping<String, String>{{{"Content-Length"_k, "3"_k}, {"x"_k, "3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
+            EXPECT_EQ (kReference3b_.size (), 2u);
+            const auto kReference3c_ = Mapping<String, String>{{"Content-Length", "3"}, {"x", "3"}};
+            EXPECT_EQ (kReference3c_.size (), 2u);
         }
     }
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_MultiSet, Cleanup)
+    GTEST_TEST (Foundation_Containers_Mapping, Where_)
+    {
+        Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
+        EXPECT_EQ (m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }),
+                   (Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+        EXPECT_EQ (m.Where ([] (int key) { return Math::IsPrime (key); }), (Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, WithKeys_)
+    {
+        Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
+        EXPECT_EQ (m.WithKeys ({2, 5}), (Mapping<int, int>{{2, 4}, {5, 7}}));
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, ClearBug_)
+    {
+        // http://stroika-bugs.sophists.com/browse/STK-541
+        Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
+                            KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+        Mapping<int, int> mm{move (m)};
+        // SEE http://stroika-bugs.sophists.com/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
+        //m.clear ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, AddVsAddIf_)
+    {
+        Mapping<int, int> m;
+        m.Add (1, 2);
+        EXPECT_EQ (m[1], 2);
+        m.Add (1, 3);
+        EXPECT_EQ (m[1], 3);
+        EXPECT_TRUE (not m.Add (1, 4, AddReplaceMode::eAddIfMissing));
+        EXPECT_EQ (m[1], 3);
+        EXPECT_TRUE (m.Add (2, 3, AddReplaceMode::eAddIfMissing));
+        EXPECT_EQ (m[2], 3);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, CTORWithComparerAndContainer_)
+    {
+        using namespace Characters;
+        {
+            Mapping<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
+            // http://stroika-bugs.sophists.com/browse/STK-738 (and see other workarounds in other files)
+            Mapping<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, RetainAllCaseFails_)
+    {
+        {
+            Mapping<string, int> mOrig{{"id", 1}, {"y", 7}, {"x", 7}};
+            Mapping<string, int> m = mOrig;
+            m.RetainAll (initializer_list<string>{"id"});
+            EXPECT_TRUE (m.Keys ().SetEquals (initializer_list<string>{"id"}));
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, Cleanup)
     {
         EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
