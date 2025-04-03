@@ -24,9 +24,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     /**
      *  HashTable module design notes:
      *      o   use traits to pick between separate chaining, and linear probing (do sep chaining first since easiest)
-     *      o   Sometimes want HashTable<T> and sometimes HashTable<KEY,MAPPED_VALUE> - could go either way (with mapped_value==void).
-     *          Did other way for skipList - not sure what is best. For now - do HashTable<T>, and use Hash<KVP<KEY,MAPPED_VALUE>> in usage, and provide 
-     *          wrapping hash/compare functions
+     *      o   Sometimes want HashTable<T> and sometimes HashTable<KEY,MAPPED_VALUE> - later appears more natural due to
+     *          ability to conditionally create overloads of things like Add (KEY) (when mapped_value=void).
      */
     namespace HashTable_Support {
 
@@ -67,7 +66,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
             /**
              */
-            using ValueHasherType = HASHER;
+            using KeyHasherType = HASHER;
 
             /**
              */
@@ -91,8 +90,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         concept IValidTraits = Common::IEqualsComparer<typename TRAITS::KeyEqualsComparerType, KEY_TYPE>
 #if 0
             and requires (TRAITS) {
-            {  TRAITS::ValueHasherType } -> invocable<typename TRAITS::value_type>;
-            /*{ TRAITS::ValueHasherType };
+            {  TRAITS::KeyHasherType } -> invocable<typename TRAITS::value_type>;
+            /*{ TRAITS::KeyHasherType };
             { TRAITS::KeyEqualsComparerType };
             { TRAITS::LayoutType };
             { TRAITS::AlternateFindType };*/
@@ -124,7 +123,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        using ValueHasherType = typename TRAITS::ValueHasherType;
+        using KeyHasherType = typename TRAITS::KeyHasherType;
 
     public:
         /**
@@ -146,19 +145,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         HashTable ();
-        HashTable (size_t bucketCount, const ValueHasherType& hashFunction = {}, const KeyEqualsComparerType& keyComparer = {});
+        HashTable (size_t bucketCount, const KeyHasherType& hashFunction = {}, const KeyEqualsComparerType& keyComparer = {});
         HashTable (HashTable&& src) noexcept = default;
         HashTable (const HashTable& src)     = default;
         ~HashTable ()                        = default;
 
     public:
+        /**
+         */
         nonvirtual HashTable& operator= (const HashTable&) = default;
         nonvirtual HashTable& operator= (HashTable&&)      = default;
 
-        //public:
-        //    /**
-        //     */
-        //    constexpr KeyComparerType key_comp () const;
+    public:
+        /**
+         */
+        nonvirtual KeyHasherType GetKeyHasherType () const;
+
+    public:
+        /**
+         */
+        nonvirtual KeyEqualsComparerType GetKeyEqualsComparerType () const;
 
     public:
         class ForwardIterator;
@@ -166,12 +172,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          */
-        ForwardIterator begin ();
+        nonvirtual ForwardIterator begin ();
 
     public:
         /**
          */
-        constexpr ForwardIterator end ();
+        constexpr static ForwardIterator end ();
 
     public:
         /**
@@ -190,6 +196,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \req t present - use RemoveIf() to avoid that precondition
          */
         nonvirtual void Remove (const key_type& t);
 
@@ -207,14 +214,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  bucket_count never goes below 1, but if you request a number too low, just goes to lowest allowed.
          * so ReHash(0) can be used to 'compact' as much as possible.
          */
-        void ReHash (size_t newBucketCount);
+        nonvirtual void ReHash (size_t newBucketCount);
 
     public:
         /**
-        * This examines load_factor and max_load_factor(), and depending on relationship, makes
-        * a guess as to best size to use in call to ReHash();
+         * This examines load_factor and max_load_factor(), and depending on relationship, makes
+         * a guess as to best size to use in call to ReHash();
          */
-        void ReHashIfNeeded ();
+        nonvirtual void ReHashIfNeeded ();
 
     public:
         /**
@@ -250,7 +257,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \see https://en.cppreference.com/w/cpp/container/unordered_set/load_factor
          */
-        float load_factor () const;
+        nonvirtual float load_factor () const;
 
     public:
         /**
@@ -258,8 +265,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \see https://en.cppreference.com/w/cpp/container/unordered_set/load_factor
          */
-        float max_load_factor () const;
-        void  max_load_factor (float mlf);
+        nonvirtual float max_load_factor () const;
+        nonvirtual void  max_load_factor (float mlf);
 
     private:
         using LayoutType_                                  = TraitsType::LayoutType;
@@ -275,20 +282,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         Memory::InlineBuffer<BucketType_, kBufferedBuckets_> fBuckets_;
 
-        [[no_unique_address]] ValueHasherType       fHasher_;
+        [[no_unique_address]] KeyHasherType         fHasher_;
         [[no_unique_address]] KeyEqualsComparerType fKeyComparer_;
 
         size_t fCachedSize_{0};
 
     private:
-        nonvirtual size_t Hash_ (const key_type& v, size_t useBucketSize)
-        {
-            Require (useBucketSize > 0);
-            return fHasher_ (v) % useBucketSize;
-        }
         nonvirtual size_t Hash_ (const key_type& v)
         {
-            return Hash_ (v, fBuckets_.size ());
+            Require (fBuckets_.size () > 0);
+            return fHasher_ (v) % fBuckets_.size ();
         }
 
     private:
@@ -370,10 +373,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator& operator++ ();
         nonvirtual ForwardIterator  operator++ (int);
 
-    private:
-        // to make == compares simpler
-        void AdvanceOverEmptyBuckets_ ();
-
     public:
         // safe to update in place (doesn't change iterators) since doesn't change order of list (since not updating key)
         template <typename CHECKED_T = MAPPED_TYPE>
@@ -395,12 +394,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     private:
+        // to make == compares simpler
+        void AdvanceOverEmptyBuckets_ ();
+
+    private:
         const HashTable* fData_{nullptr}; // sentinel value indicating DONE
         size_t           fBucketIndex_{0};
         size_t           fIntraBucketIndex_{0};
-
-    private:
-        //friend class HashTable;
     };
 
 #if 0

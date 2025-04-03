@@ -19,12 +19,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::HashTable (size_t bucketCount, const ValueHasherType& hashFunction,
-                                                                const KeyEqualsComparerType& keyComparer)
+    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::HashTable (size_t bucketCount, const KeyHasherType& hashFunction, const KeyEqualsComparerType& keyComparer)
         : fHasher_{hashFunction}
         , fKeyComparer_{keyComparer}
     {
         ReHash (bucketCount);
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetKeyHasherType () const -> KeyHasherType
+    {
+        return fHasher_;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetKeyEqualsComparerType () const -> KeyEqualsComparerType
+    {
+        return fKeyComparer_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () -> ForwardIterator
@@ -75,7 +84,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const key_type& t)
     {
-        (void)RemoveIf (t);
+        Verify (RemoveIf (t));
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveIf (const key_type& t)
@@ -89,7 +98,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 }
             }
         }
-        return nullopt;
+        return false;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReHash (size_t newBucketCount)
@@ -97,12 +106,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t useBucketCount = Math::AtLeast (Math::PrimeAtLeastThisBig (newBucketCount), kBufferedBuckets_);
         if (useBucketCount != fBuckets_.size ()) {
             Memory::InlineBuffer<BucketType_, kBufferedBuckets_> newBuckets;
-            // fill in by iterating, but for now quick tmphack
-            newBuckets = fBuckets_;
-            newBuckets.resize (newBucketCount);
-
+            // fill in new by iterating, so basically cost of a whole new copy of all the data
+            HashTable n{newBucketCount, fHasher_, fKeyComparer_};
+            for (auto i : *this) {
+                n.Add (i);
+            }
             // this move is expensive - perhaps better to indirect buckets_ into HEAP object so this is cheaper
-            fBuckets_ = move (newBuckets);
+            fBuckets_ = move (n.fBuckets_);
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
@@ -110,7 +120,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         // @todo redo so less finicky.. - this logic is WRONG/poor
         float lf = load_factor ();
-
         float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 4;
         if (lf < thresholdBelowWhichWeShouldShrink) {
         }
@@ -160,7 +169,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     /*
      ********************************************************************************
-     ****** HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator ***************
+     ********* HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator ************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
@@ -219,7 +228,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         if (done or rDone) {
             return false;
         }
-        // neither is done, nor special sentinal value, so this case is easy
+        // neither is done, nor special sentinel value, so this case is easy
         return this->fBucketIndex_ == rhs.fBucketIndex_ and this->fIntraBucketIndex_ == rhs.fIntraBucketIndex_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
