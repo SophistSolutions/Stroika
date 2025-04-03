@@ -34,7 +34,7 @@ namespace {
         EXPECT_TRUE (someArray.size () == 0);
 
         someArray.SetLength (kBigSize, 0);
-        someArray.RemoveAll ();
+        someArray.clear ();
         someArray.SetLength (kBigSize, 0);
         someArray.SetLength (10, 0);
         someArray.SetLength (kBigSize, 0);

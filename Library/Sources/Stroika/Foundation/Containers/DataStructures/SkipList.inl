@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>& SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::operator= (const SkipList& t)
     {
-        RemoveAll ();
+        clear ();
         if (t.size () != 0) {
             Link_* prev = nullptr;
             Link_* n    = t.fHead_[0];
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::~SkipList ()
     {
-        RemoveAll ();
+        clear ();
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
     constexpr auto SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::key_comp () const -> KeyComparerType
@@ -552,7 +552,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Ensure (fHead_.size () >= 1);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, SkipList_Support::IValidTraits<KEY_TYPE> TRAITS>
-    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::RemoveAll ()
+    void SkipList<KEY_TYPE, MAPPED_TYPE, TRAITS>::clear ()
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Link_*                                          link = (fHead_.size () == 0) ? nullptr : fHead_[0];

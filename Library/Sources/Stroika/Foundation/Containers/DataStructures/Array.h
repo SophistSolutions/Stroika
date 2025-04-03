@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(N) - if !trivial_type
          *      Typical: constant
          */
-        nonvirtual void RemoveAll ();
+        nonvirtual void clear ();
 
     public:
         /**

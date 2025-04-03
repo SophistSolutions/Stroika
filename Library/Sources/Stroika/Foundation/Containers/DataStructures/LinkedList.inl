@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *   at least protected - and call it here to do what I've mentioned above >
          */
         Invariant ();
-        RemoveAll ();
+        clear ();
         Invariant ();
         Ensure (fHead_ == nullptr);
     }
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
         if (this != &rhs) {
-            RemoveAll ();
+            clear ();
             /*
              *      Copy the link list by keeping a point to the new current and new
              *  previous, and sliding them along in parallel as we construct the
@@ -431,7 +431,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return nullptr;
     }
     template <typename T>
-    void LinkedList<T>::RemoveAll ()
+    void LinkedList<T>::clear ()
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();

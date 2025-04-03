@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    void Array<T>::RemoveAll ()
+    void Array<T>::clear ()
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
@@ -356,7 +356,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline Array<T>::~Array ()
     {
-        RemoveAll (); // call destructors on elements
+        clear (); // call destructors on elements
         if constexpr (kUseMalloc_) {
             if (fItems_ != nullptr) {
                 free (fItems_);

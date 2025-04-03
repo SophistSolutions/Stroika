@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N) - but generally quite quick cuz uses block (de-)allocation
          * 
          */
-        nonvirtual void RemoveAll ();
+        nonvirtual void clear ();
 
     public:
         /**

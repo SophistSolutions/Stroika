@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
         * @todo discuss with sterl - if we allow multiple values with same key, add RemoveAll overload taking key_type, and maybe returning count removed? RemoveAllIf
          */
-        nonvirtual void RemoveAll ();
+        nonvirtual void clear ();
 
     public:
         /**

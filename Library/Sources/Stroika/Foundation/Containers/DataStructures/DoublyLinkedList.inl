@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *   at least protected - and call it here to do what I've mentioned above >
          */
         Invariant ();
-        RemoveAll ();
+        clear ();
         Invariant ();
         Ensure (size () == 0);
         Ensure (fHead_ == nullptr);
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
-        RemoveAll ();
+        clear ();
         /*
          *      Copy the linked list by keeping a point to the new current and new
          *  previous, and sliding them along in parallel as we construct the
@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return nullptr;
     }
     template <typename T>
-    void DoublyLinkedList<T>::RemoveAll ()
+    void DoublyLinkedList<T>::clear ()
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         for (Link_* i = fHead_; i != nullptr;) {

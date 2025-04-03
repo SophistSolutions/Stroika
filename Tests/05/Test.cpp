@@ -38,7 +38,7 @@ namespace {
                 someLL.push_front (0);
             }
         }
-        someLL.RemoveAll ();
+        someLL.clear ();
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.push_front (0);
@@ -49,7 +49,7 @@ namespace {
                 someLL.RemoveFirst ();
             }
         }
-        someLL.RemoveAll (); //  someLL.SetLength(kBigSize, 0);
+        someLL.clear (); //  someLL.SetLength(kBigSize, 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.push_front (0);
@@ -94,7 +94,7 @@ namespace {
                 someLL.push_front (0);
             }
         }
-        someLL.RemoveAll ();
+        someLL.clear ();
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.push_front (0);
@@ -105,7 +105,7 @@ namespace {
                 someLL.RemoveFirst ();
             }
         }
-        someLL.RemoveAll (); //  someLL.SetLength(kBigSize, 0);
+        someLL.clear (); //  someLL.SetLength(kBigSize, 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.push_front (0);
@@ -118,7 +118,7 @@ namespace {
         EXPECT_TRUE (someLL.GetAt (55) == 55);
         EXPECT_TRUE (not(someLL.GetAt (55) == 56));
 
-        someLL.RemoveAll ();
+        someLL.clear ();
         EXPECT_TRUE (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
