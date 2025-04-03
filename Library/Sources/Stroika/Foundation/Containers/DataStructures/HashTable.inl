@@ -8,6 +8,151 @@
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
+    /*
+     ********************************************************************************
+     ****************** HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS> ********************
+     ********************************************************************************
+     */
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::HashTable ()
+        : HashTable{kBufferedBuckets_}
+    {
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::HashTable (size_t bucketCount, const ValueHasherType& hashFunction, const EqualsComparerType& keyComparer)
+        : fHasher_{hashFunction}
+        , fKeyComparer_{keyComparer}
+    {
+        ReHash (bucketCount);
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () -> ForwardIterator
+    {
+        return ForwardIterator{this};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () -> ForwardIterator
+    {
+        return ForwardIterator{};
+    }
+
+    /*
+     ********************************************************************************
+     ****** HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator ***************
+     ********************************************************************************
+     */
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const HashTable* data) noexcept
+        : ForwardIterator{data, make_tuple (0, 0)}
+    {
+        AdvanceOverEmptyBuckets_ ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::ForwardIterator (const HashTable* data, UnderlyingIteratorRep startAt) noexcept
+        : fData_{data}
+        , fBucketIndex_{get<0> (startAt)}
+        , fIntraBucketIndex_{get<1> (startAt)}
+    {
+        RequireNotNull (data);
+    }
+#if qStroika_Foundation_Debug_AssertionsChecked
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::~ForwardIterator ()
+    {
+        Invariant ();
+    }
+#endif
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator bool () const
+    {
+        return not Done ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Done () const noexcept
+    {
+        Assert (fData_ == nullptr or fBucketIndex_ <= fData_->bucket_count ());
+        return fData_ == nullptr or fBucketIndex_ == fData_->bucket_count ();
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator* () const -> const value_type&
+    {
+        Require (not Done ());
+        return fData_->fBuckets_[fBucketIndex_].fElements[fIntraBucketIndex_];
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator->() const -> const value_type*
+    {
+        Require (not Done ());
+        return &fData_->fBuckets_[fBucketIndex_].fElements[fIntraBucketIndex_];
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator== (const ForwardIterator& rhs) const
+    {
+        Require (fData_ == rhs.fData_ or fData_ == nullptr or rhs.fData_ == nullptr); // nullptr used for sentinal end else must refer to same container
+        bool done  = Done ();
+        bool rDone = rhs.Done ();
+        if (done and rDone) {
+            return true;
+        }
+        if (done or rDone) {
+            return false;
+        }
+        // neither is done, nor special sentinal value, so this case is easy
+        return this->fBucketIndex_ == rhs.fBucketIndex_ and this->fIntraBucketIndex_ == rhs.fIntraBucketIndex_;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::GetUnderlyingIteratorRep () const -> UnderlyingIteratorRep
+    {
+        return make_tuple (fBucketIndex_, fIntraBucketIndex_);
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::SetUnderlyingIteratorRep (const UnderlyingIteratorRep l)
+    {
+        fBucketIndex_      = get<0> (l);
+        fIntraBucketIndex_ = get<1> (l);
+        // @todo assert valid in range
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ () -> ForwardIterator&
+    {
+        Require (not Done ());
+        RequireNotNull (fData_);
+        ++fIntraBucketIndex_;
+        Assert (fIntraBucketIndex_ <= fData_->bucket_size (fBucketIndex_));
+        if (fIntraBucketIndex_ == fData_->bucket_size (fBucketIndex_)) {
+            ++fBucketIndex_;
+            fIntraBucketIndex_ = 0;
+        }
+        AdvanceOverEmptyBuckets_ ();
+        return *this;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator++ (int) -> ForwardIterator
+    {
+        ForwardIterator result = *this;
+        this->operator++ ();
+        return result;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AdvanceOverEmptyBuckets_()
+    {
+        while (fBucketIndex_ < fData_->bucket_count () and fData_->bucket_size (fBucketIndex_) == 0) {
+            ++fBucketIndex_;
+        }
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
+    {
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Invariant_ ();
+#endif
+    }
+#if qStroika_Foundation_Debug_AssertionsChecked
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant_ () const noexcept
+    {
+    }
+#endif
 #if 0
 
     /*
@@ -813,18 +958,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         : ForwardIterator{data, (RequireExpression (data != nullptr), data->fHead_[0])}
     {
     }
-#if qStroika_Foundation_Debug_AssertionsChecked
-    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE> TRAITS>
-    HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::~ForwardIterator ()
-    {
-        Invariant ();
-    }
-#endif
-    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE> TRAITS>
-    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::operator bool () const
-    {
-        return not Done ();
-    }
+
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE> TRAITS>
     inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Done () const noexcept -> bool
     {

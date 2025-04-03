@@ -29,9 +29,11 @@ namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_HashTable, Test1)
     {
         DataStructures::HashTable<int> ht1;
+        EXPECT_EQ (distance (ht1.begin (), ht1.end ()), 0u);
         ht1.Add (1);
         EXPECT_EQ (ht1.size (), 1u);
-
+        EXPECT_EQ (distance (ht1.begin (), ht1.end ()), 1u);
+        EXPECT_EQ (*ht1.begin (), 1);
         EXPECT_EQ (ht1.Lookup (2), nullopt);
         EXPECT_EQ (ht1.Lookup (1), 1);
     }
