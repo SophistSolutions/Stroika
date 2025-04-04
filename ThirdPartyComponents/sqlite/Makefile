@@ -33,9 +33,7 @@ VERSION:=3490100
 #
 #	--LGP 2020-07-02
 #
-ifeq (${VERSION},3320300)
-MAPPED_VERSION=3.32.3
-endif
+MAPPED_VERSION=$(shell (echo ${VERSION} | echo -n $$(cut -b 1)); echo -n '.'; (echo ${VERSION} | echo -n $$(cut -b 2-3)); echo -n '.'; (echo ${VERSION} | echo -n $$(cut -b 5)))
 
 AMALGAMATION_WITH_VERSION:=sqlite-amalgamation-$(VERSION)
 
@@ -49,6 +47,10 @@ FETCHURLS+=https://www.sqlite.org/2022/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2021/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/${MAPPED_VERSION}.zip
+
+## TRIED but they dont archive the amalgamation files, so I would need separate build step for that
+##FETCHURLS+=https://github.com/sqlite/sqlite/archive/refs/tags/version-${MAPPED_VERSION}.zip
+
 
 
 PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
