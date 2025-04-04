@@ -296,6 +296,7 @@ namespace Stroika::Foundation::Memory {
          */
         template <ISpanOfT<T> SPAN_T>
         nonvirtual void Insert (size_t at, const SPAN_T& copyFrom);
+        nonvirtual void Insert (size_t at, const T& item);
 
     public:
         /**
@@ -324,7 +325,12 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  This doesn't change InlineBuffer::capacity, but just shuffles (and destroys)
+         *  This doesn't change InlineBuffer::capacity, but just shuffles (and destroys) - remote (to-from) items starting at to
+         * 
+         *  \req from <= to         (if ==, does nothing)
+         *  \req to <= size ()
+         * 
+         *  Remove (i) same as Remove (i, i+1);
          */
         nonvirtual void Remove (size_t at);
         nonvirtual void Remove (size_t from, size_t to);

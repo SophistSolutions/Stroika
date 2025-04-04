@@ -485,6 +485,11 @@ namespace Stroika::Foundation::Memory {
         this->fSize_ = newS; // above leaks if exception in copies, but practically impossible...@todo...
     }
     template <typename T, size_t BUF_SIZE>
+    inline void InlineBuffer<T, BUF_SIZE>::Insert (size_t at, const T& item)
+    {
+        Insert (at, span{&item, 1});
+    }
+    template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::insert (iterator i, const_pointer from, const_pointer to)
     {
         Insert (i - begin (), span{from, to});
@@ -562,9 +567,9 @@ namespace Stroika::Foundation::Memory {
              *      | .....STUFF-AFTER|END-OF-BUFFER
              */
             auto copySrcSpan = span{this->begin () + to, this->end ()};          // STUFF-AFTER in first line
-            auto copyToSpan  = span{this->begin () + from, this->begin () + to}; // RANGE2REMOVE in first line
+            auto copyToSpan  = span{this->begin () + from, copySrcSpan.size ()}; // RANGE2REMOVE in first line
             Memory::CopyOverlappingSpanData (copySrcSpan, copyToSpan);
-            auto destroySpan = span{copyToSpan.end (), to - from};
+            auto destroySpan = span{copyToSpan.data () + copyToSpan.size (), to - from};
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
             destroy (destroySpan.begin (), destroySpan.end ());
 #else

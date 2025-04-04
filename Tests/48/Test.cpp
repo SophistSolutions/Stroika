@@ -303,8 +303,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Memory_, Test9a_Buffer_)
+    GTEST_TEST (Foundation_Memory_, TestInlineBuffer)
     {
+        Debug::TraceContextBumper ctx{"TestInlineBuffer"};
         {
             InlineBuffer<int> x0{0};
             InlineBuffer<int> x1{x0};
@@ -326,6 +327,52 @@ namespace {
             assign2 = x0;
             EXPECT_EQ (x0.size (), assign2.size ()); // test regression fixed 2019-03-20
             EXPECT_EQ (x0.size (), 4u);
+        }
+        {
+            using namespace Characters;
+            using String = Characters::String;
+            InlineBuffer<String> buf;       // so we test dtors called properly
+            buf.push_back ("0");
+            buf.push_back ("1");
+            buf.push_back ("2");
+            for (int i = 3; i < 100; ++i) {
+                buf.push_back ("{}"_f (i));
+            }
+            EXPECT_EQ (buf.size (), 100u);
+            for (int i = 0; i < 100; ++i) {
+                EXPECT_EQ (buf[i], "{}"_f(i));
+            }
+            buf.Remove (9);
+            EXPECT_EQ (buf.size (), 99u);
+            for (int i = 0; i < 99; ++i) {
+                if (i < 9) {
+                    EXPECT_EQ (buf[i], "{}"_f(i));
+                }
+                else {
+                    EXPECT_EQ (buf[i], "{}"_f(i+1));
+                }
+            }
+            buf.Remove (1,9);
+            EXPECT_EQ (buf.size (), 91u);
+            for (int i = 0; i < 91; ++i) {
+                if (i == 0) {
+                    EXPECT_EQ (buf[i], "{}"_f(i));
+                }
+                else {
+                    EXPECT_EQ (buf[i], "{}"_f(i + 9));
+                }
+            }
+            buf.Remove (0);
+            EXPECT_EQ (buf.size (), 90u);
+            for (int i = 0; i < 90; ++i) {
+                    EXPECT_EQ (buf[i], "{}"_f(i + 10));
+            }
+            for (int i = 0; i < 10; ++i) {
+                buf.Insert (i, "{}"_f(i ));
+            }
+            for (int i = 0; i < 100; ++i) {
+                    EXPECT_EQ (buf[i], "{}"_f(i));
+            }
         }
     }
 }
