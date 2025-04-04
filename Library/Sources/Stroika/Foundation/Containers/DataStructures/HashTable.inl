@@ -91,10 +91,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         size_t hashVal = Hash_ (t);
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
-            for (auto i : fBuckets_[hashVal].fElements) {
-                if (this->fKeyComparer_ (i.fKey, t)) {
-                    /// fBuckets_.erase  NYI
-                    AssertNotReached ();
+            for (auto i = fBuckets_[hashVal].fElements.begin (); i != fBuckets_[hashVal].fElements.end (); ++i) {
+                if (this->fKeyComparer_ (i->fKey, t)) {
+                    fBuckets_[hashVal].fElements.Remove (i - fBuckets_[hashVal].fElements.begin ());
+                    --fCachedSize_;
+                    return true;
                 }
             }
         }
@@ -105,21 +106,25 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         size_t useBucketCount = Math::AtLeast (Math::PrimeAtLeastThisBig (newBucketCount), kBufferedBuckets_);
         if (useBucketCount != fBuckets_.size ()) {
-            Memory::InlineBuffer<BucketType_, kBufferedBuckets_> newBuckets;
-            // fill in new by iterating, so basically cost of a whole new copy of all the data
-            HashTable n{newBucketCount, fHasher_, fKeyComparer_};
-            for (auto i : *this) {
-                n.Add (i);
+            if (this->empty ()) {
+                fBuckets_.resize (newBucketCount);
             }
-            // this move is expensive - perhaps better to indirect buckets_ into HEAP object so this is cheaper
-            fBuckets_ = move (n.fBuckets_);
+            else {
+                // fill in new by iterating, so basically cost of a whole new copy of all the data
+                HashTable n{newBucketCount, fHasher_, fKeyComparer_};
+                for (auto i : *this) {
+                    n.Add (i);
+                }
+                // this move is expensive - perhaps better to indirect buckets_ into HEAP object so this is cheaper
+                fBuckets_ = move (n.fBuckets_);
+            }
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReHashIfNeeded ()
     {
         // @todo redo so less finicky.. - this logic is WRONG/poor
-        float lf = load_factor ();
+        float lf                                = load_factor ();
         float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 4;
         if (lf < thresholdBelowWhichWeShouldShrink) {
         }
@@ -166,6 +171,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (mlf > 0.0);
         fMaxLoadFactor_ = mlf;
     }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant () const noexcept
+    {
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Invariant_ ();
+#endif
+    }
+#if qStroika_Foundation_Debug_AssertionsChecked
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant_ () const noexcept
+    {
+    }
+#endif
 
     /*
      ********************************************************************************

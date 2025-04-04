@@ -36,6 +36,10 @@ namespace {
         EXPECT_EQ (*ht1.begin (), 1);
         EXPECT_EQ (ht1.Lookup (2), nullopt);
         EXPECT_EQ (ht1.Lookup (1), 1);
+        EXPECT_EQ (ht1.RemoveIf (2), false);
+        EXPECT_EQ (ht1.size (), 1u);
+        EXPECT_EQ (ht1.RemoveIf (1), true);
+        EXPECT_EQ (ht1.size (), 0u);
     }
 
     GTEST_TEST (Foundation_Containers_DataStructures_HashTable, Test2)

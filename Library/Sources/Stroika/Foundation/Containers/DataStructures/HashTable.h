@@ -268,6 +268,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual float max_load_factor () const;
         nonvirtual void  max_load_factor (float mlf);
 
+    public:
+        constexpr void Invariant () const noexcept;
+
+#if qStroika_Foundation_Debug_AssertionsChecked
+    private:
+        nonvirtual void Invariant_ () const noexcept;
+#endif
+
     private:
         using LayoutType_                                  = TraitsType::LayoutType;
         static constexpr size_t kBufferedElementsPerChain_ = TraitsType::LayoutType::kBufferedElementsPerChain;
