@@ -544,6 +544,32 @@ namespace Stroika::Foundation::Memory {
         this->fSize_ = newS;
     }
     template <typename T, size_t BUF_SIZE>
+    inline void InlineBuffer<T, BUF_SIZE>::Remove (size_t at)
+    {
+        Remove (at, at + 1);
+    }
+    template <typename T, size_t BUF_SIZE>
+    void InlineBuffer<T, BUF_SIZE>::Remove (size_t from, size_t to)
+    {
+        Require (from <= to);
+        Require (to <= size ());
+        // if removing from anything BUT the end of the (live) buffer, we must slide items down
+        if (to < size ()) {
+            /*
+             * Slide items down.
+             *      | .... RANGE2REMOVE|STUFF-AFTER|END-OF-BUFFER
+             *  produces
+             *      | .....STUFF-AFTER|END-OF-BUFFER
+             */
+            auto copySrcSpan = span{this->begin () + to, this->end ()};
+            auto copyToSpan  = span{this->begin () + from, this->size () - to};
+            Memory::CopyOverlappingSpanData (copySrcSpan, copyToSpan);
+            auto destroySpan = span{copyToSpan.begin (), to - from};
+            ranges::destroy (destroySpan);
+            this->fSize_ -= destroySpan.size ();
+        }
+    }
+    template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::clear () noexcept
     {
         resize (0);

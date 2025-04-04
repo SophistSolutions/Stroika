@@ -324,6 +324,13 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  This doesn't change InlineBuffer::capacity, but just shuffles (and destroys)
+         */
+        nonvirtual void Remove (size_t at);
+        nonvirtual void Remove (size_t from, size_t to);
+
+    public:
+        /**
          */
         nonvirtual void clear () noexcept;
 
