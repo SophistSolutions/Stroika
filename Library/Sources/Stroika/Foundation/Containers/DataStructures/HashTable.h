@@ -277,9 +277,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     private:
-        using LayoutType_                                  = TraitsType::LayoutType;
-        static constexpr size_t kBufferedElementsPerChain_ = TraitsType::LayoutType::kBufferedElementsPerChain;
-        static constexpr size_t kBufferedBuckets_          = TraitsType::LayoutType::kBufferedBuckets;
+        using LayoutType_                                  = typename TraitsType::LayoutType;
+        static constexpr size_t kBufferedElementsPerChain_ = LayoutType_::kBufferedElementsPerChain;
+        static constexpr size_t kBufferedBuckets_          = LayoutType_::kBufferedBuckets;
 
         // this type depends MORE INTIMATELY on LayoutType (use concepts to select when we support more)
         //
