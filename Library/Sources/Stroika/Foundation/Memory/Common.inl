@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Memory {
     {
         Require (src.size () <= target.size ());
         if (target.size () == 0) {
-            return span{};
+            return target.subspan(0,0);
         }
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
         // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
