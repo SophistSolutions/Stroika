@@ -220,6 +220,12 @@ namespace Stroika::Foundation::Memory {
     constexpr span<TO_T, TO_E> CopySpanData (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
         requires (not is_const_v<TO_T>);
 
+    // like CopySpanData but src and target are POTENTIALLY overlapping
+    // BUT for this - dont need separate FROM_T and TO_T
+    template <typename T, size_t FROM_E, size_t TO_E>
+    constexpr span<T, TO_E> CopyOverlappingSpanData (span<T, FROM_E> src, span<T, TO_E> target)
+        requires (not is_const_v<T>);
+
     /**
      *  \brief Span-flavored memmove/std::copy_backwards (copies from, to) - ALLOWING argument spans to overlap
      *

@@ -179,6 +179,28 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
+     ********************* Memory::CopyOverlappingSpanData **************************
+     ********************************************************************************
+     */
+    template <typename T, size_t FROM_E, size_t TO_E>
+    constexpr span<T, TO_E> CopyOverlappingSpanData (span<T, FROM_E> src, span<T, TO_E> target)
+        requires (not is_const_v<T>)
+    {
+        Require (src.size () == target.size ());
+        if (target.size () != 0) {
+            if (addressof (*as_bytes (target).data ()) < addressof (*as_bytes (src).data ()) or
+                addressof (*as_bytes (target).data ()) > addressof (*(as_bytes (src).data () + src.size_bytes ()))) {
+                std::copy (src.begin (), src.end (), target.data ());
+            }
+            else {
+                std::copy_backward (src.begin (), src.end (), target.data ());
+            }
+        }
+        return target;
+    }
+
+    /*
+     ********************************************************************************
      ************************ Memory::CopyOverlappingBytes **************************
      ********************************************************************************
      */
@@ -187,8 +209,20 @@ namespace Stroika::Foundation::Memory {
         requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>)
     {
         Require (src.size () <= target.size ());
+        if (target.size () == 0) {
+            return;
+        }
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
-        std::copy_backward (src.begin (), src.end (), target.data ());
+        // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
+        // destination range is outside the source range) while std::copy_backward is appropriate when copying
+        // to the right (end of the destination range is outside the source range).
+        if (addressof (*as_bytes (target).data ()) < addressof (*as_bytes (src).begin ()) or
+            addressof (*as_bytes (target).data ()) > addressof (*as_bytes (src).begin () + src.size_bytes ())) {
+            std::copy (src.begin (), src.end (), target.data ());
+        }
+        else {
+            std::copy_backward (src.begin (), src.end (), target.data ());
+        }
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
     }
