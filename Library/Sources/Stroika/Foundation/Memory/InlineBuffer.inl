@@ -561,10 +561,10 @@ namespace Stroika::Foundation::Memory {
              *  produces
              *      | .....STUFF-AFTER|END-OF-BUFFER
              */
-            auto copySrcSpan = span{this->begin () + to, this->end ()};
-            auto copyToSpan  = span{this->begin () + from, this->size () - to};
+            auto copySrcSpan = span{this->begin () + to, this->end ()};          // STUFF-AFTER in first line
+            auto copyToSpan  = span{this->begin () + from, this->begin () + to}; // RANGE2REMOVE in first line
             Memory::CopyOverlappingSpanData (copySrcSpan, copyToSpan);
-            auto destroySpan = span{copyToSpan.begin (), to - from};
+            auto destroySpan = span{copyToSpan.end (), to - from};
             ranges::destroy (destroySpan);
             this->fSize_ -= destroySpan.size ();
         }
