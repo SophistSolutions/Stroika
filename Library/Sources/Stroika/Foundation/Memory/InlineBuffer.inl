@@ -565,7 +565,11 @@ namespace Stroika::Foundation::Memory {
             auto copyToSpan  = span{this->begin () + from, this->begin () + to}; // RANGE2REMOVE in first line
             Memory::CopyOverlappingSpanData (copySrcSpan, copyToSpan);
             auto destroySpan = span{copyToSpan.end (), to - from};
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            destroy (destroySpan.begin (), destroySpan.end ());
+#else
             ranges::destroy (destroySpan);
+#endif
             this->fSize_ -= destroySpan.size ();
         }
     }
