@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
+#include <algorithm>
 #include <cstring>
 
 #include "Stroika/Foundation/Common/Compare.h"
@@ -186,10 +187,10 @@ namespace Stroika::Foundation::Memory {
         if (target.size () != 0) {
             if (addressof (*as_bytes (target).data ()) < addressof (*as_bytes (src).data ()) or
                 addressof (*as_bytes (target).data ()) > addressof (*(as_bytes (src).data () + src.size_bytes ()))) {
-                std::copy (src.begin (), src.end (), target.data ());
+                copy (src.begin (), src.end (), target.data ());
             }
             else {
-                std::copy_backward (src.begin (), src.end (), target.data ());
+                copy_backward (src.data (), src.data () + src.size(), target.data ());
             }
         }
         return target;
@@ -217,7 +218,7 @@ namespace Stroika::Foundation::Memory {
             std::copy (src.begin (), src.end (), target.data ());
         }
         else {
-            std::copy_backward (src.begin (), src.end (), target.data ());
+            std::copy_backward (src.data (), src.data () + src.size(), target.data ());
         }
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
