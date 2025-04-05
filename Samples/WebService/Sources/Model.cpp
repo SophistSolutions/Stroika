@@ -4,6 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
+#include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -67,7 +68,6 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
             for (unsigned int cnt = 0; cnt < 2 and not remainingNumber2Parse.empty (); ++cnt) {
                 // special case rewrite bare 'i' as '1i' with +/- cases
                 if (remainingNumber2Parse.StartsWith ("i"_k)) {
-                    static_assert (is_base_of_v<String, decltype (remainingNumber2Parse)>);
                     remainingNumber2Parse = "1i"_k + remainingNumber2Parse.Skip (1);
                 }
                 else if (remainingNumber2Parse.StartsWith ("+i"_k)) {
