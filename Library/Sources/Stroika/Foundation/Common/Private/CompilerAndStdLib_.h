@@ -422,9 +422,6 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 
 #endif
 
-
-
-
 #ifndef qCompilerAndStdLib_illunderstood_ispan_Buggy
 
 #if defined(__clang__)
@@ -434,8 +431,6 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 #endif
 
 #endif
-
-
 
 /*
 

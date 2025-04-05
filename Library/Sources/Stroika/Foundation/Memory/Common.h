@@ -20,14 +20,14 @@
 
 namespace Stroika::Foundation::Memory {
 
-    #if qCompilerAndStdLib_illunderstood_ispan_Buggy
+#if qCompilerAndStdLib_illunderstood_ispan_Buggy
     namespace Private_ {
         template <class>
         inline constexpr bool _Is_span_v = false;
         template <class _Ty, size_t _Extent>
         inline constexpr bool _Is_span_v<span<_Ty, _Extent>> = true;
     }
-    #endif
+#endif
 
     /**
      *  For when you want to assert an argument is a SPAN, but you haven't yet deduced the type its a span of yet.
@@ -46,11 +46,11 @@ namespace Stroika::Foundation::Memory {
         };
     };
 #endif
-    #if qCompilerAndStdLib_illunderstood_ispan_Buggy
-    static_assert (ISpan<span<int>> and ISpan<span<int, 3>> );
-    #else
+#if qCompilerAndStdLib_illunderstood_ispan_Buggy
+    static_assert (ISpan<span<int>> and ISpan<span<int, 3>>);
+#else
     static_assert (ISpan<span<int>> and ISpan<span<int, 3>> and ISpan<const span<const int, 3>>);
-    #endif
+#endif
     static_assert (not ISpan<std::string> and not ISpan<int> and not ISpan<vector<int>>); // we don't include <string>/<vector> in this module, but sometimes helpful to test/debug/document
 
     /**
