@@ -132,7 +132,7 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2410 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2410 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 endif
 
 
