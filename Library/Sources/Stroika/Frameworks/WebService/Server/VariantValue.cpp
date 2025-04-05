@@ -35,7 +35,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
         Mapping<String, VariantValue> result;
         if (auto query = url.GetQuery ()) {
             Mapping<String, String> unconverted = query->GetMap ();
-            unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, VariantValue{kvp.fValue}); });
+            unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, kvp.fValue); });
         }
         return result;
     });
