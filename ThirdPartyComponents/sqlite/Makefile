@@ -21,8 +21,6 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 # https://www.sqlite.org/download.html
 VERSION:=3490100
 #VERSION:=3470200
-#VERSION:=3470000
-
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
@@ -43,10 +41,9 @@ FETCHURLS:=
 FETCHURLS+=https://www.sqlite.org/2025/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2024/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2023/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2022/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2021/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/${MAPPED_VERSION}.zip
+
+# apparently only old copies of sqlite here - up to 2022 apx --LGP 2025-04-05
+# FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/${MAPPED_VERSION}.zip
 
 ## TRIED but they dont archive the amalgamation files, so I would need separate build step for that
 ##FETCHURLS+=https://github.com/sqlite/sqlite/archive/refs/tags/version-${MAPPED_VERSION}.zip
