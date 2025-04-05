@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Memory {
                 copy (src.begin (), src.end (), target.data ());
             }
             else {
-                copy_backward (src.data (), src.data () + src.size(), target.data ());
+                copy_backward (src.data (), src.data () + src.size (), target.data ());
             }
         }
         return target;
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Memory {
             std::copy (src.begin (), src.end (), target.data ());
         }
         else {
-            std::copy_backward (src.data (), src.data () + src.size(), target.data ());
+            std::copy_backward (src.data (), src.data () + src.size (), target.data ());
         }
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
