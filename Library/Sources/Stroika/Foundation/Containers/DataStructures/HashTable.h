@@ -143,6 +143,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \note HashTable (const HashTable& src) (and move ctor) guarantee elements iteration order unchanged in copy
+         *        (see https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1)
          */
         HashTable ();
         HashTable (size_t bucketCount, const KeyHasherType& hashFunction = {}, const KeyEqualsComparerType& keyComparer = {});
@@ -267,6 +269,51 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         nonvirtual float max_load_factor () const;
         nonvirtual void  max_load_factor (float mlf);
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      Worst Case: O(N)
+         *      Typical: O(N) if ! trivial_t<T> and if trivial_t, O(N-BUCKETS)
+         */
+        nonvirtual void clear ();
+
+    public:
+        /**
+         *  \see https://en.cppreference.com/w/cpp/container/map/contains
+         *
+         *  \note Runtime performance/complexity:   ??
+         *      Average:    log(N)
+         *      Worst:      N
+         */
+        nonvirtual bool contains (ArgByValueType<key_type> key) const;
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      Always: O(N)
+         */
+        template <invocable<typename TRAITS::value_type> FUNCTION>
+        nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      overload: (key_type)
+         *      Average/Worst:    O(1) ; N
+         *  \note Runtime performance/complexity:
+         *      overload: (FUNCTION&& f overload)
+         *      Average/Worst:    O(N)
+         * 
+         *  \note this is kind of like set<T>::find () - but not exactly, and find() doesn't really have a uniform API across the various stl containers...
+         *        which is why we use Find(), instead of find() as a name
+         */
+        nonvirtual ForwardIterator Find (ArgByValueType<key_type> key) const;
+        template <typename ARG_T = typename TRAITS::AlternateFindType>
+        nonvirtual ForwardIterator Find (ARG_T key) const
+            requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>);
+        template <predicate<typename TRAITS::key_type> FUNCTION>
+        nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
 
     public:
         constexpr void Invariant () const noexcept;

@@ -172,6 +172,92 @@ namespace Stroika::Foundation::Containers::DataStructures {
         fMaxLoadFactor_ = mlf;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::clear ()
+    {
+        if (fCachedSize_ != 0) {
+            for (auto& bi : fBuckets_) {
+                bi.fElements.clear ();
+            }
+            fCachedSize_ = 0;
+        }
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::contains (ArgByValueType<key_type> key) const
+    {
+        size_t hashVal = Hash_ (key);
+        if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            for (auto i : fBuckets_[hashVal].fElements) {
+                if (this->fKeyComparer_ (i.fKey, key)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    template <invocable<typename TRAITS::value_type> FUNCTION>
+    void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
+    {
+        if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            for (const auto& bi : fBuckets_) {
+                for (const auto& i : bi.fElements) {
+                    forward<FUNCTION> (doToElement) (i);
+                }
+            }
+        }
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ArgByValueType<key_type> key) const -> ForwardIterator
+    {
+        size_t hashVal = Hash_ (key);
+        if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            size_t idx{0};
+            for (auto i : fBuckets_[hashVal].fElements) {
+                if (this->fKeyComparer_ (i.fKey, key)) {
+                    return ForwardIterator{this, make_tuple (hashVal, idx)};
+                }
+                ++idx;
+            }
+        }
+        return ForwardIterator{};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    template <typename ARG_T>
+    auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (ARG_T key) const -> ForwardIterator
+        requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>)
+    {
+        size_t hashVal = Hash_ (key);
+        if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            size_t idx{0};
+            for (auto i : fBuckets_[hashVal].fElements) {
+                if (this->fKeyComparer_ (i.fKey, key)) {
+                    return ForwardIterator{this, make_tuple (hashVal, idx)};
+                }
+                ++idx;
+            }
+        }
+        return ForwardIterator{};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    template <predicate<typename TRAITS::key_type> FUNCTION>
+    auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Find (FUNCTION&& firstThat) const -> ForwardIterator
+    {
+        if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            size_t hashVal{0};
+            for (const auto& bi : fBuckets_) {
+                size_t idx{0};
+                for (const auto& i : bi.fElements) {
+                    if (forward<FUNCTION> (firstThat) (i)) {
+                        return ForwardIterator{this, make_tuple (hashVal, idx)};
+                    }
+                    ++idx;
+                }
+                ++hashVal;
+            }
+        }
+        return ForwardIterator{};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant () const noexcept
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
