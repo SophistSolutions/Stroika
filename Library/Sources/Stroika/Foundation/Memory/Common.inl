@@ -58,16 +58,12 @@ namespace Stroika::Foundation::Memory {
     {
         return CompareBytes (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), count * sizeof (T));
     }
-    template <typename T>
-    constexpr strong_ordering CompareBytes (span<const T> lhs, span<const T> rhs)
+    template <typename TL, size_t EL, typename TR, size_t ER>
+    constexpr strong_ordering CompareBytes (span<TL, EL> lhs, span<TR, ER> rhs)
+        requires (same_as<remove_cvref_t<TL>, remove_cvref_t<TR>> and is_trivial_v<TL>)
     {
         Require (lhs.size () == rhs.size ());
         return CompareBytes (lhs.data (), rhs.data (), lhs.size ());
-    }
-    template <typename T>
-    constexpr strong_ordering CompareBytes (span<T> lhs, span<T> rhs)
-    {
-        return CompareBytes (ConstSpan (lhs), ConstSpan (rhs));
     }
 
     /*

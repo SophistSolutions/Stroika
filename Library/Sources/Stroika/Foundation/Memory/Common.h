@@ -20,12 +20,6 @@
 
 namespace Stroika::Foundation::Memory {
 
-    namespace Private_ {
-        template <class>
-        inline constexpr bool _Is_span_v = false;
-        template <class _Ty, size_t _Extent>
-        inline constexpr bool _Is_span_v<span<_Ty, _Extent>> = true;
-    }
     /**
      *  For when you want to assert an argument is a SPAN, but you haven't yet deduced the type its a span of yet.
      * 
@@ -33,9 +27,13 @@ namespace Stroika::Foundation::Memory {
      *  are CONVERTIBLE to span<T>
      */
     template <typename SPAN_T>
-    concept ISpan = Private_::_Is_span_v<SPAN_T>;
-    static_assert (ISpan<span<int>> and ISpan<span<int, 3>>);
-    static_assert (not ISpan<std::string> and not ISpan<int>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
+    concept ISpan = requires (SPAN_T t) {
+        {
+            []<typename T1, size_t E1> (span<T1, E1>) {}(t)
+        };
+    };
+    static_assert (ISpan<span<int>> and ISpan<span<int, 3>> and ISpan<const span<const int, 3>>);
+    static_assert (not ISpan<std::string> and not ISpan<int> and not ISpan<vector<int>>); // we don't include <string>/<vector> in this module, but sometimes helpful to test/debug/document
 
     /**
      *  \brief use ISpanOfT<T> as a concept declaration for parameters where you want a span, but accept either T or const T
@@ -62,6 +60,28 @@ namespace Stroika::Foundation::Memory {
     template <typename SPAN_T, typename T>
     concept ISpanOfT = Common::IAnyOf<remove_cvref_t<SPAN_T>, span<T>, span<const T>, span<T, SPAN_T::extent>, span<const T, SPAN_T::extent>>;
     static_assert (ISpanOfT<span<int>, int> and ISpanOfT<span<const int>, int> and ISpanOfT<span<const int, 3>, int> and not ISpanOfT<span<int>, char>);
+
+    /**
+     *  \brief Can safely cast span<FROM_T,FROM_EXTENT> to a TO_SPAN (where the underlying types are POD - plain old data - types - roughly)
+     *
+     *  \note - this requires the two spans to have the same number of bytes (cannot always be fully determined at compile time).
+     *          But this returns true if its possible.
+     * 
+     *  \note its perfectly reasonable to span cast from span<uint32_t> to span<byte> - so long as the two spans have the same size_bytes()
+     * 
+     *  \note this also requires trivially_copyable on the types. Nothing REALLY requires that. But its more likely a bug than
+     *        a feature if you are using types for which that is not true, so fail here. And force a more careful exam with explicit
+     *        reinterpret_casts...
+     * 
+     *  \note Since Stroika v3.0d15 - this doesn't allow casting away constness of the underlying value_type (though it ignores the
+     *        constness of the span itself).
+     */
+    template <typename TO_SPAN, typename FROM_SPAN>
+    concept ISpanBytesCastable = (ISpan<TO_SPAN> and Common::trivially_copyable<typename TO_SPAN::value_type>) and
+                                 (ISpan<FROM_SPAN> and Common::trivially_copyable<typename FROM_SPAN::value_type>) and
+                                 (is_const_v<typename TO_SPAN::value_type> or not is_const_v<typename FROM_SPAN::value_type>) and
+                                 (sizeof (typename FROM_SPAN::value_type) % sizeof (typename TO_SPAN::value_type) == 0 or
+                                  sizeof (typename TO_SPAN::value_type) % sizeof (typename FROM_SPAN::value_type) == 0);
 
     /**
      *  \brief convert a (possibly already const) span to the same span, but with const on the 'T' argument
@@ -102,7 +122,8 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  \brief - like std::memcmp() - except count is in units of T (not bytes) and this function is
-     *           constexpr, and this function allows nullptr arguments (if count == 0).
+     *           constexpr, and this function allows nullptr arguments (if count == 0), and it returns strong_ordering, and provides
+     *           helpful overloads.
      * 
      *  @aliases memcmp, MemCmp
      * 
@@ -115,13 +136,15 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \note - like std::memcmp() it returns an int < 0 for less, == 0 for equal, and > 0 for greater, but that corresponds
      *          backward compatibly to the strong_ordering C++20 type, so we use that for clarity going forward.
+     * 
+     *  \note - This is LOGICALLY CompareBytes (span<const T> lhs, span<const T> rhs), but use use span<T> because unfortunately
+     *          static_assert (not assignable_from<span<int>, span<const int>>);    // which makes no sense to me
      */
     template <typename T>
     constexpr strong_ordering CompareBytes (const T* lhs, const T* rhs, size_t count);
-    template <typename T>
-    constexpr strong_ordering CompareBytes (span<const T> lhs, span<const T> rhs);
-    template <typename T>
-    constexpr strong_ordering CompareBytes (span<T> lhs, span<T> rhs);
+    template <typename TL, size_t EL, typename TR, size_t ER>
+    constexpr strong_ordering CompareBytes (span<TL, EL> lhs, span<TR, ER> rhs)
+        requires (same_as<remove_cvref_t<TL>, remove_cvref_t<TR>> and is_trivial_v<TL>);
 
     /**
      * \brief return true iff intersection of the two spans is non-empty (contains any bytes)
@@ -132,28 +155,6 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T1, typename T2, size_t E1, size_t E2>
     constexpr bool Intersects (span<T1, E1> lhs, span<T2, E2> rhs);
-
-    /**
-     *  \brief Can safely cast span<FROM_T,FROM_EXTENT> to a TO_SPAN (where the underlying types are POD - plain old data - types - roughly)
-     *
-     *  \note - this requires the two spans to have the same number of bytes (cannot always be fully determined at compile time).
-     *          But this returns true if its possible.
-     * 
-     *  \note its perfectly reasonable to span cast from span<uint32_t> to span<byte> - so long as the two spans have the same size_bytes()
-     * 
-     *  \note this also requires trivially_copyable on the types. Nothing REALLY requires that. But its more likely a bug than
-     *        a feature if you are using types for which that is not true, so fail here. And force a more careful exam with explicit
-     *        reinterpret_casts...
-     * 
-     *  \note Since Stroika v3.0d15 - this doesn't allow casting away constness of the underlying value_type (though it ignores the
-     *        constness of the span itself).
-     */
-    template <typename TO_SPAN, typename FROM_SPAN>
-    concept ISpanBytesCastable = (ISpan<TO_SPAN> and Common::trivially_copyable<typename TO_SPAN::value_type>) and
-                                 (ISpan<FROM_SPAN> and Common::trivially_copyable<typename FROM_SPAN::value_type>) and
-                                 (is_const_v<typename TO_SPAN::value_type> or not is_const_v<typename FROM_SPAN::value_type>) and
-                                 (sizeof (typename FROM_SPAN::value_type) % sizeof (typename TO_SPAN::value_type) == 0 or
-                                  sizeof (typename TO_SPAN::value_type) % sizeof (typename FROM_SPAN::value_type) == 0);
 
     /**
      *  \brief 'cast' a span of one thing to another, as if as_bytes, from_bytes; require span<T1...> and span<T2...> such that one T size is a multiple of the other
@@ -220,8 +221,10 @@ namespace Stroika::Foundation::Memory {
     constexpr span<TO_T, TO_E> CopySpanData (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
         requires (not is_const_v<TO_T>);
 
-    // like CopySpanData but src and target are POTENTIALLY overlapping
-    // BUT for this - dont need separate FROM_T and TO_T
+    /**
+     * like CopySpanData but src and target are POTENTIALLY overlapping
+     * BUT for this - dont need separate FROM_T and TO_T
+     */
     template <typename T, size_t FROM_E, size_t TO_E>
     constexpr span<T, TO_E> CopyOverlappingSpanData (span<T, FROM_E> src, span<T, TO_E> target)
         requires (not is_const_v<T>);
