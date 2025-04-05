@@ -151,7 +151,8 @@
 			"stdfloat": "cpp",
 			"cuchar": "cpp",
 			"mdspan": "cpp",
-			"spanstream": "cpp"
+			"spanstream": "cpp",
+			"text_encoding": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
