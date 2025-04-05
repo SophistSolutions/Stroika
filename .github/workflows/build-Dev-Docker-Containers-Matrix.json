@@ -11,6 +11,16 @@
     },
     {
         "comment": "Linux",
+        "comment2": "ubuntu 24.04"
+    },
+    {
+        "build_job": "Linux",
+        "runs_on": "ubuntu-latest",
+        "displayTargetName": "stroika-buildvm-ubuntu2404*",
+        "container_images": "sophistsolutionsinc/stroika-buildvm-ubuntu2404-small sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests"
+    },
+    {
+        "comment": "Linux",
         "comment2": "ubuntu 24.10"
     },
     {
@@ -21,13 +31,13 @@
     },
     {
         "comment": "Linux",
-        "comment2": "ubuntu 24.04"
+        "comment2": "ubuntu 25.04"
     },
     {
         "build_job": "Linux",
         "runs_on": "ubuntu-latest",
-        "displayTargetName": "stroika-buildvm-ubuntu2404*",
-        "container_images": "sophistsolutionsinc/stroika-buildvm-ubuntu2404-small sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests"
+        "displayTargetName": "stroika-buildvm-ubuntu2504*",
+        "container_images": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-small sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests"
     },
     {
         "comment": "Windows"
