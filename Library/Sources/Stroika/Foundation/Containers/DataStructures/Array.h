@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Return index of first place in the array matching, or nullopt if not found
+         *  Return ForwardIterator of first place in the array matching, or nullptr if not found
          * 
          *  \note Runtime performance/complexity:
          *      Worst Case: O(N)
