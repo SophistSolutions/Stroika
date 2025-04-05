@@ -1107,10 +1107,10 @@ string Thread::FormatThreadID_A (Thread::IDType threadID, const FormatThreadInfo
 #if qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 #if __cpp_lib_jthread >= 201911
 /*
-     ********************************************************************************
-     ************************ Thread::GetCurrentThreadStopToken *********************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ************************ Thread::GetCurrentThreadStopToken *********************
+ ********************************************************************************
+ */
 optional<stop_token> Thread::GetCurrentThreadStopToken ()
 {
     if (Ptr curThread = GetCurrent ()) {
