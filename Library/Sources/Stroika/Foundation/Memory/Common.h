@@ -20,19 +20,37 @@
 
 namespace Stroika::Foundation::Memory {
 
+    #if qCompilerAndStdLib_illunderstood_ispan_Buggy
+    namespace Private_ {
+        template <class>
+        inline constexpr bool _Is_span_v = false;
+        template <class _Ty, size_t _Extent>
+        inline constexpr bool _Is_span_v<span<_Ty, _Extent>> = true;
+    }
+    #endif
+
     /**
      *  For when you want to assert an argument is a SPAN, but you haven't yet deduced the type its a span of yet.
      * 
      *  \note matches span<T>, span<T,EXTENT>, span<const T>, span<const T,EXTENT>, but not things that
      *  are CONVERTIBLE to span<T>
      */
+#if qCompilerAndStdLib_illunderstood_ispan_Buggy
+    template <typename SPAN_T>
+    concept ISpan = Private_::_Is_span_v<SPAN_T>;
+#else
     template <typename SPAN_T>
     concept ISpan = requires (SPAN_T t) {
         {
             []<typename T1, size_t E1> (span<T1, E1>) {}(t)
         };
     };
+#endif
+    #if qCompilerAndStdLib_illunderstood_ispan_Buggy
+    static_assert (ISpan<span<int>> and ISpan<span<int, 3>> );
+    #else
     static_assert (ISpan<span<int>> and ISpan<span<int, 3>> and ISpan<const span<const int, 3>>);
+    #endif
     static_assert (not ISpan<std::string> and not ISpan<int> and not ISpan<vector<int>>); // we don't include <string>/<vector> in this module, but sometimes helpful to test/debug/document
 
     /**
