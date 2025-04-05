@@ -601,6 +601,10 @@ namespace Stroika::Foundation::Characters {
         size_t useLength = (t - f);
         return SubString_ (accessor, f, f + useLength);
     }
+    inline String String::Skip (size_t n) const
+    {
+        return SafeSubString (n);
+    }
     inline String String::RemoveAt (size_t charAt) const
     {
         return RemoveAt (charAt, charAt + 1);

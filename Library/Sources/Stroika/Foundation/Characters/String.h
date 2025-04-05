@@ -591,6 +591,15 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         * \brief Return a substring of this string, starting at 'argument' n. If n > size(), return empty string.
+         * 
+         *  \note   This hides inherited Skip, and returns a subtype of what it returns, and is just slightly more
+         *          efficient, but otherwise completley compatible behavior.
+         */
+        nonvirtual String Skip (size_t n) const;
+
+    public:
+        /**
          *  Return 'count' copies of this String (concatenated after one another).
          */
         nonvirtual String Repeat (unsigned int count) const;
