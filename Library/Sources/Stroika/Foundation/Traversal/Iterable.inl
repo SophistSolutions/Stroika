@@ -791,6 +791,7 @@ namespace Stroika::Foundation::Traversal {
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{begin (), Iterator<T>{end ()}}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
+        static_assert (__cpp_lib_execution >= 201603L); // see if test still needed - and if so - document!!! --LGP 2025-04-06
 #if __cpp_lib_execution >= 201603L
         if (seq == Execution::SequencePolicy::eSeq) {
             stable_sort (tmp.begin (), tmp.end (), inorderComparer);
@@ -817,9 +818,9 @@ namespace Stroika::Foundation::Traversal {
     {
         optional<T> last;
         for (const T& i : *this) {
-            if (last.has_value ()) {
+            if (last.has_value ()) [[likely]] {
                 // inorderComparer is 'strict inorder' - so case of equals we keep going...
-                if (inorderComparer (i, *last)) {
+                if (inorderComparer (i, *last)) [[unlikely]] {
                     return false;
                 }
             }
@@ -1141,7 +1142,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, THAT_FUNCTION&& that, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
-            if (that (*i)) {
+            if (forward<THAT_FUNCTION> (that) (*i)) [[unlikely]] {
                 return i;
             }
         }
@@ -1153,7 +1154,7 @@ namespace Stroika::Foundation::Traversal {
                                    [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
-            if (equalsComparer (v, *i)) {
+            if (forward<EQUALS_COMPARER> (equalsComparer) (v, *i)) [[unlikely]] {
                 return i;
             }
         }
