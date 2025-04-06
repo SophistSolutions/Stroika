@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
     constexpr size_t GetScaledUpCapacity (size_t targetSize, size_t eltSizeInBytes = 1, size_t minChunk = kDefaultMinChunkSize);
 
     /**
-     *  \brief Comupute the best 'capacity' (using GetScaledUpCapacity) to use for the given container adding N elements to its given size .
+     *  \brief Compute the best 'capacity' (using GetScaledUpCapacity) to use for the given container adding N elements to its given size .
      *
      * @see GetScaledUpCapacity
      */
@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
      *  \brief use @see GetScaledUpCapacity () to automatically optimally adjust the capacity (reserve) on the given container before adding N elements to it.
      *
      * For the given container (which supports capacity/reserve/size APIs) - figure how much to adjust the capacity
-     * for the given container (using @see ScaleUpCapacity) and call reseve() to perform that adjustment.
+     * for the given container (using @see ScaleUpCapacity) and call reserve() to perform that adjustment.
      */
     template <typename CONTAINER>
     void Reserve4AddN (CONTAINER& c, size_t n, size_t minChunk = kDefaultMinChunkSize);
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
      *  \brief use @see GetScaledUpCapacity () to automatically optimally adjust the capacity (reserve) on the given container before adding one element to it.
      *
      * For the given container (which supports capacity/reserve/size APIs) - figure how much to adjust the capacity
-     * for the given container (using @see ScaleUpCapacity) and call reseve() to perform that adjustment.
+     * for the given container (using @see ScaleUpCapacity) and call reserve() to perform that adjustment.
      */
     template <typename CONTAINER>
     void Reserve4Add1 (CONTAINER& c, size_t minChunk = kDefaultMinChunkSize);
