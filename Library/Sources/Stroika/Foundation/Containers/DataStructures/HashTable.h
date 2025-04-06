@@ -182,6 +182,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         constexpr static ForwardIterator end ();
 
     public:
+        /*
+         *  Support for COW (CopyOnWrite):
+         *
+         *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iterator from 'this' - which points at the same logical position. This requires that this container
+         *  was just 'copied' from 'movedFrom' - and is used to produce an equivalent iterator (since iterators are tied to
+         *  the container they were iterating over).
+         */
+        nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const HashTable* movedFrom) const;
+
+    public:
         /**
          */
         nonvirtual void Add (const value_type& t);
@@ -314,6 +325,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
             requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>);
         template <predicate<typename TRAITS::key_type> FUNCTION>
         nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
+
+    public:
+        /**
+         *  \note - unlike other modifying operations, this doesn't invalidate any iterators (including the argument iterator).
+         */
+        template <typename CHECKED_T = MAPPED_TYPE>
+        nonvirtual void Update (const ForwardIterator& it, ArgByValueType<CHECKED_T> newValue)
+            requires (not same_as<MAPPED_TYPE, void>);
 
     public:
         constexpr void Invariant () const noexcept;

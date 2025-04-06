@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
@@ -44,6 +45,25 @@ namespace Stroika::Foundation::Containers::DataStructures {
     constexpr auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::end () -> ForwardIterator
     {
         return ForwardIterator{};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const HashTable* movedFrom) const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        RequireNotNull (pi);
+        RequireNotNull (movedFrom);
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Require (pi->fData_ == movedFrom);
+#endif
+        Require (this->bucket_count () == movedFrom->bucket_count ());
+        Require (this->fHasher_ == movedFrom->fHasher_); // logically required but not equals comparable
+        // Also require no changes to this after clone!!! - cuz those could re-order elements
+        if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            // then easy - cuz iterator rep is same - index into bucket list and index into array within bucket
+        }
+#if qStroika_Foundation_Debug_AssertionsChecked
+        pi->fData_ = this;
+#endif
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& t)
@@ -199,10 +219,25 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
-            for (const auto& bi : fBuckets_) {
-                for (const auto& i : bi.fElements) {
-                    forward<FUNCTION> (doToElement) (i);
-                }
+            switch (seq) {
+                case Execution::SequencePolicy::eSeq:
+#if __cpp_lib_execution < 201603L
+                default:
+#endif
+                    for (const auto& bi : fBuckets_) {
+                        for (const auto& i : bi.fElements) {
+                            forward<FUNCTION> (doToElement) (i);
+                        }
+                    }
+                    break;
+#if __cpp_lib_execution >= 201603L
+                default:
+                    std::for_each (execution::par, fBuckets_.begin (), fBuckets_.end (), [&] (const BucketType_& bi) {
+                        std::for_each (execution::par, bi.fElements.begin (), bi.fElements.end (),
+                                       [&] (const value_type& v) { forward<FUNCTION> (doToElement) (v); });
+                    });
+#endif
+                    break;
             }
         }
     }
@@ -256,6 +291,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         return ForwardIterator{};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    template <typename CHECKED_T>
+    void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Update (const ForwardIterator& it, ArgByValueType<CHECKED_T> newValue)
+        requires (not same_as<MAPPED_TYPE, void>)
+    {
+        size_t bucketIndex                                              = get<0> (it.GetUnderlyingIteratorRep ());
+        size_t intraBucketIndex                                         = get<1> (it.GetUnderlyingIteratorRep ());
+        this->fBuckets_[bucketIndex].fElements[intraBucketIndex].fValue = newValue;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Invariant () const noexcept
