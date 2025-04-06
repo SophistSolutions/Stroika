@@ -2045,10 +2045,38 @@ Objects involved in the operation:
       references sequence with type 'std::__debug::vector<int, std::allocator<int> >' @ 0x0x7ffeee801fd0
     }
 Aborted (core dumped)
+
+
+also get error in UBUNTU 25.04 g++14.2
+
+UN      ] Foundation_Math.Test5_ReBin_
+[       OK ] Foundation_Math.Test5_ReBin_ (5 ms)
+[ RUN      ] Foundation_Math.Test6_Statistics_
+/usr/include/c++/14/debug/safe_iterator.h:199:
+In function:
+    constexpr gnu_debug::_Safe_iterator<_Iterator, _Sequence, 
+    _Category>::_Safe_iterator(const gnu_debug::_Safe_iterator<_Iterator, 
+    _Sequence, _Category>&) [with _Iterator = gnu_cxx::normal_iterator<const 
+    int*, std::vector<int, std::allocator<int> > >; _Sequence = std::
+    debug::vector<int>; _Category = std::forward_iterator_tag]
+
+Error: attempt to copy-construct an iterator from a singular iterator.
+
+Objects involved in the operation:
+    iterator "this" @ 0x7ffff5f5cec0 {
+      type = gnu_cxx::normal_iterator<int const*, std::vector<int, std::allocator<int> > > (constant iterator);
+      state = singular (value-initialized);
+    }
+    iterator "other" @ 0x7ffff5eca470 {
+      type = gnu_cxx::normal_iterator<int const*, std::vector<int, std::allocator<int> > > (constant iterator);
+      state = singular;
+    }
+
 */
 #ifndef qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy
 #if defined(__GNUC__)
-#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 11))
+// unclear if this is my bug or g++ - but for now just treat it as g++ bug working around...
+#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 14))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy 0
 #endif
