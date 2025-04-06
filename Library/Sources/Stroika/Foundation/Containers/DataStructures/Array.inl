@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
@@ -94,25 +95,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         InsertAt (this->size (), item);
     }
     template <typename T>
-    void Array<T>::RemoveAt (size_t index)
+    void Array<T>::RemoveAt (size_t index) noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (index >= 0);
         Require (index < fLength_);
         Invariant ();
-        if (index < fLength_ - 1) {
-            /*
-             * Slide items down.
-             */
-            T* lhs = &fItems_[index];
-            T* rhs = &fItems_[index + 1];
-            // We tried getting rid of index var and using ptr compare but
-            // did much worse on CFront/MPW Thursday, August 27, 1992 4:12:08 PM
-            for (size_t i = fLength_ - index - 1; i > 0; i--) {
-                *lhs++ = *rhs++;
-            }
-        }
-        destroy_at (&fItems_[--fLength_]);
+        (void)Memory::Remove (span{this->data (), size ()}, span{this->data (), capacity ()}, index, index + 1);
+        --fLength_;
+        Invariant ();
+    }
+    template <typename T>
+    void Array<T>::RemoveAt (size_t from, size_t to) noexcept
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Invariant ();
+        fLength_ = Memory::Remove (span{this->data (), size ()}, span{this->data (), capacity ()}, from, to).size ();
         Invariant ();
     }
     template <typename T>
@@ -126,21 +124,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         fLength_ = 0;
         Invariant ();
-    }
-    template <typename T>
-    template <typename EQUALS_COMPARER>
-    bool Array<T>::Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        Invariant ();
-        const T* current = &fItems_[0];
-        const T* last    = &fItems_[fLength_];
-        for (; current < last; ++current) {
-            if (equalsComparer (*current, item)) {
-                return true;
-            }
-        }
-        return false;
     }
     template <typename T>
     template <invocable<T> FUNCTION>
@@ -186,6 +169,32 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         return end ();
+    }
+    template <typename T>
+    template <typename EQUALS_COMPARER>
+    const T* Array<T>::Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
+    {
+        const T* start = &fItems_[0];
+        const T* last  = &fItems_[fLength_];
+        for (const T* i = start; i < last; ++i) {
+            if (forward<EQUALS_COMPARER> (equalsComparer) (i->fItem, item)) {
+                return &i->fItem;
+            }
+        }
+        return nullptr;
+    }
+    template <typename T>
+    template <typename EQUALS_COMPARER>
+    T* Array<T>::Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer)
+    {
+        const T* start = &fItems_[0];
+        const T* last  = &fItems_[fLength_];
+        for (const T* i = start; i < last; ++i) {
+            if (forward<EQUALS_COMPARER> (equalsComparer) (i->fItem, item)) {
+                return &i->fItem;
+            }
+        }
+        return nullptr;
     }
     template <typename T>
     void Array<T>::reserve (size_t slotsAlloced)
@@ -375,6 +384,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (pi->CurrentIndex () <= this->size ());
         Require (pi->_fData == movedFrom);
         pi->_fData = this;
+    }
+    template <typename T>
+    inline T* Array<T>::data () noexcept
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        return fItems_;
+    }
+    template <typename T>
+    inline const T* Array<T>::data () const noexcept
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        return fItems_;
     }
     template <typename T>
     inline T Array<T>::GetAt (size_t i) const

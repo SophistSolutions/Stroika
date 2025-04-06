@@ -23,6 +23,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     using Common::ArgByValueType;
 
     /**
+     *  \brief very similar to std::vector<T>
+     * 
      *      This class provides an array abstraction, where the size can be set dynamically, and
      *  extra sluff is maintained off the end to reduce copying from reallocs.
      *  Only items 0..size ()-1 are kept constructed. The rest (size()+1
@@ -45,38 +47,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *      Unlike other dynamic array implementations, when an item is removed,
      *  it is destructed then. So the effects of buffering have no effects on the
      *  semantics of the Array.
-     *
-     *
-     *  Notes:
-     *
-     *  C++/StandardC arrays and segmented architectures: ((@todo DOCS OBSOLETE))
-     *
-     *      Our iterators use address arithmetic since that is faster than
-     *  array indexing, but that requires care in the presence of patching,
-     *  and in iterating backwards.
-     *
-     *      The natural thing to do in iteration would be to have fCurrent
-     *  point to the current item, but that would pose difficulties in the
-     *  final test at the end of the iteration when iterating backwards. The
-     *  final test would be fCurrent < _fStart. This would be illegal in ANSI C.
-     *
-     *      The next possible trick is for backwards iteration always point one
-     *  past the one you mean, and have *it subtract one before
-     *  dereferencing. This works pretty well, but makes source code sharing between
-     *  the forwards and backwards cases difficult.
-     *
-     *      The next possible trick, and the one we use for now, is to have
-     *  fCurrent point to the current item, and in the Next() code, when
-     *  going backwards, reset fCurrent to _fEnd - bizarre as this may seem
-     *  then the test code can be shared among the forwards and backwards
-     *  implementations, all the patching code can be shared, with only this
-     *  one minor check. Other potential choices are presented in the TODO
-     *  below.
-     *
-     *  TODO:
-     *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
-     *              (IN FACT, Find (function) overload basically same thing - maybe have two find overloads - with function and comparer
-     *              but easily confusable, and redundant, but maybe useful for performance?)
      */
     template <typename T>
     class Array : public Debug::AssertExternallySynchronizedMutex {
@@ -101,6 +71,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual Array& operator= (const Array& rhs);
+
+    public:
+        /**
+         */
+        nonvirtual T*       data () noexcept;
+        nonvirtual const T* data () const noexcept;
 
     public:
         /**
@@ -182,26 +158,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Runtime performance/complexity:
-         *      Worst Case: O(N)
-         *      Typical: depends on index but typically O(N) (can be less if removing from end of Array)
-         */
-        nonvirtual void RemoveAt (size_t index);
-
-    public:
-        /**
-         *  \note Runtime performance/complexity:
          *      Worst Case: O(N) - if !trivial_type
          *      Typical: constant
          */
         nonvirtual void clear ();
-
-    public:
-        /**
-         *  \note Runtime performance/complexity:
-         *      Worst Case/Typical: O(N) ; O(N), but can be less if systematically finding entries near start of array
-         */
-        template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const;
 
     public:
         /**
@@ -240,9 +200,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *        and more similar to LinkedList find ...
          * 
          *  \note before Stroika v3.0d10, this returned optional<size_t>
+         *        
+         *   EQUALS_COMPARER OVERLOAD : Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
+         * 
+         *  \alias Lookup, First, Contains (sort of)
          */
         template <predicate<T> FUNCTION>
         nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual const T* Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {}) const;
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual T* Find (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {});
 
     public:
         /*
@@ -270,10 +238,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \note Runtime performance/complexity:
+         *      Worst Case: O(N)
+         *      Typical: depends on index but typically O(N) (can be less if removing from end of Array)
+         *
          *  \see erase () - same as Remove(it) but returns iterator of 'next'
          */
         nonvirtual void Remove (const ForwardIterator& i);
         nonvirtual void Remove (const BackwardIterator& i);
+
+    public:
+        /**
+         *  \note Runtime performance/complexity:
+         *      Worst Case: O(N)
+         *      Typical: depends on index but typically O(N) (can be less if removing from end of Array)
+         */
+        nonvirtual void RemoveAt (size_t index) noexcept;
+        nonvirtual void RemoveAt (size_t from, size_t to) noexcept;
 
     public:
         /**
@@ -305,6 +286,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         nonvirtual void Invariant_ () const noexcept;
 #endif
+
+    public:
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        [[deprecated ("Since Stroika v3.0d18")]] bool Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
+        {
+            return this->Find (item, equalsComparer) != nullptr;
+        }
 
     private:
         // mostly useful cuz allows for use of realloc, which might imply fewer copies
