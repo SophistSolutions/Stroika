@@ -565,8 +565,9 @@ namespace Stroika::Foundation::Traversal {
     {
         using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
         constexpr bool kLazyEvaluateIteration_ = same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>; // For now use vector and lazy not truly implemented
-        [[maybe_unused]] constexpr bool kOptionalExtractor_ = not convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> and
-                                             convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>;
+        [[maybe_unused]] constexpr bool kOptionalExtractor_ =
+            not convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> and
+            convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>;
         if constexpr (kLazyEvaluateIteration_) {
             // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
             auto sharedContext = make_shared<Iterable<T>> (*this);
