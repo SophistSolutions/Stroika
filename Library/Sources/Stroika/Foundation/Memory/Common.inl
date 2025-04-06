@@ -226,6 +226,95 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
+     ********************************* Memory::Insert *******************************
+     ********************************************************************************
+     */
+    template <ISpan INTO_SPAN, ISpan FROM_SPAN>
+        requires (same_as<remove_cvref_t<typename INTO_SPAN::value_type>, remove_cvref_t<typename FROM_SPAN::value_type>>)
+    remove_cvref_t<INTO_SPAN> Insert (const INTO_SPAN& intoLiveSpan, const INTO_SPAN& intoReservedSpan, size_t at, const FROM_SPAN& copyFrom) noexcept
+    {
+        using T = remove_cvref_t<typename INTO_SPAN::value_type>;
+        Require (intoLiveSpan.data () == intoReservedSpan.data () or (intoLiveSpan.data () == nullptr and intoLiveSpan.size () == 0));
+        size_t n2Add = copyFrom.size ();
+        Require (intoLiveSpan.size () + copyFrom.size () <= intoReservedSpan.size ());
+        Require (at + copyFrom.size () <= intoReservedSpan.size ());
+        T* b = intoReservedSpan.data ();
+        // [.....orig data... AT ...more data...]
+        // becomes
+        // [.....orig data... AT {copyFrom} ...more data...]  ; slide by newS; but last newS elts uninitialized_copy copy, and regular copy rest
+        T*     atPtr    = b + at;
+        size_t origSize = intoLiveSpan.size ();
+        size_t newSize  = origSize + n2Add;
+        if constexpr (is_trivially_copyable_v<T>) {
+            // we don't need to pay attention to what is initialized and what is not so quicker and easier
+            // So slosh bytes after at down, and copy in the new ones
+            CopyBytes (span{atPtr, origSize - at}, span{atPtr + n2Add, origSize - at});
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), atPtr);
+#else
+            ranges::uninitialized_copy (copyFrom, span{atPtr, n2Add});
+#endif
+        }
+        else {
+            // Simple but not super algorithm, append the data (using uninitialized_copy)
+            // and then std::rotate () - idea lifted from MSVC std::vector::insert()
+            // reason for trixyness, is cuz we need uninitialized_copy for new stuff (into uninitialized memory)
+            // and copy with destruction of old stuff for rest (handled by rotate)
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + origSize);
+#else
+            ranges::uninitialized_copy (copyFrom, span{b + origSize, n2Add});
+#endif
+            rotate (atPtr, b + origSize, b + newSize);
+        }
+        return intoReservedSpan.subspan (0, newSize);
+    }
+
+    /*
+     ********************************************************************************
+     ********************************* Memory::Remove *******************************
+     ********************************************************************************
+     */
+    template <ISpan FROM_SPAN>
+        requires (not is_const_v<remove_cvref_t<typename FROM_SPAN::value_type>>)
+    remove_cvref_t<FROM_SPAN> Remove (FROM_SPAN&& spanToEdit, FROM_SPAN&& reservedSpan, size_t from, size_t to) noexcept
+    {
+        // @todo FIX - this COPIES elements during destroy, but should MOVE THEM - slight performance optimization sometimes
+        using T = remove_cvref_t<typename FROM_SPAN::value_type>;
+        Require (spanToEdit.data () == reservedSpan.data () or (spanToEdit.data () == nullptr and spanToEdit.size () == 0));
+        Require (from <= to);
+        Require (to <= spanToEdit.size ());
+        T*     b             = reservedSpan.data ();
+        size_t amountRemoved = to - from;
+
+        // if removing from anything BUT the end of the (live) buffer, we must slide items down
+        if (to < spanToEdit.size ()) {
+            /*
+             * Slide items down. Note - this operates ENTIRELY on LIVE (constructed) objects.
+             *      b    b+from       b+to
+             *      v      v           v
+             *      | .... RANGE2REMOVE|STUFF-AFTER|END-OF-BUFFER
+             *  produces
+             *      | .....STUFF-AFTER|END-OF-BUFFER
+             *                        /\
+             *                        b+spanToEdit.size() - (amount-removed)
+             */
+            auto copySrcSpan = span{b + to, spanToEdit.size ()};    // STUFF-AFTER in first line
+            auto copyToSpan  = span{b + from, copySrcSpan.size ()}; // RANGE2REMOVE in first line
+            Memory::CopyOverlappingSpanData (copySrcSpan, copyToSpan);
+        }
+        // but either way, we must destroy a few elements at the end, and return the updated span
+        auto destroySpan = span{b + spanToEdit.size () - amountRemoved, amountRemoved};
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+        destroy (destroySpan.begin (), destroySpan.end ());
+#else
+        ranges::destroy (destroySpan);
+#endif
+        return reservedSpan.subspan (0, spanToEdit.size () - amountRemoved);
+    }
+
+    /*
+     ********************************************************************************
      ******************************** Memory::OffsetOf ******************************
      ********************************************************************************
      */

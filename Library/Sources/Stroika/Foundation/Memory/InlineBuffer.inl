@@ -455,34 +455,8 @@ namespace Stroika::Foundation::Memory {
             reserve (newS);
         }
         Assert (this->HasEnoughCapacity_ (newS));
-        auto b = this->begin ();
-        // [.....orig data... AT ...more data...]
-        // becomes
-        // [.....orig data... AT {copyFrom} ...more data...]  ; slide by newS; but last newS elts uninitialized_copy copy, and regular copy rest
-        auto atPtr = b + at;
-        if constexpr (is_trivially_copyable_v<T>) {
-            // we don't need to pay attention to what is initialized and what is not so quicker and easier
-            // So slosh bytes after at down, and copy in the new ones
-            CopyBytes (span{atPtr, s - at}, span{atPtr + n2Add, s - at});
-#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-            uninitialized_copy (copyFrom.begin (), copyFrom.end (), atPtr);
-#else
-            ranges::uninitialized_copy (copyFrom, span{atPtr, n2Add});
-#endif
-        }
-        else {
-            // Simple but not super algorithm, append the data (using uninitialized_copy)
-            // and then std::rotate () - idea lifted from MSVC std::vector::insert()
-            // reason for trixyness, is cuz we need uninitialized_copy for new stuff (into uninitialized memory)
-            // and copy with destruction of old stuff for rest (handled by rotate)
-#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-            uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + s);
-#else
-            ranges::uninitialized_copy (copyFrom, span{b + s, n2Add});
-#endif
-            rotate (atPtr, b + s, b + newS);
-        }
-        this->fSize_ = newS; // above leaks if exception in copies, but practically impossible...@todo...
+        this->fSize_ = Memory::Insert (span{this->begin (), size ()}, span{this->begin (), capacity ()}, at, copyFrom).size ();
+        Assert (this->fSize_ == newS);
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::Insert (size_t at, const T& item)
@@ -558,25 +532,7 @@ namespace Stroika::Foundation::Memory {
     {
         Require (from <= to);
         Require (to <= size ());
-        // if removing from anything BUT the end of the (live) buffer, we must slide items down
-        if (to < size ()) {
-            /*
-             * Slide items down.
-             *      | .... RANGE2REMOVE|STUFF-AFTER|END-OF-BUFFER
-             *  produces
-             *      | .....STUFF-AFTER|END-OF-BUFFER
-             */
-            auto copySrcSpan = span{this->begin () + to, this->end ()};          // STUFF-AFTER in first line
-            auto copyToSpan  = span{this->begin () + from, copySrcSpan.size ()}; // RANGE2REMOVE in first line
-            Memory::CopyOverlappingSpanData (copySrcSpan, copyToSpan);
-            auto destroySpan = span{copyToSpan.data () + copyToSpan.size (), to - from};
-#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-            destroy (destroySpan.begin (), destroySpan.end ());
-#else
-            ranges::destroy (destroySpan);
-#endif
-            this->fSize_ -= destroySpan.size ();
-        }
+        this->fSize_ = Memory::Remove (span{this->data (), size ()}, span{this->data (), capacity ()}, from, to).size ();
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::clear () noexcept

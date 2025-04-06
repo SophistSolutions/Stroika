@@ -263,6 +263,56 @@ namespace Stroika::Foundation::Memory {
     constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
         requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>);
 
+    /*
+     * \brief Logic to insert a span of elements into another span of elements (assuming caller externally assured enuf space)
+     * 
+     *  \req intoLiveSpan subspan of intoReservedSpan, starting at same offset
+     *  \req enough space in intoReservedSpan to insert copyFrom (at position at) - ie at + copyFrom.size() <= intoReservedSpan.size()
+     * 
+     *  Leaves intoReservedSpan unchanged (doesn't allocate memory).
+     *  But expands intoLiveSpan, and returns updated span.
+     * 
+     *  This assures the right constructors/destructors/move operators called on appropriate span elements.
+     * 
+     *  \note - this code assumes no exceptions copying elements. Generally safe, but not 100% guaranteed.
+     *          @todo add appropriate 'T' is noexcept copyable requirement
+     * 
+     *  \par Example Usage
+     *      \code
+     *          // first ensure capacity large enuf, then...
+     *          this->fSize_ = Memory::Insert (span{this->data (), size ()}, span{this->data (), capacity ()}, at, copyFrom).size ();
+     *      \endcode
+     * 
+     *  @todo consider if we could allow 'copyFrom' to also be a 'moveFrom'. Generally wouldn't matter, but might
+     *        if copy of objects was expensive, but move cheap (like std::vector = T for example).
+     */
+    template <ISpan INTO_SPAN, ISpan FROM_SPAN>
+        requires (same_as<remove_cvref_t<typename INTO_SPAN::value_type>, remove_cvref_t<typename FROM_SPAN::value_type>>)
+    remove_cvref_t<INTO_SPAN> Insert (const INTO_SPAN& intoLiveSpan, const INTO_SPAN& intoReservedSpan, size_t at, const FROM_SPAN& copyFrom) noexcept;
+
+    /*
+     * \brief Logic to remove span of elements from another span of elements (handling calling right move/ctor/dtors for elements)
+     * 
+     *  \req intoLiveSpan subspan of intoReservedSpan, starting at same offset
+     *  \req enough space in intoReservedSpan to insert copyFrom (at position at)
+     * 
+     *  Leaves intoReservedSpan unchanged (doesn't allocate memory).
+     *  But expands intoLiveSpan, and returns updated live span.
+     * 
+     *  This assures the right constructors/destructors/move operators called on appropriate span elements.
+     * 
+     *  \note - this code assumes no exceptions copying elements. Generally safe, but not 100% guaranteed.
+     *          @todo add appropriate 'T' is noexcept copyable requirement
+     * 
+     *  \par Example Usage
+     *      \code
+     *          this->fSize_ = Memory::Remove (span{this->data (), size ()}, span{this->data (), capacity ()}, from, to).size ();
+     *      \endcode
+     */
+    template <ISpan FROM_SPAN>
+        requires (not is_const_v<remove_cvref_t<typename FROM_SPAN::value_type>>)
+    remove_cvref_t<FROM_SPAN> Remove (FROM_SPAN&& spanToEdit, FROM_SPAN&& reservedSpan, size_t from, size_t to) noexcept;
+
     /**
      *  \brief use Memory::OffsetOf(&CLASS::MEMBER) in place of offsetof(CLASS,MEMBER) to avoid compiler warnings, and cuz easier to 
      *         map from other constructors (e.g. StructFieldMetaInfo) cuz ptr to member legit C++ object, whereas CLASS and MEMBER are not.
