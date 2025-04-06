@@ -532,7 +532,13 @@ namespace Stroika::Foundation::Memory {
     {
         Require (from <= to);
         Require (to <= size ());
+#if qStroika_Foundation_Debug_AssertionsChecked
+        size_t newSz = size () - (to - from);
+#endif
         this->fSize_ = Memory::Remove (span{this->data (), size ()}, span{this->data (), capacity ()}, from, to).size ();
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Assert (this->fSize_ == newSz);
+#endif
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::clear () noexcept
