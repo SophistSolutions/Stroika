@@ -140,13 +140,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of container
          * 
-         *  @todo add predicate
-         * 
          *  *  Complexity EQUALS_COMPARER OVERLOAD:
          *      Worst Case: O(N)
          *      Average Case: O(N)
          *
          *   EQUALS_COMPARER OVERLOAD : Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
+         * 
+         *  \alias Lookup, First, Contains (sort of)
          */
         template <predicate<T> FUNCTION>
         nonvirtual UnderlyingIteratorRep Find (FUNCTION&& firstThat) const;

@@ -412,7 +412,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; // lock not shared cuz return mutable ptr
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            if (equalsComparer (i->fItem, item)) {
+            if (forward<EQUALS_COMPARER> (equalsComparer) (i->fItem, item)) {
                 return &i->fItem;
             }
         }
@@ -424,7 +424,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            if (equalsComparer (i->fItem, item)) {
+            if (forward<EQUALS_COMPARER> (equalsComparer) (i->fItem, item)) {
                 return &i->fItem;
             }
         }
