@@ -4,6 +4,7 @@
 #include <random>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
@@ -37,7 +38,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return fKeyComparer_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () -> ForwardIterator
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::begin () -> ForwardIterator
     {
         return ForwardIterator{this};
     }
@@ -130,6 +131,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 fBuckets_.resize (newBucketCount);
             }
             else {
+                Debug::TraceContextBumper ctx{"ReHash - rehashing"sv};
                 // fill in new by iterating, so basically cost of a whole new copy of all the data
                 HashTable n{newBucketCount, fHasher_, fKeyComparer_};
                 for (auto i : *this) {
@@ -143,14 +145,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReHashIfNeeded ()
     {
-        // @todo redo so less finicky.. - this logic is WRONG/poor
+        // @todo consider the logic that makes sense here - look at std c++ unordered_set impl - and compare...
         float lf                                = load_factor ();
-        float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 4;
-        if (lf < thresholdBelowWhichWeShouldShrink) {
+        if constexpr (TRAITS::kAutoShrinkBucketCount) {
+            float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 10;
+            if (lf < thresholdBelowWhichWeShouldShrink) {
+                float targetLoadFactor = fMaxLoadFactor_ * 1.5; // NO IDEA how much to use here?
+                size_t targetBucketCount = Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
+                ReHash (targetBucketCount);
+                return;
+            }
         }
-        else if (lf > fMaxLoadFactor_) {
-            float  targetLoadFactor  = fMaxLoadFactor_ / 2; // VERY roughly
-            size_t targetBucketCount = static_cast<size_t> (targetLoadFactor * fCachedSize_);
+        if (lf > fMaxLoadFactor_) {
+            float targetLoadFactor = fMaxLoadFactor_ * 1.5; // NO IDEA how much to use here?
+            size_t targetBucketCount = Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
             ReHash (targetBucketCount);
         }
     }

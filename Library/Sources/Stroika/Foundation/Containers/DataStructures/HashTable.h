@@ -82,6 +82,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
              *  \note when using AlternateFindType != void, caller must ALSO provide a compare function which accepts combinations of T, and AlternateFindType
              */
             using AlternateFindType = ALTERNATE_FIND_TYPE;
+
+            /**
+             */
+            static constexpr bool kAutoShrinkBucketCount = false;
         };
 
         /**
