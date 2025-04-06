@@ -369,6 +369,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \brief simple wrapper on Find() - but returning optional instead of iterators or pointers
+         * 
          *  \par Example Usage:
          *      \code
          *          EXPECT_EQ (t.First (key), i);
@@ -401,7 +403,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  \note - unlike modifying operations, this doesn't invalidate any iterators (including the argument iterator).
+         *  \note - unlike other modifying operations, this doesn't invalidate any iterators (including the argument iterator).
          */
         template <typename CHECKED_T = MAPPED_TYPE>
         nonvirtual void Update (const ForwardIterator& it, ArgByValueType<CHECKED_T> newValue)
