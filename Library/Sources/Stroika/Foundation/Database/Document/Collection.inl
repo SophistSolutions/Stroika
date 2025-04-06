@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline Document Ptr::GetOneOrThrow (const IDType& id, const optional<Projection>& projection)
     {
-        static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"};
+        static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"sv};
         return Memory::ValueOfOrThrow (GetOne (id, projection), kExcept_);
     }
     inline Sequence<Document> Ptr::GetAll (const optional<Filter>& filter, const optional<Projection>& projection)
@@ -58,8 +58,8 @@ namespace Stroika::Foundation::Database::Document::Collection {
     inline Sequence<IDType> Ptr::GetAllIDs (const optional<Filter>& filter)
     {
         return this->GetAll (filter, kOnlyIDs).Map<Sequence<IDType>> ([] (const Document& d) -> IDType {
-            static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"};
-            return d.LookupChecked ("id", kExcept_).As<String> ();
+            static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"sv};
+            return d.LookupChecked (kID, kExcept_).As<String> ();
         });
     }
     inline void Ptr::Replace (const Document& newV)
