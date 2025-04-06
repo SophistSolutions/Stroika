@@ -299,8 +299,8 @@ namespace Stroika::Foundation::Memory {
              *                        /\
              *                        b+spanToEdit.size() - (amount-removed)
              */
-            auto copySrcSpan = span{b + to, spanToEdit.size ()};    // STUFF-AFTER in first line
-            auto copyToSpan  = span{b + from, copySrcSpan.size ()}; // RANGE2REMOVE in first line
+            auto copySrcSpan = span{b + to, b + spanToEdit.size ()}; // STUFF-AFTER in first line
+            auto copyToSpan  = span{b + from, copySrcSpan.size ()};  // RANGE2REMOVE in first line
             Memory::CopyOverlappingSpanData (copySrcSpan, copyToSpan);
         }
         // but either way, we must destroy a few elements at the end, and return the updated span
