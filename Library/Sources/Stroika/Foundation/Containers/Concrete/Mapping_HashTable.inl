@@ -76,24 +76,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-#if 1
-            AssertNotImplemented ();
-            return KeyEqualsCompareFunctionType{};
-#else
-            // @todo fix shouldn't need this cast!!!
-            //return Common::DeclareEqualsComparer (fData_.key_eq ());
-            return Common::DeclareEqualsComparer ((function<bool (KEY_TYPE, KEY_TYPE)>)fData_.key_eq ());
-#endif
+            return fData_.key_eq ();
         }
         virtual shared_ptr<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-#if 1
-            AssertNotImplemented ();
-            return nullptr;
-#else
+            // @todo UNCLEAR if this should also clone # buckets - but probably not
             return Memory::MakeSharedPtr<Rep_> (fData_.hash_function (), fData_.key_eq ()); // keep hash/comparer, but lose data
-#endif
         }
         virtual shared_ptr<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
@@ -107,11 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-#if 1
-            AssertNotImplemented ();
-            return false;
-#else
-            auto i = fData_.find (key);
+            auto                                                  i = fData_.find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
                     *item = nullopt;
@@ -120,11 +105,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             else {
                 if (item != nullptr) {
-                    *item = i->second;
+                    *item = i->fValue;
                 }
                 return true;
             }
-#endif
         }
         virtual bool Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt, AddReplaceMode addReplaceMode) override
         {
@@ -167,11 +151,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
+            Require (not i.Done ());
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
 #if 1
             AssertNotImplemented ();
 #else
-            Require (not i.Done ());
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (nextI != nullptr) {
                 *nextI = i;
                 ++(*nextI); // advance to next item if deleting current one
@@ -179,7 +163,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             mir.fIterator.AssertDataMatches (&fData_);
             (void)fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
+#endif
             fChangeCounts_.PerformedChange ();
+#if 0
             if (nextI != nullptr) {
                 Debug::UncheckedDynamicCast<IteratorRep_&> (nextI->GetRep ()).UpdateChangeCount ();
                 nextI->Refresh (); // update to reflect changes made to rep
@@ -188,22 +174,22 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {
-#if 1
-            AssertNotImplemented ();
-#else
             Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             if (nextI != nullptr) {
                 savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
             }
+#if 1
+            AssertNotImplemented ();
+#else
             fData_
                 .remove_constness (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ())
                 ->second = newValue;
+#endif
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }
-#endif
         }
 
     private:
@@ -217,7 +203,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
-     *************** Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
+     **************** Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -230,9 +216,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS>
     inline Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
-#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-        requires (default_initializable<Mapping_HashTable>)
-#endif
         : inherited{Memory::MakeSharedPtr<Rep_<HASH_TABLE_TRAITS>> (move (src))}
     {
 #if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy

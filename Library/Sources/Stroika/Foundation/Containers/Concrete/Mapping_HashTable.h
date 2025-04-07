@@ -20,19 +20,7 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
-     *  \brief   Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
-     *
-     *  @aliases Could have been called Mapping_stdunorderedmap - but that name would not be nearly as suggestive.
-     *           the name std::unordered_map is something of an move towards the approach taken by Stroika - focusing
-     *           on data access patterns, rather than implementation data structure. But the API - truly has hash-table
-     *           written all over it (so the name is really misleading in std).
-     * 
-     *  \note   \em Implementation Details
-     *          This module is essentially identical to SortedMapping_HashTable, but making it dependent on SortedMapping<> creates
-     *          problems with circular dependencies - especially give how the default Mapping CTOR calls the factory class
-     *          which maps back to the _HashTable<> variant.
-     *
-     *          There maybe another (better) way, but this works.
+     *  \brief   Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is a HashTable based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> container pattern.
      *
      * \note Runtime performance/complexity:
      *      o   size () is constant complexity
@@ -52,13 +40,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  \brief HashTable is std::map<> that can be used inside Mapping_HashTable
-         * 
-         *      @todo - STK appraoch to blockallocation not working for unordred map cuz allocates many at a time
+         *  \brief HashTable is DataStructures::HashTable<...> that can be used inside Mapping_HashTable
          */
-        template <typename HASH = std::hash<key_type>, typename KEY_EQUALS_COMPARER = std::equal_to<key_type>>
-        using STDHASHMAP = unordered_map<KEY_TYPE, MAPPED_VALUE_TYPE, HASH, KEY_EQUALS_COMPARER>;
-
         template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS =
                       DataStructures::HashTable_Support::DefaultTraits<KEY_TYPE, MAPPED_VALUE_TYPE>>
         using HASHTABLE = DataStructures::HashTable<KEY_TYPE, MAPPED_VALUE_TYPE, HASH_TABLE_TRAITS>;
@@ -72,11 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_HashTable ()
             requires (Cryptography::Digest::IHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
         template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS = DataStructures::HashTable_Support::DefaultTraits<KEY_TYPE, MAPPED_VALUE_TYPE>>
-        Mapping_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
-#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-            requires (default_initializable<Mapping_HashTable>)
-#endif
-        ;
+        Mapping_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src);
         template <Cryptography::Digest::IHashFunction<KEY_TYPE> HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Mapping_HashTable (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer);
         Mapping_HashTable (Mapping_HashTable&&) noexcept      = default;

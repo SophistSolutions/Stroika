@@ -28,12 +28,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ReHash (bucketCount);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetKeyHasherType () const -> KeyHasherType
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::hash_function () const -> KeyHasherType
     {
         return fHasher_;
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::GetKeyEqualsComparerType () const -> KeyEqualsComparerType
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::key_eq () const -> KeyEqualsComparerType
     {
         return fKeyComparer_;
     }
@@ -299,6 +299,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         return ForwardIterator{};
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::find (ArgByValueType<key_type> key) const -> ForwardIterator
+    {
+        return this->Find (key);
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    template <typename ARG_T>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::find (ARG_T key) const -> ForwardIterator
+        requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>)
+    {
+        return this->Find (key);
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     template <typename CHECKED_T>

@@ -163,13 +163,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+        * \note this name mimics the name used in https://en.cppreference.com/w/cpp/container/unordered_set/hash_function
          */
-        nonvirtual KeyHasherType GetKeyHasherType () const;
+        nonvirtual KeyHasherType hash_function () const;
 
     public:
         /**
+        * \note this name mimics the naming used in https://en.cppreference.com/w/cpp/container/unordered_map/key_eq
+        * 
+        * GetKeyEqualsComparerType
          */
-        nonvirtual KeyEqualsComparerType GetKeyEqualsComparerType () const;
+        nonvirtual KeyEqualsComparerType key_eq () const;
 
     public:
         class ForwardIterator;
@@ -319,6 +323,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      overload: (FUNCTION&& f overload)
          *      Average/Worst:    O(N)
          * 
+         *  \see also find()
+         * 
          *  \note this is kind of like set<T>::find () - but not exactly, and find() doesn't really have a uniform API across the various stl containers...
          *        which is why we use Find(), instead of find() as a name
          */
@@ -328,6 +334,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
             requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>);
         template <predicate<typename TRAITS::key_type> FUNCTION>
         nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
+
+    public:
+        /**
+         *  \brief stdlib-ish API for 'Find' - returns iterator for found object in hashtable
+         * 
+         *  \note Runtime performance/complexity:
+         *      overload: (key_type)
+         *      Average/Worst:    O(1) ; N
+         * 
+         *  \note closely resembles https://en.cppreference.com/w/cpp/container/unordered_set/find API, so use same name (except for const/non-const part).
+         */
+        nonvirtual ForwardIterator find (ArgByValueType<key_type> key) const;
+        template <typename ARG_T = typename TRAITS::AlternateFindType>
+        nonvirtual ForwardIterator find (ARG_T key) const
+            requires (not same_as<typename TRAITS::AlternateFindType, void> and same_as<remove_cvref_t<ARG_T>, typename TRAITS::AlternateFindType>);
 
     public:
         /**
@@ -365,13 +386,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t fCachedSize_{0};
 
     private:
-        nonvirtual size_t Hash_ (const key_type& v)
+        nonvirtual size_t Hash_ (const key_type& v) const
         {
             Require (fBuckets_.size () > 0);
             return fHasher_ (v) % fBuckets_.size ();
         }
 
     private:
+        // From https://en.cppreference.com/w/cpp/container/unordered_set/unordered_set - max_load_factor = 1 by default - not wedded to that, but not a crazy default...
         float fMaxLoadFactor_{1.0};
     };
 
