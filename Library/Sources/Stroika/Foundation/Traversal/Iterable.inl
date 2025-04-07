@@ -792,7 +792,7 @@ namespace Stroika::Foundation::Traversal {
     {
         // @todo http://stroika-bugs.sophists.com/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{begin (), Iterator<T>{end ()}}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
-                                                      // STILL MISSING ON CLANG++-20 Ubuntu 25.04
+            // STILL MISSING ON CLANG++-20 Ubuntu 25.04
 #if __cpp_lib_execution >= 201603L
         if (seq == Execution::SequencePolicy::eSeq) {
             stable_sort (tmp.begin (), tmp.end (), inorderComparer);
