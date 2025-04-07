@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief HashTable is DataStructures::HashTable<...> that can be used inside Mapping_HashTable
          */
-        template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS = MyDefaultTraits_>
+        template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS = MyDefaultTraits_<>>
         using HASHTABLE = DataStructures::HashTable<KEY_TYPE, MAPPED_VALUE_TYPE, HASH_TABLE_TRAITS>;
 
     public:
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         Mapping_HashTable ()
             requires (Cryptography::Digest::IHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
-        template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS = MyDefaultTraits_>
+        template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS = MyDefaultTraits_<>>
             requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
         Mapping_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src);
         template <Cryptography::Digest::IHashFunction<KEY_TYPE> HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
