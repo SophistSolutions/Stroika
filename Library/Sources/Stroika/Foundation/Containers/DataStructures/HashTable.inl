@@ -16,8 +16,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::HashTable ()
-        : HashTable{kBufferedBuckets_}
+    inline HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::HashTable (const KeyHasherType& hashFunction, const KeyEqualsComparerType& keyComparer)
+        : HashTable{kBufferedBuckets_, hashFunction, keyComparer}
     {
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (pi->fData_ == movedFrom);
 #endif
         Require (this->bucket_count () == movedFrom->bucket_count ());
-        Require (this->fHasher_ == movedFrom->fHasher_); // logically required but not equals comparable
+        //Require (this->fHasher_ == movedFrom->fHasher_); // logically required but not equals comparable
         // Also require no changes to this after clone!!! - cuz those could re-order elements
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
             // then easy - cuz iterator rep is same - index into bucket list and index into array within bucket

@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/Common.h"
+#include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
@@ -49,7 +50,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  AddOrExtendOrReplaceMode addOrExtendOrReplace defaults to eAddExtras, but here the caller may not want the default. There is no good default here.
          *  ALTERNATE_FIND_TYPE can often be omitted (default) - but allows Find () to be overloaded (argument comparer) on a different type (besides just KEY_TYPE).
          */
-        template <typename KEY_TYPE, typename MAPPED_TYPE, typename HASHER = std::hash<KEY_TYPE>, Common::IEqualsComparer<KEY_TYPE> EQUALS_COMPARER = equal_to<KEY_TYPE>,
+        template <typename KEY_TYPE, typename MAPPED_TYPE, Cryptography::Digest::IHashFunction<KEY_TYPE> HASHER = hash<KEY_TYPE>,
+                  Common::IEqualsComparer<KEY_TYPE> EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   typename LAYOUT_OPTIONS = SeparateChainingOptions<KEY_TYPE, MAPPED_TYPE>, typename ALTERNATE_FIND_TYPE = void>
         struct DefaultTraits {
             /**
@@ -93,11 +95,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename TRAITS, typename KEY_TYPE, typename MAPPED_TYPE>
         concept IValidTraits = requires (TRAITS traits) {
-            { typename TRAITS::KeyHasherType{} } -> invocable<typename TRAITS::key_type>;
-            { typename TRAITS::KeyHasherType{}(declval<typename TRAITS::key_type> ()) } -> convertible_to<size_t>;
+            { typename TRAITS::KeyHasherType{} } -> Cryptography::Digest::IHashFunction<KEY_TYPE>;
             { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
             { typename TRAITS::LayoutType{} };
-            { typename TRAITS::AlternateFindType{} }; // == void or works with equals comparar and hasher
+            //{ typename TRAITS::AlternateFindType{} }; // == void or works with equals comparar and hasher
             { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
         };
 
@@ -148,7 +149,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note HashTable (const HashTable& src) (and move ctor) guarantee elements iteration order unchanged in copy
          *        (see https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1)
          */
-        HashTable ();
+        HashTable (const KeyHasherType& hashFunction = {}, const KeyEqualsComparerType& keyComparer = {});
         HashTable (size_t bucketCount, const KeyHasherType& hashFunction = {}, const KeyEqualsComparerType& keyComparer = {});
         HashTable (HashTable&& src) noexcept = default;
         HashTable (const HashTable& src)     = default;
@@ -471,12 +472,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         // to make == compares simpler
-        void AdvanceOverEmptyBuckets_ ();
+        nonvirtual void AdvanceOverEmptyBuckets_ ();
 
     private:
         const HashTable* fData_{nullptr}; // sentinel value indicating DONE
         size_t           fBucketIndex_{0};
         size_t           fIntraBucketIndex_{0};
+
+    private:
+        friend class HashTable;
     };
 
 #if 0
