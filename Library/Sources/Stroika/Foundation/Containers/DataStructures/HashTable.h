@@ -89,20 +89,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         };
 
         /**
+         *  \brief validated the HashTable provided TRAITS object looks healthy (for better compiler diagnostics and usage docs)
          */
         template <typename TRAITS, typename KEY_TYPE, typename MAPPED_TYPE>
-        concept IValidTraits = Common::IEqualsComparer<typename TRAITS::KeyEqualsComparerType, KEY_TYPE>
-#if 0
-                               and
-                               requires (TRAITS) {
-                                   { typename TRAITS::KeyHasherType{} } -> invocable<typename TRAITS::value_type>;
-                                   /*
-            { TRAITS::KeyEqualsComparerType };
-            { TRAITS::LayoutType };
-            { TRAITS::AlternateFindType };*/
-                               }
-#endif
-        ;
+        concept IValidTraits = requires (TRAITS traits) {
+            { typename TRAITS::KeyHasherType{} } -> invocable<typename TRAITS::key_type>;
+            { typename TRAITS::KeyHasherType{}(declval<typename TRAITS::key_type> ()) } -> convertible_to<size_t>;
+            { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
+            { typename TRAITS::LayoutType{} };
+            { typename TRAITS::AlternateFindType{} }; // == void or works with equals comparar and hasher
+            { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
+        };
 
     }
 
