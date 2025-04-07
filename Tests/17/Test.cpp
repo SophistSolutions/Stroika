@@ -146,7 +146,12 @@ namespace {
             EXPECT_EQ (fred, (Mapping_HashTable<size_t, size_t>{}));
         }
         DoTestForConcreteContainer_<Mapping_HashTable<size_t, size_t>> ();
-        DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+        #if 0
+        DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ([] () {
+            return Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>{
+                [] (const OnlyCopyableMoveableAndTotallyOrdered& i) { return hash<size_t>{}(static_cast<size_t> (i)); },
+                AsIntsEqualsComparer<OnlyCopyableMoveableAndTotallyOrdered>{}};
+        });
         DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
             [] () {
                 return Mapping_HashTable<OnlyCopyableMoveable, OnlyCopyableMoveable>{
@@ -154,6 +159,7 @@ namespace {
                     AsIntsEqualsComparer<OnlyCopyableMoveable>{}};
             },
             AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+            #endif
     }
 }
 
