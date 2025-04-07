@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Traversal {
         if (&rhs != this) [[likely]] {
             fRep_          = rhs.fRep_ == nullptr ? nullptr : Clone_ (*rhs.fRep_);
             fCurrentValue_ = rhs.fCurrentValue_;
-            this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+            this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
         }
         return *this;
     }
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Traversal {
         if (&rhs != this) [[likely]] {
             fRep_          = move (rhs.fRep_);
             fCurrentValue_ = move (rhs.fCurrentValue_);
-            this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+            this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
         }
         return *this;
     }
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Traversal {
     inline void Iterator<T, ITERATOR_TRAITS>::Refresh ()
     {
         fRep_->More (&this->fCurrentValue_, false);
-        this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
+        this->Invariant (); // could do before and after but this is a good cost/benefit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
     inline void Iterator<T, ITERATOR_TRAITS>::Invariant () const noexcept
