@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 fBuckets_.resize (newBucketCount);
             }
             else {
-                Debug::TraceContextBumper ctx{"ReHash - rehashing"sv};
+                Debug::TraceContextBumper ctx{"ReHash - rehashing"};
                 // fill in new by iterating, so basically cost of a whole new copy of all the data
                 HashTable n{newBucketCount, fHasher_, fKeyComparer_};
                 for (auto i : *this) {
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReHashIfNeeded ()
     {
         // @todo consider the logic that makes sense here - look at std c++ unordered_set impl - and compare...
-        float lf                                = load_factor ();
+        float lf = load_factor ();
         if constexpr (TRAITS::kAutoShrinkBucketCount) {
             float thresholdBelowWhichWeShouldShrink = fMaxLoadFactor_ / 10;
             if (lf < thresholdBelowWhichWeShouldShrink) {
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         if (lf > fMaxLoadFactor_) {
-            float targetLoadFactor = fMaxLoadFactor_ * 1.5; // NO IDEA how much to use here?
+            float targetLoadFactor = fMaxLoadFactor_ * 1.5f; // NO IDEA how much to use here?
             size_t targetBucketCount = Support::ReserveTweaks::GetScaledUpCapacity (static_cast<size_t> (targetLoadFactor * fCachedSize_ + 1));
             ReHash (targetBucketCount);
         }

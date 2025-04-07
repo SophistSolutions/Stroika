@@ -93,15 +93,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
         template <typename TRAITS, typename KEY_TYPE, typename MAPPED_TYPE>
         concept IValidTraits = Common::IEqualsComparer<typename TRAITS::KeyEqualsComparerType, KEY_TYPE>
 #if 0
-            and requires (TRAITS) {
-            {  TRAITS::KeyHasherType } -> invocable<typename TRAITS::value_type>;
-            /*{ TRAITS::KeyHasherType };
+                               and
+                               requires (TRAITS) {
+                                   { typename TRAITS::KeyHasherType{} } -> invocable<typename TRAITS::value_type>;
+                                   /*
             { TRAITS::KeyEqualsComparerType };
             { TRAITS::LayoutType };
             { TRAITS::AlternateFindType };*/
-        }
+                               }
 #endif
-            ;
+        ;
 
     }
 
