@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Memory {
     }
 
     inline namespace Literals {
-        inline BLOB operator"" _blob (const char* str, size_t len)
+        inline BLOB operator""_blob (const char* str, size_t len)
         {
             return BLOB::Attach (span<const byte>{reinterpret_cast<const byte*> (str), len});
         }

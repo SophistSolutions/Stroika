@@ -36,23 +36,23 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     inline namespace Literals {
-        inline RegularExpression operator"" _RegEx (const char* str, size_t len)
+        inline RegularExpression operator""_RegEx (const char* str, size_t len)
         {
             return RegularExpression{String::FromStringConstant (span{str, len})};
         }
-        inline RegularExpression operator"" _RegEx (const wchar_t* str, size_t len)
+        inline RegularExpression operator""_RegEx (const wchar_t* str, size_t len)
         {
             return RegularExpression{String{span{str, len}}};
         }
-        inline RegularExpression operator"" _RegEx (const char8_t* str, size_t len)
+        inline RegularExpression operator""_RegEx (const char8_t* str, size_t len)
         {
             return RegularExpression{String{span{str, len}}};
         }
-        inline RegularExpression operator"" _RegEx (const char16_t* str, size_t len)
+        inline RegularExpression operator""_RegEx (const char16_t* str, size_t len)
         {
             return RegularExpression{String{span{str, len}}};
         }
-        inline RegularExpression operator"" _RegEx (const char32_t* str, size_t len)
+        inline RegularExpression operator""_RegEx (const char32_t* str, size_t len)
         {
             return RegularExpression{String{span{str, len}}};
         }

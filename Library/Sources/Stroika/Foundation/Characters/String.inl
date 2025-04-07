@@ -1413,7 +1413,7 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
-    [[deprecated ("Since Stroika v3.0d1 - just use _k, sv, or nothing")]] inline String operator"" _ASCII (const char* str, size_t len)
+    [[deprecated ("Since Stroika v3.0d1 - just use _k, sv, or nothing")]] inline String operator""_ASCII (const char* str, size_t len)
     {
         return String{span{str, len}};
     }

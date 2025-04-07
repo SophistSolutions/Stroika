@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Memory {
          *           Assert (b[0] == static_cast<byte> ('h'));
          *      \endcode
          */
-        inline BLOB operator"" _blob (const char* str, size_t len);
+        inline BLOB operator""_blob (const char* str, size_t len);
 
     }
 

@@ -90,11 +90,12 @@ namespace Stroika::Foundation::Characters {
 #else
         constexpr
 #endif
-            FormatString<char> operator"" _f (const char* str, size_t len)
+            FormatString<char>
+            operator""_f (const char* str, size_t len)
         {
             return FormatString<char>{string_view{str, len}};
         }
-        constexpr FormatString<wchar_t> operator"" _f (const wchar_t * str, size_t len)
+        constexpr FormatString<wchar_t> operator""_f (const wchar_t* str, size_t len)
         {
             return FormatString<wchar_t>{wstring_view{str, len}};
         }
