@@ -153,13 +153,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             mir.fIterator.AssertDataMatches (&fData_);
             if (nextI == nullptr) {
                 fData_.Remove (mir.fIterator);
+                fChangeCounts_.PerformedChange ();
             }
             else {
                 typename DataStructureImplType_::ForwardIterator hNextI;
                 fData_.Remove (mir.fIterator, &hNextI);
+                fChangeCounts_.PerformedChange ();
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, hNextI.GetUnderlyingIteratorRep ())};
             }
-            fChangeCounts_.PerformedChange ();
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {

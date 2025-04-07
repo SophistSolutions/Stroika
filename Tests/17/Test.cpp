@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
@@ -35,6 +36,7 @@ using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using Concrete::Mapping_Array;
+using Concrete::Mapping_HashTable;
 using Concrete::Mapping_LinkedList;
 using Concrete::SortedMapping_SkipList;
 using Concrete::SortedMapping_stdmap;
@@ -113,6 +115,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, FACTORY_DEFAULT)
     {
+        Debug::TraceContextBumper ctx{"{}::FACTORY_DEFAULT"};
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<Mapping<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
@@ -124,6 +127,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, Mapping_Array)
     {
+        Debug::TraceContextBumper ctx{"{}::Mapping_Array"};
         DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
@@ -133,8 +137,28 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Containers_Mapping, Mapping_HashTable)
+    {
+        Debug::TraceContextBumper ctx{"{}::Mapping_HashTable"};
+        {
+            static_assert (Cryptography::Digest::IHashFunction<std::hash<size_t>, size_t>);
+            Mapping_HashTable<size_t, size_t> fred{std::hash<size_t>{}, std::equal_to<size_t>{}};
+            EXPECT_EQ (fred, (Mapping_HashTable<size_t, size_t>{}));
+        }
+        DoTestForConcreteContainer_<Mapping_HashTable<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
+#if 0
+        DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
+            [] () { return Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; },
+            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
+#endif
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Containers_Mapping, SortedMapping_SkipList)
     {
+        Debug::TraceContextBumper ctx{"{}::SortedMapping_SkipList"};
         DoTestForConcreteContainer_<SortedMapping_SkipList<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedMapping_SkipList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
@@ -150,6 +174,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, Mapping_LinkedList)
     {
+        Debug::TraceContextBumper ctx{"{}::Mapping_LinkedList"};
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
@@ -161,6 +186,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, SortedMapping_stdmap)
     {
+        Debug::TraceContextBumper ctx{"{}::SortedMapping_stdmap"};
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
