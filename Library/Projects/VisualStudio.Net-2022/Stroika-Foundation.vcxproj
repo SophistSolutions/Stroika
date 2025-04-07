@@ -373,12 +373,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_HashTable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedKeyedCollection_SkipList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_SkipList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdhashmap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.h" />
@@ -443,6 +443,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\ArraySupport.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\HashTableSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\SkipListSupport.h" />
@@ -862,12 +863,12 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_HashTable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedKeyedCollection_SkipList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_SkipList.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdhashmap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.inl" />
@@ -929,6 +930,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\MultiSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\ArraySupport.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\HashTableSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\SkipListSupport.inl" />

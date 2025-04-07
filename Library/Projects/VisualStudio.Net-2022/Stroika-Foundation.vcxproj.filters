@@ -2103,9 +2103,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdhashmap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\HashBase.h">
       <Filter>Sources\Cryptography\Digest</Filter>
     </ClInclude>
@@ -2393,6 +2390,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.h">
       <Filter>Sources\Containers\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_HashTable.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\HashTableSupport.h">
+      <Filter>Sources\Containers\Private</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3636,9 +3639,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.inl">
       <Filter>Sources\Streams</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdhashmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\HashBase.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
     </None>
@@ -3951,6 +3951,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.inl">
       <Filter>Sources\Containers\DataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_HashTable.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\HashTableSupport.inl">
+      <Filter>Sources\Containers\Private</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
