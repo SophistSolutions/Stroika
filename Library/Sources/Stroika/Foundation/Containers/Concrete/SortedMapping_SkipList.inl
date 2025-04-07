@@ -125,13 +125,14 @@ namespace Stroika::Foundation::Containers::Concrete {
                     result = fData_.Add (key, newElt);
                     break;
                 case AddReplaceMode::eAddIfMissing: {
-                    result = fData_.Add (key, newElt);
                     // not ideally most efficient - maybe add AddIfMissing (variation) to SkipList API (if not compiled that way) - as I used to have
                     if (fData_.Find (key)) {
-                        return false;
+                        result = false;
                     }
-                    auto r = fData_.Add (key, newElt);
-                    return r;
+                    else {
+                        auto r = fData_.Add (key, newElt);
+                        result = true;
+                    }
                 }
                 default:
                     AssertNotReached ();

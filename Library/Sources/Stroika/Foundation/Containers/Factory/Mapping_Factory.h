@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Factory {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Mapping_Factory<K,P> makes up its own default comparer, and so can use order mappings, like Mapping_stdmap, whereas
-     *          Mapping_Factory<K,P,E> - since it takes an equals comparer - is restricted to backends that work with an equals comparere.
+     *          Mapping_Factory<K,P,E> - since it takes an equals comparer - is restricted to backends that work with an equals comparer.
      */
     template <typename KEY_TYPE, typename VALUE_TYPE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
     class Mapping_Factory {
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Construct a factory for producing new ConstructedType ivhects. The default is to use whatever was registered with 
+         *  Construct a factory for producing new ConstructedType objects. The default is to use whatever was registered with 
          *  Mapping_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         constexpr Mapping_Factory ();

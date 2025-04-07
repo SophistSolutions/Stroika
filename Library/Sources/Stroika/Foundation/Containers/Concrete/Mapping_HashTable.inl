@@ -123,9 +123,13 @@ namespace Stroika::Foundation::Containers::Concrete {
                     fData_.Add (key, newElt);
                     result = oldSize != fData_.size ();
                 } break;
-                case AddReplaceMode::eAddIfMissing:
-                    result = fData_.Add (key, newElt);
-                    break;
+                case AddReplaceMode::eAddIfMissing: {
+                    auto i = fData_.find (key);
+                    if (i == fData_.end ()) {
+                        result = fData_.Add (key, newElt);
+                        Assert (result);
+                    }
+                } break;
                 default:
                     AssertNotReached ();
             }

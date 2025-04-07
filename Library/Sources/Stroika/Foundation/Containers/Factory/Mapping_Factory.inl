@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 
@@ -46,8 +47,12 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                          default_initializable<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
+            if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and default_initializable<Concrete::Mapping_HashTable<KEY_TYPE, VALUE_TYPE>>) {
+                static const auto kDefault_ = Concrete::Mapping_HashTable<KEY_TYPE, VALUE_TYPE>{};
+                return kDefault_;
+            }
+            else if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
+                               default_initializable<Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>>) {
                 static const auto kDefault_ = Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }

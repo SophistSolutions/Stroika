@@ -146,7 +146,7 @@ namespace {
             EXPECT_EQ (fred, (Mapping_HashTable<size_t, size_t>{}));
         }
         DoTestForConcreteContainer_<Mapping_HashTable<size_t, size_t>> ();
-        #if 0
+#if 0
         DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ([] () {
             return Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>{
                 [] (const OnlyCopyableMoveableAndTotallyOrdered& i) { return hash<size_t>{}(static_cast<size_t> (i)); },
@@ -159,7 +159,7 @@ namespace {
                     AsIntsEqualsComparer<OnlyCopyableMoveable>{}};
             },
             AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-            #endif
+#endif
     }
 }
 
@@ -274,15 +274,23 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_Mapping, AddVsAddIf_)
     {
-        Mapping<int, int> m;
-        m.Add (1, 2);
-        EXPECT_EQ (m[1], 2);
-        m.Add (1, 3);
-        EXPECT_EQ (m[1], 3);
-        EXPECT_TRUE (not m.Add (1, 4, AddReplaceMode::eAddIfMissing));
-        EXPECT_EQ (m[1], 3);
-        EXPECT_TRUE (m.Add (2, 3, AddReplaceMode::eAddIfMissing));
-        EXPECT_EQ (m[2], 3);
+        auto mTest = [] (Mapping<int, int> m) {
+            EXPECT_EQ (m.size (), 0u);
+            m.Add (1, 2);
+            EXPECT_EQ (m[1], 2);
+            m.Add (1, 3);
+            EXPECT_EQ (m[1], 3);
+            EXPECT_TRUE (not m.Add (1, 4, AddReplaceMode::eAddIfMissing));
+            EXPECT_EQ (m[1], 3);
+            EXPECT_TRUE (m.Add (2, 3, AddReplaceMode::eAddIfMissing));
+            EXPECT_EQ (m[2], 3);
+        };
+        mTest (Mapping<int, int>{});
+        mTest (Mapping_HashTable<int, int>{});
+        mTest (Mapping_LinkedList<int, int>{});
+        mTest (Mapping_Array<int, int>{});
+        mTest (SortedMapping_SkipList<int, int>{});
+        mTest (SortedMapping_stdmap<int, int>{});
     }
 }
 
