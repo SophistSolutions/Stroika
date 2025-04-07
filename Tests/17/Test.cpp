@@ -147,11 +147,13 @@ namespace {
         }
         DoTestForConcreteContainer_<Mapping_HashTable<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ();
-#if 0
         DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () { return Mapping_Array<OnlyCopyableMoveable, OnlyCopyableMoveable>{AsIntsEqualsComparer<OnlyCopyableMoveable>{}}; },
+            [] () {
+                return Mapping_HashTable<OnlyCopyableMoveable, OnlyCopyableMoveable>{
+                    [] (const OnlyCopyableMoveable& i) { return hash<size_t>{}(static_cast<size_t> (i)); },
+                    AsIntsEqualsComparer<OnlyCopyableMoveable>{}};
+            },
             AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-#endif
     }
 }
 
