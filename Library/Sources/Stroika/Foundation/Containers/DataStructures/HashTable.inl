@@ -67,27 +67,68 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& t)
+    inline bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const value_type& t)
     {
         size_t hashVal = Hash_ (t.fKey);
         if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            switch (TraitsType::kAddOrExtendOrReplace) {
+                case AddOrExtendOrReplaceMode::eAddIfMissing: {
+                    for (auto i : fBuckets_[hashVal].fElements) {
+                        if (this->fKeyComparer_ (i.fKey, t.fKey)) {
+                            return false;
+                        }
+                    }
+                    // fall through and do default - append
+                } break;
+                case AddOrExtendOrReplaceMode::eAddReplaces: {
+                    // must scan to see if present...
+                    for (auto i = fBuckets_[hashVal].fElements.begin (); i != fBuckets_[hashVal].fElements.end (); ++i) {
+                        if (this->fKeyComparer_ (i->fKey, t.fKey)) {
+                            if constexpr (same_as<MAPPED_TYPE, void>) {
+                                *i = t;
+                            }
+                            else {
+                                i->fValue = t.fValue;
+                            }
+                            return true;
+                        }
+                    }
+                    // fall through and do default - append
+                } break;
+                case AddOrExtendOrReplaceMode::eAddExtras: {
+                    // fall through and do default - append
+                } break;
+                case AddOrExtendOrReplaceMode::eDuplicatesRejected: {
+                    for (auto i : fBuckets_[hashVal].fElements) {
+                        if (this->fKeyComparer_ (i.fKey, t.fKey)) {
+                            static const auto kExcept_ = Execution::RuntimeErrorException<logic_error>{"Duplicates not allowed"sv};
+                            Execution::Throw (kExcept_);
+                        }
+                    }
+                    // fall through and do default - append
+                } break;
+                default:
+                    AssertNotReached ();
+            }
+            // common case handled by fallthrough
             fBuckets_[hashVal].fElements.push_back (t);
             ++fCachedSize_;
             ReHashIfNeeded ();
+            return true;
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& t)
+    inline bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& t)
         requires (same_as<MAPPED_TYPE, void>)
     {
-        Add (Common::KeyValuePair<key_type, void>{t});
+        return Add (Common::KeyValuePair<key_type, void>{t});
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     template <same_as<MAPPED_TYPE> MAPPED_TYPE2>
-    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& t, const MAPPED_TYPE2& m)
+    inline bool HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Add (const key_type& t, const MAPPED_TYPE2& m)
         requires (not same_as<MAPPED_TYPE, void>)
     {
-        Add (Common::KeyValuePair<key_type, mapped_type>{t, m});
+        return Add (Common::KeyValuePair<key_type, mapped_type>{t, m});
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Lookup (const key_type& t) -> optional<value_type>
@@ -101,6 +142,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
         }
         return nullopt;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const ForwardIterator& i, ForwardIterator* nextI)
+    {
+        if constexpr (derived_from<LayoutType_, HashTable_Support::SeparateChainingTag>) {
+            fBuckets_[i.fBucketIndex_].fElements.Remove (i.fIntraBucketIndex_);
+            --fCachedSize_;
+            if (nextI != nullptr) {
+                *nextI = i;
+                if (nextI->fIntraBucketIndex_ == fBuckets_[nextI->fBucketIndex_].fElements.size ()) {
+                    ++nextI->fBucketIndex_;
+                    nextI->fIntraBucketIndex_ = 0;
+                    nextI->AdvanceOverEmptyBuckets_ ();
+                }
+            }
+        }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Remove (const key_type& t)
@@ -440,6 +497,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches (const HashTable* data) const
+    {
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Require (data == fData_);
+#endif
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::Invariant () const noexcept
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -452,5 +516,4 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
 #endif
-
 }

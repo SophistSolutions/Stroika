@@ -51,8 +51,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  ALTERNATE_FIND_TYPE can often be omitted (default) - but allows Find () to be overloaded (argument comparer) on a different type (besides just KEY_TYPE).
          */
         template <typename KEY_TYPE, typename MAPPED_TYPE, Cryptography::Digest::IHashFunction<KEY_TYPE> HASHER = hash<KEY_TYPE>,
-                  Common::IEqualsComparer<KEY_TYPE> EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  typename LAYOUT_OPTIONS = SeparateChainingOptions<KEY_TYPE, MAPPED_TYPE>, typename ALTERNATE_FIND_TYPE = void>
+                  Common::IEqualsComparer<KEY_TYPE> EQUALS_COMPARER = equal_to<KEY_TYPE>, typename LAYOUT_OPTIONS = SeparateChainingOptions<KEY_TYPE, MAPPED_TYPE>,
+                  AddOrExtendOrReplaceMode addOrExtendOrReplace = AddOrExtendOrReplaceMode::eAddExtras, typename ALTERNATE_FIND_TYPE = void>
         struct DefaultTraits {
             /**
              */
@@ -86,6 +86,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
             using AlternateFindType = ALTERNATE_FIND_TYPE;
 
             /**
+             *  \see AddOrExtendOrReplaceMode
+             */
+            static constexpr AddOrExtendOrReplaceMode kAddOrExtendOrReplace = addOrExtendOrReplace;
+
+            /**
              */
             static constexpr bool kAutoShrinkBucketCount = false;
         };
@@ -99,6 +104,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
             { typename TRAITS::LayoutType{} };
             //{ typename TRAITS::AlternateFindType{} }; // == void or works with equals comparar and hasher
+            { TRAITS::kAddOrExtendOrReplace } -> convertible_to<AddOrExtendOrReplaceMode>;
             { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
         };
 
@@ -201,12 +207,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+        * 
+        * ?????
+         *  You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
+         *
+         *  Returns true if the list was changed (if eAddReplaces, and key found, return true even if val same as value already there because we cannot generically compare values)
+         * 
+         *  \note Behavior of adding redundant keys (keys which are already present) depends on TRAITS::kAddOrExtendOrReplace.
+         * 
+         *  returns true iff container modified by this operation (so for add replaces mode no info if already was present)
+         * 
+         *  \note Runtime performance/complexity:   ??
+         *      Average:    O(1)
+         *      Worst:      N
+         *
          */
-        nonvirtual void Add (const value_type& t);
-        nonvirtual void Add (const key_type& t)
+        nonvirtual bool Add (const value_type& t);
+        nonvirtual bool Add (const key_type& t)
             requires (same_as<MAPPED_TYPE, void>);
         template <same_as<MAPPED_TYPE> MAPPED_TYPE2 = MAPPED_TYPE>
-        nonvirtual void Add (const key_type& t, const MAPPED_TYPE2& m)
+        nonvirtual bool Add (const key_type& t, const MAPPED_TYPE2& m)
             requires (not same_as<MAPPED_TYPE, void>);
 
     public:
@@ -218,6 +238,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \req t present - use RemoveIf() to avoid that precondition
          */
+        nonvirtual void Remove (const ForwardIterator& i, ForwardIterator* nextI = nullptr);
         nonvirtual void Remove (const key_type& t);
 
     public:
