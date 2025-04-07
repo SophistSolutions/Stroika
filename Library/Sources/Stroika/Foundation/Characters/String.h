@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Characters {
      *  \note Narrow String handling
      *      Because the character set of strings of type 'char' is ambiguous, if you construct a String
      *      with char (char* etc) - it is somehow 'required' that the characters be ASCII. If using the FromConstantString () API
-     *      , or operator"" _k, it is checked with Require () - so assertion failure. If you construct
+     *      , or operator""_k, it is checked with Require () - so assertion failure. If you construct
      *      with String::CTOR, it will generate a runtime exception (so more costly runtime checking).
      *
      *  \note Satisfies Concepts:
@@ -1887,13 +1887,13 @@ namespace Stroika::Foundation::Characters {
          *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
          *        so it will work in some overload contexts where sv would fail.
          * 
-         *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1)
+         *  \note operator""_k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1)
          */
-        String operator"" _k (const ASCII* s, size_t len);
-        String operator"" _k (const wchar_t* s, size_t len);
-        String operator"" _k (const char8_t* s, size_t len);
-        String operator"" _k (const char16_t* s, size_t len);
-        String operator"" _k (const char32_t* s, size_t len);
+        String operator""_k (const ASCII* s, size_t len);
+        String operator""_k (const wchar_t* s, size_t len);
+        String operator""_k (const char8_t* s, size_t len);
+        String operator""_k (const char16_t* s, size_t len);
+        String operator""_k (const char32_t* s, size_t len);
     }
 
     /**

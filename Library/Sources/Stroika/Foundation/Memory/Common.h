@@ -394,7 +394,7 @@ namespace Stroika::Foundation::Memory {
          * 
          *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
          */
-        constexpr byte operator"" _b (unsigned long long b);
+        constexpr byte operator""_b (unsigned long long b);
     }
 
     /**
