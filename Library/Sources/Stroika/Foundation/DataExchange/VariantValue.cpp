@@ -7,7 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/SortedMapping.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
 #include "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/Cast.h"
@@ -245,7 +245,7 @@ namespace {
             } break;
             case json::kind::array: {
                 const auto& a = val.as_array ();
-                std::vector<VariantValue> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika Seqeunce
+                std::vector<VariantValue> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika Sequence
                 r.reserve (a.size ());
                 for (const boost::json::value& i : a) {
                     r.emplace_back (mk_ (i));
@@ -254,11 +254,11 @@ namespace {
             } break;
             case json::kind::object: {
                 const auto& o = val.as_object ();
-                Containers::Concrete::SortedMapping_stdmap<String, VariantValue>::STDMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
+                Containers::Concrete::Mapping_HashTable<String, VariantValue>::DEFAULT_HASHTABLE<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
                 for (const auto& i : o) {
                     r.insert ({String::FromUTF8 (span{i.key ()}), mk_ (i.value ())});
                 }
-                return VariantValue{Containers::Concrete::SortedMapping_stdmap<String, VariantValue>{std::move (r)}};
+                return VariantValue{Containers::Concrete::Mapping_HashTable<String, VariantValue>{std::move (r)}};
             } break;
             default:
                 AssertNotReached ();
