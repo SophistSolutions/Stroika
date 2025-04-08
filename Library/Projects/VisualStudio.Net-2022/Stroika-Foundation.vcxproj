@@ -370,6 +370,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DenseDataHyperRectangle_Vector.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_Array.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_HashTable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h" />
@@ -861,6 +862,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\DenseDataHyperRectangle_Vector.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_Array.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_HashTable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_HashTable.inl" />

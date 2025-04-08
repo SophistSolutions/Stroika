@@ -203,6 +203,8 @@ namespace Stroika::Foundation::Common {
      *          KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
      *          ...
      *      \endcode
+     * 
+     *  \note see ComparisonRelationDeclarationBase<ComparisonRelationType::eEquals> to make a comparer into an 'equals' comparer
      */
     template <typename COMPARER, typename ARG_T>
     concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER, ARG_T> and

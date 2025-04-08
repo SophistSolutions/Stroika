@@ -9,6 +9,7 @@
 #include <typeindex>
 
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_HashTable.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_SkipList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_stdset.h"
@@ -80,13 +81,26 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_Array)
     {
+        Debug::TraceContextBumper ctx{"{}::KeyedCollection_Array"};
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_Array<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_HashTable)
+    {
+        Debug::TraceContextBumper                    ctx{"{}::KeyedCollection_HashTable"};
+       // Concrete::KeyedCollection_HashTable<T1, int> a;
+        /*CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});*/
+    }
+}
+
 namespace {
     GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_LinkedList)
     {
+        Debug::TraceContextBumper ctx{"{}::KeyedCollection_LinkedList"};
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
     }
