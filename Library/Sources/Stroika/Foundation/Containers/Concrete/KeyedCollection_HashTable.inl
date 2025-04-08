@@ -28,12 +28,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         [[no_unique_address]] const KeyExtractorType fKeyExtractor_;
 
     public:
-        Rep_ (const KeyExtractorType& keyExtractor, const typename HASH_TABLE_TRAITS::KeyHasherType& hashFun,
-              const typename HASH_TABLE_TRAITS::KeyEqualsComparerType& equalsComparer)
-            : fKeyExtractor_{keyExtractor}
-            , fData_{hashFun, equalsComparer}
-        {
-        }
         Rep_ (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
             : fKeyExtractor_{keyExtractor}
             , fData_{move (src)}
@@ -172,8 +166,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = HASHTABLE<HASH_TABLE_TRAITS>;
-        //  using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDHASHSET<KEY_HASH, KEY_EQUALS_COMPARER>>;
-        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
         DataStructureImplType_                                     fData_;
@@ -186,12 +179,34 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable ()
+        requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
+                  Cryptography::Digest::IHashFunction<hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>)
+        : inherited{DEFAULT_HASHTABLE{}}
+    {
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
+    KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
+        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+        : inherited{Memory::MakeSharedPtr<Rep_<HASHTABLE<HASH_TABLE_TRAITS>>> (keyExtractor, move (src))}
+    {
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
+    KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
+        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
+                  IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
+        : inherited{KeyExtractorType{}, move (src)}
+    {
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_HASH, typename KEY_EQUALS_COMPARER>
     KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, KEY_HASH&& keyHasher,
                                                                                KEY_EQUALS_COMPARER&& keyComparer)
         requires (IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IHashFunction<KEY_HASH, KEY_TYPE>)
-        : inherited{Memory::MakeSharedPtr<Rep_<HASHTABLE<DefaultTraits<KEY_HASH, KEY_EQUALS_COMPARER>>>> (
-              keyExtractor, forward<KEY_HASH> (keyHasher), forward<KEY_EQUALS_COMPARER> (keyComparer))}
+        : inherited{keyExtractor, DataStructures::HashTable<T, void, DefaultTraits<KEY_HASH, KEY_EQUALS_COMPARER>>{
+                                      ElementHash{keyExtractor, keyHasher}, ElementEqualsComparer{keyExtractor, keyComparer}}}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>

@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyComparer;
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
 
-    //        static_assert (IEqualsComparer<ElementEqualsComparer, value_type>); // we promise this
+            //        static_assert (IEqualsComparer<ElementEqualsComparer, value_type>); // we promise this
         };
 
     public:
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
 
-//            static_assert (Cryptography::Digest::IHashFunction<ElementHash, value_type>);   // we promise this
+            //            static_assert (Cryptography::Digest::IHashFunction<ElementHash, value_type>);   // we promise this
         };
 
     public:
@@ -142,12 +142,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       Cryptography::Digest::IHashFunction<hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
         template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
-        KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src);
+
+        KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
+            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces);
         template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
         KeyedCollection_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
-            requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
+                      IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         template <typename KEY_HASH = hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_HashTable (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
                                    KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
