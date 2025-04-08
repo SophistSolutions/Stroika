@@ -8,11 +8,6 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/Common.h"
 
-// namespace Stroika::Foundation::Execution {
-//     template <equality_comparable_with<nullptr_t> T>
-//      void ThrowIfNull (const T& p);
-// }
-
 namespace Stroika::Foundation::Containers::DataStructures {
 
 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
