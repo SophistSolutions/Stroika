@@ -226,6 +226,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 if (fItems_ == nullptr) {
                     if constexpr (kUseMalloc_) {
                         fItems_ = (T*)malloc (sizeof (T) * slotsAlloced);
+                        Execution::ThrowIfNull (fItems_);
                     }
                     else {
                         fItems_ = (T*)new char[sizeof (T) * slotsAlloced];
@@ -233,7 +234,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 }
                 else {
                     if constexpr (kUseMalloc_) {
-                        fItems_ = (T*)realloc (fItems_, sizeof (T) * slotsAlloced);
+                        auto newVal = (T*)realloc (fItems_, sizeof (T) * slotsAlloced);
+                        Execution::ThrowIfNull (newVal);
+                        fItems_ = newVal;
                     }
                     else {
                         // do better, but for now at least do something SAFE
