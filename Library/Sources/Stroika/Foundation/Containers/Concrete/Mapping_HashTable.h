@@ -6,8 +6,6 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <unordered_map>
-
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/DataStructures/HashTable.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
