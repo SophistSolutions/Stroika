@@ -130,10 +130,10 @@ namespace Stroika::Foundation::Containers::Concrete {
                         result = false;
                     }
                     else {
-                        auto r = fData_.Add (key, newElt);
+                        fData_.Add (key, newElt);
                         result = true;
                     }
-                }
+                } break;
                 default:
                     AssertNotReached ();
             }
