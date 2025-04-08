@@ -13,6 +13,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping_Array;
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class Mapping_HashTable;
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping_LinkedList;
 }
 namespace Stroika::Foundation::Containers::Factory {
