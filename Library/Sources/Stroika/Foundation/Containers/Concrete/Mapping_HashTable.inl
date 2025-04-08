@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS>
+   template<qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE>) HASH_TABLE_TRAITS>
         requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
     class Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
                                                                  public Memory::UseBlockAllocationIfAppropriate<Rep_<HASH_TABLE_TRAITS>> {
