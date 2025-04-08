@@ -5,7 +5,13 @@
 
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Memory/Common.h"
+
+// namespace Stroika::Foundation::Execution {
+//     template <equality_comparable_with<nullptr_t> T>
+//      void ThrowIfNull (const T& p);
+// }
 
 namespace Stroika::Foundation::Containers::DataStructures {
 
