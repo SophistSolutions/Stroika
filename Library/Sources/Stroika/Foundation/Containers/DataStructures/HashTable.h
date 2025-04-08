@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Common/KeyValuePair.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
