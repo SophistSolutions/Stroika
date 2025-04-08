@@ -50,14 +50,14 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         template <DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE> HASH_TABLE_TRAITS>
         using HASHTABLE = DataStructures::HashTable<KEY_TYPE, MAPPED_VALUE_TYPE, HASH_TABLE_TRAITS>;
-    
+
     public:
         /**
          * Convenient shorthand - not 100% sure why I couldn't just do this with default template arg to HASHTABLE, but didn't compile on gcc/clang?
          */
         template <typename K = KEY_TYPE>
             requires (Cryptography::Digest::IHashFunction<std::hash<K>, K> and IEqualsComparer<std::equal_to<K>, K>)
-        using DEFAULT_HASHTABLE = DataStructures::HashTable<KEY_TYPE, MAPPED_VALUE_TYPE, DefaultTraits<std::hash<K>,equal_to<K>>>;
+        using DEFAULT_HASHTABLE = DataStructures::HashTable<KEY_TYPE, MAPPED_VALUE_TYPE, DefaultTraits<std::hash<K>, equal_to<K>>>;
 
     public:
         /**
