@@ -25,6 +25,8 @@ DISABLE_COMPILER_MSC_WARNING_END (4166)
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
+#include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Database/Exception.h"
@@ -42,6 +44,9 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
+
+using Containers::Concrete::Mapping_HashTable;
+using Containers::Concrete::Sequence_stdvector;
 
 using Database::Document::EngineProperties;
 using Database::Document::Filter;
@@ -100,20 +105,21 @@ namespace {
             case bsoncxx::type::k_string:
                 return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{value.get_string ().value}));
             case bsoncxx::type::k_document: {
-                Mapping<String, VariantValue>     vvResult;
+                Mapping_HashTable<String, VariantValue>::DEFAULT_HASHTABLE<> vvResult; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
                 const bsoncxx::types::b_document& thisDoc = value.get_document ();
                 for (auto di : thisDoc.value) {
                     vvResult.Add (String::FromUTF8 (span{di.key ()}), BSON2VV_ (di));
                 }
-                return VariantValue{vvResult};
+                return VariantValue{Mapping_HashTable<String, VariantValue>{move (vvResult)}};
             }
             case bsoncxx::type::k_array: {
-                Sequence<VariantValue>         vvResult;
+                vector<VariantValue>           vvResult;
                 const bsoncxx::types::b_array& thisArray = value.get_array ();
+                vvResult.reserve (distance (thisArray.value.begin (), thisArray.value.end ()));
                 for (auto ai : thisArray.value) {
-                    vvResult += BSON2VV_ (ai);
+                    vvResult.push_back (BSON2VV_ (ai));
                 }
-                return VariantValue{vvResult};
+                return VariantValue{Sequence_stdvector<VariantValue>{move (vvResult)}};
             }
             case bsoncxx::type::k_binary:
                 return Memory::BLOB{span{value.get_binary ().bytes, static_cast<size_t> (value.get_binary ().size)}};
