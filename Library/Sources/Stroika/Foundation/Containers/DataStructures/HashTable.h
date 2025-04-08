@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \see https://en.cppreference.com/w/cpp/container/unordered_map/insert
          */
-        void insert(const pair<KEY_TYPE, MAPPED_TYPE>& p)
+        void insert (const pair<KEY_TYPE, MAPPED_TYPE>& p)
         {
             Add (p.first, p.second);
         }
