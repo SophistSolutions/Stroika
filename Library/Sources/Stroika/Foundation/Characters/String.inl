@@ -961,8 +961,10 @@ namespace Stroika::Foundation::Characters {
     {
         return PeekData<CHAR_TYPE> (GetPeekSpanData<CHAR_TYPE> ());
     }
+    // even thought this looks complex, nearly all of it is if constexpr, and most important cases vanish into practically nothing,
+    // so inline
     template <IUNICODECanAlwaysConvertTo CHAR_TYPE, size_t STACK_BUFFER_SZ>
-    span<const CHAR_TYPE> String::GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE, STACK_BUFFER_SZ>* possiblyUsedBuffer)
+    inline span<const CHAR_TYPE> String::GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE, STACK_BUFFER_SZ>* possiblyUsedBuffer)
     {
         RequireNotNull (possiblyUsedBuffer);
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
