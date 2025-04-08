@@ -231,6 +231,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \brief somewhat stdlib-like names - that will do what is expected of someone from stdc++, except for the
+         *         lack of return type that wouldn't make sense here since Stroika iterators not directly used for modification.
+         * 
+         *  \see https://en.cppreference.com/w/cpp/container/unordered_map/insert
+         */
+        void insert(const pair<KEY_TYPE, MAPPED_TYPE>& p)
+        {
+            Add (p.first, p.second);
+        }
+
+    public:
+        /**
          */
         nonvirtual optional<value_type> Lookup (const key_type& t);
 
