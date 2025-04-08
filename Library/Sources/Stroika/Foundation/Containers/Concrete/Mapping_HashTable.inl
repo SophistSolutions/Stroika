@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <Cryptography::Digest::IHashFunction<KEY_TYPE> HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_HashTable (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
-        : inherited{Memory::MakeSharedPtr<Rep_<MyDefaultTraits_<remove_cvref_t<HASH>, remove_cvref_t<KEY_EQUALS_COMPARER>>>> (
+        : inherited{Memory::MakeSharedPtr<Rep_<DefaultTraits<remove_cvref_t<HASH>, remove_cvref_t<KEY_EQUALS_COMPARER>>>> (
               forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer))}
     {
         AssertRepValidType_ ();
