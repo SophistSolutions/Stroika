@@ -181,7 +181,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  This is the type of the 'extractor' function, which can be static (so occupy no space) but defaults to
+         *  This is the type of the 'extractor' function, which can be static (so occupy no space, and can be inlined) but defaults to
          *  function<KEY_TYPE (ArgByValueType<T>)>> - specified in the TRAITS argument to KeyedCollection<>
          */
         using KeyExtractorType = typename TRAITS::KeyExtractorType;
