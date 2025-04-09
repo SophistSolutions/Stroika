@@ -111,11 +111,11 @@ namespace {
             a.Add (T1{4});
             EXPECT_EQ (a.size (), 2u);
         }
-        #if 0
+#if 0
         // above works but this causes asserts!
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_HashTable<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-        #endif
+#endif
 
         //        Concrete::KeyedCollection_HashTable<T1, int> a{T1_Key_Extractor{}};
         /*CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
