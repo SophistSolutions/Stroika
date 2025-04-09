@@ -102,12 +102,12 @@ namespace Stroika::Foundation::Containers::Private {
             }
             else {
                 //            static_assert (convertible_to<decltype (*fIterator), typename TRAITS::DataStructureContainerValueT>);
-               // *result = TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
+                // *result = TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
                 *result = *fIterator;
             }
         }
         else {
-            AssertNotImplemented ();// loose case soon        
+            AssertNotImplemented (); // loose case soon
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
