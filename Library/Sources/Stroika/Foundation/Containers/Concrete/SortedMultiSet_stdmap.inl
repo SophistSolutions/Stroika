@@ -183,8 +183,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMAP<INORDER_COMPARER>>;
-        using IteratorRep_ =
-            Private::IteratorImplHelper_<value_type, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
+        struct IterTraits_ : Private::IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_> {
+            using DataStructureContainerValueT = pair<T, CounterType>;
+        };
+        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_, IterTraits_>;
 
     private:
         DataStructureImplType_                                     fData_;

@@ -51,14 +51,14 @@ namespace Stroika::Foundation::Containers::Private {
 
     /*
      ********************************************************************************
-     *IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR,DATASTRUCTURE_CONTAINER_VALUE> *
+     ************ IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS> ***********
      ********************************************************************************
      */
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
     template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
-    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (
-        const DATASTRUCTURE_CONTAINER* data, [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter,
-        ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
+    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data,
+                                                                                         [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter,
+                                                                                         ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
         requires (constructible_from<DATASTRUCTURE_CONTAINER_ITERATOR, const DATASTRUCTURE_CONTAINER*, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS...>)
         : fIterator{data, forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -68,10 +68,10 @@ namespace Stroika::Foundation::Containers::Private {
     {
         RequireNotNull (data);
     }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
     template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
-    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::IteratorImplHelper_ (
-        [[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
+    inline IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::IteratorImplHelper_ ([[maybe_unused]] const ContainerDebugChangeCounts_* changeCounter,
+                                                                                         ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args)
         requires (constructible_from<DATASTRUCTURE_CONTAINER_ITERATOR, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS...>)
         : fIterator{forward<ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS> (args)...}
 #if qStroika_Foundation_Debug_AssertionsChecked
@@ -80,18 +80,17 @@ namespace Stroika::Foundation::Containers::Private {
 #endif
     {
     }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    auto IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Clone () const
-        -> unique_ptr<typename Iterator<T>::IRep>
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    auto IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Clone () const -> unique_ptr<typename Iterator<T>::IRep>
     {
         ValidateChangeCount ();
         return make_unique<IteratorImplHelper_> (*this);
     }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::More (optional<T>* result, bool advance)
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::More (optional<T>* result, bool advance)
     {
+        RequireNotNull (result); // API says result ptr required
         if constexpr (convertible_to<decltype (*fIterator), T>) {
-            RequireNotNull (result); // API says result ptr required
             ValidateChangeCount ();
             // Typically calls have advance = true
             if (advance) [[likely]] {
@@ -102,31 +101,32 @@ namespace Stroika::Foundation::Containers::Private {
                 *result = nullopt;
             }
             else {
+                //            static_assert (convertible_to<decltype (*fIterator), typename TRAITS::DataStructureContainerValueT>);
+               // *result = TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
                 *result = *fIterator;
             }
         }
         else {
-            RequireNotReached (); // "If this fails, you must override ::More, and provide it yourself"; and remember to override Clone() too!!!
+            AssertNotImplemented ();// loose case soon        
         }
     }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    bool IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Equals (
-        const typename Iterator<T>::IRep* rhs) const
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    bool IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Equals (const typename Iterator<T>::IRep* rhs) const
     {
         RequireNotNull (rhs);
-        using ActualIterImplType_ = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>;
+        using ActualIterImplType_       = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
         const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
         return fIterator == rrhs->fIterator;
     }
 #if qStroika_Foundation_Debug_AssertionsChecked
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Invariant () const noexcept
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Invariant () const noexcept
     {
         ValidateChangeCount ();
     }
 #endif
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::UpdateChangeCount ()
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::UpdateChangeCount ()
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         if (fChangeCounter != nullptr) {
@@ -134,8 +134,8 @@ namespace Stroika::Foundation::Containers::Private {
         }
 #endif
     }
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::ValidateChangeCount () const
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
+    inline void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::ValidateChangeCount () const
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         if (fChangeCounter != nullptr) {

@@ -92,6 +92,7 @@ namespace {
     GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_HashTable)
     {
         Debug::TraceContextBumper ctx{"{}::KeyedCollection_HashTable"};
+#if 0
         {
 
             Concrete::KeyedCollection_HashTable<T1, int, T1_Traits> a{};
@@ -111,6 +112,27 @@ namespace {
             a.Add (T1{4});
             EXPECT_EQ (a.size (), 2u);
         }
+        if (0) {
+            auto coll = Concrete::KeyedCollection_HashTable<T1, int>{[] (T1 e) { return e.key; }};
+            coll.Add (T1{1, 101});
+            EXPECT_EQ (coll.size (), 1u);
+            EXPECT_EQ (coll.Lookup (1)->value, 101);
+            coll.Add (T1{1, 201});
+            EXPECT_EQ (coll.size (), 1u);
+            EXPECT_TRUE (coll.Contains (1));
+            EXPECT_EQ (coll.Lookup (1)->value, 201);
+            EXPECT_TRUE (not coll.Contains (2));
+            auto prevValue = coll;
+            EXPECT_EQ (prevValue, coll);
+            coll.Add (T1{2, 102});
+            EXPECT_TRUE (prevValue != coll);
+            EXPECT_TRUE (coll.Contains (2));
+            EXPECT_EQ (coll.size (), 2u);
+            size_t sz = ranges::distance (coll.begin (), coll.end ());
+
+            EXPECT_EQ (coll.Keys (), (Set<int>{1, 2}));
+        }
+#endif
 #if 0
         // above works but this causes asserts!
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (

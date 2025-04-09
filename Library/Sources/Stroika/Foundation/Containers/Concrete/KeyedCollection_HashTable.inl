@@ -162,8 +162,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
+        static_assert (same_as<value_type, remove_cvref_t<value_type>>);
         using DataStructureImplType_ = HASHTABLE<HASH_TABLE_TRAITS>;
-        using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
+        struct IterTraits_ : Private::IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_> {
+            using DataStructureContainerValueT = DataStructureImplType_::value_type;
+            static_assert (same_as<DataStructureContainerValueT, Common::KeyValuePair<value_type, void>>);
+            static constexpr value_type ConvertDataStructureIterationResult2ContainerIteratorResult (const DataStructureContainerValueT& t)
+            {
+                return t.fKey;
+            }
+        };
+        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_, IterTraits_>;
 
     private:
         DataStructureImplType_                                     fData_;

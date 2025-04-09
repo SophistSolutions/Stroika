@@ -52,6 +52,22 @@ namespace Stroika::Foundation::Containers::Private {
         nonvirtual void PerformedChange ();
     };
 
+    template <typename T, typename DATASTRUCTURE_CONTAINER>
+    struct IteratorImplHelper_DefaultTraits {
+        static_assert (not is_reference_v<T>);
+        static_assert (not is_reference_v<DATASTRUCTURE_CONTAINER>);
+        using DataStructureT               = DATASTRUCTURE_CONTAINER;
+        using DataStructureIteratorT       = typename DATASTRUCTURE_CONTAINER::ForwardIterator;
+        using DataStructureContainerValueT = T;
+        template <typename XX>
+        static constexpr T ConvertDataStructureIterationResult2ContainerIteratorResult (XX&& t)
+        {
+            static_assert (convertible_to<DataStructureContainerValueT, T>,
+                           "dont use the default traits, but provide your own - see KeyedCollection_HashTable as example");
+            return t;
+        }
+    };
+
     /**
      *  \brief helper to wrap a low level 'DataStructure Container Iterator' into a 'Stroika' Iterator::IRep iterator.
      * 
@@ -65,12 +81,16 @@ namespace Stroika::Foundation::Containers::Private {
      *          good compiler error messages - maybe use more/better concepts usage; low priority since private impl helper method;
      *          -- LGP 2024-09-05
      */
-    template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR = typename DATASTRUCTURE_CONTAINER::ForwardIterator, typename DATASTRUCTURE_CONTAINER_VALUE = T>
-    class IteratorImplHelper_
-        : public Iterator<T>::IRep,
-          public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>> {
+    template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
+    class IteratorImplHelper_ : public Iterator<T>::IRep,
+                                public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER>> {
     private:
         using inherited = typename Iterator<T>::IRep;
+
+        //backward compat names
+    private:
+        using DATASTRUCTURE_CONTAINER_ITERATOR = typename TRAITS::DataStructureIteratorT;
+        using DATASTRUCTURE_CONTAINER_VALUE    = typename TRAITS::DataStructureContainerValueT;
 
     public:
         using DataStructureImplValueType_ = DATASTRUCTURE_CONTAINER_VALUE;
