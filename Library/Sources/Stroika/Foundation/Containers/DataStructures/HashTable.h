@@ -261,6 +261,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         */
+        nonvirtual ForwardIterator erase (const ForwardIterator& i)
+        {
+            ForwardIterator next{};
+            Remove (i, &next);
+            return next;
+        }
+        nonvirtual UnderlyingIteratorRep erase (const UnderlyingIteratorRep& i)
+        {
+            ForwardIterator next{};
+            Remove (ForwardIterator{this, i}, &next);
+            return next.GetUnderlyingIteratorRep ();
+        }
+
+    public:
+        /**
          *  TBD...  NOT same as https://en.cppreference.com/w/cpp/container/unordered_set/rehash
          * 
          *  Use ROUGHLY the argument number of hash buckets. Call bucket_count() to find number actually used.
@@ -421,6 +437,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     private:
         nonvirtual size_t Hash_ (const key_type& v) const
+        {
+            Require (fBuckets_.size () > 0);
+            return fHasher_ (v) % fBuckets_.size ();
+        }
+        template <typename AT = typename TRAITS::AlternateFindType>
+            requires (not same_as<AT, void>)
+        nonvirtual size_t Hash_ (const AT& v) const
         {
             Require (fBuckets_.size () > 0);
             return fHasher_ (v) % fBuckets_.size ();

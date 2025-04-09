@@ -72,8 +72,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             [[no_unique_address]] const KeyExtractorType    fKeyExtractor_;
             [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyComparer;
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
-
-            //        static_assert (IEqualsComparer<ElementEqualsComparer, value_type>); // we promise this
         };
 
     public:
@@ -105,19 +103,21 @@ namespace Stroika::Foundation::Containers::Concrete {
             [[no_unique_address]] const KEY_HASHER       fKeyHasher;
 
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
-
-            //            static_assert (Cryptography::Digest::IHashFunction<ElementHash, value_type>);   // we promise this
         };
 
     public:
         /**
-        * DESIGN CHOICE - could use HashTable<KEY_TYPE,T> or HASH_TABLE<T,void>. The former would be simpler, and the later more compact.
-        * For now - try the more compact choice.
+         * DESIGN CHOICE - could use HashTable<KEY_TYPE,T> or HASH_TABLE<T,void>. The former would be simpler, and the later more compact.
+         * For now - try the more compact choice.'
+         * 
+         *  Note this means that KEY_TYPE in the KeyedCollection_HashTable is VERY different from the KEY_TYPE in
+         *  the HashTable (which is 'T' aka value_type from the KeyedCollection_HashTable); which is why we use the HashTable TRAITS AlteranateFindType to be KEY_TYPE
          */
         template <Cryptography::Digest::IHashFunction<KEY_TYPE> HASHER = hash<KEY_TYPE>, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   typename LAYOUT_OPTIONS = DataStructures::HashTable_Support::SeparateChainingOptions<T, void>>
         using DefaultTraits =
-            DataStructures::HashTable_Support::DefaultTraits<T, void, ElementHash<HASHER>, ElementEqualsComparer<KEY_EQUALS_COMPARER>, LAYOUT_OPTIONS, AddOrExtendOrReplaceMode::eAddReplaces>;
+            DataStructures::HashTable_Support::DefaultTraits<T, void, ElementHash<HASHER>, ElementEqualsComparer<KEY_EQUALS_COMPARER>,
+                                                             LAYOUT_OPTIONS, AddOrExtendOrReplaceMode::eAddReplaces, KEY_TYPE>;
 
     public:
         /**
