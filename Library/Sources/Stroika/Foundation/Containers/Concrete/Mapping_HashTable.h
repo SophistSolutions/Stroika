@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
-        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE>) HASH_TABLE_TRAITS >
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE>) HASH_TABLE_TRAITS>
             requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
         class Rep_;
 
