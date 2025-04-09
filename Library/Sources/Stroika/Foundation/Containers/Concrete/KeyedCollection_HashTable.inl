@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                                                                                KEY_EQUALS_COMPARER&& keyComparer)
         requires (IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IHashFunction<KEY_HASH, KEY_TYPE>)
         : KeyedCollection_HashTable{keyExtractor, DataStructures::HashTable<T, void, DefaultTraits<KEY_HASH, KEY_EQUALS_COMPARER>>{
-                                                      ElementHash{keyExtractor, keyHasher}, ElementEqualsComparer{keyExtractor, keyComparer}}}
+                                                      ElementHash<KEY_HASH>{keyExtractor, keyHasher}, ElementEqualsComparer<KEY_EQUALS_COMPARER>{keyExtractor, keyComparer}}}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
