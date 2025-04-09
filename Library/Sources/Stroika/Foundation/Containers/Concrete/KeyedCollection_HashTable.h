@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief HashTable is DataStructures::HashTable<...> that can be used inside Mapping_HashTable
          */
-        template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
+        template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS = DefaultTraits<>>
         using HASHTABLE = DataStructures::HashTable<T, void, HASH_TABLE_TRAITS>;
 
     public:
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual KeyedCollection_HashTable& operator= (const KeyedCollection_HashTable& rhs)     = default;
 
     private:
-        struct IImplRepBase_ {};
+        using IImplRepBase_ = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
         template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
             requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
         class Rep_;

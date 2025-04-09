@@ -92,7 +92,7 @@ namespace {
     GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_HashTable)
     {
         Debug::TraceContextBumper ctx{"{}::KeyedCollection_HashTable"};
-        // Concrete::KeyedCollection_HashTable<T1, int, T1_Traits> a{};
+        Concrete::KeyedCollection_HashTable<T1, int, T1_Traits> a{};
         //        Concrete::KeyedCollection_HashTable<T1, int> a{T1_Key_Extractor{}};
         /*CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});*/
