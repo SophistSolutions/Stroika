@@ -74,12 +74,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             // if doing a find by 'equals-to' - we already have this indexed
             auto found = fData_.find (v);
-            #if 0
+#if 0
             // !todo fix!!!
             Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
                     (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
                                   .fIterator.GetUnderlyingIteratorRep ()));
-            #endif
+#endif
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found.GetUnderlyingIteratorRep ())};
         }
 
