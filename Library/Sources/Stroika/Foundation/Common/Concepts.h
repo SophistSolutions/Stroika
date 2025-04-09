@@ -147,6 +147,18 @@ namespace Stroika::Foundation::Common {
         { noexcept (f (args...)) };
     };
 
+    /**
+     *  \par Example Usage
+     *      \code
+     *          static_assert (invocable_r<decltype ([] (int) { return ""; }), const char*, int>);
+     *          static_assert (invocable_r<decltype ([] (char*, char*) {}), void, char*, char*>);
+     *      \endcode
+     */
+    template <typename F, typename R, typename... Args>
+    concept invocable_r = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
+    static_assert (invocable_r<decltype ([] (int) { return ""; }), const char*, int>);
+    static_assert (invocable_r<decltype ([] (char*, char*) {}), void, char*, char*>);
+
     // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
     template <typename T>
     concept IDuration =
