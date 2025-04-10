@@ -105,26 +105,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \brief validated the HashTable provided TRAITS object looks healthy (for better compiler diagnostics and usage docs)
          */
         template <typename TRAITS, typename KEY_TYPE, typename MAPPED_TYPE>
-        concept IValidTraits =
-            requires (TRAITS traits) {
-                { typename TRAITS::KeyHasherType{} } -> Cryptography::Digest::IHashFunction<KEY_TYPE>;
-                { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
-                { typename TRAITS::LayoutType{} };
-                { TRAITS::kAddOrExtendOrReplace } -> convertible_to<AddOrExtendOrReplaceMode>;
-                { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
-            }
-#if 0
-        // @todo get this working!
-        and (same_as<typename TRAITS::AlternateFindType, void> or requires (TRAITS traits) {
+        concept IValidTraits = requires (TRAITS traits) {
+            { typename TRAITS::KeyHasherType{} } -> Cryptography::Digest::IHashFunction<KEY_TYPE>;
+            { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
+            { typename TRAITS::LayoutType{} };
+            { TRAITS::kAddOrExtendOrReplace } -> convertible_to<AddOrExtendOrReplaceMode>;
+            { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
+        } and (same_as<typename TRAITS::AlternateFindType, void> or requires (TRAITS traits) {
+                                   { typename TRAITS::AlternateFindType{} };
                                    {
                                        typename TRAITS::KeyHasherType{}
                                    } -> Cryptography::Digest::IHashFunction<typename TRAITS::AlternateFindType>;
-                                   {
-                                       typename TRAITS::KeyEqualsComparerType{}
-                                   } -> Common::IEqualsComparer<typename TRAITS::AlternateFindType>;
-                               })
+#if 0
+                    // @todo get this working!
+                    { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<typename TRAITS::AlternateFindType>;
 #endif
-        ;
+                               });
 
     }
 

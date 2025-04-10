@@ -35,10 +35,6 @@ using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using namespace CommonTests::KeyedCollectionTests::Test1_Basics_;
 
-//using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
-//using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
-//using T1_Key_Extractor = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Key_Extractor;
-
 #if qStroika_HasComponent_googletest
 namespace {
     namespace Test_KeyedCollectionTypeIndexUsesStdSet_ {
@@ -85,6 +81,8 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::KeyedCollection_Array"};
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_Array<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::KeyedCollection_Array<T1, int, T1_Traits>{}; }, [] (auto) {});
     }
 }
 
@@ -92,56 +90,10 @@ namespace {
     GTEST_TEST (Foundation_Containers_KeyedCollection, KeyedCollection_HashTable)
     {
         Debug::TraceContextBumper ctx{"{}::KeyedCollection_HashTable"};
-#if 0
-        {
-
-            Concrete::KeyedCollection_HashTable<T1, int, T1_Traits> a{};
-            a.Add (T1{3});
-            EXPECT_EQ (a.size (), 1u);
-            a.Add (T1{3});
-            EXPECT_EQ (a.size (), 1u);
-            a.Add (T1{4});
-            EXPECT_EQ (a.size (), 2u);
-        }
-        {
-            Concrete::KeyedCollection_HashTable<T1, int> a{T1_Key_Extractor{}};
-            a.Add (T1{3});
-            EXPECT_EQ (a.size (), 1u);
-            a.Add (T1{3});
-            EXPECT_EQ (a.size (), 1u);
-            a.Add (T1{4});
-            EXPECT_EQ (a.size (), 2u);
-        }
-        if (0) {
-            auto coll = Concrete::KeyedCollection_HashTable<T1, int>{[] (T1 e) { return e.key; }};
-            coll.Add (T1{1, 101});
-            EXPECT_EQ (coll.size (), 1u);
-            EXPECT_EQ (coll.Lookup (1)->value, 101);
-            coll.Add (T1{1, 201});
-            EXPECT_EQ (coll.size (), 1u);
-            EXPECT_TRUE (coll.Contains (1));
-            EXPECT_EQ (coll.Lookup (1)->value, 201);
-            EXPECT_TRUE (not coll.Contains (2));
-            auto prevValue = coll;
-            EXPECT_EQ (prevValue, coll);
-            coll.Add (T1{2, 102});
-            EXPECT_TRUE (prevValue != coll);
-            EXPECT_TRUE (coll.Contains (2));
-            EXPECT_EQ (coll.size (), 2u);
-            size_t sz = ranges::distance (coll.begin (), coll.end ());
-
-            EXPECT_EQ (coll.Keys (), (Set<int>{1, 2}));
-        }
-#endif
-#if 1
-        // above works but this causes asserts!
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_HashTable<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
-#endif
-
-        //        Concrete::KeyedCollection_HashTable<T1, int> a{T1_Key_Extractor{}};
-        /*CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});*/
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::KeyedCollection_HashTable<T1, int, T1_Traits>{}; }, [] (auto) {});
     }
 }
 
@@ -151,6 +103,8 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::KeyedCollection_LinkedList"};
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::KeyedCollection_LinkedList<T1, int, T1_Traits>{}; }, [] (auto) {});
     }
 }
 
@@ -159,6 +113,8 @@ namespace {
     {
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::SortedKeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_stdset<T1, int, T1_Traits>{}; }, [] (auto) {});
     }
 }
 
@@ -167,6 +123,8 @@ namespace {
     {
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+        CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+            [] () { return Concrete::SortedKeyedCollection_SkipList<T1, int, T1_Traits>{}; }, [] (auto) {});
         {
             Concrete::SortedKeyedCollection_SkipList<T1, int> x{[] (T1 e) { return e.key; }};
             x.ReBalance ();
