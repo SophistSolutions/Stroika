@@ -15,8 +15,10 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA(DataStructures::HashTable_Support::IValidTraits<T, void>) HASH_TABLE_TRAITS>
+#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
         requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+#endif
     class KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRepBase_,
                                                                  public Memory::UseBlockAllocationIfAppropriate<Rep_<HASH_TABLE_TRAITS>> {
 
@@ -194,15 +196,19 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
     KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
-        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
+    requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+#endif
         : inherited{Memory::MakeSharedPtr<Rep_<HASH_TABLE_TRAITS>> (keyExtractor, move (src))}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
     KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
+#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
         requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
                   IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
+#endif
         : KeyedCollection_HashTable{KeyExtractorType{}, move (src)}
     {
     }

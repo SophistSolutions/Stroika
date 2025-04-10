@@ -142,13 +142,18 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       Cryptography::Digest::IHashFunction<hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
         template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
-
         KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces);
+#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
+            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+#endif
+            ;
         template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
         KeyedCollection_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
-                      IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
+        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
+                      IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
+#endif
+                      ;
         template <typename KEY_HASH = hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_HashTable (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
                                    KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
@@ -164,8 +169,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
-        template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<T, void>) HASH_TABLE_TRAITS>
+        #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
+        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+        #endif
         class Rep_;
 
     private:
