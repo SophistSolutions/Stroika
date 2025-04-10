@@ -131,6 +131,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         return Add (Common::KeyValuePair<key_type, mapped_type>{t, m});
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::insert (const pair<KEY_TYPE, MAPPED_TYPE>& p)
+    {
+        Add (p.first, p.second);
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::Lookup (const key_type& t) -> optional<value_type>
     {
         size_t hashVal = Hash_ (t);
@@ -179,6 +184,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         return false;
     }
+
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase (const ForwardIterator& i) -> ForwardIterator
+    {
+        ForwardIterator next{};
+        Remove (i, &next);
+        return next;
+    }
+    template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
+    inline auto HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::erase (const UnderlyingIteratorRep& i) -> UnderlyingIteratorRep
+    {
+        ForwardIterator next{};
+        Remove (ForwardIterator{this, i}, &next);
+        return next.GetUnderlyingIteratorRep ();
+    }
+
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
     void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ReHash (size_t newBucketCount)
     {
@@ -497,7 +518,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches ([[maybe_unused]]const HashTable* data) const
+    constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches ([[maybe_unused]] const HashTable* data) const
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);

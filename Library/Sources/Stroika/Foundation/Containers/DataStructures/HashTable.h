@@ -37,6 +37,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         struct SeparateChainingTag {};
 
         /**
+         *  \brief used internally to select HashTable implementation strategies. NOT YET IMPLEMENTED OR THOUGHT OUT (see https://en.wikipedia.org/wiki/Linear_probing) - tricky part is delete
+         */
+        struct LinearProbingTag {};
+
+        /**
          *  \brief use as LAYOUT_OPTIONS for HashTable DefaultTraits<> template
          */
         template <typename KEY_TYPE, typename MAPPED_TYPE, size_t INLINE_ELTS_PER_CHAIN = 2, size_t INLINE_BUCKETS = 5>
@@ -100,14 +105,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \brief validated the HashTable provided TRAITS object looks healthy (for better compiler diagnostics and usage docs)
          */
         template <typename TRAITS, typename KEY_TYPE, typename MAPPED_TYPE>
-        concept IValidTraits = requires (TRAITS traits) {
-            { typename TRAITS::KeyHasherType{} } -> Cryptography::Digest::IHashFunction<KEY_TYPE>;
-            { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
-            { typename TRAITS::LayoutType{} };
-            //{ typename TRAITS::AlternateFindType{} }; // == void or works with equals comparar and hasher
-            { TRAITS::kAddOrExtendOrReplace } -> convertible_to<AddOrExtendOrReplaceMode>;
-            { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
-        };
+        concept IValidTraits =
+            requires (TRAITS traits) {
+                { typename TRAITS::KeyHasherType{} } -> Cryptography::Digest::IHashFunction<KEY_TYPE>;
+                { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
+                { typename TRAITS::LayoutType{} };
+                { TRAITS::kAddOrExtendOrReplace } -> convertible_to<AddOrExtendOrReplaceMode>;
+                { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
+            }
+#if 0
+        // @todo get this working!
+        and (same_as<typename TRAITS::AlternateFindType, void> or requires (TRAITS traits) {
+                                   {
+                                       typename TRAITS::KeyHasherType{}
+                                   } -> Cryptography::Digest::IHashFunction<typename TRAITS::AlternateFindType>;
+                                   {
+                                       typename TRAITS::KeyEqualsComparerType{}
+                                   } -> Common::IEqualsComparer<typename TRAITS::AlternateFindType>;
+                               })
+#endif
+        ;
 
     }
 
@@ -208,9 +225,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-        * 
-        * ?????
-         *  You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
+         *  \brief Add an item (key value pair typically, but the value can be void). Return true on list change; Respects TRAITS::kAddOrExtendOrReplace
+         * 
+         *  If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove (key) calls.
          *
          *  Returns true if the list was changed (if eAddReplaces, and key found, return true even if val same as value already there because we cannot generically compare values)
          * 
@@ -221,7 +238,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:   ??
          *      Average:    O(1)
          *      Worst:      N
-         *
          */
         nonvirtual bool Add (const value_type& t);
         nonvirtual bool Add (const key_type& t)
@@ -237,10 +253,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * 
          *  \see https://en.cppreference.com/w/cpp/container/unordered_map/insert
          */
-        void insert (const pair<KEY_TYPE, MAPPED_TYPE>& p)
-        {
-            Add (p.first, p.second);
-        }
+        nonvirtual void insert (const pair<KEY_TYPE, MAPPED_TYPE>& p);
 
     public:
         /**
@@ -261,19 +274,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \brief stdlib like names and semantics (though may want to rethink the ForwardIterator vs UnderlyingIteratorRep thing)
          */
-        nonvirtual ForwardIterator erase (const ForwardIterator& i)
-        {
-            ForwardIterator next{};
-            Remove (i, &next);
-            return next;
-        }
-        nonvirtual UnderlyingIteratorRep erase (const UnderlyingIteratorRep& i)
-        {
-            ForwardIterator next{};
-            Remove (ForwardIterator{this, i}, &next);
-            return next.GetUnderlyingIteratorRep ();
-        }
+        nonvirtual ForwardIterator       erase (const ForwardIterator& i);
+        nonvirtual UnderlyingIteratorRep erase (const UnderlyingIteratorRep& i);
 
     public:
         /**
@@ -504,6 +508,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual const value_type* operator->() const; //  Error to call if Done (), otherwise OK
 
+#if 0
     public:
         /**
          *  \note Runtime performance/complexity:
@@ -512,6 +517,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \pre data == fData_ argument constructed with (or as adjusted by Move...); api takes extra param so release builds need not store fData_
          */
         nonvirtual size_t CurrentIndex (const HashTable* data) const;
+#endif
 
     public:
         /**
@@ -561,10 +567,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         friend class HashTable;
     };
-
-#if 0
     static_assert (ranges::input_range<HashTable<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
-#endif
 
 }
 
