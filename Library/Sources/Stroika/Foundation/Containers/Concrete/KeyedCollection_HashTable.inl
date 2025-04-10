@@ -208,10 +208,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_HASH, typename KEY_EQUALS_COMPARER>
+    template <Cryptography::Digest::IHashFunction<KEY_TYPE> KEY_HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, KEY_HASH&& keyHasher,
                                                                                KEY_EQUALS_COMPARER&& keyComparer)
-        requires (IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IHashFunction<KEY_HASH, KEY_TYPE>)
         : KeyedCollection_HashTable{keyExtractor, DataStructures::HashTable<T, void, DefaultTraits<KEY_HASH, KEY_EQUALS_COMPARER>>{
                                                       ElementHash<KEY_HASH>{keyExtractor, keyHasher},
                                                       ElementEqualsComparer<KEY_EQUALS_COMPARER>{keyExtractor, keyComparer}}}

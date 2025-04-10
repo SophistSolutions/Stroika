@@ -157,10 +157,9 @@ namespace Stroika::Foundation::Containers::Concrete {
                       IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
 #endif
         ;
-        template <typename KEY_HASH = hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+        template <Cryptography::Digest::IHashFunction<KEY_TYPE> KEY_HASH = hash<KEY_TYPE>, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_HashTable (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
-                                   KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
-            requires (IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IHashFunction<KEY_HASH, KEY_TYPE>);
+                                   KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         KeyedCollection_HashTable (KeyedCollection_HashTable&& src) noexcept      = default;
         KeyedCollection_HashTable (const KeyedCollection_HashTable& src) noexcept = default;
 
