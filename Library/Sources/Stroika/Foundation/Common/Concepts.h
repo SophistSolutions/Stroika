@@ -153,9 +153,11 @@ namespace Stroika::Foundation::Common {
      *          static_assert (invocable_r<decltype ([] (int) { return ""; }), const char*, int>);
      *          static_assert (invocable_r<decltype ([] (char*, char*) {}), void, char*, char*>);
      *      \endcode
+     * 
+     *  \note used STL-style name since so closely related to invocable - which is part of the standard library.
      */
     template <typename F, typename R, typename... Args>
-    concept invocable_r = std::invocable<F, Args...> && std::convertible_to<std::invoke_result_t<F, Args...>, R>;
+    concept invocable_r = invocable<F, Args...> && convertible_to<invoke_result_t<F, Args...>, R>;
     static_assert (invocable_r<decltype ([] (int) { return ""; }), const char*, int>);
     static_assert (invocable_r<decltype ([] (char*, char*) {}), void, char*, char*>);
 

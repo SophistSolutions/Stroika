@@ -184,31 +184,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using DataStructureImplType_ = SKIPLIST<COMPARER>;
-        struct IteratorRep_ : Private::IteratorImplHelper_<value_type, DataStructureImplType_> {
-            using inherited = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
-            using inherited::inherited; // forward base class constructors
-            // override to map just the key part to 'T'
-            virtual void More (optional<value_type>* result, bool advance) override
+        struct IterTraits_ : Private::IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_> {
+            static constexpr value_type ConvertDataStructureIterationResult2ContainerIteratorResult (const DataStructureImplType_::value_type& t)
             {
-                RequireNotNull (result);
-                this->ValidateChangeCount ();
-                if (advance) [[likely]] {
-                    Require (not this->fIterator.Done ());
-                    ++this->fIterator;
-                }
-                if (this->fIterator.Done ()) [[unlikely]] {
-                    *result = nullopt;
-                }
-                else {
-                    *result = value_type{this->fIterator->fKey, this->fIterator->fValue};
-                }
-            }
-            virtual auto Clone () const -> unique_ptr<typename Iterator<value_type>::IRep> override
-            {
-                this->ValidateChangeCount ();
-                return make_unique<IteratorRep_> (*this);
+                return value_type{t.fKey, t.fValue};
             }
         };
+        using IteratorRep_ = Private::IteratorImplHelper_<value_type, DataStructureImplType_, IterTraits_>;
 
     private:
         DataStructureImplType_                                     fData_;

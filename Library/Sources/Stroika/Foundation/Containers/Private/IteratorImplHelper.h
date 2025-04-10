@@ -58,13 +58,16 @@ namespace Stroika::Foundation::Containers::Private {
         static_assert (not is_reference_v<DATASTRUCTURE_CONTAINER>);
         using DataStructureT               = DATASTRUCTURE_CONTAINER;
         using DataStructureIteratorT       = typename DATASTRUCTURE_CONTAINER::ForwardIterator;
-        using DataStructureContainerValueT = T;
-        template <typename XX>
-        static constexpr T ConvertDataStructureIterationResult2ContainerIteratorResult (XX&& t)
+        using DataStructureContainerValueT = typename DATASTRUCTURE_CONTAINER::value_type; // I THINK WE CAN LOSE THIS DEFINE
+        //  static constexpr bool kConvertDataStructureIterationResult2ContainerIteratorResult = false;
+        // see if can use auto in place of explict XX
+        //template <typename XX>
+        static constexpr T ConvertDataStructureIterationResult2ContainerIteratorResult (const DataStructureContainerValueT& t)
+        //requires (Common::explicitly_convertible_to<DataStructureContainerValueT, T>)
         {
-            static_assert (convertible_to<DataStructureContainerValueT, T>,
+            static_assert (Common::explicitly_convertible_to<DataStructureContainerValueT, T>,
                            "dont use the default traits, but provide your own - see KeyedCollection_HashTable as example");
-            return t;
+            return static_cast<T> (t);
         }
     };
 
@@ -83,7 +86,7 @@ namespace Stroika::Foundation::Containers::Private {
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS = IteratorImplHelper_DefaultTraits<T, DATASTRUCTURE_CONTAINER>>
     class IteratorImplHelper_ : public Iterator<T>::IRep,
-                                public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER>> {
+                                public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>> {
     private:
         using inherited = typename Iterator<T>::IRep;
 

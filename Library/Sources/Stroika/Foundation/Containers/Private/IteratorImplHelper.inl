@@ -90,31 +90,24 @@ namespace Stroika::Foundation::Containers::Private {
     void IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::More (optional<T>* result, bool advance)
     {
         RequireNotNull (result); // API says result ptr required
-        if constexpr (convertible_to<decltype (*fIterator), T>) {
-            ValidateChangeCount ();
-            // Typically calls have advance = true
-            if (advance) [[likely]] {
-                Require (not fIterator.Done ());
-                ++fIterator;
-            }
-            if (fIterator.Done ()) [[unlikely]] {
-                *result = nullopt;
-            }
-            else {
-                //            static_assert (convertible_to<decltype (*fIterator), typename TRAITS::DataStructureContainerValueT>);
-                // *result = TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
-                *result = *fIterator;
-            }
+        ValidateChangeCount ();
+        // Typically calls have advance = true
+        if (advance) [[likely]] {
+            Require (not fIterator.Done ());
+            ++fIterator;
+        }
+        if (fIterator.Done ()) [[unlikely]] {
+            *result = nullopt;
         }
         else {
-            AssertNotImplemented (); // loose case soon
+            *result = typename TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
     bool IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>::Equals (const typename Iterator<T>::IRep* rhs) const
     {
         RequireNotNull (rhs);
-        using ActualIterImplType_       = IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, TRAITS>;
+        using ActualIterImplType_       = IteratorImplHelper_;
         const ActualIterImplType_* rrhs = Debug::UncheckedDynamicCast<const ActualIterImplType_*> (rhs);
         return fIterator == rrhs->fIterator;
     }
