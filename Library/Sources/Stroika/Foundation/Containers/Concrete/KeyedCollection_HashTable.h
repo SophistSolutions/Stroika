@@ -18,17 +18,13 @@
  */
 namespace Stroika::Foundation::Containers::Concrete {
 
-
-
     /**
      *  \brief mostly internal concept validator for hash-table that resides inside KeyedCollection_HashTable
      */
     namespace KeyedCollection_HashTable_Support {
         template <typename TRAITS, typename T, typename KEY_TYPE>
-        concept IValidHashTableTraits = 
-            DataStructures::HashTable_Support::IValidTraits<TRAITS, T, void> 
-            and TRAITS::kAddOrExtendOrReplace  == AddOrExtendOrReplaceMode::eAddReplaces
-            ;
+        concept IValidHashTableTraits = DataStructures::HashTable_Support::IValidTraits<TRAITS, T, void> and
+                                        TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces;
     }
 
     /**
@@ -124,7 +120,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          * DESIGN CHOICE - could use HashTable<KEY_TYPE,T> or HASH_TABLE<T,void>. The former would be simpler, and the later more compact.
-         * For now - try the more compact choice.'
+         * For now - try the more compact choice.
          * 
          *  Note this means that KEY_TYPE in the KeyedCollection_HashTable is VERY different from the KEY_TYPE in
          *  the HashTable (which is 'T' aka value_type from the KeyedCollection_HashTable); which is why we use the HashTable TRAITS AlternateFindType to be KEY_TYPE
@@ -137,7 +133,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  \brief HashTable is DataStructures::HashTable<...> that can be used inside Mapping_HashTable
+         *  \brief HashTable is DataStructures::HashTable<...> that can be used inside KeyedCollection_HashTable
          */
         template <KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE> HASH_TABLE_TRAITS = DefaultTraits<>>
         using HASHTABLE = DataStructures::HashTable<T, void, HASH_TABLE_TRAITS>;
@@ -158,8 +154,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       Cryptography::Digest::IHashFunction<hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
         template <KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE> HASH_TABLE_TRAITS>
-        KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
-        ;
+        KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src);
         template <KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE> HASH_TABLE_TRAITS>
         KeyedCollection_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
