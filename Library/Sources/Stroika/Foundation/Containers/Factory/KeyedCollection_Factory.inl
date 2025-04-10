@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_HashTable.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedKeyedCollection_stdset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
@@ -36,8 +37,12 @@ namespace Stroika::Foundation::Containers::Factory {
                                                                                                const KEY_EQUALS_COMPARER& keyComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            if constexpr (default_initializable<Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
+            if constexpr (constructible_from<Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyExtractorType> and
                           same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
+                return Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
+            }
+            else if constexpr (default_initializable<Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
+                               same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
                 return Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
             }
             else {
