@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         using DataStructureImplType_ = SKIPLIST<COMPARER>;
         struct IterTraits_ : Private::IteratorImplHelper_DefaultTraits<value_type, DataStructureImplType_> {
-            static constexpr value_type ConvertDataStructureIterationResult2ContainerIteratorResult (const DataStructureImplType_::value_type& t)
+            static constexpr value_type ConvertDataStructureIterationResult2ContainerIteratorResult (const typename DataStructureImplType_::value_type& t)
             {
                 return value_type{t.fKey, t.fValue};
             }
