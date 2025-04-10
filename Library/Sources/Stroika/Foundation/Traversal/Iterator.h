@@ -612,6 +612,7 @@ namespace Stroika::Foundation::Traversal {
          * and/or More() to get values and move forward through the iteration.
          */
         virtual unique_ptr<IRep> Clone () const = 0;
+
         /**
          *  More () takes two required arguments - one an optional<T>* result, and the other a flag about whether or
          *  not to advance.
@@ -633,8 +634,13 @@ namespace Stroika::Foundation::Traversal {
          *      initialization/copying. Note that the return value optimization rule doesn't apply
          *      to assignment, but only initialization.
          *
+         *  \em Design Note
+         *      Standard C++ iterators separate advancing from testing if done. That is almost strictly better.
+         *      However, standard c++ iterators don't require a virtual call per iteration. It is to mitigate
+         *      that we combine those two operations into one call (not that unnaturally).
          */
         virtual void More (optional<T>* result, bool advance) = 0;
+
         /**
          * \brief two iterators must be iterating over the same source, and be up to the same position.
          *
@@ -645,6 +651,7 @@ namespace Stroika::Foundation::Traversal {
          *  @see Iterator<T>::Equals for details
          */
         virtual bool Equals (const IRep* rhs) const = 0;
+
 #if qStroika_Foundation_Debug_AssertionsChecked
         /**
          */
