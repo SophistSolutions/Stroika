@@ -146,14 +146,14 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
             requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
 #endif
-            ;
+        ;
         template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
         KeyedCollection_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
-        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
+            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
                       IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
 #endif
-                      ;
+        ;
         template <typename KEY_HASH = hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_HashTable (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
                                    KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
@@ -170,9 +170,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         using IImplRepBase_ = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<T, void>) HASH_TABLE_TRAITS>
-        #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
-        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
-        #endif
+#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
+            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+#endif
         class Rep_;
 
     private:

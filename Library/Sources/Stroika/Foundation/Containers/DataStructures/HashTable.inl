@@ -497,7 +497,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_TYPE, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS>
-    constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches (const HashTable* data) const
+    constexpr void HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>::ForwardIterator::AssertDataMatches ([[maybe_unused]]const HashTable* data) const
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         Require (data == fData_);
