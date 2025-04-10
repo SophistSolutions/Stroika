@@ -22,6 +22,7 @@ This folder contains all the Stroika Library Foundation::Containers::Concrete so
   - [Collection_stdforwardlist](Collection_stdforwardlist.h)
   - [Deque_DoublyLinkedList](Deque_DoublyLinkedList.h)
   - [KeyedCollection_Array](KeyedCollection_Array.h)
+  - [KeyedCollection_HashTable](KeyedCollection_HashTable.h)
   - [KeyedCollection_LinkedList](KeyedCollection_LinkedList.h)
   - [Mapping_Array](Mapping_Array.h)
   - [Mapping_HashTable](Mapping_HashTable.h)

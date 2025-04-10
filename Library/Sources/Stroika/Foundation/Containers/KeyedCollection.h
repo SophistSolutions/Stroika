@@ -115,6 +115,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \em Concrete Implementations:
      *      o   @see Concrete::KeyedCollection_Array<>
+     *      o   @see Concrete::KeyedCollection_HashTable<>
      *      o   @see Concrete::KeyedCollection_LinkedList<>
      *      o   @see Concrete::SortedKeyedCollection_stdset<>
      *      o   @see Concrete::SortedKeyedCollection_SkipList<>

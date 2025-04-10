@@ -116,7 +116,7 @@ For example, a Stack\<T>, or Set\<T>, or Sequence\<T>. Unlike std c++ container 
   - Supported backends: [DoublyLinkedList](Concrete/Deque_DoublyLinkedList.h)
 - [KeyedCollection\<T, KEY_TYPE, TRAITS>](KeyedCollection.h)
   - KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single object. It takes a parameter saying how to 'extract' the key from the collected value 'T'.
-  - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[LinkedList](Concrete/KeyedCollection_LinkedList_.h), [SkipList](Concrete/SortedKeyedCollection_SkipList.h), [std::set](Concrete/SortedKeyedCollection_stdset.h)
+  - Supported backends: [Array](Concrete/KeyedCollection_Array_.h),[HashTable](Concrete/KeyedCollection_HashTable.h), [LinkedList](Concrete/KeyedCollection_LinkedList.h), [SkipList](Concrete/SortedKeyedCollection_SkipList.h), [std::set](Concrete/SortedKeyedCollection_stdset.h)
 - [Mapping\<KEY_TYPE, VALUE_TYPE>](Mapping.h)
   - Allows for the association of two elements: a key and a value. The key UNIQUELY specifies its associated value
   - A collection of elements where each time you add something, the MultiSet tallies the number of times that thing has been entered. This is not a commonly used class, but handy when you want to count things
