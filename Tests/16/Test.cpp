@@ -133,7 +133,7 @@ namespace {
             EXPECT_EQ (coll.Keys (), (Set<int>{1, 2}));
         }
 #endif
-#if 0
+#if 1
         // above works but this causes asserts!
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return Concrete::KeyedCollection_HashTable<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});

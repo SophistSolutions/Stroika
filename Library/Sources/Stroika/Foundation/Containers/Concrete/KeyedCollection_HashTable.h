@@ -22,7 +22,10 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \brief   KeyedCollection_HashTable<T,KEY_TYPE> is a HashTable based concrete implementation of the KeyedCollection<T,KEY_TYPE> container pattern.
      *
      * \note Runtime performance/complexity:
-     *      @todo
+     *      o   Add (typical O(1), worst case O(N))
+     *      o   Find (typical O(1), worst case O(N))
+     * 
+     *      key is quality of hash; if you hash well - get constant time access, if you have collisions, get poor (array or linked list like) performance.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -111,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          * For now - try the more compact choice.'
          * 
          *  Note this means that KEY_TYPE in the KeyedCollection_HashTable is VERY different from the KEY_TYPE in
-         *  the HashTable (which is 'T' aka value_type from the KeyedCollection_HashTable); which is why we use the HashTable TRAITS AlteranateFindType to be KEY_TYPE
+         *  the HashTable (which is 'T' aka value_type from the KeyedCollection_HashTable); which is why we use the HashTable TRAITS AlternateFindType to be KEY_TYPE
          */
         template <Cryptography::Digest::IHashFunction<KEY_TYPE> HASHER = hash<KEY_TYPE>, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   typename LAYOUT_OPTIONS = DataStructures::HashTable_Support::SeparateChainingOptions<T, void>>

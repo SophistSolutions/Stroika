@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA(DataStructures::HashTable_Support::IValidTraits<T, void>) HASH_TABLE_TRAITS>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<T, void>) HASH_TABLE_TRAITS>
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
         requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
 #endif
@@ -76,12 +76,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             // if doing a find by 'equals-to' - we already have this indexed
             auto found = fData_.find (v);
-#if 0
-            // !todo fix!!!
             Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
-                    (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
-                                  .fIterator.GetUnderlyingIteratorRep ()));
-#endif
+                    (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ()).fIterator));
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found.GetUnderlyingIteratorRep ())};
         }
 
@@ -116,7 +112,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            static_assert (same_as<KeyType, int>);
             static_assert (same_as<value_type, typename DataStructureImplType_::key_type>);
             auto i = fData_.find (key); // using AlternateFindType overload of find()
             if (i == fData_.end ()) {
@@ -137,6 +132,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             size_t                                                 oldSize = this->size ();
+            static_assert (DataStructureImplType_::TraitsType::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces); // here we count on this setting
             (void)fData_.Add (item); // returns if there was a change, but this KeyedCollection returns true iff collection changed size
             bool newItemAdded = this->size () != oldSize;
             fChangeCounts_.PerformedChange ();
@@ -196,7 +192,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
     KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
-    requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
+        requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
 #endif
         : inherited{Memory::MakeSharedPtr<Rep_<HASH_TABLE_TRAITS>> (keyExtractor, move (src))}
     {
