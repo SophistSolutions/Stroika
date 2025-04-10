@@ -37,31 +37,21 @@ namespace Stroika::Foundation::Containers::Factory {
                                                                                                const KEY_EQUALS_COMPARER& keyComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-
             if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>
-              // SHOULD BE DONE AUTOMATICALLY WITH constructible_from above
+#if defined(__clang__) || defined(__GNUC__)
+                // if compilerbug add define - but inviestigate a bit first...
+                 // SHOULD BE DONE AUTOMATICALLY WITH constructible_from below
+                // but fails on ??? (list - maybe macosx and g++14 on ubuntu 24.04)
               and Cryptography::Digest::IHashFunction<hash<KEY_TYPE>,KEY_TYPE>
               and IEqualsComparer<equal_to<KEY_TYPE>,KEY_TYPE>
-              ) {
+#else
+                // this works on VisualStudio --LGP 2025-04-10
+              and constructible_from<Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyExtractorType>
+#endif
+            ) {
                 return Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>{keyExtractor};
             }
-            else 
-
-            #if 0
-            if constexpr (constructible_from<Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyExtractorType> and
-                          same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>
-                        
-                        // SHOULD BE DONE AUTOMATICALLY WITH constructible_from above
-                        and Cryptography::Digest::IHashFunction<hash<KEY_TYPE>,KEY_TYPE>
-                        
-                        
-                        ) {
-                return Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>{keyExtractor};
-            }
-            else 
-            #endif
-            
-            if constexpr (default_initializable<Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
+            else if constexpr (default_initializable<Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
                                same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
                 return Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
             }
