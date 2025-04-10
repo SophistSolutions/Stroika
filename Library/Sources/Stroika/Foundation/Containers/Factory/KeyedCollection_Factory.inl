@@ -37,11 +37,31 @@ namespace Stroika::Foundation::Containers::Factory {
                                                                                                const KEY_EQUALS_COMPARER& keyComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            if constexpr (constructible_from<Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyExtractorType> and
-                          same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
+
+            if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>
+              // SHOULD BE DONE AUTOMATICALLY WITH constructible_from above
+              and Cryptography::Digest::IHashFunction<hash<KEY_TYPE>,KEY_TYPE>
+              and IEqualsComparer<equal_to<KEY_TYPE>,KEY_TYPE>
+              ) {
                 return Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>{keyExtractor};
             }
-            else if constexpr (default_initializable<Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
+            else 
+
+            #if 0
+            if constexpr (constructible_from<Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyExtractorType> and
+                          same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>
+                        
+                        // SHOULD BE DONE AUTOMATICALLY WITH constructible_from above
+                        and Cryptography::Digest::IHashFunction<hash<KEY_TYPE>,KEY_TYPE>
+                        
+                        
+                        ) {
+                return Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>{keyExtractor};
+            }
+            else 
+            #endif
+            
+            if constexpr (default_initializable<Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
                                same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
                 return Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
             }
