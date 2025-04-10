@@ -39,14 +39,13 @@ namespace Stroika::Foundation::Containers::Factory {
         if (this->fFactory_ == nullptr) [[likely]] {
             if constexpr (same_as<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>
 #if defined(__clang__) || defined(__GNUC__)
-                // if compilerbug add define - but inviestigate a bit first...
-                 // SHOULD BE DONE AUTOMATICALLY WITH constructible_from below
-                // but fails on ??? (list - maybe macosx and g++14 on ubuntu 24.04)
-              and Cryptography::Digest::IHashFunction<hash<KEY_TYPE>,KEY_TYPE>
-              and IEqualsComparer<equal_to<KEY_TYPE>,KEY_TYPE>
+                          // if compilerbug add define - but inviestigate a bit first...
+                          // SHOULD BE DONE AUTOMATICALLY WITH constructible_from below
+                          // but fails on ??? (list - maybe macosx and g++14 on ubuntu 24.04)
+                          and Cryptography::Digest::IHashFunction<hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>
 #else
-                // this works on VisualStudio --LGP 2025-04-10
-              and constructible_from<Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyExtractorType>
+                          // this works on VisualStudio --LGP 2025-04-10
+                          and constructible_from<Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyExtractorType>
 #endif
             ) {
                 return Concrete::KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>{keyExtractor};
