@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers::Private {
             *result = nullopt;
         }
         else {
-            *result = typename TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
+            *result = TRAITS::ConvertDataStructureIterationResult2ContainerIteratorResult (*fIterator);
         }
     }
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename TRAITS>
