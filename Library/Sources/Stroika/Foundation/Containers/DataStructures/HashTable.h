@@ -106,19 +106,19 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         template <typename TRAITS, typename KEY_TYPE, typename MAPPED_TYPE>
         concept IValidTraits = requires (TRAITS traits) {
-            { typename TRAITS::KeyHasherType{} } -> Cryptography::Digest::IHashFunction<KEY_TYPE>;
-            { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<KEY_TYPE>;
-            { typename TRAITS::LayoutType{} };
+            { declval<typename TRAITS::KeyHasherType> () } -> Cryptography::Digest::IHashFunction<KEY_TYPE>;
+            { declval<typename TRAITS::KeyEqualsComparerType> () } -> Common::IEqualsComparer<KEY_TYPE>;
+            { declval<typename TRAITS::LayoutType> () };
             { TRAITS::kAddOrExtendOrReplace } -> convertible_to<AddOrExtendOrReplaceMode>;
             { TRAITS::kAutoShrinkBucketCount } -> convertible_to<bool>;
         } and (same_as<typename TRAITS::AlternateFindType, void> or requires (TRAITS traits) {
-                                   { typename TRAITS::AlternateFindType{} };
+                                   { declval<typename TRAITS::AlternateFindType> () };
                                    {
-                                       typename TRAITS::KeyHasherType{}
+                                       declval<typename TRAITS::KeyHasherType> ()
                                    } -> Cryptography::Digest::IHashFunction<typename TRAITS::AlternateFindType>;
 #if 0
                     // @todo get this working!
-                    { typename TRAITS::KeyEqualsComparerType{} } -> Common::IEqualsComparer<typename TRAITS::AlternateFindType>;
+                    { declval<typename TRAITS::KeyEqualsComparerType>() } -> Common::IEqualsComparer<typename TRAITS::AlternateFindType>;
 #endif
                                });
 
