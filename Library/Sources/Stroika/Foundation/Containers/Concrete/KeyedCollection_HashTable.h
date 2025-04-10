@@ -18,6 +18,19 @@
  */
 namespace Stroika::Foundation::Containers::Concrete {
 
+
+
+    /**
+     *  \brief mostly internal concept validator for hash-table that resides inside KeyedCollection_HashTable
+     */
+    namespace KeyedCollection_HashTable_Support {
+        template <typename TRAITS, typename T, typename KEY_TYPE>
+        concept IValidHashTableTraits = 
+            DataStructures::HashTable_Support::IValidTraits<TRAITS, T, void> 
+            and TRAITS::kAddOrExtendOrReplace  == AddOrExtendOrReplaceMode::eAddReplaces
+            ;
+    }
+
     /**
      *  \brief   KeyedCollection_HashTable<T,KEY_TYPE> is a HashTable based concrete implementation of the KeyedCollection<T,KEY_TYPE> container pattern.
      *
@@ -126,7 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief HashTable is DataStructures::HashTable<...> that can be used inside Mapping_HashTable
          */
-        template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS = DefaultTraits<>>
+        template <KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE> HASH_TABLE_TRAITS = DefaultTraits<>>
         using HASHTABLE = DataStructures::HashTable<T, void, HASH_TABLE_TRAITS>;
 
     public:
@@ -144,17 +157,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         KeyedCollection_HashTable ()
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       Cryptography::Digest::IHashFunction<hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
-        template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
+        template <KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE> HASH_TABLE_TRAITS>
         KeyedCollection_HashTable (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
-#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
-#endif
         ;
-        template <DataStructures::HashTable_Support::IValidTraits<T, void> HASH_TABLE_TRAITS>
+        template <KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE> HASH_TABLE_TRAITS>
         KeyedCollection_HashTable (HASHTABLE<HASH_TABLE_TRAITS>&& src)
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces and
-                      IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
+            requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
 #endif
         ;
         template <Cryptography::Digest::IHashFunction<KEY_TYPE> KEY_HASH = hash<KEY_TYPE>, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
@@ -171,10 +180,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using IImplRepBase_ = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
-        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<T, void>) HASH_TABLE_TRAITS>
-#if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
-            requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
-#endif
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE>) HASH_TABLE_TRAITS>
         class Rep_;
 
     private:
