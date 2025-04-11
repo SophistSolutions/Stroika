@@ -33,6 +33,9 @@ namespace Stroika::Foundation::Containers::Private {
      *          // BECOMES
      *          class Association_Array : public Private::HashTableBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true> {
      *          using inherited = Private::HashTableBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
+     * 
+     *          // AND need in main public container, 
+     *          friend inherited;       // for HashTableBasedContainer
      *      \endcode
      */
     template <typename THIS_CONTAINER, typename BASE_CONTAINER>

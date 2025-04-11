@@ -39,6 +39,9 @@ namespace Stroika::Foundation::Containers::Private {
      *          // BECOMES
      *          class Association_Array : public Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true> {
      *          using inherited = Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
+     * 
+     *          // AND need in main public container, 
+     *          friend inherited;       // for ArrayBasedContainer
      *      \endcode
      */
     template <typename THIS_CONTAINER, typename BASE_CONTAINER, bool USING_IREP>
