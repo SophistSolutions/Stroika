@@ -26,26 +26,26 @@ namespace Stroika::Foundation::Containers::Private {
     template <typename THIS_CONTAINER, typename BASE_CONTAINER>
     inline size_t HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::bucket_count () const
     {
-        using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
-        return _SafeReadRepAccessor{this}._GetReadableRep ().bucket_count ();
+        using _SafeReadRepAccessor = typename THIS_CONTAINER ::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+        return _SafeReadRepAccessor{this}._ConstGetRep ().bucket_count ();
     }
     template <typename THIS_CONTAINER, typename BASE_CONTAINER>
     inline size_t HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::bucket_size (size_t bucketIdx) const
     {
         using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
-        return _SafeReadRepAccessor{this}._GetReadableRep ().bucket_size (bucketIdx);
+        return _SafeReadRepAccessor{this}._ConstGetRep ().bucket_size (bucketIdx);
     }
     template <typename THIS_CONTAINER, typename BASE_CONTAINER>
     inline float HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::load_factor () const
     {
         using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
-        return _SafeReadRepAccessor{this}._GetReadableRep ().load_factor ();
+        return _SafeReadRepAccessor{this}._ConstGetRep ().load_factor ();
     }
     template <typename THIS_CONTAINER, typename BASE_CONTAINER>
     inline float HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::max_load_factor () const
     {
         using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
-        return _SafeReadRepAccessor{this}._GetReadableRep ().max_load_factor ();
+        return _SafeReadRepAccessor{this}._ConstGetRep ().max_load_factor ();
     }
     template <typename THIS_CONTAINER, typename BASE_CONTAINER>
     inline void HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::max_load_factor (float mlf)
