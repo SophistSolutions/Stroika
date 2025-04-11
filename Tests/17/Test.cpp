@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Containers/Collection.h"
 
+#include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
@@ -141,25 +142,14 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"{}::Mapping_HashTable"};
         {
+            using namespace Characters;
             static_assert (Cryptography::Digest::IHashFunction<std::hash<size_t>, size_t>);
             Mapping_HashTable<size_t, size_t> fred{std::hash<size_t>{}, std::equal_to<size_t>{}};
             EXPECT_EQ (fred, (Mapping_HashTable<size_t, size_t>{}));
+            DbgTrace ("fred.bucket_count={}"_f, fred.bucket_count ());
+            DbgTrace ("fred.max_load_factor={}"_f, fred.max_load_factor ());
         }
         DoTestForConcreteContainer_<Mapping_HashTable<size_t, size_t>> ();
-#if 0
-        DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>> ([] () {
-            return Mapping_HashTable<OnlyCopyableMoveableAndTotallyOrdered, OnlyCopyableMoveableAndTotallyOrdered>{
-                [] (const OnlyCopyableMoveableAndTotallyOrdered& i) { return hash<size_t>{}(static_cast<size_t> (i)); },
-                AsIntsEqualsComparer<OnlyCopyableMoveableAndTotallyOrdered>{}};
-        });
-        DoTestForConcreteContainer_<Mapping_HashTable<OnlyCopyableMoveable, OnlyCopyableMoveable>> (
-            [] () {
-                return Mapping_HashTable<OnlyCopyableMoveable, OnlyCopyableMoveable>{
-                    [] (const OnlyCopyableMoveable& i) { return hash<size_t>{}(static_cast<size_t> (i)); },
-                    AsIntsEqualsComparer<OnlyCopyableMoveable>{}};
-            },
-            AsIntsEqualsComparer<OnlyCopyableMoveable>{});
-#endif
     }
 }
 
