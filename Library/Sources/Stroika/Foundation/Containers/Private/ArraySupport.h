@@ -113,6 +113,9 @@ namespace Stroika::Foundation::Containers::Private {
      *              : public Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>,
      *              public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
      *              using inherited = Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>;
+     * 
+     *          // AND need in Rep_, 
+     *          friend inherited;       // for ArrayBasedContainerRepImpl
      *      \endcode
      */
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>

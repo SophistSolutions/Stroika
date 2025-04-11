@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
-        friend inherited;
+        friend inherited; // for ArrayBasedContainerRepImpl
     };
 
     /*

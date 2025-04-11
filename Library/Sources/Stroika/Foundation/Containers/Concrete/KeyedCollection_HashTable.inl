@@ -16,11 +16,13 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE>) HASH_TABLE_TRAITS>
-    class KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRepBase_,
-                                                                 public Memory::UseBlockAllocationIfAppropriate<Rep_<HASH_TABLE_TRAITS>> {
+    class KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::Rep_
+        : public Private::HashTableBasedContainerRepImpl<KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::Rep_<HASH_TABLE_TRAITS>, IImplRepBase_>,
+          public Memory::UseBlockAllocationIfAppropriate<Rep_<HASH_TABLE_TRAITS>> {
 
     private:
-        using inherited = IImplRepBase_;
+        using inherited =
+            Private::HashTableBasedContainerRepImpl<KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::Rep_<HASH_TABLE_TRAITS>, IImplRepBase_>;
 
     private:
         // these are stored inside fData_ (often zero sized so no matter) - but if not zero sized - @todo just re-use the space inside fData_
@@ -171,6 +173,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend inherited; // for HashTableBasedContainerRepImpl
     };
 
     /*

@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/DataStructures/HashTable.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/Containers/Private/HashTableSupport.h"
 #include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 
 /**
@@ -39,9 +40,10 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
-    class KeyedCollection_HashTable : public KeyedCollection<T, KEY_TYPE, TRAITS> {
+    class KeyedCollection_HashTable
+        : public Private::HashTableBasedContainer<KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyedCollection<T, KEY_TYPE, TRAITS>> {
     private:
-        using inherited = KeyedCollection<T, KEY_TYPE, TRAITS>;
+        using inherited = Private::HashTableBasedContainer<KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>, KeyedCollection<T, KEY_TYPE, TRAITS>>;
 
     public:
         using TraitsType              = typename inherited::TraitsType;
@@ -174,7 +176,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual KeyedCollection_HashTable& operator= (const KeyedCollection_HashTable& rhs)     = default;
 
     private:
-        using IImplRepBase_ = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep;
+        using IImplRepBase_ = Containers::Private::HashTableBasedContainerIRep<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>;
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (KeyedCollection_HashTable_Support::IValidHashTableTraits<T, KEY_TYPE>) HASH_TABLE_TRAITS>
         class Rep_;
 
