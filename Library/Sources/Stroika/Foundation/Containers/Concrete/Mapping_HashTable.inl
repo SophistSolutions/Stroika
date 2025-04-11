@@ -18,10 +18,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
         requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
 #endif
-    class Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_,
-                                                                 public Memory::UseBlockAllocationIfAppropriate<Rep_<HASH_TABLE_TRAITS>> {
+    class Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
+        : public Private::HashTableBasedContainerRepImpl<Rep_<HASH_TABLE_TRAITS>, IImplRepBase_>,
+          public Memory::UseBlockAllocationIfAppropriate<Rep_<HASH_TABLE_TRAITS>> {
     private:
-        using inherited = IImplRepBase_;
+        using inherited = Private::HashTableBasedContainerRepImpl<Rep_<HASH_TABLE_TRAITS>, IImplRepBase_>;
 
     public:
         Rep_ (const typename HASH_TABLE_TRAITS::KeyHasherType& hashFun, const typename HASH_TABLE_TRAITS::KeyEqualsComparerType& equalsComparer)
@@ -185,6 +186,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         DataStructureImplType_                                     fData_;
         [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+
+    private:
+        friend inherited; // for HashTableBasedContainerRepImpl
     };
 
     /*

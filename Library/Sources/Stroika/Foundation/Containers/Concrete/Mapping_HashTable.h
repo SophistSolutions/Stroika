@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/DataStructures/HashTable.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Containers/Private/HashTableSupport.h"
 #include "Stroika/Foundation/Cryptography/Digest/HashBase.h"
 
 /**
@@ -26,9 +27,10 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping_HashTable : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    class Mapping_HashTable
+        : public Private::HashTableBasedContainer<Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>, Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>> {
     private:
-        using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
+        using inherited = Private::HashTableBasedContainer<Mapping_HashTable<KEY_TYPE, MAPPED_VALUE_TYPE>, Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
     public:
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
@@ -126,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Mapping_HashTable& operator= (const Mapping_HashTable&)     = default;
 
     private:
-        using IImplRepBase_ = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
+        using IImplRepBase_ = Private::HashTableBasedContainerIRep<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>;
         template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (DataStructures::HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_VALUE_TYPE>) HASH_TABLE_TRAITS>
 #if !qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy
             requires (HASH_TABLE_TRAITS::kAddOrExtendOrReplace == AddOrExtendOrReplaceMode::eAddReplaces)
