@@ -53,6 +53,18 @@ namespace Stroika::Foundation::Containers::Private {
          *  \brief 
          */
         nonvirtual void ReHashIfNeeded ();
+
+    public:
+        /**
+         *  \brief 
+         */
+        nonvirtual size_t bucket_count () const;
+
+    public:
+        /**
+         *  \brief 
+         */
+        nonvirtual size_t bucket_size (size_t bucketIdx) const;
     };
 
     /**
@@ -60,15 +72,18 @@ namespace Stroika::Foundation::Containers::Private {
      * 
      *  \par Example Usage
      *      \code
+     *          // In Association_HashTable template
      *          //using IImplRepBase_ = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;      // BECOMES
-     *          using IImplRepBase_ = Containers::Private::HashTableBasedContainerIRep<    typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep     >;
+     *          using IImplRepBase_ = Private::HashTableBasedContainerIRep<    typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep     >;
      *      \endcode
      */
     template <typename CONTAINER_REP_BASE_CLASS>
     class HashTableBasedContainerIRep : public CONTAINER_REP_BASE_CLASS {
     public:
-        virtual void ReHash (size_t newBucketCount) = 0;
-        virtual void ReHashIfNeeded ()              = 0;
+        virtual void   ReHash (size_t newBucketCount)       = 0;
+        virtual void   ReHashIfNeeded ()                    = 0;
+        virtual size_t bucket_count () const                = 0;
+        virtual size_t bucket_size (size_t bucketIdx) const = 0;
     };
 
     /**
@@ -98,8 +113,10 @@ namespace Stroika::Foundation::Containers::Private {
         /**
          */
         using BASE_CONTAINER_REP::BASE_CONTAINER_REP;
-        virtual void ReHash (size_t newBucketCount) override;
-        virtual void ReHashIfNeeded () override;
+        virtual void   ReHash (size_t newBucketCount) override;
+        virtual void   ReHashIfNeeded () override;
+        virtual size_t bucket_count () const override;
+        virtual size_t bucket_size (size_t bucketIdx) const override;
     };
 
 }

@@ -23,6 +23,18 @@ namespace Stroika::Foundation::Containers::Private {
         using _SafeReadWriteRepAccessor = typename THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
         _SafeReadWriteRepAccessor{this}._GetWriteableRep ().ReHashIfNeeded ();
     }
+    template <typename THIS_CONTAINER, typename BASE_CONTAINER>
+    inline size_t HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::bucket_count () const
+    {
+        using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+        return _SafeReadRepAccessor{this}._GetReadableRep ().bucket_count ();
+    }
+    template <typename THIS_CONTAINER, typename BASE_CONTAINER>
+    inline size_t HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::bucket_size (size_t bucketIdx) const
+    {
+        using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+        return _SafeReadRepAccessor{this}._GetReadableRep ().bucket_size (bucketIdx);
+    }
 
     /*
      ********************************************************************************
@@ -42,6 +54,18 @@ namespace Stroika::Foundation::Containers::Private {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.ReHashIfNeeded ();
         Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
+    }
+    template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
+    size_t HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::bucket_count () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.bucket_count ();
+    }
+    template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
+    size_t HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::bucket_size (size_t bucketIdx) const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.bucket_size (bucketIdx);
     }
 
 }
