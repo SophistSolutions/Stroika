@@ -65,6 +65,24 @@ namespace Stroika::Foundation::Containers::Private {
          *  \brief 
          */
         nonvirtual size_t bucket_size (size_t bucketIdx) const;
+
+    public:
+        /**
+         *  \brief 
+         */
+        nonvirtual float load_factor () const;
+
+    public:
+        /**
+         *  \brief 
+         */
+        nonvirtual float max_load_factor () const;
+
+    public:
+        /**
+         *  \brief 
+         */
+        nonvirtual void max_load_factor (float mlf);
     };
 
     /**
@@ -84,6 +102,9 @@ namespace Stroika::Foundation::Containers::Private {
         virtual void   ReHashIfNeeded ()                    = 0;
         virtual size_t bucket_count () const                = 0;
         virtual size_t bucket_size (size_t bucketIdx) const = 0;
+        virtual float  load_factor () const                 = 0;
+        virtual float  max_load_factor () const             = 0;
+        virtual void   max_load_factor (float mlf)          = 0;
     };
 
     /**
@@ -117,6 +138,9 @@ namespace Stroika::Foundation::Containers::Private {
         virtual void   ReHashIfNeeded () override;
         virtual size_t bucket_count () const override;
         virtual size_t bucket_size (size_t bucketIdx) const override;
+        virtual float  load_factor () const override;
+        virtual float  max_load_factor () const override;
+        virtual void   max_load_factor (float mlf) override;
     };
 
 }

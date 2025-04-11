@@ -35,6 +35,24 @@ namespace Stroika::Foundation::Containers::Private {
         using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
         return _SafeReadRepAccessor{this}._GetReadableRep ().bucket_size (bucketIdx);
     }
+    template <typename THIS_CONTAINER, typename BASE_CONTAINER>
+    inline float HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::load_factor () const
+    {
+        using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+        return _SafeReadRepAccessor{this}._GetReadableRep ().load_factor ();
+    }
+    template <typename THIS_CONTAINER, typename BASE_CONTAINER>
+    inline float HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::max_load_factor () const
+    {
+        using _SafeReadRepAccessor = typename THIS_CONTAINER::template _SafeReadRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+        return _SafeReadRepAccessor{this}._GetReadableRep ().max_load_factor ();
+    }
+    template <typename THIS_CONTAINER, typename BASE_CONTAINER>
+    inline void HashTableBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::max_load_factor (float mlf)
+    {
+        using _SafeReadWriteRepAccessor = typename THIS_CONTAINER::template _SafeReadWriteRepAccessor<typename THIS_CONTAINER::IImplRepBase_>;
+        _SafeReadWriteRepAccessor{this}._GetWriteableRep ().max_load_factor (mlf);
+    }
 
     /*
      ********************************************************************************
@@ -66,6 +84,25 @@ namespace Stroika::Foundation::Containers::Private {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
         return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.bucket_size (bucketIdx);
+    }
+    template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
+    float HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::load_factor () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.load_factor ();
+    }
+    template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
+    float HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::max_load_factor () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_};
+        return Debug::UncheckedDynamicCast<const THIS_CONTAINER_REP*> (this)->fData_.max_load_factor ();
+    }
+    template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
+    void HashTableBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::max_load_factor (float mlf)
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_};
+        Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fData_.max_load_factor (mlf);
+        Debug::UncheckedDynamicCast<THIS_CONTAINER_REP*> (this)->fChangeCounts_.PerformedChange ();
     }
 
 }
