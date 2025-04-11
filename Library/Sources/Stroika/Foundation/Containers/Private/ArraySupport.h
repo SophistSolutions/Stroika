@@ -31,14 +31,22 @@ namespace Stroika::Foundation::Containers::Private {
      *      type-erased, but no otherwise. If we specify false, we can avoid putting references to the ArrayBasedContainerIRep
      *      into the vtable, and linking a bunch of often not used code. But if we've got extra template parameters to the Rep_,
      *      we cannot peek at it from this container, so must indirect.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          class Association_Array : public Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE> {
+     *          using inherited = Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>;
+     *          // BECOMES
+     *          class Association_Array : public Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true> {
+     *          using inherited = Private::ArrayBasedContainer<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>, true>;
+     *      \endcode
      */
     template <typename THIS_CONTAINER, typename BASE_CONTAINER, bool USING_IREP>
     class ArrayBasedContainer : public BASE_CONTAINER {
     public:
         /**
          */
-        template <typename... ARGS>
-        ArrayBasedContainer (ARGS... args);
+        using BASE_CONTAINER::BASE_CONTAINER;
 
     public:
         /*
@@ -74,6 +82,12 @@ namespace Stroika::Foundation::Containers::Private {
 
     /**
      *  \brief impl detail for array based container support (see ArrayBasedContainer docs on bool USING_IREP)
+     * 
+     *  \par Example Usage
+     *      \code
+     *          //using IImplRepBase_ = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;      // BECOMES
+     *          using IImplRepBase_ = Containers::Private::ArrayBasedContainerIRep<    typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep     >;
+     *      \endcode
      */
     template <typename CONTAINER_REP_BASE_CLASS>
     class ArrayBasedContainerIRep : public CONTAINER_REP_BASE_CLASS {
@@ -85,14 +99,28 @@ namespace Stroika::Foundation::Containers::Private {
 
     /**
      *  \brief CRTP applied when ArrayBasedContainerIRep used
+     * 
+     *  \par Example Usage
+     *      \code
+     *          template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
+     *          class Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
+     *              : public Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_,
+     *              public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
+     *                  using inherited = Rep_<KEY_EQUALS_COMPARER>;
+     *          // BECOMES
+     *          template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<KEY_TYPE>) KEY_EQUALS_COMPARER>
+     *              class Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_
+     *              : public Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>,
+     *              public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
+     *              using inherited = Private::ArrayBasedContainerRepImpl<Rep_<KEY_EQUALS_COMPARER>, IImplRepBase_>;
+     *      \endcode
      */
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     class ArrayBasedContainerRepImpl : public BASE_CONTAINER_REP {
     public:
         /**
          */
-        template <typename... ARGS>
-        ArrayBasedContainerRepImpl (ARGS... args);
+        using BASE_CONTAINER_REP::BASE_CONTAINER_REP;
         virtual void   shrink_to_fit () override;
         virtual size_t capacity () const override;
         virtual void   reserve (size_t slotsAlloced) override;

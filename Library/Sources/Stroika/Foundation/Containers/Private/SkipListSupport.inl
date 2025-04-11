@@ -12,12 +12,6 @@ namespace Stroika::Foundation::Containers::Private {
      ********************************************************************************
      */
     template <typename THIS_CONTAINER, typename BASE_CONTAINER, bool USING_IREP>
-    template <typename... ARGS>
-    inline SkipListBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::SkipListBasedContainer (ARGS... args)
-        : BASE_CONTAINER{forward<ARGS> (args)...}
-    {
-    }
-    template <typename THIS_CONTAINER, typename BASE_CONTAINER, bool USING_IREP>
     inline void SkipListBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::ReBalance ()
     {
         if constexpr (USING_IREP) {
@@ -35,12 +29,6 @@ namespace Stroika::Foundation::Containers::Private {
      *** SkipListBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP> ******
      ********************************************************************************
      */
-    template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
-    template <typename... ARGS>
-    inline SkipListBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::SkipListBasedContainerRepImpl (ARGS... args)
-        : BASE_CONTAINER_REP{forward<ARGS> (args)...}
-    {
-    }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void SkipListBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::ReBalance ()
     {

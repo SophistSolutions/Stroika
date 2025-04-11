@@ -37,8 +37,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         /**
          */
-        template <typename... ARGS>
-        SkipListBasedContainer (ARGS... args);
+        using BASE_CONTAINER::BASE_CONTAINER;
 
     public:
         /**
@@ -64,8 +63,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         /**
          */
-        template <typename... ARGS>
-        SkipListBasedContainerRepImpl (ARGS... args);
+        using BASE_CONTAINER_REP::BASE_CONTAINER_REP;
         virtual void ReBalance () override;
     };
 

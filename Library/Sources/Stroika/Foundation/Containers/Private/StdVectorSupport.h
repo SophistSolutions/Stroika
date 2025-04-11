@@ -31,8 +31,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         /**
          */
-        template <typename... ARGS>
-        StdVectorBasedContainer (ARGS... args);
+        using BASE_CONTAINER::BASE_CONTAINER;
 
     public:
         /*

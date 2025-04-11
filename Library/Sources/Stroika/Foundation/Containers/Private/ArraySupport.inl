@@ -12,12 +12,6 @@ namespace Stroika::Foundation::Containers::Private {
      ********************************************************************************
      */
     template <typename THIS_CONTAINER, typename BASE_CONTAINER, bool USING_IREP>
-    template <typename... ARGS>
-    inline ArrayBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::ArrayBasedContainer (ARGS... args)
-        : BASE_CONTAINER{forward<ARGS> (args)...}
-    {
-    }
-    template <typename THIS_CONTAINER, typename BASE_CONTAINER, bool USING_IREP>
     inline size_t ArrayBasedContainer<THIS_CONTAINER, BASE_CONTAINER, USING_IREP>::capacity () const
     {
         if constexpr (USING_IREP) {
@@ -59,12 +53,6 @@ namespace Stroika::Foundation::Containers::Private {
      ***** ArrayBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP> *******
      ********************************************************************************
      */
-    template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
-    template <typename... ARGS>
-    inline ArrayBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::ArrayBasedContainerRepImpl (ARGS... args)
-        : BASE_CONTAINER_REP{forward<ARGS> (args)...}
-    {
-    }
     template <typename THIS_CONTAINER_REP, typename BASE_CONTAINER_REP>
     void ArrayBasedContainerRepImpl<THIS_CONTAINER_REP, BASE_CONTAINER_REP>::shrink_to_fit ()
     {

@@ -12,12 +12,6 @@ namespace Stroika::Foundation::Containers::Private {
      ********************************************************************************
      */
     template <typename THIS_CONTAINER, typename BASE_CONTAINER>
-    template <typename... ARGS>
-    inline StdVectorBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::StdVectorBasedContainer (ARGS... args)
-        : BASE_CONTAINER{forward<ARGS> (args)...}
-    {
-    }
-    template <typename THIS_CONTAINER, typename BASE_CONTAINER>
     inline size_t StdVectorBasedContainer<THIS_CONTAINER, BASE_CONTAINER>::capacity () const
     {
         using _SafeReadRepAccessor = typename THIS_CONTAINER ::template _SafeReadRepAccessor<typename THIS_CONTAINER::Rep_>;
