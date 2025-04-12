@@ -272,7 +272,7 @@ public:
         DefaultFaultInterceptor defaultHandler;
         fConnectionMgr_.defaultErrorHandler = DefaultFaultInterceptor{[defaultHandler] (Message& m, const exception_ptr& e) {
             // Unsure if we should bother recording 404s
-            DbgTrace ("faulting on request {}"_f, Characters::ToString (m.request ()));
+            DbgTrace ("faulting on request {}"_f, Characters::ToString (m.request ()));     // note subtle: references return value from m.request() doesn't work with std::format, so must wrap in ToString()
             OperationalStatisticsMgr::ProcessAPICmd::NoteError ();
             defaultHandler.HandleFault (m, e);
         }};
