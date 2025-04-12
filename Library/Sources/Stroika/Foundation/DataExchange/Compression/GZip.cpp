@@ -8,7 +8,7 @@
 #include "Stroika/Foundation/Execution/FeatureNotSupportedException.h"
 
 #if qStroika_HasComponent_zlib
-#include "Private_/ZLibSupport.h"
+#include "Stroika/Foundation/DataExchange/Compression/Private_/ZLibSupport.h"
 #endif
 
 #include "GZip.h"
