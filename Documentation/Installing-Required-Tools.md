@@ -110,7 +110,7 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
   - gcc 11 or later OR
     - Stroika v3 is currently tested with gcc-11 thru gcc-14
   - llvm (clang++) 14 or later
-    - Stroika v3 is currently tested with clang-14 thrue clang-19
+    - Stroika v3 is currently tested with clang-14 thrue clang-20
     - libc++ - if used - must be v 14 or later due to concept/chrono support
 - automake (if building curl)
 - libtool (gnu version) – (if building curl)
