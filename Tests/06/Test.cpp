@@ -32,7 +32,7 @@ namespace {
         EXPECT_EQ (distance (ht1.begin (), ht1.end ()), 0);
         ht1.Add (1);
         EXPECT_EQ (ht1.size (), 1u);
-        EXPECT_EQ (distance (ht1.begin (), ht1.end ()), 1u);
+        EXPECT_EQ (distance (ht1.begin (), ht1.end ()), 1);
         EXPECT_EQ (*ht1.begin (), 1);
         EXPECT_EQ (ht1.Lookup (2), nullopt);
         EXPECT_EQ (ht1.Lookup (1), 1);
