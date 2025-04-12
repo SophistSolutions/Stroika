@@ -20,7 +20,8 @@ RUN apt-get -qq install -y g++-14
 RUN apt-get update  # unclear why update needed but container build fails without
 RUN apt-get -qq install -y clang++-17
 RUN apt-get -qq install -y clang++-18
-RUN apt-get -qq install -y clang++-19 && apt-get install -y libc++-19-dev libc++abi-19-dev
+RUN apt-get -qq install -y clang++-19
+RUN apt-get -qq install -y clang++-20 && apt-get install -y libc++-20-dev libc++abi-20-dev
 
 #Only needed to run with valgrind regtests
 RUN apt-get -qq install -y valgrind
