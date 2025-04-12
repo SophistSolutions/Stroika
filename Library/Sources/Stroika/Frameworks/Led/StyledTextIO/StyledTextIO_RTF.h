@@ -864,7 +864,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         SinkStream&             fSinkStream;
         RTFInfo&                fRTFInfo;
-        StyledTextIOReader_RTF& fReader;
+        //StyledTextIOReader_RTF& fReader;
         Context                 fCurrentContext{};
         Context                 fNewContext{};
         mutable bool            fNewContextPending{false};

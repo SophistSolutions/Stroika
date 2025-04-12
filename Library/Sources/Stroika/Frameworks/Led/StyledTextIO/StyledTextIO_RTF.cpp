@@ -598,10 +598,10 @@ using ReaderContext = StyledTextIOReader_RTF::ReaderContext;
  */
 using SinkStreamDestination = ReaderContext::SinkStreamDestination;
 StyledTextIOReader_RTF::ReaderContext::SinkStreamDestination::SinkStreamDestination (StyledTextIOReader_RTF& reader)
-    : Destination_ ()
-    , fSinkStream (reader.GetSinkStream ())
-    , fRTFInfo (reader.GetRTFInfo ())
-    , fReader (reader)
+    : Destination_ {}
+    , fSinkStream {reader.GetSinkStream ()}
+    , fRTFInfo {reader.GetRTFInfo ()}
+    //, fReader (reader)
 {
 }
 
