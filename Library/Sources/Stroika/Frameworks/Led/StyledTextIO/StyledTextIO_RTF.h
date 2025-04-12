@@ -1209,29 +1209,29 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     //  class   StyledTextIOWriter_RTF::WriterContext
     inline StyledTextIOWriter_RTF::WriterContext::WriterContext (StyledTextIOWriter_RTF& writer)
-        : fWriter (writer)
-        , fInTable (false)
-        , fSrcStream (writer.GetSrcStream ())
+        : fWriter {writer}
+        , fInTable {false}
+        , fSrcStream {writer.GetSrcStream ()}
         , fLastEmittedISR (IncrementalFontSpecification (), 0)
-        , fNextStyleChangeAt (0)
-        , fIthStyleRun (0)
+        , fNextStyleChangeAt {0}
+        , fIthStyleRun {0}
         , fNextHidableTextChangeAt (size_t (-1))
         , fHidableTextRegionOpen (false)
-        , fIthHidableTextRun (0)
-        , fCharsToSkip (0)
+        , fIthHidableTextRun {0}
+        , fCharsToSkip {0}
     {
     }
     inline StyledTextIOWriter_RTF::WriterContext::WriterContext (WriterContext& parentContext, SrcStream& srcStream)
-        : fWriter (parentContext.fWriter)
+        : fWriter {parentContext.fWriter}
         , fInTable (true)
         , fSrcStream (srcStream)
-        , fLastEmittedISR (IncrementalFontSpecification (), 0)
-        , fNextStyleChangeAt (0)
-        , fIthStyleRun (0)
-        , fNextHidableTextChangeAt (size_t (-1))
+        , fLastEmittedISR {IncrementalFontSpecification {}, 0}
+        , fNextStyleChangeAt {0}
+        , fIthStyleRun {0}
+        , fNextHidableTextChangeAt {size_t (-1)}
         , fHidableTextRegionOpen (false)
-        , fIthHidableTextRun (0)
-        , fCharsToSkip (0)
+        , fIthHidableTextRun {0}
+        , fCharsToSkip {0}
     {
     }
     inline StyledTextIOWriter_RTF& StyledTextIOWriter_RTF::WriterContext::GetWriter () const
