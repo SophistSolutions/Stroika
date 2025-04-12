@@ -416,7 +416,8 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 
 #if defined(__clang__)
 // also in clang++-20
-#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19 or __clang_major__ == 20))
+#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy                                                                                     \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19 or __clang_major__ == 20))
 #else
 #define qCompilerAndStdLib_AssumeWarningSpamming_Buggy 0
 #endif

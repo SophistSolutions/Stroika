@@ -862,15 +862,15 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void FlushParaEndings () const;
 
     private:
-        SinkStream&             fSinkStream;
-        RTFInfo&                fRTFInfo;
+        SinkStream& fSinkStream;
+        RTFInfo&    fRTFInfo;
         //StyledTextIOReader_RTF& fReader;
-        Context                 fCurrentContext{};
-        Context                 fNewContext{};
-        mutable bool            fNewContextPending{false};
-        Led_tChar               fSmallBuffer[8 * 1024]; // buffer is simply a performance hack...
-        size_t                  fTCharsInSmallBuffer{0};
-        mutable bool            fParaEndedFlag{false};
+        Context      fCurrentContext{};
+        Context      fNewContext{};
+        mutable bool fNewContextPending{false};
+        Led_tChar    fSmallBuffer[8 * 1024]; // buffer is simply a performance hack...
+        size_t       fTCharsInSmallBuffer{0};
+        mutable bool fParaEndedFlag{false};
 
         // RETHINK - MAYBE DON'T NEED???
         mutable bool fParaEndBeforeNewContext{false}; // SPR#0968 - if we get BOTH delayed paraend and delayed setcontext call, AND
@@ -1209,29 +1209,29 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     //  class   StyledTextIOWriter_RTF::WriterContext
     inline StyledTextIOWriter_RTF::WriterContext::WriterContext (StyledTextIOWriter_RTF& writer)
-        : fWriter {writer}
-        , fInTable {false}
-        , fSrcStream {writer.GetSrcStream ()}
+        : fWriter{writer}
+        , fInTable{false}
+        , fSrcStream{writer.GetSrcStream ()}
         , fLastEmittedISR (IncrementalFontSpecification (), 0)
-        , fNextStyleChangeAt {0}
-        , fIthStyleRun {0}
+        , fNextStyleChangeAt{0}
+        , fIthStyleRun{0}
         , fNextHidableTextChangeAt (size_t (-1))
         , fHidableTextRegionOpen (false)
-        , fIthHidableTextRun {0}
-        , fCharsToSkip {0}
+        , fIthHidableTextRun{0}
+        , fCharsToSkip{0}
     {
     }
     inline StyledTextIOWriter_RTF::WriterContext::WriterContext (WriterContext& parentContext, SrcStream& srcStream)
-        : fWriter {parentContext.fWriter}
+        : fWriter{parentContext.fWriter}
         , fInTable (true)
         , fSrcStream (srcStream)
-        , fLastEmittedISR {IncrementalFontSpecification {}, 0}
-        , fNextStyleChangeAt {0}
-        , fIthStyleRun {0}
-        , fNextHidableTextChangeAt {size_t (-1)}
+        , fLastEmittedISR{IncrementalFontSpecification{}, 0}
+        , fNextStyleChangeAt{0}
+        , fIthStyleRun{0}
+        , fNextHidableTextChangeAt{size_t (-1)}
         , fHidableTextRegionOpen (false)
-        , fIthHidableTextRun {0}
-        , fCharsToSkip {0}
+        , fIthHidableTextRun{0}
+        , fCharsToSkip{0}
     {
     }
     inline StyledTextIOWriter_RTF& StyledTextIOWriter_RTF::WriterContext::GetWriter () const
