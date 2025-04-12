@@ -2589,7 +2589,7 @@ sub PostProcessOptions_ ()
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 		my $clangVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
 		my $ubuntuVersion = getUbuntuVersion();
-		if ("$^O" eq "linux" && (22.04 <= $ubuntuVersion and $ubuntuVersion <= 24.04)) {
+		if ("$^O" eq "linux" && (22.04 <= $ubuntuVersion and $ubuntuVersion <= 25.04)) {
 			# As of 2023-09-26 -  seen with clang++-15 Ubuntu 22.04 and with boost library
 			#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
 			#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
@@ -2606,7 +2606,8 @@ sub PostProcessOptions_ ()
 			# AND saw on ubuntu 23.10 with clang++-16
 			# AND saw on ubuntu 23.10 with clang++-17
 			# AND saw on ubuntu 24.04(prerelease) with clang++-18
-			if ($clangVersion < 19.0) {
+			# AND saw on ubuntu 25.04 clang++-20
+			if ($clangVersion < 21.0) {
 				$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 			}
 		}

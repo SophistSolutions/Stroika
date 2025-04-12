@@ -88,7 +88,7 @@
     "Warning: Stroika v3 does not support versions prior to clang++ 15 (non-apple); note that Stroika v2.1 supports earlier clang "        \
     "versions"
 #endif
-#if (__clang_major__ > 19)
+#if (__clang_major__ > 20)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: Stroika untested with this version of clang++ - (>18.x) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -415,7 +415,8 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 #ifndef qCompilerAndStdLib_AssumeWarningSpamming_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19))
+// also in clang++-20
+#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19 or __clang_major__ == 20))
 #else
 #define qCompilerAndStdLib_AssumeWarningSpamming_Buggy 0
 #endif
@@ -618,7 +619,8 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 // reproduced in clang 17
 // release only bug - (lto?)- clang++18
 // release only bug - (lto?)- clang++19
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
+// release only bug - (lto?)- clang++20
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 20))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
 // and broken in GCC 12 with raspberrypi-g++-12-release-sanitize_address
@@ -1219,8 +1221,9 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 // noticed broken in clang++17 with LIBC++
 //  clang++18 with LIBC++
 //  clang++19 with LIBC++
+//  clang++20 with LIBC++
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 19)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 20)
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
@@ -1376,8 +1379,9 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 // broken in clang++17
 // broken in clang++18      error: type constraint differs in template redeclaration
 // broken in clang++19
+// broken in clang++20
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 20))
 #else
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy 0
 #endif
@@ -1492,7 +1496,8 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../includ
 // also broken in clang++-17
 // also broken in clang++-18
 // also broken in clang++-19
-#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 19)
+// also broken in clang++-20
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 20)
 #else
 #define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
 #endif
@@ -1710,8 +1715,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
 // broken in clang++-17
 // broken in clang++-18
 // broken in clang++-19
+// broken in clang++-20
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 20))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -1763,8 +1769,9 @@ C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to functi
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt13_)
 #elif defined(__clang__)
 // first broken in clang++ 19 (linux)
+// Still broken in clang++-20
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19 or __clang_major__ == 20))
 #else
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
 #endif
@@ -1946,6 +1953,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 
 #if defined(__clang__) and __clang_major__ == 19 and _LIBCPP_STD_VER == 23
 // appears broken ONLY for clang++19 and stdc++ version 23
+// appears fixed for clang++20
 #define qCompilerAndStdLib_StdFmtOfPath_Buggy 1
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt12_
@@ -2121,6 +2129,7 @@ In file included from /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Li
 // fails with clang++18 using _GLIBCXX_RELEASE
 // fails with clang++19 using _GLIBCXX_RELEASE
 #if defined(_GLIBCXX_RELEASE)
+// TESTING 20
 #define qCompilerAndStdLib_defaultconstructibleFails_Buggy                                                                                 \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_GLIBCXX_RELEASE <= 12) or (__clang_major__ <= 19))
 #else
@@ -2646,7 +2655,8 @@ clang++: error: linker command failed with exit code 1 (use -v to see invoc
 // same issue with clang++-17-release-libc++23
 // same issue with clang++-18-release-libc++23
 // same issue with clang++-19-release on Ubuntu 24.10
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 19))
+// same issue with clang++-20-release on Ubuntu 25.04
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 20))
 #else
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #endif
@@ -2826,8 +2836,9 @@ Stack dump:
 // appears fixed in clang++16
 // appears broken in clang++-18
 // appears broken in clang++-19
+// appears broken in clang++-20
 #define qCompilerAndStdLib_template_second_concept_Buggy                                                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18) or (__clang_major__ == 19))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18) or (__clang_major__ == 19) or (__clang_major__ == 20))
 #else
 #define qCompilerAndStdLib_template_second_concept_Buggy 0
 #endif
