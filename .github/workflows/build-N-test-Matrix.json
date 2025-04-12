@@ -214,6 +214,17 @@
         "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-25.04-clang++-20",
+        "compiler": "clang++-20",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false",
+        "run_on_branch": "v3-Release"
+    },
+    {
         "comment": "MacOS"
     },
     {
