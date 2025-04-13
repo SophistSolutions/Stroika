@@ -579,6 +579,7 @@ basic-unix-test-configurations:
 		./configure g++-release++2b --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure clang++-debug --config-tag Unix --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure clang++-release --config-tag Unix --compiler-driver clang++ --apply-default-release-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
+		./configure g++-15-debug --config-tag Unix --compiler-driver g++-15 --apply-default-debug-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 	fi)
 
 # Currently not used, but maybe test occasionally
