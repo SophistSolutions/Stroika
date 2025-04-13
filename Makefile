@@ -509,7 +509,7 @@ basic-unix-test-configurations:
 	@# PITA to use - see https://github.com/google/sanitizers/wiki/MemorySanitizerLibcxxHowTo - must rebuild own libc++ specailly.
 	@# Note they do provide a dockerfile with all this setup, but still ... Not worth the trouble... --LGP 2023-12-02
 
-	@if [[ `lsb_release -rs 2>/dev/null` == '22.04' ]]; then \
+	@(MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)); if [[ `lsb_release -rs 2>/dev/null` == '22.04' ]]; then \
 		#Ubuntu 22.04\
 		./configure DEFAULT_CONFIG --config-tag Unix --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure no-third-party-components --config-tag Unix --only-if-has-compiler --no-third-party-components; \
@@ -579,7 +579,7 @@ basic-unix-test-configurations:
 		./configure g++-release++2b --config-tag Unix --compiler-driver g++ --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure clang++-debug --config-tag Unix --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
 		./configure clang++-release --config-tag Unix --compiler-driver clang++ --apply-default-release-flags --only-if-has-compiler ${TEST_CONFIGURATIONS_ADD2ALL}; \
-	fi
+	fi)
 
 # Currently not used, but maybe test occasionally
 private_compiler_versions_:
