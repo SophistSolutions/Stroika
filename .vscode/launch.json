@@ -15,8 +15,8 @@
       "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test37",
-      //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-SystemPerformanceClient/SystemPerformanceClient",
+      // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test37",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-SystemPerformanceClient/SystemPerformanceClient",
       "args": ["-m"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
@@ -24,6 +24,7 @@
         // Looks good but doesn't appear to work - 
         {"name": "UBSAN_OPTIONS","value":"halt_on_error=1"},
         {"name": "ASAN_OPTIONS","value":"abort_on_error=1"},
+        {"name": "LSAN_OPTIONS","value":"halt_on_error=1"},
         {"name": "MONGO_CONNECTION_STRING","value":"mongodb://admin:pass@192.168.244.234:27017"}
        ],
       "externalConsole": false,
