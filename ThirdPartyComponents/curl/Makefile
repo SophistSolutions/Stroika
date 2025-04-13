@@ -22,7 +22,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 # CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
 #
 
-#	APPARENT ASAN BUG WITH curl 8.13.0
+#	APPARENT ASAN BUG WITH curl 8.13.0 - Ubuntu 24.04.2 LTS - clang++-16
 #   [45] Foundation::IO::Network::Transfer - ../Builds/Debug/Tests/Test45 --gtest_brief
 #	=================================================================
 #	READ of size 9 at 0x50300025afc1 thread T0
