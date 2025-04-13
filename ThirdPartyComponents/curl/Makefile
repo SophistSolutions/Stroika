@@ -22,7 +22,8 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 # CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
 #
 
-VERSION=8.12.1
+VERSION=8.13.0
+#VERSION=8.12.1
 #VERSION=8.11.1
 #VERSION=8.11.0
 BASENAME=curl-$(VERSION)
