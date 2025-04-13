@@ -373,7 +373,7 @@ namespace {
                 _fContext.rwget ().rwref ()->fDiskPerfStats_ = diskStats;
             }
             catch (...) {
-                DbgTrace ("Exception gathering procfs disk io stats"_f);
+                DbgTrace ("Exception gathering procfs disk io stats: {}"_f, current_exception ());
             }
         }
 
