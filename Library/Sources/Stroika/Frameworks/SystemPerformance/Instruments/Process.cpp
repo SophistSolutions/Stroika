@@ -1045,7 +1045,7 @@ namespace {
             }
             MemorySizeType result{};
             ifstream       r;
-            Streams::iostream::OpenInputFileStream (&r, fullPath);
+            r.open (fullPath, ios_base::in);    // no exception on failed open- just returns false immediately
             while (r) {
                 char buf[1024];
                 buf[0] = '\0';
@@ -1077,7 +1077,7 @@ namespace {
 #endif
             proc_status_data_ result{};
             ifstream          r;
-            Streams::iostream::OpenInputFileStream (&r, fullPath);
+            r.open (fullPath, ios_base::in);    // no exception on failed open- just returns false immediately
             while (r) {
                 char buf[1024];
                 buf[0] = '\0';
