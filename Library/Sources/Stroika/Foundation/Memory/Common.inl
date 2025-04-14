@@ -104,10 +104,10 @@ namespace Stroika::Foundation::Memory {
         auto lhsEnd   = lhsStart + lhs.size_bytes ();
         auto rhsEnd   = rhsStart + rhs.size_bytes ();
         if (rhsEnd <= lhsStart) {
-            return false;
+            return false;   // combine two cases from Range<T, TRAITS>::Intersects cuz always closed
         }
         if (rhsStart >= lhsEnd) {
-            return false;
+            return false;   // ""
         }
         if (lhs.empty () or rhs.empty ()) {
             return false;
