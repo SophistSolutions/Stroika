@@ -242,6 +242,8 @@ namespace Stroika::Foundation::Memory {
     /**
      * like CopySpanData but src and target are POTENTIALLY overlapping
      * BUT for this - dont need separate FROM_T and TO_T
+     *
+     *  @aliases could have been called CopyPotentiallyOverlappingSpanData or CopyPossiblyOverlappingSpanData
      */
     template <typename T, size_t FROM_E, size_t TO_E>
     constexpr span<T, TO_E> CopyOverlappingSpanData (span<T, FROM_E> src, span<T, TO_E> target)
@@ -256,6 +258,8 @@ namespace Stroika::Foundation::Memory {
      *  \pre src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
+     * 
+     *  @aliases could have been called CopyPotentiallyOverlappingBytes or CopyPossiblyOverlappingBytes
      * 
      *  @see also CopyBytes
      */
