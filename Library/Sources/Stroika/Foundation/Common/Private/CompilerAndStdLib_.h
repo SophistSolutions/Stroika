@@ -101,7 +101,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 14
+#if __GNUC__ > 15
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: This version of Stroika (consider newer Stroika) untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG "      \
     "DEFINES"
@@ -373,7 +373,9 @@ make[2]: *** Waiting for unfinished jobs....
 #ifndef qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy ((__GNUC__ <= 14))
+// seen broken in GCC 14
+// seen broken in GCC 15
+#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__GNUC__ <= 15))
 #else
 #define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy 0
 #endif
@@ -398,6 +400,7 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
 #ifndef qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
+// appears fixed in GCC 15
 #define qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy ((__GNUC__ == 14))
 #else
 #define qCompilerAndStdLib_PSTLWARNINGSPAM_Buggy 0
@@ -1005,6 +1008,17 @@ In file included from ../Characters/../Containers/../Traversal/Iterable.h:1283,
 ../Characters/../Containers/../Traversal/Iterable.inl:921:15: note:   template argument deduction/substitution failed:
 InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THREEWAY_COMPARER'
   180 |         return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (lhs.fParameters_), sortedMapping (rhs.fParameters_));
+
+
+      Compiling Library/Sources/Stroika/Foundation/Execution/CommandLine.cpp ... 
+InternetMediaType.cpp: In member function ‘std::strong_ordering Stroika::Foundation::DataExchange::InternetMediaType::THREEWAYCOMPARE_(const Stroika::Foundation::DataExchange::InternetMediaType&) const’:
+InternetMediaType.cpp:122:68: error: class template argument deduction failed:
+  122 |         return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
+      |                                                                    ^
+InternetMediaType.cpp:122:68: error: no matching function for call to ‘SequentialThreeWayComparer()’
+InternetMediaType.cpp:122:68: note: there are 2 candidates
+
+
  */
 #ifndef qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
 
@@ -1013,7 +1027,8 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 // VERIFIED BROKEN IN GCC 12
 // VERIFIED BROKEN IN GCC 13
 // VERIFIED BROKEN IN GCC 14
-#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
+// VERIFIED BROKEN IN GCC 15
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
 #endif
@@ -1043,8 +1058,9 @@ In file included from ../Characters/StringBuilder.h:273,
 // VERIFIED BROKEN IN GCC 12
 // VERIFIED BROKEN IN GCC 13
 // VERIFIED BROKEN IN GCC 14
+// VERIFIED BROKEN IN GCC 15
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
 #else
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy 0
 #endif
@@ -1694,7 +1710,18 @@ In file included from Writer.cpp:8:
 1 error generated.
 make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
       |                                                 ^~~~~~~~
-         Co*/
+
+
+Library/Sources/Stroika/Foundation/Debug/Debugger.cpp ... 
+In file included from SystemConfiguration.cpp:48:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ProcessRunner.h:233:105: error: could not convert ‘<brace-enclosed initializer list>()’ from ‘<brace-enclosed initializer list>’ to ‘const Stroika::Foundation::Execution::ProcessRunner::Options&’
+  233 |         ProcessRunner (const filesystem::path& executable, const CommandLine& args, const Options& o = {});
+      |                                                                                                         ^
+      |                                                                                                         |
+      |                                                                                                         <brace-enclosed initializer list>
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ProcessRunner.h:234:69: error: could not convert ‘<brace-enclosed initializer list>()’ from ‘<brace-enclosed initializer list>’ to ‘const Stroika::Foundation::Execution::ProcessRunner::Options&’
+
+*/
 #ifndef qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -1702,8 +1729,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
 // still broken in g++-12
 // still broken in g++-13
 // still broken in g++-14
+// still broken in g++-15
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
 #elif defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
 // Reproduced in clang++-15
