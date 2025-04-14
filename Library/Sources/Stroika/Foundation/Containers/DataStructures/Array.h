@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 /**
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
@@ -142,6 +143,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: depends on i, and Capacity - if need to change capacity O(N), and if near start of array O(N), and if near end of the array (append) can be cheap
          */
         nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
+        template <Memory::ISpanOfT<T> SPAN_T>
+        nonvirtual void Insert (size_t at, const SPAN_T& copyFrom);
 
     public:
         /**
