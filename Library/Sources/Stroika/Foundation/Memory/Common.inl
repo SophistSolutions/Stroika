@@ -214,11 +214,12 @@ namespace Stroika::Foundation::Memory {
         // to the right (end of the destination range is outside the source range).
         if (Intersects (src, target)) {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
-            if (as_bytes (target).data () < as_bytes (src).data ()) {
-                copy (src.begin (), src.end (), target.data ());
+            if (as_bytes (target).data () >= as_bytes (src).data () + src.size_bytes ()) {
+                // target inside src-range, so copy_backward
+                copy_backward (src.data (), src.data () + src.size (), target.data ());
             }
             else {
-                copy_backward (src.data (), src.data () + src.size (), target.data ());
+                copy (src.begin (), src.end (), target.data ());
             }
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
             return target.subspan (0, src.size ());
