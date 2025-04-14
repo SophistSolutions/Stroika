@@ -114,8 +114,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             KEY_TYPE                                               key{fKeyExtractor_ (item)};
             if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
                                      Execution::SequencePolicy::eDEFAULT)) {
-                auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-                fData_.SetAt (mir.fIterator, item);
+                                        const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+                fData_.SetAt (iteratorRep.fIterator, item);
                 fChangeCounts_.PerformedChange ();
                 return false;
             }
@@ -128,13 +128,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (nextI == nullptr) {
-                fData_.Remove (mir.fIterator);
+                fData_.Remove (iteratorRep.fIterator);
                 fChangeCounts_.PerformedChange ();
             }
             else {
-                auto retI = fData_.erase (mir.fIterator);
+                auto retI = fData_.erase (iteratorRep.fIterator);
                 fChangeCounts_.PerformedChange ();
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retI)};
             }

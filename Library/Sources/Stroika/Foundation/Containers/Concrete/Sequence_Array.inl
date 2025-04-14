@@ -100,19 +100,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto&                                                 mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            return mir.fIterator.CurrentIndex ();
+            const IteratorRep_&                                                iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            return iteratorRep.fIterator.CurrentIndex ();
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            const IteratorRep_&                                                iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (nextI == nullptr) {
-                fData_.Remove (mir.fIterator);
+                fData_.Remove (iteratorRep.fIterator);
                 fChangeCounts_.PerformedChange ();
             }
             else {
-                auto ret = fData_.erase (mir.fIterator);
+                auto ret = fData_.erase (iteratorRep.fIterator);
                 fChangeCounts_.PerformedChange ();
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, ret)};
             }
@@ -120,12 +120,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            const IteratorRep_&                                                iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             optional<size_t>                                       savedUnderlyingIndex;
             static_assert (same_as<size_t, typename DataStructureImplType_::UnderlyingIteratorRep>); // else must do slightly differently
             if (nextI != nullptr) {
-                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.CurrentIndex ();
+                savedUnderlyingIndex = iteratorRep.fIterator.CurrentIndex ();
             }
-            fData_.SetAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator, newValue);
+            fData_.SetAt (iteratorRep.fIterator, newValue);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};

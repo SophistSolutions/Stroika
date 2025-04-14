@@ -130,13 +130,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto& iterRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (nextI == nullptr) {
-                fData_.Remove (mir.fIterator);
+                fData_.Remove (iterRep.fIterator);
                 fChangeCounts_.PerformedChange ();
             }
             else {
-                auto retI = fData_.erase (mir.fIterator);
+                auto retI = fData_.erase (iterRep.fIterator);
                 fChangeCounts_.PerformedChange ();
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fChangeCounts_, retI)};
             }
@@ -144,11 +144,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext           declareWriteContext{fData_};
+            const IteratorRep_& iterRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             optional<typename DataStructureImplType_::UnderlyingIteratorRep> savedUnderlyingIndex;
             if (nextI != nullptr) {
-                savedUnderlyingIndex = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
+                savedUnderlyingIndex = iterRep.fIterator.GetUnderlyingIteratorRep ();
             }
-            fData_.PeekAt (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.CurrentIndex ())->fValue = newValue;
+            fData_.PeekAt (iterRep.fIterator.CurrentIndex ())->fValue = newValue;
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
