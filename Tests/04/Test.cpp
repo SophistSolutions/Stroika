@@ -31,7 +31,7 @@ namespace {
 
         const size_t kBigSize = 1001;
 
-        EXPECT_TRUE (someArray.size () == 0);
+        EXPECT_EQ (someArray.size (), 0u);
 
         someArray.SetLength (kBigSize, 0);
         someArray.clear ();
