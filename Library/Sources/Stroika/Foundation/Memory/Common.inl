@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <>
-    constexpr strong_ordering CompareBytes (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
+    constexpr strong_ordering CompareBytes (const uint8_t* lhs, const uint8_t* rhs, size_t count)
     {
         DISABLE_COMPILER_MSC_WARNING_START (5063)
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Memory {
             if (count == 0) {
                 return strong_ordering::equal;
             }
-            return Common::CompareResultNormalizer (std::memcmp (lhs, rhs, count));
+            return Common::CompareResultNormalizer (::memcmp (lhs, rhs, count));
         }
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtautological-compare\"");
         DISABLE_COMPILER_MSC_WARNING_END (5063)
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Memory {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
-        std::copy (src.begin (), src.end (), target.data ());
+        copy (src.begin (), src.end (), target.data ());
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
     }
@@ -209,19 +209,23 @@ namespace Stroika::Foundation::Memory {
         if (target.size () == 0) {
             return target.subspan (0, 0);
         }
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
         // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
         // destination range is outside the source range) while std::copy_backward is appropriate when copying
         // to the right (end of the destination range is outside the source range).
-        if (addressof (*as_bytes (target).data ()) < addressof (*as_bytes (src).begin ()) or
-            addressof (*as_bytes (target).data ()) > addressof (*as_bytes (src).begin () + src.size_bytes ())) {
-            std::copy (src.begin (), src.end (), target.data ());
+        if (Intersects (src, target)) {
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
+            if (as_bytes (target).data () < as_bytes (src).data ()) {
+                copy (src.begin (), src.end (), target.data ());
+            }
+            else {
+                copy_backward (src.data (), src.data () + src.size (), target.data ());
+            }
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
+            return target.subspan (0, src.size ());
         }
         else {
-            std::copy_backward (src.data (), src.data () + src.size (), target.data ());
+            return CopyBytes (src, target);
         }
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
-        return target.subspan (0, src.size ());
     }
 
     /*
@@ -248,7 +252,7 @@ namespace Stroika::Foundation::Memory {
         if constexpr (is_trivially_copyable_v<T>) {
             // we don't need to pay attention to what is initialized and what is not so quicker and easier
             // So slosh bytes after at down, and copy in the new ones
-            CopyBytes (span{atPtr, origSize - at}, span{atPtr + n2Add, origSize - at});
+            CopyOverlappingBytes (span{atPtr, origSize - at}, span{atPtr + n2Add, origSize - at});
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
             uninitialized_copy (copyFrom.begin (), copyFrom.end (), atPtr);
 #else
