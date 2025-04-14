@@ -393,10 +393,10 @@ namespace {
             static_assert (equality_comparable<int>);
             static_assert (not equality_comparable<X_>);
             static_assert (equality_comparable<pair<int, int>>); // makes sense
-       //???     static_assert (equality_comparable<pair<X_, X_>>);     // makes NO sense - but appears to be defect in definition of pair<> 
-                // - fixed in C++26 according to https://en.cppreference.com/w/cpp/utility/pair/operator_cmp - undefined in C++14 and later so dont check
+            //???     static_assert (equality_comparable<pair<X_, X_>>);     // makes NO sense - but appears to be defect in definition of pair<>
+            // - fixed in C++26 according to https://en.cppreference.com/w/cpp/utility/pair/operator_cmp - undefined in C++14 and later so dont check
             static_assert (equality_comparable<tuple<int, string>>);
-      //??      static_assert (equality_comparable<tuple<int, X_>>);                    // similarly defect with tuple it appears
+            //??      static_assert (equality_comparable<tuple<int, X_>>);                    // similarly defect with tuple it appears
             static_assert (not equality_comparable<Common::KeyValuePair<int, X_>>); // works cuz conditionally defined operator==
         }
         {

@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            shared_ptr<Rep_>                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
+            shared_ptr<Rep_>                                      result = Memory::MakeSharedPtr<Rep_> (*this);
             const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&iteratorRep.fIterator, &fData_);
             i->Refresh (); // reflect updated rep

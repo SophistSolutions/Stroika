@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RANGE_TYPE>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_};  it; ++it) {
+            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; it; ++it) {
                 if (fDomainEqualsComparer_ (it->first, key)) {
                     if (item != nullptr) {
                         *item = it->second;
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DOMAIN_TYPE>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_};  it; ++it) {
+            for (typename DataStructures::LinkedList<value_type>::ForwardIterator it{&fData_}; it; ++it) {
                 if (fRangeEqualsComparer_ (it->second, key)) {
                     if (item != nullptr) {
                         *item = it->first;
@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_};  it; ++it) {
+            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; it; ++it) {
                 if (fRangeEqualsComparer_ (it->second, r)) {
                     fData_.Remove (it);
                     fChangeCounts_.PerformedChange ();

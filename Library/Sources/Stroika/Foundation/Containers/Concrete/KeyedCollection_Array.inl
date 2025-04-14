@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             KEY_TYPE                                               key{fKeyExtractor_ (item)};
             if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
                                      Execution::SequencePolicy::eDEFAULT)) {
-                                        const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+                const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
                 fData_.SetAt (iteratorRep.fIterator, item);
                 fChangeCounts_.PerformedChange ();
                 return false;

@@ -375,7 +375,7 @@ make[2]: *** Waiting for unfinished jobs....
 #if defined(__GNUC__) && !defined(__clang__)
 // seen broken in GCC 14
 // seen broken in GCC 15
-#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__GNUC__ <= 15))
+#define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 15))
 #else
 #define qCompilerAndStdLib_thread_local_static_inline_twice_Buggy 0
 #endif

@@ -100,13 +100,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual size_t IndexOf (const Iterator<value_type>& i) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            const IteratorRep_&                                                iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             return iteratorRep.fIterator.CurrentIndex ();
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            const IteratorRep_&                                                iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (nextI == nullptr) {
                 fData_.Remove (iteratorRep.fIterator);
                 fChangeCounts_.PerformedChange ();
@@ -120,8 +120,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            const IteratorRep_&                                                iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            optional<size_t>                                       savedUnderlyingIndex;
+            const IteratorRep_& iteratorRep = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            optional<size_t>    savedUnderlyingIndex;
             static_assert (same_as<size_t, typename DataStructureImplType_::UnderlyingIteratorRep>); // else must do slightly differently
             if (nextI != nullptr) {
                 savedUnderlyingIndex = iteratorRep.fIterator.CurrentIndex ();
