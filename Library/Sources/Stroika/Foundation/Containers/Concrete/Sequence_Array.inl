@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             Support::ReserveTweaks::Reserve4AddN (fData_, to - from);
             for (auto i = from; i != to; ++i) {
-                fData_.InsertAt (at++, *i);
+                fData_.Insert (at++, *i);
             }
             fChangeCounts_.PerformedChange ();
         }

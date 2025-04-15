@@ -59,9 +59,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         from.Invariant ();
     }
     template <typename T>
-    inline void Array<T>::InsertAt (size_t index, ArgByValueType<T> item)
+    inline void Array<T>::Insert (size_t index, ArgByValueType<T> item)
     {
-        #if 1
+#if 1
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (index >= 0);
         Require (index <= fLength_);
@@ -90,9 +90,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
             *lhs = item;
         }
         Invariant ();
-        #else
+#else
         Insert (index, span{&item, 1});
-        #endif
+#endif
     }
     template <typename T>
     template <Memory::ISpanOfT<T> SPAN_T>
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::push_back (ArgByValueType<T> item)
     {
-        InsertAt (this->size (), item);
+        Insert (this->size (), item);
     }
     template <typename T>
     void Array<T>::RemoveAt (size_t index) noexcept
@@ -546,7 +546,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (i._fData == this); // assure iterator not stale
         // i CAN BE DONE OR NOT
-        InsertAt (i.CurrentIndex (), newValue);
+        Insert (i.CurrentIndex (), newValue);
     }
     template <typename T>
     inline void Array<T>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
@@ -554,7 +554,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (i._fData == this); // assure iterator not stale
         // i CAN BE DONE OR NOT
-        InsertAt (i.CurrentIndex (), newValue);
+        Insert (i.CurrentIndex (), newValue);
     }
     template <typename T>
     inline void Array<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
@@ -562,14 +562,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (i._fData == this); // assure iterator not stale
         Require (not i.Done ());
-        InsertAt (i.CurrentIndex () + 1, newValue);
+        Insert (i.CurrentIndex () + 1, newValue);
     }
     template <typename T>
     inline void Array<T>::AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
-        InsertAt (i.CurrentIndex () + 1, newValue);
+        Insert (i.CurrentIndex () + 1, newValue);
     }
 
     /*
