@@ -107,7 +107,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_DataStructures_Array, all)
     {
         Test1 ();
         Test2 ();
