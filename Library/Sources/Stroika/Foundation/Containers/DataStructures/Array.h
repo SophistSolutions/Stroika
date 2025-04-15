@@ -75,6 +75,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  \brief returns internal pointer to data - which is unsynchronized, and only guaranteed valid until the next non-const array method.
          */
         nonvirtual T*       data () noexcept;
         nonvirtual const T* data () const noexcept;
@@ -226,6 +227,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void reserve (size_t slotsAlloced);
 
     public:
+        /**
+         */
         nonvirtual void shrink_to_fit ();
 
     public:
