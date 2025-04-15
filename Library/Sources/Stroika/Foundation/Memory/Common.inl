@@ -99,8 +99,11 @@ namespace Stroika::Foundation::Memory {
     constexpr bool Intersects (span<T1, E1> lhs, span<T2, E2> rhs)
     {
         // See Range<T, TRAITS>::Intersects for explanation - avoid direct call here to avoid include file reference
-        auto lhsStart = as_bytes (lhs).data ();
-        auto rhsStart = as_bytes (rhs).data ();
+        if (lhs.empty () or rhs.empty ()) {
+            return false;
+        }
+        auto lhsStart = addressof(*as_bytes (lhs).data ());
+        auto rhsStart = addressof (*as_bytes (rhs).data ());
         auto lhsEnd   = lhsStart + lhs.size_bytes ();
         auto rhsEnd   = rhsStart + rhs.size_bytes ();
         if (rhsEnd <= lhsStart) {
@@ -108,9 +111,6 @@ namespace Stroika::Foundation::Memory {
         }
         if (rhsStart >= lhsEnd) {
             return false;   // ""
-        }
-        if (lhs.empty () or rhs.empty ()) {
-            return false;
         }
         return true;
     }
@@ -185,12 +185,20 @@ namespace Stroika::Foundation::Memory {
     {
         Require (src.size () == target.size ());
         if (target.size () != 0) {
-            if (addressof (*as_bytes (target).data ()) < addressof (*as_bytes (src).data ()) or
-                addressof (*as_bytes (target).data ()) > addressof (*(as_bytes (src).data () + src.size_bytes ()))) {
-                copy (src.begin (), src.end (), target.data ());
+            if (Intersects (src, target)) {
+                return CopySpanData (src, target);
             }
             else {
-                copy_backward (src.data (), src.data () + src.size (), target.data ());
+                // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
+                // destination range is outside the source range) while std::copy_backward is appropriate when copying
+                // to the right (end of the destination range is outside the source range).
+                if (addressof (*as_bytes (target).data ()) < addressof (*as_bytes (src).data ()) or
+                    addressof (*as_bytes (target).data ()) > addressof (*(as_bytes (src).data () + src.size_bytes ()))) {
+                    copy (src.begin (), src.end (), target.data ());
+                }
+                else {
+                    copy_backward (src.data (), src.data () + src.size (), target.data ());
+                }
             }
         }
         return target;
@@ -206,7 +214,8 @@ namespace Stroika::Foundation::Memory {
         requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>)
     {
         Require (src.size () <= target.size ());
-        if (target.size () == 0) {
+        if (src.size () == 0) {
+            Assert (target.size () == 0);
             return target.subspan (0, 0);
         }
         // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
@@ -214,7 +223,7 @@ namespace Stroika::Foundation::Memory {
         // to the right (end of the destination range is outside the source range).
         if (Intersects (src, target)) {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
-            if (as_bytes (target).data () >= as_bytes (src).data () + src.size_bytes ()) {
+            if (addressof (*as_bytes (target).data ()) >= addressof (*as_bytes (src).data ()) + src.size_bytes ()) {
                 // target inside src-range, so copy_backward
                 copy_backward (src.data (), src.data () + src.size (), target.data ());
             }
