@@ -19,13 +19,14 @@ using namespace Stroika::Foundation::Containers;
 
 using namespace Stroika::Frameworks;
 
+using Test::ArchtypeClasses::OnlyCopyableMoveable;
 using Test::ArchtypeClasses::OnlyCopyableMoveableAndTotallyOrdered;
 
 using DataStructures::Array;
 
 #if qStroika_HasComponent_googletest
 namespace {
-    static void Test1 ()
+    GTEST_TEST (Foundation_Containers_DataStructures_Array, VerySimpleTestsOnArrayOfSize_t)
     {
         Array<size_t> someArray;
 
@@ -39,25 +40,26 @@ namespace {
         someArray.SetLength (10, 0);
         someArray.SetLength (kBigSize, 0);
 
-        EXPECT_TRUE (someArray.size () == kBigSize);
+        EXPECT_EQ (someArray.size (), kBigSize);
         someArray[55] = 55;
-        EXPECT_TRUE (someArray[55] == 55);
-        EXPECT_TRUE (someArray[55] != 56);
+        EXPECT_EQ (someArray[55], 55u);
+        EXPECT_NE (someArray[55], 56u);
 
         someArray.Insert (100, 1);
-        EXPECT_TRUE (someArray.size () == kBigSize + 1);
+        EXPECT_EQ (someArray.size (), kBigSize + 1u);
         EXPECT_EQ (someArray[100], 1u);
 
         someArray[101] = someArray[100] + 10;
-        EXPECT_TRUE (someArray[101] == 11);
+        EXPECT_EQ (someArray[101], 11u);
         someArray.RemoveAt (0);
-        EXPECT_TRUE (someArray[100] == 11);
+        EXPECT_EQ (someArray[100], 11u);
         someArray.RemoveAt (1);
-
-        EXPECT_TRUE (someArray[99] == 11);
+        EXPECT_EQ (someArray[99], 11u);
     }
+}
 
-    static void Test2 ()
+namespace {
+    GTEST_TEST (Foundation_Containers_DataStructures_Array, VerySimpleTestsOnArrayOfOnlyCopyableMoveableAndTotallyOrdered)
     {
         {
             Array<OnlyCopyableMoveableAndTotallyOrdered> someArray;
@@ -76,16 +78,16 @@ namespace {
 
         const size_t kBigSize = 1001;
 
-        EXPECT_TRUE (someArray.size () == 0);
+        EXPECT_EQ (someArray.size (), 0u);
         someArray.SetLength (kBigSize, 0);
         someArray.SetLength (0, 0);
         someArray.SetLength (kBigSize, 0);
         someArray.SetLength (10, 0);
         someArray.SetLength (kBigSize, 0);
 
-        EXPECT_TRUE (someArray.size () == kBigSize);
+        EXPECT_EQ (someArray.size (), kBigSize);
         someArray[55] = 55;
-        EXPECT_TRUE (someArray[55] == 55);
+        EXPECT_EQ (someArray[55], 55u);
         EXPECT_TRUE (not(someArray[55] == 56));
 
         someArray.RemoveAt (100);
@@ -98,8 +100,8 @@ namespace {
         }
 
         someArray.Insert (100, 1);
-        EXPECT_TRUE (someArray.size () == kBigSize + 1);
-        EXPECT_TRUE (someArray[100] == 1);
+        EXPECT_EQ (someArray.size (), kBigSize + 1u);
+        EXPECT_EQ (someArray[100], 1u);
         someArray[101] = 1 + static_cast<size_t> (someArray[100]);
         someArray.RemoveAt (1);
         EXPECT_EQ (static_cast<size_t> (someArray[100]), 2u);
@@ -107,10 +109,61 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Containers_DataStructures_Array, all)
+    GTEST_TEST (Foundation_Containers_DataStructures_Array, RangedInsertAndRemove)
     {
-        Test1 ();
-        Test2 ();
+        Array<OnlyCopyableMoveable> someArray;
+        EXPECT_EQ (someArray.size (), 0u);
+        someArray.Insert (0, 3);
+        EXPECT_EQ (someArray.size (), 1u);
+        {
+            const OnlyCopyableMoveable kTest_[] = {2, 3, 4}; // not static cuz of 'cleanup' test at end
+            someArray.Insert (1, span{kTest_});
+        }
+        EXPECT_EQ (someArray.size (), 4u);
+        someArray.RemoveAt (1, 3);
+        EXPECT_EQ (someArray.size (), 2u);
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_DataStructures_Array, RangedInsertAndRemove2)
+    {
+        Array<OnlyCopyableMoveableAndTotallyOrdered> someArray;
+        EXPECT_EQ (someArray.size (), 0u);
+        someArray.Insert (0, 3);
+        EXPECT_EQ (someArray.size (), 1u);
+        {
+            const OnlyCopyableMoveableAndTotallyOrdered kTest_[] = {2, 3, 4}; // not static cuz of 'cleanup' test at end
+            someArray.Insert (1, span{kTest_});
+        }
+        EXPECT_EQ (someArray.size (), 4u);
+        someArray.RemoveAt (1, 4);
+        EXPECT_EQ (someArray.size (), 1u);
+        EXPECT_EQ (someArray[0], 3u);
+        someArray[0] = 0;
+        {
+            const OnlyCopyableMoveableAndTotallyOrdered kTest_[] = {2, 3, 4}; // not static cuz of 'cleanup' test at end
+            someArray.Insert (0, span{kTest_});
+            EXPECT_EQ (someArray[0], 2u);
+            EXPECT_EQ (someArray[1], 3u);
+            EXPECT_EQ (someArray[2], 4u);
+            EXPECT_EQ (someArray[3], 0u);
+            someArray.Insert (2, span{kTest_});
+            EXPECT_EQ (someArray[0], 2u);
+            EXPECT_EQ (someArray[1], 3u);
+            EXPECT_EQ (someArray[2], 2u);
+            EXPECT_EQ (someArray[3], 3u);
+            EXPECT_EQ (someArray[4], 4u);
+            EXPECT_EQ (someArray[2 + 3], 4u);
+            EXPECT_EQ (someArray[3 + 3], 0u);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Containers_DataStructures_Array, Cleanup)
+    {
+        EXPECT_TRUE (OnlyCopyableMoveableAndTotallyOrdered::GetTotalLiveCount () == 0 and OnlyCopyableMoveable::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 #endif
