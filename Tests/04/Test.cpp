@@ -44,9 +44,9 @@ namespace {
         EXPECT_TRUE (someArray[55] == 55);
         EXPECT_TRUE (someArray[55] != 56);
 
-        someArray.InsertAt (100, 1);
+        someArray.Insert (100, 1);
         EXPECT_TRUE (someArray.size () == kBigSize + 1);
-        EXPECT_TRUE (someArray[100] == 1);
+        EXPECT_EQ (someArray[100], 1u);
 
         someArray[101] = someArray[100] + 10;
         EXPECT_TRUE (someArray[101] == 11);
@@ -61,13 +61,13 @@ namespace {
     {
         {
             Array<OnlyCopyableMoveableAndTotallyOrdered> someArray;
-            someArray.InsertAt (0, 100);
+            someArray.Insert (0, 100);
             // for (size_t i = 0; i < someArray.size (); ++i) { cerr << "someArray[" << i << "] = " << someArray[i].GetValue () << endl; }
             someArray.RemoveAt (0);
-            someArray.InsertAt (0, 2);
-            someArray.InsertAt (0, 1);
-            someArray.InsertAt (0, 3);
-            someArray.InsertAt (someArray.size (), 4);
+            someArray.Insert (0, 2);
+            someArray.Insert (0, 1);
+            someArray.Insert (0, 3);
+            someArray.Insert (someArray.size (), 4);
             someArray.RemoveAt (someArray.size () - 1);
             someArray.RemoveAt (1);
         }
@@ -94,10 +94,10 @@ namespace {
             someArray.RemoveAt (0);
         }
         while (someArray.size () < kBigSize) {
-            someArray.InsertAt (someArray.size (), 1);
+            someArray.Insert (someArray.size (), 1);
         }
 
-        someArray.InsertAt (100, 1);
+        someArray.Insert (100, 1);
         EXPECT_TRUE (someArray.size () == kBigSize + 1);
         EXPECT_TRUE (someArray[100] == 1);
         someArray[101] = 1 + static_cast<size_t> (someArray[100]);
