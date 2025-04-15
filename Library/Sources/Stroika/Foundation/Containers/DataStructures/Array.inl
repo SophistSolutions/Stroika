@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::Insert (size_t index, ArgByValueType<T> item)
     {
-#if 0
+#if 1
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (index >= 0);
         Require (index <= fLength_);
