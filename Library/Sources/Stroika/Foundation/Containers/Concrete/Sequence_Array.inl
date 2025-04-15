@@ -139,10 +139,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (at == _kSentinelLastItemIndex) {
                 at = fData_.size ();
             }
-            Support::ReserveTweaks::Reserve4AddN (fData_, to - from);
-            for (auto i = from; i != to; ++i) {
-                fData_.Insert (at++, *i);
-            }
+            fData_.Insert (at, span{from, to});
             fChangeCounts_.PerformedChange ();
         }
         virtual void Remove (size_t from, size_t to) override
