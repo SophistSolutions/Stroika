@@ -18,7 +18,7 @@ RUN apt-get -qq install -y g++-14 g++-15
 #install the latest (C++20 compat) clang compilers (and libs)
 #and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
 RUN apt-get update  # unclear why update needed but container build fails without
-RUN apt-get -qq install -y clang++-17
+# RUN apt-get -qq install -y clang++-17 # COULD test but tested elsewhere and run out of space on github actions
 RUN apt-get -qq install -y clang++-18
 RUN apt-get -qq install -y clang++-19
 RUN apt-get -qq install -y clang++-20 && apt-get install -y libc++-20-dev libc++abi-20-dev
