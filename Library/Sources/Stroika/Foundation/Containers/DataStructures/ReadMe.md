@@ -7,7 +7,7 @@ Overview
 	These data structures are all 'ranges aware' - and all valid ranges.
 
 	They
-		-	are not <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a> (externally synchronized)
+		-	<a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a> (externally synchronized)
 		-	they are not organized around the Stroika Container abstractions/access patterns
 		-	they are primarily building blocks used in Stroika's concrete container library,
 			though they can be used directly if someone wishes to
@@ -32,14 +32,17 @@ Overview
   - basic dynamically sized array type (similar to std::vector)
 
 - [DoublyLinkedList\<T>](DoublyLinkedList.h)
-  - d
+  - standard non-intrusive doubly linked list
+  
+- [HashTable\<KEY_TYPE, MAPPED_TYPE, TRAITS>](HashTable.h)
+  - hash table implementation (open hashing, or separate chaining)
   
 - [LinkedList\<T>](LinkedList.h)
-  - d
+  - standard singly linked non-intrusive linked list
   
-- [SkipList\<T>](SkipList.h)
+- [SkipList\<KEY_TYPE, MAPPED_TYPE, TRAITS>](SkipList.h)
   - This is an ordered linked list, with most of the performance behavior of a b-tree, O(log N) inserts etc, but with more
-	flexability and tunability, and perhaps less memory overhead
+	flexibility and tunability, and perhaps less memory overhead
 
-- [STLContainerWrapper\<T>](STLContainerWrapper.h)
+- [STLContainerWrapper\<STL_CONTAINER_OF_T>](STLContainerWrapper.h)
   - This module generically wraps STL containers (such as map, vector etc), and facilitates using them as backends for Stroika containers
