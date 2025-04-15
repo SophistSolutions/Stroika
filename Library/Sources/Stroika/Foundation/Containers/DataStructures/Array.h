@@ -224,7 +224,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual size_t capacity () const;
 
     public:
+        /**
+         *  \brief sets the reserved capacity to slotsAlloced
+         * 
+         *  \pre size () <= slotsAlloced
+         * 
+         *  \see also more likely to use ReserveAtLeast
+         */
         nonvirtual void reserve (size_t slotsAlloced);
+
+    public:
+        /**
+         *  \note slotsAllocated maybe < size() - but then it would be ignored, since this only grows the capacity
+         * 
+         */
+        nonvirtual void ReserveAtLeast (size_t slotsAlloced);
 
     public:
         /**

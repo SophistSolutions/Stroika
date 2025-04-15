@@ -105,9 +105,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t sz    = size ();
         size_t n2Add = copyFrom.size ();
         size_t newSz = sz + n2Add;
-        if (newSz > this->capacity ()) [[unlikely]] {
-            reserve (newSz);
-        }
+        ReserveAtLeast (newSz);
         this->fLength_ = Memory::Insert (span{this->data (), sz}, span{this->data (), capacity ()}, at, copyFrom).size ();
         Assert (this->fLength_ == newSz);
         Invariant ();
@@ -290,6 +288,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
+    inline void Array<T>::ReserveAtLeast (size_t slotsAlloced)
+    {
+        if (slotsAlloced > capacity ()) [[unlikely]] {
+            /*
+             *      Bump up Slots alloced to be at least big enuf for our
+             * new length. We could be minimalistic here, and just bump up
+             * exactly, but this function can be expensive because it calls
+             * realloc which could cause lots of memory copying. There are two
+             * plausible strategies for bumping up memory in big chunks-
+             * rounding up, and scaling up.
+             */
+            reserve (Support::ReserveTweaks::GetScaledUpCapacity (slotsAlloced, sizeof (T)));
+        }
+        Ensure (size () <= capacity ());
+        Ensure (capacity () >= slotsAlloced);
+    }
+    template <typename T>
     auto Array<T>::operator= (const Array& list) -> Array&
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -349,17 +364,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          * Safe to grow the memory, but not to shrink it here, since
          * we may need to destruct guys in the shrinking case.
          */
-        if (newLength > fSlotsAllocated_) {
-            /*
-             *      Bump up Slots alloced to be at least big enuf for our
-             * new length. We could be minimalistic here, and just bump up
-             * exactly, but this function can be expensive because it calls
-             * realloc which could cause lots of memory copying. There are two
-             * plausible strategies for bumping up memory in big chunks-
-             * rounding up, and scaling up.
-             */
-            reserve (Support::ReserveTweaks::GetScaledUpCapacity (newLength, sizeof (T)));
-        }
+        ReserveAtLeast (newLength);
         T* cur = &fItems_[fLength_];  // point 1 past first guy
         T* end = &fItems_[newLength]; // point 1 past last guy
         if (newLength > fLength_) {
