@@ -186,19 +186,19 @@ namespace Stroika::Foundation::Memory {
         Require (src.size () == target.size ());
         if (target.size () != 0) {
             if (Intersects (src, target)) {
-                return CopySpanData (src, target);
-            }
-            else {
                 // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
                 // destination range is outside the source range) while std::copy_backward is appropriate when copying
                 // to the right (end of the destination range is outside the source range).
-                if (addressof (*as_bytes (target).data ()) < addressof (*as_bytes (src).data ()) or
-                    addressof (*as_bytes (target).data ()) > addressof (*(as_bytes (src).data () + src.size_bytes ()))) {
-                    copy (src.begin (), src.end (), target.data ());
-                }
-                else {
+                if (addressof (*as_bytes (target).data ()) >= addressof (*as_bytes (src).data ()) + src.size_bytes ()) {
+                    // target inside src-range, so copy_backward
                     copy_backward (src.data (), src.data () + src.size (), target.data ());
                 }
+                else {
+                    copy (src.begin (), src.end (), target.data ());
+                }
+            }
+            else {
+                return CopySpanData (src, target);
             }
         }
         return target;
