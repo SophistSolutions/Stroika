@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <ISpan INTO_SPAN, ISpan FROM_SPAN>
-        requires (same_as<remove_cvref_t<typename INTO_SPAN::value_type>, remove_cvref_t<typename FROM_SPAN::value_type>>)
+        requires (same_as<remove_const_t<typename INTO_SPAN::value_type>, remove_const_t<typename FROM_SPAN::value_type>>)
     remove_cvref_t<INTO_SPAN> Insert (const INTO_SPAN& intoLiveSpan, const INTO_SPAN& intoReservedSpan, size_t at, const FROM_SPAN& copyFrom) noexcept
     {
         using T = remove_cvref_t<typename INTO_SPAN::value_type>;
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Memory {
         //
         //                         at      at+n2Add
         //                         v          v
-        //      [.....orig data... {copyFrom} ...more data...]  
+        //      [.....orig data... {copyFrom} ...more data...]
         //
         //
         size_t origSize = intoLiveSpan.size ();
@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <ISpan FROM_SPAN>
-        requires (not is_const_v<remove_cvref_t<typename FROM_SPAN::value_type>>)
+        requires (not is_const_v<typename FROM_SPAN::value_type>)
     remove_cvref_t<FROM_SPAN> Remove (FROM_SPAN&& spanToEdit, FROM_SPAN&& reservedSpan, size_t from, size_t to) noexcept
     {
         // @todo FIX - this COPIES elements during destroy, but should MOVE THEM - slight performance optimization sometimes
@@ -343,7 +343,7 @@ namespace Stroika::Foundation::Memory {
              *  produces
              *      | .....STUFF-AFTER|END-OF-BUFFER
              *                        /\
-             *                        b+spanToEdit.size() - (amount-removed)
+             *             b+spanToEdit.size()-amountRemoved
              */
             auto copySrcSpan = span{b + to, b + spanToEdit.size ()}; // STUFF-AFTER in first line
             auto copyToSpan  = span{b + from, copySrcSpan.size ()};  // RANGE2REMOVE in first line

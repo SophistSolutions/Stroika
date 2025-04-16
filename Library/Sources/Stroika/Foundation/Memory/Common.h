@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Memory {
      *        a feature if you are using types for which that is not true, so fail here. And force a more careful exam with explicit
      *        reinterpret_casts...
      * 
-     *  \note Since Stroika v3.0d15 - this doesn't allow casting away constness of the underlying value_type (though it ignores the
+     *  \note This doesn't allow casting away constness of the underlying value_type (though it ignores the
      *        constness of the span itself).
      */
     template <typename TO_SPAN, typename FROM_SPAN>
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Memory {
     constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY]);
 
     /**
-     *  \brief 'cast' the given POD data type argument to a span<const byte> - a bit like std::as_bytes, but taking different arguments
+     *  \brief 'cast' the given POD data type argument to a span<const byte> - a bit like std::as_bytes, but any 'trivial' type T as argument (as_bytes takes span)
      * 
      *  \note only works on POD (trivially_v<T>) data
      *  \note returns address of argument, so use results before argument goes out of scope
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Memory {
      *        if copy of objects was expensive, but move cheap (like std::vector = T for example).
      */
     template <ISpan INTO_SPAN, ISpan FROM_SPAN>
-        requires (same_as<remove_cvref_t<typename INTO_SPAN::value_type>, remove_cvref_t<typename FROM_SPAN::value_type>>)
+        requires (same_as<remove_const_t<typename INTO_SPAN::value_type>, remove_const_t<typename FROM_SPAN::value_type>>)
     remove_cvref_t<INTO_SPAN> Insert (const INTO_SPAN& intoLiveSpan, const INTO_SPAN& intoReservedSpan, size_t at, const FROM_SPAN& copyFrom) noexcept;
 
     /*
@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      */
     template <ISpan FROM_SPAN>
-        requires (not is_const_v<remove_cvref_t<typename FROM_SPAN::value_type>>)
+        requires (not is_const_v<typename FROM_SPAN::value_type>)
     remove_cvref_t<FROM_SPAN> Remove (FROM_SPAN&& spanToEdit, FROM_SPAN&& reservedSpan, size_t from, size_t to) noexcept;
 
     /**
