@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             size_t sz    = size ();
             size_t newSz = sz + n2Add;
             ReserveAtLeast (newSz);
-#if defined(__GNUC__) && (13 <= __GNUC__ && __GNUC__ <= 14)
+#if defined(__GNUC__) && (13 <= __GNUC__ && __GNUC__ <= 14) && 0
             //temporary BWA til I find what is wrong with Memory::Insert () on gcc optimizer
             for (size_t i = 0; i < copyFrom.size (); ++i) {
                 this->Insert_BWA (i + at, copyFrom[i]);
