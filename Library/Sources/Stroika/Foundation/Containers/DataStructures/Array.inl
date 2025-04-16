@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <typename T>
     inline void Array<T>::Insert (size_t index, ArgByValueType<T> item)
     {
-#if 1
+#if 0
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (index >= 0);
         Require (index <= fLength_);
@@ -102,12 +102,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (at >= 0);
         Require (at <= fLength_);
         Invariant ();
-        size_t sz    = size ();
         size_t n2Add = copyFrom.size ();
-        size_t newSz = sz + n2Add;
-        ReserveAtLeast (newSz);
-        this->fLength_ = Memory::Insert (span{this->data (), sz}, span{this->data (), capacity ()}, at, copyFrom).size ();
-        Assert (this->fLength_ == newSz);
+        if (n2Add != 0) [[likely]] {
+            size_t sz    = size ();
+            size_t newSz = sz + n2Add;
+            ReserveAtLeast (newSz);
+            this->fLength_ = Memory::Insert (span{this->data (), sz}, span{this->data (), capacity ()}, at, copyFrom).size ();
+            Assert (this->fLength_ == newSz);
+        }
         Invariant ();
     }
     template <typename T>
@@ -600,13 +602,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 #endif
     template <typename T>
-    inline bool Array<T>::IteratorBase::operator== (const IteratorBase& rhs) const
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
-        Require (_fData == rhs._fData);
-        return _fCurrentIdx == rhs._fCurrentIdx;
-    }
-    template <typename T>
     inline size_t Array<T>::IteratorBase::CurrentIndex () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*_fData};
@@ -744,6 +739,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         this->operator++ ();
         return result;
     }
+    template <typename T>
+    inline bool Array<T>::ForwardIterator::operator== (const ForwardIterator& rhs) const
+    {
+        auto thisDone = this->Done ();
+        bool rhsDone  = rhs.Done ();
+        if (thisDone or rhsDone) {
+            return thisDone and rhsDone;
+        }
+        Require (this->_fData == rhs._fData);
+        return this->_fCurrentIdx == rhs._fCurrentIdx;
+    }
 
     /*
      ********************************************************************************
@@ -788,6 +794,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         this->Invariant ();
         return *this;
+    }
+    template <typename T>
+    inline bool Array<T>::BackwardIterator::operator== (const BackwardIterator& rhs) const
+    {
+        auto thisDone = this->Done ();
+        bool rhsDone  = rhs.Done ();
+        if (thisDone or rhsDone) {
+            return thisDone and rhsDone;
+        }
+        Require (this->_fData == rhs._fData);
+        return this->_fCurrentIdx == rhs._fCurrentIdx;
     }
 
 }

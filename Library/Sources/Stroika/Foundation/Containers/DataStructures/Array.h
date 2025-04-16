@@ -365,9 +365,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetIndex (size_t i);
 
     public:
-        nonvirtual bool operator== (const IteratorBase& rhs) const;
-
-    public:
         nonvirtual UnderlyingIteratorRep GetUnderlyingIteratorRep () const;
 
     public:
@@ -431,6 +428,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         nonvirtual ForwardIterator& operator++ () noexcept;
         nonvirtual ForwardIterator  operator++ (int) noexcept;
+
+    public:
+        nonvirtual bool operator== (const ForwardIterator& rhs) const;
     };
 
     /**
@@ -454,6 +454,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual BackwardIterator& operator++ () noexcept;
+
+    public:
+        nonvirtual bool operator== (const BackwardIterator& rhs) const;
     };
 
     static_assert (ranges::input_range<Array<int>>); // smoke test - make sure basic iteration etc should work (allows formattable to work)
