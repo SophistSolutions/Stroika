@@ -214,7 +214,25 @@ namespace Stroika::Foundation::Memory {
      */
     template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
     constexpr span<TO_T, TO_E> CopyBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
-        requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>);
+        requires (same_as<remove_cv_t<FROM_T>, TO_T>);
+
+    /**
+     *  \brief Span-flavored memmove/ (copies from, to) - ALLOWING argument spans to overlap
+     *
+     *  like std::copy_backward, except copies the data the spans point to/reference. Target span maybe larger than src,
+     *  but must (require) be no smaller than src span;
+     * 
+     *  \pre src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
+     *  
+     *  Returns the subset of the target span filled (so a subspan of target).
+     * 
+     *  @aliases could have been called CopyPotentiallyOverlappingBytes or CopyPossiblyOverlappingBytes
+     * 
+     *  @see also CopyBytes
+     */
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
+        requires (same_as<remove_cv_t<FROM_T>, TO_T>);
 
     /*
      *  \brief Span-flavored std::copy (copies from, to), works with spans, not iterators, works with different sized from/to types
@@ -248,24 +266,6 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t FROM_E, size_t TO_E>
     constexpr span<T, TO_E> CopyOverlappingSpanData (span<T, FROM_E> src, span<T, TO_E> target)
         requires (not is_const_v<T>);
-
-    /**
-     *  \brief Span-flavored memmove/std::copy_backwards (copies from, to) - ALLOWING argument spans to overlap
-     *
-     *  like std::copy_backward, except copies the data the spans point to/reference. Target span maybe larger than src,
-     *  but must (require) be no smaller than src span;
-     * 
-     *  \pre src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
-     *  
-     *  Returns the subset of the target span filled (so a subspan of target).
-     * 
-     *  @aliases could have been called CopyPotentiallyOverlappingBytes or CopyPossiblyOverlappingBytes
-     * 
-     *  @see also CopyBytes
-     */
-    template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
-        requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>);
 
     /*
      * \brief Logic to insert a span of elements into another span of elements (assuming caller externally assured enuf space)

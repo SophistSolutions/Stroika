@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
     constexpr span<TO_T, TO_E> CopyBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
-        requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>)
+        requires (same_as<remove_cv_t<FROM_T>, TO_T>)
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
@@ -146,6 +146,42 @@ namespace Stroika::Foundation::Memory {
         copy (src.begin (), src.end (), target.data ());
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
+    }
+    
+    /*
+     ********************************************************************************
+     ************************ Memory::CopyOverlappingBytes **************************
+     ********************************************************************************
+     */
+    template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
+    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
+        requires (same_as<remove_cv_t<FROM_T>, TO_T>)
+    {
+        Require (src.size () <= target.size ());
+        if (src.size () == 0) {
+            Assert (target.size () == 0);
+            return target.subspan (0, 0);
+        }
+        // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
+        // destination range is outside the source range) while std::copy_backward is appropriate when copying
+        // to the right (end of the destination range is outside the source range).
+        if (Intersects (src, target)) {
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
+            span<byte>       targetBytes = as_writable_bytes (target);
+            span<const byte> srcBytes    = as_bytes (src);
+            if (addressof (*targetBytes.data ()) >= addressof (*srcBytes.data ()) + srcBytes.size ()) {
+                // target inside src-range, so copy_backward
+                copy_backward (srcBytes.data (), srcBytes.data () + srcBytes.size (), targetBytes.data () + srcBytes.size ());
+            }
+            else {
+                copy (src.begin (), src.end (), target.data ());
+            }
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
+            return target.subspan (0, src.size ());
+        }
+        else {
+            return CopyBytes (src, target);
+        }
     }
 
     /*
@@ -206,42 +242,6 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ************************ Memory::CopyOverlappingBytes **************************
-     ********************************************************************************
-     */
-    template <Common::trivially_copyable FROM_T, size_t FROM_E, Common::trivially_copyable TO_T, size_t TO_E>
-    constexpr span<TO_T, TO_E> CopyOverlappingBytes (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target) noexcept
-        requires (same_as<remove_cvref_t<FROM_T>, remove_cvref_t<TO_T>>)
-    {
-        Require (src.size () <= target.size ());
-        if (src.size () == 0) {
-            Assert (target.size () == 0);
-            return target.subspan (0, 0);
-        }
-        // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
-        // destination range is outside the source range) while std::copy_backward is appropriate when copying
-        // to the right (end of the destination range is outside the source range).
-        if (Intersects (src, target)) {
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
-            span<byte>       targetBytes = as_writable_bytes (target);
-            span<const byte> srcBytes    = as_bytes (src);
-            if (addressof (*targetBytes.data ()) >= addressof (*srcBytes.data ()) + srcBytes.size ()) {
-                // target inside src-range, so copy_backward
-                copy_backward (srcBytes.data (), srcBytes.data () + srcBytes.size (), targetBytes.data () + srcBytes.size ());
-            }
-            else {
-                copy (src.begin (), src.end (), target.data ());
-            }
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
-            return target.subspan (0, src.size ());
-        }
-        else {
-            return CopyBytes (src, target);
-        }
-    }
-
-    /*
-     ********************************************************************************
      ********************************* Memory::Insert *******************************
      ********************************************************************************
      */
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Memory {
     remove_cvref_t<INTO_SPAN> Insert (const INTO_SPAN& intoLiveSpan, const INTO_SPAN& intoReservedSpan, size_t at, const FROM_SPAN& copyFrom) noexcept
     {
         using T = remove_cvref_t<typename INTO_SPAN::value_type>;
-        Require (intoLiveSpan.data () == intoReservedSpan.data () or (intoLiveSpan.data () == nullptr and intoLiveSpan.size () == 0));
+        Require (intoLiveSpan.data () == intoReservedSpan.data () or (intoLiveSpan.size () == 0));
         size_t n2Add = copyFrom.size ();
         Require (intoLiveSpan.size () + copyFrom.size () <= intoReservedSpan.size ());
         Require (at + copyFrom.size () <= intoReservedSpan.size ());
@@ -260,6 +260,7 @@ namespace Stroika::Foundation::Memory {
         // [.....orig data... AT {copyFrom} ...more data...]  ; slide by newS; but last newS elts uninitialized_copy copy, and regular copy rest
         size_t origSize = intoLiveSpan.size ();
         size_t newSize  = origSize + n2Add;
+        Assert (newSize > 0);
 
         // do hack impl based on old array code that seems to work on gcc=14 optimizer
         if constexpr (true) {
