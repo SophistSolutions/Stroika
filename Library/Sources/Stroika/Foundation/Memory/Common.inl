@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Memory {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
     }
-    
+
     /*
      ********************************************************************************
      ************************ Memory::CopyOverlappingBytes **************************
@@ -265,15 +265,16 @@ namespace Stroika::Foundation::Memory {
         // do hack impl based on old array code that seems to work on gcc=14 optimizer
         if constexpr (true) {
             // liven objects at the end
-            /*for (size_t i = 0; i < n2Add; ++i) {
-                new (b + origSize + i) T{copyFrom[i]};
-            }*/
             if constexpr (not is_trivially_constructible_v<T>) {
+                //for (size_t i = 0; i < n2Add; ++i) {
+                //    new (b + origSize + i) T{copyFrom[i]};
+                //}
                 uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + origSize); // could copy from anywhere todo this or be smarter and copy from right place and do it once, but tricky
             }
 
             // now copy to the right - using INITIALIZED copy
-            // must use copy_backward
+            // must use copy_backward, since if we copied forward we would
+            // overwrite values before they got copied
             // for (size_t i = origSize; i > at; --i) { //
             //     b[i-1+n2Add] = b[i-1];
             // }
