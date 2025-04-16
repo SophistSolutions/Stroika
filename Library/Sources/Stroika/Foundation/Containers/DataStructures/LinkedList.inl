@@ -188,6 +188,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <Memory::ISpanOfT<T> SPAN_T>
     void LinkedList<T>::push_front (const SPAN_T& copyFrom)
     {
+        // push_front in reverse order cuz push_front reverses traversal order, and two wrongs make a right
         for (auto ri = copyFrom.rbegin (); ri != copyFrom.rend (); ++ri) {
             push_front (*ri);
         }
@@ -213,7 +214,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::push_back (const SPAN_T& copyFrom)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Link_* last = this->fHead_;      // Compute last once, and re-use for each item appended
+        Link_*                                                 last = this->fHead_; // Compute last once, and re-use for each item appended
         if (last != nullptr) {
             for (; last->fNext != nullptr; last = last->fNext)
                 ;
@@ -223,9 +224,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 push_front (i);
             }
             else {
-                Assert (last->fNext == nullptr);    // really we are last
+                Assert (last->fNext == nullptr); // really we are last
                 last->fNext = new Link_{i, nullptr};
-                last = last->fNext; // for next item in span
+                last        = last->fNext; // for next item in span
             }
         }
     }

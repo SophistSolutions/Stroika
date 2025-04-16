@@ -124,6 +124,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <Memory::ISpanOfT<T> SPAN_T>
     void DoublyLinkedList<T>::push_front (const SPAN_T& copyFrom)
     {
+        // push_front in reverse order cuz push_front reverses traversal order, and two wrongs make a right
         for (auto ri = copyFrom.rbegin (); ri != copyFrom.rend (); ++ri) {
             push_front (*ri);
         }

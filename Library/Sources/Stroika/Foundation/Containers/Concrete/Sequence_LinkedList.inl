@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 fData_.push_back (copyFrom);
             }
             else {
-                size_t index = at;
+                size_t                                           index = at;
                 typename DataStructureImplType_::ForwardIterator it{&fData_};
                 for (; not it.Done (); ++it) {
                     if (--index == 0) {
