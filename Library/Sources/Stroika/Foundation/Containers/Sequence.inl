@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         Require (i <= accessor._ConstGetRep ().size ());
-        return accessor._GetWriteableRep ().Insert (i, span{&item, 1});
+        return accessor._GetWriteableRep ().Insert (i, span{&item, 1u});
     }
     template <typename T>
     inline void Sequence<T>::Insert (const Iterator<value_type>& i, ArgByValueType<value_type> item)
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         size_t                           idx = accessor._ConstGetRep ().IndexOf (i);
         Require (idx <= accessor._ConstGetRep ().size ()); //  if equals end, we append
-        return accessor._GetWriteableRep ().Insert (idx, span{&item, 1});
+        return accessor._GetWriteableRep ().Insert (idx, span{&item, 1u});
     }
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<ITERATOR_OF_ADDABLE> ITERATOR_OF_ADDABLE2>
@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
             const T& tmp = *i;
-            accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1});
+            accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1u});
         }
     }
     template <typename T>
