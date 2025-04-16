@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  Utility to search the list for the given item using EQUALS_COMPARER
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
-        nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
+        nonvirtual bool Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer = {}) const;
 
     public:
         /**

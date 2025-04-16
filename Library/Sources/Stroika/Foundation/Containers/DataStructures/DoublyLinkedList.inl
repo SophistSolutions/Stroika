@@ -255,11 +255,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
-    bool DoublyLinkedList<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
+    bool DoublyLinkedList<T>::Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (const Link_* current = fHead_; current != nullptr; current = current->fNext) {
-            if (equalsComparer (current->fItem, item)) {
+            if (forward<EQUALS_COMPARER> (equalsComparer) (current->fItem, item)) {
                 return true;
             }
         }
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (const Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            doToElement (i->fItem);
+            forward<FUNCTION> (doToElement) (i->fItem);
         }
     }
     template <typename T>
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         for (Link_* i = fHead_; i != nullptr; i = i->fNext) {
-            if (firstThat (i->fItem)) {
+            if (forward<FUNCTION> (firstThat) (i->fItem)) {
                 return i;
             }
         }
