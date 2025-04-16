@@ -147,7 +147,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         template <Memory::ISpanOfT<T> SPAN_T>
         nonvirtual void Insert (size_t at, const SPAN_T& copyFrom);
 
-
     public:
         nonvirtual void Insert_BWA (size_t index, ArgByValueType<T> item)
         {
@@ -350,7 +349,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
 
     private:
-        // mostly useful cuz allows for use of realloc, which might imply fewer copies
+        // mostly useful cuz allows for use of realloc, which might imply fewer copies,
+        // but is only legal for trivially_copyable types (cuz realloc sometimes resizes sometimes moves data)
         static constexpr bool kUseMalloc_{is_trivially_copyable_v<T>};
 
     private:
