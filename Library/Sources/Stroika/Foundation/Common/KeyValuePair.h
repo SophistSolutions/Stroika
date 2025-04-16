@@ -28,6 +28,9 @@ namespace Stroika::Foundation::Common {
      * 
      *  \note   Supports KeyValuePair<T,void> - so second type maybe void (sometimes useful as degenerate case - e.g. SkipList)
      *
+     *  \note   KEY_TYPE is TYPICALLY equals_comparable, but not required to be so we can use Mapping<...> etc with a type
+     *          that is not equals_comparable, but with an explicitly given equals_compare function.
+     *
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<KEY_TYPE> and totally_ordered<VALUE_TYPE> IMPLIES totally_ordered<KeyValuePair<...>>)
      */
