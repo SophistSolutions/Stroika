@@ -212,9 +212,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <Memory::ISpanOfT<T> SPAN_T>
     void LinkedList<T>::push_back (const SPAN_T& copyFrom)
     {
-        // @todo REIMPLEMENT, as can be much more efficient (find last once)
-        for (auto i : copyFrom) {
-            push_back (i);
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Link_* last = this->fHead_;      // Compute last once, and re-use for each item appended
+        if (last != nullptr) {
+            for (; last->fNext != nullptr; last = last->fNext)
+                ;
+        }
+        for (const auto& i : copyFrom) {
+            if (last == nullptr) [[unlikely]] {
+                push_front (i);
+            }
+            else {
+                Assert (last->fNext == nullptr);    // really we are last
+                last->fNext = new Link_{i, nullptr};
+                last = last->fNext; // for next item in span
+            }
         }
     }
     template <typename T>
