@@ -2113,7 +2113,9 @@ Objects involved in the operation:
 #ifndef qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy
 #if defined(__GNUC__)
 // unclear if this is my bug or g++ - but for now just treat it as g++ bug working around...
-#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 14))
+// seen with g++-14
+// seen with g++-15
+#define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 15))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy 0
 #endif
