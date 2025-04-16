@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Memory {
                 // to the right (end of the destination range is outside the source range).
                 if (addressof (*as_bytes (target).data ()) >= addressof (*as_bytes (src).data ()) + src.size_bytes ()) {
                     // target inside src-range, so copy_backward
-                    copy_backward (src.data (), src.data () + src.size (), target.data ());
+                    copy_backward (src.data (), src.data () + src.size (), target.data () + src.size ());
                 }
                 else {
                     copy (src.begin (), src.end (), target.data ());
@@ -223,9 +223,11 @@ namespace Stroika::Foundation::Memory {
         // to the right (end of the destination range is outside the source range).
         if (Intersects (src, target)) {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
-            if (addressof (*as_bytes (target).data ()) >= addressof (*as_bytes (src).data ()) + src.size_bytes ()) {
+            span<byte>       targetBytes = as_writable_bytes (target);
+            span<const byte> srcBytes    = as_bytes (src);
+            if (addressof (*targetBytes.data ()) >= addressof (*srcBytes.data ()) + srcBytes.size ()) {
                 // target inside src-range, so copy_backward
-                copy_backward (src.data (), src.data () + src.size (), target.data ());
+                copy_backward (srcBytes.data (), srcBytes.data () + srcBytes.size (), targetBytes.data () + srcBytes.size ());
             }
             else {
                 copy (src.begin (), src.end (), target.data ());
@@ -256,17 +258,35 @@ namespace Stroika::Foundation::Memory {
         // [.....orig data... AT ...more data...]
         // becomes
         // [.....orig data... AT {copyFrom} ...more data...]  ; slide by newS; but last newS elts uninitialized_copy copy, and regular copy rest
-        T*     atPtr    = b + at;
         size_t origSize = intoLiveSpan.size ();
         size_t newSize  = origSize + n2Add;
-        if constexpr (is_trivially_copyable_v<T>) {
+
+        // do hack impl based on old array code that seems to work on gcc=14 optimizer
+        if constexpr (true) {
+            // liven objects at the end
+            /*for (size_t i = 0; i < n2Add; ++i) {
+                new (b + origSize + i) T{copyFrom[i]};
+            }*/
+            if constexpr (not is_trivially_constructible_v<T>) {
+                uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + origSize); // could copy from anywhere todo this or be smarter and copy from right place and do it once, but tricky
+            }
+
+            // now copy to the right - using INITIALIZED copy
+            // must use copy_backward
+            // for (size_t i = origSize; i > at; --i) { //
+            //     b[i-1+n2Add] = b[i-1];
+            // }
+            copy_backward (b + at, b + origSize, b + origSize + n2Add);
+            copy (copyFrom.begin (), copyFrom.end (), b + at);
+        }
+        else if constexpr (is_trivially_copyable_v<T>) {
             // we don't need to pay attention to what is initialized and what is not so quicker and easier
             // So slosh bytes after at down, and copy in the new ones
-            CopyOverlappingBytes (span{atPtr, origSize - at}, span{atPtr + n2Add, origSize - at});
+            CopyOverlappingBytes (span{b + at, origSize - at}, span{b + at + n2Add, origSize - at});
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-            uninitialized_copy (copyFrom.begin (), copyFrom.end (), atPtr);
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + at);
 #else
-            ranges::uninitialized_copy (copyFrom, span{atPtr, n2Add});
+            ranges::uninitialized_copy (copyFrom, span{b + at, n2Add});
 #endif
         }
         else {
@@ -279,7 +299,7 @@ namespace Stroika::Foundation::Memory {
 #else
             ranges::uninitialized_copy (copyFrom, span{b + origSize, n2Add});
 #endif
-            rotate (atPtr, b + origSize, b + newSize);
+            rotate (b + at, b + origSize, b + newSize);
         }
         return intoReservedSpan.subspan (0, newSize);
     }
