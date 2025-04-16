@@ -102,10 +102,10 @@ namespace Stroika::Foundation::Memory {
         if (lhs.empty () or rhs.empty ()) {
             return false;
         }
-        auto lhsStart = addressof (*as_bytes (lhs).data ());
-        auto rhsStart = addressof (*as_bytes (rhs).data ());
-        auto lhsEnd   = lhsStart + lhs.size_bytes ();
-        auto rhsEnd   = rhsStart + rhs.size_bytes ();
+        const byte* lhsStart = addressof (*as_bytes (lhs).data ());
+        const byte* rhsStart = addressof (*as_bytes (rhs).data ());
+        const byte* lhsEnd   = lhsStart + lhs.size_bytes ();
+        const byte* rhsEnd   = rhsStart + rhs.size_bytes ();
         if (rhsEnd <= lhsStart) {
             return false; // combine two cases from Range<T, TRAITS>::Intersects cuz always closed
         }
@@ -225,9 +225,10 @@ namespace Stroika::Foundation::Memory {
                 // When copying overlapping ranges, std::copy is appropriate when copying to the left (beginning of the
                 // destination range is outside the source range) while std::copy_backward is appropriate when copying
                 // to the right (end of the destination range is outside the source range).
-                if (addressof (*as_bytes (target).data ()) >= addressof (*as_bytes (src).data ()) + src.size_bytes ()) {
+                if (addressof (*target.data ()) >= addressof (*src.data ())) {
                     // target inside src-range, so copy_backward
-                    copy_backward (src.data (), src.data () + src.size (), target.data () + src.size ());
+                    size_t nItems2Copy = src.size ();
+                    copy_backward (src.data (), src.data () + nItems2Copy, target.data () + nItems2Copy);
                 }
                 else {
                     copy (src.begin (), src.end (), target.data ());
@@ -255,9 +256,18 @@ namespace Stroika::Foundation::Memory {
         Require (intoLiveSpan.size () + copyFrom.size () <= intoReservedSpan.size ());
         Require (at + copyFrom.size () <= intoReservedSpan.size ());
         T* b = intoReservedSpan.data ();
-        // [.....orig data... AT ...more data...]
-        // becomes
-        // [.....orig data... AT {copyFrom} ...more data...]  ; slide by newS; but last newS elts uninitialized_copy copy, and regular copy rest
+        //
+        //                         at          origSize
+        //                         v              v
+        //      [.....orig data... ...more data...]
+        //
+        //  becomes (; slide by newS; but last newS elts uninitialized_copy copy, and regular copy rest)
+        //
+        //                         at      at+n2Add
+        //                         v          v
+        //      [.....orig data... {copyFrom} ...more data...]  
+        //
+        //
         size_t origSize = intoLiveSpan.size ();
         size_t newSize  = origSize + n2Add;
         Assert (newSize > 0);

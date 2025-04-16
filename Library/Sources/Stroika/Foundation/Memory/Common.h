@@ -169,7 +169,8 @@ namespace Stroika::Foundation::Memory {
      * 
      *  Note this is similar to Range::Intersects, except for the business about openness/closedness and details at the edge conditions
      * 
-     *  The only known use for this is assertions in CopySpanData that the spans don't overlap (memcpy vs memmove)
+     *  \note - I remember from the days of segmented architectures, this may not be 100% safe, or done correctly. But occasionally important to check
+     *        and not sure how todo better. Should work fine on any modern processor I'm aware of --LGP 2025-04-16
      */
     template <typename T1, typename T2, size_t E1, size_t E2>
     constexpr bool Intersects (span<T1, E1> lhs, span<T2, E2> rhs);
