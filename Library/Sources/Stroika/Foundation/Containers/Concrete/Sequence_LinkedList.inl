@@ -138,11 +138,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             // quickie poor impl
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             if (at == 0) {
-                for (auto i = copyFrom.rbegin (); i != copyFrom.rend (); ++i) {
-                    fData_.push_front (*i);
-                }
+                fData_.push_front (copyFrom);
             }
-            else if (at == fData_.size ()) { // ** very costly - see if below case works for both - I THINK it does
+            else if (at == fData_.size ()) {
                 fData_.push_back (copyFrom);
             }
             else {
@@ -155,7 +153,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                         break;
                     }
                 }
-                //Assert (not it.Done ());      // cuz that would mean we never added
+                Assert (not it.Done ()); // cuz that would mean we never added
             }
             fChangeCounts_.PerformedChange ();
         }

@@ -124,8 +124,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     template <Memory::ISpanOfT<T> SPAN_T>
     void DoublyLinkedList<T>::push_front (const SPAN_T& copyFrom)
     {
-        for (auto i : copyFrom) {
-            push_front (i);
+        for (auto ri = copyFrom.rbegin (); ri != copyFrom.rend (); ++ri) {
+            push_front (*ri);
         }
     }
     template <typename T>

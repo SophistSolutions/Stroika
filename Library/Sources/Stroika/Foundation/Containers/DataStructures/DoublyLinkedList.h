@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Always: constant
          * 
-         *  \note for push_front(span) - this puts the span in front in the reverse order from
+         *  \note for push_front(span) - this puts the span in front in the same order in
          *        which it appears in the span.
          */
         nonvirtual void push_front (ArgByValueType<T> item);
