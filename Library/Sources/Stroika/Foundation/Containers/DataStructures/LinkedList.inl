@@ -185,6 +185,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
+    template <Memory::ISpanOfT<T> SPAN_T>
+    void LinkedList<T>::push_front (const SPAN_T& copyFrom)
+    {
+        for (auto i : copyFrom) {
+            push_front (i);
+        }
+    }
+    template <typename T>
     void LinkedList<T>::push_back (ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -198,6 +206,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
             Assert (last != nullptr);
             Assert (last->fNext == nullptr);
             last->fNext = new Link_{item, nullptr};
+        }
+    }
+    template <typename T>
+    template <Memory::ISpanOfT<T> SPAN_T>
+    void LinkedList<T>::push_back (const SPAN_T& copyFrom)
+    {
+        // @todo REIMPLEMENT, as can be much more efficient (find last once)
+        for (auto i : copyFrom) {
+            push_back (i);
         }
     }
     template <typename T>

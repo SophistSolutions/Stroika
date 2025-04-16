@@ -129,34 +129,29 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }
         }
-        virtual void Insert (size_t at, const value_type* from, const value_type* to) override
+        virtual void Insert (size_t at, const span<const value_type>& copyFrom) override
         {
             Require (at == _kSentinelLastItemIndex or at <= size ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (at == _kSentinelLastItemIndex) {
-                for (const T* p = from; p != to; ++p) {
-                    fData_.push_back (*p);
-                }
+                fData_.push_back (copyFrom);
             }
             // quickie poor impl
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             else if (at == 0) {
-                for (size_t i = (to - from); i > 0; --i) {
-                    fData_.push_front (from[i - 1]);
+                for (auto i = copyFrom.crbegin (); i != copyFrom.crend (); ++i) {
+                    fData_.push_front (*i);
                 }
             }
             else if (at == fData_.size ()) {
-                for (const T* p = from; p != to; ++p) {
-                    fData_.push_back (*p);
-                }
+                fData_.push_back (copyFrom);
             }
             else {
                 size_t index = at;
                 for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                     if (--index == 0) {
-                        for (const T* p = from; p != to; ++p) {
+                        for (auto p = copyFrom.rbegin (); p != copyFrom.rend (); ++p) {
                             fData_.AddBefore (it, *p);
-                            //it.AddBefore (*p);
                         }
                         break;
                     }

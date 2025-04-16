@@ -693,8 +693,8 @@ namespace Stroika::Foundation::Containers {
         virtual void       Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                      = 0;
         virtual void       Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) = 0;
         // 'at' argument to Insert MAYBE kBadSequenceIndex - indicating append
-        virtual void Insert (size_t at, const value_type* from, const value_type* to) = 0;
-        virtual void Remove (size_t from, size_t to)                                  = 0;
+        virtual void Insert (size_t at, const span<const value_type>& copyFrom) = 0;
+        virtual void Remove (size_t from, size_t to)                            = 0;
 
     private:
         friend Sequence<T>;

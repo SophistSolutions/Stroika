@@ -121,6 +121,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
+    template <Memory::ISpanOfT<T> SPAN_T>
+    void DoublyLinkedList<T>::push_front (const SPAN_T& copyFrom)
+    {
+        for (auto i : copyFrom) {
+            push_front (i);
+        }
+    }
+    template <typename T>
     inline void DoublyLinkedList<T>::push_back (ArgByValueType<T> item)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -135,6 +143,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
             fHead_ = fTail_;
         }
         Invariant ();
+    }
+    template <typename T>
+    template <Memory::ISpanOfT<T> SPAN_T>
+    void DoublyLinkedList<T>::push_back (const SPAN_T& copyFrom)
+    {
+        for (auto i : copyFrom) {
+            push_back (i);
+        }
     }
     template <typename T>
     inline void DoublyLinkedList<T>::RemoveFirst ()

@@ -115,8 +115,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: constant
          * 
          *  \see push_back
+         * 
+         *  \note for push_front(span) - this puts the span in front in the reverse order from
+         *        which it appears in the span.
          */
         nonvirtual void push_front (ArgByValueType<T> item);
+        template <Memory::ISpanOfT<T> SPAN_T>
+        nonvirtual void push_front (const SPAN_T& copyFrom);
 
     public:
         /**
@@ -225,9 +230,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *
          *      Not a lot of point in having this method, as is terribly slow, but the could be convenient.
          *
+         *  \note for push_back(span) - this puts the span in front in the same order in
+         *        which it appears in the span.
+         * 
          *  \see push_front
          */
         nonvirtual void push_back (ArgByValueType<T> item);
+        template <Memory::ISpanOfT<T> SPAN_T>
+        nonvirtual void push_back (const SPAN_T& copyFrom);
 
     public:
         /*

@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Containers {
     {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         Require (i <= accessor._ConstGetRep ().size ());
-        return accessor._GetWriteableRep ().Insert (i, &item, &item + 1);
+        return accessor._GetWriteableRep ().Insert (i, span{&item, 1});
     }
     template <typename T>
     inline void Sequence<T>::Insert (const Iterator<value_type>& i, ArgByValueType<value_type> item)
@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep> accessor{this};
         size_t                           idx = accessor._ConstGetRep ().IndexOf (i);
         Require (idx <= accessor._ConstGetRep ().size ()); //  if equals end, we append
-        return accessor._GetWriteableRep ().Insert (idx, &item, &item + 1);
+        return accessor._GetWriteableRep ().Insert (idx, span{&item, 1});
     }
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE, sentinel_for<ITERATOR_OF_ADDABLE> ITERATOR_OF_ADDABLE2>
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::Append (ArgByValueType<value_type> item)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, &item, &item + 1);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&item, 1});
     }
     template <typename T>
     template <IIterableOfTo<T> ITERABLE_OF_ADDABLE>
@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE2> (end); ++i) {
             const T& tmp = *i;
-            accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, &tmp, &tmp + 1);
+            accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, span{&tmp, 1});
         }
     }
     template <typename T>

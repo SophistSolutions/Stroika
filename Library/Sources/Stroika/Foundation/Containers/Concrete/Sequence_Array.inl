@@ -132,14 +132,14 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }
         }
-        virtual void Insert (size_t at, const value_type* from, const value_type* to) override
+        virtual void Insert (size_t at, const span<const value_type>& copyFrom) override
         {
             Require (at == _kSentinelLastItemIndex or at <= fData_.size ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (at == _kSentinelLastItemIndex) {
                 at = fData_.size ();
             }
-            fData_.Insert (at, span{from, to});
+            fData_.Insert (at, copyFrom);
             fChangeCounts_.PerformedChange ();
         }
         virtual void Remove (size_t from, size_t to) override

@@ -137,15 +137,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             fData_.Invariant ();
         }
-        virtual void Insert (size_t at, const value_type* from, const value_type* to) override
+        virtual void Insert (size_t at, const span<const value_type>& copyFrom) override
         {
             Require (at == _kSentinelLastItemIndex or at <= size ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (at == _kSentinelLastItemIndex) {
                 at = fData_.size ();
             }
-            Support::ReserveTweaks::Reserve4AddN (fData_, to - from);
-            fData_.insert (fData_.begin () + at, from, to);
+            Support::ReserveTweaks::Reserve4AddN (fData_, copyFrom.size ());
+            fData_.insert (fData_.begin () + at, copyFrom.begin (), copyFrom.end ());
             fChangeCounts_.PerformedChange ();
         }
         virtual void Remove (size_t from, size_t to) override
