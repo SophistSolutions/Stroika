@@ -103,8 +103,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Always: constant
          * 
-         *  \note for push_front(span) - this puts the span in front in the same order in
-         *        which it appears in the span.
+         *  \note for push_front(span) - this puts the span elements in front in the same order in
+         *        which they appears in the span.
          */
         nonvirtual void push_front (ArgByValueType<T> item);
         template <Memory::ISpanOfT<T> SPAN_T>
@@ -117,8 +117,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *  \note Runtime performance/complexity:
          *      Always: constant
          * 
-         *  \note for push_back(span) - this puts the span in front in the same order in
-         *        which it appears in the span.
+         *  \note for push_back(span) - this puts the span elements in back in the same order in
+         *        which they appears in the span.
          */
         nonvirtual void push_back (ArgByValueType<T> item);
         template <Memory::ISpanOfT<T> SPAN_T>
