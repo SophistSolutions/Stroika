@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             // quickie poor impl
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             if (at == 0) {
-                for (auto i = copyFrom.crbegin (); i != copyFrom.crend (); ++i) {
+                for (auto i = copyFrom.rbegin (); i != copyFrom.rend (); ++i) {
                     fData_.push_front (*i);
                 }
             }
