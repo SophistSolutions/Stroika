@@ -382,6 +382,26 @@ make[2]: *** Waiting for unfinished jobs....
 
 #endif
 
+
+
+/**
+  [==========] 24 tests from 1 test suite ran. (25 ms total)         [  PASSED  ] 24 tests.
+    [33] Foundation::DataExchange::ObjectVariantMapper - ../Builds/g++-14-release++23/Tests/Test33 --gtest_brief
+Segmentation fault (core dumped)
+ */
+#ifndef qCompilerAndStdLib_MemoryInsertAt_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// seen broken in GCC 13
+// seen broken in GCC 14 (on ubuntu 24.10, but fixed in gcc14 on ubuntu 25.04)
+// FIXED in GCC 15
+#define qCompilerAndStdLib_MemoryInsertAt_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 15))
+#else
+#define qCompilerAndStdLib_MemoryInsertAt_Buggy 0
+#endif
+
+#endif
+
 /*
      Compiling Library/Sources/Stroika/Frameworks/Led/BiDiLayoutEngine.cpp ... 
 In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
