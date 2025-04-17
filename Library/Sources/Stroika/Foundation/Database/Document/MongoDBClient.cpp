@@ -5,7 +5,7 @@
 
 #if qStroika_HasComponent_mongocxxdriver
 DISABLE_COMPILER_MSC_WARNING_START (4166) // avoid warning of buggy usage cdecl on CTOR/DTOR- only shows up on x86 MSVC compilers
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \" - Wdeprecated - literal - operator"\""); // ...bsoncxx/v_noabi/bsoncxx/json.hpp:85:54: warning: identifier '_bson' preceded by whitespace in a literal operator declaration is deprecated [-Wdeprecated-literal-operator]
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-literal-operator"\""); // ...bsoncxx/v_noabi/bsoncxx/json.hpp:85:54: warning: identifier '_bson' preceded by whitespace in a literal operator declaration is deprecated [-Wdeprecated-literal-operator]
 #include <bsoncxx/builder/basic/document.hpp>
 #include <bsoncxx/document/value.hpp>
 #include <bsoncxx/json.hpp>
@@ -21,7 +21,7 @@ DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \" - Wdeprecated
 #include <mongocxx/instance.hpp>
 #include <mongocxx/pool.hpp>
 #include <mongocxx/uri.hpp>
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \" - Wdeprecated - literal - operator"\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-literal-operator"\"");
 DISABLE_COMPILER_MSC_WARNING_END (4166)
 #endif
 
