@@ -382,8 +382,6 @@ make[2]: *** Waiting for unfinished jobs....
 
 #endif
 
-
-
 /**
   [==========] 24 tests from 1 test suite ran. (25 ms total)         [  PASSED  ] 24 tests.
     [33] Foundation::DataExchange::ObjectVariantMapper - ../Builds/g++-14-release++23/Tests/Test33 --gtest_brief

@@ -63,40 +63,40 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Insert (index, span{&item, 1});
     }
-    #if qCompilerAndStdLib_MemoryInsertAt_Buggy
+#if qCompilerAndStdLib_MemoryInsertAt_Buggy
     template <typename T>
     nonvirtual void Array<T>::Insert_BWA (size_t index, ArgByValueType<T> item)
-        {
-            // workaround crash in gcc optimized output
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-            Require (index >= 0);
-            Require (index <= fLength_);
-            Invariant ();
+    {
+        // workaround crash in gcc optimized output
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (index >= 0);
+        Require (index <= fLength_);
+        Invariant ();
 
-            /*
+        /*
              * Delicate matter so that we assure ctors/dtors/op= called at
              * right time.
              */
-            size_t oldLength = fLength_;
-            SetLength (oldLength + 1, item); //  Add space for extra item
-            if (index < oldLength) {
-                /*
+        size_t oldLength = fLength_;
+        SetLength (oldLength + 1, item); //  Add space for extra item
+        if (index < oldLength) {
+            /*
                  * Slide items down, and add our new entry
                  */
-                Assert (fLength_ >= 2);
-                T*     lhs = &fItems_[fLength_ - 1];
-                T*     rhs = &fItems_[fLength_ - 2];
-                size_t i   = fLength_ - 1;
+            Assert (fLength_ >= 2);
+            T*     lhs = &fItems_[fLength_ - 1];
+            T*     rhs = &fItems_[fLength_ - 2];
+            size_t i   = fLength_ - 1;
 
-                for (; i > index; --i) {
-                    *lhs-- = *rhs--;
-                }
-                Assert (i == index);
-                Assert (lhs == &fItems_[index]);
-                *lhs = item;
+            for (; i > index; --i) {
+                *lhs-- = *rhs--;
             }
-            Invariant ();
+            Assert (i == index);
+            Assert (lhs == &fItems_[index]);
+            *lhs = item;
         }
+        Invariant ();
+    }
 #endif
     template <typename T>
     template <Memory::ISpanOfT<T> SPAN_T>
