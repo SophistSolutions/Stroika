@@ -274,22 +274,39 @@ namespace Stroika::Foundation::Memory {
 
         // do hack impl based on old array code that seems to work on gcc=14 optimizer
         if constexpr (true) {
-            // liven objects at the end
+            // liven objects at the end so operator= doesn't crash (finds already constructed object to assign over)
             if constexpr (not is_trivially_constructible_v<T>) {
-                //for (size_t i = 0; i < n2Add; ++i) {
-                //    new (b + origSize + i) T{copyFrom[i]};
-                //}
-                uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + origSize); // could copy from anywhere todo this or be smarter and copy from right place and do it once, but tricky
+                if constexpr (true) {
+                    uninitialized_copy (copyFrom.begin (), copyFrom.end (), b + origSize); // could copy from anywhere todo this or be smarter and copy from right place and do it once, but tricky
+                }
+                else {
+                    for (size_t i = 0; i < n2Add; ++i) {
+                        new (b + origSize + i) T{copyFrom[i]};
+                    }
+                }
             }
 
             // now copy to the right - using INITIALIZED copy
             // must use copy_backward, since if we copied forward we would
             // overwrite values before they got copied
-            // for (size_t i = origSize; i > at; --i) { //
-            //     b[i-1+n2Add] = b[i-1];
-            // }
-            copy_backward (b + at, b + origSize, b + origSize + n2Add);
-            copy (copyFrom.begin (), copyFrom.end (), b + at);
+            if constexpr (true) {
+                copy_backward (b + at, b + origSize, b + origSize + n2Add);
+            }
+            else {
+                for (size_t i = origSize; i > at; --i) { //
+                    b[i - 1 + n2Add] = b[i - 1];
+                }
+            }
+
+            // Then add the 'copyFrom' data
+            if constexpr (true) {
+                copy (copyFrom.begin (), copyFrom.end (), b + at);
+            }
+            else {
+                for (size_t i = 0; i < n2Add; ++i) {
+                    b[at + i] = copyFrom[i];
+                }
+            }
         }
         else if constexpr (is_trivially_copyable_v<T>) {
             // we don't need to pay attention to what is initialized and what is not so quicker and easier
