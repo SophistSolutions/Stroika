@@ -628,7 +628,8 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
 // and broken in GCC 12 with raspberrypi-g++-12-release-sanitize_address
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+// and broken in ubuntu 25.04 g++15 and configure g++-15-release-nolto --config-tag Unix --compiler-driver g++-15 --apply-default-release-flags --lto disable
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
 #else
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy 0
 #endif
