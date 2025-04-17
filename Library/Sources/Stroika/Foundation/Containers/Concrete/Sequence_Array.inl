@@ -144,12 +144,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (size_t from, size_t to) override
         {
+            Require (from <= to);
+            Require (to <= this->size ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            // quickie poor impl
-            for (size_t i = from; i < to; ++i) {
-                fData_.RemoveAt (from);
+            if (from != to) {
+                fData_.Remove (from, to);
+                fChangeCounts_.PerformedChange ();
             }
-            fChangeCounts_.PerformedChange ();
         }
 
     private:

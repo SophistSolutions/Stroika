@@ -134,7 +134,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  \note Runtime performance/complexity:
          *      Always: O(N)
-         *  @todo add function concept
          */
         template <invocable<T> FUNCTION>
         nonvirtual void Apply (FUNCTION&& doToElement) const;

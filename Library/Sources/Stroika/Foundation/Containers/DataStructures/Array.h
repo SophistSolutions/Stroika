@@ -307,8 +307,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Worst Case: O(N)
          *      Typical: depends on index but typically O(N) (can be less if removing from end of Array)
          */
-        nonvirtual void RemoveAt (size_t index) noexcept;
-        nonvirtual void RemoveAt (size_t from, size_t to) noexcept;
+        nonvirtual void Remove (size_t index) noexcept;
+        nonvirtual void Remove (size_t from, size_t to) noexcept;
 
     public:
         /**

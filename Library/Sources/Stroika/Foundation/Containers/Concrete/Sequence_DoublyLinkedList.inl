@@ -160,20 +160,22 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (size_t from, size_t to) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             // quickie poor impl
             // See Stroika v1 - much better - handling cases of remove near start or end of linked list
             size_t index          = from;
             size_t amountToRemove = to - from;
-            for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
-                if (index-- == 0) {
-                    while (amountToRemove-- != 0) {
-                        it = fData_.erase (it);
+            if (amountToRemove != 0) [[likely]] {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+                for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
+                    if (index-- == 0) {
+                        while (amountToRemove-- != 0) {
+                            it = fData_.erase (it);
+                        }
+                        break;
                     }
-                    break;
                 }
+                fChangeCounts_.PerformedChange ();
             }
-            fChangeCounts_.PerformedChange ();
         }
 
     private:
