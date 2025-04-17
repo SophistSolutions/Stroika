@@ -34,20 +34,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
      *  remove them from contains, not when the caches happen to empty.
      *
      *      Array<T> is simple data structure implementation. It is not intended to be directly
-     *  used by programmers, except in implementing concrete container reps.
+     *  used by programmers, except in implementing concrete container reps (and occasionally in
+     *  performance sensitive situations, though std::vector<> maybe a better choice then).
      *
      *      Array<T> is a template which provides a dynamic array class (very similar to std::vector). Elements
      *  of type T can be assigned, and accessed much like a normal array, except
      *  that when debug is on, accesses are range-checked.
      *
      *      Array<T> also provides a dynamic sizing capability. It reallocs its
-     *  underlying storage is such a ways as to keep a buffer of n(currently 5)%
-     *  extra, so that reallocs on resizes only occur log(n) times on n appends.
+     *  underlying storage is such a ways as to keep a buffer of roughly 20%
+     *  extra (see Support::ReserveTweaks::GetScaledUpCapacity), so that reallocs on resizes
+     *  only occur log(n) times on n appends.
      *  To save even this space, you can call shrink_to_fit().
-     *
-     *      Unlike other dynamic array implementations, when an item is removed,
-     *  it is destructed then. So the effects of buffering have no effects on the
-     *  semantics of the Array.
      */
     template <typename T>
     class Array : public Debug::AssertExternallySynchronizedMutex {
@@ -72,6 +70,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         nonvirtual Array& operator= (const Array& rhs);
+
+    public:
+        class ForwardIterator;
+        class BackwardIterator;
 
     public:
         /**
@@ -146,6 +148,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Insert (size_t index, ArgByValueType<T> item);
         template <Memory::ISpanOfT<T> SPAN_T>
         nonvirtual void Insert (size_t at, const SPAN_T& copyFrom);
+        nonvirtual void Insert (const ForwardIterator& i, ArgByValueType<T> item);
+        nonvirtual void Insert (const BackwardIterator& i, ArgByValueType<T> item);
 
     public:
         nonvirtual void Insert_BWA (size_t index, ArgByValueType<T> item)
@@ -213,10 +217,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         class IteratorBase;
 
     public:
-        class ForwardIterator;
-        class BackwardIterator;
-
-    public:
         /**
          */
         nonvirtual ForwardIterator begin () const;
@@ -270,7 +270,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note slotsAllocated maybe < size() - but then it would be ignored, since this only grows the capacity
-         * 
          */
         nonvirtual void ReserveAtLeast (size_t slotsAlloced);
 
@@ -300,13 +299,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
          */
         nonvirtual void Remove (const ForwardIterator& i);
         nonvirtual void Remove (const BackwardIterator& i);
-
-    public:
-        /**
-         *  \note Runtime performance/complexity:
-         *      Worst Case: O(N)
-         *      Typical: depends on index but typically O(N) (can be less if removing from end of Array)
-         */
         nonvirtual void Remove (size_t index) noexcept;
         nonvirtual void Remove (size_t from, size_t to) noexcept;
 
@@ -321,17 +313,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual ForwardIterator erase (const ForwardIterator& i);
 
     public:
+        /**
+         */
         nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
         nonvirtual void SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
-
-    public:
-        //  NB: Can be called if i done
-        nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
-        nonvirtual void AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
-
-    public:
-        nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
-        nonvirtual void AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
 
     public:
         nonvirtual void Invariant () const noexcept;
@@ -346,6 +331,26 @@ namespace Stroika::Foundation::Containers::DataStructures {
         [[deprecated ("Since Stroika v3.0d18")]] bool Contains (ArgByValueType<T> item, EQUALS_COMPARER&& equalsComparer) const
         {
             return this->Find (item, equalsComparer) != nullptr;
+        }
+        /**
+         *  \brief insert the 
+         *  NB: Can be called if i done, and just means add before the last item (so if i==end() - same as append)
+         */
+        [[deprecated ("Since v3.0d18 - use Insert()")]] void AddBefore (const ForwardIterator& i, ArgByValueType<T> item)
+        {
+            InsertAt (i, item);
+        }
+        [[deprecated ("Since v3.0d18 - use Insert()")]] void AddBefore (const BackwardIterator& i, ArgByValueType<T> item)
+        {
+            InsertAt (i, item);
+        }
+        [[deprecated ("Since v3.0d18 - use Insert()")]] void AddAfter (const ForwardIterator& i, ArgByValueType<T> item)
+        {
+            Insert (i.CurrentIndex () + 1, item);
+        }
+        [[deprecated ("Since v3.0d18 - use Insert()")]] void AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
+        {
+            Insert (i.CurrentIndex () + 1, newValue);
         }
 
     private:

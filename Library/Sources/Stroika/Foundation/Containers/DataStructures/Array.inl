@@ -90,6 +90,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
+    inline void Array<T>::Insert (const ForwardIterator& i, ArgByValueType<T> newValue)
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (i._fData == this); // assure iterator not stale
+        // i CAN BE DONE OR NOT
+        Insert (i.CurrentIndex (), newValue);
+    }
+    template <typename T>
+    inline void Array<T>::Insert (const BackwardIterator& i, ArgByValueType<T> newValue)
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (i._fData == this); // assure iterator not stale
+        // i CAN BE DONE OR NOT
+        Insert (i.CurrentIndex (), newValue);
+    }
+    template <typename T>
     inline void Array<T>::push_back (ArgByValueType<T> item)
     {
         Insert (this->size (), item);
@@ -134,13 +150,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         const T*                                              end   = &fItems_[fLength_];
         switch (seq) {
             case Execution::SequencePolicy::eSeq:
-                std::for_each (start, end, forward<FUNCTION> (doToElement));
+                for_each (start, end, forward<FUNCTION> (doToElement));
                 break;
             default:
 #if __cpp_lib_execution >= 201603L
-                std::for_each (execution::par, start, end, forward<FUNCTION> (doToElement));
+                for_each (execution::par, start, end, forward<FUNCTION> (doToElement));
 #else
-                std::for_each (start, end, forward<FUNCTION> (doToElement));
+                for_each (start, end, forward<FUNCTION> (doToElement));
 #endif
                 break;
         }
@@ -200,7 +216,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void Array<T>::reserve (size_t slotsAlloced)
     {
         /*
-         *  @todo NOTE - http://stroika-bugs.sophists.com/browse/STK-757 - use realloc sometimes - if constexpr
          */
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (size () <= slotsAlloced);
@@ -289,6 +304,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Invariant ();
         size_t newLength = list.size ();
+
+        // @todo CLEANUP using std::copy and uninitialized_copy and range::destroy (or iterator range destory)
 
         /*
          *      In case user already set this, we should not unset,
@@ -524,37 +541,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not i.Done ());
         SetAt (i.CurrentIndex (), newValue);
     }
-    template <typename T>
-    inline void Array<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (i._fData == this); // assure iterator not stale
-        // i CAN BE DONE OR NOT
-        Insert (i.CurrentIndex (), newValue);
-    }
-    template <typename T>
-    inline void Array<T>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (i._fData == this); // assure iterator not stale
-        // i CAN BE DONE OR NOT
-        Insert (i.CurrentIndex (), newValue);
-    }
-    template <typename T>
-    inline void Array<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (i._fData == this); // assure iterator not stale
-        Require (not i.Done ());
-        Insert (i.CurrentIndex () + 1, newValue);
-    }
-    template <typename T>
-    inline void Array<T>::AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        Require (not i.Done ());
-        Insert (i.CurrentIndex () + 1, newValue);
-    }
+    
 
     /*
      ********************************************************************************
