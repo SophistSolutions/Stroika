@@ -215,7 +215,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-25.04-g++-15",
+        "displayTargetName": "ubuntu-25.04-g++-15-debug",
         "compiler": "g++-15",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
@@ -224,6 +224,18 @@
         "COMMENT-1": "--boost no to save space, cuz else runs out of disk space, and -O1 to make save space as well",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --boost no --append-CXXFLAGS -O1 --append-CFLAGS -O1",
         "run_on_branch": "always"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-25.04-g++-15",
+        "compiler": "g++-15",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "COMMENT-1": "--boost no to save space, cuz else runs out of disk space, and -O1 to make save space as well",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --boost no",
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
