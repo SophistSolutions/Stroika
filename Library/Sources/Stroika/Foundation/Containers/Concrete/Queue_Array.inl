@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             T                                                      item = fData_.GetAt (0);
-            fData_.RemoveAt (0);
+            fData_.Remove (0u);
             fChangeCounts_.PerformedChange ();
             return item;
         }
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return optional<value_type>{};
             }
             T item = fData_.GetAt (0);
-            fData_.RemoveAt (0);
+            fData_.Remove (0u);
             fChangeCounts_.PerformedChange ();
             return item;
         }

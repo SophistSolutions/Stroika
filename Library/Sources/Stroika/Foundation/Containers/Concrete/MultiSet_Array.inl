@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     result = count;
                 }
                 else {
-                    fData_.RemoveAt (index);
+                    fData_.Remove (index);
                     result = tmp.fCount;
                 }
                 fChangeCounts_.PerformedChange ();

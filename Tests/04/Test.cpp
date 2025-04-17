@@ -51,9 +51,9 @@ namespace {
 
         someArray[101] = someArray[100] + 10;
         EXPECT_EQ (someArray[101], 11u);
-        someArray.RemoveAt (0);
+        someArray.Remove (0u);
         EXPECT_EQ (someArray[100], 11u);
-        someArray.RemoveAt (1);
+        someArray.Remove (1u);
         EXPECT_EQ (someArray[99], 11u);
     }
 }
@@ -65,13 +65,13 @@ namespace {
             Array<OnlyCopyableMoveableAndTotallyOrdered> someArray;
             someArray.Insert (0, 100);
             // for (size_t i = 0; i < someArray.size (); ++i) { cerr << "someArray[" << i << "] = " << someArray[i].GetValue () << endl; }
-            someArray.RemoveAt (0);
+            someArray.Remove (0u);
             someArray.Insert (0, 2);
             someArray.Insert (0, 1);
             someArray.Insert (0, 3);
             someArray.Insert (someArray.size (), 4);
-            someArray.RemoveAt (someArray.size () - 1);
-            someArray.RemoveAt (1);
+            someArray.Remove (someArray.size () - 1u);
+            someArray.Remove (1u);
         }
 
         Array<OnlyCopyableMoveableAndTotallyOrdered> someArray;
@@ -90,10 +90,10 @@ namespace {
         EXPECT_EQ (someArray[55], 55u);
         EXPECT_TRUE (not(someArray[55] == 56));
 
-        someArray.RemoveAt (100);
+        someArray.Remove (100u);
 
         while (someArray.size () > 0) {
-            someArray.RemoveAt (0);
+            someArray.Remove (0u);
         }
         while (someArray.size () < kBigSize) {
             someArray.Insert (someArray.size (), 1);
@@ -103,7 +103,7 @@ namespace {
         EXPECT_EQ (someArray.size (), kBigSize + 1u);
         EXPECT_EQ (someArray[100], 1u);
         someArray[101] = 1 + static_cast<size_t> (someArray[100]);
-        someArray.RemoveAt (1);
+        someArray.Remove (1u);
         EXPECT_EQ (static_cast<size_t> (someArray[100]), 2u);
     }
 }
@@ -120,7 +120,7 @@ namespace {
             someArray.Insert (1, span{kTest_});
         }
         EXPECT_EQ (someArray.size (), 4u);
-        someArray.RemoveAt (1, 3);
+        someArray.Remove (1, 3);
         EXPECT_EQ (someArray.size (), 2u);
     }
 }
@@ -137,7 +137,7 @@ namespace {
             someArray.Insert (1, span{kTest_});
         }
         EXPECT_EQ (someArray.size (), 4u);
-        someArray.RemoveAt (1, 4);
+        someArray.Remove (1, 4);
         EXPECT_EQ (someArray.size (), 1u);
         EXPECT_EQ (someArray[0], 3u);
         someArray[0] = 0;
@@ -154,8 +154,8 @@ namespace {
             EXPECT_EQ (someArray[2], 2u);
             EXPECT_EQ (someArray[3], 3u);
             EXPECT_EQ (someArray[4], 4u);
-            EXPECT_EQ (someArray[2 + 3], 4u);
-            EXPECT_EQ (someArray[3 + 3], 0u);
+            EXPECT_EQ (someArray[5], 4u);
+            EXPECT_EQ (someArray[6], 0u);
         }
     }
 }
