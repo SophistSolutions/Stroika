@@ -541,7 +541,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Require (not i.Done ());
         SetAt (i.CurrentIndex (), newValue);
     }
-    
 
     /*
      ********************************************************************************
