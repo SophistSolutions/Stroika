@@ -161,12 +161,6 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
 
         public:
             virtual void CreateDatabase (const String& dbName) = 0;
-
-            //        private:
-            //          [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
-
-            //        private:
-            //           friend class Ptr;
         };
 
         /**
@@ -182,7 +176,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         };
 
         /**
-         *  \note produces unsynchonized reps - so must be externally synchronized
+         *  \note produces unsynchronized reps - so must be externally synchronized
          */
         Ptr New (const Options& options);
     }
@@ -259,15 +253,12 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         class IRep : public Database::Document::Connection::IRep {
         public:
             virtual mongocxx::client& GetClientRef () = 0;
-
-            //   private:
-            //      friend class Ptr;
         };
 
     };
 
     /**
-    *   @todo NYI
+     *   @todo NYI
      */
     class Transaction : public Database::Document::Transaction {
     private:
