@@ -60,6 +60,21 @@ CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 # endif
 
 
+#
+# Silence a bunch of warnings cuz we don't write this code!
+# And weirdly, with link time codegen, these warnings come out at link time, not when I compile this!
+# No apparent options to silence this stuff from the linker, but adding it to the compilation step here
+# appears to be preserved with the obj file, and used in link time codegen in the linker
+#
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
+CFLAGS	+= -wd4701
+CFLAGS	+= -wd4702
+CFLAGS	+= -wd4724
+endif
+endif
+
+
 # NOT getting asan errors on windows - til we have basic function working - try disabling
 CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
