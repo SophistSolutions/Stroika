@@ -1314,7 +1314,8 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			# /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/ThirdPartyComponents/GoogleTest/CURRENT/googletest/src/gtest-internal-inl.h:1156:74: note: at offset 16 into destination object '<anonymous>' of size 32
 			# 1156 |     SendLn("event=TestProgramEnd&passed=" + FormatBool(unit_test.Passed()));
 			# |                                                                          ^
-			if ($itsVersion < 15.0) {
+			#	NOTE - happens on g++-15 on Ubuntuy 25.04 as well
+			if ($itsVersion < 16.0) {
 				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-stringop-overflow ';
 			}
 
