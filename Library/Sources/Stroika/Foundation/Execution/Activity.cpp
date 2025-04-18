@@ -30,3 +30,13 @@ Containers::Stack<Activity<>> Execution::CaptureCurrentActivities ()
     }
     return result;
 }
+
+/*
+ ********************************************************************************
+ ********************** Execution::AnyCurrentActivities *************************
+ ********************************************************************************
+ */
+bool Execution::AnyCurrentActivities ()
+{
+    return Private_::Activities_::sTop_ != nullptr;
+}

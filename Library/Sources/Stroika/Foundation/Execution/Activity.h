@@ -109,6 +109,11 @@ namespace Stroika::Foundation::Execution {
     };
 
     /**
+     *  \brief Checks if CaptureCurrentActivities() would produce a non-empty stack (but faster)
+     */
+    bool AnyCurrentActivities ();
+
+    /**
      *  \brief Returns a copyable preservable version of the current activities stack.
      *
      *  'render' each current activity on the current threads activity stack as a Activity<> (so String based), and return the full
@@ -136,6 +141,9 @@ namespace Stroika::Foundation::Execution {
      *              Assert (exceptionMsg.Contains (kBuildingThingy_.AsString ());       // exception e while building thingy...
      *          }
      *      \endcode
+     * 
+     *  \note these activities are captured via CaptureCurrentActivities() - when an ExceptionStringHelper subclass (any of the Stroika Exception classes)
+     *        is constructed. For 3rd-party exceptions, consider wrapping with NestedException.
      */
     template <typename ACTIVITY>
     class DeclareActivity {
