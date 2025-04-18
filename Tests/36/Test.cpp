@@ -982,7 +982,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
                    (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
         User u      = userCollection.GetOneOrThrow (userIDAdded);
         u.fImage    = TypedBLOB{.fData = Memory::BLOB{0x1, 0x2, 0x3, 0x4}, .fType = InternetMediaTypes::kAudioMP3};
-        u.fDateTime = Time::DateTime::Now ();
+        u.fDateTime = Time::DateTime::NowUTC ();    // since we write to database and read back, and DB stores in UTC, to make compare work reliably, start with UTC
         userCollection.Replace (userIDAdded, u);
         EXPECT_EQ (userCollection.GetOne (userIDAdded), u);
     };
