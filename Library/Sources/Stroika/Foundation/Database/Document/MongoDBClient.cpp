@@ -132,7 +132,7 @@ namespace {
             case bsoncxx::type::k_bool:
                 return static_cast<bool> (value.get_bool ());
             case bsoncxx::type::k_date:
-                // @todo FIX - UNSURE of right clock to use
+                // Note - STROIKA doesn't usually (ever) generate these, because of problems documented in VV2BSONV_
                 return Time::DateTime{chrono::time_point<chrono::system_clock>{value.get_date ().value}}; // UTC datetime.
             case bsoncxx::type::k_null:
                 return VariantValue{nullptr};
@@ -188,21 +188,21 @@ namespace {
                 return bsoncxx::types::bson_value::value{vv.As<double> ()};
             case VariantValue::Type::eDate:
                 // MongoDB doesn't support dates before 1970, so store as string
-                if (Date dt = vv.As<Date> (); dt > Date{1970y / January / 1d}) {
-                    return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{dt.As<std::chrono::system_clock::time_point> ()}};
-                }
-                else {
-                    return dt.Format (Date::kISO8601Format).AsUTF8<string> ();
-                }
+                // Also, because mongocxx api uses system_clock, which is neither a steady_clock nor monotonic_clock, its really not suitable for roundtripping.
+                // So just store dates as strings in the database (and our read code will convert them back to DateTime as appropriate - really VariantValue)
+                //      if (Date dt = vv.As<Date> (); dt > Date{1970y / January / 1d}) {
+                //          return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{dt.As<std::chrono::system_clock::time_point> ()}};
+                //      }
+                return vv.As<Date> ().Format (Date::kISO8601Format).AsUTF8<string> ();
             case VariantValue::Type::eDateTime:
                 // MongoDB doesn't support dates before 1970, so store as string
-                // only makes sense to store UTC dates in database
-                if (DateTime dt = vv.As<DateTime> ().AsUTC (); dt.GetDate () > Date{1970y / January / 1d}) {
-                    return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{dt.As<std::chrono::system_clock::time_point> ()}};
-                }
-                else {
-                    return dt.Format (DateTime::kISO8601Format).AsUTF8<string> ();
-                }
+                // only makes sense to store UTC dates in database (so convert to UTC before ISO8601)
+                // Also, because mongocxx api uses system_clock, which is neither a steady_clock nor monotonic_clock, its really not suitable for roundtripping.
+                // So just store dates as strings in the database (and our read code will convert them back to DateTime as appropriate - really VariantValue)
+                //      if (DateTime dt = vv.As<DateTime> ().AsUTC (); dt.GetDate () > Date{1970y / January / 1d}) {
+                //          return bsoncxx::types::bson_value::value{bsoncxx::types::b_date{dt.As<std::chrono::system_clock::time_point> ()}};
+                //      }
+                return vv.As<DateTime> ().AsUTC ().Format (DateTime::kISO8601Format).AsUTF8<string> ();
             case VariantValue::Type::eString:
                 return bsoncxx::types::bson_value::value{vv.As<String> ().AsUTF8<string> ()};
             case VariantValue::Type::eArray: {
