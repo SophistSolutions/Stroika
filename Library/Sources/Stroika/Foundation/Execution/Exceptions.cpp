@@ -72,6 +72,16 @@ ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonFo
 
 /*
  ********************************************************************************
+ ********************************* NestedException ******************************
+ ********************************************************************************
+ */
+NestedException::NestedException (const exception_ptr& basedOnException)
+    : NestedException{Characters::ToString (basedOnException), basedOnException}
+{
+}
+
+/*
+ ********************************************************************************
  ***************** Private_::SystemErrorExceptionPrivate_ ***********************
  ********************************************************************************
  */

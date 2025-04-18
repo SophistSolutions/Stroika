@@ -205,6 +205,9 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief NestedException contains a new higher level error message (typically based on argument basedOnException)
      *         and preserves the original exception (which you can use to get its message, with Characters::ToString (fBasedOnException)
+     * 
+     *  This also can be used to wrap third-party libraries exceptions, which don't know about 'DeclareActivity' - and incorporating
+     *  that into an error message.
      */
     class NestedException : public RuntimeErrorException<> {
     public:
@@ -212,6 +215,7 @@ namespace Stroika::Foundation::Execution {
          */
         NestedException ()                       = delete;
         NestedException (const NestedException&) = default;
+        NestedException (const exception_ptr& basedOnException);
         NestedException (const Characters::String& msg, const exception_ptr& basedOnException);
 
     public:
