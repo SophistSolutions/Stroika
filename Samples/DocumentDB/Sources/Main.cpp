@@ -75,32 +75,50 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     if (mongoConnectionString) {
         using namespace Stroika::Foundation::Database::Document::MongoDBClient;
         const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
-        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
-        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-        adminDB.CreateDatabase (kTestDBName_);
-        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
-            MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
-        cerr << "Starting mongodb networks sample:" << endl;
-        ComputerNetworksModel ([=] () {
-            cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
-            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
-        });
-        cerr << "done." << endl;
+
+        try {
+            static const Activity kMongoCXXActivity_{"performing MongoDBConnection test on {}"_f(kTestDBName_)};
+            DeclareActivity       da{&kMongoCXXActivity_};
+            auto                  adminDB = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
+            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+            adminDB.CreateDatabase (kTestDBName_);
+            Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+                MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+            cerr << "Starting mongodb networks sample:" << endl;
+            ComputerNetworksModel ([=] () {
+                cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
+                return MongoDBClient::Connection::New (
+                    MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+            });
+            cerr << "done." << endl;
+        }
+        catch (...) {
+            cerr << "\t{}"_f(current_exception ()) << endl;
+        }
     }
     if (mongoConnectionString) {
         using namespace Stroika::Foundation::Database::Document::MongoDBClient;
         const String kTestDBName_ = "DocumentDB-Sample-Employees"sv;
-        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
-        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-        adminDB.CreateDatabase (kTestDBName_);
-        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
-            MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
-        cerr << "Starting mongodb employees sample:" << endl;
-        EmployeesDB ([=] () {
-            cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
-            return MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
-        });
-        cerr << "done." << endl;
+
+        try {
+            static const Activity kMongoCXXActivity_{"performing MongoDBConnection test on {}"_f(kTestDBName_)};
+            DeclareActivity       da{&kMongoCXXActivity_};
+            auto                  adminDB = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
+            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+            adminDB.CreateDatabase (kTestDBName_);
+            Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+                MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+            cerr << "Starting mongodb employees sample:" << endl;
+            EmployeesDB ([=] () {
+                cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
+                return MongoDBClient::Connection::New (
+                    MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+            });
+            cerr << "done." << endl;
+        }
+        catch (...) {
+            cerr << "\t{}"_f(current_exception ()) << endl;
+        }
     }
 #endif
 
