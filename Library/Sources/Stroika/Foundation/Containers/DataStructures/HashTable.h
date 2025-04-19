@@ -125,6 +125,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
     /**
+     *  \brief implement hash table support in a lightweight standard template library style. Use
+     *         traits to describe various choices about hashtable layout (separate chaining vs linear probing) etc
      */
     template <typename KEY_TYPE, typename MAPPED_TYPE = void, HashTable_Support::IValidTraits<KEY_TYPE, MAPPED_TYPE> TRAITS = HashTable_Support::DefaultTraits<KEY_TYPE, MAPPED_TYPE>>
     class HashTable : public Debug::AssertExternallySynchronizedMutex {
