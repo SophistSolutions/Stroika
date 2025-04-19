@@ -239,6 +239,17 @@ endif
 LDFLAGS:=$(LinkerArgs_ExtraPrefix) $(LinkerArgs_LibPath) $(LinkerArgs_ExtraSuffix)
 
 
+
+#
+# Attempt to silence linker warning:
+#		C:\Stroika\IntermediateFiles\Release-x86\ThirdPartyComponents\openssl\include\internal\ring_buf.h(131) : warning C4724: potential mod by 0
+#
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
+CFLAGS	+= -wd4724
+endif
+endif
+
 #
 # openssl with sanitizers doesn't work (causes issues with building libcurl)
 # see ... IntermediateFiles\Debug\ThirdPartyComponents\curl\config.log for failure this causes (could fix by having this patch pkgconfig file)
