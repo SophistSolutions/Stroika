@@ -27,6 +27,17 @@ Then pass this ENV variable to the regression tests
 MONGO_CONNECTION_STRING=mongodb://admin:pass@localhost:27017
 ~~~
 
+or 
+
+~~~bash
+MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017
+~~~
+or 
+
+~~~bash
+MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017
+~~~
+
 For my home regression tests, I run that on 'hercules', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules.local:27017
 
 
@@ -84,7 +95,7 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2404_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
       MACHINE=Hercules \
       ./ScriptsLib/RunRemoteRegressionTests
