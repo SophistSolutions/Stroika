@@ -8,6 +8,1991 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+### PROTO REL 3.0d18
+
+    HTMLUI code cleanups (html)
+
+
+- thirdpartycomponent
+  - **new** mongocxxdriver (qFeatureFlag_mongocxxdriver)
+    - FEATUREFLAG_mongocxxdriver to default on, if python present
+
+
+
+
+    small cleanup to ScriptsLib/Makefile-CMake-Common.mk (windows only code ifdefed)
+
+- Build System
+  - Makefile (top level)
+    - cleanup use of DEFAULT_CONFIGURATION_ADD2ALL in toplevel makefile - not needed - use use already existing EXTRA_CONFIGURE_ARGS= respected by configure - and better docs on this in makefile
+    - improved make help
+  - Makefiles 
+
+    - progress cleaning up pkgconfig usage - I think can just use pkg-config --msvc-syntax for libs on windows and then lost most/all of the patches I was doing to .pc files with sed
+    - configure now adds openssl to pkgconfig configuraiton, instead of adding explicit paths; and lose #pragma comment link stuff - so now even for windows using pkg-config for openssl (had to patch pc files in openssl build to make them work)
+    - from SharedMakeVariables-Default.mk - lose unused StroikaFoundationSupportLibs and TPP_PKG_CONFIG_PATH
+    - use single-quotes windows CPPFlags for -I names
+    - moved BWA for cmake/_DEBUG/_RELEASE flag issue from ScriptsLib/Makefile-CMake-Common.mk to ThirdPartyComponents/Xerces/Makefile since appears specific to xerces
+  - configure
+    - dont have all-thirdparty flag for configure include mongodb without python being installed
+    - configure (and related) scripts - added VSVARS_PLATFORM_INCLUDES_PATH (windows only); separted CPPFLAGS_NOTINCLUDES vs regular CPPFLAGS;
+    - lose CPPFLAGS from Configuration file (just keep CPPFLAGS_NOTINCLUDES); and keep CPPFLAGS in Configuration.mk file
+
+  - Scripts
+    - new utility script ./ScriptsLib/FixupDashIs and used in ApplyConfigurations - so now less tmphack workaround for libxml2 stuff - and just dependency on pkg-config stuff
+
+  - Docker Build Containers
+    - Optionally (but default on) include python in windows docker containers (so can build mongodbclient)
+
+
+#if 0
+commit 4153437c4482799ce731a5e23e86b64089a1a6d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 12 21:24:41 2025 -0400
+
+    mostly fixed https://stroika.atlassian.net/browse/STK-1005 - Configuration.mk depends on .rc files; and fixed ApplyConfigurations to check pkg-config files
+
+commit 57b3072ad5ad17dc591b1eddd7caf30da39d1ea0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 13 09:47:40 2025 -0400
+
+    completed fix for https://stroika.atlassian.net/browse/STK-1005 - vscode/c_cpp_properties.json depends on ThirdPartyComponents/lib/pkgconfig/*.pc rebuild only that file
+
+commit 9e05a38bb142f5fdcf4c9ded62c064500bad6515
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 13 14:55:15 2025 -0400
+
+    minor fixes to pkg-config files for gtest_main
+
+commit dc9d46f2c227526ee9cdcd7e531c1156d2a64cfa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 13 14:55:37 2025 -0400
+
+    minor tweaks to windows patches to pkgconfig files for openssl
+
+commit c144f80d7bf12943fb7d062bf073d872a1e68ec0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 13 15:45:12 2025 -0400
+
+    cleanup/unify naming of some makefile variables (private ones)
+
+commit 82b19d415d73a6d8794d4131b9e725b759201bff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 13 16:18:56 2025 -0400
+
+    Super early rough draft of new Foundation/Database/Document module
+
+commit 69bacf9a7cedde2097732d54ff847c279dadc358
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 13 17:34:24 2025 -0400
+
+    modest progress on Foundation/Database/Document
+
+commit 78bc33312433ae5d26e47e8fc6856dd339d5d973
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 13 22:53:10 2025 -0400
+
+    progress on Foundation/Database/Document/SQLite support (still super minimal/rough)
+
+commit c9826053cd85a13d02780e6629a059a2cc29ee60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 08:48:19 2025 -0400
+
+    support iether python or python3 in configure/mongo-cxx-driver makefiles
+
+commit 1ce2a8caf824b968c41cc1fbb463ac2b41f5b1b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 08:49:04 2025 -0400
+
+    put CMAKE_C_FLAGS_DEBUG/RELASE etc hack back into /Makefile-CMake-Common.mk since needed and better documented why
+
+commit bd181f702e1bb92eaa96fe273f76d80f04998266
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 09:00:48 2025 -0400
+
+    support iether python or python3 in configure/mongo-cxx-driver makefiles
+
+commit 43a606efe696feb96f4f1f17a81a93070b4d01a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 12:18:01 2025 -0400
+
+    only depend on libmongocxx-static pkg-config; and try setting DBUILD_SHARED_LIBS:OFF for mongo-cxx-driver
+
+commit 19e46ef91ffdc7ed986212d367e1654f4e303a6d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 12:27:51 2025 -0400
+
+    Tiny progress on Database/Document/MongoDBClient
+
+commit 6507062ad1418588f8561b197a7fb3dcc29a7ce8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 13:04:59 2025 -0400
+
+    fixed ApplyConfiguration handling of PkgConfig files for vscode files (small issue) and vcproj files (was never supported)
+
+commit db0b8a10739156aaa62bce0a4e17895a173d0acc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 13:05:22 2025 -0400
+
+    Foundation/Database/Document/Connection start regtests support
+
+commit 1d9e314905d4260e11b465d7370ea43d5c513409
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 16:11:09 2025 -0400
+
+    define and use in Configuration.mk PKG_CONFIG_STROIKA_DEPENDS_ON and PKG_CONFIG_PATH variables
+
+commit 4ed6ae86b4a471a2cedf048181d27c98bfb271d1
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 14 16:29:20 2025 -0400
+
+    Cleanup libcurl makefile for recent changes to Configuration.mk handling of PKG_CONFIG_PATH= and var +PKG_CONFIG_STROIKA_DEPENDS_ON and used to silence a warning cuz of stuff not fully built when libcurl being built
+
+commit 19dbbeccf0765ad4222552b5021af7e89b237bd8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 14 17:07:51 2025 -0400
+
+    export PKG_CONFIG_STROIKA_DEPENDS_ON
+
+commit 71f546357bc079cc79209f5cb664392402000947
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 14 17:41:44 2025 -0400
+
+    Adjust +PKG_CONFIG_STROIKA_DEPENDS_ON for ThirdPartyComponents/mongo-cxx-driver/Makefile
+
+commit 10ec21888370f3a3a4cd8ae80dd9c1bf257f2b32
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 14 17:47:13 2025 -0400
+
+    progress debugigng scripting suse with ApplyConfiguraiotn and libcurl build on unix
+
+commit 2a16c54b956eaf6f8e6fec31661c77c0551735e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 19:25:18 2025 -0400
+
+    github action - improved catpure of logfiles for unix
+
+commit 4f1f63458586f70110b6ec75ea8aa20baf0cb5b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 19:54:38 2025 -0400
+
+    experimental change to ApplyConfigurations so CPPFLAGS and LinkerArgs_LibDependencies all set in one line without += in .mk file
+
+commit 49ced1513d5320cc3e585ff8a43b08ff5db7eb79
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 14 20:05:44 2025 -0400
+
+    capture more from build-N-test.yml unix log data czu cannot repro problem
+
+commit 141a0be325750f5d222ec9a8dbfb84818e59df4d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Mar 15 09:16:54 2025 -0400
+
+    makefile tweaks to mong-cxx-driver thirdpartycomponnts makefile for ubuntu 22
+
+commit 53913c0b812ea6d4a2f6e7b08db611402a3f12fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 15 09:45:37 2025 -0400
+
+    use nested shell syntax for pkg-config call in ApplyConfiguration
+
+commit 85d7b31ec56a9ed6e954ec8f9e4223b1d5a37ef6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Mar 15 09:51:28 2025 -0400
+
+    lose logfile save not needed it githun actions
+
+commit 65be9383ea2ddb8592120786d0cfa7103e585292
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 16 15:35:19 2025 -0400
+
+    ScriptsLib/Makefile-CMake-Common.mk: add comments about how to add CMAKE_ARGS --trace/--debug-output; depending on AssertionsEnabled, set CMAKE_MSVC_RUNTIME_LIBRARY
+
+commit 35b5bcce81f0adc418656bef14d4e298bd1d12ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 16 15:39:02 2025 -0400
+
+    early draft of SimpleMongoDBClientTest_
+
+commit dce9cee67a99040219da0ba3ebc5da7e1d3d1a75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 17 10:51:15 2025 -0400
+
+    ThirdPartyComponents/mongo-cxx-driver/Makefile - disable fsanitize=address since appears to be causing trouble - maybe real bugs or not, but KISS for early draft
+
+commit ca2ba49c8990ee5a06e66e1ba826b88fdedd5c1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 17 10:51:42 2025 -0400
+
+    progress on Database/Document/MongoDBClient and simple regtest
+
+commit ea9db25d7955dd0cc3fa38d77a44e66b7fe239d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 17 11:59:55 2025 -0400
+
+    progress on Foundation/Database/Document (mongodb client support)
+
+commit 3fe19e70533ea813bed9d36dfb18614b458e6478
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 17 22:24:10 2025 -0400
+
+    draft support for mongo add/get/delete document support from collection (untesetd)
+
+commit 1ba252f2c834b1eeb75e243c57e86ad20e2e4664
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 08:58:54 2025 -0400
+
+    progress on MongoDB client Document DB connection api
+
+commit 128c32503e7057598d790cf43a3c66520a239d5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 11:47:33 2025 -0400
+
+    clenaups/get mongodb code compiling on macos/clangmac
+
+commit f9e8a44dbb016f858d40384fabdcd75ba1345f8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 11:49:29 2025 -0400
+
+    new to Foundation/Database/Document: Document, Projection, Filter and related changes/use
+
+commit 2b8ae51b30a7f2d654b85d23e8b7e101ac09d808
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 13:05:42 2025 -0400
+
+    fixed Containers::Mapping<> RemoveAll support to work with iterable_keys argument
+
+commit 320789c9e3363945ecad280a5be1fca8ad138839
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 13:06:01 2025 -0400
+
+    fixed Containers::Mapping<> RemoveAll support to work with iterable_keys argument
+
+commit c24a263ab03404bbc5ba6a63e411903b5e80e1b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 13:06:48 2025 -0400
+
+    Same fix I just did for Mapping  for assocation (RemovealL)
+
+commit ba8fc288ec74f42e41bb1029e0f6b3bd65d4c4c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 14:06:40 2025 -0400
+
+    Modest progress on DocuemntDB Filter/Projection apis
+
+commit 6953a4e4dd7eeb3596cdcd352a2ff72e7512d5b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 15:40:14 2025 -0400
+
+    correct corner case (at least on msvc) of IEqualToOptimizable - check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did)
+
+commit 26ca636e6641293de36993d3b8986a1640680db2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 15:45:41 2025 -0400
+
+    fixed a few issues with new Database/Document/Filter
+
+commit cf338f5b61dda80392dd9b6f98a2b3d5b2697f80
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 15:58:57 2025 -0400
+
+    minor progress Database/Document/Filter
+
+commit bafd8b7325e9aa6779e931e613643a1c53ab1018
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 17:27:24 2025 -0400
+
+    Minor cleanup to Iterable<>::container_Of_T CTOR - fix to give better error message/concepts copyable
+
+commit dc75ae089b57c65f1a06a6a4a9246d1d4aeac350
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 18 17:27:54 2025 -0400
+
+    Minor porogress on Database/Document support
+
+commit 96f0fbc8a0893c9ae405fe37daf8163ef17e90b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 19 07:47:37 2025 -0400
+
+    More progress on MongoDB client code for DocumentDB layer
+
+commit a04ed4f1cc11ada142cc36f5cfe9e82ba5ae44c8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Mar 19 10:47:17 2025 -0400
+
+    mongocxx disable sanitize=undefined for gcc11 (cuz it doesnt compile)
+
+commit bccef88a64f589e31e60354ff25799c76b93a1c3
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Mar 19 10:55:03 2025 -0400
+
+    tried to -DENABLE_ZLIB=SYSTEM for mongo-cxx-driver but disabled cuz not working (try again later)
+
+commit 35eaaed0b7fac9986607342b09a446753c2f910c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 19 13:44:12 2025 -0400
+
+    More cleanups of Foundation::Database::Document code
+
+commit f1d0ebc68c24ad55d05c9086093e49f3109203e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 19 15:18:47 2025 -0400
+
+    more modest progress on DocumentDB support/regtests etc
+
+commit e81d59b39b5049e852a50877e3945319790ee82e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 08:08:30 2025 -0400
+
+    ScriptsLib/ApplyConfiguration minor cleanup
+
+commit 0406a861d806f51367efa1d76006dbb308bdb8f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 09:51:59 2025 -0400
+
+    Minor fixes to new Database/Document/Projection
+
+commit 4ac7c50a76ec9bb2741c1a538d777046dd7b2132
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 09:53:17 2025 -0400
+
+    MongoDBClient::Activator fixes (quirky behavior of underling mongocxx::instance); and support commandline option mongoConnectionString on regtest and more regtest progress for documentdb stuff
+
+commit fb8d667b2a5b5812f74a1f25b014b70cb6a5b9f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 10:58:48 2025 -0400
+
+    Document DB code - clarify UpdateDocument vs ReplaceDocument, and added regtests for both (passing)
+
+commit 71068ae4784048188cf52e18d0003ff403569e6e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Mar 20 11:08:09 2025 -0400
+
+    BWA qCompilerAndStdLib_constructible_Buggy
+
+commit 3230fe88cc15f4df56397a44ee2eac4503f2eba3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 13:59:34 2025 -0400
+
+    docs testing and tweaks for running local docker container mongodb (very prelim docs) to test -
+
+commit 2f9ca7b5601cfdd852bff3fd84d2cfee765777a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 15:03:13 2025 -0400
+
+    document collection: GetDocumentIDs method added
+
+commit ee8ba0e99efb76ff7a05717992e251ba8954a410
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 15:04:00 2025 -0400
+
+    new draft Database\Document\ObjectCollection
+
+commit 5cc18de13faa63d55ad8407e86b532039d02401f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 20 15:20:01 2025 -0400
+
+    Minor progress on Database/Document/ObjectCollection
+
+commit c7ce38e80242e442478a645ab7553ee6e197530f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 21 11:09:53 2025 -0400
+
+    Added/used Database::Document::IDType (just String alias)
+
+commit d14a55a14c0aa987411dee72bf23d8e4db1a9dc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 21 11:11:18 2025 -0400
+
+    Added/used Database::Document::IDType (just String alias)
+
+commit 2b37f04b3b264c01dfee06764c21141f7ff8f9b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 21 13:15:29 2025 -0400
+
+    github actions more 'save space' code needed for clang++-19 c++23 ubuntu 24.10 debug configuraiton
+
+commit 54ac30aa975b8cb1d4010decc4ae001bac555b96
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 21 17:10:30 2025 -0400
+
+    try removing #include of mongocxx from headers - so users can include but not forced to include
+
+commit ce882d77cf78b462278f6fd629567e4e56ac172c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 21 17:35:52 2025 -0400
+
+    added + lines before cmake --build to address warning from make call from cmake about -j flags being ignored (https://stackoverflow.com/questions/44042771/cmake-add-prefix-to-build-command-to-enable-parallel-make)  - Add '+' to parent make rule issue
+
+commit 46e7541294028c0f20e993159dacf154870f06bf
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 21 17:36:24 2025 -0400
+
+    fixed minor regression due to move of headers use for mongocxx
+
+commit 42d19ac2609d41694dfd531b058602863f9403a9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Mar 21 17:37:00 2025 -0400
+
+    change default for FEATUREFLAG_mongocxxdriver to be OFF by default for g++11 or earlier (since appears to not compile)
+
+
+commit d5445fc4c322bdde0109c7281ccacf71da746871
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 21 17:49:40 2025 -0400
+
+    fewer warnings about Skipping mongoDBServer test
+
+commit a46c7ccf4feee605607333f805a948510e24f787
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Mar 22 07:54:01 2025 -0400
+
+    disable FEATUREFLAG_mongocxxdriver on g++11 by default - since doesnt appear to compile
+
+commit 69e4646e334335dce9ac42fd25656beffe9d06eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 22 11:34:11 2025 -0400
+
+    fixes to new Database::Document::ObjectCollection
+
+commit 8ea3eff6daf9d674aab1aaf45e5ae2669f0969ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 22 12:00:49 2025 -0400
+
+    Minor Foundation/Database/Document Ptr cleanups
+
+commit 93b5d09f1a0f9339ba42c8ade8bacb7022141651
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 22 12:28:37 2025 -0400
+
+    more cleanupos to Database/Document/Connection code
+
+commit 7f0521673c8871e2e13ca3c5d14bf1fc9798005b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 22 13:43:14 2025 -0400
+
+    remove ambiguous overloads from Database/Document/ObjectCollection
+
+commit 743f21e10adf9feecfb81e4aa93d2f864dd18427
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 07:27:33 2025 -0400
+
+    Database/Document/ObjectCollection fixed an overload
+
+commit f7c419f33a8ee0153a1d8f7e8fd513eb672497d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 07:34:12 2025 -0400
+
+    Database/Document/ObjectCollection fixed overloads
+
+commit 3d4a9576f7db2241fcea6f1c2a995009a1b4125c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 07:42:50 2025 -0400
+
+    more fixes to Database/Document/Collection smart ptrs
+
+commit a9bfd4f96948aa1389a8212a75a0fd75ebf83bef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 07:43:07 2025 -0400
+
+    more fixes to Database/Document/Collection smart ptrs
+
+commit 3d37fe739a14ff55d55cd0c80b7832fbe7a1e8cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 08:38:58 2025 -0400
+
+    Added requires<> to Syncrhonized CTOR to produce better error messages from compiler
+
+commit 308ce1cac1b347f6d97f45ba7740a3cd40c86ff1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 09:58:00 2025 -0400
+
+    hopefully fixed mongocxxlib build so sources used from CURRENT and left around after clean
+
+commit 0fe0b3eb38231a77d5a814d122c8dd6e811c465c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 10:43:21 2025 -0400
+
+    Revert "hopefully fixed mongocxxlib build so sources used from CURRENT and left around after clean"
+    
+    This reverts commit 308ce1cac1b347f6d97f45ba7740a3cd40c86ff1.
+
+commit 334d77f7f4eeb1b90a58f732898def5248852769
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 12:33:38 2025 -0400
+
+    new regtest DocumentDBTestObjectCollection_
+
+commit 9965c6810381166b11e2c2a88cf2f7f906dd4889
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 15:12:51 2025 -0400
+
+    fixed bug with Document/MongoDBClient refcounts on collection
+
+commit cc2e7814995482b810e5ed0b0daba9be006ba30b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 16:59:02 2025 -0400
+
+    fixed Database/Document/ObjectCollection
+
+commit a3b71096dcfbe4d0e40e7f85246e6283a6c36001
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 17:02:02 2025 -0400
+
+    fixed Database/Document/ObjectCollection
+
+commit fa18a60fb7aabe890e6ae905e8d22ff9eed55a5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 23 17:03:39 2025 -0400
+
+    fixed Database/Document/ObjectCollection
+
+commit cd420a5c5a452b113fadc54caae58107a405c2c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 11:32:39 2025 -0400
+
+    String no longer defined [[nodiscard]] cuz there is no way to undo that unfortunately, and some APIs return Strings where it makes sense to ignore
+
+commit 5b226158e9b3d7e1ab06a6dbe6a5082fef00d3f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 11:33:11 2025 -0400
+
+    new Samples/DocumentDB
+
+commit 88b7e2417c477b2469c69bb8c4b7845d83a19d4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 11:37:30 2025 -0400
+
+    minor progress on DocumentDB sample
+
+commit f26992d94b27a31e75be3c58f46d9ea5231d82ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 11:49:47 2025 -0400
+
+    Tiny progress on Samples-DocumentDB - at least one test case runs (when mongdb present - little erorr handling)
+
+commit c8f74fe7b89e19284bb5e5705729987cf7bfc9a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 14:10:11 2025 -0400
+
+    enahnced DocumentDBTestObjectCollection_ so writes datetime and BLOBs (and more) and checks roundtrip)
+
+commit f05a0cdc49b679b1fa0792bbd310df44bd4437e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 17:55:15 2025 -0400
+
+    BSON2VV_ - draft optimized convert from BSON to VariantValue
+
+commit 927972021d1ca961ce5c78be117badde0ba8ccb4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 20:10:22 2025 -0400
+
+    Database/Document/MongoDBClient - more cleanusp to ToBSON_ code
+
+commit 8468beb904ae63904f2ce01f5b763ff38c2dc0d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 24 20:56:32 2025 -0400
+
+    MongoDBClient VV2BSONV_ code (draft)
+
+commit da0c529abb15c788b959a882e61557ee2aadcc3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 25 08:35:50 2025 -0400
+
+    documentdb sample docs
+
+commit 22a42c5c20d7cd4508df66b27b2e82185c7f6abe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 25 08:36:24 2025 -0400
+
+    Support delegating filters (some) and projections to mongodb - rather than doing client side
+
+commit 78a8a9ffea27da080c36e287b6df1b09cf354836
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 25 10:31:41 2025 -0400
+
+    Several (new code) Database::Document connection method renames
+
+commit ac4090ebea7015108464764625f17dc698a71d65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 25 11:50:31 2025 -0400
+
+    MongoDBClient - now supports optional ConnectionPool
+
+commit 38c876b643eecdccaf6e114d88647c68f470cf71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Mar 25 12:02:39 2025 -0400
+
+    fixed typo; and test connection pool for mongodb
+
+commit 4ebf78a89e39294bc06dbe0da9bc456fdb2eb64a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 26 21:35:58 2025 -0400
+
+    Date::As() now uses concepts like DateTime::As() so better compiler error messages
+
+commit c083cc40cec0f576ae35893ec41e11234b8b03bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 26 21:36:46 2025 -0400
+
+    tweak requires on DateTime::As() method
+
+commit f1211a0f8ff3f4b7eaf93aa6c361085a4bd99310
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Mar 26 21:37:29 2025 -0400
+
+    bsoncxx::types::bson_value::value VV2BSONV_ (const VariantValue& vv) method fix for dates - before 1970 - BSON limitation
+
+commit e994f86e3c00323b717aa3696df4b0e4bbf697d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 27 09:53:41 2025 -0400
+
+    lose [[nodiscard]] on a bunch of types (like Timezzone, TimeOfDay, etc, cuz too banket a rule and no way to reverse [[nodicard] on a type
+
+commit 4785ba12b51718292046613dc0e777caf8e140b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 27 11:18:15 2025 -0400
+
+    in mongo regtest - check MONGO_CONNECTION_STRING and only use if present (opr cmdline) and warn at start of make (note) if missing and documented how to setup/use
+
+commit a76504f9fc65a34470ca865d6c930e1d05ca3dac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 27 11:27:36 2025 -0400
+
+    update docs for mongdb connection testing
+
+commit 12b162039d41c61af62ea909ee96f6926b4ea664
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Mar 27 14:03:19 2025 -0400
+
+    small fixes to MongoDBClient for UTC dates, one warning (check raw_server_error = startiong to debug); and more minor
+
+commit 67c064f986eccfee9c81a6aa3871243718c22961
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Mar 28 17:43:19 2025 -0400
+
+    configure script: ValidateUseArg_() - and if use-system on zlib - double check really installed (onlyGenerateIfCompilerExists)
+
+commit 01d070e087170f674dee142901d37a8249575493
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Mar 28 17:43:56 2025 -0400
+
+    fixed default mkaefile configs to use 'use-system' instead of 'system'
+
+commit dec99c923fc01e91ba74e8d8c5477aca09505c1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Mar 28 17:46:55 2025 -0400
+
+    docker VS_17_13_5
+
+commit 6f2fa5baedaf3064da440af85398bd942f9a9cc6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 29 08:45:42 2025 -0400
+
+    fixed chmod on two scripts
+
+commit 47a211119e821ca4a21e5250e63a1a97ed3d917f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 29 09:58:53 2025 -0400
+
+    turn on CMAKE_VERBOSE_MAKEFILE=1 for cmake builds
+
+commit 2db9a724d38d573c373b6022a7c7eba3778819c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 29 10:39:55 2025 -0400
+
+    workaround msvc 4166 compiler warnings about code in mongocxxclient (appears real warning but not much I can do)
+
+commit 3519c1abac24d5d7077b121e7077238d9ce99454
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 29 10:40:20 2025 -0400
+
+    Added MONGO_CONNECTION_STRING support to RunRemoteRegressionTests (untested)
+
+commit 1af63b641e2219ead7e4dba3bc868001faf93980
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 29 13:39:11 2025 -0400
+
+    Minor propgress on Database/Document/SQLite.cpp
+
+commit 1497b4ed61a56fa4f9317fcb86d2966d97fe6013
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 29 14:07:40 2025 -0400
+
+    SQLite doesnt need to use praga comment anymore
+
+commit b3e95058e01244cae5c418a90f3cb91fef159066
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 29 21:42:22 2025 -0400
+
+    progress on SQLite DocumentDB impl
+
+commit 99adc3dbc5b23afdca9733d82077c2a4185fe6be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 08:58:30 2025 -0400
+
+    More progress on Database/Document/SQLite - almost working
+
+commit 2651f8ab07e02f2c267d3e434fa2e4975575a288
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 12:46:42 2025 -0400
+
+    first draft of Database/Document/SQLite which I htink is fully (at least mostly) functional
+
+commit 461879866f81274c1528b1cb821aeb3b7ffc4a27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 12:48:35 2025 -0400
+
+    enabled regtests for Database::Document::SQLite - now appears to pass all existing regtests
+
+commit e631dfd74109ce3615c8d670b8856f9ece08d6d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 12:51:25 2025 -0400
+
+    print MONGO_CONNECTION_STRING in regressiontests script
+
+commit 64fd77b948460625da8c19b70c0f7cca8e6d4c8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 12:54:00 2025 -0400
+
+    update docs on MONGO_CONNECTION_STRING for regressiontests
+
+commit ff123dbb05754d3a15a7eae0049012672360b9d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 15:17:33 2025 -0400
+
+    CommandLine: ValidateQuietly method added
+
+commit d2b16bef725e740d7504d9e17eec527aba2180ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 15:18:08 2025 -0400
+
+    document and fix Document/SQLite so can call CreateCollection if it already exists
+
+commit bdf968aeba2ed2d9e22d1f7d5a5b738e3ddfee70
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 15:18:43 2025 -0400
+
+    DocumentDB sample - enhanced mongo code, and added sqlite test cases (not fully working)
+
+commit 16140277bcc2c320a71bce17a96e14f6267664f7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 15:28:23 2025 -0400
+
+    Added Samples-DocumentDB/DocumentDB to regressiontests samples to run
+
+commit e098cb165c8fc5d0634e4634638dae803fa49bff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 18:40:05 2025 -0400
+
+    Minor sqlite cleanups; added kDefault_ThreadingMode=ThreadingMode::eMultiThread (with docs why); fixed minor bug settings flags based on this flag/enum
+
+commit 6c2647fba9ec8e16d5a6609ef654719182290b5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 18:40:38 2025 -0400
+
+    react to change of default fThreadingMode in sample
+
+commit f367003bd63ea4d951e6b669e875e778016dcc75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Mar 30 18:41:45 2025 -0400
+
+    experiment with fBusyTimeout in Samples/DocumentDB for SQLite - but not happy with this
+
+commit 93b157405ab416ba343ed43f9066de0d70c3dd16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 10:06:02 2025 -0400
+
+    start using SQLiteCallback_ utility in Database/SQL/SQLite
+
+commit 1c133d3ca41e33fe871701917091556746d3c9bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 14:13:09 2025 -0400
+
+    fixed typos in Samples/DocumentDB
+
+commit c7da566f98eaaf9adfa98f3e88c27be8dae54ddb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 14:54:07 2025 -0400
+
+    Document/SQLIte db support: fixes to ThrowSQLiteErrorIfNotOK_() so we get better exception messages (todo in sql code);  and beginnings of mkPreparedStatement_() usage
+
+commit ffc31eda26058083ffcece362eac3b6000f6b187
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 16:03:40 2025 -0400
+
+    fixed bug with sqlite documentdb supprot for in-memory dbs - so actually sharing in memory db now works right
+
+commit 7f0c996c16a4142d25093f9077aab974fd56a571
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 16:05:07 2025 -0400
+
+    Minor cleanups to Samples/DocumentDB/Sources, messages, etc, and  docs about fBusyTimeout
+
+commit 34c858a4872ae0f848ae05c901c143f746d994a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 16:34:39 2025 -0400
+
+    applied some of the fixes I did to DocumentDB SQLITE code to SQL code (opening memory dbs and better error reporting and docs)
+
+commit a31b8433ffab853222f14d349fad83b0a2b48883
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 16:43:23 2025 -0400
+
+    hopefully fix forwarding of MONGO_CONNECTION_STRING to docker containers in ScriptsLib/RunRemoteRegressionTests
+
+commit 7c15d91aeab941f7d641ec80a6b756c11d0538f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Mar 31 22:30:47 2025 -0400
+
+    fixed small recent regression in Database/Document/SQLite GetOne
+
+commit 4a3f6b020a55886fd50327a87c2f99fe06d21c71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 11:32:20 2025 -0400
+
+    docuemnt db sample docs mostly
+
+commit aed2291021ceccb607c62567dfe54296722b8cc7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 11:32:45 2025 -0400
+
+    mostly docs
+
+commit ebfeead316956235da96277e14b046c159189bea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 11:56:57 2025 -0400
+
+    first draft of (working memory based, NYI filesystem based) TrivialDocumentDB
+
+commit c006333faf20b13e204e051aefd09ce44e2f3b07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 12:28:07 2025 -0400
+
+    Added Foundation_Containers_Mapping, RetainAllCaseFails_ regtest - failing on xcode
+
+commit d5c3aaa30a8b2c71a74f340c03be403a6079d338
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 13:53:02 2025 -0400
+
+    close jira issue http://stroika-bugs.sophists.com/browse/STK-539 and open replacement issue for more narrow but more serious https://stroika.atlassian.net/browse/STK-1026, and provide (temporary) workaround for the isssue (so tests not failing now)
+
+commit 44f6ab55018491232dd4d33053a347cd8b97c68c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 16:00:32 2025 -0400
+
+    Minor cleanups to container backend imps of remove/erase - making more uniform how approached, and maybe more safe (re-use erase result)
+
+commit 04c00bc3eaf12329e215691baf82790527192f17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 16:17:40 2025 -0400
+
+    change docs for local regtest runs to use hardwired ip addr for mongo since dns resolution not working from inside containers
+
+commit 8ab086848f3cf1bc235d2a1dc1bdc92dec9e5180
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 17:22:04 2025 -0400
+
+    Minor celanups to Mapping/Association RetainAll code
+
+commit eaaf217dd2ddbdccbcc3ec822d597a15697582f1
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Apr 1 20:51:34 2025 -0400
+
+    qCompilerAndStdLib_stdhashmap_erase_Buggy experimental BWA
+
+commit bad9cc802d8d1769fc68072944fe2057fa0c3c97
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 1 20:58:20 2025 -0400
+
+    cosmetic
+
+commit 61ad316eaf505b13eff0e08f7720dcf2e734c135
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 2 11:08:19 2025 -0400
+
+    STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone () change to take extra parameter, eventually to fix https://stroika.atlassian.net/browse/STK-1026 but for now sb no effect
+
+commit 06bf1ead5f621d56761dc403a41b88e52a840ec8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 2 19:23:18 2025 -0400
+
+    https://stroika.atlassian.net/browse/STK-1026 - LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
+
+commit 2c813ac9eca489bd735ad484a54d07ec3d5ffedc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 07:04:28 2025 -0400
+
+    fixed typo
+
+commit 9099782d2e3df002eaca99ff2261080f38d26dc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 10:04:02 2025 -0400
+
+    new module DataStructures::HashTable (totally no-functional so far - just early draft); added regression test for hashtable code and renumbered rest
+
+commit c98f18b4770786062fdd713913df31805b114345
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 11:52:40 2025 -0400
+
+    lose qCompilerAndStdLib_stdhashmap_erase_Buggy due to https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order
+
+commit 052ce37a2a9df162cefa1ec3e2a39e229d4ee891
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 12:38:04 2025 -0400
+
+    new Math::PrimeAtLeastThisBig
+
+commit cafd3a52bf9a6e73f6eebc995b2734d07a6afd70
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 12:38:27 2025 -0400
+
+    progress on new HashTable code
+
+commit b273229ae873ee1e299794e14d1306561b0308e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 13:17:19 2025 -0400
+
+    renamed DataStructure::*::RemoveAll() to '...clear' - since stl methods have that name/semantics
+
+commit 36f4b752a7595f78f7a555ff1f4fba5a565c5e71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 14:32:26 2025 -0400
+
+    more progress on HashTable code - minimalist version mostly complete (now can iterate at least)
+
+commit 3ffe56a30decf4a42300b013273604155465a466
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 14:51:39 2025 -0400
+
+    more cleanups / progress on HashTable code
+
+commit 76a7e17370f189d271768565052c2b98ad659895
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 17:56:24 2025 -0400
+
+    Minor HashTable class progress
+
+commit f9df7653de6ec2c44cab59a977286b2a8da5e910
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 20:07:40 2025 -0400
+
+    fixed CopyOverlappingBytes to use copy or copy_backward depending on direction of copy; and new CopyOverlappingSpanData that works with non-byteish data
+
+commit 86aef56c886ee83b50d51204e2c42fd4ba96016c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 20:09:04 2025 -0400
+
+    little tested - InlineBuffer<T, BUF_SIZE>::Remove
+
+commit 7f959ec06bd2733aaa5c8c31d79c5fbc031be96c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 20:10:10 2025 -0400
+
+    slight more progress on HashTable (removeif test case works)
+
+commit 155731dde0a990c5c922efe29a65095be46a1986
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 21:17:01 2025 -0400
+
+    fixed typo
+
+commit 3d5900b1a85e40a966e2ead6261707634cd7a876
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 3 22:06:57 2025 -0400
+
+    fixed typo
+
+commit 2489f9412ebcb51b8b87cf4637f191857f78541b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 4 08:33:22 2025 -0400
+
+    format
+
+commit 6d937c5aa6f2be6c7f062a834bc0fceba68ea3d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 4 08:33:57 2025 -0400
+
+    fixes for InlineBuffer<T, BUF_SIZE>::Remove - but still must review / test
+
+commit 3f266995359b66fcf0aeba67c6d1434957890aa6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 4 08:37:45 2025 -0400
+
+    qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA
+
+commit d0411ba3f032b8974447cd9c62380363d1329eef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 4 10:31:59 2025 -0400
+
+    fixed typo
+
+commit 3b4ab233fc5ccbfc0f3ca4f066a32ddc46a90740
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 4 11:02:10 2025 -0400
+
+    fixed bugs in new InlineBuffer remove code, and added regtests
+
+commit 63f720fa99480e9fecd39670f0f4d0723a6f8d38
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 4 11:11:48 2025 -0400
+
+    cosmetic
+
+commit b161a989cda05fb6ba137b67a766fa1660583081
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 4 13:28:20 2025 -0400
+
+    tried to make sqlite makefile download more resilient but failed to find mirror of amalgamation
+
+commit 9dde72f55e05deece579758c6a38d66594d360ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 5 09:02:26 2025 -0400
+
+    Memory::Common cleanups: modernized concept ISpan def, improved CompareBytes() def, and related docs/cleanups
+
+commit 8f111ed33039118bff409ad9759dd9e74f0c902b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 5 09:05:22 2025 -0400
+
+    vscode workspace
+
+commit 83abd016b728e3252a6c67db76ecfbb9ae9687ab
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 5 09:05:49 2025 -0400
+
+    minor sqlite makefile cleanups
+
+commit 2ae328fe7c1c828bc33cc5e16a0cfb2b1894bd57
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 5 09:06:44 2025 -0400
+
+    Minor fixes to Memory::Common utilities (#include missing etc)
+
+commit 4fe288f915d373ff012dc36f6a34a4a2a6c78540
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 5 09:07:05 2025 -0400
+
+    cosmetic
+
+commit e7dd46be2fb764af5b2e2bbe25a157d721874fa5
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 5 09:17:12 2025 -0400
+
+    new experimentional support for ubuntu 25.10 - docker containers regtests etc
+
+commit 0e2eb75908b5dc6b5a87dd0b7314725669f953a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 5 10:08:14 2025 -0400
+
+    cosmetic
+
+commit 1f15ad18accf24ff93f29bddd9710193dc60222c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 5 10:08:34 2025 -0400
+
+    docs
+
+commit 3a0c54c2a34232ac578295aa7590cb683cbf691d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 5 10:24:10 2025 -0400
+
+    a few new HashTable methods - more needed - but nearly complete (though not super tested til we use in containers)
+
+commit 408b7117c61306e386bff652c0ceef18eca83869
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 5 10:35:11 2025 -0400
+
+    fixed build scripts for docker container 25.04
+
+commit 08e6f506c4f748722753bf900024056bd093d661
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 5 10:39:18 2025 -0400
+
+    Minor cleanup
+
+commit b62af97645558c279a63a31fcacafbce0ac21a4d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 5 17:18:05 2025 -0400
+
+    minor cleanups
+
+commit 8c845830d91f94f2005796b52b4eb81b12f7fd80
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 5 18:42:38 2025 -0400
+
+    qCompilerAndStdLib_illunderstood_ispan_Buggy BWA
+
+commit a552bbeb2c3c63b1bcf7976b18dc790994fd241c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 5 18:48:33 2025 -0400
+
+    String::Skip utility slightly better behavior and slihgtly better performance
+
+commit 5f7056397f82e903c16c2d140a376d4863c9deea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 5 18:53:05 2025 -0400
+
+    cosmetic
+
+commit 7adfa33f92503150d4e7ff8199a01baf492a6e17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 08:10:04 2025 -0400
+
+    new Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
+
+commit 804d71634386d70808ef1d439edde2824dcdc9fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 08:25:51 2025 -0400
+
+    fixed bug in new method
+
+commit 6fda23f1a6b1c21e0e8f2d2ee6f31206adbda72b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 08:26:12 2025 -0400
+
+    assertions
+
+commit 6878c277f71432c5f7e2220d9ba0017da97ad2b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 09:47:40 2025 -0400
+
+    docs
+
+commit 300c75d7abccc763b6ff96b6e84f98e57ae08fbf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 09:49:33 2025 -0400
+
+    Array<> template: docs, new .data() method, new Find () overloads (to be more similar to other datastructure classes), depreacte Contains() method, and added RemoveAt () overload and refactored RemoveAt to use new Memory::Remove() functionality
+
+commit e4a3be9f22e9d6029b6da4efd9fc4a3d8cc2c46a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 09:50:14 2025 -0400
+
+    Minor LinkedList cleanups (forward and docs)
+
+commit e94d1d8cd37999dc14bd8a782c5e6117b6cb1f1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 09:50:41 2025 -0400
+
+    More progress on hashTable code - about ready to test it in a container
+
+commit cc94b932426f2f30d351f7b80f62f45321f97014
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 6 09:51:54 2025 -0400
+
+    Minor cleanups
+
+commit 175de07ec9b5a059b0795d22d3bc10c416f13493
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 6 09:52:12 2025 -0400
+
+    fixed one [[maybe_unused]]
+
+commit 0c5117390e5bc1d99429109b0672a4be36d6df58
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 6 10:06:31 2025 -0400
+
+    Iterable<T> minor tweaks; and static_assert (__cpp_lib_execution test
+
+commit 43bbfcc335f8c26d2d9ef7b2838b14c5d0f7e6e7
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 6 11:43:01 2025 -0400
+
+    define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - but not sure I have this understood properly
+
+commit 824e9b5b83c09fe9d2dc2651d553e585e42c2dfa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 12:06:28 2025 -0400
+
+    Cosmetic
+
+commit acf85d4eda4fb6ee95b833d991cc568cef0cebcc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 12:06:44 2025 -0400
+
+    cosmetic
+
+commit 155ece1631e0501efcc4f686936a550db43d7e6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 12:07:03 2025 -0400
+
+    Minor HashTable cleanups
+
+commit 78dfd45aaea74e62038ba55ddf75e1988db47bbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 22:14:02 2025 -0400
+
+    fixed minor typos in DataStructures/HashTable
+
+commit 85be8ab5a7230cdd949220bb7608e04cea9424ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 22:15:15 2025 -0400
+
+    early draft of Mapping_HashTable HashTableSupport
+
+commit a2d4f3ba28154859c7db39c1eba72599f5c6432a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 22:15:45 2025 -0400
+
+    __cpp_lib_execution still misisng on CLANG++-20 Ubuntu 25.04
+
+commit 15eb878e40bc182774ae70aab9f1ef341bb9f8bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 6 22:16:08 2025 -0400
+
+    fixed worksapce for file new test54
+
+commit e319c654ec5812161376a5e70b4c8ba46399e7b2
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 7 07:35:56 2025 -0400
+
+    cosmetic/avoid warning
+
+commit d73a6e7ef5c6188b8c03e2c12fbaabdb1f8690e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 07:36:57 2025 -0400
+
+    improved HashTable concepts usage
+
+commit 5b0c415d2bcc90a62ffe740fb1e3afdf1805edfe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 07:37:23 2025 -0400
+
+    Cosmetic
+
+commit 3e2659c2002736899168010384569c4d4cdf2550
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 07:44:28 2025 -0400
+
+    g++ 14.2 says operator _xxxx deprecated - lose space separator
+
+commit 20a94e6132a37bddf7377b7c5b9ee5e19f44ceb7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 11:30:36 2025 -0400
+
+    HashTable code uses Digest::IHashFunction and a few other cleanups
+
+commit 02643099703a52e4cf7aa943698ec6d6cea582bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 11:30:56 2025 -0400
+
+    docs
+
+commit 022a58815b70c981a4ce8d0c244d74b5850a8292
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 11:31:27 2025 -0400
+
+    progress on Containers_Concrete_Mapping_HashTable
+
+commit 781ed80b487545b39a5a5f83608791ee79b08223
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 12:05:32 2025 -0400
+
+    More progress on Mapping_HashTable code (and tweaks to new HashTable class to make easier)
+
+commit b00e15b5596bad041fc2171ec837f059cc23b130
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 16:32:27 2025 -0400
+
+    More progress on DataStructures/HashTable and Concrete/Mapping_HashTable
+
+commit 3e168171cc69dd900074d9b77843f0661dcaf85b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 17:50:58 2025 -0400
+
+    fixed serious memory bug with InlineBuffer MOVE CTOR
+
+commit ab740d9779058aaf8d71a6e69645c9ee142cd90d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 17:51:26 2025 -0400
+
+    cosmetic
+
+commit eeaf3127c7c0fafc8b9346a4ded7c41fa849f608
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 17:51:57 2025 -0400
+
+    Minor fixes to Mapping_HashTable, and enable Mapping_HashTable regtests (first draft)
+
+commit 1f818e7fe54b5877f2ebf3e43380850a69a4fc53
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 18:03:35 2025 -0400
+
+    Mapping_HashTable regtests
+
+commit 4c5db841a66bf3a97130045f5a8cccfbfcda41ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 19:13:13 2025 -0400
+
+    fixed typo
+
+commit ffe139da6355a6375a303891fc5a11fcc0fa3701
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 19:23:45 2025 -0400
+
+    disbale broken (new) tests still fcn fix (mapping_)hashtable)
+
+commit a54a2347dca907494db5305bd89196965d1c0141
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 19:37:21 2025 -0400
+
+    improved Mapping regetsts; fixed bug iwth SortedMapping_SkipList (and if missing); and made Mapping_HashTable default (againish) in factory
+
+commit f12224b22d549ccde224c50e3f2faef72c221543
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 7 21:53:04 2025 -0400
+
+    fixed typo in last fix
+
+commit cf8d1d801489e9ae0ab6978fe839ea6cbca2871b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 08:44:28 2025 -0400
+
+    workaround failure to compile some stuff on clang++ - not sure why exactly - but testing
+
+commit 61a21d02295a6749801655c21e4d5dc1a9a076aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 08:54:20 2025 -0400
+
+    Added stlish alias for HashTable
+
+commit c4ffcbad5e95d20e5a7c23b9f3d701c43ca4fbe5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 09:04:05 2025 -0400
+
+    Added DEFAULT_HASHTABLE to Mapping_HashTable
+
+commit 6237e59560f9961e57d26384c1fbb7d03f9fe882
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 09:54:51 2025 -0400
+
+    Cosmetic
+
+commit 3ae54f1b5300ab001ed3b4dbd890decd094f266a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 09:55:14 2025 -0400
+
+    Mapping_Factory support for Mapping_HashTable
+
+commit c69ec864634641135a81d072ca02da1d6977f535
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 09:55:34 2025 -0400
+
+    cosmetic
+
+commit b0391b5eddd1755e58d56d95a9b9ae134cdd5356
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 09:56:07 2025 -0400
+
+    (go back to)  use Mapping_HashTable instead of SortedMapping_stdmap in DataExchange/Variant/JSON/Reader (optimization)
+
+commit e9e02ef14a0ec960ed922e1b1ddf850bb32517f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 10:22:18 2025 -0400
+
+    slight tweak to String::GetData()
+
+commit 6b46b07fd87813c83f694141c1dffdd32b10514a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 10:22:59 2025 -0400
+
+    restore hashtable optimization to Foundation/DataExchange/VariantValue
+
+commit 85a0ad2352ca14c4399e63420e041d5e4507d043
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 10:23:35 2025 -0400
+
+    use hashtabe/vector optimization (move) in Document/MongoDBClient bson converter
+
+commit 5ffb893792a1e748c0c0113f5ace4b238c6b2ec0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 11:20:54 2025 -0400
+
+    cleanup
+
+commit 556a993864d62ba61a47d187f608c79b07043c47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 11:21:30 2025 -0400
+
+    Comments
+
+commit 83ccfbd7fd7ae8cf421c46da07a0fdea584b57cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 12:08:57 2025 -0400
+
+    fixed missing include
+
+commit 2e1aa080def5de808903e6c7909cc7be22afe73c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 12:09:33 2025 -0400
+
+    early draft of KeyedCollection_HashTable and regtests
+
+commit 8decbe0fc19842b7dc3502a65876de97acf25be9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 12:45:03 2025 -0400
+
+    Containers/DataStructures/Array fix some issues (possible leak/no out of memory checks) in malloc impl
+
+commit ad85caf55b2ebd9d82134410afc502c8218b4b87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 12:45:53 2025 -0400
+
+    More progress on Concrete::KeyedCollection_HashTable - feature complete I THINK - except not compiling on windows (internal compiler error) - so spelunking
+
+commit 0be8a2a90e3e93e878eaa5c06bdf36287399d36a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 14:55:55 2025 -0400
+
+    fixed misinng #include
+
+commit ee158960abca9cda62bea149be8e6b1c33a41f54
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 14:56:15 2025 -0400
+
+    cosmetic
+
+commit 310fa39b7c9b0e1ad209d9c304e0456bd7104e71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 14:57:11 2025 -0400
+
+    cosmetic, and qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
+
+commit 882989e84a88df788e2a00f89a43317c9ba84f0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 21:34:42 2025 -0400
+
+    minor tweaks to HashTable code so can get working KeyedCollection_HashTable - about ready to really test (all parts compiling)
+
+commit 6211e4ebe090284d8d9130b8271249cee46b6d5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 21:43:09 2025 -0400
+
+    more progress on regtests and working on KeyedCollection_HashTable
+
+commit 329b778550c1d31983411363085c5440a2eee234
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 8 23:07:22 2025 -0400
+
+    add explicit template arguments where clang failed to deduce
+
+commit 2894397a73c7f7977bdade5aca2743aa46d00988
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 9 08:54:24 2025 -0400
+
+    new utility invocable_r
+
+commit f677f38b9048b19d961cd339806c671fc03c0be2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 9 11:09:32 2025 -0400
+
+    refactored Private::IteratorImplHelper_ to use new IteratorImplHelper_DefaultTraits (still not complete but should be as good as before - soon better)
+
+commit 02c97cffa20a31672bbe544c53cd6812197a8ad2
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 9 14:25:26 2025 -0400
+
+    qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy BWA
+
+commit 25271095eb52ba95ba06df7b870bf9c5f18f02d7
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 9 21:20:47 2025 -0400
+
+    qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy BWA
+
+commit c0ba5113ed349e2b79e3bfcb756c9fd7227213dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 9 22:02:28 2025 -0400
+
+    big cleanup/progrewss on IteratorImplHelper_DefaultTraits / IteratorImplHelper_
+
+commit 286caab973fecbf34399adb521b2b021ead7c805
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 08:12:05 2025 -0400
+
+    various small cleanups to HashTable code
+
+commit f974e7e4fccba85e18ec4d49748761f9a15e5114
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 08:12:42 2025 -0400
+
+    various small celanups to KeyedCollection_HashTable and enable regtests
+
+commit fc1dea3d8a72805760eb447f956747c01ab7a99f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 08:39:03 2025 -0400
+
+    Minor hashtable and keyedcollection regtest cleanups
+
+commit a93f604a4d7c697f5561297800d165bbf9829de3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 10:16:19 2025 -0400
+
+    KeyedCollection_Factory now (better) supports KeyedCollection_HashTable
+
+commit 39dd7999237574c3bee11ad476ed5e2a323c7d11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 10:46:00 2025 -0400
+
+    Minor cleanup to KeyedCollection_HashTable requires
+
+commit b29074bac5f48086c27fdad36823e72100beddbf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 11:31:53 2025 -0400
+
+    redo KeyedCollection_Factory check for building Concrete::KeyedCollection_HashTable... at least temporarily - I think old code made sense but didnt work on clang++, and others
+
+commit deda0c922de188e0382f1f3db5e2d4b5fab12186
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 11:32:56 2025 -0400
+
+    refactor (KeyedCollection_HashTable_Support::IValidHashTableTraits) - to simplify KeyedCollection_HashTable and improve contstraint checking
+
+commit 12bc99240fddab9126fe143edb5f9c0195a320f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 10 12:01:28 2025 -0400
+
+    experimental BWA for issues with KeyedCollection_Factory and Concrete::KeyedCollection_HashTable and gcc/clang
+
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 11 11:09:05 2025 -0400
+
+    docs and cleanup CTOR delegation in Containers/Private/XXXSupport classes
+
+commit 93ff09c53b3d76bc2d7f5c3411fec21a192a07d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 11 11:53:30 2025 -0400
+
+    Containers/Private/HashTableSupport progress, and used in KeyedCollection_HashTable
+
+commit d8d10e0318d1b7d87f9f85e6d5516f0706e5d54a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 11 12:40:43 2025 -0400
+
+    progress on Containers/Private/HashTableSupport
+
+commit 6e90c48d20bb9b75e6ec2d9b46639f810a370976
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 11 12:41:20 2025 -0400
+
+    Mapping_HashTable uses HashTableSupport
+
+commit 48fc5a129db4475a7084a527c97ed00e70891ab0
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 12 08:49:48 2025 -0400
+
+    include clang++-20 in DockerBuildContainers/Ubuntu2504-RegressionTests/Dockerfile
+
+commit 28e9bc33f9b17155311e188ed578366b7fde5638
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 12 09:33:44 2025 -0400
+
+    support _LIBCPP_VERSION version 20 bug defines
+
+commit f2eb190435d6524bd44da4c041f378a1318ad8b7
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 12 11:36:46 2025 -0400
+
+    a few minor Led cleanups
+
+commit 5807cc0c1657c0e1a7347f1470a968c81b1c69a4
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 12 11:54:42 2025 -0400
+
+    clang++-20 bug defines (ubuntu 25.04)
+
+commit 1f6c383472cf127301eedf52a28167eceacae82a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sat Apr 12 11:55:10 2025 -0400
+
+    added clang++20 build to github action builds
+
+commit beeb54ea72f5b4c064571f8db135433952799cd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 13 13:26:14 2025 -0400
+
+    maybe cleanup output in make regression-test-configurations for unix
+
+commit abb76a8001c548a755f602944be76c2710ac30fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 13 14:40:54 2025 -0400
+
+    Boost 1.88
+
+commit 7da9dc88a132337827f2064ba16f2d442db24c05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 13 14:41:14 2025 -0400
+
+    curl 8.13.0
+
+commit c9796c218f06f607708d1222c46c4ac89e8aa673
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 13 14:41:39 2025 -0400
+
+    libxml2 2.14.1
+
+commit d5675e0233be2943ca3345711d5ed50ae6833713
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 13 14:41:56 2025 -0400
+
+    openssl 3.5.0
+
+commit ec860838256bd82e93de1ac2b5e35dceaa4fea5f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 13 16:29:23 2025 -0400
+
+    include g++-15 in Ubuntu2504-RegressionTests/Dockerfile
+
+commit 1355f84ab89ff23ba36bb2671b6eac46b186bea3
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 13 16:30:21 2025 -0400
+
+    Added MONGO_CONNECTION_STRING to .vscode/launch.json
+
+commit b9f2d3a517d144ca4f6b29237f828a2978499219
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 13 19:32:27 2025 -0400
+
+    revert to libcurl 8.12.1 cuz of apparent asan issue
+
+commit 88158bc9edab1d55dcba743e17c08748b285d571
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 13 19:33:57 2025 -0400
+
+    revert to libcurl 8.12.1 cuz of apparent asan issue
+
+commit ac1d11247537078d1591c0efe1bfae791a81592a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 13 19:36:46 2025 -0400
+
+    fixed issue with default assertion handlers on UNIX with clang++ - fwrprintf not working right
+
+commit 4a7972a7c0738ef5db31576fc28a9130248c446a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Sun Apr 13 19:38:05 2025 -0400
+
+    Dont use OpenInputFileStream - just std lib open - cuz dont want
+    exceptions in this code
+
+commit e6e88fec122b3f0d7535408661b648001beb98cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 13 21:03:29 2025 -0400
+
+    fixed bug with Concrete/Mapping_HashTable Update
+
+commit 7ff200766a11a5e66761e2b65abe46829ba9d889
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 14 10:18:05 2025 -0400
+
+    fixed Memory::CopyOverlappingBytes() - I hope - to check/copy correctly and use Intersects to clarify; And fixed Memory::Insert to use CopyOverlappingBytes
+
+commit 4be2e35c87dc035c61d316eff200643d686613b3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 14 11:03:54 2025 -0400
+
+    Array<T>::Insert overload with span (todo fix naming) - and refactor to used Memory::Insert
+
+commit a6a1e9dac1b49063f9a53090a80e4a48858ca1e3
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 11:04:55 2025 -0400
+
+    bug defines for gcc 15
+
+commit df911b1fb35654a3ebe20f6e8130272647de2eaa
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 11:05:14 2025 -0400
+
+    cleanup regtest which no longer passes with gcc15
+
+commit ed0ace29d7768104fe72bf330400f139ae578d66
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 11:06:01 2025 -0400
+
+    Minor contianer backend cleanups/refactoring (mostly renames)
+
+commit 4fd578cbf8652a82f37905afe330bf2f2752a831
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 11:06:18 2025 -0400
+
+    github actions - include g++-15
+
+commit b15cb39cfde4dc1d2ea2d3dad6f6835ce32deccf
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 20:04:47 2025 -0400
+
+    minor attempts at fixing issues(bugs/regressions?) with Memory::Copy.... bytes/spans code
+
+commit c6ee6ff533e16b3d954de8c112e7cd9c7a16712a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 20:05:23 2025 -0400
+
+    revert to old Array<T>::InsertAt() impl - til I can fix fancier one
+
+commit 69e0ae84e8aba84f262594ce64c5abac806e79bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 14 20:19:25 2025 -0400
+
+    Renamed Array<T>::InsertAt to Insert()
+
+commit f5e1c867c61be75f67f04fe2fffab90d0b90d39b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 22:11:47 2025 -0400
+
+    more fixes to CopyOverlappingSpanData
+
+commit 4541a7b26b3ec37a567c4a7abc97fd9f0decf5b9
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Apr 14 22:13:25 2025 -0400
+
+    github action save space
+
+commit 0c9d136d5018de8c62a4ff75790c6a62da557768
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 15 08:28:18 2025 -0400
+
+    see if lising clang++-17 saves enuf space for github actions ubuntu 25
+
+commit 100665a2176d1f057c6e1f6ac38d7643a3d64e61
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Apr 15 10:06:18 2025 -0400
+
+    experiment with Array<T>::Insert
+
+commit 438ec9d98a1a1c166a645070f68b03ce3a3b7d7e
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Apr 15 13:48:24 2025 -0400
+
+    tweak .github action for g++-15 due to running out of space (-O1)
+
+commit a9fb3f258200cdd1d5f153b3a102f61507d6c395
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 15 13:29:25 2025 -0400
+
+    Array regtests improvements
+
+commit 7c7c4e9c0ebdb45eec9e7ad12432965117739a94
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 15 14:44:29 2025 -0400
+
+    Array<>::ReserveAtLeast utility - separate from reserve()
+
+commit dedd4f65b32455bf6526ac1f7fba99521c294e65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 15 14:45:15 2025 -0400
+
+    use Array::Insert(span) instead of manual reserve and lots of adds from Sequence_Array
+
+commit 6b51b930872269416aafaa94c13635368898cc54
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Apr 15 14:48:15 2025 -0400
+
+    revert Array<T>::Insert /1 since seems still broken under ubuntu 24.10 and g++14 release build
+
+commit 676df5b2905e5295d40bd5090acd3ece698007e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 15 21:59:24 2025 -0400
+
+    fixed Foundation/Memory/Common code calls to copy_backward, and related fixes to Memory::Insert()
+
+commit b0f8da4607a8493add578c2d6e0e3591a7bbbd10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 15 22:14:32 2025 -0400
+
+    fixed Array Iterator (forward/backward) operator==; and re-enable new version of Array<T>::Insert
+
+commit 222b4599ba8b0ac3c897d1390c4836755a5cd06d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Apr 15 22:43:54 2025 -0400
+
+    Memory cleanups, but still not fixed issue on gcc release builds
+
+commit 9f30d9618f52b2eb00987907bf28f24f2d1c647d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 08:19:20 2025 -0400
+
+    mostly cosmetic cleanups to Memory::Common code (doc pictures and simplifed some addressof checks
+
+commit 20ab6a5b8f371c259f926cd336b37859107fb450
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 08:19:49 2025 -0400
+
+    Insert_BWA HACK for Array and attmeped use for gcc 13 and 14
+
+commit 6194a6f2103bb2a21d25f6aad0cf341be61fe3cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 09:19:21 2025 -0400
+
+    Memory::Common - cleanup a few requires and comments
+
+commit d570357f739f0dedf025b02501a6c60df2ec4260
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 09:19:53 2025 -0400
+
+    Minor DoublyLinkedList cleanups (forward)
+
+commit 99ec1fda0c92bdc7b23889b14fa5725b05fcae8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 09:20:34 2025 -0400
+
+    Containers/DataStructures/Array minor cleanups and only do Insert_BWA for gcc 13 / 14
+
+commit 4c63b8ddf9a1aab075ed0ae235c97d5a9b6f1583
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 12:11:57 2025 -0400
+
+    datastrucutres LinkedList/DoublyLinkedList take span overloads on push_front,push_back (carefully document semantics); Sequence Rep :: Insert() method now uses span; and internally uses these new data strucuture push_back/front overloads(at least sometimes)
+
+commit 8171d1acfd6999898b411f5f007768b54669b68b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 16 12:12:45 2025 -0400
+
+    mark qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy broken in g++-15
+
+commit e7a7c73aae0f9c5f5f2bdf1fdbf0372dfd344de0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 13:00:55 2025 -0400
+
+    simplified/fixed LinkedList/DoublyLinkedList push_front to mainain order from span in span overload
+
+commit f25a5ccd0ecb953e1823ff19429cbe42f162c961
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 16 14:51:49 2025 -0400
+
+    use 1u instead of 1 in span in a few places to workaround issue with g++ (too many flakies at the moment to track this down and debug)
+
+commit 05a24116dafd929f09f1f04c875dcc6ab8f2d27d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 16 14:52:45 2025 -0400
+
+    Comments, and LinkedList - optimize push_back for span
+
+commit f5e40eecaf925995ed9b697fa93ad73ae06fa17e
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 16 17:29:52 2025 -0400
+
+    disabled temporary BWA Memory::Insert - since not failing now - confused
+
+commit 101b57661dba4afb380e7b7ed0ce0d1591fb47b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 20:11:28 2025 -0400
+
+    Re-enable BWA got just gcc 13 and 14
+
+commit a8c33c3f50e56190ebf5aa8e629a6962a03bbb66
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 16 20:12:17 2025 -0400
+
+    renamed Array::RemoveAt to Remove (2 overloads)
+
+commit 0a0d0808b20e79d928b2735800080c400c137dee
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 16 20:49:29 2025 -0400
+
+    added ubuntu-25.04-g++-15 rel build to github actions (v3-Release only)
+
+commit 392c970a9a0253f79ae47ae5bca570bea5d7d48a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Apr 16 20:49:59 2025 -0400
+
+    Added g++-15-release to makefile regtest build configs
+
+commit 5ecf04cacf675fc7f55ac36fed1fb9270b451641
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Apr 17 08:17:03 2025 -0400
+
+    qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy sometimes fails on gcc 15
+
+commit 375c06dd05705eff443b41e0f5ed47e79002c58c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 17 08:26:00 2025 -0400
+
+    suppress clang warning
+
+commit 8219e903384f00959581dcd415d01b4e3c65dc71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 17 08:27:06 2025 -0400
+
+    suppress clang warning
+
+commit ff656cb849a3e73c87a9fd9f5078c76c0201ab9d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Apr 17 09:17:46 2025 -0400
+
+    Array: deprecate AddBefore/AddAfter and add overloads to Insert for that purpose; improve docs
+
+commit 618b9af8f50c0964732eb887f23eebfb1d243e77
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Apr 17 15:19:55 2025 -0400
+
+    qCompilerAndStdLib_MemoryInsertAt_Buggy BWA
+
+commit 3172ac9b197d66d10f08f5e227e3cb9436378929
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Apr 17 20:41:07 2025 -0400
+
+    in mongodb test - write to DB in UTC, since we read back in UTC and compare equality
+
+commit 791b7dc5ac73caa531754e550cbe934ae02bb98c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 17 21:30:19 2025 -0400
+
+    Because MongoDB mongocxxdriver uses system_clock, which is neither steady nor monotonic, to store dates, in addition to other limitations, I decided to just write dates to mongodb as (UTC) iso8601 strings. Still read the native date if thats there, but just write strings
+
+commit 1d0bc1ce2bce3305963e181dc3a57679feef7f4d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Apr 18 08:47:02 2025 -0400
+
+    Silence some warnings in mongocxx builds (their problem not mine)
+
+commit cfb5cca5184e244a492e9f018442f0460470c7ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 18 08:54:14 2025 -0400
+
+    windows docker container uses VS_17_13_6
+
+commit 588764ab25b65f6514e57d8d27eb28f7cb4355f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 18 11:30:09 2025 -0400
+
+    new utility Execution::AnyCurrentActivities()
+
+commit 91beaa3ad15a659bfaa08870d7ce2215b604d4ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 18 11:31:01 2025 -0400
+
+    new overload for NestedException
+
+commit a17f6ba38534264d16c55e3f181e4d4f0d9db495
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 18 11:33:14 2025 -0400
+
+    MongoDBConnection support for NestedException wrapper of native mongodb excpetions - so they reflect 'current activities'
+
+commit 89dc72413e89c81c15dc17d5a04a3f5d79085024
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 18 11:33:49 2025 -0400
+
+    Better error reporting on mongodb exceptions in Samples/DocumentDB/Sources/Main
+
+commit 4cf9558255062099ac6b8831fde710ad7f5041db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 18 16:36:53 2025 -0400
+
+    stringop-overflow issue suppressed in configure for g++-15 as well (lto issue)
+
+commit 68fbc47cedafa7678accda6ff57c6199ee428e17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 18 20:43:55 2025 -0400
+
+    attempt to sielnce windows linker warning
+#endif
+
+
+------------------------------------
+
+
+
 ### 3.0d17 {2025-03-08} {[diff](../../compare/3.0d16...3.0d17)}
 
 #### TLDR
