@@ -12,19 +12,20 @@ This folder contains all the Stroika Library [Foundation](../../)::[IO](../)::Ne
 Other Types:
 
 - [CIDR.h](CIDR.h)
+- [HTTP/ReadMe.md](HTTP/ReadMe.md)
 - [Interface.h](Interface.h)
 - [InternetAddress.h](InternetAddress.h)
 - [InternetAddressRange.h](InternetAddressRange.h)
-- [InternetProtocol/](InternetProtocol/)
+- [InternetProtocol/ReadMe.md](InternetProtocol/ReadMe.md)
 - [LinkMonitor.h](LinkMonitor.h) - watch for changes in available networks
 - [Listener.h](Listener.h) - socket listener
 - [Neighbors.h](Neighbors.h) - find nearby devices on network
-- [Platform/](Platform/)
+- [Platform/ReadMe.md](Platform/ReadMe.md)
 - [Port.h](Port.h)
-- [SOAP/](SOAP/)
+- [SOAP/ReadMe.md](SOAP/ReadMe.md)
 - [SocketAddress.h](SocketAddress.h) - wrapper on sockaddr
 - [SocketStream.h](SocketStream.h)
 - [SystemFirewall.h](SystemFirewall.h)
-- [Transfer/](Transfer/) - curl/fetch interface
+- [Transfer/ReadMe.md](Transfer/ReadMe.md) - curl/fetch interface
 - [UniformResourceIdentification.h](UniformResourceIdentification.h)
 - [URL.h](URL.h)

@@ -2,41 +2,41 @@
 
 This folder contains all the Stroika Library Frameworks source code.
 
-- [Auth](Auth/)
+- [Auth](Auth/ReadMe.md)
 
   Support for authentication. WebServer interceptor to capture Auth headers; Identity manager to track (thread_local) user identities. OAuth support (data structures and webservice apis).
 
-- [Led](Led/)
+- [Led](Led/ReadMe.md)
 
   A rich text processing and editing framework (includes sample LedIt word processor application, and LedLineIt, text editor)
 
-- [Modbus](Modbus/)
+- [Modbus](Modbus/ReadMe.md)
 
   A library to interact with/exchange data over [Modbus](https://en.wikipedia.org/wiki/Modbus)
 
-- [NetworkMonitor](NetworkMonitor/)
+- [NetworkMonitor](NetworkMonitor/ReadMe.md)
   Framework for capturing network measurements, probes, etc.
 
   This is for things like ping, traceroute, but not for things like SNMP network data (which is in system monitor framework)
 
-- [Service](Service/)
+- [Service](Service/ReadMe.md)
 
   Package a program in the form of a UNIX or Windows service (aka daemon, app that auto-starts with OS, has installer, start/stop integrated with OS, etc)
 
-- [System Performance](SystemPerformance/)
+- [System Performance](SystemPerformance/ReadMe.md)
 
   Measure CPU usage, network usage, disk activity etc for a system, in a very straightfoward and system portable way
 
-- [UPnP](UPnP/)
+- [UPnP](UPnP/ReadMe.md)
 
   Universal Plug and Play.
   The only part currently implemented is SSDP
 
-- [Web Server](WebServer/)
+- [Web Server](WebServer/ReadMe.md)
 
   Provide basic web server functionality within your application, including routers, interceptors etc.
 
-- [Web Service](WebService/)
+- [Web Service](WebService/ReadMe.md)
 
   Expose programatic APIs through web services (SOAP, JSON, REST).
   This framework depends on the Web-Server framework

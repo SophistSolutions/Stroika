@@ -14,11 +14,11 @@ going in/out of a module.
 
 Most Central Classes:
 
-- [Archive](Archive/)
+- [Archive](Archive/ReadMe.md)
 
   Algorithms that provide storage of (often folders) of data. This is for formats like 'zip' file, or .7z files
 
-- [Compression](Compression/)
+- [Compression](Compression/ReadMe.md)
 
   Algorithms that provide compression/decompression of streams of data
 
@@ -34,7 +34,7 @@ Most Central Classes:
 
   This is only moderately similar to std::variant\<>. Its more similar to MSFT COM VARIANT_VALUE. Its an object with a fixed enumeration of possible types (closely fitting the data model used by python, JSON, and other weakly typed languages). It's ideal as a lingua-franca for exchanging data between strongly typed C++ structures and external formats like JSON.
 
-- [Variant](Variant/)
+- [Variant](Variant/ReadMe.md)
 
   Algorithms that convert between VariantValues and forms like XML, JSON, CSV, etc..
 
@@ -51,5 +51,5 @@ Others:
 
 - StructFieldMetaInfo - [StructFieldMetaInfo.h](StructFieldMetaInfo.h)
 
-- [StructFieldMetaInfo/](StructFieldMetaInfo/)
-- [XML/](XML/)
+- [StructFieldMetaInfo/](StructFieldMetaInfo/ReadMe.md)
+- [XML/](XML/ReadMe.md)

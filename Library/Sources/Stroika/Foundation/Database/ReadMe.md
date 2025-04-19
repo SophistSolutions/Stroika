@@ -4,4 +4,5 @@ This folder contains all the Stroika Library [Foundation](../)::Database source 
 
 ## Modules
 
-- [SQL](SQL/) - tools like SQLite, ODBCClient, ORM, etc...
+- [Document](Document/ReadMe.md) - Document database oriented code, include trivial, sqlite, mongodb
+- [SQL](SQL/ReadMe.md) - tools like SQLite, ODBCClient, ORM, etc...
