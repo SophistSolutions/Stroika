@@ -12,6 +12,7 @@ especially those they need to be aware of when upgrading.
 
     HTMLUI code cleanups (html)
 
+- DOCS (doxygen)
 
 - thirdpartycomponent
   - **new** mongocxxdriver (qFeatureFlag_mongocxxdriver)

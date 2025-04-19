@@ -1,4 +1,4 @@
-# Stroika Library Frameworks
+# Stroika Library Frameworks  {#Stroika-Library-Frameworks}
 
 This folder contains all the Stroika Library Frameworks source code.
 

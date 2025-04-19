@@ -1,6 +1,8 @@
 # Stroika Library {#mainpage}
 - [All Classes](annotated.html)
 - [All Files](files.html)
+- [Foundation](#Stroika-Library-Foundation)
+- [Frameworks](#Stroika-Library-Frameworks)
 
 ### Getting Started
 - [Building Stroika](#Building-Stroika)

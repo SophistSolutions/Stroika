@@ -1,8 +1,8 @@
-# Stroika Library Foundation
+# Stroika Library Foundation {#Stroika-Library-Foundation}
 
 This folder contains all the Stroika Library Foundation source code.
 
-- [Cache/](Cache/) - Smart storage of partial data structures
+- [Cache/](Cache/ReadMe.md) - Smart storage of partial data structures
 - [Characters/](Characters/) - Character and String classes
 - [Common/](Common/) - Various building blocks used elsewhere
 - [Containers/](Containers/) - Stack, Set, Sequence, etc...
