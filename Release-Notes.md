@@ -67,7 +67,7 @@ especially those they need to be aware of when upgrading.
     - Optionally (but default on) include python in windows docker containers (so can build mongodbclient)
     - Windows Container
       - Use VS_17_13_5
-
+    - **new** Ubuntu 25.04 support
 - Documentation
   - Miscelaneous comments/docx cleanups
   - Tweaked Doxgygen linking and Table-Of-Contents a bit
@@ -77,9 +77,13 @@ especially those they need to be aware of when upgrading.
   - ALL (pan-library)
     - lose [[nodiscard]] on a bunch of types (like String, Timezzone, TimeOfDay, etc, cuz too banket a rule and no way to reverse [[nodicard] on a type
   - Characters
+    - String
+      - Skip utility slightly better behavior and slihgtly better performance
+
   - Common
     - Compiler Bug Defines
       - new BWA qCompilerAndStdLib_constructible_Buggy
+      - new qCompilerAndStdLib_illunderstood_ispan_Buggy BWA
     - Concepts
       - correct corner case of IEqualToOptimizable:  check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did on msvc)
 
@@ -87,9 +91,32 @@ especially those they need to be aware of when upgrading.
     - Associaion and Mapping
       - fixed RemoveAll support to work with iterable_keys argument
       - Fixed RetainAll - big cleanup, and apparent bug in retainall was really bug with Mapping_stdhashmap impl (now killed)
+      - close jira issue http://stroika-bugs.sophists.com/browse/STK-539 and open replacement issue for more narrow but more serious https://stroika.atlassian.net/browse/STK-1026, and provide (temporary) workaround for the isssue (so tests not failing now), and then fixed https://stroika.atlassian.net/browse/STK-1026
+    - Misc Concrete
+      - Minor cleanups to container backend imps of remove/erase - making more uniform how approached, and maybe more safe (re-use erase result)
+    - Private
+      - STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone () change to take extra parameter, eventually to fix https://stroika.atlassian.net/browse/STK-1026 but for now sb no effect
+
+    - https://stroika.atlassian.net/browse/STK-1026 - 
+      - LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
+
+    - DataStructures
+      - **new** HashTable (and regression test)
+      - All 
+        - renamed DataStructure::*::RemoveAll() to '...clear' - since stl methods have that name/semantics
+      - Array
+        - Array<> template: docs, new .data() method, new Find () overloads (to be more similar to other datastructure classes), depreacte Contains() method, and added RemoveAt () overload and refactored RemoveAt to use new Memory::Remove() functionality
+      - LinkedList
+        - cleanups (forward and docs)
+
     - Mapping
 
   - Database
+    - SQL
+      - fThreadingMode default (and changed sample)
+      - use SQLiteCallback_ utility
+      - opening memory dbs and better error reporting and docs
+
     - **new Document module**
       - Filter
       - ObjectCollection
@@ -102,6 +129,17 @@ especially those they need to be aware of when upgrading.
       -  ValidateQuietly method added
     - Synchronized
       - Added requires to Syncrhonized CTOR to produce better error messages from compiler
+
+  - Math
+    - **new** PrimeAtLeastThisBig
+
+  - Memory
+    - Common
+      -  fixed CopyOverlappingBytes to use copy or copy_backward depending on direction of copy; and new CopyOverlappingSpanData that works with non-byteish data
+      - modernized concept ISpan def, improved CompareBytes() def, and related docs/cleanups
+      - **new** Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
+    - InlineBuffer
+      - added Remove () method
 
   - Time
     - Date
@@ -130,247 +168,11 @@ especially those they need to be aware of when upgrading.
     - FEATUREFLAG_mongocxxdriver to default on, if python present
   - libcurl
     - Cleanup libcurl makefile for recent changes to Configuration.mk handling of PKG_CONFIG_PATH= and var +PKG_CONFIG_STROIKA_DEPENDS_ON and used to silence a warning cuz of stuff not fully built when libcurl being built
+  - sqlite
+    - makefile cleanups
+
    
 #if 0
-commit e098cb165c8fc5d0634e4634638dae803fa49bff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 18:40:05 2025 -0400
-
-    Minor sqlite cleanups; added kDefault_ThreadingMode=ThreadingMode::eMultiThread (with docs why); fixed minor bug settings flags based on this flag/enum
-
-commit 6c2647fba9ec8e16d5a6609ef654719182290b5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 18:40:38 2025 -0400
-
-    react to change of default fThreadingMode in sample
-
-commit f367003bd63ea4d951e6b669e875e778016dcc75
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 18:41:45 2025 -0400
-
-    experiment with fBusyTimeout in Samples/DocumentDB for SQLite - but not happy with this
-
-commit 93b157405ab416ba343ed43f9066de0d70c3dd16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 31 10:06:02 2025 -0400
-
-    start using SQLiteCallback_ utility in Database/SQL/SQLite
-
-commit c7da566f98eaaf9adfa98f3e88c27be8dae54ddb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 31 14:54:07 2025 -0400
-
-    Document/SQLIte db support: fixes to ThrowSQLiteErrorIfNotOK_() so we get better exception messages (todo in sql code);  and beginnings of mkPreparedStatement_() usage
-
-commit ffc31eda26058083ffcece362eac3b6000f6b187
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 31 16:03:40 2025 -0400
-
-    fixed bug with sqlite documentdb supprot for in-memory dbs - so actually sharing in memory db now works right
-
-commit 7f0c996c16a4142d25093f9077aab974fd56a571
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 31 16:05:07 2025 -0400
-
-    Minor cleanups to Samples/DocumentDB/Sources, messages, etc, and  docs about fBusyTimeout
-
-commit 34c858a4872ae0f848ae05c901c143f746d994a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 31 16:34:39 2025 -0400
-
-    applied some of the fixes I did to DocumentDB SQLITE code to SQL code (opening memory dbs and better error reporting and docs)
-
-commit a31b8433ffab853222f14d349fad83b0a2b48883
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 31 16:43:23 2025 -0400
-
-    hopefully fix forwarding of MONGO_CONNECTION_STRING to docker containers in ScriptsLib/RunRemoteRegressionTests
-
-commit d5c3aaa30a8b2c71a74f340c03be403a6079d338
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 1 13:53:02 2025 -0400
-
-    close jira issue http://stroika-bugs.sophists.com/browse/STK-539 and open replacement issue for more narrow but more serious https://stroika.atlassian.net/browse/STK-1026, and provide (temporary) workaround for the isssue (so tests not failing now)
-
-commit 44f6ab55018491232dd4d33053a347cd8b97c68c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 1 16:00:32 2025 -0400
-
-    Minor cleanups to container backend imps of remove/erase - making more uniform how approached, and maybe more safe (re-use erase result)
-
-commit 04c00bc3eaf12329e215691baf82790527192f17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 1 16:17:40 2025 -0400
-
-    change docs for local regtest runs to use hardwired ip addr for mongo since dns resolution not working from inside containers
-
-commit 61ad316eaf505b13eff0e08f7720dcf2e734c135
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 2 11:08:19 2025 -0400
-
-    STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone () change to take extra parameter, eventually to fix https://stroika.atlassian.net/browse/STK-1026 but for now sb no effect
-
-commit 06bf1ead5f621d56761dc403a41b88e52a840ec8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 2 19:23:18 2025 -0400
-
-    https://stroika.atlassian.net/browse/STK-1026 - LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
-
-commit 9099782d2e3df002eaca99ff2261080f38d26dc1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 10:04:02 2025 -0400
-
-    new module DataStructures::HashTable (totally no-functional so far - just early draft); added regression test for hashtable code and renumbered rest
-
-commit c98f18b4770786062fdd713913df31805b114345
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 11:52:40 2025 -0400
-
-    lose qCompilerAndStdLib_stdhashmap_erase_Buggy due to https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order
-
-commit 052ce37a2a9df162cefa1ec3e2a39e229d4ee891
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 12:38:04 2025 -0400
-
-    new Math::PrimeAtLeastThisBig
-
-commit cafd3a52bf9a6e73f6eebc995b2734d07a6afd70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 12:38:27 2025 -0400
-
-    progress on new HashTable code
-
-commit b273229ae873ee1e299794e14d1306561b0308e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 13:17:19 2025 -0400
-
-    renamed DataStructure::*::RemoveAll() to '...clear' - since stl methods have that name/semantics
-
-commit 36f4b752a7595f78f7a555ff1f4fba5a565c5e71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 14:32:26 2025 -0400
-
-    more progress on HashTable code - minimalist version mostly complete (now can iterate at least)
-
-commit f9df7653de6ec2c44cab59a977286b2a8da5e910
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 20:07:40 2025 -0400
-
-    fixed CopyOverlappingBytes to use copy or copy_backward depending on direction of copy; and new CopyOverlappingSpanData that works with non-byteish data
-
-commit 86aef56c886ee83b50d51204e2c42fd4ba96016c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 20:09:04 2025 -0400
-
-    little tested - InlineBuffer<T, BUF_SIZE>::Remove
-
-commit 7f959ec06bd2733aaa5c8c31d79c5fbc031be96c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 3 20:10:10 2025 -0400
-
-    slight more progress on HashTable (removeif test case works)
-
-commit 6d937c5aa6f2be6c7f062a834bc0fceba68ea3d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 4 08:33:57 2025 -0400
-
-    fixes for InlineBuffer<T, BUF_SIZE>::Remove - but still must review / test
-
-commit 3f266995359b66fcf0aeba67c6d1434957890aa6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 4 08:37:45 2025 -0400
-
-    qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy BWA
-
-commit 3b4ab233fc5ccbfc0f3ca4f066a32ddc46a90740
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 4 11:02:10 2025 -0400
-
-    fixed bugs in new InlineBuffer remove code, and added regtests
-
-commit b161a989cda05fb6ba137b67a766fa1660583081
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 4 13:28:20 2025 -0400
-
-    tried to make sqlite makefile download more resilient but failed to find mirror of amalgamation
-
-commit 9dde72f55e05deece579758c6a38d66594d360ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 5 09:02:26 2025 -0400
-
-    Memory::Common cleanups: modernized concept ISpan def, improved CompareBytes() def, and related docs/cleanups
-
-commit 83abd016b728e3252a6c67db76ecfbb9ae9687ab
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 5 09:05:49 2025 -0400
-
-    minor sqlite makefile cleanups
-
-commit 2ae328fe7c1c828bc33cc5e16a0cfb2b1894bd57
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 5 09:06:44 2025 -0400
-
-    Minor fixes to Memory::Common utilities (#include missing etc)
-
-commit e7dd46be2fb764af5b2e2bbe25a157d721874fa5
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 5 09:17:12 2025 -0400
-
-    new experimentional support for ubuntu 25.10 - docker containers regtests etc
-
-commit 3a0c54c2a34232ac578295aa7590cb683cbf691d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 5 10:24:10 2025 -0400
-
-    a few new HashTable methods - more needed - but nearly complete (though not super tested til we use in containers)
-
-commit 408b7117c61306e386bff652c0ceef18eca83869
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 5 10:35:11 2025 -0400
-
-    fixed build scripts for docker container 25.04
-
-commit 8c845830d91f94f2005796b52b4eb81b12f7fd80
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Apr 5 18:42:38 2025 -0400
-
-    qCompilerAndStdLib_illunderstood_ispan_Buggy BWA
-
-commit a552bbeb2c3c63b1bcf7976b18dc790994fd241c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Apr 5 18:48:33 2025 -0400
-
-    String::Skip utility slightly better behavior and slihgtly better performance
-
-commit 7adfa33f92503150d4e7ff8199a01baf492a6e17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 6 08:10:04 2025 -0400
-
-    new Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
-
-commit 300c75d7abccc763b6ff96b6e84f98e57ae08fbf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 6 09:49:33 2025 -0400
-
-    Array<> template: docs, new .data() method, new Find () overloads (to be more similar to other datastructure classes), depreacte Contains() method, and added RemoveAt () overload and refactored RemoveAt to use new Memory::Remove() functionality
-
-commit e4a3be9f22e9d6029b6da4efd9fc4a3d8cc2c46a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 6 09:50:14 2025 -0400
-
-    Minor LinkedList cleanups (forward and docs)
-
-commit 175de07ec9b5a059b0795d22d3bc10c416f13493
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 6 09:52:12 2025 -0400
-
-    fixed one [[maybe_unused]]
-
-commit 0c5117390e5bc1d99429109b0672a4be36d6df58
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 6 10:06:31 2025 -0400
-
-    Iterable<T> minor tweaks; and static_assert (__cpp_lib_execution test
 
 commit 43bbfcc335f8c26d2d9ef7b2838b14c5d0f7e6e7
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -378,29 +180,11 @@ Date:   Sun Apr 6 11:43:01 2025 -0400
 
     define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - but not sure I have this understood properly
 
-commit 155ece1631e0501efcc4f686936a550db43d7e6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 6 12:07:03 2025 -0400
-
-    Minor HashTable cleanups
-
-commit 78dfd45aaea74e62038ba55ddf75e1988db47bbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 6 22:14:02 2025 -0400
-
-    fixed minor typos in DataStructures/HashTable
-
 commit 85be8ab5a7230cdd949220bb7608e04cea9424ae
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 6 22:15:15 2025 -0400
 
     early draft of Mapping_HashTable HashTableSupport
-
-commit a2d4f3ba28154859c7db39c1eba72599f5c6432a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 6 22:15:45 2025 -0400
-
-    __cpp_lib_execution still misisng on CLANG++-20 Ubuntu 25.04
 
 commit d73a6e7ef5c6188b8c03e2c12fbaabdb1f8690e6
 Author: Lewis Pringle <lewis@sophists.com>
