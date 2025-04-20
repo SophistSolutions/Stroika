@@ -12,17 +12,25 @@ especially those they need to be aware of when upgrading.
 
 
 - Build System
+  - github actions
+    - improved catpure of logfiles for unix
+    - more 'save space' code needed for clang++-19 c++23 ubuntu 24.10 debug configuration
   - Makefile (top level)
     - cleanup use of DEFAULT_CONFIGURATION_ADD2ALL in toplevel makefile - not needed - use use already existing EXTRA_CONFIGURE_ARGS= respected by configure - and better docs on this in makefile
     - improved make help
     - fixed https://stroika.atlassian.net/browse/STK-1005 - vscode/c_cpp_properties.json depends on ThirdPartyComponents/lib/pkgconfig/*.pc rebuild only that file
+    - fixed default mkaefile configs to use 'use-system' instead of 'system' (caught by better error handling in configure script)
+
   - Makefiles 
+    - added + lines before cmake --build to address warning from make call from cmake about -j flags being ignored (https://stackoverflow.com/questions/44042771/cmake-add-prefix-to-build-command-to-enable-parallel-make - Add '+' to parent make rule issue
+
     - pkgconfig
       - major cleanups
       - progress cleaning up pkgconfig usage - I think can just use pkg-config --msvc-syntax for libs on windows and then lost most/all of the patches I was doing to .pc files with sed
       - fixes to pkg-config files for gtest_main, openssl
       - configure now adds openssl to pkgconfig configuraiton, instead of adding explicit paths; and lose #pragma comment link stuff - so now even for windows using pkg-config for openssl (had to patch pc files in openssl build to make them work)
       - fixed ApplyConfiguration handling of PkgConfig files for vscode files (small issue) and vcproj files (was never supported)
+      - define and use in Configuration.mk PKG_CONFIG_STROIKA_DEPENDS_ON and PKG_CONFIG_PATH variables
     - SharedMakeVariables-Default.mk 
       - lose unused StroikaFoundationSupportLibs and TPP_PKG_CONFIG_PATH
     - use single-quotes windows CPPFlags for -I names
@@ -33,21 +41,48 @@ especially those they need to be aware of when upgrading.
     - dont have all-thirdparty flag for configure include mongodb without python being installed
     - configure (and related) scripts - added VSVARS_PLATFORM_INCLUDES_PATH (windows only); separted CPPFLAGS_NOTINCLUDES vs regular CPPFLAGS;
     - lose CPPFLAGS from Configuration file (just keep CPPFLAGS_NOTINCLUDES); and keep CPPFLAGS in Configuration.mk file
+    - configure script: ValidateUseArg_() - and if use-system on zlib - double check really installed (onlyGenerateIfCompilerExists)
+
   - Scripts
-    - ApplyConfigurations
+    - ApplyConfigurations (aka Configuration.mk)
       - mostly fixed https://stroika.atlassian.net/browse/STK-1005 - Configuration.mk depends on .rc files; and fixed ApplyConfigurations to check pkg-config files
+      - writing CPPFLAGS and LinkerArgs_LibDependencies all set in one line without += in .mk file
+      - use nested shell syntax for pkg-config call in ApplyConfiguration
+    - Makefile-CMake-Common.mk
+      - add comments about how to add CMAKE_ARGS --trace/--debug-output;
+      - depending on AssertionsEnabled, set CMAKE_MSVC_RUNTIME_LIBRARY
+      - turn on CMAKE_VERBOSE_MAKEFILE=1 for cmake builds
     - FixupDashIs 
       - new utility script and used in ApplyConfigurations - so now less tmphack workaround for libxml2 stuff - and just dependency on pkg-config stuff
     - Makefile-CMake-Common.mk
       - small cleanup to ScriptsLib/Makefile-CMake-Common.mk (windows only code ifdefed)
+    - RunRemoteRegressionTests
+      - Added MONGO_CONNECTION_STRING support
+    - RegressionTests
+      - print MONGO_CONNECTION_STRING in regressiontests script
+      - Added Samples-DocumentDB/DocumentDB to regressiontests samples to run
+
+
   - Docker Build Containers
     - Optionally (but default on) include python in windows docker containers (so can build mongodbclient)
+    - Windows Container
+      - Use VS_17_13_5
 
 - Documentation
   - Miscelaneous comments/docx cleanups
   - Tweaked Doxgygen linking and Table-Of-Contents a bit
+  - docs testing and tweaks for running local docker container mongodb
 
 - Library
+  - ALL (pan-library)
+    - lose [[nodiscard]] on a bunch of types (like String, Timezzone, TimeOfDay, etc, cuz too banket a rule and no way to reverse [[nodicard] on a type
+  - Characters
+  - Common
+    - Compiler Bug Defines
+      - new BWA qCompilerAndStdLib_constructible_Buggy
+    - Concepts
+      - correct corner case of IEqualToOptimizable:  check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did on msvc)
+
   - Containers
     - Associaion and Mapping
       - fixed RemoveAll support to work with iterable_keys argument
@@ -62,6 +97,18 @@ especially those they need to be aware of when upgrading.
       - SQLite backend impl
       - MongoDB backend impl
       - TrivialDocumentDB backend impl
+  - Execution
+    - CommandLine
+      -  ValidateQuietly method added
+    - Synchronized
+      - Added requires to Syncrhonized CTOR to produce better error messages from compiler
+
+  - Time
+    - Date
+      - Date::As() now uses concepts like DateTime::As() so better compiler error messages
+    - DateTime
+      - tweak requires on DateTime::As() method
+
   - Traversal
     - Iterable
       - Minor cleanup to Iterable<>::container_Of_T CTOR - fix to give better error message/concepts copyable
@@ -77,233 +124,14 @@ especially those they need to be aware of when upgrading.
     - Added Foundation_Containers_Mapping, RetainAllCaseFails_ regtest - failing sometimes (more)
 
 - thirdpartycomponent
+  - boost
+    - version 1.88
   - **new** mongocxxdriver (qFeatureFlag_mongocxxdriver)
     - FEATUREFLAG_mongocxxdriver to default on, if python present
-
+  - libcurl
+    - Cleanup libcurl makefile for recent changes to Configuration.mk handling of PKG_CONFIG_PATH= and var +PKG_CONFIG_STROIKA_DEPENDS_ON and used to silence a warning cuz of stuff not fully built when libcurl being built
+   
 #if 0
-
-commit db0b8a10739156aaa62bce0a4e17895a173d0acc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 14 13:05:22 2025 -0400
-
-    Foundation/Database/Document/Connection start regtests support
-
-commit 1d9e314905d4260e11b465d7370ea43d5c513409
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 14 16:11:09 2025 -0400
-
-    define and use in Configuration.mk PKG_CONFIG_STROIKA_DEPENDS_ON and PKG_CONFIG_PATH variables
-
-commit 4ed6ae86b4a471a2cedf048181d27c98bfb271d1
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 14 16:29:20 2025 -0400
-
-    Cleanup libcurl makefile for recent changes to Configuration.mk handling of PKG_CONFIG_PATH= and var +PKG_CONFIG_STROIKA_DEPENDS_ON and used to silence a warning cuz of stuff not fully built when libcurl being built
-
-commit 19dbbeccf0765ad4222552b5021af7e89b237bd8
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 14 17:07:51 2025 -0400
-
-    export PKG_CONFIG_STROIKA_DEPENDS_ON
-
-commit 71f546357bc079cc79209f5cb664392402000947
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 14 17:41:44 2025 -0400
-
-    Adjust +PKG_CONFIG_STROIKA_DEPENDS_ON for ThirdPartyComponents/mongo-cxx-driver/Makefile
-
-commit 10ec21888370f3a3a4cd8ae80dd9c1bf257f2b32
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 14 17:47:13 2025 -0400
-
-    progress debugigng scripting suse with ApplyConfiguraiotn and libcurl build on unix
-
-commit 2a16c54b956eaf6f8e6fec31661c77c0551735e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 14 19:25:18 2025 -0400
-
-    github action - improved catpure of logfiles for unix
-
-commit 4f1f63458586f70110b6ec75ea8aa20baf0cb5b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 14 19:54:38 2025 -0400
-
-    experimental change to ApplyConfigurations so CPPFLAGS and LinkerArgs_LibDependencies all set in one line without += in .mk file
-
-commit 49ced1513d5320cc3e585ff8a43b08ff5db7eb79
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 14 20:05:44 2025 -0400
-
-    capture more from build-N-test.yml unix log data czu cannot repro problem
-
-commit 53913c0b812ea6d4a2f6e7b08db611402a3f12fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 15 09:45:37 2025 -0400
-
-    use nested shell syntax for pkg-config call in ApplyConfiguration
-
-commit 85d7b31ec56a9ed6e954ec8f9e4223b1d5a37ef6
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Mar 15 09:51:28 2025 -0400
-
-    lose logfile save not needed it githun actions
-
-commit 65be9383ea2ddb8592120786d0cfa7103e585292
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 16 15:35:19 2025 -0400
-
-    ScriptsLib/Makefile-CMake-Common.mk: add comments about how to add CMAKE_ARGS --trace/--debug-output; depending on AssertionsEnabled, set CMAKE_MSVC_RUNTIME_LIBRARY
-
-commit ba8fc288ec74f42e41bb1029e0f6b3bd65d4c4c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 18 14:06:40 2025 -0400
-
-    Modest progress on DocuemntDB Filter/Projection apis
-
-commit 6953a4e4dd7eeb3596cdcd352a2ff72e7512d5b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 18 15:40:14 2025 -0400
-
-    correct corner case (at least on msvc) of IEqualToOptimizable - check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did)
-
-commit 4ac7c50a76ec9bb2741c1a538d777046dd7b2132
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 20 09:53:17 2025 -0400
-
-    MongoDBClient::Activator fixes (quirky behavior of underling mongocxx::instance); and support commandline option mongoConnectionString on regtest and more regtest progress for documentdb stuff
-
-commit fb8d667b2a5b5812f74a1f25b014b70cb6a5b9f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 20 10:58:48 2025 -0400
-
-    Document DB code - clarify UpdateDocument vs ReplaceDocument, and added regtests for both (passing)
-
-commit 71068ae4784048188cf52e18d0003ff403569e6e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 20 11:08:09 2025 -0400
-
-    BWA qCompilerAndStdLib_constructible_Buggy
-
-commit 3230fe88cc15f4df56397a44ee2eac4503f2eba3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 20 13:59:34 2025 -0400
-
-    docs testing and tweaks for running local docker container mongodb (very prelim docs) to test -
-
-commit 2b37f04b3b264c01dfee06764c21141f7ff8f9b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 21 13:15:29 2025 -0400
-
-    github actions more 'save space' code needed for clang++-19 c++23 ubuntu 24.10 debug configuraiton
-
-commit ce882d77cf78b462278f6fd629567e4e56ac172c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Mar 21 17:35:52 2025 -0400
-
-    added + lines before cmake --build to address warning from make call from cmake about -j flags being ignored (https://stackoverflow.com/questions/44042771/cmake-add-prefix-to-build-command-to-enable-parallel-make)  - Add '+' to parent make rule issue
-
-commit 3d37fe739a14ff55d55cd0c80b7832fbe7a1e8cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 23 08:38:58 2025 -0400
-
-    Added requires<> to Syncrhonized CTOR to produce better error messages from compiler
-
-commit cd420a5c5a452b113fadc54caae58107a405c2c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 24 11:32:39 2025 -0400
-
-    String no longer defined [[nodiscard]] cuz there is no way to undo that unfortunately, and some APIs return Strings where it makes sense to ignore
-
-commit 4ebf78a89e39294bc06dbe0da9bc456fdb2eb64a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 26 21:35:58 2025 -0400
-
-    Date::As() now uses concepts like DateTime::As() so better compiler error messages
-
-commit c083cc40cec0f576ae35893ec41e11234b8b03bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 26 21:36:46 2025 -0400
-
-    tweak requires on DateTime::As() method
-
-commit e994f86e3c00323b717aa3696df4b0e4bbf697d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 27 09:53:41 2025 -0400
-
-    lose [[nodiscard]] on a bunch of types (like Timezzone, TimeOfDay, etc, cuz too banket a rule and no way to reverse [[nodicard] on a type
-
-commit 67c064f986eccfee9c81a6aa3871243718c22961
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 28 17:43:19 2025 -0400
-
-    configure script: ValidateUseArg_() - and if use-system on zlib - double check really installed (onlyGenerateIfCompilerExists)
-
-commit 01d070e087170f674dee142901d37a8249575493
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Mar 28 17:43:56 2025 -0400
-
-    fixed default mkaefile configs to use 'use-system' instead of 'system'
-
-commit dec99c923fc01e91ba74e8d8c5477aca09505c1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 28 17:46:55 2025 -0400
-
-    docker VS_17_13_5
-
-commit 47a211119e821ca4a21e5250e63a1a97ed3d917f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 29 09:58:53 2025 -0400
-
-    turn on CMAKE_VERBOSE_MAKEFILE=1 for cmake builds
-
-commit 2db9a724d38d573c373b6022a7c7eba3778819c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 29 10:39:55 2025 -0400
-
-    workaround msvc 4166 compiler warnings about code in mongocxxclient (appears real warning but not much I can do)
-
-commit 3519c1abac24d5d7077b121e7077238d9ce99454
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 29 10:40:20 2025 -0400
-
-    Added MONGO_CONNECTION_STRING support to RunRemoteRegressionTests (untested)
-
-commit e631dfd74109ce3615c8d670b8856f9ece08d6d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 12:51:25 2025 -0400
-
-    print MONGO_CONNECTION_STRING in regressiontests script
-
-commit 64fd77b948460625da8c19b70c0f7cca8e6d4c8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 12:54:00 2025 -0400
-
-    update docs on MONGO_CONNECTION_STRING for regressiontests
-
-commit ff123dbb05754d3a15a7eae0049012672360b9d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 15:17:33 2025 -0400
-
-    CommandLine: ValidateQuietly method added
-
-commit d2b16bef725e740d7504d9e17eec527aba2180ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 15:18:08 2025 -0400
-
-    document and fix Document/SQLite so can call CreateCollection if it already exists
-
-commit bdf968aeba2ed2d9e22d1f7d5a5b738e3ddfee70
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 15:18:43 2025 -0400
-
-    DocumentDB sample - enhanced mongo code, and added sqlite test cases (not fully working)
-
-commit 16140277bcc2c320a71bce17a96e14f6267664f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 30 15:28:23 2025 -0400
-
-    Added Samples-DocumentDB/DocumentDB to regressiontests samples to run
-
 commit e098cb165c8fc5d0634e4634638dae803fa49bff
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Mar 30 18:40:05 2025 -0400
@@ -848,12 +676,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 13 13:26:14 2025 -0400
 
     maybe cleanup output in make regression-test-configurations for unix
-
-commit abb76a8001c548a755f602944be76c2710ac30fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 13 14:40:54 2025 -0400
-
-    Boost 1.88
 
 commit 7da9dc88a132337827f2064ba16f2d442db24c05
 Author: Lewis Pringle <lewis@sophists.com>
