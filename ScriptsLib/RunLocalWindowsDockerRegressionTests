@@ -29,7 +29,7 @@ DOCKER_RUN_ARGS_+=" --name $CONTAINER_NAME"
 if [[ "$DOCKER_NETWORK" != "" ]] ; then
     DOCKER_RUN_ARGS_ = "${DOCKER_RUN_ARGS_} --network ${DOCKER_NETWORK}"
 fi
-DOCKER_RUN_ARGS_+=" --storage-opt \"size=125GB\""
+DOCKER_RUN_ARGS_+=" --storage-opt \"size=150GB\""
 
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
 
