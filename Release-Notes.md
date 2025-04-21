@@ -7,9 +7,23 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 3.0d18 {2025-04-??} {[diff](../../compare/3.0d17...3.0d18)}     -- DRAFT
 
-### PROTO REL 3.0d18
+#### TLDR
 
+- LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because, due to issue with COW and iteration guarantees. Replace with new HashTable (DataStructures) based implmenetations of basically the same thing
+  - https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
+  - https://stroika.atlassian.net/browse/STK-1026
+- New Foundation::Database::Document module
+  - sample provided
+  - implements MongoDB connection, SQLite backed impl (via json extension) and TrivialDocumentDB backends
+- Support Ubuntu 25.04, g++15, and clang++-20
+
+#### Upgrade Notes (3.0d17 to 3.0d18)
+
+- If you directly used KeyedCollection_stdhashset or Mapping_stdhashmap, replace with KeyedCollection_HashTable/Mapping_HashTable
+
+#### Change Details
 
 - Build System
   - github actions
@@ -18,16 +32,13 @@ especially those they need to be aware of when upgrading.
     - added clang++20 build to github action builds
     - include g++-15
     - tweak .github action for g++-15 due to running out of space (-O1)
-
   - Makefile (top level)
     - cleanup use of DEFAULT_CONFIGURATION_ADD2ALL in toplevel makefile - not needed - use use already existing EXTRA_CONFIGURE_ARGS= respected by configure - and better docs on this in makefile
     - improved make help
     - fixed https://stroika.atlassian.net/browse/STK-1005 - vscode/c_cpp_properties.json depends on ThirdPartyComponents/lib/pkgconfig/*.pc rebuild only that file
     - fixed default mkaefile configs to use 'use-system' instead of 'system' (caught by better error handling in configure script)
-
   - Makefiles 
     - added + lines before cmake --build to address warning from make call from cmake about -j flags being ignored (https://stackoverflow.com/questions/44042771/cmake-add-prefix-to-build-command-to-enable-parallel-make - Add '+' to parent make rule issue
-
     - pkgconfig
       - major cleanups
       - progress cleaning up pkgconfig usage - I think can just use pkg-config --msvc-syntax for libs on windows and then lost most/all of the patches I was doing to .pc files with sed
@@ -46,7 +57,6 @@ especially those they need to be aware of when upgrading.
     - configure (and related) scripts - added VSVARS_PLATFORM_INCLUDES_PATH (windows only); separted CPPFLAGS_NOTINCLUDES vs regular CPPFLAGS;
     - lose CPPFLAGS from Configuration file (just keep CPPFLAGS_NOTINCLUDES); and keep CPPFLAGS in Configuration.mk file
     - configure script: ValidateUseArg_() - and if use-system on zlib - double check really installed (onlyGenerateIfCompilerExists)
-
   - Scripts
     - ApplyConfigurations (aka Configuration.mk)
       - mostly fixed https://stroika.atlassian.net/browse/STK-1005 - Configuration.mk depends on .rc files; and fixed ApplyConfigurations to check pkg-config files
@@ -67,177 +77,151 @@ especially those they need to be aware of when upgrading.
       - Added Samples-DocumentDB/DocumentDB to regressiontests samples to run
     - RunLocalWindowsDockerRegressionTests
       - fixed so sizes disk properly (quoting) and sizes larger so works on windows (builds have gotten bigger), and upped size to 175GB
-
   - Docker Build Containers
     - Optionally (but default on) include python in windows docker containers (so can build mongodbclient)
     - Windows Container
       - Use VS_17_13_6
-
     - **new** Ubuntu 25.04 support
   - .vscode
     - Added MONGO_CONNECTION_STRING to .vscode/launch.json
-
 - Documentation
   - Miscelaneous comments/docx cleanups
   - Tweaked Doxgygen linking and Table-Of-Contents a bit
   - docs testing and tweaks for running local docker container mongodb
-
 - Library
   - ALL (pan-library)
     - lose [[nodiscard]] on a bunch of types (like String, Timezzone, TimeOfDay, etc, cuz too banket a rule and no way to reverse [[nodicard] on a type
     - g++ 14.2 says operator _xxxx deprecated - so lose space separator in our operator '' literals
-  - Characters
-    - String
-      - Skip utility slightly better behavior and slihgtly better performance
-      - slight tweak to String::GetData()
-
-  - Common
-    - Compiler Bug Defines
-      - new BWA qCompilerAndStdLib_constructible_Buggy
-      - new qCompilerAndStdLib_illunderstood_ispan_Buggy BWA
-      - define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - 
-      - bug defines for g++-15
-      - support _LIBCPP_VERSION version 20 bug defines
-      - **new** qCompilerAndStdLib_MemoryInsertAt_Buggy BWA (release builds gcc 13 and gcc 14)
-
-
-    - Concepts
-      - correct corner case of IEqualToOptimizable:  check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did on msvc)
-      - new utility invocable_r
-
-  - Containers
-    - Associaion and Mapping
-      - fixed RemoveAll support to work with iterable_keys argument
-      - Fixed RetainAll - big cleanup, and apparent bug in retainall was really bug with Mapping_stdhashmap impl (now killed)
-      - close jira issue http://stroika-bugs.sophists.com/browse/STK-539 and open replacement issue for more narrow but more serious https://stroika.atlassian.net/browse/STK-1026, and provide (temporary) workaround for the isssue (so tests not failing now), and then fixed https://stroika.atlassian.net/browse/STK-1026
-    - Misc Concrete
-      - Minor cleanups to container backend imps of remove/erase - making more uniform how approached, and maybe more safe (re-use erase result)
-    - Private
-      - STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone () change to take extra parameter, eventually to fix https://stroika.atlassian.net/browse/STK-1026 but for now sb no effect
-      - **new** HashTableSupport (classes to capture common features for hashtable-based concrete containers)
-      - refactored Private::IteratorImplHelper_ to use new IteratorImplHelper_DefaultTraits
-      - cleanup CTOR delegation in Containers/Private/XXXSupport classes
-
-
-    - https://stroika.atlassian.net/browse/STK-1026 - 
-      - LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
-
-    - DataStructures
-      - **new** HashTable (and regression test)
-      - All 
-        - renamed DataStructure::*::RemoveAll() to '...clear' - since stl methods have that name/semantics
-      - Array
-        - Array<> template: docs, new .data() method, new Find () overloads (to be more similar to other datastructure classes), depreacte Contains() method, and added RemoveAt () overload and refactored RemoveAt to use new Memory::Remove() functionality
-        - Containers/DataStructures/Array fix some issues (possible leak/no out of memory checks) in malloc impl
-        - Array<T>::Insert overload with span (todo fix naming) - and refactor to used Memory::Insert
-        - Renamed Array<T>::InsertAt to Insert()
-        - Array regtests improvements
-        - Array<>::ReserveAtLeast utility - separate from reserve()
-        - fixed Array Iterator (forward/backward) operator==; and re-enable new version of Array<T>::Insert
-        - renamed Array::RemoveAt to Remove (2 overloads)
-        - deprecate AddBefore/AddAfter and add overloads to Insert for that purpose;
-
-      - DoublyLinkedList
-        -  Minor cleanups (forward iterator)
-      - LinkedList
-        - cleanups (forward iterator and docs)
-      - DoublyLinkedList and LinkedList
-        -  take span overloads on push_front,push_back (carefully document semantics); 
-        
-
-    - KeyedCollection
-      - **new** KeyedCollection_HashTable and regtests and use as appropriate in Factory
-    - Mapping
-      - **new** Mapping_HashTable
-      - improved Mapping regetsts; 
-      - fixed bug iwth SortedMapping_SkipList (and if missing); 
-      - and made Mapping_HashTable default (againish) in factory
-
-    - Sequence
-      - Sequence X Rep :: Insert() method now uses span and new span-based insert etc methods in DataStructures 
-    - Sequence_Array
-      - use Array::Insert(span) instead of manual reserve and lots of adds from Sequence_Array
-
-
-  - Database
-    - SQL
-      - fThreadingMode default (and changed sample)
-      - use SQLiteCallback_ utility
-      - opening memory dbs and better error reporting and docs
-
-    - **new Document module**
-      - Filter
-      - ObjectCollection
-      - Projection
-      - SQLite backend impl
-      - MongoDB backend impl
-      - TrivialDocumentDB backend impl
-  - DataExchange
-    - VariantValue
-      - (go back to)  use Mapping_HashTable instead of SortedMapping_stdmap in DataExchange/Variant/JSON/Reader (optimization)
-  - Debug
-    - Assert
-      - fixed issue with default assertion handlers on UNIX with clang++ - fwrprintf not working right
-
-  - Execution
-    - Activity
-      - new utility AnyCurrentActivities()
-    - CommandLine
-      -  ValidateQuietly method added
-    - NestedException
-      - new overload for NestedException CTOR
-    - Synchronized
-      - Added requires to Syncrhonized CTOR to produce better error messages from compiler
-
-  - Math
-    - **new** PrimeAtLeastThisBig
-
-  - Memory
+  - Foundation
+    - Characters
+      - String
+        - Skip utility slightly better behavior and slihgtly better performance
+        - slight tweak to String::GetData()
     - Common
-      -  fixed CopyOverlappingBytes to use copy or copy_backward depending on direction of copy; and new CopyOverlappingSpanData that works with non-byteish data
-      - modernized concept ISpan def, improved CompareBytes() def, and related docs/cleanups
-      - **new** Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
-      - fixed Memory::CopyOverlappingBytes() - I hope - to check/copy correctly and use Intersects to clarify; 
-      - fixed Memory::Insert to use CopyOverlappingBytes
-      - more fixes to CopyOverlappingSpanData
-      - fixed Foundation/Memory/Common code calls to copy_backward, and related fixes to Memory::Insert()
-      - mostly cosmetic cleanups to Memory::Common code (doc pictures and simplifed some addressof checks
-
-    - InlineBuffer
-      - added Remove () method
-      - fixed serious memory bug with InlineBuffer MOVE CTOR
-
-  - Time
-    - Date
-      - Date::As() now uses concepts like DateTime::As() so better compiler error messages
-    - DateTime
-      - tweak requires on DateTime::As() method
-
-  - Traversal
-    - Iterable
-      - Minor cleanup to Iterable<>::container_Of_T CTOR - fix to give better error message/concepts copyable
-
+      - Compiler Bug Defines
+        - new BWA qCompilerAndStdLib_constructible_Buggy
+        - new qCompilerAndStdLib_illunderstood_ispan_Buggy BWA
+        - define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - 
+        - bug defines for g++-15
+        - support _LIBCPP_VERSION version 20 bug defines
+        - **new** qCompilerAndStdLib_MemoryInsertAt_Buggy BWA (release builds gcc 13 and gcc 14)
+      - Concepts
+        - correct corner case of IEqualToOptimizable:  check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did on msvc)
+        - new utility invocable_r
+    - Containers
+      - Associaion and Mapping
+        - fixed RemoveAll support to work with iterable_keys argument
+        - Fixed RetainAll - big cleanup, and apparent bug in retainall was really bug with Mapping_stdhashmap impl (now killed)
+        - close jira issue http://stroika-bugs.sophists.com/browse/STK-539 and open replacement issue for more narrow but more serious https://stroika.atlassian.net/browse/STK-1026, and provide (temporary) workaround for the isssue (so tests not failing now), and then fixed https://stroika.atlassian.net/browse/STK-1026
+      - Misc Concrete
+        - Minor cleanups to container backend imps of remove/erase - making more uniform how approached, and maybe more safe (re-use erase result)
+      - Private
+        - STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone () change to take extra parameter, eventually to fix https://stroika.atlassian.net/browse/STK-1026 but for now sb no effect
+        - **new** HashTableSupport (classes to capture common features for hashtable-based concrete containers)
+        - refactored Private::IteratorImplHelper_ to use new IteratorImplHelper_DefaultTraits
+        - cleanup CTOR delegation in Containers/Private/XXXSupport classes
+      - https://stroika.atlassian.net/browse/STK-1026 - 
+        - LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
+      - DataStructures
+        - **new** HashTable (and regression test)
+        - All 
+          - renamed DataStructure::*::RemoveAll() to '...clear' - since stl methods have that name/semantics
+        - Array
+          - Array<> template: docs, new .data() method, new Find () overloads (to be more similar to other datastructure classes), depreacte Contains() method, and added RemoveAt () overload and refactored RemoveAt to use new Memory::Remove() functionality
+          - Containers/DataStructures/Array fix some issues (possible leak/no out of memory checks) in malloc impl
+          - Array<T>::Insert overload with span (todo fix naming) - and refactor to used Memory::Insert
+          - Renamed Array<T>::InsertAt to Insert()
+          - Array regtests improvements
+          - Array<>::ReserveAtLeast utility - separate from reserve()
+          - fixed Array Iterator (forward/backward) operator==; and re-enable new version of Array<T>::Insert
+          - renamed Array::RemoveAt to Remove (2 overloads)
+          - deprecate AddBefore/AddAfter and add overloads to Insert for that purpose;
+        - DoublyLinkedList
+          -  Minor cleanups (forward iterator)
+        - LinkedList
+          - cleanups (forward iterator and docs)
+        - DoublyLinkedList and LinkedList
+          -  take span overloads on push_front,push_back (carefully document semantics); 
+      - KeyedCollection
+        - **new** KeyedCollection_HashTable and regtests and use as appropriate in Factory
+      - Mapping
+        - **new** Mapping_HashTable
+        - improved Mapping regetsts; 
+        - fixed bug iwth SortedMapping_SkipList (and if missing); 
+        - and made Mapping_HashTable default (againish) in factory
+      - Sequence
+        - Sequence X Rep :: Insert() method now uses span and new span-based insert etc methods in DataStructures 
+      - Sequence_Array
+        - use Array::Insert(span) instead of manual reserve and lots of adds from Sequence_Array
+    - Database
+      - SQL
+        - fThreadingMode default (and changed sample)
+        - use SQLiteCallback_ utility
+        - opening memory dbs and better error reporting and docs
+      - **new module** Document
+        - Filter
+        - ObjectCollection
+        - Projection
+        - SQLite backend impl
+        - MongoDB backend impl
+        - TrivialDocumentDB backend impl
+    - DataExchange
+      - VariantValue
+        - (go back to)  use Mapping_HashTable instead of SortedMapping_stdmap in DataExchange/Variant/JSON/Reader (optimization)
+    - Debug
+      - Assert
+        - fixed issue with default assertion handlers on UNIX with clang++ - fwrprintf not working right
+    - Execution
+      - Activity
+        - new utility AnyCurrentActivities()
+      - CommandLine
+        -  ValidateQuietly method added
+      - NestedException
+        - new overload for NestedException CTOR
+      - Synchronized
+        - Added requires to Syncrhonized CTOR to produce better error messages from compiler
+    - Math
+      - **new** PrimeAtLeastThisBig
+    - Memory
+      - Common
+        -  fixed CopyOverlappingBytes to use copy or copy_backward depending on direction of copy; and new CopyOverlappingSpanData that works with non-byteish data
+        - modernized concept ISpan def, improved CompareBytes() def, and related docs/cleanups
+        - **new** Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
+        - fixed Memory::CopyOverlappingBytes() - I hope - to check/copy correctly and use Intersects to clarify; 
+        - fixed Memory::Insert to use CopyOverlappingBytes
+        - more fixes to CopyOverlappingSpanData
+        - fixed Foundation/Memory/Common code calls to copy_backward, and related fixes to Memory::Insert()
+        - mostly cosmetic cleanups to Memory::Common code (doc pictures and simplifed some addressof checks
+      - InlineBuffer
+        - added Remove () method
+        - fixed serious memory bug with InlineBuffer MOVE CTOR
+    - Time
+      - Date
+        - Date::As() now uses concepts like DateTime::As() so better compiler error messages
+      - DateTime
+        - tweak requires on DateTime::As() method
+    - Traversal
+      - Iterable
+        - Minor cleanup to Iterable<>::container_Of_T CTOR - fix to give better error message/concepts copyable
 - Frameworks
   - SystemPerformance
     - Dont use OpenInputFileStream - just std lib open - cuz dont want exceptions in a couple places (code written old style if (in) ...)
-
 - Samples
-  - **new** DocumentDB
+  - **new** DocumentDB sample
   - HTMLUI
     - code cleanups (html)
-
 - Tests
   - Regression tests for new DocumentDB code
   - Mapping
     - Added Foundation_Containers_Mapping, RetainAllCaseFails_ regtest - failing sometimes (more)
-
-- thirdpartycomponent
+- ThirdPartyComponents
   - boost
     - version 1.88
   - **new** mongocxxdriver (qFeatureFlag_mongocxxdriver)
     - FEATUREFLAG_mongocxxdriver to default on, if python present
   - libcurl
-    - Cleanup libcurl makefile for recent changes to Configuration.mk handling of PKG_CONFIG_PATH= and var +PKG_CONFIG_STROIKA_DEPENDS_ON and used to silence a warning cuz of stuff not fully built when libcurl being built
+    - Cleanup makefile for recent changes to Configuration.mk handling of PKG_CONFIG_PATH= and var +PKG_CONFIG_STROIKA_DEPENDS_ON 
+    - used to silence a warning cuz of stuff not fully built when libcurl being built
     - TRIED version 8.13.0, but revert to libcurl 8.12.1 cuz of apparent asan issue
   - libxml2
     -version 2.14.1
@@ -246,10 +230,38 @@ especially those they need to be aware of when upgrading.
   - sqlite
     - makefile cleanups
 
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14. 15 }
+  - Clang++ { unix: 15, 16, 17, 18, 19, 20; XCode: 15.2, 15.3, 16.0 }
+  - MSVC: { 17.13.6 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20241208.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 24.10. 25.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+
 
 ------------------------------------
-
-
 
 ### 3.0d17 {2025-03-08} {[diff](../../compare/3.0d16...3.0d17)}
 
