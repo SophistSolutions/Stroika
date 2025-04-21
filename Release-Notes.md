@@ -61,6 +61,8 @@ especially those they need to be aware of when upgrading.
     - RegressionTests
       - print MONGO_CONNECTION_STRING in regressiontests script
       - Added Samples-DocumentDB/DocumentDB to regressiontests samples to run
+    - RunLocalWindowsDockerRegressionTests
+      - (testing) size=150GB
 
 
   - Docker Build Containers
@@ -76,16 +78,22 @@ especially those they need to be aware of when upgrading.
 - Library
   - ALL (pan-library)
     - lose [[nodiscard]] on a bunch of types (like String, Timezzone, TimeOfDay, etc, cuz too banket a rule and no way to reverse [[nodicard] on a type
+    - g++ 14.2 says operator _xxxx deprecated - so lose space separator in our operator '' literals
   - Characters
     - String
       - Skip utility slightly better behavior and slihgtly better performance
+      - slight tweak to String::GetData()
 
   - Common
     - Compiler Bug Defines
       - new BWA qCompilerAndStdLib_constructible_Buggy
       - new qCompilerAndStdLib_illunderstood_ispan_Buggy BWA
+      - define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - 
+      - bug defines for g++-15
+
     - Concepts
       - correct corner case of IEqualToOptimizable:  check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did on msvc)
+      - new utility invocable_r
 
   - Containers
     - Associaion and Mapping
@@ -96,6 +104,8 @@ especially those they need to be aware of when upgrading.
       - Minor cleanups to container backend imps of remove/erase - making more uniform how approached, and maybe more safe (re-use erase result)
     - Private
       - STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone () change to take extra parameter, eventually to fix https://stroika.atlassian.net/browse/STK-1026 but for now sb no effect
+      - **new** HashTableSupport (classes to capture common features for hashtable-based concrete containers)
+      - refactored Private::IteratorImplHelper_ to use new IteratorImplHelper_DefaultTraits
 
     - https://stroika.atlassian.net/browse/STK-1026 - 
       - LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
@@ -106,10 +116,18 @@ especially those they need to be aware of when upgrading.
         - renamed DataStructure::*::RemoveAll() to '...clear' - since stl methods have that name/semantics
       - Array
         - Array<> template: docs, new .data() method, new Find () overloads (to be more similar to other datastructure classes), depreacte Contains() method, and added RemoveAt () overload and refactored RemoveAt to use new Memory::Remove() functionality
+        - Containers/DataStructures/Array fix some issues (possible leak/no out of memory checks) in malloc impl
       - LinkedList
         - cleanups (forward and docs)
+        
 
+    - KeyedCollection
+      - **new** KeyedCollection_HashTable and regtests and use as appropriate in Factory
     - Mapping
+      - **new** Mapping_HashTable
+      - improved Mapping regetsts; 
+      - fixed bug iwth SortedMapping_SkipList (and if missing); 
+      - and made Mapping_HashTable default (againish) in factory
 
   - Database
     - SQL
@@ -124,6 +142,9 @@ especially those they need to be aware of when upgrading.
       - SQLite backend impl
       - MongoDB backend impl
       - TrivialDocumentDB backend impl
+  - DataExchange
+    - VariantValue
+      - (go back to)  use Mapping_HashTable instead of SortedMapping_stdmap in DataExchange/Variant/JSON/Reader (optimization)
   - Execution
     - CommandLine
       -  ValidateQuietly method added
@@ -140,6 +161,7 @@ especially those they need to be aware of when upgrading.
       - **new** Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
     - InlineBuffer
       - added Remove () method
+      - fixed serious memory bug with InlineBuffer MOVE CTOR
 
   - Time
     - Date
@@ -173,216 +195,6 @@ especially those they need to be aware of when upgrading.
 
    
 #if 0
-
-commit 43bbfcc335f8c26d2d9ef7b2838b14c5d0f7e6e7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 6 11:43:01 2025 -0400
-
-    define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - but not sure I have this understood properly
-
-commit 85be8ab5a7230cdd949220bb7608e04cea9424ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 6 22:15:15 2025 -0400
-
-    early draft of Mapping_HashTable HashTableSupport
-
-commit d73a6e7ef5c6188b8c03e2c12fbaabdb1f8690e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 07:36:57 2025 -0400
-
-    improved HashTable concepts usage
-
-commit 3e2659c2002736899168010384569c4d4cdf2550
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 07:44:28 2025 -0400
-
-    g++ 14.2 says operator _xxxx deprecated - lose space separator
-
-commit 20a94e6132a37bddf7377b7c5b9ee5e19f44ceb7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 11:30:36 2025 -0400
-
-    HashTable code uses Digest::IHashFunction and a few other cleanups
-
-commit 022a58815b70c981a4ce8d0c244d74b5850a8292
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 11:31:27 2025 -0400
-
-    progress on Containers_Concrete_Mapping_HashTable
-
-commit 781ed80b487545b39a5a5f83608791ee79b08223
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 12:05:32 2025 -0400
-
-    More progress on Mapping_HashTable code (and tweaks to new HashTable class to make easier)
-
-commit b00e15b5596bad041fc2171ec837f059cc23b130
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 16:32:27 2025 -0400
-
-    More progress on DataStructures/HashTable and Concrete/Mapping_HashTable
-
-commit 3e168171cc69dd900074d9b77843f0661dcaf85b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 17:50:58 2025 -0400
-
-    fixed serious memory bug with InlineBuffer MOVE CTOR
-
-commit eeaf3127c7c0fafc8b9346a4ded7c41fa849f608
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 17:51:57 2025 -0400
-
-    Minor fixes to Mapping_HashTable, and enable Mapping_HashTable regtests (first draft)
-
-commit 1f818e7fe54b5877f2ebf3e43380850a69a4fc53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 18:03:35 2025 -0400
-
-    Mapping_HashTable regtests
-
-commit a54a2347dca907494db5305bd89196965d1c0141
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 7 19:37:21 2025 -0400
-
-    improved Mapping regetsts; fixed bug iwth SortedMapping_SkipList (and if missing); and made Mapping_HashTable default (againish) in factory
-
-commit cf8d1d801489e9ae0ab6978fe839ea6cbca2871b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 08:44:28 2025 -0400
-
-    workaround failure to compile some stuff on clang++ - not sure why exactly - but testing
-
-commit c4ffcbad5e95d20e5a7c23b9f3d701c43ca4fbe5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 09:04:05 2025 -0400
-
-    Added DEFAULT_HASHTABLE to Mapping_HashTable
-
-commit 3ae54f1b5300ab001ed3b4dbd890decd094f266a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 09:55:14 2025 -0400
-
-    Mapping_Factory support for Mapping_HashTable
-
-commit b0391b5eddd1755e58d56d95a9b9ae134cdd5356
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 09:56:07 2025 -0400
-
-    (go back to)  use Mapping_HashTable instead of SortedMapping_stdmap in DataExchange/Variant/JSON/Reader (optimization)
-
-commit e9e02ef14a0ec960ed922e1b1ddf850bb32517f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 10:22:18 2025 -0400
-
-    slight tweak to String::GetData()
-
-commit 6b46b07fd87813c83f694141c1dffdd32b10514a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 10:22:59 2025 -0400
-
-    restore hashtable optimization to Foundation/DataExchange/VariantValue
-
-commit 85a0ad2352ca14c4399e63420e041d5e4507d043
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 10:23:35 2025 -0400
-
-    use hashtabe/vector optimization (move) in Document/MongoDBClient bson converter
-
-commit 2e1aa080def5de808903e6c7909cc7be22afe73c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 12:09:33 2025 -0400
-
-    early draft of KeyedCollection_HashTable and regtests
-
-commit 8decbe0fc19842b7dc3502a65876de97acf25be9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 12:45:03 2025 -0400
-
-    Containers/DataStructures/Array fix some issues (possible leak/no out of memory checks) in malloc impl
-
-commit ad85caf55b2ebd9d82134410afc502c8218b4b87
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 12:45:53 2025 -0400
-
-    More progress on Concrete::KeyedCollection_HashTable - feature complete I THINK - except not compiling on windows (internal compiler error) - so spelunking
-
-commit 310fa39b7c9b0e1ad209d9c304e0456bd7104e71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 14:57:11 2025 -0400
-
-    cosmetic, and qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
-
-commit 882989e84a88df788e2a00f89a43317c9ba84f0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 21:34:42 2025 -0400
-
-    minor tweaks to HashTable code so can get working KeyedCollection_HashTable - about ready to really test (all parts compiling)
-
-commit 6211e4ebe090284d8d9130b8271249cee46b6d5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 21:43:09 2025 -0400
-
-    more progress on regtests and working on KeyedCollection_HashTable
-
-commit 329b778550c1d31983411363085c5440a2eee234
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 8 23:07:22 2025 -0400
-
-    add explicit template arguments where clang failed to deduce
-
-commit 2894397a73c7f7977bdade5aca2743aa46d00988
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 9 08:54:24 2025 -0400
-
-    new utility invocable_r
-
-commit f677f38b9048b19d961cd339806c671fc03c0be2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 9 11:09:32 2025 -0400
-
-    refactored Private::IteratorImplHelper_ to use new IteratorImplHelper_DefaultTraits (still not complete but should be as good as before - soon better)
-
-commit 02c97cffa20a31672bbe544c53cd6812197a8ad2
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 9 14:25:26 2025 -0400
-
-    qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy BWA
-
-commit 25271095eb52ba95ba06df7b870bf9c5f18f02d7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 9 21:20:47 2025 -0400
-
-    qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy BWA
-
-commit c0ba5113ed349e2b79e3bfcb756c9fd7227213dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 9 22:02:28 2025 -0400
-
-    big cleanup/progrewss on IteratorImplHelper_DefaultTraits / IteratorImplHelper_
-
-commit f974e7e4fccba85e18ec4d49748761f9a15e5114
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 10 08:12:42 2025 -0400
-
-    various small celanups to KeyedCollection_HashTable and enable regtests
-
-commit fc1dea3d8a72805760eb447f956747c01ab7a99f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 10 08:39:03 2025 -0400
-
-    Minor hashtable and keyedcollection regtest cleanups
-
-commit a93f604a4d7c697f5561297800d165bbf9829de3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 10 10:16:19 2025 -0400
-
-    KeyedCollection_Factory now (better) supports KeyedCollection_HashTable
-
-commit 39dd7999237574c3bee11ad476ed5e2a323c7d11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 10 10:46:00 2025 -0400
-
-    Minor cleanup to KeyedCollection_HashTable requires
 
 commit b29074bac5f48086c27fdad36823e72100beddbf
 Author: Lewis Pringle <lewis@sophists.com>
