@@ -36,22 +36,23 @@ especially those they need to be aware of when upgrading.
     - cleanup use of DEFAULT_CONFIGURATION_ADD2ALL in toplevel makefile - not needed - use use already existing EXTRA_CONFIGURE_ARGS= respected by configure - and better docs on this in makefile
     - improved make help
     - fixed https://stroika.atlassian.net/browse/STK-1005 - vscode/c_cpp_properties.json depends on ThirdPartyComponents/lib/pkgconfig/*.pc rebuild only that file
-    - fixed default mkaefile configs to use 'use-system' instead of 'system' (caught by better error handling in configure script)
+    - fixed default makefile configs to use 'use-system' instead of 'system' (caught by better error handling in configure script)
   - Makefiles 
     - added + lines before cmake --build to address warning from make call from cmake about -j flags being ignored (https://stackoverflow.com/questions/44042771/cmake-add-prefix-to-build-command-to-enable-parallel-make - Add '+' to parent make rule issue
     - pkgconfig
       - major cleanups
-      - progress cleaning up pkgconfig usage - I think can just use pkg-config --msvc-syntax for libs on windows and then lost most/all of the patches I was doing to .pc files with sed
+      - use pkg-config --msvc-syntax for libs on windows and then lost most/all of the patches I was doing to .pc files with sed
       - fixes to pkg-config files for gtest_main, openssl
-      - configure now adds openssl to pkgconfig configuraiton, instead of adding explicit paths; and lose #pragma comment link stuff - so now even for windows using pkg-config for openssl (had to patch pc files in openssl build to make them work)
+      - configure now adds openssl to pkgconfig configuration, instead of adding explicit paths; 
+      - lose #pragma comment link stuff - so now even for windows using pkg-config for openssl (had to patch pc files in openssl build to make them work)
       - fixed ApplyConfiguration handling of PkgConfig files for vscode files (small issue) and vcproj files (was never supported)
       - define and use in Configuration.mk PKG_CONFIG_STROIKA_DEPENDS_ON and PKG_CONFIG_PATH variables
     - SharedMakeVariables-Default.mk 
       - lose unused StroikaFoundationSupportLibs and TPP_PKG_CONFIG_PATH
     - use single-quotes windows CPPFlags for -I names
     - cleanup/unify naming of some makefile variables (private ones)
-    - moved BWA for cmake/_DEBUG/_RELEASE flag issue from ScriptsLib/Makefile-CMake-Common.mk to ThirdPartyComponents/Xerces/Makefile since appears specific to xerces;
-      put CMAKE_C_FLAGS_DEBUG/RELASE etc hack back into /Makefile-CMake-Common.mk since needed and better documented why
+    - tried to move BWA for cmake/_DEBUG/_RELEASE flag issue from ScriptsLib/Makefile-CMake-Common.mk to ThirdPartyComponents/Xerces/Makefile since appears specific to xerces;
+      but put CMAKE_C_FLAGS_DEBUG/RELASE etc hack back into /Makefile-CMake-Common.mk since needed and better documented why
   - configure
     - dont have all-thirdparty flag for configure include mongodb without python being installed
     - configure (and related) scripts - added VSVARS_PLATFORM_INCLUDES_PATH (windows only); separted CPPFLAGS_NOTINCLUDES vs regular CPPFLAGS;
@@ -66,7 +67,7 @@ especially those they need to be aware of when upgrading.
       - add comments about how to add CMAKE_ARGS --trace/--debug-output;
       - depending on AssertionsEnabled, set CMAKE_MSVC_RUNTIME_LIBRARY
       - turn on CMAKE_VERBOSE_MAKEFILE=1 for cmake builds
-    - FixupDashIs 
+    - **new** FixupDashIs 
       - new utility script and used in ApplyConfigurations - so now less tmphack workaround for libxml2 stuff - and just dependency on pkg-config stuff
     - Makefile-CMake-Common.mk
       - small cleanup to ScriptsLib/Makefile-CMake-Common.mk (windows only code ifdefed)
@@ -184,14 +185,14 @@ especially those they need to be aware of when upgrading.
       - **new** PrimeAtLeastThisBig
     - Memory
       - Common
-        -  fixed CopyOverlappingBytes to use copy or copy_backward depending on direction of copy; and new CopyOverlappingSpanData that works with non-byteish data
+        - CopyOverlappingBytes
+          - fixed to use copy or copy_backward depending on direction of copy; 
+          - fixed to check/copy correctly and use Intersects to clarify
+        - new CopyOverlappingSpanData 
+          - that works with non-byteish data
         - modernized concept ISpan def, improved CompareBytes() def, and related docs/cleanups
         - **new** Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
-        - fixed Memory::CopyOverlappingBytes() - I hope - to check/copy correctly and use Intersects to clarify; 
-        - fixed Memory::Insert to use CopyOverlappingBytes
-        - more fixes to CopyOverlappingSpanData
-        - fixed Foundation/Memory/Common code calls to copy_backward, and related fixes to Memory::Insert()
-        - mostly cosmetic cleanups to Memory::Common code (doc pictures and simplifed some addressof checks
+        - mostly cosmetic cleanups to Memory::Common code (doc pictures and simplifed some addressof checks)
       - InlineBuffer
         - added Remove () method
         - fixed serious memory bug with InlineBuffer MOVE CTOR
@@ -259,7 +260,6 @@ especially those they need to be aware of when upgrading.
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
-
 
 ------------------------------------
 
