@@ -16,6 +16,8 @@ especially those they need to be aware of when upgrading.
     - improved catpure of logfiles for unix
     - more 'save space' code needed for clang++-19 c++23 ubuntu 24.10 debug configuration
     - added clang++20 build to github action builds
+    - include g++-15
+    - tweak .github action for g++-15 due to running out of space (-O1)
 
   - Makefile (top level)
     - cleanup use of DEFAULT_CONFIGURATION_ADD2ALL in toplevel makefile - not needed - use use already existing EXTRA_CONFIGURE_ARGS= respected by configure - and better docs on this in makefile
@@ -69,7 +71,8 @@ especially those they need to be aware of when upgrading.
   - Docker Build Containers
     - Optionally (but default on) include python in windows docker containers (so can build mongodbclient)
     - Windows Container
-      - Use VS_17_13_5
+      - Use VS_17_13_6
+
     - **new** Ubuntu 25.04 support
   - .vscode
     - Added MONGO_CONNECTION_STRING to .vscode/launch.json
@@ -95,6 +98,8 @@ especially those they need to be aware of when upgrading.
       - define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - 
       - bug defines for g++-15
       - support _LIBCPP_VERSION version 20 bug defines
+      - **new** qCompilerAndStdLib_MemoryInsertAt_Buggy BWA (release builds gcc 13 and gcc 14)
+
 
     - Concepts
       - correct corner case of IEqualToOptimizable:  check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did on msvc)
@@ -124,8 +129,20 @@ especially those they need to be aware of when upgrading.
       - Array
         - Array<> template: docs, new .data() method, new Find () overloads (to be more similar to other datastructure classes), depreacte Contains() method, and added RemoveAt () overload and refactored RemoveAt to use new Memory::Remove() functionality
         - Containers/DataStructures/Array fix some issues (possible leak/no out of memory checks) in malloc impl
+        - Array<T>::Insert overload with span (todo fix naming) - and refactor to used Memory::Insert
+        - Renamed Array<T>::InsertAt to Insert()
+        - Array regtests improvements
+        - Array<>::ReserveAtLeast utility - separate from reserve()
+        - fixed Array Iterator (forward/backward) operator==; and re-enable new version of Array<T>::Insert
+        - renamed Array::RemoveAt to Remove (2 overloads)
+        - deprecate AddBefore/AddAfter and add overloads to Insert for that purpose;
+
+      - DoublyLinkedList
+        -  Minor cleanups (forward iterator)
       - LinkedList
-        - cleanups (forward and docs)
+        - cleanups (forward iterator and docs)
+      - DoublyLinkedList and LinkedList
+        -  take span overloads on push_front,push_back (carefully document semantics); 
         
 
     - KeyedCollection
@@ -135,6 +152,12 @@ especially those they need to be aware of when upgrading.
       - improved Mapping regetsts; 
       - fixed bug iwth SortedMapping_SkipList (and if missing); 
       - and made Mapping_HashTable default (againish) in factory
+
+    - Sequence
+      - Sequence X Rep :: Insert() method now uses span and new span-based insert etc methods in DataStructures 
+    - Sequence_Array
+      - use Array::Insert(span) instead of manual reserve and lots of adds from Sequence_Array
+
 
   - Database
     - SQL
@@ -152,9 +175,17 @@ especially those they need to be aware of when upgrading.
   - DataExchange
     - VariantValue
       - (go back to)  use Mapping_HashTable instead of SortedMapping_stdmap in DataExchange/Variant/JSON/Reader (optimization)
+  - Debug
+    - Assert
+      - fixed issue with default assertion handlers on UNIX with clang++ - fwrprintf not working right
+
   - Execution
+    - Activity
+      - new utility AnyCurrentActivities()
     - CommandLine
       -  ValidateQuietly method added
+    - NestedException
+      - new overload for NestedException CTOR
     - Synchronized
       - Added requires to Syncrhonized CTOR to produce better error messages from compiler
 
@@ -166,6 +197,12 @@ especially those they need to be aware of when upgrading.
       -  fixed CopyOverlappingBytes to use copy or copy_backward depending on direction of copy; and new CopyOverlappingSpanData that works with non-byteish data
       - modernized concept ISpan def, improved CompareBytes() def, and related docs/cleanups
       - **new** Memory::Insert, and Memory::Remove utility functions - and used in InlineBuffer (code refactor)
+      - fixed Memory::CopyOverlappingBytes() - I hope - to check/copy correctly and use Intersects to clarify; 
+      - fixed Memory::Insert to use CopyOverlappingBytes
+      - more fixes to CopyOverlappingSpanData
+      - fixed Foundation/Memory/Common code calls to copy_backward, and related fixes to Memory::Insert()
+      - mostly cosmetic cleanups to Memory::Common code (doc pictures and simplifed some addressof checks
+
     - InlineBuffer
       - added Remove () method
       - fixed serious memory bug with InlineBuffer MOVE CTOR
@@ -179,6 +216,10 @@ especially those they need to be aware of when upgrading.
   - Traversal
     - Iterable
       - Minor cleanup to Iterable<>::container_Of_T CTOR - fix to give better error message/concepts copyable
+
+- Frameworks
+  - SystemPerformance
+    - Dont use OpenInputFileStream - just std lib open - cuz dont want exceptions in a couple places (code written old style if (in) ...)
 
 - Samples
   - **new** DocumentDB
@@ -204,323 +245,6 @@ especially those they need to be aware of when upgrading.
     - version 3.5.0
   - sqlite
     - makefile cleanups
-
-   
-#if 0
-
-commit ac1d11247537078d1591c0efe1bfae791a81592a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 13 19:36:46 2025 -0400
-
-    fixed issue with default assertion handlers on UNIX with clang++ - fwrprintf not working right
-
-commit 4a7972a7c0738ef5db31576fc28a9130248c446a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 13 19:38:05 2025 -0400
-
-    Dont use OpenInputFileStream - just std lib open - cuz dont want
-    exceptions in this code
-
-commit e6e88fec122b3f0d7535408661b648001beb98cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 13 21:03:29 2025 -0400
-
-    fixed bug with Concrete/Mapping_HashTable Update
-
-commit 7ff200766a11a5e66761e2b65abe46829ba9d889
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 14 10:18:05 2025 -0400
-
-    fixed Memory::CopyOverlappingBytes() - I hope - to check/copy correctly and use Intersects to clarify; And fixed Memory::Insert to use CopyOverlappingBytes
-
-commit 4be2e35c87dc035c61d316eff200643d686613b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 14 11:03:54 2025 -0400
-
-    Array<T>::Insert overload with span (todo fix naming) - and refactor to used Memory::Insert
-
-commit a6a1e9dac1b49063f9a53090a80e4a48858ca1e3
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 11:04:55 2025 -0400
-
-    bug defines for gcc 15
-
-commit df911b1fb35654a3ebe20f6e8130272647de2eaa
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 11:05:14 2025 -0400
-
-    cleanup regtest which no longer passes with gcc15
-
-commit ed0ace29d7768104fe72bf330400f139ae578d66
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 11:06:01 2025 -0400
-
-    Minor contianer backend cleanups/refactoring (mostly renames)
-
-commit 4fd578cbf8652a82f37905afe330bf2f2752a831
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 11:06:18 2025 -0400
-
-    github actions - include g++-15
-
-commit b15cb39cfde4dc1d2ea2d3dad6f6835ce32deccf
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 20:04:47 2025 -0400
-
-    minor attempts at fixing issues(bugs/regressions?) with Memory::Copy.... bytes/spans code
-
-commit c6ee6ff533e16b3d954de8c112e7cd9c7a16712a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 20:05:23 2025 -0400
-
-    revert to old Array<T>::InsertAt() impl - til I can fix fancier one
-
-commit 69e0ae84e8aba84f262594ce64c5abac806e79bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 14 20:19:25 2025 -0400
-
-    Renamed Array<T>::InsertAt to Insert()
-
-commit f5e1c867c61be75f67f04fe2fffab90d0b90d39b
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 22:11:47 2025 -0400
-
-    more fixes to CopyOverlappingSpanData
-
-commit 4541a7b26b3ec37a567c4a7abc97fd9f0decf5b9
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Apr 14 22:13:25 2025 -0400
-
-    github action save space
-
-commit 0c9d136d5018de8c62a4ff75790c6a62da557768
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 15 08:28:18 2025 -0400
-
-    see if lising clang++-17 saves enuf space for github actions ubuntu 25
-
-commit 100665a2176d1f057c6e1f6ac38d7643a3d64e61
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Apr 15 10:06:18 2025 -0400
-
-    experiment with Array<T>::Insert
-
-commit 438ec9d98a1a1c166a645070f68b03ce3a3b7d7e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Apr 15 13:48:24 2025 -0400
-
-    tweak .github action for g++-15 due to running out of space (-O1)
-
-commit a9fb3f258200cdd1d5f153b3a102f61507d6c395
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 15 13:29:25 2025 -0400
-
-    Array regtests improvements
-
-commit 7c7c4e9c0ebdb45eec9e7ad12432965117739a94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 15 14:44:29 2025 -0400
-
-    Array<>::ReserveAtLeast utility - separate from reserve()
-
-commit dedd4f65b32455bf6526ac1f7fba99521c294e65
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 15 14:45:15 2025 -0400
-
-    use Array::Insert(span) instead of manual reserve and lots of adds from Sequence_Array
-
-commit 6b51b930872269416aafaa94c13635368898cc54
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Apr 15 14:48:15 2025 -0400
-
-    revert Array<T>::Insert /1 since seems still broken under ubuntu 24.10 and g++14 release build
-
-commit 676df5b2905e5295d40bd5090acd3ece698007e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 15 21:59:24 2025 -0400
-
-    fixed Foundation/Memory/Common code calls to copy_backward, and related fixes to Memory::Insert()
-
-commit b0f8da4607a8493add578c2d6e0e3591a7bbbd10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 15 22:14:32 2025 -0400
-
-    fixed Array Iterator (forward/backward) operator==; and re-enable new version of Array<T>::Insert
-
-commit 222b4599ba8b0ac3c897d1390c4836755a5cd06d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Apr 15 22:43:54 2025 -0400
-
-    Memory cleanups, but still not fixed issue on gcc release builds
-
-commit 9f30d9618f52b2eb00987907bf28f24f2d1c647d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 08:19:20 2025 -0400
-
-    mostly cosmetic cleanups to Memory::Common code (doc pictures and simplifed some addressof checks
-
-commit 20ab6a5b8f371c259f926cd336b37859107fb450
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 08:19:49 2025 -0400
-
-    Insert_BWA HACK for Array and attmeped use for gcc 13 and 14
-
-commit 6194a6f2103bb2a21d25f6aad0cf341be61fe3cb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 09:19:21 2025 -0400
-
-    Memory::Common - cleanup a few requires and comments
-
-commit d570357f739f0dedf025b02501a6c60df2ec4260
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 09:19:53 2025 -0400
-
-    Minor DoublyLinkedList cleanups (forward)
-
-commit 99ec1fda0c92bdc7b23889b14fa5725b05fcae8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 09:20:34 2025 -0400
-
-    Containers/DataStructures/Array minor cleanups and only do Insert_BWA for gcc 13 / 14
-
-commit 4c63b8ddf9a1aab075ed0ae235c97d5a9b6f1583
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 12:11:57 2025 -0400
-
-    datastrucutres LinkedList/DoublyLinkedList take span overloads on push_front,push_back (carefully document semantics); Sequence Rep :: Insert() method now uses span; and internally uses these new data strucuture push_back/front overloads(at least sometimes)
-
-commit 8171d1acfd6999898b411f5f007768b54669b68b
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 16 12:12:45 2025 -0400
-
-    mark qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy broken in g++-15
-
-commit e7a7c73aae0f9c5f5f2bdf1fdbf0372dfd344de0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 13:00:55 2025 -0400
-
-    simplified/fixed LinkedList/DoublyLinkedList push_front to mainain order from span in span overload
-
-commit f25a5ccd0ecb953e1823ff19429cbe42f162c961
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 16 14:51:49 2025 -0400
-
-    use 1u instead of 1 in span in a few places to workaround issue with g++ (too many flakies at the moment to track this down and debug)
-
-commit 05a24116dafd929f09f1f04c875dcc6ab8f2d27d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 16 14:52:45 2025 -0400
-
-    Comments, and LinkedList - optimize push_back for span
-
-commit f5e40eecaf925995ed9b697fa93ad73ae06fa17e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 16 17:29:52 2025 -0400
-
-    disabled temporary BWA Memory::Insert - since not failing now - confused
-
-commit 101b57661dba4afb380e7b7ed0ce0d1591fb47b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 20:11:28 2025 -0400
-
-    Re-enable BWA got just gcc 13 and 14
-
-commit a8c33c3f50e56190ebf5aa8e629a6962a03bbb66
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 16 20:12:17 2025 -0400
-
-    renamed Array::RemoveAt to Remove (2 overloads)
-
-commit 0a0d0808b20e79d928b2735800080c400c137dee
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 16 20:49:29 2025 -0400
-
-    added ubuntu-25.04-g++-15 rel build to github actions (v3-Release only)
-
-commit 392c970a9a0253f79ae47ae5bca570bea5d7d48a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 16 20:49:59 2025 -0400
-
-    Added g++-15-release to makefile regtest build configs
-
-commit 5ecf04cacf675fc7f55ac36fed1fb9270b451641
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Apr 17 08:17:03 2025 -0400
-
-    qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy sometimes fails on gcc 15
-
-commit ff656cb849a3e73c87a9fd9f5078c76c0201ab9d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Apr 17 09:17:46 2025 -0400
-
-    Array: deprecate AddBefore/AddAfter and add overloads to Insert for that purpose; improve docs
-
-commit 618b9af8f50c0964732eb887f23eebfb1d243e77
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Apr 17 15:19:55 2025 -0400
-
-    qCompilerAndStdLib_MemoryInsertAt_Buggy BWA
-
-commit 3172ac9b197d66d10f08f5e227e3cb9436378929
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Apr 17 20:41:07 2025 -0400
-
-    in mongodb test - write to DB in UTC, since we read back in UTC and compare equality
-
-commit 791b7dc5ac73caa531754e550cbe934ae02bb98c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 17 21:30:19 2025 -0400
-
-    Because MongoDB mongocxxdriver uses system_clock, which is neither steady nor monotonic, to store dates, in addition to other limitations, I decided to just write dates to mongodb as (UTC) iso8601 strings. Still read the native date if thats there, but just write strings
-
-commit 1d0bc1ce2bce3305963e181dc3a57679feef7f4d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Apr 18 08:47:02 2025 -0400
-
-    Silence some warnings in mongocxx builds (their problem not mine)
-
-commit cfb5cca5184e244a492e9f018442f0460470c7ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 18 08:54:14 2025 -0400
-
-    windows docker container uses VS_17_13_6
-
-commit 588764ab25b65f6514e57d8d27eb28f7cb4355f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 18 11:30:09 2025 -0400
-
-    new utility Execution::AnyCurrentActivities()
-
-commit 91beaa3ad15a659bfaa08870d7ce2215b604d4ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 18 11:31:01 2025 -0400
-
-    new overload for NestedException
-
-commit a17f6ba38534264d16c55e3f181e4d4f0d9db495
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 18 11:33:14 2025 -0400
-
-    MongoDBConnection support for NestedException wrapper of native mongodb excpetions - so they reflect 'current activities'
-
-commit 89dc72413e89c81c15dc17d5a04a3f5d79085024
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 18 11:33:49 2025 -0400
-
-    Better error reporting on mongodb exceptions in Samples/DocumentDB/Sources/Main
-
-commit 4cf9558255062099ac6b8831fde710ad7f5041db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 18 16:36:53 2025 -0400
-
-    stringop-overflow issue suppressed in configure for g++-15 as well (lto issue)
-
-commit 68fbc47cedafa7678accda6ff57c6199ee428e17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 18 20:43:55 2025 -0400
-
-    attempt to sielnce windows linker warning
-#endif
 
 
 ------------------------------------
