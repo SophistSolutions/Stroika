@@ -26,9 +26,9 @@
 [ RUN      ] Foundation_Traversal.Test12_RangeConstExpr_
 [       OK ] Foundation_Traversal.Test12_RangeConstExpr_ (0 ms)
 [ RUN      ] Foundation_Traversal.Test13_DisjointRange_
-[       OK ] Foundation_Traversal.Test13_DisjointRange_ (3 ms)
+[       OK ] Foundation_Traversal.Test13_DisjointRange_ (6 ms)
 [ RUN      ] Foundation_Traversal.Range_ToString_
-[       OK ] Foundation_Traversal.Range_ToString_ (5 ms)
+[       OK ] Foundation_Traversal.Range_ToString_ (2 ms)
 [ RUN      ] Foundation_Traversal.Test15_Partition_
 [       OK ] Foundation_Traversal.Test15_Partition_ (0 ms)
 [ RUN      ] Foundation_Traversal.Test16_LinqLikeFunctions_
