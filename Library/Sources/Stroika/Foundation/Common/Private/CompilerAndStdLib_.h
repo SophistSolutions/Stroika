@@ -393,7 +393,7 @@ Segmentation fault (core dumped)
 // seen broken in GCC 13
 // seen broken in GCC 14 (on ubuntu 24.10, but fixed in gcc14 on ubuntu 25.04)
 // FIXED in GCC 15
-#define qCompilerAndStdLib_MemoryInsertAt_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 15))
+#define qCompilerAndStdLib_MemoryInsertAt_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__GNUC__ <= 14))
 #else
 #define qCompilerAndStdLib_MemoryInsertAt_Buggy 0
 #endif

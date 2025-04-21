@@ -15,6 +15,8 @@ especially those they need to be aware of when upgrading.
   - github actions
     - improved catpure of logfiles for unix
     - more 'save space' code needed for clang++-19 c++23 ubuntu 24.10 debug configuration
+    - added clang++20 build to github action builds
+
   - Makefile (top level)
     - cleanup use of DEFAULT_CONFIGURATION_ADD2ALL in toplevel makefile - not needed - use use already existing EXTRA_CONFIGURE_ARGS= respected by configure - and better docs on this in makefile
     - improved make help
@@ -62,14 +64,16 @@ especially those they need to be aware of when upgrading.
       - print MONGO_CONNECTION_STRING in regressiontests script
       - Added Samples-DocumentDB/DocumentDB to regressiontests samples to run
     - RunLocalWindowsDockerRegressionTests
-      - (testing) size=150GB
-
+      - fixed so sizes disk properly (quoting) and sizes larger so works on windows (builds have gotten bigger), and upped size to 175GB
 
   - Docker Build Containers
     - Optionally (but default on) include python in windows docker containers (so can build mongodbclient)
     - Windows Container
       - Use VS_17_13_5
     - **new** Ubuntu 25.04 support
+  - .vscode
+    - Added MONGO_CONNECTION_STRING to .vscode/launch.json
+
 - Documentation
   - Miscelaneous comments/docx cleanups
   - Tweaked Doxgygen linking and Table-Of-Contents a bit
@@ -90,6 +94,7 @@ especially those they need to be aware of when upgrading.
       - new qCompilerAndStdLib_illunderstood_ispan_Buggy BWA
       - define qCompilerAndStdLib_stdlib_ranges_ComputeDiffSignularToADeref_Buggy for gcc14 as well (since triggered on ubuntu 25.04) - 
       - bug defines for g++-15
+      - support _LIBCPP_VERSION version 20 bug defines
 
     - Concepts
       - correct corner case of IEqualToOptimizable:  check equality_comparable beofre Private_::HasUsableEqualToOptimization cuz sometimes fails evaluating HasUsableEqualToOptimization (probably shouldnt but did on msvc)
@@ -106,6 +111,8 @@ especially those they need to be aware of when upgrading.
       - STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone () change to take extra parameter, eventually to fix https://stroika.atlassian.net/browse/STK-1026 but for now sb no effect
       - **new** HashTableSupport (classes to capture common features for hashtable-based concrete containers)
       - refactored Private::IteratorImplHelper_ to use new IteratorImplHelper_DefaultTraits
+      - cleanup CTOR delegation in Containers/Private/XXXSupport classes
+
 
     - https://stroika.atlassian.net/browse/STK-1026 - 
       - LOSE support for KeyedCollection_stdhashset and Mapping_stdhashmap because https://stackoverflow.com/questions/79551148/how-to-copy-stdunordered-map-while-preserving-its-order?noredirect=1#comment140292420_79551148
@@ -190,130 +197,16 @@ especially those they need to be aware of when upgrading.
     - FEATUREFLAG_mongocxxdriver to default on, if python present
   - libcurl
     - Cleanup libcurl makefile for recent changes to Configuration.mk handling of PKG_CONFIG_PATH= and var +PKG_CONFIG_STROIKA_DEPENDS_ON and used to silence a warning cuz of stuff not fully built when libcurl being built
+    - TRIED version 8.13.0, but revert to libcurl 8.12.1 cuz of apparent asan issue
+  - libxml2
+    -version 2.14.1
+  - openssl
+    - version 3.5.0
   - sqlite
     - makefile cleanups
 
    
 #if 0
-
-commit b29074bac5f48086c27fdad36823e72100beddbf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 10 11:31:53 2025 -0400
-
-    redo KeyedCollection_Factory check for building Concrete::KeyedCollection_HashTable... at least temporarily - I think old code made sense but didnt work on clang++, and others
-
-commit deda0c922de188e0382f1f3db5e2d4b5fab12186
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 10 11:32:56 2025 -0400
-
-    refactor (KeyedCollection_HashTable_Support::IValidHashTableTraits) - to simplify KeyedCollection_HashTable and improve contstraint checking
-
-commit 12bc99240fddab9126fe143edb5f9c0195a320f2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 10 12:01:28 2025 -0400
-
-    experimental BWA for issues with KeyedCollection_Factory and Concrete::KeyedCollection_HashTable and gcc/clang
-
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 11 11:09:05 2025 -0400
-
-    docs and cleanup CTOR delegation in Containers/Private/XXXSupport classes
-
-commit 93ff09c53b3d76bc2d7f5c3411fec21a192a07d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 11 11:53:30 2025 -0400
-
-    Containers/Private/HashTableSupport progress, and used in KeyedCollection_HashTable
-
-commit d8d10e0318d1b7d87f9f85e6d5516f0706e5d54a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 11 12:40:43 2025 -0400
-
-    progress on Containers/Private/HashTableSupport
-
-commit 6e90c48d20bb9b75e6ec2d9b46639f810a370976
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 11 12:41:20 2025 -0400
-
-    Mapping_HashTable uses HashTableSupport
-
-commit 48fc5a129db4475a7084a527c97ed00e70891ab0
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 12 08:49:48 2025 -0400
-
-    include clang++-20 in DockerBuildContainers/Ubuntu2504-RegressionTests/Dockerfile
-
-commit 28e9bc33f9b17155311e188ed578366b7fde5638
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 12 09:33:44 2025 -0400
-
-    support _LIBCPP_VERSION version 20 bug defines
-
-commit f2eb190435d6524bd44da4c041f378a1318ad8b7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 12 11:36:46 2025 -0400
-
-    a few minor Led cleanups
-
-commit 5807cc0c1657c0e1a7347f1470a968c81b1c69a4
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 12 11:54:42 2025 -0400
-
-    clang++-20 bug defines (ubuntu 25.04)
-
-commit 1f6c383472cf127301eedf52a28167eceacae82a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Apr 12 11:55:10 2025 -0400
-
-    added clang++20 build to github action builds
-
-commit beeb54ea72f5b4c064571f8db135433952799cd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 13 13:26:14 2025 -0400
-
-    maybe cleanup output in make regression-test-configurations for unix
-
-commit 7da9dc88a132337827f2064ba16f2d442db24c05
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 13 14:41:14 2025 -0400
-
-    curl 8.13.0
-
-commit c9796c218f06f607708d1222c46c4ac89e8aa673
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 13 14:41:39 2025 -0400
-
-    libxml2 2.14.1
-
-commit d5675e0233be2943ca3345711d5ed50ae6833713
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 13 14:41:56 2025 -0400
-
-    openssl 3.5.0
-
-commit ec860838256bd82e93de1ac2b5e35dceaa4fea5f
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 13 16:29:23 2025 -0400
-
-    include g++-15 in Ubuntu2504-RegressionTests/Dockerfile
-
-commit 1355f84ab89ff23ba36bb2671b6eac46b186bea3
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 13 16:30:21 2025 -0400
-
-    Added MONGO_CONNECTION_STRING to .vscode/launch.json
-
-commit b9f2d3a517d144ca4f6b29237f828a2978499219
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 13 19:32:27 2025 -0400
-
-    revert to libcurl 8.12.1 cuz of apparent asan issue
-
-commit 88158bc9edab1d55dcba743e17c08748b285d571
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Apr 13 19:33:57 2025 -0400
-
-    revert to libcurl 8.12.1 cuz of apparent asan issue
 
 commit ac1d11247537078d1591c0efe1bfae791a81592a
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
