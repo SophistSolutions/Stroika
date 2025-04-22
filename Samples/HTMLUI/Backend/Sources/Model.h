@@ -17,8 +17,8 @@
 
 #include "Stroika/Frameworks/Auth/OAuth/Client.h"
 
-/**
- * \brief: The Model module defines all the objects, which can appear in web service requests (on the request or response side).
+/*
+ * The Model module defines all the objects, which can appear in web service requests (on the request or response side).
  *
  *  These objects appear (are used) in the IWSAPI.
  *
@@ -40,8 +40,7 @@ namespace Stroika::Samples::HTMLUI::Model {
     using Time::DateTime;
     using Time::Duration;
 
-    /**
-     * @brief  
+    /*
      * 
      */
     struct HealthStatus {
@@ -56,7 +55,7 @@ namespace Stroika::Samples::HTMLUI::Model {
 
     namespace Auth {
 
-        /**
+        /*
          * Configuration returned by webservices - combo of client and provider configuration data
          * ('joined by provider field')
          */
@@ -65,13 +64,13 @@ namespace Stroika::Samples::HTMLUI::Model {
             Stroika::Frameworks::Auth::OAuth::ProvidersConfigurations fProviders;
         };
 
-        /**
-         * @brief  OAuth2 works with gui client requesting a short-lived authorization_code from the web browser (typically)
-         *   and then the GUI client exchanges that for a longer-lived access_token (and sometimes a refresh_token, and/or id_token).
+        /*
+         * OAuth2 works with gui client requesting a short-lived authorization_code from the web browser (typically)
+         * and then the GUI client exchanges that for a longer-lived access_token (and sometimes a refresh_token, and/or id_token).
          */
         struct TokenRequest {
-            /**
-             * @brief e.g. google - index into ??
+            /*
+             * e.g. google - index into ??
              */
             String fOAuthProvider;
             String fApplicationID;
@@ -93,7 +92,7 @@ namespace Stroika::Samples::HTMLUI::Model {
         template <>
         Stroika::Frameworks::Auth::OAuth::TokenRequest Auth::TokenRequest::As () const;
 
-        /**
+        /*
          */
         struct TokenResponse {
 
@@ -114,7 +113,7 @@ namespace Stroika::Samples::HTMLUI::Model {
             nonvirtual String ToString () const;
         };
 
-        /**
+        /*
          */
         struct TokenRevocationRequest {
             /**
@@ -132,8 +131,8 @@ namespace Stroika::Samples::HTMLUI::Model {
         template <>
         Stroika::Frameworks::Auth::OAuth::TokenRequest Auth::TokenRequest::As () const;
 
-        /**
-         * @brief  Information from OAuth2 server about the user.
+        /*
+         * Information from OAuth2 server about the user.
          */
         struct UserInfo {
 

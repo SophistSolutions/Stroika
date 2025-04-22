@@ -14,8 +14,8 @@ namespace Stroika::Samples::Document {
 
     using namespace Stroika::Foundation::Database::Document;
 
-    /**
-     *  \brief  Simple test of creating a plain (employees) db and adding to it, and a few simple queries.
+    /*
+     *  Simple test of creating a plain (employees) db and adding to it, and a few simple queries.
      */
     void EmployeesDB (const std::function<Connection::Ptr ()>& connectionFactory);
 

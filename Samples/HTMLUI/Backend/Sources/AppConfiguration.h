@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _RFL_AskHealthFrame_AppConfiguration_h_
-#define _RFL_AskHealthFrame_AppConfiguration_h_ 1
+#ifndef _StroikaSample_AppConfiguration_h_
+#define _StroikaSample_AppConfiguration_h_ 1
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
@@ -17,7 +17,7 @@
 
 #include "Stroika/Frameworks/Auth/OAuth/Configuration.h"
 
-/**
+/*
  */
 
 namespace Stroika::Samples::HTMLUI {
@@ -29,7 +29,7 @@ namespace Stroika::Samples::HTMLUI {
     using Containers::Sequence;
     using IO::Network::URI;
 
-    /**
+    /*
      *  This is the type of object stored in application configuration.
      */
     struct AppConfigurationType {
@@ -78,7 +78,7 @@ namespace Stroika::Samples::HTMLUI {
         };
     }
 
-    /**
+    /*
      *  gAppConfiguration is automatically internally synchronized ... - just call update / set / get to access options freely.
      */
     inline Execution::ModuleGetterSetter<AppConfigurationType, Private_::AppConfiguration_Storage_IMPL_> gAppConfiguration;
@@ -92,4 +92,4 @@ namespace Stroika::Samples::HTMLUI {
  */
 #include "AppConfiguration.inl"
 
-#endif /*_RFL_AskHealthFrame_AppConfiguration_h_*/
+#endif /*_StroikaSample_AppConfiguration_h_*/

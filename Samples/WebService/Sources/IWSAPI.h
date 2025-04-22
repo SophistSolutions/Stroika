@@ -10,7 +10,7 @@
 
 #include "Model.h"
 
-/**
+/*
  */
 
 namespace StroikaSample::WebServices {
@@ -19,8 +19,8 @@ namespace StroikaSample::WebServices {
 
     using namespace Model;
 
-    /**
-     *  \brief: IWSAPI defines an abstract version of the web service API provided by this program.
+    /*
+     *  IWSAPI defines an abstract version of the web service API provided by this program.
      */
     class IWSAPI {
     protected:
@@ -37,7 +37,7 @@ namespace StroikaSample::WebServices {
         virtual void               Variables_SET (const String& variable, const Number& value) = 0;
 
     public:
-        /**
+        /*
          */
         virtual Number plus (Number lhs, Number rhs) const   = 0;
         virtual Number minus (Number lhs, Number rhs) const  = 0;

@@ -4,10 +4,6 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/ToString.h"
-//#include "Stroika/Foundation/Common/Property.h"
-//#include "Stroika/Foundation/Debug/Trace.h"
-//#include "Stroika/Foundation/Execution/Synchronized.h"
-//#include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 
 #include "AppConfiguration.h"
 

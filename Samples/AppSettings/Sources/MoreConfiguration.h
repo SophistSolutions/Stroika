@@ -12,10 +12,9 @@
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
-/**
+/*
  *   A more complicated example of configuration, fancier usage patterns (e.g. watching for config changes)
  */
-
 namespace StroikaSample::AppSettings {
 
     using namespace std;

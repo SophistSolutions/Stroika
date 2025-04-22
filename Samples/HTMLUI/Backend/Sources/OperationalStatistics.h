@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2021.  All rights reserved
  */
-#ifndef _RFL_AskHealthFrame_OperationalStatistics_h_
-#define _RFL_AskHealthFrame_OperationalStatistics_h_ 1
+#ifndef _StroikaSample_OperationalStatistics_h_
+#define _StroikaSample_OperationalStatistics_h_ 1
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
@@ -115,4 +115,4 @@ namespace Stroika::Samples::HTMLUI {
  */
 #include "OperationalStatistics.inl"
 
-#endif /*_RFL_AskHealthFrame_OperationalStatistics_h_*/
+#endif /*_StroikaSample_OperationalStatistics_h_*/

@@ -10,8 +10,8 @@
 
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 
-/**
- * \brief: The Model module defines all the objects, which can appear in web service requests (on the request or response side).
+/*
+ * The Model module defines all the objects, which can appear in web service requests (on the request or response side).
  *
  *  These objects appear (are used) in the IWSAPI.
  *

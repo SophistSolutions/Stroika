@@ -11,9 +11,9 @@ Demonstrates facilities for creating/updating simple database using DocumentDB s
 ### Details
 
 #### Source
-  - [ComputerNetwork.cpp](./Sources/ComputerNetwork.cpp)
-  - [EmployeesDB.cpp](./Sources/EmployeesDB.cpp)
-  - [Main.cpp](./Sources/Main.cpp)
+  - [ComputerNetwork.cpp](Sources/ComputerNetwork.cpp)
+  - [EmployeesDB.cpp](Sources/EmployeesDB.cpp)
+  - [Main.cpp](Sources/Main.cpp)
 
 #### Running a mongodb instance
 

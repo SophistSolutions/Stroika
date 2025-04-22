@@ -22,7 +22,7 @@ namespace StroikaSample::AppSettings {
     using namespace std;
     using namespace Stroika::Foundation;
 
-    /**
+    /*
      *  This is the type of object stored in configuration.
      */
     struct AppConfigurationType {
@@ -49,7 +49,7 @@ namespace StroikaSample::AppSettings {
         };
     }
 
-    /**
+    /*
      *  gAppConfiguration is automatically internally synchronized ... - just call update / set / get to access options freely.
      */
     inline Execution::ModuleGetterSetter<AppConfigurationType, Private_::AppConfiguration_Storage_IMPL_> gAppConfiguration;

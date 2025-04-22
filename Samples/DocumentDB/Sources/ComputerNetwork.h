@@ -14,8 +14,8 @@ namespace Stroika::Samples::Document {
 
     using namespace Stroika::Foundation::Database::Document;
 
-    /**
-     *  \brief  Simple test of using threads with SQL - one thread updates employees table, and one writes paychecks
+    /*
+     *  Simple test of using threads with SQL - one thread updates employees table, and one writes paychecks
      */
     void ComputerNetworksModel (const function<Connection::Ptr ()>& connectionFactory);
 

@@ -27,8 +27,8 @@ namespace Stroika::Samples::HTMLUI {
 
     using namespace Model;
 
-    /**
-     * @brief identity inferred from webserver authentication information
+    /*
+     * identity inferred from webserver authentication information
      */
     struct WebServiceIdentity {
         optional<String> fBearerToken;
@@ -36,8 +36,8 @@ namespace Stroika::Samples::HTMLUI {
         String ToString () const;
     };
 
-    /**
-     * \par Example Usage:
+    /*
+     * Example Usage:
      *      // In WebServer, to establish thread_local ID value - use CurrentIdentityAuthInterceptor
      * 
      *      // Then in WSAPI instance

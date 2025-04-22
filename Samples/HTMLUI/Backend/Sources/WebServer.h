@@ -17,7 +17,7 @@ namespace Stroika::Samples::HTMLUI {
 
     using namespace std;
 
-    /**
+    /*
      *  WebServer handles basic HTTP web server technology, and translates to ISAPI interface web-service implementation methods.
      *  This internally does all the marshalling (serialization/deserialization) of the web service parameters into a clean C++ API (IWSAPI).
      */

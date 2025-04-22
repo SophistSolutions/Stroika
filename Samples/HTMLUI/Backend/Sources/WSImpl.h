@@ -15,20 +15,20 @@
 
 namespace Stroika::Samples::HTMLUI {
 
-    /**
-     *  \brief: WSImpl is the module providing the concrete C++ implementation (fully using C++ objects, exceptions etc) for the web service API.
+    /*
+     *  WSImpl is the module providing the concrete C++ implementation (fully using C++ objects, exceptions etc) for the web service API.
      *
      *  This is straight C++ application logic, with (hopefully) zero logic relating to marshalling, or HTTP etc.
      */
     class WSImpl : public IWSAPI {
     public:
-        /**
+        /*
          * Function that can be called safely on a webserver connection-manager
          */
         using WithWebServerCallbackType = function<void (const Stroika::Frameworks::WebServer::ConnectionManager&)>;
 
     public:
-        /**
+        /*
          *  WSImpl may need access to webserver connection manager (const API access) occasionally, so provide in
          *  controlled way that can work with locking if needed; note effectively same as passing in ConnectionManager&,
          *  except that the caller might want to control when the ConnectionManager& is referenced (e.g. locking).
