@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             using KeyEqualsComparerType = EQUALS_COMPARER;
 
             /**
-            *  separate chaining (for now) - or some probing variation
+             *  separate chaining (for now) - or some probing variation
              */
             using LayoutType = LAYOUT_OPTIONS;
 
@@ -185,15 +185,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-        * \note this name mimics the name used in https://en.cppreference.com/w/cpp/container/unordered_set/hash_function
+         * \note this name mimics the name used in https://en.cppreference.com/w/cpp/container/unordered_set/hash_function
          */
         nonvirtual KeyHasherType hash_function () const;
 
     public:
         /**
-        * \note this name mimics the naming used in https://en.cppreference.com/w/cpp/container/unordered_map/key_eq
-        * 
-        * GetKeyEqualsComparerType
+         * \note this name mimics the naming used in https://en.cppreference.com/w/cpp/container/unordered_map/key_eq
+         * 
+         * GetKeyEqualsComparerType
          */
         nonvirtual KeyEqualsComparerType key_eq () const;
 
@@ -456,7 +456,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         float fMaxLoadFactor_{1.0};
     };
 
-    /*
+    /**
      *      ForwardIterator allows you to iterate over a HashTable<KEY_TYPE, MAPPED_TYPE, TRAITS>. It is not safe to use a ForwardIterator after any
      *      update to the HashTable.
      */

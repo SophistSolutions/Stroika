@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         using UnderlyingIteratorRep = const Link_*;
 
     public:
-        /*
+        /**
          *  Support for COW (CopyOnWrite):
          *
          *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
@@ -216,7 +216,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          *  Complexity:
          *      Always: O(N) - but generally quite quick cuz uses block (de-)allocation
-         * 
          */
         nonvirtual void clear ();
 
@@ -239,7 +238,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void push_back (const SPAN_T& copyFrom);
 
     public:
-        /*
+        /**
          *  Complexity:
          *      Always: O(N)
          *
@@ -248,7 +247,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual T GetAt (size_t i) const;
 
     public:
-        /*
+        /**
          *  Complexity:
          *      Always: O(i)
          *
@@ -257,6 +256,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void SetAt (T item, size_t i);
 
     public:
+        /**
+         */
         nonvirtual void Invariant () const noexcept;
 
     private:

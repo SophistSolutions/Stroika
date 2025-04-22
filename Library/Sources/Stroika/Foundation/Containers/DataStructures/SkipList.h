@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-        * @todo discuss with sterl - if we allow multiple values with same key, add RemoveAll overload taking key_type, and maybe returning count removed? RemoveAllIf
+         * @todo discuss with sterl - if we allow multiple values with same key, add RemoveAll overload taking key_type, and maybe returning count removed? RemoveAllIf
          */
         nonvirtual void clear ();
 
@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         constexpr ForwardIterator end () const noexcept;
 
     public:
-        /*
+        /**
          *  Support for COW (CopyOnWrite):
          *
          *  Take iterator 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
@@ -442,11 +442,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void Apply (FUNCTION&& doToElement) const;
 
     public:
+        /**
+         */
         constexpr void Invariant () const noexcept;
 
     public:
         /**
-        * @todo doc api just for debugging? And not generally useful. And maybe have return tuple, not take var param?
+         * @todo doc api just for debugging? And not generally useful. And maybe have return tuple, not take var param?
         // height is highest link height, also counts total links if pass in non-null totalHeight
             @todo ask sterl about this?
          */
