@@ -7,9 +7,9 @@ a stream of data in some 'encoded' format (folder 'Encoding').
 
 And it contains functions that compute a cryptographic digest (or hash), in the folder 'Hash'.
 
-- [Digest/](Digest/) - algorithms to 'hash' content
-- [Encoding/](Encoding/) - algorithms to 'encrypt' (or decrypt), or otherwise transform such as base64
+- [Digest/](Digest/ReadMe.md) - algorithms to 'hash' content
+- [Encoding/](Encoding/ReadMe.md) - algorithms to 'encrypt' (or decrypt), or otherwise transform such as base64
 - [Format.h](Format.h) - utility to format some binary structures in common ways done for crypto
-- [PKI](PKI/) - private keys, certificates, pem files, etc
-- [Providers](Providers/) - integration with libraries that provide most of the underlying functionality (such as openssl)
-- [SSL](SSL/) - code to manage SSL streams (networking)
+- [PKI](PKI/ReadMe.md) - private keys, certificates, pem files, etc
+- [Providers](Providers/ReadMe.md) - integration with libraries that provide most of the underlying functionality (such as openssl)
+- [SSL](SSL/ReadMe.md) - code to manage SSL streams (networking)
