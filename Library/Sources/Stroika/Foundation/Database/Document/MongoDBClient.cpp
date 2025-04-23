@@ -60,7 +60,7 @@ using Database::Document::IDType;
 using Database::Document::Projection;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /**
  *  Character set Docx
@@ -488,7 +488,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll()", "filter={}, projection={}"_f, filter, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 auto [mongoFilter, myFilter]         = Partition_ (filter);

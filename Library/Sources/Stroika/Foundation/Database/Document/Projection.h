@@ -57,6 +57,12 @@ namespace Stroika::Foundation::Database::Document {
          */
         nonvirtual Database::Document::Document Apply (const Database::Document::Document& d) const;
 
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual String ToString () const;
+
     private:
         /**
          *  get<0> are fields that are used, and get<1> are fields that are omitted.

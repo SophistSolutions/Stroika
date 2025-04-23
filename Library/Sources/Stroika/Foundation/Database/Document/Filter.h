@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Database::Document {
     namespace FilterElements {
 
         /**
-         * String like object, but explciitly different type
+         * String like object, but explicitly different type
          */
         struct FieldName : String {
             using String::String;
@@ -38,8 +38,8 @@ namespace Stroika::Foundation::Database::Document {
         static inline const FieldName kID{Database::Document::kID};
 
         /**
-          * VariantValue like object, but explciitly different type
-          */
+         * VariantValue like object, but explicitly different type
+         */
         struct Value : VariantValue {
             using VariantValue::VariantValue;
 
@@ -52,6 +52,11 @@ namespace Stroika::Foundation::Database::Document {
             bool                      Matches (const Database::Document::Document& doc) const;
 
             bool operator== (const Equals&) const = default;
+
+            /**
+             *  @see Characters::ToString ()
+             */
+            String ToString () const;
         };
 
         /**
@@ -90,6 +95,12 @@ namespace Stroika::Foundation::Database::Document {
 
     public:
         nonvirtual Sequence<FilterElements::Operation> GetConjunctionOperations () const;
+
+    public:
+        /**
+         *  @see Characters::ToString ()
+         */
+        nonvirtual String ToString () const;
 
     private:
         // todo list of function objects - or operator, arglist, with predefined constant functions for equals, and a few others

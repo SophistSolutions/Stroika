@@ -3,9 +3,12 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Characters/StringBuilder.h"
+
 #include "Filter.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 
 using namespace Database;
 using namespace Database::Document;
@@ -28,6 +31,18 @@ bool FilterElements::Equals::Matches (const Database::Document::Document& doc) c
     }
     return false;
 }
+
+String FilterElements::Equals::ToString () const
+{
+    StringBuilder sb;
+    sb << "{ "sv;
+    sb << ", op: EQUALS "sv;
+    sb << ", lhs:  "sv << fLHS;
+    sb << ", rhs:  "sv << fRHS;
+    sb << "}"sv;
+    return sb;
+}
+
 
 /*
  ********************************************************************************
@@ -56,4 +71,13 @@ bool Filter::Matches (const Database::Document::Document& doc) const
         }
     }
     return true;
+}
+
+String Filter::ToString () const
+{
+    StringBuilder sb;
+    sb << "{ "sv;
+    sb << ", disjunction: "sv << fAndedOperations_;
+    sb << "}"sv;
+    return sb;
 }
