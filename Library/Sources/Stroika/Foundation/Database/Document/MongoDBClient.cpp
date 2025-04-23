@@ -114,7 +114,7 @@ namespace {
                 return String{};
         }
     }
-    template <Common::IAnyOf<bsoncxx::types::bson_value::view, bsoncxx::document::element, bsoncxx::array::element> T>
+    template <Common::IAnyOf<bsoncxx::types::bson_value::view, bsoncxx::document::element, bsoncxx::document::value, bsoncxx::array::element> T>
     VariantValue BSON2VV_ (const T& value)
     {
         switch (value.type ()) {
@@ -263,7 +263,7 @@ namespace {
             // patch 'id':string => '_id':oid
             auto idValue = vv[Database::Document::kID];
             newDoc.Remove (Database::Document::kID);
-            newDoc.Add (kMongoID_, VariantValue{Mapping<String, VariantValue>{{"$oid", idValue}}});
+            newDoc.Add (kMongoID_, VariantValue{Mapping<String, VariantValue>{{"$oid"sv, idValue}}});
         }
         bsoncxx::builder::basic::document bsonDoc;
         for (const KeyValuePair<String, VariantValue>& ai : newDoc) {
@@ -492,7 +492,12 @@ namespace {
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 auto [mongoFilter, myFilter]         = Partition_ (filter);
+                // @todo - must be careful if myFilter != nullptr, may not be able to do projection server-side! 
                 auto [mongoProjection, myProjection] = Partition_ (projection);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_ && 0
+                DbgTrace ("myFilter={}"_f, myFilter);
+                DbgTrace ("mongoFilter={}"_f, BSON2VV_ (mongoFilter));
+#endif
                 Sequence<Document::Document> result;
                 mongocxx::options::find      o;
                 if (mongoProjection) {
@@ -505,7 +510,7 @@ namespace {
                         if (myProjection) {
                             rr = myProjection->Apply (rr);
                         }
-                        if (not filter or filter->Matches (rr)) {
+                        if (not myFilter or myFilter->Matches (rr)) {
                             result += rr;
                         }
                     }
@@ -543,11 +548,11 @@ namespace {
                     else {
                         if (auto o = fCollection_.replace_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})), bsonDoc.view ())) {
                             if (o->modified_count () == 0) {
-                                Throw (RuntimeErrorException{"failed to replace doc - not modified"});
+                                Throw (RuntimeErrorException{"failed to replace doc - not modified"sv});
                             }
                         }
                         else {
-                            Throw (RuntimeErrorException{"failed to replace doc"});
+                            Throw (RuntimeErrorException{"failed to replace doc"sv});
                         }
                     }
                 }
@@ -566,7 +571,7 @@ namespace {
                     filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); // kMongoID_
                     auto result = fCollection_.delete_one (filterDoc.view ());
                     if (result && result->deleted_count () == 0) {
-                        Throw (RuntimeErrorException{"failed to delete doc"});
+                        Throw (RuntimeErrorException{"failed to delete doc"sv});
                     }
                 }
                 catch (...) {
@@ -715,6 +720,7 @@ Document::MongoDBClient::Activator::Activator ()
         }
     }
 }
+
 Document::MongoDBClient::Activator::Activator (AllowReactivateFlag)
     : Activator{}
 {
