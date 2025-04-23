@@ -43,7 +43,6 @@ String FilterElements::Equals::ToString () const
     return sb;
 }
 
-
 /*
  ********************************************************************************
  ********************** Document::FilterElements::Matches ***********************
