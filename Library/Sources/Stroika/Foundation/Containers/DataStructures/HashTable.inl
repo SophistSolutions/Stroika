@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 fBuckets_.resize (newBucketCount);
             }
             else {
-                Debug::TraceContextBumper ctx{"ReHash - rehashing"};
+                //Debug::TraceContextBumper ctx{"ReHash - rehashing"};
                 // fill in new by iterating, so basically cost of a whole new copy of all the data
                 HashTable n{newBucketCount, fHasher_, fKeyComparer_};
                 for (auto i : *this) {
