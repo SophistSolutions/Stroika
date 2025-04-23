@@ -491,12 +491,15 @@ namespace {
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll()", "filter={}, projection={}"_f, filter, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                auto [mongoFilter, myFilter]         = Partition_ (filter);
-                // @todo - must be careful if myFilter != nullptr, may not be able to do projection server-side! 
-                auto [mongoProjection, myProjection] = Partition_ (projection);
+                auto [mongoFilter, myFilter] = Partition_ (filter);
+                // must be careful if myFilter != nullptr, may not be able to do projection server-side!
+                // cuz data needed client side to do the filtering...
+                auto [mongoProjection, myProjection] = myFilter == nullopt ? Partition_ (projection) : make_tuple (nullopt, projection);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_ && 0
                 DbgTrace ("myFilter={}"_f, myFilter);
-                DbgTrace ("mongoFilter={}"_f, BSON2VV_ (mongoFilter));
+                if (mongoFilter) {
+                    DbgTrace ("mongoFilter={}"_f, BSON2VV_ (*mongoFilter));
+                }
 #endif
                 Sequence<Document::Document> result;
                 mongocxx::options::find      o;
