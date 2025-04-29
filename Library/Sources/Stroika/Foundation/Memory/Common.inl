@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Memory {
         Assert (newSize > 0);
 
         // do hack impl based on old array code that seems to work on gcc=14 optimizer
-        if constexpr (true) {
+        if constexpr (false) {
             // liven objects at the end so operator= doesn't crash (finds already constructed object to assign over)
             if constexpr (not is_trivially_constructible_v<T>) {
                 if constexpr (true) {
