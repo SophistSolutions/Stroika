@@ -184,6 +184,7 @@ sub	ReadConfiguration_
 	$gAssertionsEnabled = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "AssertionsEnabled"));
 	$INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
 	$VSVARS_PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "VSVARS_PLATFORM_INCLUDES_PATH");
+	$VSVARS_MSVC_RUNTIME_LIBRARY = GetConfigurationParameter($activeConfiguration, "VSVARS_MSVC_RUNTIME_LIBRARY");
 	$LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibPath");
 	$LinkerArgs_LibDependencies = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibDependencies");
 
@@ -320,6 +321,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkTime_CopyFilesToEXEDir");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("INCLUDES_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_PLATFORM_INCLUDES_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_MSVC_RUNTIME_LIBRARY");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS_NOTINCLUDES");
 

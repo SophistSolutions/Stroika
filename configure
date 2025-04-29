@@ -86,6 +86,7 @@ my $TargetPlatforms='';
 # Various Visaul Studio defines sometimes (maybe) helpful - somewhat speculative
 my $VSVARS_VSINSTALLDIR=undef;
 my $VSVARS_WindowsSdkDir=undef;
+my $VSVARS_MSVC_RUNTIME_LIBRARY=undef;		# https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html
 my $VSVARS_WindowsSDKVersion=undef;
 my $VSVARS_VCToolsInstallDir=undef;
 
@@ -515,6 +516,7 @@ sub	DoHelp_
 		print("	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
 		print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
 		print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
+		print("	    --msvc-runtime-library {MultiThreaded|...} 		/* MSVC_RUNTIME_LIBRARY windows value - defaults to no-DLL and debug based on assertion flag - https://cmake.org/cmake/help/latest/prop_tgt/MSVC_RUNTIME_LIBRARY.html */\n");
 		print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\n");
 		print("	                                                       any arg you can pass to -fsanitize=XXXX */\n");
 		print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
@@ -1278,19 +1280,19 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
 				# NOTE EVEN WITH THIS WE STILL GET
 				#		Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-odr';
 			}
 			if (13.0 <= $itsVersion && $itsVersion < 14) {
 				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
 				# are hard to figure out what todo about --LGP 2023-10-04
-				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-subobject-linkage ';
+				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . ' -Wno-subobject-linkage';
 
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-lto-type-mismatch ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-odr';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-lto-type-mismatch';
 
 				### this suppression doesnt seem eneeded for g++-14...--LGP 2024-03-26
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-tsan ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-tsan';
 			}
 			if (14.0 <= $itsVersion && $itsVersion < 14.1) {
 				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
@@ -1299,8 +1301,8 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 				# TEST AGAIN with the official g++-14 release (still experimental) --LGP 2024-03-26
 
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-lto-type-mismatch ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-odr';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-lto-type-mismatch';
 			}
 
 			# In function 'copy',
@@ -1316,7 +1318,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			# |                                                                          ^
 			#	NOTE - happens on g++-15 on Ubuntuy 25.04 as well
 			if ($itsVersion < 16.0) {
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-stringop-overflow ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-stringop-overflow';
 			}
 
 
@@ -1334,7 +1336,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			# /usr/arm-linux-gnueabihf/include/c++/12/bits/new_allocator.h:158:33: warning: 'operator delete' called on pointer '_1397' with nonzero offset [1, 2147483647] [-Wfree-nonheap-object]
 			# 158 |         _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n));
 			if ($itsVersion < 13.0 && $ARCH eq "armhf") {
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-free-nonheap-object ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-free-nonheap-object';
 			}
 
 		}
@@ -2162,6 +2164,11 @@ sub	ParseCommandLine_Remaining_
 			}
 			$runtimeStackProtectorFlag = $var;
 		}
+		elsif ((lc ($var) eq "-msvc-runtime-library") or (lc ($var) eq "--msvc-runtime-library")) {
+			$i++;
+			$var = $args[$i];
+			$VSVARS_MSVC_RUNTIME_LIBRARY = $i;
+		}
 		elsif ((lc ($var) eq "-sanitize") or (lc ($var) eq "--sanitize")) {
 			$i++;
 			$var = $args[$i];
@@ -2405,7 +2412,6 @@ sub GetDefaultCZZFLAGS_flags_
 				push @flags, "-GS";			#	Enable Security Check
 				push @flags, "-Oy-";		#	(Dont) omit frame pointers
 				push @flags, "-Od";			#	Disable Optimization
-				push @flags, "-MTd";		#	Multithreaded (Debug; but not dll)
 			}
 			if ($ApplyReleaseFlags == true) {
 				push @flags, "-GS-";		#	Disable Security Check
@@ -2415,10 +2421,25 @@ sub GetDefaultCZZFLAGS_flags_
 				push @flags, "-GL";			#	Whole Program Optimization
 				push @flags, "-Oi";			#	Enable Intrinsic Functions
 				push @flags, "-GF";			#	Enable String Pooling
-				push @flags, "-MT";			#	Multithreaded (not debug not dll)
 			}
 			##push @flags, "-fp:precise";	#vs2k sample projects define this, but maybe can use default?
 		
+			if ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreaded") {
+				push @flags, "-MT";			#	Multithreaded (not debug not dll)
+			}
+			elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebug") {
+				push @flags, "-MTd";		#	Multithreaded (Debug; but not dll)
+			}
+			elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDLL") {
+				push @flags, "-MD";			#	NOT SURE REALLY SUPPORTED
+			}
+			elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebugDLL") {
+				push @flags, "-MDd";		#	NOT SURE REALLY SUPPORTED
+			}
+			else {
+				print ("WARNING: Unrecognized MSVC_RUNTIME_LIBRARY: $VSVARS_MSVC_RUNTIME_LIBRARY\n");
+			}
+
 			if ($INCLUDE_SYMBOLS_LIB) {
 				if ($WinFlag_DebugProgramDatabase) {
 					push @flags, "-Zi";		#	Program Database (Debug Information)
@@ -2826,6 +2847,15 @@ sub PostProcessOptions_ ()
 			$WIN_LIBCOMPATIBLE_ARCH = "x64";
 		}
 		$LinkerArgs_ExtraPrefix .= " -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
+
+		if (! defined $VSVARS_MSVC_RUNTIME_LIBRARY ) {
+			if ($gAssertionsEnabled) {
+				$VSVARS_MSVC_RUNTIME_LIBRARY = "MultiThreadedDebug";
+			}
+			else {
+				$VSVARS_MSVC_RUNTIME_LIBRARY = "MultiThreaded";
+			}
+		}
 	}
 
 	if ($CPPFLAGS_Overridden eq false) {
@@ -3093,6 +3123,9 @@ sub	WriteConfigFile_
 	}
 	if (defined $VSVARS_VCToolsInstallDir) {
 		print (OUT "    <VSVARS_VCToolsInstallDir>$VSVARS_VCToolsInstallDir</VSVARS_VCToolsInstallDir>\n");
+	}
+	if (defined $VSVARS_MSVC_RUNTIME_LIBRARY) {
+		print (OUT "    <VSVARS_MSVC_RUNTIME_LIBRARY>$VSVARS_MSVC_RUNTIME_LIBRARY</VSVARS_MSVC_RUNTIME_LIBRARY>\n");
 	}
 	if (defined $MACOSX_DEPLOYMENT_TARGET && $MACOSX_DEPLOYMENT_TARGET ne "") {
 		print (OUT "    <MACOSX_DEPLOYMENT_TARGET>$MACOSX_DEPLOYMENT_TARGET</MACOSX_DEPLOYMENT_TARGET>\n");

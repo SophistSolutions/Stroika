@@ -259,6 +259,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'VSVARS_PLATFORM_INCLUDES_PATH'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<VSVARS_MSVC_RUNTIME_LIBRARY>");
+		if (defined $pps) {
+			$configuration {'VSVARS_MSVC_RUNTIME_LIBRARY'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<INCLUDES_PATH>");
 		if (defined $pps) {
 			$configuration {'INCLUDES_PATH'} = $pps;

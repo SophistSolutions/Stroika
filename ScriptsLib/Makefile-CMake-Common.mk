@@ -100,11 +100,12 @@ $(error "unsupported version of visual studio.net")
 endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-ifeq (1,$(AssertionsEnabled))
-CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDebug
-else
-CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
-endif
+CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=${VSVARS_MSVC_RUNTIME_LIBRARY}
+# ifeq (1,$(AssertionsEnabled))
+# CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDebug
+# else
+# CMAKE_ARGS+= -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+# endif
 endif
 CMAKE_ARGS+= -DCMAKE_C_FLAGS="$(CPPFLAGS_NOTINCLUDES) $(CFLAGS)"
 CMAKE_ARGS+= -DCMAKE_CXX_FLAGS="$(CPPFLAGS_NOTINCLUDES) $(CXXFLAGS)"
