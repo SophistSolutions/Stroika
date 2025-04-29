@@ -99,6 +99,13 @@ namespace Stroika::Foundation::Memory {
     constexpr bool Intersects (span<T1, E1> lhs, span<T2, E2> rhs)
     {
         // See Range<T, TRAITS>::Intersects for explanation - avoid direct call here to avoid include file reference
+        /*
+         *  Assume LHS is at given position. RHS could be A, B, C, D, E, F, G, or H
+         *                         |               LHS              |
+         *  | A |                | B |             | C |           | D |           | E |
+         *  | G                    |                                |   H   |
+         *  |                                        F                                 |
+         */
         if (lhs.empty () or rhs.empty ()) {
             return false;
         }
@@ -106,12 +113,17 @@ namespace Stroika::Foundation::Memory {
         const byte* rhsStart = addressof (*as_bytes (rhs).data ());
         const byte* lhsEnd   = lhsStart + lhs.size_bytes ();
         const byte* rhsEnd   = rhsStart + rhs.size_bytes ();
+        // NOTE - not sure how to test this safely in general. On segmented architectures, this test isn't legal, if they are not
+        // from the same segment, for example. C++ only guarantees test safe IF they overlap, in essence --LGP 2025-04-29
         if (rhsEnd <= lhsStart) {
+            // cases A, G
             return false; // combine two cases from Range<T, TRAITS>::Intersects cuz always closed
         }
         if (rhsStart >= lhsEnd) {
+            // cases E, H
             return false; // ""
         }
+        // cases B, C, D, F
         return true;
     }
 
@@ -169,7 +181,8 @@ namespace Stroika::Foundation::Memory {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // this suppress doesn't work for g++-11, so must use configure to add suppress to cmdline
             span<byte>       targetBytes = as_writable_bytes (target);
             span<const byte> srcBytes    = as_bytes (src);
-            if (addressof (*targetBytes.data ()) >= addressof (*srcBytes.data ()) + srcBytes.size ()) {
+            // we know they overlap, so just checking which is to the left and which to the right
+            if (addressof (*targetBytes.data ()) >= addressof (*srcBytes.data ())) {
                 // target inside src-range, so copy_backward
                 copy_backward (srcBytes.data (), srcBytes.data () + srcBytes.size (), targetBytes.data () + srcBytes.size ());
             }
