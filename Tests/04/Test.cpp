@@ -132,11 +132,13 @@ namespace {
         EXPECT_EQ (someArray.size (), 0u);
         someArray.Insert (0, 3);
         EXPECT_EQ (someArray.size (), 1u);
+        EXPECT_EQ (distance (someArray.begin (), someArray.end ()), 1);
         {
             const OnlyCopyableMoveableAndTotallyOrdered kTest_[] = {2, 3, 4}; // not static cuz of 'cleanup' test at end
             someArray.Insert (1, span{kTest_});
         }
         EXPECT_EQ (someArray.size (), 4u);
+        EXPECT_EQ (distance (someArray.begin (), someArray.end ()), 4);
         someArray.Remove (1, 4);
         EXPECT_EQ (someArray.size (), 1u);
         EXPECT_EQ (someArray[0], 3u);
