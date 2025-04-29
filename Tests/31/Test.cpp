@@ -319,8 +319,8 @@ namespace {
             auto digesterWithResult_string = Digester<Digest::Algorithm::MD5, string>{};
             // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
             // so if these fail, either something relevant changed or bug...
-            EXPECT_TRUE (digesterWithResult_string (value2Hash) == "4fa4ac89a4c435e7899a53afa9fcdc5b");
-            EXPECT_TRUE ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"4fa4ac89a4c435e7899a53afa9fcdc5b"));
+            EXPECT_EQ (digesterWithResult_string (value2Hash), "4fa4ac89a4c435e7899a53afa9fcdc5b");
+            EXPECT_EQ ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash)), "4fa4ac89a4c435e7899a53afa9fcdc5b");
         }
         {
             using namespace IO::Network;

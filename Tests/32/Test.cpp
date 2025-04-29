@@ -892,14 +892,14 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_3_::DoAll_"};
         {
-            const char kJSONExample_[] = "{"
-                                         "    \"T1\" : \"\","
-                                         "    \"T2\" : null,"
-                                         "    \"T3\" : {"
-                                         "        \"DefaultBackupDirectory\" : true,"
-                                         "        \"PrintName\" : \"{Default Backup Directory}\""
-                                         "    }"
-                                         "}";
+            const char kJSONExample_[] = R"({
+                                            "T1" : "",
+                                            "T2" : null,
+                                            "T3" : {
+                                                 "DefaultBackupDirectory" : true,
+                                                 "PrintName" : "{Default Backup Directory}"
+                                             }
+                                         })";
             VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
             EXPECT_EQ (mv["T1"].GetType (), VariantValue::eString);
@@ -1207,30 +1207,30 @@ namespace {
         using namespace Memory::Literals;
         // Saw assertion error cuz not seekable here, but doesn't seem to happen anymore - not sure what was happening? --LGP 2024-05-22
         // I THINK an issue with code in DataExchange::JSON::Reader::BoostRep_::Read - but cannot see anything wrong and cannot repro issue
-        VariantValue readAsString = DataExchange::Variant::JSON::Reader{}.Read ("{"
-                                                                                "\"foo\" : [ \"bar\", \"baz\" ]"
-                                                                                ",\"\" : 0"
-                                                                                ",\"a/b\" : 1"
-                                                                                ",\"c%d\" : 2"
-                                                                                ",\"e^f\" : 3"
-                                                                                ",\"g|h\" : 4"
-                                                                                ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
-                                                                                ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
-                                                                                ",\" \": 7"
-                                                                                ",\"m~n\" : 8"
-                                                                                "}"_k);
-        VariantValue readAsBLOB   = DataExchange::Variant::JSON::Reader{}.Read ("{"
-                                                                                  "\"foo\" : [ \"bar\", \"baz\" ]"
-                                                                                  ",\"\" : 0"
-                                                                                  ",\"a/b\" : 1"
-                                                                                  ",\"c%d\" : 2"
-                                                                                  ",\"e^f\" : 3"
-                                                                                  ",\"g|h\" : 4"
-                                                                                  ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
-                                                                                ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
-                                                                                ",\" \": 7"
-                                                                                  ",\"m~n\" : 8"
-                                                                                  "}"_blob);
+        VariantValue readAsString = DataExchange::Variant::JSON::Reader{}.Read (R"({
+                                                                                "foo" : [ "bar", "baz" ]
+                                                                                ,"" : 0
+                                                                                ,"a/b" : 1
+                                                                                ,"c%d" : 2
+                                                                                ,"e^f" : 3
+                                                                                ,"g|h" : 4
+                                                                                ,"i\\j" : 5
+                                                                                ,"k\"l": 6
+                                                                                ," ": 7
+                                                                                ,"m~n" : 8
+                                                                                })"_k);
+        VariantValue readAsBLOB   = DataExchange::Variant::JSON::Reader{}.Read (R"({
+                                                                                "foo" : [ "bar", "baz" ]
+                                                                                ,"" : 0
+                                                                                ,"a/b" : 1
+                                                                                ,"c%d" : 2
+                                                                                ,"e^f" : 3
+                                                                                ,"g|h" : 4
+                                                                                ,"i\\j" : 5
+                                                                                ,"k\"l": 6
+                                                                                ," ": 7
+                                                                                ,"m~n" : 8
+                                                                                })"_blob);
         EXPECT_EQ (readAsString, readAsBLOB);
     }
 }
@@ -1241,18 +1241,18 @@ namespace {
         using namespace Characters::Literals;
         using namespace Memory::Literals;
         // test case from https://datatracker.ietf.org/doc/html/rfc6901
-        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read ("{"
-                                                                                        "\"foo\" : [ \"bar\", \"baz\" ]"
-                                                                                        ",\"\" : 0"
-                                                                                        ",\"a/b\" : 1"
-                                                                                        ",\"c%d\" : 2"
-                                                                                        ",\"e^f\" : 3"
-                                                                                        ",\"g|h\" : 4"
-                                                                                        ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
-                                                                                        ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
-                                                                                        ",\" \": 7"
-                                                                                        ",\"m~n\" : 8"
-                                                                                        "}"_blob);
+        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read (R"({
+                                                                                "foo" : [ "bar", "baz" ]
+                                                                                ,"" : 0
+                                                                                ,"a/b" : 1
+                                                                                ,"c%d" : 2
+                                                                                ,"e^f" : 3
+                                                                                ,"g|h" : 4
+                                                                                ,"i\\j" : 5
+                                                                                ,"k\"l": 6
+                                                                                ," ": 7
+                                                                                ,"m~n" : 8
+                                                                                })"_blob);
         EXPECT_EQ (JSON::PointerType{""}.Apply (kTestVariant_), kTestVariant_);
         EXPECT_EQ (JSON::PointerType{"/foo"}.Apply (kTestVariant_), (VariantValue{Sequence<VariantValue>{"bar", "baz"}}));
         EXPECT_EQ (JSON::PointerType{"/foo/0"}.Apply (kTestVariant_), (VariantValue{"bar"}));
@@ -1272,18 +1272,18 @@ namespace {
     {
         using namespace Memory::Literals;
         // test case from https://datatracker.ietf.org/doc/html/rfc6901
-        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read ("{"
-                                                                                        "\"foo\" : [ \"bar\", \"baz\" ]"
-                                                                                        ",\"\" : 0"
-                                                                                        ",\"a/b\" : 1"
-                                                                                        ",\"c%d\" : 2"
-                                                                                        ",\"e^f\" : 3"
-                                                                                        ",\"g|h\" : 4"
-                                                                                        ",\"i\\\\j\" : 5" // double double backslash cuz interpreted by C and then json parser
-                                                                                        ",\"k\\\"l\": 6" // 2 C quotes, and one json quote
-                                                                                        ",\" \": 7"
-                                                                                        ",\"m~n\" : 8"
-                                                                                        "}"_blob);
+        static VariantValue kTestVariant_ = DataExchange::Variant::JSON::Reader{}.Read (R"({
+                                                                                "foo" : [ "bar", "baz" ]
+                                                                                ,"" : 0
+                                                                                ,"a/b" : 1
+                                                                                ,"c%d" : 2
+                                                                                ,"e^f" : 3
+                                                                                ,"g|h" : 4
+                                                                                ,"i\\j" : 5
+                                                                                ,"k\"l": 6
+                                                                                ," ": 7
+                                                                                ,"m~n" : 8
+                                                                                })"_blob);
 
         using namespace DataExchange::JSON::Patch;
         {
