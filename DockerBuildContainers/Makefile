@@ -47,17 +47,14 @@ endif
 ifeq (${DETECTED_HOST_OS},Linux)
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
-IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2410-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2504-small
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests
-IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests
 IMAGES+= sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests
 ifeq (${BUILD_DEV_IMAGES},1)
 IMAGES+= sophistsolutionsinc/stroika-dev
 IMAGES+= sophistsolutionsinc/stroika-dev-2204
 IMAGES+= sophistsolutionsinc/stroika-dev-2404
-IMAGES+= sophistsolutionsinc/stroika-dev-2410
 IMAGES+= sophistsolutionsinc/stroika-dev-2504
 endif
 endif
@@ -78,9 +75,6 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2204-small:
 sophistsolutionsinc/stroika-buildvm-ubuntu2404-small:
 	docker build -f Ubuntu2404-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2404-small .
 
-sophistsolutionsinc/stroika-buildvm-ubuntu2410-small:
-	docker build -f Ubuntu2410-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2410-small .
-
 sophistsolutionsinc/stroika-buildvm-ubuntu2504-small:
 	docker build -f Ubuntu2504-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2504-small .
 
@@ -92,9 +86,6 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests:
 	docker build -f Ubuntu2404-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
-
-sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests:
-	docker build -f Ubuntu2410-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests .
 
 sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests:
 	docker build -f Ubuntu2504-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests .
@@ -119,9 +110,6 @@ sophistsolutionsinc/stroika-dev-2204:
 sophistsolutionsinc/stroika-dev-2404:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2404 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests .
 
-sophistsolutionsinc/stroika-dev-2410:
-	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2410 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2410-regression-tests .
-
 sophistsolutionsinc/stroika-dev-2504:
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2504 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests .
 
@@ -131,7 +119,6 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2410 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2410 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10622:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
 endif
 
