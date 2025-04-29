@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         Array () = default;
-        Array (Array&& from);
+        Array (Array&& from) noexcept;
         Array (const Array& from);
 
     public:

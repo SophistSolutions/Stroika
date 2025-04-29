@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         DoublyLinkedList ();
-        DoublyLinkedList (DoublyLinkedList&& src);
+        DoublyLinkedList (DoublyLinkedList&& src) noexcept;
         DoublyLinkedList (const DoublyLinkedList& src);
         ~DoublyLinkedList ();
 

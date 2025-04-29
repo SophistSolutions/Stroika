@@ -11,7 +11,9 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key,
+                                                                const ValueType& value) noexcept (is_nothrow_constructible_v<KEY_TYPE, KEY_TYPE> and
+                                                                                                  is_nothrow_constructible_v<VALUE_TYPE, VALUE_TYPE>)
         requires (copy_constructible<KEY_TYPE> and copy_constructible<VALUE_TYPE>)
         : fKey (key)
         , fValue (value)

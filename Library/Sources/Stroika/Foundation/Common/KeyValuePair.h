@@ -49,16 +49,18 @@ namespace Stroika::Foundation::Common {
          *  @todo cleanup - should be BOTH simpler, and handle a bunch of other cases. See if I can find a good example. pair<> code
          *  from visual studio uses a bunch of requires and is even more complex.
          */
-        constexpr KeyValuePair ()
+        constexpr KeyValuePair () noexcept (is_nothrow_constructible_v<KEY_TYPE> and is_nothrow_constructible_v<VALUE_TYPE>)
             requires (constructible_from<KEY_TYPE> and constructible_from<VALUE_TYPE>)
         = default;
-        KeyValuePair (const KeyValuePair& src)
+        KeyValuePair (const KeyValuePair& src) noexcept (is_nothrow_constructible_v<KEY_TYPE, KEY_TYPE> and
+                                                         is_nothrow_constructible_v<VALUE_TYPE, VALUE_TYPE>)
             requires (copy_constructible<KEY_TYPE> and copy_constructible<VALUE_TYPE>)
         = default;
-        KeyValuePair (KeyValuePair&& src)
+        KeyValuePair (KeyValuePair&& src) noexcept (is_nothrow_constructible_v<KEY_TYPE> and is_nothrow_constructible_v<VALUE_TYPE>)
             requires (is_move_constructible_v<KEY_TYPE> and is_move_constructible_v<VALUE_TYPE>)
         = default;
-        constexpr KeyValuePair (const KeyType& key, const ValueType& value)
+        constexpr KeyValuePair (const KeyType& key, const ValueType& value) noexcept (is_nothrow_constructible_v<KEY_TYPE, KEY_TYPE> and
+                                                                                      is_nothrow_constructible_v<VALUE_TYPE, VALUE_TYPE>)
             requires (copy_constructible<KEY_TYPE> and copy_constructible<VALUE_TYPE>);
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         constexpr KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)

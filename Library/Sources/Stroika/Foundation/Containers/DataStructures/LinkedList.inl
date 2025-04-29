@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    inline LinkedList<T>::LinkedList (LinkedList&& src)
+    inline LinkedList<T>::LinkedList (LinkedList&& src) noexcept
         : fHead_{src.fHead_}
     {
         src.fHead_ = nullptr;

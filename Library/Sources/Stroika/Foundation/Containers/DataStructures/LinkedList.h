@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         /**
          */
         LinkedList ();
-        LinkedList (LinkedList&& src);
+        LinkedList (LinkedList&& src) noexcept;
         LinkedList (const LinkedList& src);
         ~LinkedList ();
 

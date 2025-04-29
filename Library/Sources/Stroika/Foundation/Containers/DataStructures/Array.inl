@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    Array<T>::Array (Array&& from)
+    Array<T>::Array (Array&& from) noexcept
         : fItems_{move (from.fItems_)}
         , fLength_{from.fLength_}
     {

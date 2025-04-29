@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
-    DoublyLinkedList<T>::DoublyLinkedList (DoublyLinkedList&& src)
+    DoublyLinkedList<T>::DoublyLinkedList (DoublyLinkedList&& src) noexcept
         : fHead_{src.fHead_}
         , fTail_{src.fTail_}
     {
