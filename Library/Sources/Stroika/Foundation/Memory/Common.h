@@ -207,6 +207,8 @@ namespace Stroika::Foundation::Memory {
      *  \pre src.size () <= target.size ()      -- so that all of source can always be copied (else would need api/indicator of how much copied)
      *  \pre not Intersects (src, target) - so non-overlapping
      * 
+     *  @aliases CopyNonOverlappingBytes
+     * 
      *  \note somewhat unlike memcpy, its fine if the spans{} are empty ()
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
@@ -245,6 +247,8 @@ namespace Stroika::Foundation::Memory {
      *  \pre from.size() <= to.size()
      *  \pre not Intersects (src, target) - so non-overlapping
      *
+     *  @aliases Could be called CopyNonOverlappingSpanData
+     * 
      *  \returns the subspan of the target which was just filled in.
      * 
      *  \note @todo CONSIDER how similar/different this is from ranges::copy, or ranges_uninitialized_copy

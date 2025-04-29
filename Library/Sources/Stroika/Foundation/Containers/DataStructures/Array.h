@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *        
          *   EQUALS_COMPARER OVERLOAD : Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
          * 
-         *  \alias Lookup, First, Contains (sort of)
+         *  @aliases Lookup, First, Contains (sort of)
          */
         template <predicate<T> FUNCTION>
         nonvirtual ForwardIterator Find (FUNCTION&& firstThat) const;
