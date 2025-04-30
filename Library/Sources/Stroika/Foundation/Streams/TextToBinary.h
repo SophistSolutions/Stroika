@@ -74,6 +74,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
         using Ptr = Streams::OutputStream::Ptr<Character>;
 
         /**
+         *  \note Warning: the OutputStream objects returned are not seekable.
          */
         Ptr New (const Streams::OutputStream::Ptr<byte>& src, const Characters::CodeCvt<>& char2OutputConverter);
         Ptr New (const Streams::OutputStream::Ptr<byte>& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDEFAULT,
@@ -104,8 +105,13 @@ namespace Stroika::Foundation::Streams::TextToBinary {
          * @todo take optional CodeCvt argument, or things you would pass to CodeCvt (character coding) for what binary rep to create!
          * 
          *  WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
+         * 
+         *  Ptr New (const InputStream::Ptr<Character>& srcStream, optional<SeekableFlag> seekable...) overload:
+         *      if seekable argument seekable, then \ens result.IsSeekable ()
+         *  Ptr New (const Traversal::Iterable<Character>& srcText) overload:
+         *      \ens result.IsSeekable ()
          */
-        Ptr New (const InputStream::Ptr<Character>& srcStream);
+        Ptr New (const InputStream::Ptr<Character>& srcStream, optional<SeekableFlag> seekable = {});
         Ptr New (const Traversal::Iterable<Character>& srcText);
 
     }

@@ -11,8 +11,8 @@
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-
-#include "IterableToInputStream.h"
+#include "Stroika/Foundation/Streams/BufferedInputStream.h"
+#include "Stroika/Foundation/Streams/IterableToInputStream.h"
 
 #include "TextToBinary.h"
 
@@ -122,13 +122,21 @@ namespace {
  *********************** Streams::TextToBinary::Reader::New *********************
  ********************************************************************************
  */
-auto TextToBinary::Reader::New (const InputStream::Ptr<Character>& srcStream) -> InputStream::Ptr<byte>
+auto TextToBinary::Reader::New (const InputStream::Ptr<Character>& srcStream, optional<SeekableFlag> seekable) -> InputStream::Ptr<byte>
 {
-    return InputStream::Ptr<byte>{make_shared<Rep_> (srcStream)};
+    auto result = InputStream::Ptr<byte>{make_shared<Rep_> (srcStream)};
+    // @todo - this could be more efficient by working embedding some of this logic into Rep_
+    if (seekable == SeekableFlag::eSeekable) {
+        result = BufferedInputStream::New (result, true);
+        Ensure (result.IsSeekable ());
+    }
+    return result;
 }
 
 auto TextToBinary::Reader::New (const Traversal::Iterable<Character>& srcText) -> InputStream::Ptr<byte>
 {
     // @todo - Could make this more efficient (by combining into one object) - but for now KISS
-    return New (IterableToInputStream::New<Character> (srcText));
+    auto result = New (IterableToInputStream::New<Character> (srcText));
+    Ensure (result.IsSeekable ());
+    return result;
 }
