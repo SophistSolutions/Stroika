@@ -127,7 +127,7 @@ auto TextToBinary::Reader::New (const InputStream::Ptr<Character>& srcStream, op
     auto result = InputStream::Ptr<byte>{make_shared<Rep_> (srcStream)};
     // @todo - this could be more efficient by working embedding some of this logic into Rep_
     if (seekable == SeekableFlag::eSeekable) {
-        result = BufferedInputStream::New (result, true);
+        result = BufferedInputStream::New (result, SeekableFlag::eSeekable);
         Ensure (result.IsSeekable ());
     }
     return result;
