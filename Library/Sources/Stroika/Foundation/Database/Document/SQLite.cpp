@@ -229,7 +229,7 @@ namespace {
                  *      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                  */
                 if (fAddStatement_ == nullptr) [[unlikely]] {
-                    fAddStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "insert into {} (json) values(?);"_f(fTableName_));
+                    fAddStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "insert into {} (json) values(json(?));"_f(fTableName_));
                 }
                 string jsonText = Variant::JSON::Writer{}.WriteAsString (VariantValue{v}).AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fAddStatement_), fConnectionRep_->fDB_);
@@ -335,10 +335,11 @@ namespace {
 
                 // @todo PREPARED STATEMENT!
                 String r = Variant::JSON::Writer{}.WriteAsString (VariantValue{d2Update});
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
-                                                          "update {} SET json='{}' where id='{}';"_f(fTableName_, r, id).AsUTF8<string> ().c_str (),
-                                                          nullptr, nullptr, nullptr),
-                                          fConnectionRep_->fDB_);
+                ThrowSQLiteErrorIfNotOK_ (
+                    ::sqlite3_exec (fConnectionRep_->fDB_,
+                                    "update {} SET json='json({})' where id='{}';"_f(fTableName_, r, id).AsUTF8<string> ().c_str (),
+                                    nullptr, nullptr, nullptr),
+                    fConnectionRep_->fDB_);
             }
             virtual void Remove (const IDType& id) override
             {
