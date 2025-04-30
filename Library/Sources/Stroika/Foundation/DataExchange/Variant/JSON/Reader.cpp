@@ -28,6 +28,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Traversal;
 
@@ -139,7 +140,7 @@ namespace {
             return static_cast<uint8_t> ((c - 'A') + 10);
         }
         static const auto kException_{BadFormatException{"JSON: bad hex digit after \\u"sv}};
-        Execution::Throw (kException_);
+        Throw (kException_);
     }
 
     // 'in' is positioned to the start of string, and we read, leaving in positioned just after the end of the string
@@ -149,7 +150,7 @@ namespace {
         char32_t c = in.NextChar ();
         if (c != '\"') [[unlikely]] {
             static const auto kException_{BadFormatException{"JSON: Expected quoted string"sv}};
-            Execution::Throw (kException_);
+            Throw (kException_);
         }
         /*
          * accumulate chars, and check for close-quote
@@ -158,7 +159,7 @@ namespace {
         while (true) {
             if (in.IsAtEOF ()) [[unlikely]] {
                 static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
-                Execution::Throw (kException_);
+                Throw (kException_);
             }
             c = in.NextChar ();
             if (c == '\"') [[unlikely]] {
@@ -168,7 +169,7 @@ namespace {
                 // quoted character read...
                 if (in.IsAtEOF ()) [[unlikely]] {
                     static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
-                    Execution::Throw (kException_);
+                    Throw (kException_);
                 }
                 c = in.NextChar ();
                 switch (c) {
@@ -193,7 +194,7 @@ namespace {
                         for (int n = 0; n < 4; ++n) {
                             if (in.IsAtEOF ()) [[unlikely]] {
                                 static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
-                                Execution::Throw (kException_);
+                                Throw (kException_);
                             }
                             newC += HexChar2Num_ (static_cast<char> (in.NextChar ()));
                             if (n != 3) {
@@ -267,7 +268,7 @@ namespace {
             optional<Character> oNextChar = in.Peek ();
             if (not oNextChar.has_value ()) [[unlikely]] {
                 static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading object (looking for '}')"sv}};
-                Execution::Throw (kException_);
+                Throw (kException_);
             }
             char32_t nextChar = oNextChar->As<char32_t> ();
             if (IsJSONSpace_ (nextChar)) [[likely]] {
@@ -288,7 +289,7 @@ namespace {
                     else {
                         static const auto kException_{
                             BadFormatException{"JSON: Reading object, looking for a name, didn't find a close brace or open quote"sv}};
-                        Execution::Throw (kException_);
+                        Throw (kException_);
                     }
                 } break;
                 case eComma: {
@@ -303,7 +304,7 @@ namespace {
                     }
                     else {
                         static const auto kException_{BadFormatException{"JSON: Reading object, looking for a comma, but found something else"sv}};
-                        Execution::Throw (kException_);
+                        Throw (kException_);
                     }
                 } break;
                 case eColon: {
@@ -314,7 +315,7 @@ namespace {
                     }
                     else {
                         static const auto kException_{BadFormatException{"JSON: Reading object, looking for a colon, but found something else"sv}};
-                        Execution::Throw (kException_);
+                        Throw (kException_);
                     }
                 } break;
                 case eValue: {
@@ -338,7 +339,7 @@ namespace {
         while (true) {
             if (in.IsAtEOF ()) [[unlikely]] {
                 static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading array (looking for ']')"sv}};
-                Execution::Throw (kException_);
+                Throw (kException_);
             }
             char32_t peekedChar = in.Peek ()->As<char32_t> ();
             if (peekedChar == ']') {
@@ -351,7 +352,7 @@ namespace {
             else if (peekedChar == ',') {
                 if (lookingForElt) [[unlikely]] {
                     static const auto kException_{BadFormatException{"JSON: Unexpected second ',' in reading array"sv}};
-                    Execution::Throw (kException_);
+                    Throw (kException_);
                 }
                 else {
                     lookingForElt = true;
@@ -370,7 +371,7 @@ namespace {
                 }
                 else {
                     static const auto kException_{BadFormatException{"JSON: Unexpected character (missing ',' ?) in reading array"sv}};
-                    Execution::Throw (kException_);
+                    Throw (kException_);
                 }
             }
         }
@@ -399,7 +400,7 @@ namespace {
             } break;
         }
         static const auto kException_{BadFormatException{"JSON: Unrecognized token"sv}};
-        Execution::Throw (kException_);
+        Throw (kException_);
     }
 
     VariantValue Reader_value_ (MyBufferedStreamReader_& in)
@@ -447,14 +448,14 @@ namespace {
                     }
                     else {
                         static const auto kException_{BadFormatException{"JSON: Unexpected character looking for start of value"sv}};
-                        Execution::Throw (kException_);
+                        Throw (kException_);
                     }
                 }
             }
         }
         // if we get here - nothing found
         static const auto kException_{BadFormatException{"JSON: Unexpected EOF looking for value"sv}};
-        Execution::Throw (kException_);
+        Throw (kException_);
     }
 }
 
@@ -800,13 +801,13 @@ public:
                         break; // good parse
                     }
                     else if (ec) {
-                        Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                        Throw (BadFormatException{String::FromNarrowSDKString (ec.what ())});
                     }
                 }
                 if (not p.done ()) {
                     p.write_some (false, nullptr, 0, ec);
                     if (ec and ec != boost::json::error::extra_data /*and ec != boost::json::error::incomplete*/) {
-                        Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                        Throw (BadFormatException{String::FromNarrowSDKString (ec.what ())});
                     }
                 }
                 return p.handler ().GetConstructedValue ();
@@ -828,7 +829,7 @@ public:
                         break; // good parse
                     }
                     else if (ec) {
-                        Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                        Throw (BadFormatException{String::FromNarrowSDKString (ec.what ())});
                     }
                 }
                 if (not p.done ()) {
@@ -839,7 +840,7 @@ public:
             }
         }
         catch (...) {
-            Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
+            Throw (BadFormatException{Characters::ToString (current_exception ())});
         }
     }
     virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
