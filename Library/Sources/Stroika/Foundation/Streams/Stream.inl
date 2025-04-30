@@ -47,6 +47,11 @@ namespace Stroika::Foundation::Streams {
         return fSeekable_;
     }
     template <typename ELEMENT_TYPE>
+    inline auto Ptr<ELEMENT_TYPE>::GetSeekability () const -> SeekableFlag
+    {
+        return IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
+    }
+    template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::reset () noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};

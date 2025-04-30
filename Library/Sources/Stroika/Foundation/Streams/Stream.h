@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Streams {
      *  For reading, the low level Read () API (that everything is built off of) - will take a span<Element> and not return until it has at least one read. Failure to read
      *  more is nearly meaningless, and is fine. If it is KNOWN you are at EOF - end of stream - then and only then can the Read return 0 elements read.
      * 
-     *  But if you cannot read at least one (say reading from a socket and no data is avaiable), then Read () can return the special value nullopt.
+     *  But if you cannot read at least one (say reading from a socket and no data is available), then Read () can return the special value nullopt.
      * 
      *  For Writing - the Stream Write API (for simplicity sake) doesn't allow for incomplete writes. It blocks until all elements are written.
      * 
@@ -236,10 +236,10 @@ namespace Stroika::Foundation::Streams {
         nonvirtual bool IsSeekable () const;
 
     public:
-        [[deprecated ("Since Stroika v3.0d5 use IsSeekable")]] SeekableFlag GetSeekability () const
-        {
-            return IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
-        }
+        /**
+         *  Sometimes useful to have a typed flag, to avoid possible overload ambiguities with boolean result.
+         */
+        nonvirtual SeekableFlag GetSeekability () const;
 
     protected:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized; // refers to PTR not REP
