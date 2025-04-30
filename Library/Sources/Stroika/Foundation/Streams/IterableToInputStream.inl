@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
         using Debug::AssertExternallySynchronizedMutex;
         using Traversal::Iterable;
         using Traversal::Iterator;
-        // Simply iterate over the 'iterable' of characacters, but allow seekability (by saving original iteration start)
+        // Simply iterate over the 'iterable' of characters, but allow seekability (by saving original iteration start)
         class IterableAdapterStreamRep_ final : public InputStream::IRep<ELEMENT_TYPE> {
         public:
             IterableAdapterStreamRep_ (const Traversal::Iterable<ELEMENT_TYPE>& src)
