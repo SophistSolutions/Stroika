@@ -38,6 +38,9 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
      *        memory to buffer the ENTIRE contents of the stream (other cases just buffer a bit so require more
      *        modest amounts of memory).
      * 
+     *        This can be used to turn ANY non-seekable stream into a seekable one (but NOTE - that means its a
+     *        different stream, and the underlying original stream will be left at an arbitrary seek point).
+     * 
      *  \note See Also StreamReader, as for consumers, this will often work the same as BufferedInputStream, but be
      *        somewhat more performant.
      * 
@@ -53,11 +56,12 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
+
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, optional<bool> seekable = {});
+    Ptr<ELEMENT_TYPE> New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, optional<Streams::SeekableFlag> seekable = {});
     template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn,
-                           optional<bool> seekable = {});
+                           optional<Streams::SeekableFlag> seekable = {});
 
     namespace Private_ {
         template <typename ELEMENT_TYPE>

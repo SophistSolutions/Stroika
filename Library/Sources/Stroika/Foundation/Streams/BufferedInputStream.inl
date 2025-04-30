@@ -251,15 +251,16 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, optional<bool> seekable) -> Ptr<ELEMENT_TYPE>
+    inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, optional<SeekableFlag> seekable) -> Ptr<ELEMENT_TYPE>
     {
         using PTR                        = Ptr<ELEMENT_TYPE>;
-        bool             srcSeekable     = realIn.IsSeekable ();
-        bool             useSeekable     = seekable.value_or (srcSeekable);
+        SeekableFlag     srcSeekable     = realIn.GetSeekability ();
+        SeekableFlag     useSeekable     = seekable.value_or (srcSeekable);
         constexpr size_t INLINE_BUF_SIZE = 4 * 1024;
-        if (useSeekable) {
-            return srcSeekable ? PTR{make_shared<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> (realIn)}
-                               : PTR{make_shared<Private_::Rep_Seekable_FromUnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
+        if (useSeekable == SeekableFlag::eSeekable) {
+            return srcSeekable == SeekableFlag::eSeekable
+                       ? PTR{make_shared<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> (realIn)}
+                       : PTR{make_shared<Private_::Rep_Seekable_FromUnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
         }
         else {
             return PTR{make_shared<Private_::Rep_UnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
@@ -267,14 +268,14 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
     }
     template <typename ELEMENT_TYPE>
     inline auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn,
-                     optional<bool> seekable) -> Ptr<ELEMENT_TYPE>
+                     optional<SeekableFlag> seekable) -> Ptr<ELEMENT_TYPE>
     {
         constexpr size_t INLINE_BUF_SIZE = 4 * 1024;
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized: {
-                bool srcSeekable = realIn.IsSeekable ();
-                bool useSeekable = seekable.value_or (srcSeekable);
-                if (useSeekable) {
+                SeekableFlag srcSeekable = realIn.GetSeekability ();
+                SeekableFlag useSeekable = seekable.value_or (srcSeekable);
+                if (useSeekable == SeekableFlag::eSeekable) {
                     return srcSeekable
                                ? InternallySynchronizedInputStream::New<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> ({}, realIn)
                                : InternallySynchronizedInputStream::New<Private_::Rep_Seekable_FromUnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> ({}, realIn);
@@ -302,4 +303,24 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
     {
     }
 
+    template <typename ELEMENT_TYPE>
+    [[deprecated ("Since Stroika v3.0d19 use Seekability overload")]] Ptr<ELEMENT_TYPE> New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn,
+                                                                                             optional<bool> seekable)
+    {
+        optional<SeekableFlag> sf;
+        if (seekable) {
+            sf = *seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
+        }
+        return New (realIn, sf);
+    }
+    template <typename ELEMENT_TYPE>
+    [[deprecated ("Since Stroika v3.0d19 use Seekability overload")]] Ptr<ELEMENT_TYPE>
+    New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, optional<bool> seekable = {})
+    {
+        optional<SeekableFlag> sf;
+        if (seekable) {
+            sf = *seekable ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
+        }
+        return New (internallySynchronized, realIn, sf);
+    }
 }
