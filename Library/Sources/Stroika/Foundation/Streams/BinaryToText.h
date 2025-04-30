@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Streams::BinaryToText {
         using Ptr = InputStream::Ptr<Character>;
 
         /**
-         * This flag controls whether the TextReader instance will try to read-ahead (typically in order to cache). This is generally
+         * This flag controls whether the (BinaryToText::Reader) TextReader instance will try to read-ahead (typically in order to cache). This is generally
          * a good thing, but for some stream uses, its important to not read ahead - e.g. in the underlying binary stream contains multiple objects and we
          * are just reading one).
          *
