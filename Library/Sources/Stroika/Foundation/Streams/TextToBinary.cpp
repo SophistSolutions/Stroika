@@ -38,6 +38,7 @@ namespace {
     protected:
         virtual bool IsSeekable () const override
         {
+            // @todo https://stroika.atlassian.net/browse/STK-1028 - make optionally seekable
             return false; // avoid seekability at first cuz makes impl much more costly/complex
         }
         virtual void CloseRead () override
