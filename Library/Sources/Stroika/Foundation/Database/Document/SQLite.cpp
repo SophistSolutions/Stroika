@@ -189,12 +189,13 @@ namespace {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
 
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsyncrhonized connection, share its context
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsynchronized connection, share its context
             shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
             String                     fTableName_;
 
             ::sqlite3_stmt* fAddStatement_{nullptr};
             ::sqlite3_stmt* fGetOneStatement_{nullptr};
+            ::sqlite3_stmt* fRemoveStatement_{nullptr};
 
             CollectionRep_ (const shared_ptr<ConnectionRep_>& connectionRep, const String& collectionName)
                 : fConnectionRep_{connectionRep}
@@ -222,10 +223,10 @@ namespace {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 /**
                  *  UNCLEAR if this way of capturing row_id is threadsafe or not.
-                 *  MAYBE OK if not using 'fullmutex' mode on database connection? @todo FIGURE OUT!!!!
+                 *  MAYBE OK if not using 'full mutex' mode on database connection? @todo FIGURE OUT!!!!
                  * 
                  * @todo: SIMONE suggests using GUID, and pre-computing the ID, and using that.
-                 *      COULD just precomute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
+                 *      COULD just precompute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
                  *      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                  */
                 if (fAddStatement_ == nullptr) [[unlikely]] {
@@ -347,11 +348,17 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Remove()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                // @todo PREPARED STATEMENT!
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_,
-                                                          "delete from {} where id='{}';"_f(fTableName_, id).AsUTF8<string> ().c_str (),
-                                                          nullptr, nullptr, nullptr),
+                if (fRemoveStatement_ == nullptr) [[unlikely]] {
+                    fRemoveStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "delete from {} where id='?';"_f(fTableName_));
+                }
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fRemoveStatement_), fConnectionRep_->fDB_);
+                string idText = id.AsUTF8<string> ();
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fRemoveStatement_, 1, idText.c_str (), static_cast<int> (idText.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
+                int rc = ::sqlite3_step (fRemoveStatement_);
+                if (rc != SQLITE_DONE) {
+                    ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
+                }
             }
         };
 
