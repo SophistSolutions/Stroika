@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Streams {
          * 
          *  \note At destruction, StreamReader automatically calls SynchronizeToUnderlyingStream
          * 
-         *  \pre underlyingReadFromStreamAdopted.Seekable ();
+         *  \pre underlyingReadFromStreamAdopted.Seekable ();       // so it can read ahead and synchronize back in dtor
          */
         StreamReader (const typename InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted);
         StreamReader ()                    = delete;
@@ -55,6 +55,7 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
+         *  \note this does IgnoreExceptionsForCall (this->SynchronizeToUnderlyingStream ())
          */
         ~StreamReader ();
 
