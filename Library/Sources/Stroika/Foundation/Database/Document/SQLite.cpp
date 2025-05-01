@@ -211,6 +211,46 @@ namespace {
 }
 
 namespace {
+    /**
+     * Break the given Stroika filter into parts that can be handled in sqlite, and parts that must be handled locally
+     * Also return array showing names cuz sqlite returns array (for > 1) and these are the names in this order of the fields/objects:
+     */
+    tuple<optional<String>, optional<Sequence<String>>, optional<Projection>> Partition_ (const optional<Projection>& p)
+    {
+        if (p) {
+            /*
+             *  json_extract appears to only support 'include' and not 'omit' operations
+             */
+            tuple<Document::Projection::Flag, Set<String>> fields = p->GetFields ();
+            Require (get<1> (fields).size () >= 1); // cannot (usefully) project to null-space
+            if (get<Document::Projection::Flag> (fields) == Document::Projection::Flag::eInclude) {
+                StringBuilder    projectionQuery;
+                Sequence<String> fieldNames;
+                for (String f : get<1> (fields)) {
+                    String mongoFieldName = f;
+                    if (fieldNames.empty ()) {
+                        projectionQuery << "json_extract(json,'";
+                    }
+                    else {
+                        projectionQuery << ","sv;
+                    }
+                    projectionQuery << "$."sv << mongoFieldName;
+                    fieldNames.push_back (mongoFieldName);
+                }
+                if (not fieldNames.empty ()) {
+                    projectionQuery << "')"sv;
+                }
+                return make_tuple (projectionQuery, fieldNames, nullopt);
+            }
+            else {
+                return make_tuple (nullopt, nullopt, p); // cannot optimize exclude (yet)
+            }
+        }
+        return make_tuple (nullopt, nullopt, nullopt);
+    }
+}
+
+namespace {
     using Connection::Options;
     struct ConnectionRep_ final : Database::Document::SQLite::Connection::IRep {
 
@@ -270,23 +310,48 @@ namespace {
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
-                // @todo figure out how to use json apis to support projection more efficiently
-                if (fGetOneStatement_ == nullptr) [[unlikely]] {
+                // locally construct MyPreparedStatement_ for case with projection, and/or save statement for grabbing whole thing
+                auto [sqliteProjection, arrayOfFieldNames, myProjection] = Partition_ (projection);
+                optional<MyPreparedStatement_> sqliteProjectionStatement;
+                if (sqliteProjection) {
+                    sqliteProjectionStatement.emplace (fConnectionRep_->fDB_, "select {} from {} where id=?;"_f(*sqliteProjection, fTableName_));
+                }
+                else if (fGetOneStatement_ == nullptr) [[unlikely]] {
                     fGetOneStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_)};
                 }
 
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fGetOneStatement_), fConnectionRep_->fDB_);
+                sqlite3_stmt* useStatment = sqliteProjectionStatement.has_value () ? *sqliteProjectionStatement : fGetOneStatement_;
+                AssertNotNull (useStatment);
+
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (useStatment), fConnectionRep_->fDB_);
                 string idAsUTFSTR = id.AsUTF8<string> ();
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fGetOneStatement_, 1, idAsUTFSTR.c_str (),
-                                                               static_cast<int> (idAsUTFSTR.length ()), SQLITE_TRANSIENT),
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (useStatment, 1, idAsUTFSTR.c_str (), static_cast<int> (idAsUTFSTR.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
-                int                          rc = ::sqlite3_step (fGetOneStatement_);
+                int                          rc = ::sqlite3_step (useStatment);
                 optional<Document::Document> result;
                 if (rc == SQLITE_ROW) [[likely]] {
-                    result = Variant::JSON::Reader{}
-                                 .Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fGetOneStatement_, 0))))
-                                 .As<Mapping<String, VariantValue>> ();
-                    rc = ::sqlite3_step (fGetOneStatement_);
+                    /*
+                     * Also return flag if sqlite return value is array or not:
+                     *      https://www.sqlite.org/json1.html
+                     *          "There is a subtle incompatibility between the json_extract() function in SQLite and the json_extract() function in MySQL. The MySQL version of json_extract() always returns JSON. The SQLite version of json_extract() only returns JSON if there are two or more PATH arguments"
+                     */
+                    VariantValue valueReadBackFromDB =
+                        Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (useStatment, 0))));
+                    if (sqliteProjection == nullopt) {
+                        result = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
+                    }
+                    else {
+                        Assert (arrayOfFieldNames);
+                        if (arrayOfFieldNames->size () == 1) {
+                            result = Mapping<String, VariantValue>{{(*arrayOfFieldNames)[0], valueReadBackFromDB}};
+                        }
+                        else {
+                            // its array so cobble all together into big map/object
+                            AssertNotImplemented ();// but easy
+                        }
+                    
+                    }
+                    rc = ::sqlite3_step (useStatment);
                 }
                 if (rc != SQLITE_DONE) [[unlikely]] {
                     ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
