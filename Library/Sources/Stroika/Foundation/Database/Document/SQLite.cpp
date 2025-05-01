@@ -226,21 +226,7 @@ namespace {
                     connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
 #endif
             }
-            virtual ~CollectionRep_ ()
-            {
-               /* if (fAddStatement_ != nullptr) {
-                    (void)::sqlite3_finalize (fAddStatement_);
-                }*/
-              /*  if (fGetOneStatement_ != nullptr) {
-                    (void)::sqlite3_finalize (fGetOneStatement_);
-                }
-                if (fRemoveStatement_ != nullptr) {
-                    (void)::sqlite3_finalize (fRemoveStatement_);
-                }*/
-               /* if (fUpdateStatement_ != nullptr) {
-                    (void)::sqlite3_finalize (fUpdateStatement_);
-                }*/
-            }
+            virtual ~CollectionRep_ () = default;
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
