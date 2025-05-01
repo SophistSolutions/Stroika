@@ -215,6 +215,12 @@ namespace {
                 if (fGetOneStatement_ != nullptr) {
                     (void)::sqlite3_finalize (fGetOneStatement_);
                 }
+                if (fRemoveStatement_ != nullptr) {
+                    (void)::sqlite3_finalize (fRemoveStatement_);
+                }
+                if (fUpdateStatement_ != nullptr) {
+                    (void)::sqlite3_finalize (fUpdateStatement_);
+                }
             }
             virtual IDType Add (const Document::Document& v) override
             {
@@ -340,11 +346,15 @@ namespace {
                 }
                 string r = Variant::JSON::Writer{}.WriteAsString (VariantValue{d2Update}).AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fUpdateStatement_), fConnectionRep_->fDB_);
-                string idText   = id.AsUTF8<string> ();
+                string idText = id.AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fUpdateStatement_, 1, r.c_str (), static_cast<int> (r.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fUpdateStatement_, 2, idText.c_str (), static_cast<int> (idText.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
+                int rc = ::sqlite3_step (fUpdateStatement_);
+                if (rc != SQLITE_DONE) {
+                    ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
+                }
             }
             virtual void Remove (const IDType& id) override
             {
@@ -466,9 +476,6 @@ namespace {
             if (options.fJournalMode) {
                 SetJournalMode (*options.fJournalMode);
             }
-
-            //  Exec ("SELECT load_extension ('/path/to/json1/extension')");
-
             EnsureNotNull (fDB_);
         }
         ~ConnectionRep_ ()
