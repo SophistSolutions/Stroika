@@ -268,7 +268,7 @@ namespace {
             };
         }
 
-        GTEST_TEST (Foundation_Database, RegressionTest1_sqlite_ScansDBTest_)
+        GTEST_TEST (Foundation_Database, RegressionTest1_SQL_sqlite_ScansDBTest_)
         {
             //static const     DateTime   kScanStartTime4Reference_   = DateTime::Now ();
             static const DateTime kScanStartTime4Reference_ = DateTime{Date{Year{2020}, April, day{1}}, TimeOfDay{4, 0, 0}}; // hardwired data to be able to ccompare DBs
@@ -520,13 +520,13 @@ namespace {
 
         }
 
-        GTEST_TEST (Foundation_Database, RegressionTest2_sqlite_EmployeesDB_with_threads_)
+        GTEST_TEST (Foundation_Database, RegressionTest2_SQL_sqlite_EmployeesDB_with_threads_)
         {
             if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
                 DbgTrace ("Skipping remaining tests cuz too slow"_f);
                 return;
             }
-            TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt"};
+            TraceContextBumper ctx{"RegressionTest2_SQL_sqlite_EmployeesDB_with_threads_::DoIt"};
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
             (void)std::filesystem::remove (dbPath);
@@ -762,9 +762,9 @@ namespace {
             }
         }
 
-        GTEST_TEST (Foundation_Database, RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_)
+        GTEST_TEST (Foundation_Database, RegressionTest3_SQL_sqlite_EmployeesDB_with_ORM_and_threads_)
         {
-            TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt"};
+            TraceContextBumper ctx{"RegressionTest3_SQL_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt"};
             if (Debug::IsRunningUnderValgrind () and qStroika_Foundation_Debug_AssertionsChecked) {
                 DbgTrace ("Skipping remaining tests cuz too slow"_f);
                 return;
