@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
+#include "Stroika/Foundation/Streams/BufferedInputStream.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
@@ -29,6 +30,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Traversal;
 
@@ -238,8 +240,8 @@ namespace {
             }
         }
         Assert (not tmp.empty ());
-        Memory::StackBuffer<char32_t> ignoreBuf;
-        span<const char32_t>          tmpData = tmp.GetData (&ignoreBuf);
+        StackBuffer<char32_t> ignoreBuf;
+        span<const char32_t>  tmpData = tmp.GetData (&ignoreBuf);
         if (containsDot) {
             return VariantValue{FloatConversion::ToFloat<long double> (tmpData)};
         }
@@ -321,7 +323,7 @@ namespace {
                 case eValue: {
                     Assert (curName);
                     // dont care what the character is, read a new value
-                    result.insert ({Memory::ValueOf (curName), Reader_value_ (in)});
+                    result.insert ({ValueOf (curName), Reader_value_ (in)});
                     curName = nullopt;
                     lf      = eComma; // and look for another field/data member
                 } break;
@@ -466,26 +468,26 @@ namespace {
  */
 class Variant::JSON::Reader::NativeRep_ : public Variant::Reader::_IRep {
 public:
+    NativeRep_ ()                  = default;
+    NativeRep_ (const NativeRep_&) = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<NativeRep_> (); // no instance data
+        return make_shared<NativeRep_> (*this);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".json"sv;
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
     {
-        using namespace Streams;
         return Read (BinaryToText::Reader::New (in, nullopt, SeekableFlag::eSeekable));
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::NativeRep_::Read"};
 #endif
-        Require (in.IsSeekable ());
-        MyBufferedStreamReader_ reader{in};
+        MyBufferedStreamReader_ reader{in.IsSeekable () ? in : BufferedInputStream::New (in, SeekableFlag::eSeekable)};
         return Reader_value_ (reader);
     }
 };
@@ -644,7 +646,7 @@ namespace {
                 { span<const char>{t} };
             }
         {
-            return String{Memory::SpanBytesCast<span<const char8_t>> (span<const char>{sv})};
+            return String{SpanBytesCast<span<const char8_t>> (span<const char>{sv})};
         }
 
         VariantValue GetConstructedValue () const
@@ -760,41 +762,43 @@ namespace {
 
         // doesn't need to be in stack context cuz cannot fill partial string/key/etc with intervening pop/push
         // Not using StringBuilder here cuz could contain partial strings
-        Memory::InlineBuffer<char, 512> fPartSaver_;
+        InlineBuffer<char, 512> fPartSaver_;
     };
 }
 class Variant::JSON::Reader::BoostRep_ : public Variant::Reader::_IRep {
 public:
+    BoostRep_ ()                 = default;
+    BoostRep_ (const BoostRep_&) = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<BoostRep_> (); // no instance data
+        return make_shared<BoostRep_> (*this);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
         return ".json"sv;
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
 #endif
-        using namespace Streams;
         using namespace boost;
-        bool           inSeekable = in.IsSeekable ();
-        constexpr bool kUseSAX_   = true; // experimentally, on windows, sax about 10% faster than stream_parser/convert way
+        InputStream::Ptr<byte> useInStream = in.IsSeekable () ? in : BufferedInputStream::New (in, SeekableFlag::eSeekable);
+        Assert (useInStream.IsSeekable ());
+        byte           buf[8 * 1024];   // experimentally - larger buffers didn't help speed
+        constexpr bool kUseSAX_ = true; // experimentally, on windows, sax about 10% faster than stream_parser/convert way
         try {
             if constexpr (kUseSAX_) {
                 json::basic_parser<BoostSAXHandler_> p{json::parse_options{}};
-                byte                                 buf[8 * 1024]; // experimentally - larger buffers didn't help speed
-                const size_t                         targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
+                const size_t                         targetChunkSize = NEltsOf (buf);
                 size_t                               actualChunkSize;
                 boost::system::error_code            ec;
-                while ((actualChunkSize = in.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
+                while ((actualChunkSize = useInStream.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
                     ec.clear ();
                     size_t nParsed = p.write_some (true, reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
                     if (nParsed < actualChunkSize) {
-                        in.Seek (eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
+                        useInStream.Seek (eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
                         break;
                     }
                     if (p.done ()) {
@@ -814,15 +818,14 @@ public:
             }
             else {
                 json::stream_parser p;
-                byte                buf[8 * 1024];
-                const size_t        targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
+                const size_t        targetChunkSize = NEltsOf (buf);
                 size_t              actualChunkSize;
-                while ((actualChunkSize = in.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
+                while ((actualChunkSize = useInStream.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
                     boost::system::error_code ec;
                     size_t                    nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
                     if (nParsed < actualChunkSize) {
-                        in.Seek (eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
+                        useInStream.Seek (eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
                         break;
                     }
                     if (p.done ()) {
@@ -843,13 +846,12 @@ public:
             Throw (BadFormatException{Characters::ToString (current_exception ())});
         }
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
 #endif
         Require (in.IsSeekable ());
-        using namespace Streams;
         return Read (_ToByteReader (in));
     }
 };

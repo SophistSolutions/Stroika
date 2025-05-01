@@ -29,7 +29,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
     /**
      */
     struct ReaderOptions {
-        enum Algorithm {
+        enum class Algorithm {
             eStroikaNative,
 #if __has_include("boost/json.hpp")
             eBoost,
@@ -43,6 +43,10 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
             Stroika_Define_Enum_Bounds (eStroikaNative, eStroikaNative)
 #endif
         };
+        using Algorithm::eStroikaNative;
+#if __has_include("boost/json.hpp")
+        using Algorithm::eBoost;
+#endif
 
         optional<Algorithm> fPreferredAlgorithm;
     };
@@ -65,8 +69,11 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *
      *  \note   Aliases: JSONReader, JSON Reader, JSON-Reader.
      *
-     *  \note   req inputStream.IsSeekable () - when reading an input stream
      *
+     *  \note   If the inputStream which is 'Read' is seekable, it will automatically be positioned to the end
+     *          of the argument JSON on successful exit. However, if its not seekable, it will be left in an arbitrary
+     *          location (possibly well past the end of the valid JSON).
+     * 
      *  \par Example Usage
      *      \code
      *          string  srcJSON  = "[101]"; // this srcJSON can be a stream, String, string or any of a number of sources (@see DataExchange::Variant::Read)
