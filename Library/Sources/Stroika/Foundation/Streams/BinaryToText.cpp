@@ -12,8 +12,7 @@
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-
-#include "IterableToInputStream.h"
+#include "Stroika/Foundation/Streams/IterableToInputStream.h"
 
 #include "BinaryToText.h"
 
