@@ -148,18 +148,37 @@ namespace {
         }
     };
 
-    sqlite3_stmt* mkPreparedStatement_ (sqlite3* db, const String& statement)
-    {
-        RequireNotNull (db);
-        const char*   pzTail = nullptr;
-        sqlite3_stmt* result{nullptr};
-        string utfStatement = statement.AsUTF8<string> (); // subtle - need explicit named temporary (in debug builds) so we can check assertion after - which points inside utfStatement
-        ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db, utfStatement.c_str (), -1, &result, &pzTail), db);
-        Assert (pzTail != nullptr);
-        Require (*pzTail == '\0'); // else argument string had cruft at the end or was a compound statement, not allowed by sqlite and this api/mechanism
-        EnsureNotNull (result);
-        return result;
-    }
+    struct MyPreparedStatement_ {
+        MyPreparedStatement_ () = default;
+        MyPreparedStatement_ (sqlite3* db, const String& statement)
+              :fDB_{db}
+        {
+            RequireNotNull (db);
+            const char*   pzTail = nullptr;
+            string utfStatement = statement.AsUTF8<string> (); // subtle - need explicit named temporary (in debug builds) so we can check assertion after - which points inside utfStatement
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db, utfStatement.c_str (), -1, &fObj_, &pzTail), db);
+            Assert (pzTail != nullptr);
+            Require (*pzTail == '\0'); // else argument string had cruft at the end or was a compound statement, not allowed by sqlite and this api/mechanism
+            EnsureNotNull (fObj_);
+        }
+        MyPreparedStatement_ (const MyPreparedStatement_&)     = delete;
+        MyPreparedStatement_ (MyPreparedStatement_&&) noexcept = default;
+        ~MyPreparedStatement_ ()
+        {
+            if (fObj_ != nullptr) {
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_finalize (fObj_), fDB_);
+            }
+        }
+        MyPreparedStatement_& operator= (const MyPreparedStatement_&) = delete;
+        MyPreparedStatement_& operator= ( MyPreparedStatement_&&) noexcept = default;
+        operator sqlite3_stmt* () const
+        {
+            return fObj_;
+        }
+    private:
+        sqlite3*      fDB_{nullptr};
+        sqlite3_stmt* fObj_{nullptr};
+    };
 }
 
 /*
@@ -193,10 +212,10 @@ namespace {
             shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
             String                     fTableName_;
 
-            ::sqlite3_stmt* fAddStatement_{nullptr};
-            ::sqlite3_stmt* fGetOneStatement_{nullptr};
-            ::sqlite3_stmt* fRemoveStatement_{nullptr};
-            ::sqlite3_stmt* fUpdateStatement_{nullptr};
+            MyPreparedStatement_ fAddStatement_{};
+            MyPreparedStatement_ fGetOneStatement_{};
+            MyPreparedStatement_ fRemoveStatement_{};
+            MyPreparedStatement_ fUpdateStatement_{};
 
             CollectionRep_ (const shared_ptr<ConnectionRep_>& connectionRep, const String& collectionName)
                 : fConnectionRep_{connectionRep}
@@ -209,18 +228,18 @@ namespace {
             }
             virtual ~CollectionRep_ ()
             {
-                if (fAddStatement_ != nullptr) {
+               /* if (fAddStatement_ != nullptr) {
                     (void)::sqlite3_finalize (fAddStatement_);
-                }
-                if (fGetOneStatement_ != nullptr) {
+                }*/
+              /*  if (fGetOneStatement_ != nullptr) {
                     (void)::sqlite3_finalize (fGetOneStatement_);
                 }
                 if (fRemoveStatement_ != nullptr) {
                     (void)::sqlite3_finalize (fRemoveStatement_);
-                }
-                if (fUpdateStatement_ != nullptr) {
+                }*/
+               /* if (fUpdateStatement_ != nullptr) {
                     (void)::sqlite3_finalize (fUpdateStatement_);
-                }
+                }*/
             }
             virtual IDType Add (const Document::Document& v) override
             {
@@ -237,7 +256,7 @@ namespace {
                  *      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                  */
                 if (fAddStatement_ == nullptr) [[unlikely]] {
-                    fAddStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "insert into {} (json) values(?);"_f(fTableName_));
+                    fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into {} (json) values(?);"_f(fTableName_)};
                 }
                 string jsonText = Variant::JSON::Writer{}.WriteAsString (VariantValue{v}).AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fAddStatement_), fConnectionRep_->fDB_);
@@ -258,7 +277,7 @@ namespace {
 
                 // @todo figure out how to use json apis to support projection more efficiently
                 if (fGetOneStatement_ == nullptr) [[unlikely]] {
-                    fGetOneStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_));
+                    fGetOneStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_)};
                 }
 
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fGetOneStatement_), fConnectionRep_->fDB_);
@@ -342,7 +361,7 @@ namespace {
                 }
 
                 if (fUpdateStatement_ == nullptr) [[unlikely]] {
-                    fUpdateStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "update {} SET json=? where id=?;"_f(fTableName_));
+                    fUpdateStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "update {} SET json=? where id=?;"_f(fTableName_)};
                 }
                 string r = Variant::JSON::Writer{}.WriteAsString (VariantValue{d2Update}).AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fUpdateStatement_), fConnectionRep_->fDB_);
@@ -363,7 +382,7 @@ namespace {
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 if (fRemoveStatement_ == nullptr) [[unlikely]] {
-                    fRemoveStatement_ = mkPreparedStatement_ (fConnectionRep_->fDB_, "delete from {} where id=?;"_f(fTableName_));
+                    fRemoveStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "delete from {} where id=?;"_f(fTableName_)};
                 }
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fRemoveStatement_), fConnectionRep_->fDB_);
                 string idText = id.AsUTF8<string> ();
