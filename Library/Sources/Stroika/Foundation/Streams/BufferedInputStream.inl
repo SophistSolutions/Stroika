@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         SeekableFlag     useSeekable     = seekable.value_or (srcSeekable);
         constexpr size_t INLINE_BUF_SIZE = 4 * 1024;
         if (useSeekable == SeekableFlag::eSeekable) {
-            return  (srcSeekable == SeekableFlag::eSeekable)
+            return (srcSeekable == SeekableFlag::eSeekable)
                        ? PTR{make_shared<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> (realIn)}
                        : PTR{make_shared<Private_::Rep_Seekable_FromUnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
         }
