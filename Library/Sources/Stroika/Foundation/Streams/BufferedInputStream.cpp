@@ -14,7 +14,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
 
-
 /*
  ********************************************************************************
  ************** Streams::BufferedInputStream::Private_ **************************
