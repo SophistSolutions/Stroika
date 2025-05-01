@@ -165,7 +165,7 @@ namespace {
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_, "select MAX(ScanId) from Scans where  ScanTypeIDRef='{}';"_f((int)scanKind)};
+                    Statement s{fDB_, "select MAX(ScanId) from Scans where ScanTypeIDRef='{}';"_f((int)scanKind)};
                     DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -177,7 +177,7 @@ namespace {
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan_Bind_ (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_, "select MAX(ScanId) from Scans where  ScanTypeIDRef=:ScanKind;"};
+                    Statement s{fDB_, "select MAX(ScanId) from Scans where ScanTypeIDRef=:ScanKind;"};
                     s.Bind (":ScanKind", VariantValue{(int)scanKind});
                     DbgTrace ("Statement: {}"_f, Characters::ToString (s));
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
@@ -985,6 +985,9 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
         u.fDateTime = Time::DateTime::NowUTC (); // since we write to database and read back, and DB stores in UTC, to make compare work reliably, start with UTC
         userCollection.Replace (userIDAdded, u);
         EXPECT_EQ (userCollection.GetOne (userIDAdded), u);
+        EXPECT_EQ (userCollection.GetAll ().size (), 1u);
+        userCollection.Remove (userIDAdded);
+        EXPECT_EQ (userCollection.GetAll ().size (), 0u);
     };
 
 #if qStroika_HasComponent_mongocxxdriver
@@ -1003,40 +1006,33 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
             catch (...) {
                 Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
             }
-            const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
-            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-            adminDB.CreateDatabase (kTestDBName_);
-            Database::Document::Connection::Ptr p =
-                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
-            test1 (p);
+            EXPECT_NO_THROW ({
+                const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
+                auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
+                IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+                adminDB.CreateDatabase (kTestDBName_);
+                Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+                    MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
+                test1 (p);
+            });
         }
     }
 #endif
 #if qStroika_HasComponent_sqlite
     // Test against SQLite
-    try {
+    EXPECT_NO_THROW ({
         Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
         test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
+    });
+    EXPECT_NO_THROW ({
         Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
         test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
+    });
+    EXPECT_NO_THROW ({
         IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
         Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
         test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
+    });
 #endif
 }
 
