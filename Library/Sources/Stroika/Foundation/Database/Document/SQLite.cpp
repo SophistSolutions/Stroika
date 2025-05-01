@@ -151,10 +151,10 @@ namespace {
     struct MyPreparedStatement_ {
         MyPreparedStatement_ () = default;
         MyPreparedStatement_ (sqlite3* db, const String& statement)
-              :fDB_{db}
+            : fDB_{db}
         {
             RequireNotNull (db);
-            const char*   pzTail = nullptr;
+            const char* pzTail = nullptr;
             string utfStatement = statement.AsUTF8<string> (); // subtle - need explicit named temporary (in debug builds) so we can check assertion after - which points inside utfStatement
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db, utfStatement.c_str (), -1, &fObj_, &pzTail), db);
             Assert (pzTail != nullptr);
@@ -169,12 +169,13 @@ namespace {
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_finalize (fObj_), fDB_);
             }
         }
-        MyPreparedStatement_& operator= (const MyPreparedStatement_&) = delete;
-        MyPreparedStatement_& operator= ( MyPreparedStatement_&&) noexcept = default;
+        MyPreparedStatement_& operator= (const MyPreparedStatement_&)     = delete;
+        MyPreparedStatement_& operator= (MyPreparedStatement_&&) noexcept = default;
         operator sqlite3_stmt* () const
         {
             return fObj_;
         }
+
     private:
         sqlite3*      fDB_{nullptr};
         sqlite3_stmt* fObj_{nullptr};
