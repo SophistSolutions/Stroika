@@ -889,37 +889,25 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
 #endif
 #if qStroika_HasComponent_sqlite
     // Test against SQLite
-    try {
+    EXPECT_NO_THROW ({
         Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
         test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
+    });
+    EXPECT_NO_THROW ({
         Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
         test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
-    try {
+    });
+    EXPECT_NO_THROW ({
         IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
         Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
         test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
+    });
 #endif
-    try {
+    EXPECT_NO_THROW ({
         Database::Document::Connection::Ptr p =
             TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
         test1 (p);
-    }
-    catch (...) {
-        DbgTrace ("current_exception={}"_f, current_exception ());
-    }
+    });
 }
 
 namespace {
