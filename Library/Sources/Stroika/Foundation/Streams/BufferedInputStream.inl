@@ -9,6 +9,8 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
 
     namespace Private_ {
 
+        [[noreturn]] void ThrowCannotSeekFromEnd_ ();
+
         // this case easy, delegate to StreamReader to do all the work
         template <typename ELEMENT_TYPE>
         class Rep_Seekable_FromSeekable_ : public IRep_<ELEMENT_TYPE> {
@@ -112,6 +114,31 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 }
                 return nullopt;
             }
+            virtual auto SeekRead (Whence whence, SignedSeekOffsetType offset) -> SeekOffsetType override
+            {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Require (IsOpenRead ());
+                // @todo - allow seek forward past fBufferOfAllReadDataSoFar_?
+                switch (whence) {
+                    case Whence::eFromCurrent:
+                        fSeekOffset_ += offset;
+                        break;
+                    case Whence::eFromStart:
+                        fSeekOffset_ = offset;
+                        break;
+                    case Whence::eFromEnd:
+                        if (auto remaining = this->RemainingLength ()) {
+                            fSeekOffset_ += static_cast<SignedSeekOffsetType> (*remaining) - offset;
+                            break;
+                        }
+                        else {
+                            Private_::ThrowCannotSeekFromEnd_ ();
+                        }
+                    default:
+                        RequireNotReached ();
+                }
+                return fSeekOffset_;
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -126,7 +153,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                         return nullopt; // no data pre-read, and nothing available upstream
                     }
                 }
-                if (fSeekOffset_ < fBufferOfAllReadDataSoFar_.size ()) [[likely]] {
+                if (fSeekOffset_ <= fBufferOfAllReadDataSoFar_.size ()) [[likely]] {
                     size_t n2Read = min<size_t> (intoBuffer.size (), static_cast<size_t> (fBufferOfAllReadDataSoFar_.size () - fSeekOffset_));
                     auto result = Memory::CopySpanData (span{fBufferOfAllReadDataSoFar_}.subspan (static_cast<size_t> (fSeekOffset_), n2Read), intoBuffer);
                     Assert (result.size () == n2Read);

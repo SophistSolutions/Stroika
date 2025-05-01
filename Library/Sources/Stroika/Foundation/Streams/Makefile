@@ -23,6 +23,7 @@ SubDirs	:=	\
 
 
 Objs	:=	\
+	$(ObjDir)BufferedInputStream${OBJ_SUFFIX}\
 	$(ObjDir)EOFException${OBJ_SUFFIX}\
 	$(ObjDir)InputStream${OBJ_SUFFIX}\
 	$(ObjDir)TextToBinary${OBJ_SUFFIX}\
