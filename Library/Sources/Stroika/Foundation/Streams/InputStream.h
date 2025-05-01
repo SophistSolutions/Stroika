@@ -630,6 +630,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  \note this could have just be called 'Seek' but we want to be able to mix InputStream::IRep and OutputStream::IRep without conflict.
          * 
          *  \note if not seekable (what method) - default does AssertNotImplemented (); so must override iff IsSeekable
+         * 
+         *  returns final (after seek whence) SeekOffset
          */
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset);
 
