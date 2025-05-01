@@ -347,9 +347,8 @@ namespace {
                         }
                         else {
                             // its array so cobble all together into big map/object
-                            AssertNotImplemented ();// but easy
+                            AssertNotImplemented (); // but easy
                         }
-                    
                     }
                     rc = ::sqlite3_step (useStatment);
                 }
