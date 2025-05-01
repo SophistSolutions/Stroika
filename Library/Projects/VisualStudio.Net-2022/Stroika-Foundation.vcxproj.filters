@@ -936,6 +936,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.cpp">
       <Filter>Sources\Database\Document</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
