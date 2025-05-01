@@ -148,6 +148,7 @@ namespace {
         }
     };
 
+    // not reference counted; caller responsibility to destroy before db connection
     struct MyPreparedStatement_ {
         MyPreparedStatement_ () = default;
         MyPreparedStatement_ (sqlite3* db, const String& statement)
@@ -169,8 +170,13 @@ namespace {
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_finalize (fObj_), fDB_);
             }
         }
-        MyPreparedStatement_& operator= (const MyPreparedStatement_&)     = delete;
-        MyPreparedStatement_& operator= (MyPreparedStatement_&&) noexcept = default;
+        MyPreparedStatement_& operator= (const MyPreparedStatement_&) = delete;
+        MyPreparedStatement_& operator= (MyPreparedStatement_&& rhs) noexcept
+        {
+            fObj_     = rhs.fObj_;
+            rhs.fObj_ = nullptr;
+            return *this;
+        };
         operator sqlite3_stmt* () const
         {
             return fObj_;
@@ -180,6 +186,8 @@ namespace {
         sqlite3*      fDB_{nullptr};
         sqlite3_stmt* fObj_{nullptr};
     };
+    static_assert (movable<MyPreparedStatement_>);
+    static_assert (not copyable<MyPreparedStatement_>);
 }
 
 /*
