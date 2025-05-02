@@ -222,40 +222,63 @@ namespace {
     tuple<optional<String>, optional<Filter>> Partition_ (const optional<Filter>& filter)
     {
         // @todo
-        return make_tuple (nullopt, filter);
-        //if (filter) {
-        //    /*
-        //     *  For now just look for FIELD EQUALS VALUE expressions in the top level conjunction. These can be done
-        //     *  server or client side transparently, and moving them server side is more efficient.
-        //     *
-        //     *  Much more could be done, but this is a good cost/benefit start.
-        //     */
-        //    Sequence<Document::FilterElements::Operation> clientSideOps;
-        //    bsoncxx::builder::basic::document             filterDoc;
-        //    bool                                          anyTransfers = false;
-        //    for (Document::FilterElements::Operation op : filter->GetConjunctionOperations ()) {
-        //        bool transfered = false;
-        //        if (const Document::FilterElements::Equals* eqOp = get_if<Document::FilterElements::Equals> (&op)) {
-        //            String useFieldName = eqOp->fLHS == Database::Document::kID ? kMongoID_ : eqOp->fLHS;
-        //            if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
-        //                // move to server side
-        //                filterDoc.append (kvp (useFieldName.AsUTF8<string> (), VV2BSONV_ (*rhsValue)));
-        //                transfered   = true;
-        //                anyTransfers = true;
-        //            }
-        //        }
-        //        if (not transfered) {
-        //            clientSideOps += op; // keep for client side
-        //        }
-        //    }
-        //    if (anyTransfers) {
-        //        // if we moved any to server side, then return the filterDoc and the client side ops
-        //        return make_tuple (filterDoc.extract (), clientSideOps.empty () ? optional<Filter>{} : make_optional (Filter{clientSideOps}));
-        //    }
-        //    // else no change
-        //    return make_tuple (nullopt, filter);
-        //}
-        //return make_tuple (nullopt, nullopt);
+        //  return make_tuple (nullopt, filter);
+        if (filter) {
+            /*
+             *  For now just look for FIELD EQUALS VALUE expressions in the top level conjunction. These can be done
+             *  server or client side transparently, and moving them server side is more efficient.
+             *
+             *  Much more could be done, but this is a good cost/benefit start.
+             */
+            Sequence<Document::FilterElements::Operation> clientSideOps;
+            optional<String>                              idWhereTest;
+            Set<String>                                   jsonWhereTests;
+            for (Document::FilterElements::Operation op : filter->GetConjunctionOperations ()) {
+                bool transferred = false;
+                if (const Document::FilterElements::Equals* eqOp = get_if<Document::FilterElements::Equals> (&op)) {
+                    //String useFieldName = eqOp->fLHS == Database::Document::kID ? kMongoID_ : eqOp->fLHS;
+                    if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
+                        // move to server side
+                        if (eqOp->fLHS == Database::Document::kID) {
+                            idWhereTest = "{} == '{}'"_f(Database::Document::kID, rhsValue->As<String> ()); // not sure this is right way to compare?
+                        }
+                        else {
+                            // others compared in json part
+                            jsonWhereTests += "$.{} == '{}'"_f(String{eqOp->fLHS}, rhsValue->As<String> ()); // not sure this is right way to compare?
+                        }
+                    }
+                }
+                if (not transferred) {
+                    clientSideOps += op; // keep for client side
+                }
+            }
+            if (idWhereTest or not jsonWhereTests.empty ()) {
+                StringBuilder whereClause;
+                if (idWhereTest) {
+                    whereClause << *idWhereTest;
+                }
+                if (not jsonWhereTests.empty ()) {
+                    if (not whereClause.empty ()) {
+                        whereClause << " && "sv; // dont recall right sql syntax - will need to lookup
+                    }
+                    whereClause << "json_extract(json, ";
+                    size_t n = 0;
+                    for (auto i : jsonWhereTests) {
+                        if (n != 0) {
+                            whereClause << ", ";
+                        }
+                        whereClause << "'{}'"_f(i);
+                        n++;
+                    }
+                    whereClause << ")";
+                }
+                // if we moved any to server side, then return the filterDoc and the client side ops
+                return make_tuple (whereClause, clientSideOps.empty () ? optional<Filter>{} : make_optional (Filter{clientSideOps}));
+            }
+            // else no change
+            return make_tuple (nullopt, filter);
+        }
+        return make_tuple (nullopt, nullopt);
     }
 }
 
@@ -486,7 +509,7 @@ namespace {
                         Document::Document vDoc = ExtractRowValueAfterStep_ (statement, 1, id, sqliteProjection, remainingAfterProjection);
                         if (remainingFilter == nullopt or remainingFilter->Matches (vDoc)) {
                             if (remainingAfterProjection) {
-                                vDoc = remainingAfterProjection->Apply (vDoc);  // some attributes need to be projected after filter cuz maybe used in filtering
+                                vDoc = remainingAfterProjection->Apply (vDoc); // some attributes need to be projected after filter cuz maybe used in filtering
                             }
                             result += vDoc;
                         }
