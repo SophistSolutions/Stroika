@@ -310,7 +310,7 @@ namespace {
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
-                // locally construct MyPreparedStatement_ for case with projection, and/or save statement for grabbing whole thing
+                // locally construct MyPreparedStatement_ for case with projection, and/or cache statement for grabbing whole thing
                 auto [sqliteProjection, arrayOfFieldNames, myProjection] = Partition_ (projection);
                 optional<MyPreparedStatement_> sqliteProjectionStatement;
                 if (sqliteProjection) {
@@ -319,7 +319,6 @@ namespace {
                 else if (fGetOneStatement_ == nullptr) [[unlikely]] {
                     fGetOneStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_)};
                 }
-
                 sqlite3_stmt* useStatment = sqliteProjectionStatement.has_value () ? *sqliteProjectionStatement : fGetOneStatement_;
                 AssertNotNull (useStatment);
 
@@ -327,6 +326,7 @@ namespace {
                 string idAsUTFSTR = id.AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (useStatment, 1, idAsUTFSTR.c_str (), static_cast<int> (idAsUTFSTR.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
+
                 int                          rc = ::sqlite3_step (useStatment);
                 optional<Document::Document> result;
                 if (rc == SQLITE_ROW) [[likely]] {
