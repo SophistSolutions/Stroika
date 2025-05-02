@@ -35,7 +35,7 @@ bool FilterElements::Equals::Matches (const Database::Document::Document& doc) c
 String FilterElements::Equals::ToString () const
 {
     StringBuilder sb;
-    sb << "{ "sv;
+    sb << "{"sv;
     sb << ", op: EQUALS "sv;
     sb << ", lhs:  "sv << fLHS;
     sb << ", rhs:  "sv << fRHS;
@@ -75,7 +75,7 @@ bool Filter::Matches (const Database::Document::Document& doc) const
 String Filter::ToString () const
 {
     StringBuilder sb;
-    sb << "{ "sv;
+    sb << "{"sv;
     sb << ", disjunction: "sv << fAndedOperations_;
     sb << "}"sv;
     return sb;
