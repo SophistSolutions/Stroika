@@ -215,7 +215,7 @@ namespace {
      * Break the given Stroika filter into parts that can be handled in sqlite, and parts that must be handled locally
      * Also return array showing names cuz sqlite returns array (for > 1) and these are the names in this order of the fields/objects:
      */
-    tuple<optional<String>, optional<Sequence<String>>, optional<Projection>> Partition_ (const optional<Projection>& p)
+    tuple<optional<tuple<String, Sequence<String>>>, optional<Projection>> Partition_ (const optional<Projection>& p)
     {
         if (p) {
             /*
@@ -240,14 +240,48 @@ namespace {
                 if (not fieldNames.empty ()) {
                     projectionQuery << "')"sv;
                 }
-                return make_tuple (projectionQuery, fieldNames, nullopt);
+                return make_tuple (make_tuple (projectionQuery, fieldNames), nullopt);
             }
             else {
-                return make_tuple (nullopt, nullopt, p); // cannot optimize exclude (yet)
+                return make_tuple (nullopt, p); // cannot optimize exclude (yet)
             }
         }
-        return make_tuple (nullopt, nullopt, nullopt);
+        return make_tuple (nullopt, nullopt);
     }
+    // called with the result of a statement after a 'step' operation that produced a ROW.
+    // And assumes the row contains data from the Partition_ algorithm above
+    Document::Document ExtractRowValueAfterStep_ (sqlite3_stmt* statement, const IDType& id, const optional<tuple<String, Sequence<String>>>& sqliteProjection,
+                                                  const optional<Projection>& remainingProjection)
+    {
+        /*
+         *      https://www.sqlite.org/json1.html
+         *          "There is a subtle incompatibility between the json_extract() function in SQLite and the json_extract() function in MySQL. The MySQL version of json_extract() always returns JSON. The SQLite version of json_extract() only returns JSON if there are two or more PATH arguments"
+         */
+        VariantValue valueReadBackFromDB =
+            Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0))));
+        Document::Document dr;
+        if (sqliteProjection == nullopt) {
+            dr = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
+        }
+        else {
+            auto arrayOfFieldNames = get<Sequence<String>> (*sqliteProjection);
+            if (arrayOfFieldNames.size () == 1) {
+                dr = Mapping<String, VariantValue>{{arrayOfFieldNames[0], valueReadBackFromDB}};
+            }
+            else {
+                // its array so cobble all together into big map/object
+                AssertNotImplemented (); // but easy
+            }
+        }
+        if (sqliteProjection and get<Sequence<String>> (*sqliteProjection).Contains (Document::kID) or remainingProjection == nullopt or
+            remainingProjection->Includes (Document::kID)) {
+            dr.Add (Document::kID, id);
+        }
+        if (remainingProjection) {
+            dr = remainingProjection->Apply (dr);
+        }
+        return dr;
+    };
 }
 
 namespace {
@@ -306,15 +340,16 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"SQLite::CollectionRep_::GetOne()"};
+                TraceContextBumper ctx{"SQLite::CollectionRep_::GetOne()", "id={}, projection={}"_f, id, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
                 // locally construct MyPreparedStatement_ for case with projection, and/or cache statement for grabbing whole thing
-                auto [sqliteProjection, arrayOfFieldNames, myProjection] = Partition_ (projection);
+                auto [sqliteProjection, remainingAfterProjection] = Partition_ (projection);
                 optional<MyPreparedStatement_> sqliteProjectionStatement;
                 if (sqliteProjection) {
-                    sqliteProjectionStatement.emplace (fConnectionRep_->fDB_, "select {} from {} where id=?;"_f(*sqliteProjection, fTableName_));
+                    sqliteProjectionStatement.emplace (fConnectionRep_->fDB_,
+                                                       "select {} from {} where id=?;"_f(get<String> (*sqliteProjection), fTableName_));
                 }
                 else if (fGetOneStatement_ == nullptr) [[unlikely]] {
                     fGetOneStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_)};
@@ -330,39 +365,11 @@ namespace {
                 int                          rc = ::sqlite3_step (useStatment);
                 optional<Document::Document> result;
                 if (rc == SQLITE_ROW) [[likely]] {
-                    /*
-                     * Also return flag if sqlite return value is array or not:
-                     *      https://www.sqlite.org/json1.html
-                     *          "There is a subtle incompatibility between the json_extract() function in SQLite and the json_extract() function in MySQL. The MySQL version of json_extract() always returns JSON. The SQLite version of json_extract() only returns JSON if there are two or more PATH arguments"
-                     */
-                    VariantValue valueReadBackFromDB =
-                        Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (useStatment, 0))));
-                    if (sqliteProjection == nullopt) {
-                        result = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
-                    }
-                    else {
-                        Assert (arrayOfFieldNames);
-                        if (arrayOfFieldNames->size () == 1) {
-                            result = Mapping<String, VariantValue>{{(*arrayOfFieldNames)[0], valueReadBackFromDB}};
-                        }
-                        else {
-                            // its array so cobble all together into big map/object
-                            AssertNotImplemented (); // but easy
-                        }
-                    }
-                    rc = ::sqlite3_step (useStatment);
+                    result = ExtractRowValueAfterStep_ (useStatment, id, sqliteProjection, remainingAfterProjection);
+                    rc     = ::sqlite3_step (useStatment);
                 }
                 if (rc != SQLITE_DONE) [[unlikely]] {
                     ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
-                }
-
-                if (result) {
-                    auto dr = *result;
-                    dr.Add (Document::kID, id);
-                    if (projection) {
-                        dr = projection->Apply (dr);
-                    }
-                    result = dr;
                 }
                 return result;
             }
@@ -372,6 +379,9 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                auto [sqliteProjection, myProjection] = Partition_ (projection);
+                // careful, if filtering, cannot project sqlite side, cuz might be used in filter (would have to cehck that first and cannot yet in general)
+
                 /*   auto [mongoFilter, myFilter]         = Partition_ (filter);
                 auto [mongoProjection, myProjection] = Partition_ (projection);*/
                 Sequence<Document::Document> result;
