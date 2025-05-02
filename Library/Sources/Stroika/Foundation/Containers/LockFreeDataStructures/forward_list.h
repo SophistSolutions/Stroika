@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         static node_* owner_lock_ (std::atomic<node_*>& atomic_ptr);
 
         // lock free, but requires a preceding call to lock, changes atomic_ptr from spin_ to n, sets n to nullptr
-        // "ownership" is transfered from n to atomic_ptr
+        // "ownership" is transferred from n to atomic_ptr
         static void owner_unlock_ (std::atomic<node_*>& atomic_ptr, node_*& n);
 
         // NOT lock free
