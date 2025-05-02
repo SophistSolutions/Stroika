@@ -30,6 +30,9 @@ using Database::Document::Filter;
 using Database::Document::IDType;
 using Database::Document::Projection;
 
+using Database::Document::kID;
+using Database::Document::kOnlyIDs;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -212,6 +215,51 @@ namespace {
 
 namespace {
     /**
+     * Break the given Stroika filter into parts that can be remoted to sqldb, and parts that must be handled locally
+     * 
+   
+     */
+    tuple<optional<String>, optional<Filter>> Partition_ (const optional<Filter>& filter)
+    {
+        return make_tuple (nullopt, filter);
+        //if (filter) {
+        //    /*
+        //     *  For now just look for FIELD EQUALS VALUE expressions in the top level conjunction. These can be done
+        //     *  server or client side transparently, and moving them server side is more efficient.
+        //     *
+        //     *  Much more could be done, but this is a good cost/benefit start.
+        //     */
+        //    Sequence<Document::FilterElements::Operation> clientSideOps;
+        //    bsoncxx::builder::basic::document             filterDoc;
+        //    bool                                          anyTransfers = false;
+        //    for (Document::FilterElements::Operation op : filter->GetConjunctionOperations ()) {
+        //        bool transfered = false;
+        //        if (const Document::FilterElements::Equals* eqOp = get_if<Document::FilterElements::Equals> (&op)) {
+        //            String useFieldName = eqOp->fLHS == Database::Document::kID ? kMongoID_ : eqOp->fLHS;
+        //            if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
+        //                // move to server side
+        //                filterDoc.append (kvp (useFieldName.AsUTF8<string> (), VV2BSONV_ (*rhsValue)));
+        //                transfered   = true;
+        //                anyTransfers = true;
+        //            }
+        //        }
+        //        if (not transfered) {
+        //            clientSideOps += op; // keep for client side
+        //        }
+        //    }
+        //    if (anyTransfers) {
+        //        // if we moved any to server side, then return the filterDoc and the client side ops
+        //        return make_tuple (filterDoc.extract (), clientSideOps.empty () ? optional<Filter>{} : make_optional (Filter{clientSideOps}));
+        //    }
+        //    // else no change
+        //    return make_tuple (nullopt, filter);
+        //}
+        //return make_tuple (nullopt, nullopt);
+    }
+}
+
+namespace {
+    /**
      * Break the given Stroika filter into parts that can be handled in sqlite, and parts that must be handled locally
      * Also return array showing names cuz sqlite returns array (for > 1) and these are the names in this order of the fields/objects:
      */
@@ -269,8 +317,12 @@ namespace {
                 dr = Mapping<String, VariantValue>{{arrayOfFieldNames[0], valueReadBackFromDB}};
             }
             else {
-                // its array so cobble all together into big map/object
-                AssertNotImplemented (); // but easy
+                Assert (valueReadBackFromDB.GetType () == VariantValue::eArray);
+                Assert (valueReadBackFromDB.As<Sequence<VariantValue>> ().size () == arrayOfFieldNames.size ());
+                Iterator<String> nameI = arrayOfFieldNames.begin ();
+                dr                     = valueReadBackFromDB.As<Sequence<VariantValue>> ().Map<Document::Document> (
+                    [&nameI] (const VariantValue& vv) mutable { return KeyValuePair{*nameI++, vv}; });
+                Assert (nameI == arrayOfFieldNames.end ());
             }
         }
         if (sqliteProjection and get<Sequence<String>> (*sqliteProjection).Contains (Document::kID) or remainingProjection == nullopt or
@@ -379,12 +431,56 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                auto [sqliteProjection, myProjection] = Partition_ (projection);
+
+                // Optimize some important special cases
+                Sequence<Document::Document> result;
+                if (filter == nullopt and projection == nullopt) {
+                    MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id,json from {};"_f(fTableName_)};
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
+                    int rc;
+                    while ( (rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
+                        String       id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
+                        VariantValue valueReadBackFromDB =
+                            Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 1))));
+                        Document::Document vDoc = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
+                        vDoc.Add (Document::kID, id);
+                        result += vDoc;
+                    }
+                    if (rc != SQLITE_DONE) [[unlikely]] {
+                        ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
+                    }
+                    return result;
+                }
+                else if (filter == nullopt and projection == kOnlyIDs) {
+                    MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id from {};"_f(fTableName_)};
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
+                    int rc;
+                    while ( (rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
+                        String             id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
+                        Document::Document vDoc;
+                        vDoc.Add (Document::kID, id);
+                        result += vDoc;
+                    }
+                    if (rc != SQLITE_DONE) [[unlikely]] {
+                        ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
+                    }
+                    return result;
+                }
+                // else general case
+
+                auto [sqliteWhereClause, remainingFilter] = Partition_ (filter);
+
+                // if there is a remainingFilter (performed after sqlite) - we need to form full objects and then apply the filter at the end
+                // so the filter can access those fields. REALLY - we could do a little better than this in general, but this is a good first attempt
+                auto [sqliteProjection, afterProjection] = remainingFilter ? make_tuple (nullopt, projection) : Partition_ (projection);
+
+                // OLD ALGORITHM...
+
                 // careful, if filtering, cannot project sqlite side, cuz might be used in filter (would have to cehck that first and cannot yet in general)
 
                 /*   auto [mongoFilter, myFilter]         = Partition_ (filter);
                 auto [mongoProjection, myProjection] = Partition_ (projection);*/
-                Sequence<Document::Document> result;
+                //Sequence<Document::Document> result;
 
                 auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                     Assert (argc == 2);
