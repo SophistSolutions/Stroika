@@ -293,17 +293,17 @@ namespace {
             bsoncxx::builder::basic::document             filterDoc;
             bool                                          anyTransfers = false;
             for (Document::FilterElements::Operation op : filter->GetConjunctionOperations ()) {
-                bool transfered = false;
+                bool transferred = false;
                 if (const Document::FilterElements::Equals* eqOp = get_if<Document::FilterElements::Equals> (&op)) {
                     String useFieldName = eqOp->fLHS == Database::Document::kID ? kMongoID_ : eqOp->fLHS;
                     if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
                         // move to server side
                         filterDoc.append (kvp (useFieldName.AsUTF8<string> (), VV2BSONV_ (*rhsValue)));
-                        transfered   = true;
+                        transferred   = true;
                         anyTransfers = true;
                     }
                 }
-                if (not transfered) {
+                if (not transferred) {
                     clientSideOps += op; // keep for client side
                 }
             }
