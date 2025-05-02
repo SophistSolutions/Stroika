@@ -339,21 +339,21 @@ namespace {
                             if (oOld.has_value () and oNew.has_value ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
                                 IOStatsType  readStats;
-                                readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
+                                readStats.fBytesTransferred = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
                                 readStats.fTotalTransfers  = oNew->fReadsCompleted - oOld->fReadsCompleted;
                                 if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
                                     readStats.fQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure.count ();
                                 }
 
                                 IOStatsType writeStats;
-                                writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
+                                writeStats.fBytesTransferred = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
                                 writeStats.fTotalTransfers  = oNew->fWritesCompleted - oOld->fWritesCompleted;
                                 if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
                                     writeStats.fQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure.count ();
                                 }
 
                                 IOStatsType combinedStats;
-                                combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
+                                combinedStats.fBytesTransferred = *readStats.fBytesTransferred + *writeStats.fBytesTransferred;
                                 combinedStats.fTotalTransfers  = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
                                 combinedStats.fQLength         = *readStats.fQLength + *writeStats.fQLength;
 
@@ -909,7 +909,7 @@ namespace {
             for (const KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType>& i : fileSystems) {
                 Set<DynamicDiskIDType> disksForFS = NullCoalesce (i.fValue.fOnPhysicalDrive);
                 if (disksForFS.size () > 0) {
-                    WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
+                    WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransferred);
                     weightForFS /= disksForFS.size ();
                     for (const DynamicDiskIDType& di : disksForFS) {
                         totalWeights.Add (di, totalWeights.LookupValue (di) + weightForFS); // accumulate relative application to each disk
@@ -940,7 +940,7 @@ namespace {
                     MountedFilesystemInfoType mfi        = i.fValue;
                     Set<DynamicDiskIDType>    disksForFS = NullCoalesce (mfi.fOnPhysicalDrive);
                     if (disksForFS.size () > 0) {
-                        WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransfered);
+                        WeightingStat2UseType weightForFS = NullCoalesce (NullCoalesce (i.fValue.fCombinedIOStats).fBytesTransferred);
                         weightForFS /= disksForFS.size ();
                         IOStatsType cumStats          = NullCoalesce (mfi.fCombinedIOStats);
                         bool        computeInuse      = not cumStats.fInUsePercent.has_value ();
@@ -995,7 +995,7 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
     mapper.AddCommonType<optional<BlockDeviceKind>> ();
     mapper.AddClass<IOStatsType> ({
-        {"Bytes"sv, &IOStatsType::fBytesTransfered},
+        {"Bytes"sv, &IOStatsType::fBytesTransferred},
         {"Q-Length"sv, &IOStatsType::fQLength},
         {"In-Use-%"sv, &IOStatsType::fInUsePercent},
         {"Total-Transfers"sv, &IOStatsType::fTotalTransfers},

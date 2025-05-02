@@ -36,13 +36,13 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem {
     using IO::FileSystem::BlockDeviceKind;
 
     /**
-     *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
-     *  (fTotalTransfers) during the given capture interval. It is NOT cummulative.
+     *  IOStats represents the # of bytes (fBytesTransferred) and total number of transfers
+     *  (fTotalTransfers) during the given capture interval. It is NOT cumulative.
      *
-     *  Frequently you will have per read/write bytes transfered, but only Q-Length for the entire device (combined).
+     *  Frequently you will have per read/write bytes transferred, but only Q-Length for the entire device (combined).
      */
     struct IOStatsType {
-        optional<double> fBytesTransfered;
+        optional<double> fBytesTransferred;
         optional<double> fTotalTransfers;
         optional<double> fQLength;
         optional<double> fInUsePercent;
