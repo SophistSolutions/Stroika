@@ -221,6 +221,7 @@ namespace {
      */
     tuple<optional<String>, optional<Filter>> Partition_ (const optional<Filter>& filter)
     {
+        // @todo
         return make_tuple (nullopt, filter);
         //if (filter) {
         //    /*
@@ -298,15 +299,16 @@ namespace {
     }
     // called with the result of a statement after a 'step' operation that produced a ROW.
     // And assumes the row contains data from the Partition_ algorithm above
-    Document::Document ExtractRowValueAfterStep_ (sqlite3_stmt* statement, const IDType& id, const optional<tuple<String, Sequence<String>>>& sqliteProjection,
-                                                  const optional<Projection>& remainingProjection)
+    Document::Document ExtractRowValueAfterStep_ (sqlite3_stmt* statement, int dataCol, const IDType& id,
+                                                  const optional<tuple<String, Sequence<String>>>& sqliteProjection,
+                                                  const optional<Projection>&                      remainingProjection)
     {
         /*
          *      https://www.sqlite.org/json1.html
          *          "There is a subtle incompatibility between the json_extract() function in SQLite and the json_extract() function in MySQL. The MySQL version of json_extract() always returns JSON. The SQLite version of json_extract() only returns JSON if there are two or more PATH arguments"
          */
         VariantValue valueReadBackFromDB =
-            Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0))));
+            Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, dataCol))));
         Document::Document dr;
         if (sqliteProjection == nullopt) {
             dr = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
@@ -417,7 +419,7 @@ namespace {
                 int                          rc = ::sqlite3_step (useStatment);
                 optional<Document::Document> result;
                 if (rc == SQLITE_ROW) [[likely]] {
-                    result = ExtractRowValueAfterStep_ (useStatment, id, sqliteProjection, remainingAfterProjection);
+                    result = ExtractRowValueAfterStep_ (useStatment, 0, id, sqliteProjection, remainingAfterProjection);
                     rc     = ::sqlite3_step (useStatment);
                 }
                 if (rc != SQLITE_DONE) [[unlikely]] {
@@ -428,7 +430,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll()"};
+                TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll()", "filter={}, projection={}"_f, filter, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
@@ -438,7 +440,7 @@ namespace {
                     MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id,json from {};"_f(fTableName_)};
                     ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                     int rc;
-                    while ( (rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
+                    while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
                         String       id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
                         VariantValue valueReadBackFromDB =
                             Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 1))));
@@ -449,13 +451,12 @@ namespace {
                     if (rc != SQLITE_DONE) [[unlikely]] {
                         ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
                     }
-                    return result;
                 }
                 else if (filter == nullopt and projection == kOnlyIDs) {
                     MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id from {};"_f(fTableName_)};
                     ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                     int rc;
-                    while ( (rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
+                    while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
                         String             id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
                         Document::Document vDoc;
                         vDoc.Add (Document::kID, id);
@@ -464,45 +465,36 @@ namespace {
                     if (rc != SQLITE_DONE) [[unlikely]] {
                         ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
                     }
-                    return result;
                 }
-                // else general case
+                else {
+                    // general case
+                    auto [sqliteWhereClause, remainingFilter] = Partition_ (filter);
 
-                auto [sqliteWhereClause, remainingFilter] = Partition_ (filter);
+                    // if there is a remainingFilter (performed after sqlite) - we need to form full objects and then apply the filter at the end
+                    // so the filter can access those fields. REALLY - we could do a little better than this in general, but this is a good first attempt
+                    auto [sqliteProjection, remainingAfterProjection] = remainingFilter ? make_tuple (nullopt, projection) : Partition_ (projection);
 
-                // if there is a remainingFilter (performed after sqlite) - we need to form full objects and then apply the filter at the end
-                // so the filter can access those fields. REALLY - we could do a little better than this in general, but this is a good first attempt
-                auto [sqliteProjection, afterProjection] = remainingFilter ? make_tuple (nullopt, projection) : Partition_ (projection);
+                    MyPreparedStatement_ statement{
+                        fConnectionRep_->fDB_,
+                        "select id,{} from {} {};"_f(sqliteProjection == nullopt ? "json"_k : get<String> (*sqliteProjection), fTableName_,
+                                                     sqliteWhereClause == nullopt ? "" : ("where "_k + *sqliteWhereClause))};
 
-                // OLD ALGORITHM...
-
-                // careful, if filtering, cannot project sqlite side, cuz might be used in filter (would have to cehck that first and cannot yet in general)
-
-                /*   auto [mongoFilter, myFilter]         = Partition_ (filter);
-                auto [mongoProjection, myProjection] = Partition_ (projection);*/
-                //Sequence<Document::Document> result;
-
-                auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-                    Assert (argc == 2);
-                    VariantValue       vv   = Variant::JSON::Reader{}.Read (String{argv[1]});
-                    Document::Document vDoc = vv.As<Mapping<String, VariantValue>> ();
-                    vDoc.Add (Document::kID, String::FromUTF8 (argv[0]));
-                    if (filter) {
-                        // super sloppy slow inefficient impl!!!
-                        if (not filter->Matches (vDoc)) {
-                            return SQLITE_OK; // tell sqlite got it, but we drop it on the floor anyhow
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
+                    int rc;
+                    while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
+                        String             id   = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
+                        Document::Document vDoc = ExtractRowValueAfterStep_ (statement, 1, id, sqliteProjection, remainingAfterProjection);
+                        if (remainingFilter == nullopt or remainingFilter->Matches (vDoc)) {
+                            if (remainingAfterProjection) {
+                                vDoc = remainingAfterProjection->Apply (vDoc);  // some attributes need to be projected after filter cuz maybe used in filtering
+                            }
+                            result += vDoc;
                         }
                     }
-                    if (projection) {
-                        vDoc = projection->Apply (vDoc);
+                    if (rc != SQLITE_DONE) [[unlikely]] {
+                        ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
                     }
-                    result.Append (vDoc);
-                    return SQLITE_OK;
-                }};
-                // @todo PREPARED STATEMENT!
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fConnectionRep_->fDB_, "SELECT id,json FROM {};"_f(fTableName_).AsUTF8<string> ().c_str (),
-                                                          callback.GetStaticFunction (), callback.GetData (), nullptr),
-                                          fConnectionRep_->fDB_);
+                }
                 return result;
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
