@@ -713,7 +713,7 @@ namespace {
                         IOStatsType readStats;
                         if (timeCollecting) {
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
-                                readStats.fBytesTransfered = *o * timeCollecting->count ();
+                                readStats.fBytesTransferred = *o * timeCollecting->count ();
                             }
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
                                 readStats.fTotalTransfers = *o * timeCollecting->count ();
@@ -735,7 +735,7 @@ namespace {
                         IOStatsType writeStats;
                         if (timeCollecting) {
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
-                                writeStats.fBytesTransfered = *o * timeCollecting->count ();
+                                writeStats.fBytesTransferred = *o * timeCollecting->count ();
                             }
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
                                 writeStats.fTotalTransfers = *o * timeCollecting->count ();
@@ -755,7 +755,7 @@ namespace {
                         }
 
                         IOStatsType combinedStats = readStats;
-                        Memory::AccumulateIf (&combinedStats.fBytesTransfered, writeStats.fBytesTransfered);
+                        Memory::AccumulateIf (&combinedStats.fBytesTransferred, writeStats.fBytesTransferred);
                         Memory::AccumulateIf (&combinedStats.fTotalTransfers, writeStats.fTotalTransfers);
                         Memory::AccumulateIf (&combinedStats.fQLength, writeStats.fQLength);
                         Memory::AccumulateIf (&combinedStats.fInUsePercent, writeStats.fInUsePercent);
@@ -777,13 +777,13 @@ namespace {
                             }
                         }
 
-                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fQLength) {
+                        if (readStats.fBytesTransferred or readStats.fTotalTransfers or readStats.fQLength) {
                             v.fReadIOStats = readStats;
                         }
-                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fQLength) {
+                        if (writeStats.fBytesTransferred or writeStats.fTotalTransfers or writeStats.fQLength) {
                             v.fWriteIOStats = writeStats;
                         }
-                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fQLength) {
+                        if (combinedStats.fBytesTransferred or combinedStats.fTotalTransfers or combinedStats.fQLength) {
                             v.fCombinedIOStats = combinedStats;
                         }
                     }
