@@ -21,23 +21,40 @@ using namespace Database::Document;
 Database::Document::Document Projection::Apply (const Database::Document::Document& d) const
 {
     Mapping<String, VariantValue> vv = d;
-    if (const Set<String>* i0 = get_if<0> (&this->fFields_)) { // eOmit
+    if (const Set<String>* i0 = get_if<eOmit> (&this->fFields_)) {
         vv.RemoveAll (*i0);
     }
-    else if (const Set<String>* i1 = get_if<1> (&this->fFields_)) { // eInclude
+    else if (const Set<String>* i1 = get_if<eInclude> (&this->fFields_)) {
         vv.RetainAll (*i1);
     }
+    else {
+        AssertNotReached ();
+    }
     return vv;
+}
+
+bool Projection::Includes (const String& fieldName) const
+{
+    if (const Set<String>* i0 = get_if<eOmit> (&this->fFields_)) {
+        return not i0->Contains (fieldName);
+    }
+    else if (const Set<String>* i1 = get_if<eInclude> (&this->fFields_)) {
+        return i1->Contains (fieldName);
+    }
+    else {
+        AssertNotReached ();
+        return false;
+    }
 }
 
 String Projection::ToString () const
 {
     StringBuilder sb;
     sb << "{ "sv;
-    if (const Set<String>* i0 = get_if<0> (&this->fFields_)) { // eOmit
+    if (const Set<String>* i0 = get_if<eOmit> (&this->fFields_)) {
         sb << "omit: "sv << *i0;
     }
-    else if (const Set<String>* i1 = get_if<1> (&this->fFields_)) { // eInclude
+    else if (const Set<String>* i1 = get_if<eInclude> (&this->fFields_)) {
         sb << "include: "sv << *i1;
     }
     sb << "}"sv;

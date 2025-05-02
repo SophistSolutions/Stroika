@@ -31,14 +31,16 @@ namespace Stroika::Foundation::Database::Document {
      */
     class Projection {
     private:
-        // use optional<Projection> so no need for monostate/default-constuctible Projection
+        // use optional<Projection> so no need for monostate/default-constructible Projection
         using MyVariant_ = variant<Set<String>, Set<String>>;
 
     public:
-        enum Flag {
-            eOmit,
-            eInclude
+        enum class Flag {
+            eOmit    = 0,
+            eInclude = 1
         };
+        using Flag::eInclude;
+        using Flag::eOmit;
 
     public:
         /**
@@ -59,13 +61,19 @@ namespace Stroika::Foundation::Database::Document {
 
     public:
         /**
+         *  See if fieldName included after Projection applied
+         */
+        nonvirtual bool Includes (const String& fieldName) const;
+
+    public:
+        /**
          *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
 
     private:
         /**
-         *  get<0> are fields that are used, and get<1> are fields that are omitted.
+         *  get<0> are fields that are omitted, and get<1> are fields that are omitted.
          *  ONLY specify one or the other.
          */
         MyVariant_ fFields_;
@@ -77,7 +85,7 @@ namespace Stroika::Foundation::Database::Document {
 
     /**
      */
-    inline const Projection kOnlyIDs = Projection{Projection::eInclude, {"id"sv}};
+    inline const Projection kOnlyIDs = Projection{Projection::eInclude, get<Set<String>> (kOmitIDs.GetFields ())};
 
 }
 
