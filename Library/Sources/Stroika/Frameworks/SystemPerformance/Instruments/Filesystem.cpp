@@ -340,22 +340,22 @@ namespace {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
                                 IOStatsType  readStats;
                                 readStats.fBytesTransferred = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                                readStats.fTotalTransfers  = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                                readStats.fTotalTransfers   = oNew->fReadsCompleted - oOld->fReadsCompleted;
                                 if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
                                     readStats.fQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure.count ();
                                 }
 
                                 IOStatsType writeStats;
                                 writeStats.fBytesTransferred = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                                writeStats.fTotalTransfers  = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                                writeStats.fTotalTransfers   = oNew->fWritesCompleted - oOld->fWritesCompleted;
                                 if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
                                     writeStats.fQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure.count ();
                                 }
 
                                 IOStatsType combinedStats;
                                 combinedStats.fBytesTransferred = *readStats.fBytesTransferred + *writeStats.fBytesTransferred;
-                                combinedStats.fTotalTransfers  = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
-                                combinedStats.fQLength         = *readStats.fQLength + *writeStats.fQLength;
+                                combinedStats.fTotalTransfers   = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
+                                combinedStats.fQLength          = *readStats.fQLength + *writeStats.fQLength;
 
                                 vi.fReadIOStats  = readStats;
                                 vi.fWriteIOStats = writeStats;
