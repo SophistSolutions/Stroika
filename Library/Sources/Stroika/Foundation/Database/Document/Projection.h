@@ -71,6 +71,16 @@ namespace Stroika::Foundation::Database::Document {
          */
         nonvirtual String ToString () const;
 
+    public:
+        /**
+         */
+        nonvirtual bool operator== (const Projection&) const = default;
+
+    public:
+        /**
+         */
+        nonvirtual auto operator<=> (const Projection&) const = default;
+
     private:
         /**
          *  get<0> are fields that are omitted, and get<1> are fields that are omitted.
