@@ -350,7 +350,7 @@ namespace {
                 Assert (nameI == arrayOfFieldNames.end ());
             }
         }
-        if (sqliteProjection and get<Sequence<String>> (*sqliteProjection).Contains (Document::kID) or remainingProjection == nullopt or
+        if ((sqliteProjection and get<Sequence<String>> (*sqliteProjection).Contains (Document::kID)) or remainingProjection == nullopt or
             remainingProjection->Includes (Document::kID)) {
             dr.Add (Document::kID, id);
         }
