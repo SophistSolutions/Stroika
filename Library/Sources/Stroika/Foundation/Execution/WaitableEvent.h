@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   This COULD have been called 'Signal', or 'SetSignaled'.
          *
-         *  \note   ***Not Cancelation Point***
+         *  \note   ***Not Cancelation Point***, but can throw (cuz uses mutex lock which can throw)
          */
         nonvirtual void Set ();
 
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Execution {
          *  Simple wait. Can use operator HANDLE() to do fancier waits.
          *  timeout can be negative (which triggers an immediate exception).
          *
-         *  TimeOutException throws if the timeout is exceeeded.
+         *  TimeOutException throws if the timeout is exceeded.
          *
          *  \note Wait (0) will always throw TimeOutException regardless of the state of the event/trigger
          *
