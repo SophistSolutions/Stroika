@@ -76,12 +76,12 @@ namespace Stroika::Foundation::Database::Document {
          */
         nonvirtual bool operator== (const Projection&) const = default;
 
-    public:
-        /**
-         */
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
+        public:
+        /**
+         */
         nonvirtual auto operator<=> (const Projection&) const = default;
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
