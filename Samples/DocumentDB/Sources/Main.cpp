@@ -99,7 +99,6 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     if (mongoConnectionString) {
         using namespace Stroika::Foundation::Database::Document::MongoDBClient;
         const String kTestDBName_ = "DocumentDB-Sample-Employees"sv;
-
         try {
             static const Activity kMongoCXXActivity_{"performing MongoDBConnection test on {}"_f(kTestDBName_)};
             DeclareActivity       da{&kMongoCXXActivity_};
@@ -124,8 +123,10 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
 #if qStroika_HasComponent_sqlite
     // quick tests with in-memory DB
-    {
-        const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
+    try {
+        static const Activity kMongoCXXActivity_{"performing sqlite document db networks sample"sv};
+        DeclareActivity       da{&kMongoCXXActivity_};
+        const String          kTestDBName_ = "DocumentDB-Sample-Networks"sv;
         cerr << "Starting sqlite document db networks sample:" << endl;
         ComputerNetworksModel ([=] () {
             cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
@@ -133,8 +134,13 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         });
         cerr << "done." << endl;
     }
-    {
-        const String kTestDBName_ = "DocumentDB-Sample-Employees"sv;
+    catch (...) {
+        cerr << "\t{}"_f(current_exception ()) << endl;
+    }
+    try {
+        static const Activity kMongoCXXActivity_{"performing sqlite document db employees sample"sv};
+        DeclareActivity       da{&kMongoCXXActivity_};
+        const String          kTestDBName_ = "DocumentDB-Sample-Employees"sv;
         cerr << "Starting sqlite document db employees sample:" << endl;
         EmployeesDB ([=] () {
             cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
@@ -143,9 +149,14 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         });
         cerr << "done." << endl;
     }
+    catch (...) {
+        cerr << "\t{}"_f(current_exception ()) << endl;
+    }
     // or run same test on filesystem
-    {
-        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "networks-test.db";
+    try {
+        static const Activity kMongoCXXActivity_{"performing sqlite document db networks sample"sv};
+        DeclareActivity       da{&kMongoCXXActivity_};
+        auto                  dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "networks-test.db";
         remove (dbPath); // test assumes empty db
         cerr << "Starting sqlite document db networks sample:" << endl;
         ComputerNetworksModel ([=] () {
@@ -154,8 +165,13 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         });
         cerr << "done." << endl;
     }
-    {
-        auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-test.db";
+    catch (...) {
+        cerr << "\t{}"_f(current_exception ()) << endl;
+    }
+    try {
+        static const Activity kMongoCXXActivity_{"performing Starting sqlite document db employees sample"sv};
+        DeclareActivity       da{&kMongoCXXActivity_};
+        auto                  dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-test.db";
         remove (dbPath); // test assumes empty db
         cerr << "Starting sqlite document db employees sample:" << endl;
         EmployeesDB ([=] () {
@@ -166,8 +182,13 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         });
         cerr << "done." << endl;
     }
+    catch (...) {
+        cerr << "\t{}"_f(current_exception ()) << endl;
+    }
 #endif
-    {
+    try {
+        static const Activity kMongoCXXActivity_{"performing trivial document db networks sample"sv};
+        DeclareActivity       da{&kMongoCXXActivity_};
         cerr << "Starting trivial document db networks sample:" << endl;
         auto internallySynchronizedDBConnection =
             TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
@@ -177,7 +198,12 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         });
         cerr << "done." << endl;
     }
-    {
+    catch (...) {
+        cerr << "\t{}"_f(current_exception ()) << endl;
+    }
+    try {
+        static const Activity kMongoCXXActivity_{"performing trivial document db employees sample"sv};
+        DeclareActivity       da{&kMongoCXXActivity_};
         cerr << "Starting trivial document db employees sample:" << endl;
         auto internallySynchronizedDBConnection =
             TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
@@ -186,6 +212,9 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             return internallySynchronizedDBConnection;
         });
         cerr << "done." << endl;
+    }
+    catch (...) {
+        cerr << "\t{}"_f(current_exception ()) << endl;
     }
     return EXIT_SUCCESS;
 }
