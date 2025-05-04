@@ -169,7 +169,7 @@ namespace {
         ~MyPreparedStatement_ ()
         {
             if (fObj_ != nullptr) {
-                (void)::sqlite3_finalize (fObj_);    // ignore result - errors indicate error on last evaluation of prepared statement, not on deletion of it
+                (void)::sqlite3_finalize (fObj_); // ignore result - errors indicate error on last evaluation of prepared statement, not on deletion of it
             }
         }
         MyPreparedStatement_& operator= (const MyPreparedStatement_&) = delete;

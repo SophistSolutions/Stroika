@@ -136,7 +136,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     catch (...) {
         cerr << "\t{}"_f(current_exception ()) << endl;
     }
-        try {
+    try {
         const String          kTestDBName_ = "DocumentDB-Sample-Employees"sv;
         static const Activity kMongoCXXActivity_{"performing sqlite document db employees sample on {}"_f(kTestDBName_)};
         DeclareActivity       da{&kMongoCXXActivity_};
