@@ -404,6 +404,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 					echo -n "SUCCESS..." >>$TEST_OUT_FILE
 				else
 					echo "**FAILED**" >>$TEST_OUT_FILE
+					echo "FAILED TEST OUTPUT:" >>$TEST_OUT_FILE
 					cat $tmpfile >>$TEST_OUT_FILE
 				fi
 				rm -f $tmpfile
