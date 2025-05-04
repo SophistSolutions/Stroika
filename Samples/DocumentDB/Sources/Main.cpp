@@ -75,16 +75,15 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     if (mongoConnectionString) {
         using namespace Stroika::Foundation::Database::Document::MongoDBClient;
         const String kTestDBName_ = "DocumentDB-Sample-Networks"sv;
-
         try {
-            static const Activity kMongoCXXActivity_{"performing MongoDBConnection test on {}"_f(kTestDBName_)};
+            static const Activity kMongoCXXActivity_{"performing MongoDBClient test on {}"_f(kTestDBName_)};
             DeclareActivity       da{&kMongoCXXActivity_};
             auto                  adminDB = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
             IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
             adminDB.CreateDatabase (kTestDBName_);
             Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
                 MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
-            cerr << "Starting mongodb networks sample:" << endl;
+            cerr << "Starting MongoDBClient networks sample:" << endl;
             ComputerNetworksModel ([=] () {
                 cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
                 return MongoDBClient::Connection::New (
@@ -100,7 +99,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         using namespace Stroika::Foundation::Database::Document::MongoDBClient;
         const String kTestDBName_ = "DocumentDB-Sample-Employees"sv;
         try {
-            static const Activity kMongoCXXActivity_{"performing MongoDBConnection test on {}"_f(kTestDBName_)};
+            static const Activity kMongoCXXActivity_{"performing MongoDBClient test on {}"_f(kTestDBName_)};
             DeclareActivity       da{&kMongoCXXActivity_};
             auto                  adminDB = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
             IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
@@ -124,9 +123,9 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 #if qStroika_HasComponent_sqlite
     // quick tests with in-memory DB
     try {
-        static const Activity kMongoCXXActivity_{"performing sqlite document db networks sample"sv};
-        DeclareActivity       da{&kMongoCXXActivity_};
         const String          kTestDBName_ = "DocumentDB-Sample-Networks"sv;
+        static const Activity kMongoCXXActivity_{"performing sqlite document db networks sample on {}"_f(kTestDBName_)};
+        DeclareActivity       da{&kMongoCXXActivity_};
         cerr << "Starting sqlite document db networks sample:" << endl;
         ComputerNetworksModel ([=] () {
             cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
@@ -137,11 +136,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     catch (...) {
         cerr << "\t{}"_f(current_exception ()) << endl;
     }
-    try {
-        static const Activity kMongoCXXActivity_{"performing sqlite document db employees sample"sv};
-        DeclareActivity       da{&kMongoCXXActivity_};
+        try {
         const String          kTestDBName_ = "DocumentDB-Sample-Employees"sv;
-        cerr << "Starting sqlite document db employees sample:" << endl;
+        static const Activity kMongoCXXActivity_{"performing sqlite document db employees sample on {}"_f(kTestDBName_)};
+        DeclareActivity       da{&kMongoCXXActivity_};
+        cerr << "Starting sqlite document db employees sample on memory db {}"_f(kTestDBName_) << endl;
         EmployeesDB ([=] () {
             cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
             // works poorly with 100ms busyTimeout, but better than any other value - what am I missing!
@@ -154,9 +153,9 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
     // or run same test on filesystem
     try {
-        static const Activity kMongoCXXActivity_{"performing sqlite document db networks sample"sv};
-        DeclareActivity       da{&kMongoCXXActivity_};
         auto                  dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "networks-test.db";
+        static const Activity kMongoCXXActivity_{"performing sqlite document db networks sample on {}"_f(dbPath)};
+        DeclareActivity       da{&kMongoCXXActivity_};
         remove (dbPath); // test assumes empty db
         cerr << "Starting sqlite document db networks sample:" << endl;
         ComputerNetworksModel ([=] () {
@@ -169,11 +168,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "\t{}"_f(current_exception ()) << endl;
     }
     try {
-        static const Activity kMongoCXXActivity_{"performing Starting sqlite document db employees sample"sv};
-        DeclareActivity       da{&kMongoCXXActivity_};
         auto                  dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-test.db";
+        static const Activity kMongoCXXActivity_{"performing Starting sqlite document db employees sample on {}"_f(dbPath)};
+        DeclareActivity       da{&kMongoCXXActivity_};
         remove (dbPath); // test assumes empty db
-        cerr << "Starting sqlite document db employees sample:" << endl;
+        cerr << "Starting sqlite document db employees sample on {}"_f(dbPath) << endl;
         EmployeesDB ([=] () {
             cerr << "\tConnecting to sqlite  db: {}"_f(dbPath) << endl;
             // works poorly with 100ms busyTimeout, but better than any other value - what am I missing!
@@ -193,7 +192,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         auto internallySynchronizedDBConnection =
             TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
         ComputerNetworksModel ([=] () {
-            cerr << "\tConnecting to trivial document db: {}" << endl;
+            cerr << "\tConnecting to trivial document db: memory" << endl;
             return internallySynchronizedDBConnection;
         });
         cerr << "done." << endl;
@@ -208,7 +207,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         auto internallySynchronizedDBConnection =
             TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
         EmployeesDB ([=] () {
-            cerr << "\tConnecting to trivial document db: {}" << endl;
+            cerr << "\tConnecting to trivial document db: memory" << endl;
             return internallySynchronizedDBConnection;
         });
         cerr << "done." << endl;
