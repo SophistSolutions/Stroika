@@ -286,7 +286,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx1{"expect-abort-to-work-and-wait-to-succceed"};
                 constexpr Time::DurationSeconds kMarginOfError_ = 10s; // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
-                constexpr Time::DurationSeconds kWaitOnAbortFor = qStroika_Foundation_Debug_AssertionsChecked ? 7.0s : 3.0s;
+                constexpr Time::DurationSeconds kWaitOnAbortFor = qStroika_Foundation_Debug_AssertionsChecked ? 8.0s : 3.0s;
                 // use such a long timeout cuz we run this on 'debug' builds,
                 // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
                 // due to timeout on raspberrypi (rare even there)
@@ -363,6 +363,8 @@ namespace {
                     // Very rare - but saw this again on Raspberrypi - raspberrypi-g++-8-debug-sanitize_undefined- 2.1a2x -- LGP 2019-10-11
                     //
                     // Now once saw on (slow windows VM on hercules) system, during builds, so probably nothing -- LGP 2021-02-27
+                    //
+                    // Saw on raspberry pi, so upped timeout to 8 seconds - very rare - was 7 seconds --LGP 2025-05-04
                 }
                 Time::TimePointSeconds doneAt        = Time::GetTickCount ();
                 Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
