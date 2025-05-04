@@ -514,7 +514,7 @@ struct Statement::MyRep_ : IRep {
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotNull (fStatementObj_);
-        (void)::sqlite3_finalize (fStatementObj_);
+        (void)::sqlite3_finalize (fStatementObj_);       // ignore result - errors indicate error on last evaluation of prepared statement, not on deletion of it
     }
     virtual String GetSQL (WhichSQLFlag whichSQL) const override
     {

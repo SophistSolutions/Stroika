@@ -155,7 +155,6 @@ namespace {
     struct MyPreparedStatement_ {
         MyPreparedStatement_ () = default;
         MyPreparedStatement_ (sqlite3* db, const String& statement)
-            : fDB_{db}
         {
             RequireNotNull (db);
             const char* pzTail = nullptr;
@@ -170,7 +169,7 @@ namespace {
         ~MyPreparedStatement_ ()
         {
             if (fObj_ != nullptr) {
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_finalize (fObj_), fDB_);
+                (void)::sqlite3_finalize (fObj_);    // ignore result - errors indicate error on last evaluation of prepared statement, not on deletion of it
             }
         }
         MyPreparedStatement_& operator= (const MyPreparedStatement_&) = delete;
@@ -186,7 +185,6 @@ namespace {
         }
 
     private:
-        sqlite3*      fDB_{nullptr};
         sqlite3_stmt* fObj_{nullptr};
     };
     static_assert (movable<MyPreparedStatement_>);
