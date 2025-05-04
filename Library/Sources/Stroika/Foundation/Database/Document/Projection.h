@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Database::Document {
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
-        public:
+    public:
         /**
          */
         nonvirtual auto operator<=> (const Projection&) const = default;
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Database::Document {
 
     private:
         /**
-         *  get<0> are fields that are omitted, and get<1> are fields that are omitted.
+         *  get<Projection::eOmit> are fields that are omitted, and get<Projection::eInclude> are fields that are included.
          *  ONLY specify one or the other.
          */
         MyVariant_ fFields_;
