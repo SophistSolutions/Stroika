@@ -143,8 +143,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "Starting sqlite document db employees sample on memory db {}"_f(kTestDBName_) << endl;
         EmployeesDB ([=] () {
             cerr << "\tConnecting to sqlite memory db: {}"_f(kTestDBName_) << endl;
-            // works poorly with 100ms busyTimeout, but better than any other value - what am I missing!
-            return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = kTestDBName_, .fBusyTimeout = 100ms});
+            return SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = kTestDBName_});
         });
         cerr << "done." << endl;
     }
@@ -175,8 +174,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "Starting sqlite document db employees sample on {}"_f(dbPath) << endl;
         EmployeesDB ([=] () {
             cerr << "\tConnecting to sqlite  db: {}"_f(dbPath) << endl;
-            // works poorly with 100ms busyTimeout, but better than any other value - what am I missing!
-            auto c = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath, .fBusyTimeout = 100ms});
+            auto c = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath});
             return c;
         });
         cerr << "done." << endl;
