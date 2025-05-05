@@ -262,9 +262,7 @@ namespace {
                 });
                 ThrowSQLiteError_ (e, fDB_);
             }
-            if (options.fBusyTimeout) {
-                SetBusyTimeout (*options.fBusyTimeout);
-            }
+            SetBusyTimeout (options.fBusyTimeout.value_or (Options::kBusyTimeout_Default));
             if (options.fJournalMode) {
                 SetJournalMode (*options.fJournalMode);
             }

@@ -228,8 +228,15 @@ namespace Stroika::Foundation::Database::Document::SQLite {
              *  Example in sqlite docs says 100ms. It turns out, in my limited testing, that appears to work best. But what makes
              *  no sense, is that I generally get MORE busy timeout errors if I use a much larger value (like 500ms, or 5000ms).
              *  Its ALMOST as if the database was holding a lock (one connection) while retrying?
+             * 
+             *  SQLITE appears to default this value to 0s, but that causes sporadic busy_timeouts in many tests. I think (empirically) - 1s, or maybe 10s
+             *  maybe better. Still early to say. Specify your own if you care, else see kBusyTimeout_Default.
              */
             optional<Duration> fBusyTimeout;
+
+            /**
+             */
+            static constexpr inline chrono::seconds kBusyTimeout_Default = 10s;
 
             /**
              *  \note - see JournalModeType and Connection::Ptr::journalMode
