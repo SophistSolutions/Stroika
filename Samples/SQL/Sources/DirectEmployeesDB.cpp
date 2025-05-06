@@ -157,7 +157,7 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
         AssertNotReached (); // RE-USED ID!!! - only detectable at runtime - so exception thrown
     }
     catch (...) {
-        cout << "Note good error message: {}"_f(current_exception ()) << endl; // silently ignore this here...
+        cout << "Note good error message for duplicate ids: {}"_f(current_exception ()) << endl; // silently ignore this here...
     }
 
     /*

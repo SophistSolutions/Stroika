@@ -63,7 +63,6 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
             auto conn = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath});
-            Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
             return conn;
         };
         ThreadTest (connectionFactory);
@@ -77,7 +76,6 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         (void)std::filesystem::remove (dbPath);
         auto connectionFactory = [=] () {
             auto conn = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbPath});
-            Assert (Math::NearlyEquals (conn.busyTimeout ().As<double> (), 1.0));
             return conn;
         };
         ORMEmployeesDB (connectionFactory);
