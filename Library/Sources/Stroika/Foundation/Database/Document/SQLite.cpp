@@ -214,8 +214,6 @@ namespace {
 namespace {
     /**
      * Break the given Stroika filter into parts that can be remoted to sqldb, and parts that must be handled locally
-     * 
-   
      */
     tuple<optional<String>, optional<Filter>> Partition_ (const optional<Filter>& filter)
     {
@@ -630,6 +628,10 @@ namespace {
             if (options.fInMemoryDB) {
                 // Not super clear why SQLITE_OPEN_URI needed, but the example in docs uses URI, and tracing through the sqlite open code
                 // it appears to require a URI format, but not really documented as near as I can tell...--LGP 2025-03-31
+                //
+                //  NOTE -https://www.sqlite.org/sharedcache.html#dontuse says DONT USE SHAREDCACHE but not sure how todo shared memory DB
+                //  without it? And it DOES tend to produce alot of spurrious SQLITE_BUSY errors - not sure what todo --LGP 2025-05-06
+                //
                 flags |= SQLITE_OPEN_MEMORY;
                 flags |= SQLITE_OPEN_URI;
                 flags |= SQLITE_OPEN_SHAREDCACHE;
