@@ -474,8 +474,8 @@ struct Statement::MyRep_ : IRep {
         : fConnectionPtr_{db}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx{L"SQLite::Statement::MyRep_::CTOR",
-                               Stroika_Foundation_Debug_OptionalizeTraceArgs (L"db=%p, query='%s'", db.Peek (), query.As<wstring> ().c_str ())};
+        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR",
+                               Stroika_Foundation_Debug_OptionalizeTraceArgs ("db={}, query='{}'"_f, db.Peek (), query)};
 #endif
         RequireNotNull (db);
         RequireNotNull (db->Peek ());
@@ -611,7 +611,7 @@ struct Statement::MyRep_ : IRep {
         }
         DbgTrace ("Statement::Bind: Parameter '{}' not found in list {}"_f, parameterName,
                   fParameters_.Map<Traversal::Iterable<String>> ([] (const auto& i) { return i.fName; }));
-        RequireNotReached (); // invalid paramter name provided
+        RequireNotReached (); // invalid parameter name provided
     }
     virtual void Reset () override
     {

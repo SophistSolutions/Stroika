@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
 #if qStroika_HasComponent_sqlite
 
     /**
-     *  This defines what options sqlite was compiled with.
+     *  This defines what options SQLite was compiled with.
      * 
      *  For a full list of possible options, see <https://www.sqlite.org/compile.html>
      *  (though we only capture a limited subset of these). To check the rest, callers
@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             /**
              *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
              *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or
-             *  surprising how to interpret). @todo perhaps provide an API to 'parse' an sqlite URI into one of these Stroika
+             *  surprising how to interpret). @todo perhaps provide an API to 'parse' an SQLite URI into one of these Stroika
              *  SQLite options objects?
              * 
              *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
                  *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
                  *  (Stroika Debug::AssertExternallySynchronizedMutex enforces this)
                  * 
-                 * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+                 * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
                  * call sqlite3_threadsafe, to see if this is enabled
                  */
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
                  *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
                  *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedMutex)
                  * 
-                 * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+                 * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
                  * call sqlite3_threadsafe, to see if this is enabled
                  * 
@@ -225,7 +225,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
              *  @see also https://www.sqlite.org/c3ref/busy_timeout.html
              * 
              *  This seems black magic. I try different values at random, and get inscrutable results when used (or not used).
-             *  Example in sqlite docs says 100ms. It turns out, in my limited testing, that appears to work best. But what makes
+             *  Example in SQLite docs says 100ms. It turns out, in my limited testing, that appears to work best. But what makes
              *  no sense, is that I generally get MORE busy timeout errors if I use a much larger value (like 500ms, or 5000ms).
              *  Its ALMOST as if the database was holding a lock (one connection) while retrying?
              * 
@@ -289,13 +289,13 @@ namespace Stroika::Foundation::Database::Document::SQLite {
 
         public:
             /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the SQLite API.
              */
             nonvirtual ::sqlite3* Peek () const;
 
         public:
             /**
-             *  When doing a query that would have failed due to SQL_BUSY timeout, sqlite will wait
+             *  When doing a query that would have failed due to SQL_BUSY timeout, SQLite will wait
              *  and retry up to this long, to avoid the timeout.
              */
             Common::Property<Duration> busyTimeout;
@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
         class IRep : public Database::Document::Connection::IRep {
         public:
             /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the SQLite API.
              */
             virtual ::sqlite3* Peek () = 0;
 
@@ -383,7 +383,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
      *  \see https://www.sqlite.org/lang_transaction.html
      * 
      *  \note Transactions are not required. This is for explicit transactions. If you omit
-     *        using transactions, sqlite creates mini transactions automatically for each statement.
+     *        using transactions, SQLite creates mini transactions automatically for each statement.
      *
      *  \note Nested transactions not supported
      * 

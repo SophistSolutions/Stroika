@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 #if qStroika_HasComponent_sqlite
 
     /**
-     *  This defines what options sqlite was compiled with.
+     *  This defines what options SQLite was compiled with.
      * 
      *  For a full list of possible options, see <https://www.sqlite.org/compile.html>
      *  (though we only capture a limited subset of these). To check the rest, callers
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             /**
              *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
              *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or
-             *  surprising how to interpret). @todo perhaps provide an API to 'parse' an sqlite URI into one of these Stroika
+             *  surprising how to interpret). @todo perhaps provide an API to 'parse' an SQLite URI into one of these Stroika
              *  SQLite options objects?
              * 
              *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
                  *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
                  *  (Stroika Debug::AssertExternallySynchronizedMutex enforces this)
                  * 
-                 * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+                 * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
                  * call sqlite3_threadsafe, to see if this is enabled
                  */
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
                  *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
                  *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedMutex)
                  * 
-                 * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+                 * This may not always be available depending on how SQLite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
                  * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
                  * call sqlite3_threadsafe, to see if this is enabled
                  * 
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
          *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-         *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+         *          threadsafe (even if accessed across processes) - depending on its construction Options::ThreadSafety
          *
          *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
          *          of Options::fThreadingMode when the database is constructed.
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *          @see https://www.sqlite.org/threadsafe.html
          *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
          * 
-         *          NOTE - two Connection::Ptr objects refering to the same underlying REP is NOT (probably) safe with SQLITE. But referring
+         *          NOTE - two Connection::Ptr objects referring to the same underlying REP is NOT (probably) safe with SQLITE. But referring
          *          to the same database is safe.
          *
          */
@@ -291,13 +291,13 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
 
         public:
             /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the SQLite API.
              */
             nonvirtual ::sqlite3* Peek () const;
 
         public:
             /**
-             *  When doing a query that would have failed due to SQL_BUSY timeout, sqlite will wait
+             *  When doing a query that would have failed due to SQL_BUSY timeout, SQLite will wait
              *  and retry up to this long, to avoid the timeout.
              */
             Common::Property<Duration> busyTimeout;
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
          *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-         *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+         *          threadsafe (even if accessed across processes) - depending on its construction Options::ThreadSafety
          *
          *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
          *          of Options::fThreadingMode when the database is constructed.
@@ -333,13 +333,13 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
          * 
          *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedMutex code / restriction.
-         *          But sqlite docs not super clear. Maybe I need to use thier locking APIs myself internally to use
+         *          But SQLite docs not super clear. Maybe I need to use their locking APIs myself internally to use
          *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
         class IRep : public SQL::Connection::IRep {
         public:
             /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the SQLite API.
              */
             virtual ::sqlite3* Peek () = 0;
 
@@ -397,7 +397,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      *  \see https://www.sqlite.org/lang_transaction.html
      * 
      *  \note Transactions are not required. This is for explicit transactions. If you omit
-     *        using transactions, sqlite creates mini transactions automatically for each statement.
+     *        using transactions, SQLite creates mini transactions automatically for each statement.
      *
      *  \note Nested transactions not supported
      * 

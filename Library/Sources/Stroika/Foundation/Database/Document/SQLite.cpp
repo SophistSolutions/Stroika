@@ -213,7 +213,7 @@ namespace {
 
 namespace {
     /**
-     * Break the given Stroika filter into parts that can be remoted to sqldb, and parts that must be handled locally
+     * Break the given Stroika filter into parts that can be remoted to SQLite db, and parts that must be handled locally
      */
     tuple<optional<String>, optional<Filter>> Partition_ (const optional<Filter>& filter)
     {
@@ -280,8 +280,8 @@ namespace {
 
 namespace {
     /**
-     * Break the given Stroika filter into parts that can be handled in sqlite, and parts that must be handled locally
-     * Also return array showing names cuz sqlite returns array (for > 1) and these are the names in this order of the fields/objects:
+     * Break the given Stroika filter into parts that can be handled in SQLite, and parts that must be handled locally
+     * Also return array showing names cuz SQLite returns array (for > 1) and these are the names in this order of the fields/objects:
      */
     tuple<optional<tuple<String, Sequence<String>>>, optional<Projection>> Partition_ (const optional<Projection>& p)
     {
@@ -394,7 +394,7 @@ namespace {
                  *  MAYBE OK if not using 'full mutex' mode on database connection? @todo FIGURE OUT!!!!
                  * 
                  * @todo: SIMONE suggests using GUID, and pre-computing the ID, and using that.
-                 *      COULD just precompute the id (easier if sqlite had sequence type) - or do two inserts - lots of tricky ways.
+                 *      COULD just precompute the id (easier if SQLite had sequence type) - or do two inserts - lots of tricky ways.
                  *      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                  */
                 if (fAddStatement_ == nullptr) [[unlikely]] {
@@ -489,7 +489,7 @@ namespace {
                     // general case
                     auto [sqliteWhereClause, remainingFilter] = Partition_ (filter);
 
-                    // if there is a remainingFilter (performed after sqlite) - we need to form full objects and then apply the filter at the end
+                    // if there is a remainingFilter (performed after SQLite) - we need to form full objects and then apply the filter at the end
                     // so the filter can access those fields. REALLY - we could do a little better than this in general, but this is a good first attempt
                     auto [sqliteProjection, remainingAfterProjection] = remainingFilter ? make_tuple (nullopt, projection) : Partition_ (projection);
 
@@ -616,7 +616,7 @@ namespace {
             if (options.fDBPath) {
                 uriArg = options.fDBPath->generic_string ();
                 if (uriArg[0] == ':') {
-                    uriArg = "./" + uriArg; // sqlite docs warn to do this, to avoid issues with :memory or other extensions
+                    uriArg = "./" + uriArg; // SQLite docs warn to do this, to avoid issues with :memory or other extensions
                 }
             }
             if (options.fTemporaryDB) {
@@ -626,11 +626,11 @@ namespace {
                 Require (not options.fTemporaryDB->empty ());
             }
             if (options.fInMemoryDB) {
-                // Not super clear why SQLITE_OPEN_URI needed, but the example in docs uses URI, and tracing through the sqlite open code
+                // Not super clear why SQLITE_OPEN_URI needed, but the example in docs uses URI, and tracing through the SQLite open code
                 // it appears to require a URI format, but not really documented as near as I can tell...--LGP 2025-03-31
                 //
                 //  NOTE -https://www.sqlite.org/sharedcache.html#dontuse says DONT USE SHAREDCACHE but not sure how todo shared memory DB
-                //  without it? And it DOES tend to produce alot of spurrious SQLITE_BUSY errors - not sure what todo --LGP 2025-05-06
+                //  without it? And it DOES tend to produce a lot of spurious SQLITE_BUSY errors - not sure what todo --LGP 2025-05-06
                 //
                 flags |= SQLITE_OPEN_MEMORY;
                 flags |= SQLITE_OPEN_URI;
@@ -700,7 +700,6 @@ namespace {
                 results.Add (String::FromUTF8 (argv[0]));
                 return SQLITE_OK;
             }};
-            //ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, ".tables", callback, &results, nullptr)); not sure why this doesn't work
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "SELECT name FROM sqlite_master WHERE type='table';",
                                                       callback.GetStaticFunction (), callback.GetData (), nullptr),
                                       fDB_);
@@ -859,7 +858,7 @@ Document::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
 {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     if (src != nullptr) {
-        // _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->_fAssertExternallySynchronizedMutex.GetSharedContext ());
+        _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
     }
 #endif
 }
