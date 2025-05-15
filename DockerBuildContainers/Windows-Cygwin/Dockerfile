@@ -33,7 +33,7 @@ SHELL ["powershell"]
 RUN \
     Set-ExecutionPolicy Bypass -Scope Process -Force; \
     $ErrorActionPreference = 'Stop'; \
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12,Tls13'; \
     iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 # The default version of CHOCO CYGWIN fails to install as of 2024-03-08
