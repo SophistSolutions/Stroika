@@ -67,7 +67,7 @@ namespace {
  */
 String WebServer::ConnectionManager::Statistics::ThreadPool::ToString () const
 {
-    StringBuilder sb = ThreadPool::Statistics::ToString ().SubString (0, -1);
+    StringBuilder sb = this->ThreadPool::Statistics::ToString ().SubString (0, -1);
     sb << ", thread-entry-cont: "sv << fThreadEntryCount;
     sb << "}"sv;
     return sb;

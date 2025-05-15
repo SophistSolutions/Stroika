@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         using inherited =
-            Private::HashTableBasedContainerRepImpl<KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::Rep_<HASH_TABLE_TRAITS>, IImplRepBase_>;
+            Private::HashTableBasedContainerRepImpl<typename KeyedCollection_HashTable<T, KEY_TYPE, TRAITS>::template Rep_<HASH_TABLE_TRAITS>, IImplRepBase_>;
 
     private:
         // these are stored inside fData_ (often zero sized so no matter) - but if not zero sized - @todo just re-use the space inside fData_

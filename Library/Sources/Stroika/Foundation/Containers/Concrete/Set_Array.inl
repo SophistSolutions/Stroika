@@ -20,7 +20,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         : public Private::ArrayBasedContainerRepImpl<Set_Array<T>::Rep_<EQUALS_COMPARER>, typename Set_Array<T>::IImplRepBase_>,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
     private:
-        using inherited = Private::ArrayBasedContainerRepImpl<Set_Array<T>::Rep_<EQUALS_COMPARER>, typename Set_Array<T>::IImplRepBase_>;
+        using inherited =
+            Private::ArrayBasedContainerRepImpl<typename Set_Array<T>::template Rep_<EQUALS_COMPARER>, typename Set_Array<T>::IImplRepBase_>;
 
     public:
         Rep_ (const EQUALS_COMPARER& equalsComparer)
