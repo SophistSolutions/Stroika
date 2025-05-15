@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Filter.h"
 
@@ -22,10 +23,10 @@ bool FilterElements::Equals::Matches (const Database::Document::Document& doc) c
 {
     if (optional<VariantValue> elt = doc.Lookup (fLHS)) {
         // RHS could be value, or another lookup
-        optional<VariantValue> rhsValue = get_if<Value> (&fRHS); // intentionally object slice
-        if (!rhsValue) {
-            // then fetch from document
-            rhsValue = doc.Lookup (get<FieldName> (fRHS));
+        optional<VariantValue> rhsValue = Memory::OptionalFromNullable (get_if<Value> (&fRHS)); // intentionally object slice
+        if (not rhsValue) {
+            // then must be name, so fetch from document
+            rhsValue = doc.Lookup (get<FieldName> (fRHS)); // but COULD still be missing from doc - not an error
         }
         return *elt == rhsValue;
     }
