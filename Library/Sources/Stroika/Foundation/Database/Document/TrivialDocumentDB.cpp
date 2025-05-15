@@ -31,7 +31,7 @@ using Database::Document::IDType;
 using Database::Document::Projection;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 using Common::GUID;
 using Database::Document::EngineProperties;
@@ -86,20 +86,22 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll()", "filter={}, projection={}"_f,
+                                       filter, projection};
 #endif
-                // Iterable<KeyValuePair<GUID,Document::Document>> collection = fConnectionRep_->fCollections_->LookupValue (fTableName_);
                 return fConnectionRep_->fCollections_->LookupValue (fTableName_)
-                    .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document> kvp) -> optional<Document::Document> {
+                    .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
                         Document::Document d = kvp.fValue;
                         d.Add (Document::kID, kvp.fKey.ToString ());
-                        if (not filter.has_value () or filter->Matches (d)) {
+                        if (filter and not filter->Matches (d)) {
+                            return nullopt; // skip cuz didn't match filter
+                        }
+                        else {
                             if (projection) {
                                 d = projection->Apply (d);
                             }
                             return d;
                         }
-                        return nullopt;
                     });
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
