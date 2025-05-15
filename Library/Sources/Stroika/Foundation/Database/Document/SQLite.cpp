@@ -157,7 +157,10 @@ namespace {
         MyPreparedStatement_ (sqlite3* db, const String& statement)
         {
             RequireNotNull (db);
-            const char* pzTail = nullptr;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            TraceContextBumper ctx{"MyPreparedStatement_", "sql={}"_f, statement};
+#endif
+            const char*        pzTail = nullptr;
             string utfStatement = statement.AsUTF8<string> (); // subtle - need explicit named temporary (in debug builds) so we can check assertion after - which points inside utfStatement
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db, utfStatement.c_str (), -1, &fObj_, &pzTail), db);
             Assert (pzTail != nullptr);
@@ -227,47 +230,30 @@ namespace {
              *  Much more could be done, but this is a good cost/benefit start.
              */
             Sequence<Document::FilterElements::Operation> clientSideOps;
-            optional<String>                              idWhereTest;
-            Set<String>                                   jsonWhereTests;
+            StringBuilder                                 whereClause;
             for (Document::FilterElements::Operation op : filter->GetConjunctionOperations ()) {
                 bool transferred = false;
                 if (const Document::FilterElements::Equals* eqOp = get_if<Document::FilterElements::Equals> (&op)) {
-                    //String useFieldName = eqOp->fLHS == Database::Document::kID ? kMongoID_ : eqOp->fLHS;
                     if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
+                        if (not whereClause.empty ()) {
+                            whereClause << " && "sv;
+                        }
                         // move to server side
                         if (eqOp->fLHS == Database::Document::kID) {
-                            idWhereTest = "{} == '{}'"_f(Database::Document::kID, rhsValue->As<String> ()); // not sure this is right way to compare?
+                            whereClause << "{} = '{}'"_f(Database::Document::kID, rhsValue->As<String> ()); // not sure this is right way to compare?
                         }
                         else {
                             // others compared in json part
-                            jsonWhereTests += "$.{} == '{}'"_f(String{eqOp->fLHS}, rhsValue->As<String> ()); // not sure this is right way to compare?
+                            whereClause << "json_extract(json, '$.{}') = {}"_f(String{eqOp->fLHS}, rhsValue->As<String> ()); // not sure this is right way to compare?
                         }
+                        transferred = true;
                     }
                 }
                 if (not transferred) {
                     clientSideOps += op; // keep for client side
                 }
             }
-            if (idWhereTest or not jsonWhereTests.empty ()) {
-                StringBuilder whereClause;
-                if (idWhereTest) {
-                    whereClause << *idWhereTest;
-                }
-                if (not jsonWhereTests.empty ()) {
-                    if (not whereClause.empty ()) {
-                        whereClause << " && "sv; // dont recall right sql syntax - will need to lookup
-                    }
-                    whereClause << "json_extract(json, ";
-                    size_t n = 0;
-                    for (auto i : jsonWhereTests) {
-                        if (n != 0) {
-                            whereClause << ", ";
-                        }
-                        whereClause << "'{}'"_f(i);
-                        n++;
-                    }
-                    whereClause << ")";
-                }
+            if (not whereClause.empty ()) {
                 // if we moved any to server side, then return the filterDoc and the client side ops
                 return make_tuple (whereClause, clientSideOps.empty () ? optional<Filter>{} : make_optional (Filter{clientSideOps}));
             }
@@ -489,6 +475,8 @@ namespace {
                     // general case
                     auto [sqliteWhereClause, remainingFilter] = Partition_ (filter);
 
+                    //DbgTrace ("sqliteWhereClause={}"_f, sqliteWhereClause);
+                    //DbgTrace ("remainingFilter={}"_f, remainingFilter);
                     // if there is a remainingFilter (performed after SQLite) - we need to form full objects and then apply the filter at the end
                     // so the filter can access those fields. REALLY - we could do a little better than this in general, but this is a good first attempt
                     auto [sqliteProjection, remainingAfterProjection] = remainingFilter ? make_tuple (nullopt, projection) : Partition_ (projection);
