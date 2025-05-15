@@ -298,7 +298,13 @@ namespace {
                     String useFieldName = eqOp->fLHS == Database::Document::kID ? kMongoID_ : eqOp->fLHS;
                     if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
                         // move to server side
-                        filterDoc.append (kvp (useFieldName.AsUTF8<string> (), VV2BSONV_ (*rhsValue)));
+                        if (useFieldName == kMongoID_) {
+                            // @todo find cleaner way todo this cuz other thinks could be of this type?
+                            filterDoc.append (kvp ("_id", bsoncxx::oid{rhsValue->As<String> ().AsUTF8<string> ()})); //kMongoID
+                        }
+                        else {
+                            filterDoc.append (kvp (useFieldName.AsUTF8<string> (), VV2BSONV_ (*rhsValue)));
+                        }
                         transferred  = true;
                         anyTransfers = true;
                     }
@@ -495,10 +501,10 @@ namespace {
                 // must be careful if myFilter != nullptr, may not be able to do projection server-side!
                 // cuz data needed client side to do the filtering...
                 auto [mongoProjection, myProjection] = myFilter == nullopt ? Partition_ (projection) : make_tuple (nullopt, projection);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_ && 0
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("myFilter={}"_f, myFilter);
                 if (mongoFilter) {
-                    DbgTrace ("mongoFilter={}"_f, BSON2VV_ (*mongoFilter));
+                    //    DbgTrace ("mongoFilter={}"_f, BSON2VV_ (*mongoFilter));
                 }
 #endif
                 Sequence<Document::Document> result;
