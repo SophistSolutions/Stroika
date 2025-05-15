@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Database::Document {
 
         /**
          * \note this special value kID is used to identify the ID field in a document. Its value is "_id" (in mongodb, but in this API, its "id")
-         * ?????? dont want to hardwire queer choice of mongodb, but dont wnat to have todo alot of needless mapping/translation later. RETHINK!!!
+         * ?????? dont want to hardwire queer choice of mongodb, but dont want to have todo a lot of needless mapping/translation later. RETHINK!!!
          */
         static inline const FieldName kID{Database::Document::kID};
 
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Database::Document {
     public:
         /**
          */
-        Filter (const Sequence<FilterElements::Operation>& andedOperations);
+        Filter (const Sequence<FilterElements::Operation>& conjunction);
 
     public:
         /**
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Database::Document {
         // hardwired ones can be passed to mongo, and others applied ex-post-facto
 
         // conjunctive normal form (CNF)
-        Sequence<FilterElements::Operation> fAndedOperations_;
+        Sequence<FilterElements::Operation> fConjunction_;
     };
 
 }

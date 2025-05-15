@@ -36,7 +36,7 @@ String FilterElements::Equals::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << ", op: EQUALS "sv;
+    sb << "op: EQUALS "sv;
     sb << ", lhs:  "sv << fLHS;
     sb << ", rhs:  "sv << fRHS;
     sb << "}"sv;
@@ -64,7 +64,7 @@ bool FilterElements::Matches (const Operation& op, const Database::Document::Doc
  */
 bool Filter::Matches (const Database::Document::Document& doc) const
 {
-    for (FilterElements::Operation op : fAndedOperations_) {
+    for (FilterElements::Operation op : fConjunction_) {
         if (not FilterElements::Matches (op, doc)) {
             return false;
         }
@@ -76,7 +76,7 @@ String Filter::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << ", disjunction: "sv << fAndedOperations_;
+    sb << ", conjunction: "sv << fConjunction_;
     sb << "}"sv;
     return sb;
 }
