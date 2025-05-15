@@ -95,13 +95,13 @@ namespace Stroika::Foundation::Database::Document {
         MyVariant_ fFields_;
     };
 
-    /**
+/**
      */
-    #if qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy
+#if qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy
     inline const Projection kOmitIDs = Projection{Projection::eOmit, {"id"sv}};
-    #else
+#else
     inline const Projection kOmitIDs = Projection{Projection::eOmit, {kID}};
-    #endif
+#endif
 
     /**
      */
