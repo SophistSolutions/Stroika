@@ -175,6 +175,10 @@ namespace {
             EXPECT_EQ (roundTrip (optional<String>{String{}}), nullopt); // oops - but really how could it tell?
         }
         DbgTrace ("mapping_vv={}"_f, Mapping<String, VariantValue>{{"a", 3}});
+        {
+            EXPECT_EQ (VariantValue{8}, VariantValue{8});
+            EXPECT_NE (VariantValue{8}, VariantValue{9}); // FAILED: Ensure; EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0);
+        }
     }
 }
 

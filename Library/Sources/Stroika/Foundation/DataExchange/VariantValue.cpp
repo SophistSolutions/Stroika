@@ -835,11 +835,11 @@ bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator()
         case VariantValue::eNull:
             return true;
         case VariantValue::eBoolean:
-            return ln.As<bool> () == ln.As<bool> ();
+            return ln.As<bool> () == rn.As<bool> ();
         case VariantValue::eFloat:
-            return Math::NearlyEquals (ln.As<FloatType_> (), ln.As<FloatType_> ());
+            return Math::NearlyEquals (ln.As<FloatType_> (), rn.As<FloatType_> ());
         case VariantValue::eString:
-            return ln.As<String> () == ln.As<String> ();
+            return ln.As<String> () == rn.As<String> ();
         case VariantValue::eArray: {
             // same iff all elts same (after normalizing sub-elts above)
             return ln.As<Sequence<VariantValue>> () == rn.As<Sequence<VariantValue>> ();
@@ -878,7 +878,7 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
         case VariantValue::eNull:
             return strong_ordering::equal;
         case VariantValue::eBoolean:
-            return ln.As<bool> () <=> ln.As<bool> ();
+            return ln.As<bool> () <=> rn.As<bool> ();
         case VariantValue::eFloat: {
             // explicit test so we can do NearlyEquals()
             FloatType_ l = ln.As<FloatType_> ();
@@ -894,7 +894,7 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
             }
         }
         case VariantValue::eString:
-            return ln.As<String> () <=> ln.As<String> ();
+            return ln.As<String> () <=> rn.As<String> ();
         case VariantValue::eArray: {
             // same iff all elts same (after normalizing sub-elts above)
             return ln.As<Sequence<VariantValue>> () <=> rn.As<Sequence<VariantValue>> ();
