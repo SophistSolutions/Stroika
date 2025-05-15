@@ -960,7 +960,7 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
-                                  Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress,
+                                  Synchronized<optional<pid_t>>* runningPID, [[maybe_unused]] ProgressMonitor::Updater progress,
                                   const optional<filesystem::path>& executable, const CommandLine& cmdLine, const ProcessRunner::Options& options,
                                   const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {

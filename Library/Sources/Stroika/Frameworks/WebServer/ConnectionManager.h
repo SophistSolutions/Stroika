@@ -436,7 +436,7 @@ namespace Stroika::Frameworks::WebServer {
     private:
         Options                            fEffectiveOptions_;
         Traversal::Iterable<SocketAddress> fBindings_; // just to return bindings API
-#if qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy
+#if qCompilerAndStdLib_function_dependency_too_complex_Buggy
         // BWA not too bad cuz ConnectionManager(const ConnectionManager&)=delete and op= as well.
         shared_ptr<Connection::Options> fUseDefaultConnectionOptions_BWA_{make_shared<Connection::Options> ()};
         Connection::Options&            fUseDefaultConnectionOptions_{*fUseDefaultConnectionOptions_BWA_};

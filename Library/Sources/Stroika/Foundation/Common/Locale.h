@@ -120,12 +120,12 @@ namespace Stroika::Foundation::Common {
      *  Temporarily use the given argument locale.
      *
      *      \code
-     *          ScopedUseLocale useLocaleTmp{FindNamedLocaleQuietly("en", "us")};  // use the english US locale, if its available
+     *          ScopedUseLocale useLocaleTmp{FindNamedLocaleQuietly("en", "us")};  // use the English US locale, if its available
      *          do stuff with us locale (if available)
      *      \endcode
      *
      *      \code
-     *          ScopedUseLocale useLocaleTmp{FindNamedLocale("en", "us")};  // use the english US locale, or throw
+     *          ScopedUseLocale useLocaleTmp{FindNamedLocale("en", "us")};  // use the English US locale, or throw
      *          do stuff with us locale
      *      \endcode
      */
