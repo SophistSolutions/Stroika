@@ -36,8 +36,9 @@ namespace Stroika::Foundation::Database::Document {
     using IDType = String;
 
     /**
-     *  \note this special value kID is used to identify the ID field in a document. Its value is "_id" (in mongodb, but in this API, its "id")
+     *  \note this special value kID is used to identify the ID field in a document.
      * 
+     *  \note mongodb uses "_id", but in this API, uses "id", so the Stroika/mongodb layer must translate
      *  \note dont want to hardwire queer choice of mongodb, but dont want to have todo a lot of needless mapping/translation later.
      *  \note the VALUE associated with this key is of type IDType.
      */
