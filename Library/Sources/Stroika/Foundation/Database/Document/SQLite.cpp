@@ -34,7 +34,7 @@ using Database::Document::kID;
 using Database::Document::kOnlyIDs;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 using Database::Document::EngineProperties;
 
@@ -122,7 +122,7 @@ namespace {
     }
 
     /*
-     *  Simple utility to be able to use lambdas with arbitrary captures more easily with sqlite c API
+     *  Simple utility to be able to use lambdas with arbitrary captures more easily with SQLite c API
      */
     template <invocable<int, char**, char**> CB>
     struct SQLiteCallback_ {
@@ -160,11 +160,11 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"MyPreparedStatement_", "sql={}"_f, statement};
 #endif
-            const char*        pzTail = nullptr;
+            const char* pzTail = nullptr;
             string utfStatement = statement.AsUTF8<string> (); // subtle - need explicit named temporary (in debug builds) so we can check assertion after - which points inside utfStatement
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db, utfStatement.c_str (), -1, &fObj_, &pzTail), db);
             Assert (pzTail != nullptr);
-            Require (*pzTail == '\0'); // else argument string had cruft at the end or was a compound statement, not allowed by sqlite and this api/mechanism
+            Require (*pzTail == '\0'); // else argument string had cruft at the end or was a compound statement, not allowed by SQLite and this api/mechanism
             EnsureNotNull (fObj_);
         }
         MyPreparedStatement_ (const MyPreparedStatement_&)     = delete;
@@ -220,8 +220,6 @@ namespace {
      */
     tuple<optional<String>, optional<Filter>> Partition_ (const optional<Filter>& filter)
     {
-        // @todo
-        //  return make_tuple (nullopt, filter);
         if (filter) {
             /*
              *  For now just look for FIELD EQUALS VALUE expressions in the top level conjunction. These can be done
@@ -236,7 +234,7 @@ namespace {
                 if (const Document::FilterElements::Equals* eqOp = get_if<Document::FilterElements::Equals> (&op)) {
                     if (const Document::FilterElements::Value* rhsValue = get_if<Document::FilterElements::Value> (&eqOp->fRHS)) {
                         if (not whereClause.empty ()) {
-                            whereClause << " && "sv;
+                            whereClause << " AND "sv;
                         }
                         // move to server side
                         if (eqOp->fLHS == Database::Document::kID) {
@@ -244,7 +242,12 @@ namespace {
                         }
                         else {
                             // others compared in json part
-                            whereClause << "json_extract(json, '$.{}') = {}"_f(String{eqOp->fLHS}, rhsValue->As<String> ()); // not sure this is right way to compare?
+                            String vSQL = rhsValue->As<String> ();
+                            if (rhsValue->GetType () == VariantValue::eString or rhsValue->GetType () == VariantValue::eDate or
+                                rhsValue->GetType () == VariantValue::eDateTime) {
+                                vSQL = "'"sv + vSQL + "'"sv;
+                            }
+                            whereClause << "json_extract(json, '$.{}') = {}"_f(String{eqOp->fLHS}, vSQL); // not sure this is right way to compare?
                         }
                         transferred = true;
                     }
