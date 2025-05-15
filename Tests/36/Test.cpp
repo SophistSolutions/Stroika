@@ -847,16 +847,56 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
         Database::Document::IDType          id           = blah.Add (kTestObj1_);
         Database::Document::Document        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
         EXPECT_EQ (kTestObj1_, roundTripped);
-        using DOC_         = Database::Document::Document;
-        Sequence<DOC_> rrs = blah.GetAll (nullopt, Projection{Projection::eInclude, {"id"_k}});
-        EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{"id", id}}}));
-        const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
-        blah.Update (id, kTestObj1_Updated_); // only modify provided fields
-        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-        EXPECT_EQ (roundTripped, (Mapping<String, VariantValue>{{"x", 8}, {"y", 7}, {"z", "z"}}));
-        blah.Replace (id, kTestObj1_Updated_);
-        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-        EXPECT_EQ (kTestObj1_Updated_, roundTripped);
+        using DOC_ = Database::Document::Document;
+        {
+            Sequence<DOC_> rrs = blah.GetAll (nullopt, kOnlyIDs);
+            EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{kID, id}}}));
+            const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
+            blah.Update (id, kTestObj1_Updated_); // only modify provided fields
+            roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+            EXPECT_EQ (roundTripped, (Mapping<String, VariantValue>{{"x", 8}, {"y", 7}, {"z", "z"}}));
+            blah.Replace (id, kTestObj1_Updated_);
+            roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+            EXPECT_EQ (kTestObj1_Updated_, roundTripped);
+        }
+
+        {
+            // test GetAll with projections, and filters...
+            {
+                // Test test cases all have a single document:
+                const DOC_ kOneTestDoc_ = Mapping<String, VariantValue>{{"x", 8}, {kID, id}, {"z", "z"}};
+                EXPECT_EQ (blah.GetAll (), Sequence<DOC_>{kOneTestDoc_});
+
+                {
+                    Sequence<DOC_> rrs =
+                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{kID}, .fRHS = FilterElements::Value{id}}}});
+                    EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
+                }
+                {
+                    Sequence<DOC_> rrs =
+                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}}}});
+                    EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
+                }
+                {
+                    Sequence<DOC_> rrs =
+                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{9}}}});
+                    EXPECT_EQ (rrs, (Sequence<DOC_>{}));
+                }
+                {
+                    // test conjunction
+                    Sequence<DOC_> rrs =
+                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
+                                             FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"z"}}}});
+                    EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
+                }
+                {
+                    Sequence<DOC_> rrs = blah.GetAll (
+                        Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
+                                FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"wrong"}}}});
+                    EXPECT_EQ (rrs, Sequence<DOC_>{});
+                }
+            }
+        }
     };
 
 #if qStroika_HasComponent_mongocxxdriver
@@ -1028,6 +1068,11 @@ GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
         test1 (p);
     });
 #endif
+    EXPECT_NO_THROW ({
+        Database::Document::Connection::Ptr p =
+            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+        test1 (p);
+    });
 }
 
 #endif
