@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Database::Document {
 
     /**
      */
-    inline const Projection kOmitIDs = Projection{Projection::eOmit, {"id"sv}};
+    inline const Projection kOmitIDs = Projection{Projection::eOmit, {kID}};
 
     /**
      */
