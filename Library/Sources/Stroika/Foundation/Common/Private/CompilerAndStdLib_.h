@@ -1266,7 +1266,6 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 
 #endif
 
-
 /**
          [==========] 6 tests from 1 test suite ran. (9 ms total)         [  PASSED  ] 6 tests.
     [36] Foundation::Database - ../Builds/Release/Tests/Test36  --gtest_brief
