@@ -1267,22 +1267,21 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 #endif
 
 
-
-
+/**
+         [==========] 6 tests from 1 test suite ran. (9 ms total)         [  PASSED  ] 6 tests.
+    [36] Foundation::Database - ../Builds/Release/Tests/Test36  --gtest_brief
+FAILED: SIGNAL= SIGSEGV
+*/
 #ifndef qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // Noticed broken in xcode 16
-#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy 0
 #endif
 
 #endif
-
-
-
 
 /**
 * 
