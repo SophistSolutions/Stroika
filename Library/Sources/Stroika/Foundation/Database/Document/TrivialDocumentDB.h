@@ -71,6 +71,7 @@ namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
 
         /**
          * add options like caching (support external process sync/flock)
+         *  \note NYI, but easy to add
          */
         struct FilesystemStorage final {
             /**
