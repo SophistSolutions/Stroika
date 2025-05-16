@@ -1263,6 +1263,125 @@ FAILED: SIGNAL= SIGSEGV
 
 #endif
 
+
+/*
+Stack dump:
+0.      Program arguments: clang++-16 -D_GLIBCXX_DEBUG -DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=0 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=1 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=0 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/ -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libxml2 -DMONGOCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/mongocxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include -DBSONCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/bsoncxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libbson-1.0 -fPIC -DMONGOC_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libmongoc-1.0 -DBSON_STATIC -DCURL_STATICLIB -DGTEST_HAS_PTHREAD=1 --std=c++20 -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-psabi -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -g -fsanitize=address,undefined -stdlib=libc++ -c Test.cpp -o /Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/Tests/36/Test.o
+1.      Test.cpp:875:107: current parser token ','
+2.      Test.cpp:836:1: parsing function body 'Foundation_Database_DocumentDBTestBasics__Test::TestBody'
+3.      Test.cpp:836:1: in compound statement ('{}')
+4.      Test.cpp:840:35: lambda expression parsing
+5.      Test.cpp:840:78: in compound statement ('{}')
+6.      Test.cpp:863:9: in compound statement ('{}')
+7.      Test.cpp:865:13: in compound statement ('{}')
+8.      Test.cpp:870:17: in compound statement ('{}')
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+0  libLLVM-16.so.1    0x00007f7959edad3f llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) + 63
+1  libLLVM-16.so.1    0x00007f7959ed9069 llvm::sys::RunSignalHandlers() + 89
+2  libLLVM-16.so.1    0x00007f7959e13d17
+3  libc.so.6          0x00007f7958abb330
+4  libclang-cpp.so.16 0x00007f79613d713b
+5  libclang-cpp.so.16 0x00007f79613af272
+6  libclang-cpp.so.16 0x00007f79613dccad
+7  libclang-cpp.so.16 0x00007f79613af272
+8  libclang-cpp.so.16 0x00007f79613ab357
+9  libclang-cpp.so.16 0x00007f79613aae29 clang::Expr::EvaluateAsConstantExpr(clang::Expr::EvalResult&, clang::ASTContext const&, clang::Expr::ConstantExprKind) const + 1001
+10 libclang-cpp.so.16 0x00007f796197d0d0
+11 libclang-cpp.so.16 0x00007f7961977e89
+12 libclang-cpp.so.16 0x00007f7961977b17 clang::Sema::CheckConstraintSatisfaction(clang::NamedDecl const*, llvm::ArrayRef<clang::Expr const*>, llvm::SmallVectorImpl<clang::Expr*>&, clang::MultiLevelTemplateArgumentList const&, clang::SourceRange, clang::ConstraintSatisfaction&) + 823
+13 libclang-cpp.so.16 0x00007f7961978f77 clang::Sema::CheckFunctionConstraints(clang::FunctionDecl const*, clang::ConstraintSatisfaction&, clang::SourceLocation, bool) + 1111
+14 libclang-cpp.so.16 0x00007f7961b012a5 clang::Sema::DiagnoseUseOfDecl(clang::NamedDecl*, llvm::ArrayRef<clang::SourceLocation>, clang::ObjCInterfaceDecl const*, bool, bool, clang::ObjCInterfaceDecl*, bool) + 997
+15 libclang-cpp.so.16 0x00007f7961ccf249
+16 libclang-cpp.so.16 0x00007f7961ccaad5 clang::InitializationSequence::Perform(clang::Sema&, clang::InitializedEntity const&, clang::InitializationKind const&, llvm::MutableArrayRef<clang::Expr*>, clang::QualType*) + 8437
+17 libclang-cpp.so.16 0x00007f7961c20cab clang::Sema::BuildCXXTypeConstructExpr(clang::TypeSourceInfo*, clang::SourceLocation, llvm::MutableArrayRef<clang::Expr*>, clang::SourceLocation, bool) + 2267
+18 libclang-cpp.so.16 0x00007f7961c20337 clang::Sema::ActOnCXXTypeConstructExpr(clang::OpaquePtr<clang::QualType>, clang::SourceLocation, llvm::MutableArrayRef<clang::Expr*>, clang::SourceLocation, bool) + 135
+19 libclang-cpp.so.16 0x00007f796111bd20 clang::Parser::ParseCXXTypeConstructExpression(clang::DeclSpec const&) + 496
+20 libclang-cpp.so.16 0x00007f7961109922 clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 7890
+21 libclang-cpp.so.16 0x00007f796110a6c0 clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 11376
+22 libclang-cpp.so.16 0x00007f7961103ce7 clang::Parser::ParseAssignmentExpression(clang::Parser::TypeCastState) + 279
+23 libclang-cpp.so.16 0x00007f7961124c55 clang::Parser::ParseInitializerWithPotentialDesignator(clang::Parser::DesignatorCompletionInfo) + 3749
+24 libclang-cpp.so.16 0x00007f79611254d2 clang::Parser::ParseBraceInitializer() + 1234
+25 libclang-cpp.so.16 0x00007f796111bccc clang::Parser::ParseCXXTypeConstructExpression(clang::DeclSpec const&) + 412
+26 libclang-cpp.so.16 0x00007f7961109922 clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 7890
+27 libclang-cpp.so.16 0x00007f796110a6c0 clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 11376
+28 libclang-cpp.so.16 0x00007f7961103ce7 clang::Parser::ParseAssignmentExpression(clang::Parser::TypeCastState) + 279
+29 libclang-cpp.so.16 0x00007f79611254fb clang::Parser::ParseBraceInitializer() + 1275
+30 libclang-cpp.so.16 0x00007f79611254ef clang::Parser::ParseBraceInitializer() + 1263
+31 libclang-cpp.so.16 0x00007f796111bccc clang::Parser::ParseCXXTypeConstructExpression(clang::DeclSpec const&) + 412
+32 libclang-cpp.so.16 0x00007f7961109922 clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 7890
+33 libclang-cpp.so.16 0x00007f796110a6c0 clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 11376
+34 libclang-cpp.so.16 0x00007f7961103ce7 clang::Parser::ParseAssignmentExpression(clang::Parser::TypeCastState) + 279
+35 libclang-cpp.so.16 0x00007f796110fe7a clang::Parser::ParseExpressionList(llvm::SmallVectorImpl<clang::Expr*>&, llvm::function_ref<void ()>, bool, bool) + 266
+36 libclang-cpp.so.16 0x00007f7961106b22 clang::Parser::ParsePostfixExpressionSuffix(clang::ActionResult<clang::Expr*, true>) + 5250
+37 libclang-cpp.so.16 0x00007f7961107b3d clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 237
+38 libclang-cpp.so.16 0x00007f7961103ce7 clang::Parser::ParseAssignmentExpression(clang::Parser::TypeCastState) + 279
+39 libclang-cpp.so.16 0x00007f79610d5fb8 clang::Parser::ParseDeclarationAfterDeclaratorAndAttributes(clang::Declarator&, clang::Parser::ParsedTemplateInfo const&, clang::Parser::ForRangeInit*) + 3976
+40 libclang-cpp.so.16 0x00007f79610d33f8 clang::Parser::ParseDeclGroup(clang::ParsingDeclSpec&, clang::DeclaratorContext, clang::ParsedAttributes&, clang::SourceLocation*, clang::Parser::ForRangeInit*) + 1208
+41 libclang-cpp.so.16 0x00007f79610d295b clang::Parser::ParseSimpleDeclaration(clang::DeclaratorContext, clang::SourceLocation&, clang::ParsedAttributes&, clang::ParsedAttributes&, bool, clang::Parser::ForRangeInit*, clang::SourceLocation*) + 907
+42 libclang-cpp.so.16 0x00007f79610d24d2 clang::Parser::ParseDeclaration(clang::DeclaratorContext, clang::SourceLocation&, clang::ParsedAttributes&, clang::ParsedAttributes&, clang::SourceLocation*) + 1234
+43 libclang-cpp.so.16 0x00007f7961163460 clang::Parser::ParseStatementOrDeclarationAfterAttributes(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*, clang::ParsedAttributes&, clang::ParsedAttributes&) + 6800
+44 libclang-cpp.so.16 0x00007f796116179e clang::Parser::ParseStatementOrDeclaration(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*) + 334
+45 libclang-cpp.so.16 0x00007f796116a042 clang::Parser::ParseCompoundStatementBody(bool) + 1602
+46 libclang-cpp.so.16 0x00007f7961162c21 clang::Parser::ParseStatementOrDeclarationAfterAttributes(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*, clang::ParsedAttributes&, clang::ParsedAttributes&) + 4689
+47 libclang-cpp.so.16 0x00007f796116179e clang::Parser::ParseStatementOrDeclaration(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*) + 334
+48 libclang-cpp.so.16 0x00007f796116a042 clang::Parser::ParseCompoundStatementBody(bool) + 1602
+49 libclang-cpp.so.16 0x00007f7961162c21 clang::Parser::ParseStatementOrDeclarationAfterAttributes(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*, clang::ParsedAttributes&, clang::ParsedAttributes&) + 4689
+50 libclang-cpp.so.16 0x00007f796116179e clang::Parser::ParseStatementOrDeclaration(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*) + 334
+51 libclang-cpp.so.16 0x00007f796116a042 clang::Parser::ParseCompoundStatementBody(bool) + 1602
+52 libclang-cpp.so.16 0x00007f7961162c21 clang::Parser::ParseStatementOrDeclarationAfterAttributes(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*, clang::ParsedAttributes&, clang::ParsedAttributes&) + 4689
+53 libclang-cpp.so.16 0x00007f796116179e clang::Parser::ParseStatementOrDeclaration(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*) + 334
+54 libclang-cpp.so.16 0x00007f796116a042 clang::Parser::ParseCompoundStatementBody(bool) + 1602
+55 libclang-cpp.so.16 0x00007f79611192db clang::Parser::ParseLambdaExpressionAfterIntroducer(clang::LambdaIntroducer&) + 3771
+56 libclang-cpp.so.16 0x00007f796111711c clang::Parser::ParseLambdaExpression() + 220
+57 libclang-cpp.so.16 0x00007f796110a233 clang::Parser::ParseCastExpression(clang::Parser::CastParseKind, bool, bool&, clang::Parser::TypeCastState, bool, bool*) + 10211
+58 libclang-cpp.so.16 0x00007f7961103ce7 clang::Parser::ParseAssignmentExpression(clang::Parser::TypeCastState) + 279
+59 libclang-cpp.so.16 0x00007f79610d5fb8 clang::Parser::ParseDeclarationAfterDeclaratorAndAttributes(clang::Declarator&, clang::Parser::ParsedTemplateInfo const&, clang::Parser::ForRangeInit*) + 3976
+60 libclang-cpp.so.16 0x00007f79610d33f8 clang::Parser::ParseDeclGroup(clang::ParsingDeclSpec&, clang::DeclaratorContext, clang::ParsedAttributes&, clang::SourceLocation*, clang::Parser::ForRangeInit*) + 1208
+61 libclang-cpp.so.16 0x00007f79610d295b clang::Parser::ParseSimpleDeclaration(clang::DeclaratorContext, clang::SourceLocation&, clang::ParsedAttributes&, clang::ParsedAttributes&, bool, clang::Parser::ForRangeInit*, clang::SourceLocation*) + 907
+62 libclang-cpp.so.16 0x00007f79610d24d2 clang::Parser::ParseDeclaration(clang::DeclaratorContext, clang::SourceLocation&, clang::ParsedAttributes&, clang::ParsedAttributes&, clang::SourceLocation*) + 1234
+63 libclang-cpp.so.16 0x00007f7961163460 clang::Parser::ParseStatementOrDeclarationAfterAttributes(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*, clang::ParsedAttributes&, clang::ParsedAttributes&) + 6800
+64 libclang-cpp.so.16 0x00007f796116179e clang::Parser::ParseStatementOrDeclaration(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*) + 334
+65 libclang-cpp.so.16 0x00007f796116a042 clang::Parser::ParseCompoundStatementBody(bool) + 1602
+66 libclang-cpp.so.16 0x00007f796116b117 clang::Parser::ParseFunctionStatementBody(clang::Decl*, clang::Parser::ParseScope&) + 183
+67 libclang-cpp.so.16 0x00007f7961185730 clang::Parser::ParseFunctionDefinition(clang::ParsingDeclarator&, clang::Parser::ParsedTemplateInfo const&, clang::Parser::LateParsedAttrList*) + 3520
+68 libclang-cpp.so.16 0x00007f79610d414f clang::Parser::ParseDeclGroup(clang::ParsingDeclSpec&, clang::DeclaratorContext, clang::ParsedAttributes&, clang::SourceLocation*, clang::Parser::ForRangeInit*) + 4623
+69 libclang-cpp.so.16 0x00007f79611847dc clang::Parser::ParseDeclOrFunctionDefInternal(clang::ParsedAttributes&, clang::ParsedAttributes&, clang::ParsingDeclSpec&, clang::AccessSpecifier) + 1052
+70 libclang-cpp.so.16 0x00007f79611841c8 clang::Parser::ParseDeclarationOrFunctionDefinition(clang::ParsedAttributes&, clang::ParsedAttributes&, clang::ParsingDeclSpec*, clang::AccessSpecifier) + 456
+71 libclang-cpp.so.16 0x00007f7961183464 clang::Parser::ParseExternalDeclaration(clang::ParsedAttributes&, clang::ParsedAttributes&, clang::ParsingDeclSpec*) + 2036
+72 libclang-cpp.so.16 0x00007f796118170f clang::Parser::ParseTopLevelDecl(clang::OpaquePtr<clang::DeclGroupRef>&, clang::Sema::ModuleImportState&) + 1199
+73 libclang-cpp.so.16 0x00007f79610bfd3e clang::ParseAST(clang::Sema&, bool, bool) + 686
+74 libclang-cpp.so.16 0x00007f7962d25dcc clang::FrontendAction::Execute() + 92
+75 libclang-cpp.so.16 0x00007f7962ca58b4 clang::CompilerInstance::ExecuteAction(clang::FrontendAction&) + 724
+76 libclang-cpp.so.16 0x00007f7962d9f8d3 clang::ExecuteCompilerInvocation(clang::CompilerInstance*) + 675
+77 clang++-16         0x00005608894a6c3d cc1_main(llvm::ArrayRef<char const*>, char const*, void*) + 2333
+78 clang++-16         0x00005608894a3d00
+79 libclang-cpp.so.16 0x00007f796297fe0b
+80 libLLVM-16.so.1    0x00007f7959e13a67 llvm::CrashRecoveryContext::RunSafely(llvm::function_ref<void ()>) + 151
+81 libclang-cpp.so.16 0x00007f796297f44c clang::driver::CC1Command::Execute(llvm::ArrayRef<std::optional<llvm::StringRef>>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>*, bool*) const + 396
+82 libclang-cpp.so.16 0x00007f796294a783 clang::driver::Compilation::ExecuteCommand(clang::driver::Command const&, clang::driver::Command const*&, bool) const + 883
+83 libclang-cpp.so.16 0x00007f796294a9cf clang::driver::Compilation::ExecuteJobs(clang::driver::JobList const&, llvm::SmallVectorImpl<std::pair<int, clang::driver::Command const*>>&, bool) const + 159
+84 libclang-cpp.so.16 0x00007f79629650f0 clang::driver::Driver::ExecuteCompilation(clang::driver::Compilation&, llvm::SmallVectorImpl<std::pair<int, clang::driver::Command const*>>&) + 352
+85 clang++-16         0x00005608894a34bf clang_main(int, char**) + 11759
+86 libc.so.6          0x00007f7958aa01ca
+87 libc.so.6          0x00007f7958aa028b __libc_start_main + 139
+88 clang++-16         0x00005608894a02f5 _start + 37
+clang: error: clang frontend command failed with exit code 139 (use -v to see invocation)
+Ubuntu clang version 16.0.6 (23ubuntu4)
+
+
+DONT bother reporting cuz appears fixed already in clang++17
+*/
+#ifndef qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__) 
+#define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy (__clang_major__ == 16)
+#else
+#define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy 0
+#endif
+
+#endif
+
+
 /**
 * 
 * https://github.com/llvm/llvm-project/issues/62785
