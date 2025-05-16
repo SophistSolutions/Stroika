@@ -1263,7 +1263,6 @@ FAILED: SIGNAL= SIGSEGV
 
 #endif
 
-
 /*
 Stack dump:
 0.      Program arguments: clang++-16 -D_GLIBCXX_DEBUG -DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=0 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=1 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=0 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/ -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libxml2 -DMONGOCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/mongocxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include -DBSONCXX_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/bsoncxx/v_noabi -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libbson-1.0 -fPIC -DMONGOC_STATIC -I/Sandbox/Stroika-Dev/Builds/clang++-16-debug-libc++/ThirdPartyComponents/include/libmongoc-1.0 -DBSON_STATIC -DCURL_STATICLIB -DGTEST_HAS_PTHREAD=1 --std=c++20 -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-psabi -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -g -fsanitize=address,undefined -stdlib=libc++ -c Test.cpp -o /Sandbox/Stroika-Dev/IntermediateFiles/clang++-16-debug-libc++/Tests/36/Test.o
@@ -1373,14 +1372,13 @@ DONT bother reporting cuz appears fixed already in clang++17
 */
 #ifndef qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
 
-#if defined(__clang__) && !defined(__APPLE__) 
+#if defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy (__clang_major__ == 16)
 #else
 #define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy 0
 #endif
 
 #endif
-
 
 /**
 * 
