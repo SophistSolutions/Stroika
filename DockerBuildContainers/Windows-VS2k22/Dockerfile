@@ -10,10 +10,8 @@
 #        for list of versions
 #
 # ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
-
-## Seems to work now on github actions using runner=Windows-2022 --LGP 2022-02-25
-# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022                          ## ltsc2022 works fine, but use latest  
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025                            
 
 FROM ${BASE_IMAGE}
 
