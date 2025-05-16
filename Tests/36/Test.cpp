@@ -868,11 +868,11 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
 
                 {
                     Sequence<DOC_> rrs =
-                    #if qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
-                     blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"id"}, .fRHS = FilterElements::Value{id}}}})
-                    #else
+#if qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
+                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"id"}, .fRHS = FilterElements::Value{id}}}})
+#else
                         blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{kID}, .fRHS = FilterElements::Value{id}}}})
-                        #endif
+#endif
                         ;
                     EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
                 }
@@ -886,7 +886,7 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                         blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{9}}}});
                     EXPECT_EQ (rrs, Sequence<DOC_>{});
                 }
-                 #if !qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
+#if !qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
                 {
                     // test conjunction
                     Sequence<DOC_> rrs =
@@ -894,15 +894,15 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                                              FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"z"}}}});
                     EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
                 }
-                #endif
-                 #if !qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
+#endif
+#if !qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
                 {
                     Sequence<DOC_> rrs = blah.GetAll (
                         Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
                                 FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"wrong"}}}});
                     EXPECT_EQ (rrs, Sequence<DOC_>{});
                 }
-                #endif
+#endif
             }
         }
     };
