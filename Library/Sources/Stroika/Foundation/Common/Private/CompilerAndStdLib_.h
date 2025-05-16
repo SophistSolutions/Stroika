@@ -2366,7 +2366,8 @@ In file included from Namespace.cpp:10:
 // Reproduced using xcode 15 with _LIBCPP_VERSION == 160006 (yes they appear to have added an extra digit recently) (note some warnings only happen on XCode 15)
 // new case whith this happening with 200100  (was just checking < 170000)
 // and     {clang++-15-release-libstdc++}:
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy (__clang_major__ < 20)
+// reproduced using clang++20 on ubuntu 25.04
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy (__clang_major__ < 21)
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif
