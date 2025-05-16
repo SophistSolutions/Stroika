@@ -109,7 +109,7 @@ namespace {
                 nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel,
                                                            ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
                 {
-                    // @todo write rawSpectrum isntead o fhardwired string...
+                    // @todo write rawSpectrum isntead of hardwired string...
                     constexpr bool kUseBind_ = true;
                     if (kUseBind_) {
                         Statement s{fDB_, "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, "
