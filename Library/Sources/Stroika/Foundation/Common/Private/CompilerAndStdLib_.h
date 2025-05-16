@@ -1256,7 +1256,19 @@ FAILED: SIGNAL= SIGSEGV
 #if defined(__clang__)
 // Noticed broken in xcode 16
 // Noticed broken in clang++-15 on ubuntu, and other issue with clang++16 makes it hard to tell
-#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+//     [36] Foundation::Database - ../Builds/clang++-debug/Tests/Test36 --gtest_brief clang++-20 ubuntu 24.04
+// AssertExternallySynchronizedMutex.cpp:75:28: runtime error: member access within null pointer of type 'SharedContext'
+//     #0 0x653f59068ff6 in Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::lock_shared_() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.cpp:75:28
+//     #1 0x653f57c5a424 in Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::lock_shared() const /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.inl:164:9
+//     #2 0x653f57c59f6a in std::__1::shared_lock<Stroika::Foundation::Debug::AssertExternallySynchronizedMutex const>::shared_lock[abi:ne200100](Stroika::Foundation::Debug::AssertExternallySynchronizedMutex const&) /usr/lib/llvm-20/bin/../include/c++/v1/shared_mutex:325:11
+//     #3 0x653f57cd6a2a in Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex(Stroika::Foundation::Debug::AssertExternallySynchronizedMutex const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.inl:112:21
+//     #4 0x653f57cc61f9 in Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::Iterable(Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character> const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:271:9
+//     #5 0x653f57c36896 in Stroika::Foundation::Characters::String::String(Stroika::Foundation::Characters::String const&) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Characters/String.h:259:9
+//     #6 0x653f57a03076 in __cxx_global_var_init.87 /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Library/Sources/Stroika/Foundation/Database/Document/Projection.h:103:71
+//     #7 0x720633492473 in call_init csu/../csu/libc-start.c:145:3
+//     #8 0x720633492473 in __libc_start_main csu/../csu/libc-start.c:347:5
+//     #9 0x653f57a19874 in _start (/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2504_x86_64/Builds/clang++-debug/Tests/Test36+0x3f65874) (BuildId: 407732a0bee50d0835bc59fe690dea65f5958757)
+#define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 20))
 #else
 #define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy 0
 #endif
