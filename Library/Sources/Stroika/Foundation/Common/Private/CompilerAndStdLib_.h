@@ -1253,8 +1253,9 @@ FAILED: SIGNAL= SIGSEGV
 */
 #ifndef qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy
 
-#if defined(__clang__) && defined(__APPLE__)
+#if defined(__clang__)
 // Noticed broken in xcode 16
+// Noticed broken in clang++-15 on ubuntu, and other issue with clang++16 makes it hard to tell
 #define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy 0
