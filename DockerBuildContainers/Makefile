@@ -91,8 +91,10 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests:
 	docker build -f Ubuntu2504-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests .
 
 
+# Default to ltsc2025, but github actions override to set to ltsc2022 cuz else run out of disk space --LGP 2025-05-16
+WINDOWS_BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025
 sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
-	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k22/Dockerfile --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} --build-arg INSTALL_PYTHON=${INSTALL_PYTHON} -t $@ .
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=${WINDOWS_BASE_IMAGE} -t $@ .
 
 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} --build-arg INSTALL_PYTHON=${INSTALL_PYTHON} -t $@ .
