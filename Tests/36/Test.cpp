@@ -832,76 +832,75 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 }
 #endif
 
-GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
-{
-    TraceContextBumper ctx{"DocumentDBTestBasics_"};
-    using namespace Database::Document;
-
-    [[maybe_unused]] auto test1 = [] (Database::Document::Connection::Ptr p) {
-        EXPECT_EQ (p.GetCollections ().size (), 0u);
-        const String kCollectionName_ = "blah"sv;
-        p->CreateCollection (kCollectionName_);
-        EXPECT_EQ (p.GetCollections (), Set<String>{kCollectionName_});
-        Database::Document::Collection::Ptr blah         = p.GetCollection (kCollectionName_);
-        const Database::Document::Document  kTestObj1_   = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
-        Database::Document::IDType          id           = blah.Add (kTestObj1_);
-        Database::Document::Document        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-        EXPECT_EQ (kTestObj1_, roundTripped);
-        using DOC_ = Database::Document::Document;
+namespace {
+    namespace DocumentDBTestBasics_ {
+        using namespace Database::Document;
+        void Test1_ (Database::Document::Connection::Ptr p)
         {
-            Sequence<DOC_> rrs = blah.GetAll (nullopt, kOnlyIDs);
-            EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{kID, id}}}));
-            const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
-            blah.Update (id, kTestObj1_Updated_); // only modify provided fields
-            roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-            EXPECT_EQ (roundTripped, (Mapping<String, VariantValue>{{"x", 8}, {"y", 7}, {"z", "z"}}));
-            blah.Replace (id, kTestObj1_Updated_);
-            roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
-            EXPECT_EQ (kTestObj1_Updated_, roundTripped);
-        }
-        {
-            // test GetAll with projections, and filters...
+            EXPECT_EQ (p.GetCollections ().size (), 0u);
+            const String kCollectionName_ = "blah"sv;
+            p->CreateCollection (kCollectionName_);
+            EXPECT_EQ (p.GetCollections (), Set<String>{kCollectionName_});
+            Database::Document::Collection::Ptr blah         = p.GetCollection (kCollectionName_);
+            const Database::Document::Document  kTestObj1_   = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
+            Database::Document::IDType          id           = blah.Add (kTestObj1_);
+            Database::Document::Document        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+            EXPECT_EQ (kTestObj1_, roundTripped);
+            using DOC_ = Database::Document::Document;
             {
-                // Test test cases all have a single document:
-                const DOC_ kOneTestDoc_ = Mapping<String, VariantValue>{{"x", 8}, {kID, id}, {"z", "z"}};
-                EXPECT_EQ (blah.GetAll (), Sequence<DOC_>{kOneTestDoc_});
+                Sequence<DOC_> rrs = blah.GetAll (nullopt, kOnlyIDs);
+                EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{kID, id}}}));
+                const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
+                blah.Update (id, kTestObj1_Updated_); // only modify provided fields
+                roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+                EXPECT_EQ (roundTripped, (Mapping<String, VariantValue>{{"x", 8}, {"y", 7}, {"z", "z"}}));
+                blah.Replace (id, kTestObj1_Updated_);
+                roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+                EXPECT_EQ (kTestObj1_Updated_, roundTripped);
+            }
+            {
+                // test GetAll with projections, and filters...
+                {
+                    // Test test cases all have a single document:
+                    const DOC_ kOneTestDoc_ = Mapping<String, VariantValue>{{"x", 8}, {kID, id}, {"z", "z"}};
+                    EXPECT_EQ (blah.GetAll (), Sequence<DOC_>{kOneTestDoc_});
 
-                {
-                    Sequence<DOC_> rrs =
+                    {
+                        Sequence<DOC_> rrs =
 #if qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
-                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"id"}, .fRHS = FilterElements::Value{id}}}})
+                            blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"id"}, .fRHS = FilterElements::Value{id}}}})
 #else
-                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{kID}, .fRHS = FilterElements::Value{id}}}})
+                            blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{kID}, .fRHS = FilterElements::Value{id}}}})
 #endif
-                        ;
-                    EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
-                }
-                {
-                    Sequence<DOC_> rrs =
-                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}}}});
-                    EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
-                }
-                {
-                    Sequence<DOC_> rrs =
-                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{9}}}});
-                    EXPECT_EQ (rrs, Sequence<DOC_>{});
-                }
-                // test conjunctions
+                            ;
+                        EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
+                    }
+                    {
+                        Sequence<DOC_> rrs = blah.GetAll (
+                            Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}}}});
+                        EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
+                    }
+                    {
+                        Sequence<DOC_> rrs = blah.GetAll (
+                            Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{9}}}});
+                        EXPECT_EQ (rrs, Sequence<DOC_>{});
+                    }
+                    // test conjunctions
 #if !qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
-                {
-                    Sequence<DOC_> rrs =
-                        blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
-                                             FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"z"}}}});
-                    EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
-                }
+                    {
+                        Sequence<DOC_> rrs = blah.GetAll (
+                            Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
+                                    FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"z"}}}});
+                        EXPECT_EQ (rrs, Sequence<DOC_>{kOneTestDoc_});
+                    }
 #endif
 #if !qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
-                {
-                    Sequence<DOC_> rrs = blah.GetAll (
-                        Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
-                                FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"wrong"}}}});
-                    EXPECT_EQ (rrs, Sequence<DOC_>{});
-                }
+                    {
+                        Sequence<DOC_> rrs = blah.GetAll (
+                            Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
+                                    FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"wrong"}}}});
+                        EXPECT_EQ (rrs, Sequence<DOC_>{});
+                    }
 #endif
 
 #if 0
@@ -917,63 +916,76 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                     EXPECT_EQ (rrs, Sequence<DOC_>{});
                 }
 #endif
+                }
             }
-        }
-    };
+        };
 
 #if qStroika_HasComponent_mongocxxdriver
-    if (sMongoConnectionString_) {
-        String connectionString = *sMongoConnectionString_;
-        // Test against mongo connection (hardwired value or ENV VAR)
-        using namespace Database::Document::MongoDBClient;
-
-        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
+        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_mongocxxdriver)
         {
-            ConnectionPool connectionPool{connectionString}; // test connection-pool based access
-            try {
-                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
-                Set<String>           d    = p->GetDatabases ();
-                [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
+            TraceContextBumper ctx{"DocumentDBTestBasics_mongocxxdriver"};
+            if (sMongoConnectionString_) {
+                String connectionString = *sMongoConnectionString_;
+                // Test against mongo connection (hardwired value or ENV VAR)
+                using namespace Database::Document::MongoDBClient;
+
+                Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
+                {
+                    ConnectionPool connectionPool{connectionString}; // test connection-pool based access
+                    try {
+                        AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
+                        Set<String>           d    = p->GetDatabases ();
+                        [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
+                    }
+                    catch (...) {
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                    }
+                    const String kTestDBName_ = "MyTestDB"sv;
+                    auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
+                    IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+                    adminDB.CreateDatabase (kTestDBName_);
+                    Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+                        MongoDBClient::Connection::Options{.fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
+                    Test1_ (p);
+                }
             }
-            catch (...) {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-            }
-            const String kTestDBName_ = "MyTestDB"sv;
-            auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
-            IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-            adminDB.CreateDatabase (kTestDBName_);
-            Database::Document::Connection::Ptr p =
-                MongoDBClient::Connection::New (MongoDBClient::Connection::Options{.fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
-            test1 (p);
+        }
+#endif
+
+#if qStroika_HasComponent_sqlite
+        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_sqlite)
+        {
+            TraceContextBumper ctx{"DocumentDBTestBasics_sqlite"};
+            EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
+                Test1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
+                Test1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
+                Test1_ (p);
+            });
+        }
+#endif
+
+        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_TrivialDocumentDB)
+        {
+            TraceContextBumper ctx{"DocumentDBTestBasics_TrivialDocumentDB"};
+            EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p =
+                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+                Test1_ (p);
+            });
         }
     }
-
-#endif
-#if qStroika_HasComponent_sqlite
-    // Test against SQLite
-    EXPECT_NO_THROW ({
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
-        test1 (p);
-    });
-    EXPECT_NO_THROW ({
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
-        test1 (p);
-    });
-    EXPECT_NO_THROW ({
-        IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
-        test1 (p);
-    });
-#endif
-    EXPECT_NO_THROW ({
-        Database::Document::Connection::Ptr p =
-            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
-        test1 (p);
-    });
 }
 
 namespace {
-    namespace DocumentDBTestObjectCollection_Private_ {
+    namespace DocumentDB_ObjectCollection_ {
 
         using IDType = String;
 
@@ -1009,94 +1021,101 @@ namespace {
                 return mapper;
             }();
         };
-    }
-}
 
-GTEST_TEST (Foundation_Database, DocumentDBTestObjectCollection_)
-{
-    TraceContextBumper ctx{"DocumentDBTestObjectCollection_"};
-    using namespace Database::Document;
+        using namespace Database::Document;
 
-    [[maybe_unused]] auto test1 = [] (Database::Document::Connection::Ptr p) {
-        EXPECT_EQ (p.GetCollections ().size (), 0u);
-        p->CreateCollection ("Users");
-        EXPECT_EQ (p.GetCollections (), Set<String>{"Users"});
-        using namespace DocumentDBTestObjectCollection_Private_;
-        auto userCollection = Database::Document::ObjectCollection::New<User> (p.GetCollection ("Users"), User::kMapper);
-        EXPECT_EQ (userCollection.GetAll ().size (), 0u);
-        String userIDAdded = userCollection.Add (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
-        EXPECT_EQ (userCollection.GetAll ().size (), 1u);
-        EXPECT_EQ (userCollection.GetOne (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
-        userCollection.Update (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
-        EXPECT_EQ (userCollection.GetOne (userIDAdded),
-                   (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
+        void Test1_ (Database::Document::Connection::Ptr p)
         {
-            User emptyU = userCollection.GetOneOrThrow (userIDAdded, kOnlyIDs);
-            EXPECT_EQ (emptyU.fID, userIDAdded);
-            emptyU.fID = nullopt;
-            EXPECT_EQ (emptyU, User{});
-        }
-        User u   = userCollection.GetOneOrThrow (userIDAdded);
-        u.fImage = TypedBLOB{.fData = Memory::BLOB{0x1, 0x2, 0x3, 0x4}, .fType = InternetMediaTypes::kAudioMP3};
-        u.fDateTime = Time::DateTime::NowUTC (); // since we write to database and read back, and DB stores in UTC, to make compare work reliably, start with UTC
-        userCollection.Replace (userIDAdded, u);
-        EXPECT_EQ (userCollection.GetOne (userIDAdded), u);
-        EXPECT_EQ (userCollection.GetAll ().size (), 1u);
-        userCollection.Remove (userIDAdded);
-        EXPECT_EQ (userCollection.GetAll ().size (), 0u);
-    };
+            EXPECT_EQ (p.GetCollections ().size (), 0u);
+            p->CreateCollection ("Users");
+            EXPECT_EQ (p.GetCollections (), Set<String>{"Users"});
+            auto userCollection = Database::Document::ObjectCollection::New<User> (p.GetCollection ("Users"), User::kMapper);
+            EXPECT_EQ (userCollection.GetAll ().size (), 0u);
+            String userIDAdded = userCollection.Add (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
+            EXPECT_EQ (userCollection.GetAll ().size (), 1u);
+            EXPECT_EQ (userCollection.GetOne (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
+            userCollection.Update (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
+            EXPECT_EQ (userCollection.GetOne (userIDAdded),
+                       (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
+            {
+                User emptyU = userCollection.GetOneOrThrow (userIDAdded, kOnlyIDs);
+                EXPECT_EQ (emptyU.fID, userIDAdded);
+                emptyU.fID = nullopt;
+                EXPECT_EQ (emptyU, User{});
+            }
+            User u   = userCollection.GetOneOrThrow (userIDAdded);
+            u.fImage = TypedBLOB{.fData = Memory::BLOB{0x1, 0x2, 0x3, 0x4}, .fType = InternetMediaTypes::kAudioMP3};
+            u.fDateTime = Time::DateTime::NowUTC (); // since we write to database and read back, and DB stores in UTC, to make compare work reliably, start with UTC
+            userCollection.Replace (userIDAdded, u);
+            EXPECT_EQ (userCollection.GetOne (userIDAdded), u);
+            EXPECT_EQ (userCollection.GetAll ().size (), 1u);
+            userCollection.Remove (userIDAdded);
+            EXPECT_EQ (userCollection.GetAll ().size (), 0u);
+        };
 
 #if qStroika_HasComponent_mongocxxdriver
-    if (sMongoConnectionString_) {
-        String connectionString = *sMongoConnectionString_;
-        // Test against mongo connection (hardwired value or ENV VAR)
-        using namespace Database::Document::MongoDBClient;
-
-        Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
+        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_mongocxxdriver)
         {
-            try {
-                AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-                Set<String>           d    = p->GetDatabases ();
-                [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
+            TraceContextBumper ctx{"DocumentDB_ObjectCollection_mongocxxdriver"};
+            if (sMongoConnectionString_) {
+                String connectionString = *sMongoConnectionString_;
+                // Test against mongo connection (hardwired value or ENV VAR)
+                using namespace Database::Document::MongoDBClient;
+                Activator activator{Activator::eAllowReactivateFlag}; // must exist while using this library
+                {
+                    try {
+                        AdminConnection::Ptr  p    = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
+                        Set<String>           d    = p->GetDatabases ();
+                        [[maybe_unused]] auto ping = p.run_command ({{"ping", 1}});
+                    }
+                    catch (...) {
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
+                    }
+                    EXPECT_NO_THROW ({
+                        const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
+                        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
+                        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+                        adminDB.CreateDatabase (kTestDBName_);
+                        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+                            MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
+                        Test1_ (p);
+                    });
+                }
             }
-            catch (...) {
-                Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
-            }
+        }
+#endif
+
+#if qStroika_HasComponent_sqlite
+        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_sqlite)
+        {
+            TraceContextBumper ctx{"DocumentDB_ObjectCollection_sqlite"};
             EXPECT_NO_THROW ({
-                const String kTestDBName_ = "DocumentDBTestObjectCollection_"sv;
-                auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionString});
-                IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-                adminDB.CreateDatabase (kTestDBName_);
-                Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
-                    MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
-                test1 (p);
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
+                Test1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
+                Test1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
+                Test1_ (p);
+            });
+        }
+#endif
+
+        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_TrivialDocumentDB)
+        {
+            TraceContextBumper ctx{"DocumentDB_ObjectCollection_TrivialDocumentDB"};
+            EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p =
+                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+                Test1_ (p);
             });
         }
     }
-#endif
-#if qStroika_HasComponent_sqlite
-    // Test against SQLite
-    EXPECT_NO_THROW ({
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
-        test1 (p);
-    });
-    EXPECT_NO_THROW ({
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
-        test1 (p);
-    });
-    EXPECT_NO_THROW ({
-        IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
-        Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
-        test1 (p);
-    });
-#endif
-    EXPECT_NO_THROW ({
-        Database::Document::Connection::Ptr p =
-            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
-        test1 (p);
-    });
 }
-
 #endif
 
 int main (int argc, const char* argv[])
