@@ -886,9 +886,9 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                         blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{9}}}});
                     EXPECT_EQ (rrs, Sequence<DOC_>{});
                 }
+                // test conjunctions
 #if !qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
                 {
-                    // test conjunction
                     Sequence<DOC_> rrs =
                         blah.GetAll (Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
                                              FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"z"}}}});
@@ -900,6 +900,20 @@ GTEST_TEST (Foundation_Database, DocumentDBTestBasics_)
                     Sequence<DOC_> rrs = blah.GetAll (
                         Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}},
                                 FilterElements::Equals{.fLHS = FilterElements::FieldName{"z"}, .fRHS = FilterElements::Value{"wrong"}}}});
+                    EXPECT_EQ (rrs, Sequence<DOC_>{});
+                }
+#endif
+
+#if 0
+                // Test with filter and projection
+                {
+                    Sequence<DOC_> rrs = blah.GetAll (
+                        Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{8}}}}, kOnlyIDs);
+                    EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{kID, id}}}));
+                }
+                {
+                    Sequence<DOC_> rrs = blah.GetAll (
+                        Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{"x"}, .fRHS = FilterElements::Value{9}}}}, kOnlyIDs);
                     EXPECT_EQ (rrs, Sequence<DOC_>{});
                 }
 #endif
