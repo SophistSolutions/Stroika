@@ -1384,7 +1384,9 @@ DONT bother reporting cuz appears fixed already in clang++17
 */
 #ifndef qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy
 
-#if defined(__clang__) && !defined(__APPLE__)
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy (__clang_major__ == 15)
+#elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy (__clang_major__ == 16)
 #else
 #define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy 0
