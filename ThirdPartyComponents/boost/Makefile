@@ -30,15 +30,6 @@ PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Bui
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)")/"
 
-
-# # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01
-# ifeq (3.81,$(firstword $(sort $(MAKE_VERSION) 3.81)))
-# PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_:=$(shell realpath --canonicalize-missing ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_})
-# else
-# PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
-# endif
-
-
 ##
 ## Check latest release: https://www.boost.org/users/download/
 ##
@@ -46,7 +37,6 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 VERSION:=1_88_0
 #VERSION:=1_87_0
 #VERSION:=1_86_0
-#VERSION:=1_85_0
 VERSION_WITH_DOTS:=$(shell echo $(VERSION) | sed s/_/\./g)
 ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 
@@ -91,14 +81,13 @@ FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOT
 
 
 
-
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config.hpp				\
-	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/process.hpp			\
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/process.hpp				\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/type_traits.hpp
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_date_time$(LIB_SUFFIX)	\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_date_time$(LIB_SUFFIX)		\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_filesystem$(LIB_SUFFIX)	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_system$(LIB_SUFFIX)
 
