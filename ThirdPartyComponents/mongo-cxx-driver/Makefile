@@ -32,6 +32,7 @@ SHELL=/bin/bash
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/mongodb/mongo-cxx-driver/tags or https://github.com/mongodb/mongo-cxx-driver/releases
 #
+#MONGOCXXDRIRVER_VERSION_=r4.1.0
 MONGOCXXDRIRVER_VERSION_=r4.0.0
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/mongo-cxx-driver-${MONGOCXXDRIRVER_VERSION_}.tar.gz
@@ -54,7 +55,7 @@ CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 
 # If we have zlib, use it, instead of the one included in the mongo-cxx-driver
-# makes sense todo, but triggered linker errors for me, so disbale for now...--LGP 2025-03-19
+# makes sense todo, but triggered linker errors for me, so diasble for now...--LGP 2025-03-19
 # ifneq (${qFeatureFlag_ZLib}, no)
 # CMAKE_ARGS+= -DENABLE_ZLIB=SYSTEM
 # endif
@@ -74,8 +75,8 @@ CFLAGS	+= -wd4724
 endif
 endif
 
-
-# NOT getting asan errors on windows - til we have basic function working - try disabling
+# @todo RETEST!, and if needed, better document why/what fails...
+# NOTE getting asan errors on windows - til we have basic function working - try disabling
 CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
 CXXFLAGS:=$(filter-out -fsanitize=address, $(CXXFLAGS))
 
@@ -107,19 +108,36 @@ LIBPREFIX_=lib
 endif
 
 
+ifeq (${MONGOCXXDRIRVER_VERSION_},r4.0.0)
+LIBBSON_STATIC_NAME_PC_=libbson-static-1.0.pc
+LIBMONGOC_STATIC_NAME_PC_=libmongoc-static-1.0.pc
+else
+LIBBSON_STATIC_NAME_PC_=bson2-static.pc
+LIBMONGOC_STATIC_NAME_PC_=mongoc2-static.pc
+endif
+
 PRODUCED_OUTPUT_ARTIFACTS_=	\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}bson-static-1.0${LIB_SUFFIX}		\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc-static-1.0${LIB_SUFFIX}		\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/bsoncxx/v_noabi/bsoncxx/json.hpp			\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libbson-1.0/bson.h							\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0								\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0/mongoc.h						\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc					\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongoc-static-1.0.pc				\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx-static.pc					\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongocxx-static.pc
 
-
+ifeq (${MONGOCXXDRIRVER_VERSION_},r4.0.0)
+PRODUCED_OUTPUT_ARTIFACTS_+= \
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libbson-1.0/								\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libbson-1.0/bson.h							\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0								\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0/mongoc.h  					\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}bson-static-1.0${LIB_SUFFIX}  		\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc-static-1.0${LIB_SUFFIX}		\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBBSON_STATIC_NAME_PC_}			\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}
+else
+#todo
+PRODUCED_OUTPUT_ARTIFACTS_+= \
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc2${LIB_SUFFIX}				\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBBSON_STATIC_NAME_PC_}			\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}
+endif
 
 #PKG_CONFIG_STROIKA_DEPENDS_ON filter to avoid warnings about missing/incomplete stuff from stuff being built but not ready yet...
 #NB: CFLAGS - for example = depends on PKG_CONFIG_STROIKA_DEPENDS_ON
@@ -172,11 +190,11 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBBSON_STATIC_NAME_PC_}"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
+	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
+	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
+	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
 	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
 	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
 endif
