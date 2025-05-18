@@ -32,8 +32,10 @@ SHELL=/bin/bash
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/mongodb/mongo-cxx-driver/tags or https://github.com/mongodb/mongo-cxx-driver/releases
 #
-#MONGOCXXDRIRVER_VERSION_=r4.1.0
-MONGOCXXDRIRVER_VERSION_=r4.0.0
+#		(NOTE WHEN CHANGING THIS - REVIEW THE PATCHES THAT DEPEND ON THIS VERSION BELOW)
+#
+MONGOCXXDRIRVER_VERSION_=r4.1.0
+#MONGOCXXDRIRVER_VERSION_=r4.0.0
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/mongo-cxx-driver-${MONGOCXXDRIRVER_VERSION_}.tar.gz
 
@@ -108,14 +110,6 @@ LIBPREFIX_=lib
 endif
 
 
-ifeq (${MONGOCXXDRIRVER_VERSION_},r4.0.0)
-LIBBSON_STATIC_NAME_PC_=libbson-static-1.0.pc
-LIBMONGOC_STATIC_NAME_PC_=libmongoc-static-1.0.pc
-else
-LIBBSON_STATIC_NAME_PC_=bson2-static.pc
-LIBMONGOC_STATIC_NAME_PC_=mongoc2-static.pc
-endif
-
 PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/bsoncxx/v_noabi/bsoncxx/json.hpp			\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbsoncxx-static.pc					\
@@ -129,14 +123,14 @@ PRODUCED_OUTPUT_ARTIFACTS_+= \
 	${PER_CONFIGURATION_BUILDS_DIR_}include/libmongoc-1.0/mongoc.h  					\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}bson-static-1.0${LIB_SUFFIX}  		\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc-static-1.0${LIB_SUFFIX}		\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBBSON_STATIC_NAME_PC_}			\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libbson-static-1.0.pc					\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libmongoc-static-1.0.pc
 else
-#todo
+#todo add more
 PRODUCED_OUTPUT_ARTIFACTS_+= \
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${LIBPREFIX_}mongoc2${LIB_SUFFIX}				\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBBSON_STATIC_NAME_PC_}			\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/bson2-static.pc						\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/mongoc2-static.pc
 endif
 
 #PKG_CONFIG_STROIKA_DEPENDS_ON filter to avoid warnings about missing/incomplete stuff from stuff being built but not ready yet...
@@ -188,15 +182,38 @@ else
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . > INSTALL-OUT.txt 2>&1
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq (${MONGOCXXDRIRVER_VERSION_},r4.0.0)
 	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBBSON_STATIC_NAME_PC_}"
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
-	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
-	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
-	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/${LIBMONGOC_STATIC_NAME_PC_}"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
+	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
 	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
 	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
+endif
+ifeq (${MONGOCXXDRIRVER_VERSION_},r4.1.0)
+	@#enable these lines to debug Patching
+	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc".orig
+	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc".orig
+	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc".orig
+	@#cp "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc".orig
+	@#NOTE: these patches could easily change in the future! with new releases of mongo-cxx-driver
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/{libmongocxx,libbsoncxx}.pc"
+	@#libmongocxx-static.pc has Requires: libbsoncxx-static >= 3.12.9, mongoc2 >= 2.0.0, but the required mongoc2 must be mongoc2-static (BUG)
+	@sed -i "s/\,\ mongoc2\ /\,\ mongoc2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
+	@#libbsoncxx-static.pc has Requires: bson2 >= 2.0.0, but the required bson2 must be bson2-static (BUG)
+	@sed -i "s/\:\ bson2\ /\:\ bson2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
+	@#
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/{bsonc2,mongoc2}-static.pc"
+	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
+	@sed -i "s/\$${libdir}\/bson2\.lib/-lbson2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc"
+	@sed -i "s/\$${libdir}\/mongoc2\.lib/-lmongoc2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+endif
 endif
 
 
