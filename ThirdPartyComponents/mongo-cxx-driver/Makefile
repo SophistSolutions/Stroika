@@ -22,6 +22,12 @@ endif
 
 SHELL=/bin/bash
 
+SED=sed
+ifeq ($(DETECTED_HOST_OS),Darwin)
+SED=gsed
+endif
+
+
 
 #not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
 # make clobber all you don't want those to happen at the same time. And make libraries samples wouldn't really work since all the libraries
@@ -185,13 +191,14 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (${MONGOCXXDRIRVER_VERSION_},r4.0.0)
 	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
-	@sed -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
+	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbson-static-1.0.pc"
+	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@${SED} -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@${SED} -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@${SED} -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongoc-static-1.0.pc"
+	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
+	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
+endif
 endif
 ifeq (${MONGOCXXDRIRVER_VERSION_},r4.1.0)
 	@#enable these lines to debug Patching
@@ -202,17 +209,17 @@ ifeq (${MONGOCXXDRIRVER_VERSION_},r4.1.0)
 	@#NOTE: these patches could easily change in the future! with new releases of mongo-cxx-driver
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/{libmongocxx,libbsoncxx}.pc"
 	@#libmongocxx-static.pc has Requires: libbsoncxx-static >= 3.12.9, mongoc2 >= 2.0.0, but the required mongoc2 must be mongoc2-static (BUG)
-	@sed -i "s/\,\ mongoc2\ /\,\ mongoc2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
+	@${SED} -i "s/\,\ mongoc2\ /\,\ mongoc2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libmongocxx-static.pc"
 	@#libbsoncxx-static.pc has Requires: bson2 >= 2.0.0, but the required bson2 must be bson2-static (BUG)
-	@sed -i "s/\:\ bson2\ /\:\ bson2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
-	@#
+	@${SED} -i "s/\:\ bson2\ /\:\ bson2-static\ /g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libbsoncxx-static.pc"
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Patching: ${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/{bsonc2,mongoc2}-static.pc"
 	@#.lib files ignored by pkg-config when using --msvc-syntax, so mapped back to -l (to be re-mapped back to .lib by pkgconfig)
-	@sed -i "s/\$${libdir}\/bson2\.lib/-lbson2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc"
-	@sed -i "s/\$${libdir}\/mongoc2\.lib/-lmongoc2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
-	@sed -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
-	@sed -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
-	@sed -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${SED} -i "s/\$${libdir}\/bson2\.lib/-lbson2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/bson2-static.pc"
+	@${SED} -i "s/\$${libdir}\/mongoc2\.lib/-lmongoc2/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${SED} -i "s/secur32\.lib/-lsecur32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${SED} -i "s/crypt32\.lib/-lcrypt32/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
+	@${SED} -i "s/Bcrypt\.lib/-lBcrypt/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/mongoc2-static.pc"
 endif
 endif
 
