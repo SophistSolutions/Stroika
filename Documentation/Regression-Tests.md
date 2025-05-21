@@ -30,7 +30,7 @@ MONGO_CONNECTION_STRING=mongodb://admin:pass@localhost:27017
 or 
 
 ~~~bash
-MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017
+MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017
 ~~~
 or 
 
@@ -38,7 +38,7 @@ or
 MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017
 ~~~
 
-For my home regression tests, I run that on 'hercules', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules.local:27017
+For my home regression tests, I run that on 'medusa', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017
 
 
 ## File Output (for each \$TEST_TARGET)
@@ -69,13 +69,13 @@ checkin from one spot.
 
   ```bash
   USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
-    MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 \
+    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
       ./ScriptsLib/RegressionTests
   ```
 
 - \$TEST_TARGET=Ubuntu2204_x86_64
 
-  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 10 HRs)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -83,13 +83,13 @@ checkin from one spot.
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
-      MACHINE=Hercules \
+      MACHINE=medusa \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
 - \$TEST_TARGET=Ubuntu2404_x86_64
 
-  (remote execute on machine hercules using docker and copy back results; takes about 10 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 10 HRs)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -97,13 +97,13 @@ checkin from one spot.
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
-      MACHINE=Hercules \
+      MACHINE=medusa \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
 - \$TEST_TARGET=Ubuntu2504_x86_64
 
-  (remote execute on machine hercules using docker and copy back results; takes about 6 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 6 HRs)
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -111,13 +111,13 @@ checkin from one spot.
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests \
-      MACHINE=Hercules \
+      MACHINE=medusa \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
 - \$TEST_TARGET=Ubuntu2204-Cross-Compile2RaspberryPi
 
-  (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 4 HRs).
+  (remote execute on machine medusa (and then that will test on raspberrypi) - using docker and copy back results; takes about 4 HRs).
 
   ```bash
   RUN_IN_DOCKER=1 \
@@ -126,7 +126,7 @@ checkin from one spot.
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
-      MACHINE=Hercules \
+      MACHINE=medusa \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -137,7 +137,7 @@ checkin from one spot.
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
   ```bash
-  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` MONGO_CONNECTION_STRING=mongodb://admin:pass@hercules:27017 CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
+  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
   ```
 
   OR alternatively
