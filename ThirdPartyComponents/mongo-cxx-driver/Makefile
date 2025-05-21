@@ -165,10 +165,11 @@ endif
 #multiple tries to run the same rule. So remap all to making the first.
 $(wordlist 2, 9999, ${PRODUCED_OUTPUT_ARTIFACTS_}):	$(word 1,${PRODUCED_OUTPUT_ARTIFACTS_})
 
-$(word 1,${PRODUCED_OUTPUT_ARTIFACTS_}): CURRENT
+$(word 1,${PRODUCED_OUTPUT_ARTIFACTS_}):
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
+	@${MAKE} --silent CURRENT
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
 	@if [[ "${PYTHON_VERSION_}" == "" ]] ; then echo "PYTHON_VERSION_ not set"; exit 1; fi
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
