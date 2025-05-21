@@ -114,7 +114,6 @@ strong_ordering InternetMediaType::THREEWAYCOMPARE_ (const InternetMediaType& rh
     else {
         // expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
         using namespace Containers;
-        using namespace Characters;
         auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{eCaseInsensitive}, m}; };
 #if qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
         return Mapping<String, String>::SequentialThreeWayComparer{compare_three_way{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
@@ -141,5 +140,5 @@ size_t std::hash<Stroika::Foundation::DataExchange::InternetMediaType>::operator
  */
 Memory::BLOB DataExchange::DefaultSerializer<InternetMediaType>::operator() (const InternetMediaType& arg) const
 {
-    return DefaultSerializer<Characters::String>{}(arg.As<Characters::String> ());
+    return DefaultSerializer<String>{}(arg.As<String> ());
 }
