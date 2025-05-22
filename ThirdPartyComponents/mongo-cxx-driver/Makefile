@@ -83,6 +83,24 @@ CFLAGS	+= -wd4724
 endif
 endif
 
+# Avoid warnings like these:
+# 	In function 'bson_free',
+#     	inlined from 'bson_destroy' at /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/IntermediateFiles/g++-14-release++23/ThirdPartyComponents/mongo-cxx-driver/_deps/mongo-c-driver-src/src/libbson/src/bson/bson.c:2213:7,
+#     	inlined from '_mongoc_bulk_insert_opts_cleanup' at /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/IntermediateFiles/g++-14-release++23/ThirdPartyComponents/mongo-cxx-driver/_deps/mongo-c-driver-src/src/libmongoc/src/mongoc/mongoc-opts.c:1150:0,
+#     	inlined from '_server_session_destroy' at /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/IntermediateFiles/g++-14-release++23/ThirdPartyComponents/mongo-cxx-driver/_deps/mongo-c-driver-src/src/libmongoc/src/mongoc/mongoc-topology.c:214:4:
+# 	/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/IntermediateFiles/g++-14-release++23/ThirdPartyComponents/mongo-cxx-driver/_deps/mongo-c-driver-src/src/libbson/src/bson/bson-memory.c:337:4: warning: 'free' called on pointer 'session_2(D)' with nonzero offset 8 [-Wfree-nonheap-object]
+# DIDNT WORK:
+#	CFLAGS	+= -Wno-free-nonheap-object
+# 	CXXFLAGS	+= -Wno-free-nonheap-object
+# 	LDFLAGS	+= -Wno-free-nonheap-object
+# DID WORK:
+# 		-- LGP 2025-05-22
+ifneq (,$(shell ScriptLib/GetGCCVersion $(CC)))
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
+CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+endif
+
+
 # @todo RETEST!, and if needed, better document why/what fails...
 # NOTE getting asan errors on windows - til we have basic function working - try disabling
 CFLAGS:=$(filter-out -fsanitize=address, $(CFLAGS))
