@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Trick from https://unix.stackexchange.com/questions/20784/how-can-i-resolve-a-hostname-to-an-ip-address-in-a-bash-script
+# because I cannot figure out how to get docker containers to resolve local hostnames
+# 	# (like raspberrypi.local) to ip addresses
+HOSTNAME=$1
+ping -q -c 1 -t 1 $HOSTNAME | grep PING | sed -e "s/).*//" | sed -e "s/.*(//"
