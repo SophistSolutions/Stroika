@@ -130,7 +130,7 @@ checkin from one spot.
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=medusa \
-      XTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa`  --add-host raspberrypi:`./ScriptsLib/ResolveIP raspberrypi.local` " \
+      EXTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa`  --add-host raspberrypi:`./ScriptsLib/ResolveIP raspberrypi.local` " \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
