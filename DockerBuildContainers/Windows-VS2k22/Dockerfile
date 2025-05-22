@@ -41,16 +41,13 @@ ARG VS_17_9_7=https://download.visualstudio.microsoft.com/download/pr/7e1f1b8d-7
 ARG VS_17_10_5=https://download.visualstudio.microsoft.com/download/pr/11917f82-1030-4dda-a768-f0da3c4623a9/9c46bb75e959df411b26cd8bc871a53b495010f4e868fcc509f9bb26756cb311/vs_BuildTools.exe
 ARG VS_17_11_5=https://download.visualstudio.microsoft.com/download/pr/69e24482-3b48-44d3-af65-51f866a08313/471c9a89fa8ba27d356748ae0cf25eb1f362184992dc0bb6e9ccf10178c43c27/vs_BuildTools.exe
 ARG VS_17_12_3=https://download.visualstudio.microsoft.com/download/pr/f2819554-a618-400d-bced-774bb5379965/cc7231dc668ec1fb92f694c66b5d67cba1a9e21127a6e0b31c190f772bd442f2/vs_BuildTools.exe
-ARG VS_17_13_1=https://download.visualstudio.microsoft.com/download/pr/6fb3e1c1-09c2-4ead-966e-fc94d48f5b17/4089f01ccac4f20c8b717c7acc484d35358c399362df177517af370df01a8b0c/vs_BuildTools.exe
-ARG VS_17_13_2=https://download.visualstudio.microsoft.com/download/pr/84955a63-15ca-4f52-94af-14ea55b50424/e26a4f237c908739caa2ac36e2d90a51d7e3f71746e615207b7db449f82e3c4e/vs_BuildTools.exe
-ARG VS_17_13_3=https://download.visualstudio.microsoft.com/download/pr/9b2a4ec4-2233-4550-bb74-4e7facba2e03/00f873e49619fc73dedb5f577e52c1419d058b9bf2d0d3f6a09d4c05058c3f79/vs_BuildTools.exe
-ARG VS_17_13_5=https://download.visualstudio.microsoft.com/download/pr/ae26f186-44f0-4ea2-880c-4cf0acbab905/cd11faef9ecc861af0e7ed1b4c0ed7e7e5687c242b5b622293780d54807b8d0d/vs_BuildTools.exe
 ARG VS_17_13_6=https://download.visualstudio.microsoft.com/download/pr/8fada5c7-8417-4239-acc3-bd499af09222/353141457abcc59eb9c38b2f30084e7271c6bcfb4e185466d98161bada905759/vs_BuildTools.exe
 ARG VS_17_14_0=https://download.visualstudio.microsoft.com/download/pr/f50ab15d-99d5-43aa-b0b4-496b6cb1e574/8e8630e8383f68b7d2110c409dc7b2df6ae3ac92254612952eeb6a1e40207105/vs_BuildTools.exe
+ARG VS_17_14_2=https://download.visualstudio.microsoft.com/download/pr/d99c7868-44a2-4254-9861-78e21c19bd34/fa923c074d0a62d965f4dac9020924afbfe452c6ee29b294e227acd1913c0452/vs_BuildTools.exe
 
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_14_0" \
+RUN Invoke-WebRequest "$env:VS_17_14_2" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 #
