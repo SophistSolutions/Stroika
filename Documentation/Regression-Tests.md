@@ -35,7 +35,7 @@ MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017
 or 
 
 ~~~bash
-MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017
+MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017
 ~~~
 
 For my home regression tests, I run that on 'medusa', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017
@@ -58,7 +58,7 @@ checkin from one spot.
 
   ```bash
   MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode16_m1 PARALELLMAKEFLAG=-j5 \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -84,7 +84,7 @@ checkin from one spot.
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=medusa \
-	    EXTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa` " \
+      EXTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa` " \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -99,7 +99,7 @@ checkin from one spot.
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
       MACHINE=medusa \
-	    EXTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa` " \
+      EXTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa` " \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -108,13 +108,13 @@ checkin from one spot.
   (remote execute on machine medusa using docker and copy back results; takes about 6 HRs)
 
   ```bash
-RUN_IN_DOCKER=1 \
+  RUN_IN_DOCKER=1 \
     USE_TEST_BASENAME=Ubuntu2504_x86_64 \
     BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
     MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests \
     MACHINE=medusa \
-	  EXTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa` " \
+    EXTRA_DOCKER_ARGS=" --add-host mongodb:`./ScriptsLib/ResolveIP medusa` " \
     ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -147,9 +147,9 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
   OR alternatively
 
   ```sh
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_Cygwin_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 \
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 
@@ -158,5 +158,5 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
 
   ```bash
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.234:27017 ScriptsLib/RunLocalWSLRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@mongodb:27017 ScriptsLib/RunLocalWSLRegressionTests
   ```
