@@ -54,7 +54,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=MacOS_XCode16_m1
 
-  (takes about 1 HR)
+  (takes about 2 HRs)
 
   ```bash
   MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode16_m1 PARALELLMAKEFLAG=-j5 \
@@ -64,7 +64,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Windows_VS2k22
 
-  (on windows bash shell run; takes about 4 HRs)
+  (on windows bash shell run; takes about 6 HRs)
   (note this done on my laptop, not windows-dev-vm)
 
   ```bash
@@ -75,7 +75,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Ubuntu2204_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 10 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 5 HRs)
 
   ```bash
   RUN_IN_DOCKER=1 \
