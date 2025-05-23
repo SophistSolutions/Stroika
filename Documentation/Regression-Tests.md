@@ -64,8 +64,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Windows_VS2k22
 
-  (on windows bash shell run; takes about 6 HRs)
-  (note this done on my laptop, not windows-dev-vm)
+  (on windows bash shell run; takes about 6 HRs on medusa-windows-dev vm)
 
   ```bash
   USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
