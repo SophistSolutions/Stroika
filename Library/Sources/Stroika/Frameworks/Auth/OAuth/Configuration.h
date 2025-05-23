@@ -156,7 +156,14 @@ namespace Stroika::Frameworks::Auth::OAuth {
     };
 
     namespace Private_ {
-        using My_Extractor_ = decltype ([] (const ProviderConfiguration& t) -> String { return t.name; });
+        // NOTE - cannot do this due to ODR violation
+        //      using My_Extractor_ = decltype ([] (const ProviderConfiguration& t) -> String { return t.name; });
+        struct My_Extractor_ {
+            String operator() (const ProviderConfiguration& t) const noexcept
+            {
+                return t.name;
+            }
+        };
         using My_Traits_    = Containers::KeyedCollection_DefaultTraits<ProviderConfiguration, String, My_Extractor_>;
     }
     /**
