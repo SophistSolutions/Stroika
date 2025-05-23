@@ -95,7 +95,7 @@ endif
 # 	LDFLAGS	+= -Wno-free-nonheap-object
 # DID WORK:
 # 		-- LGP 2025-05-22
-ifneq (,$(shell ${StroikaRoot}ScriptLib/GetGCCVersion $(CC)))
+ifneq (,$(shell ${StroikaRoot}ScriptsLib/GetGCCVersion $(CC)))
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
 CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
 endif
