@@ -3967,6 +3967,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_HashTable.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\ReadMe.md">
+      <Filter>Sources\DataExchange\JSON</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />

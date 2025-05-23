@@ -23,301 +23,58 @@ especially those they need to be aware of when upgrading.
     - Database
       - Document
         - ToString/Format support for some types in Database::Document to facilitate debugging
+        - Projection 
+          - various cleanups 
+          - new Includes method
+          - docs
+          - compare operators
         - MongoDBCLient
           - fixed bug with filter in GetAll - and other small minor cleanups for debugging mostly
           - fix projection-filter code to not project server side when we have custom filter that cannot be done server side
+        - SQLite
+          - improved use of json functions/package
+          - cleanup prepared statement use
+          - projection support (inside db) - for includes - not excludes
+          - refactor CollectionRep_::GetOne Projection code into ExtractRowValueAfterStep_
+          - refactor of GetAll() in SQLITE documentDB to use filter and projection from sqlite query
+
+    - DataExchange
+      - Variant
+        - JSON
+          - Reader
+            - support case of non-seekable stream handed to JSONReader - just document it doesn't get seek offset reliably set in that case
     - Memory
       - Common
         - Insert() cleanups
+        - Cleanups to CopyOverlappingBytes
+
+
+    - Streams
+      - BufferedInputStream 
+        - use Seekability overload instead of bool for New methods
+        - fixed missing SeekRead() method from BufferedInputStream and fixed Read to handle fSeekOffset_ == fBufferOfAllReadDataSoFar_.size() case better
+
+      - Common
+        - Streams::GetSeekability() now undeprecated - useful method (though trivial) and often better to call IsSeekable
+      - TextToBinary
+        - Reader module (New) supports optional<SeekableFlag> or documents which overloads always produce seekable results
+
+- Samples
+  - AppSettings
+    - fixedup error handling so doesn't crash
+    - re-enabled Samples-AppSettings/AppSettings in regression tests script
+
+- lose support for ubuntu 24.10 - now end of life replaced by 25.04
+  (docker containers, .github actions, etc)
+
+- Build Scripts
+  - configure and build script support for VSVARS_MSVC_RUNTIME_LIBRARY variable and --msvc-runtime-library argument for visual studio
+
+- Regression Tests
+  - osmetic regtest cleanups (raw strings mostly)
+  - Improvements to documentdb regtest
+
 #if 0
-
-commit 8a6599be279929cc9fbfc1a5c4a56620030821b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 08:47:23 2025 -0400
-
-    Cosmetics and minor clenaup to CopyOverlappingBytes
-
-commit d5a4286f951a027589e4d382a5617b66a35bd765
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 08:56:42 2025 -0400
-
-    lose support for ubuntu 24.10 - now end of life replaced by 25.04
-
-commit 4b49a00f852fb7c37ab1613baccb6718be5e7df6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 11:34:56 2025 -0400
-
-    dbg trace cleanups
-
-commit aba31c00d9b375ec3a52ef666907e9f6927130fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 11:35:22 2025 -0400
-
-    Cleanups to AppSettings sample, and fixedup error handling so doesn't crash
-
-commit 73cb12279c17de5515fa0e860fa3ae43c3e1f89c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 11:37:26 2025 -0400
-
-    re-enabled Samples-AppSettings/AppSettings in regression tests script
-
-commit 2ae5a12d86aa9c22c71cb31a4631fdd22a48fb7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 12:55:40 2025 -0400
-
-    configure and build script support for VSVARS_MSVC_RUNTIME_LIBRARY variable and --msvc-runtime-library argument for visual studio
-
-commit 4a1eb02f0d67e8874a5dc834bada8b6c6e5a9e80
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 15:26:38 2025 -0400
-
-    cosmetic regtest cleanups (raw strings mostly)
-
-commit b5d9ccd5a8b6c85a20160088f35fa1ed3d22b7ce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 29 21:49:00 2025 -0400
-
-    Database/Document/SQLite progress using json functions
-
-commit ae365c78d033cd37ffb12e430b3829bf84ed451f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 08:07:42 2025 -0400
-
-    Comments
-
-commit c9284d28849e0ecd3673c9814cfef6e72958fc21
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 08:10:13 2025 -0400
-
-    mostly cosmetic
-
-commit 98982aff0d0d05ac699642a27a638a6a2fc68215
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 11:07:52 2025 -0400
-
-    Cosmetic
-
-commit c95677b88490dadf74c6180a39d1711e0e18a1c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 11:52:49 2025 -0400
-
-    Foundation/Database/Document/SQLite - prepared statement use progress
-
-commit 1c944fdda5fdf2fa2e252b65ec128e10c13aebe9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 11:53:18 2025 -0400
-
-    todo comments
-
-commit d637eb8bb754d67fa70946e0dff660e754057ff5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 12:29:51 2025 -0400
-
-    undo some of the JSON sqlite changes - not working yet (documentdb)
-
-commit f8677def01b4a442795d2f4a62946293d39bb9d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 12:30:25 2025 -0400
-
-    Cosmetic
-
-commit 2825acb19edfeef9ca2454016337ec9240ec28eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 13:13:55 2025 -0400
-
-    TextToBinary::Reader module (New) supports optional<SeekableFlag> or documents which overloads always produce seekable results
-
-commit 08dd2984dbb46f31a08efb97845067c83a52a8e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 14:08:18 2025 -0400
-
-    Streams::GetSeekability() now undeprecated - useful method (though trivial) and often better to call IsSeekable)
-
-commit 287ba364cd30cccaeda0bc1905c9e98e9d21c53e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 14:09:04 2025 -0400
-
-    avoid new deprecated method
-
-commit c2eb03698cbdda72f17e8853f404240a1d4ea5bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 14:10:28 2025 -0400
-
-    Streams/BufferedInputStream use Seekability overload instead of bool for New methods
-
-commit 7235212eb79d140b9a24d2300bc4c62ede0acffe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 20:57:38 2025 -0400
-
-    fixed missing SeekRead() method from BufferedInputStream and fixed Read to handle fSeekOffset_ == fBufferOfAllReadDataSoFar_.size() case better
-
-commit 063af574b25ee08cb8cc8e6e15f382aff74366ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 20:58:09 2025 -0400
-
-    Added BufferedInputStream.cpp
-
-commit cc7de4d94c25ad19030018d1ca6c94245ac290fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 20:59:54 2025 -0400
-
-    Comments
-
-commit b5db3eb5159fea580768b2360754432b3af54a8e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 21:00:18 2025 -0400
-
-    Mostly cosmetic
-
-commit c1d4f920c5e198c6da0b85261588cb0509391bc5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 21:08:05 2025 -0400
-
-    DataExchange/Variant/JSON/Reader: support case of non-seekable stream handed to JSONReader - just document it doesn't get seek offset reliably set in that case
-
-commit 6638295fe6905321975207d2621501375589d8c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 30 21:10:01 2025 -0400
-
-    mostly cosmetic Test cleanups
-
-commit 99b87977d7a4882254f954dcf622193511765be9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 06:55:06 2025 -0400
-
-    Cosmetic
-
-commit ae2bf370f624bd7afe3eb3585d7ad80e7c325a0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 06:56:10 2025 -0400
-
-    cosmetic
-
-commit 9accd4d56d0f553690cf0c5bf149cce9a71a3758
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 06:56:36 2025 -0400
-
-    Database/Document/SQLite - progress on prepared statements
-
-commit b28097d1dc36f4c12c88dd4153d3707687d8827f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 06:59:20 2025 -0400
-
-    fix syntax for picker clang
-
-commit a83d7243db1b565c95b0d3e79d395f9c5b2e58d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 07:12:59 2025 -0400
-
-    refactored prepared statement code in Database/Document/SQLite
-
-commit 89b95ae9a6eb31c0a2e342f2a394b7c625d0a6a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 07:14:16 2025 -0400
-
-    cleanups to Database/Document/SQLite
-
-commit 6e88c81550690667bb8c2e4c86575860c5c92a3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 07:23:23 2025 -0400
-
-    cosmetic
-
-commit 0738f2febafaf91096711b3aa6dac2559dc40b00
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 07:23:47 2025 -0400
-
-    cosmetic
-
-commit 966122887e691259ab8bfa14eb5fb2fbb1afa220
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 08:04:13 2025 -0400
-
-    cleanups/fixes to recent MyPreparedStatement_ code in Database/Document/SQLite
-
-commit 9947d4acb49e5b49cd3b117ccbc6d84f8fbe3869
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 08:11:17 2025 -0400
-
-    Small improvements to documentdb regtest
-
-commit 6204b04eaaf6d4ee4abc53a23cba0c0660259c0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 08:20:53 2025 -0400
-
-    improved documentdb regtests
-
-commit 449ce07b44abbaf00484f7ee7177466c1d940972
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 11:33:56 2025 -0400
-
-    Database/Document/SQLite draft projection support (inside db) - for includes - not excludes
-
-commit 7be823952fb71b081267e6375895bf9d71112d88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 11:53:20 2025 -0400
-
-    cleanup scripts
-
-commit e5839682dac23d0cfca2827bba989504521fa34f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 11:53:43 2025 -0400
-
-    cleanup regtests
-
-commit 7360cde12ca8a81fa706928b0b0fb40a72a0b704
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 11:54:04 2025 -0400
-
-    Cosmetic
-
-commit 0df11c5a766f34e765c0e4a60917c0bc8317a863
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 1 21:17:21 2025 -0400
-
-    cosmetic
-
-commit 9639501e58f1fad48fb02f4bace90b2371fb6f13
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 09:42:42 2025 -0400
-
-    DocumentDB::Projection - various cleanups - new Includes method, docs and more
-
-commit 1c80c3ad240ef09b2fcc782c27517298e43fcbca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 09:44:12 2025 -0400
-
-    refactor CollectionRep_::GetOne Projection code into ExtractRowValueAfterStep_
-
-commit a52537bda360caddb404b415d8ccb132353a613b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 11:41:48 2025 -0400
-
-    fixed clang/g++ pickier than msvc about get<> arguments (int vs enum value)
-
-commit 780ecb9c44c577debf8373a12eeca90e403b893c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 11:46:11 2025 -0400
-
-    compare operators for Database/Document/Projection
-
-commit 734466d4501d5330e00bdb9a7e9d4a3cd91b44c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 11:46:55 2025 -0400
-
-    progress (incomplete) on refactor of GetAll() in SQLITE documentDB to use filter and projection from sqlite query
-
-commit 7341a284605ec557552d1a02f175bc7280d7abf9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 13:25:03 2025 -0400
-
-    Cosmetic
-
-commit 705a8c04a77b4272d3e49a5d96833641a31e5705
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 13:25:19 2025 -0400
-
-    cosmetic
 
 commit 1e1bfca5dce64dc75cecc4cc0c221521d63da20f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -330,12 +87,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 2 13:26:30 2025 -0400
 
     progress on DocumentDB SQLIte GetAll() filter/projection
-
-commit bdd284286398c96e77b0f7224852959df88b5723
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 15:43:46 2025 -0400
-
-    fixed typo
 
 commit 632ee0e27312671b3d98c9de158cf3340cc4f6d9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -877,6 +628,16 @@ Date:   Fri May 23 10:56:08 2025 -0400
 
     start 3.0d19 release
 
+
+use dpg-deb --root-owner-group instead of deb to build .deb installers (avoid warning on latest ubuntu)
+
+
+Added xxd to list of check-prerequisite-tools-common: since used in regtests to build regtests (and elsewhere)
+
+
+re-enable (and expand) no-free-nonheap-object configure BWA, since localized BWA in CPP file didnt work/suppress
+
+fixed Frameworks/Auth/OAuth/Configuration.h ODR violation (decltype of lambda) used in type)
 #endif
 
 

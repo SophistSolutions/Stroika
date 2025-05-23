@@ -1043,6 +1043,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Patch.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Pointer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md" />
