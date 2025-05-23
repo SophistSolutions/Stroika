@@ -1335,9 +1335,12 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			# inlined from 'TestBody' at Test.cpp:1961:51:
 			# /usr/arm-linux-gnueabihf/include/c++/12/bits/new_allocator.h:158:33: warning: 'operator delete' called on pointer '_1397' with nonzero offset [1, 2147483647] [-Wfree-nonheap-object]
 			# 158 |         _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n));
-			if ($itsVersion < 13.0 && $ARCH eq "armhf") {
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-free-nonheap-object';
-			}
+
+
+			# seems to happen otherwise for gcc - without armhf - so disbale this and workaroudn with localized suppression in appropriate files
+			# if ($itsVersion < 13.0 && $ARCH eq "armhf") {
+			# 	$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-free-nonheap-object';
+			# }
 
 		}
 	}
