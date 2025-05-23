@@ -5,7 +5,7 @@ This folder contains all the Stroika Library [Foundation](../)::DataExchange sou
 This module is about data structures and formats - and NOT about the IO/networking interactions of
 an exchange.
 
-This module contains code relating to serialization and deserializaiton of structured data.
+This module contains code relating to serialization and deserialization of structured data.
 
 Most of these modules will use [VariantValue](./VariantValue.h) as a linga-franca to express structured data
 going in/out of a module.
@@ -25,6 +25,8 @@ Most Central Classes:
 - DefaultSerializer - [DefaultSerializer.h](DefaultSerializer.h)
 
   This is NOT for external serialization (generally) - but useful for internally temporarily serializing an object as a BLOB, to be able to compare it and perhaps transfer it. For example, if you want to genrically be able to compute a HASH on an object, this is what is used by the Hash\<> infrastructure.
+
+- [JSON-specific utilities](JSON/ReadMe.md)
 
 - ObjectVariantMapper - [ObjectVariantMapper.h](ObjectVariantMapper.h)
 
