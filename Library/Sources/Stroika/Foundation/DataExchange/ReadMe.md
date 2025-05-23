@@ -7,7 +7,7 @@ an exchange.
 
 This module contains code relating to serialization and deserialization of structured data.
 
-Most of these modules will use [VariantValue](./VariantValue.h) as a linga-franca to express structured data
+Most of these modules will use [VariantValue](./VariantValue.h) as a Linga-franca to express structured data
 going in/out of a module.
 
 (e.g. JSON or XML) reader / writer <--> VariantValue <-- (via ObjectVariantMapper)--> C++ struct
