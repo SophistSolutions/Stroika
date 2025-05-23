@@ -23,7 +23,7 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal ()
     : fRestoreMask_{}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals all signals"_f);
+    DbgTrace ("ScopedBlockCurrentThreadSignal blocking signals all signals"_f);
 #endif
     sigset_t mySet;
     Verify (sigemptyset (&mySet) == 0);         // nb: cannot use :: cuz crapple uses macro --LGP 2016-12-31
@@ -48,7 +48,7 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
 ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"ScopedBlockCurrentThreadSignal restoring signals"_f);
+    DbgTrace ("ScopedBlockCurrentThreadSignal restoring signals"_f);
 #endif
     Verify (::pthread_sigmask (SIG_SETMASK, &fRestoreMask_, nullptr) == 0);
 }
