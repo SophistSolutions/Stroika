@@ -105,7 +105,7 @@ checkin from one spot.
 
 - \$TEST_TARGET=Ubuntu2504_x86_64
 
-  (remote execute on machine medusa using docker and copy back results; takes about 6 HRs)
+  (remote execute on machine medusa using docker and copy back results; takes about 4 HRs)
 
   ```bash
   RUN_IN_DOCKER=1 \
