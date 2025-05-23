@@ -25,12 +25,12 @@ namespace Stroika::Foundation::Streams {
      * \see also https://learn.microsoft.com/en-us/dotnet/api/system.io.streamreader?view=net-8.0 - similar idea, except there you specify conversion from
      *      binary stream.
      *
-     *  StreamReader is an unnecessary class for using the Streams library, but it is easy to use, similar to InputStream<T>::Ptr, and significantly more performant
+     *  StreamReader is an unnecessary class for using the Streams library, but it is easy to use, has a similar API to InputStream<T>::Ptr, and significantly more performant
      * 
      *  \note Similar to BufferedInputStream - but that provides an actual Stream object, and is slightly less performant for direct use.
      * 
      *  TODO:
-     *      \todo consider if should take templated parameter indicating buffer size (really template parameter StreamReaderDefaultOptions - with various settings
+     *      \todo consider if should take templated parameter indicating buffer size (really template parameter StreamReaderDefaultOptions - with various settings)
      */
     template <typename ELEMENT_TYPE>
     struct StreamReader {
@@ -48,6 +48,9 @@ namespace Stroika::Foundation::Streams {
          *  \note At destruction, StreamReader automatically calls SynchronizeToUnderlyingStream
          * 
          *  \pre underlyingReadFromStreamAdopted.Seekable ();       // so it can read ahead and synchronize back in dtor
+         * 
+         *  \note a future version of StreamReader might allow underlyingReadFromStreamAdopted.Seekable () and just pre-read to allow seeking, but then
+         *        'synchronize' feature wont work
          */
         StreamReader (const typename InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted);
         StreamReader ()                    = delete;

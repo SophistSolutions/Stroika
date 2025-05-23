@@ -110,7 +110,8 @@ namespace Stroika::Foundation::Streams::BinaryToText {
          *  
          *  \note New (const InputStream::Ptr<byte>& src,... overloads)
          *      o   Seekability
-         *              if not specified, its copied from the src binary stream.
+         *              o   if not specified, its copied from the src binary stream.
+         *              o   New (const Traversal::Iterable<Character>& src) produces a seekable stream
          *      o   CodeCvt flags 
          *          either as specified, or, if src.IsSeekable () - defaults to AutomaticCodeCvtFlags::eDEFAULT (which looks at the BOM)
          *          and if not seekable and not specified, use CodeCvt<>{locale{}}.
