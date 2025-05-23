@@ -58,7 +58,7 @@ checkin from one spot.
 
   ```bash
   MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode16_m1 PARALELLMAKEFLAG=-j5 \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
