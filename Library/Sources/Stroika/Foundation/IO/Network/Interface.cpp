@@ -426,9 +426,9 @@ namespace {
             SocketAddress sa{i->ifr_addr};
             if (sa.IsInternetAddress ()) {
 #if qStroika_Foundation_Common_Platform_Linux || qStroika_Foundation_Common_Platform_MacOS
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
                 newInterface.fBindings.fAddressRanges.Add (CIDR{sa.GetInternetAddress (), getNetMaskAsPrefix (sd, i->ifr_name)});
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wfree-nonheap-object\"");
 #else
                 newInterface.fBindings.fAddressRanges.Add (sa.GetInternetAddress ());
 #endif

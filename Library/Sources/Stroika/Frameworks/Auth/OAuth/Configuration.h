@@ -164,7 +164,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
                 return t.name;
             }
         };
-        using My_Traits_    = Containers::KeyedCollection_DefaultTraits<ProviderConfiguration, String, My_Extractor_>;
+        using My_Traits_ = Containers::KeyedCollection_DefaultTraits<ProviderConfiguration, String, My_Extractor_>;
     }
     /**
      *  A list of definitions for configurations.
