@@ -9,6 +9,8 @@ especially those they need to be aware of when upgrading.
 
 ### NOTES for 3.0d19 release
 
+- Documentation
+  - build docs
 
 - Library
   - Foundation
@@ -33,6 +35,8 @@ especially those they need to be aware of when upgrading.
         - MongoDBCLient
           - fixed bug with filter in GetAll - and other small minor cleanups for debugging mostly
           - fix projection-filter code to not project server side when we have custom filter that cannot be done server side
+          - (ugly) fix for _id lookup/filter in MongoDBCLient GetAll() method
+
         - SQLite
           - improved use of json functions/package
           - cleanup prepared statement use
@@ -42,12 +46,13 @@ especially those they need to be aware of when upgrading.
           - ignore error result from ::sqlite3_finalize - document why
           - for SQLITE support - document default busy-timeout behavior for library, and provide my own kBusyTimeout_Default (for now set to 10s)
           -     comments about sqlite sharedcache code why not a good idea to use and why still used
+        - TrivialDocumentDB
+          - minor cleanups
+
       - SQL
         - SQLite
           - for SQLITE support - document default busy-timeout behavior for library, and provide my own kBusyTimeout_Default (for now set to 10s)
           -     comments about sqlite sharedcache code why not a good idea to use and why still used
-
-
 
     - DataExchange
       - Variant
@@ -90,257 +95,83 @@ especially those they need to be aware of when upgrading.
   - configure and build script support for VSVARS_MSVC_RUNTIME_LIBRARY variable and --msvc-runtime-library argument for visual studio
 
 - Regression Tests
-  - osmetic regtest cleanups (raw strings mostly)
+  - cosmetic regtest cleanups (raw strings mostly)
   - Improvements to documentdb regtest
+  - Document DB regtests
+    - many cleanups/improvements
+    - new tests getall with filters/conunctions etc
+    - start adding Test with filter and projection but not working - database document tests
 
 
-
-Frameworks/SystemPerformance/Instruments/Filesystem
-    fixed typo in name (rarely used so dont worry - fBytesTransfered -> fBytesTransferred
-
+- Frameworks
+  - SystemPerformance
+    - Instruments
+      - Filesystem
+        - fixed typo in name (rarely used so dont worry - fBytesTransfered -> fBytesTransferred
+  - Auth
+    - OAuth
+      - Configuration
+        - ODR violation fixed (decltype of lambda used in type)
 
 - Compiler Bug Defines
   -     qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy seems broken for new case for _LIBCPP_VERSION = 200100 on ubuntu 25.04
   - fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy bug define
     qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy BWA
-
-
-
-#if 0
-
-commit 1a76bf34dea640d23bff44c1906f40016f60d0f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 09:15:52 2025 -0400
-
-    Database/Document/TrivialDocumentDB minor cleanups
-
-commit c5e035df734430e611c13cfdfa1264ce162e057b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 09:16:47 2025 -0400
-
-    (ugly) fix for _id lookup/filter in MongoDBCLient GetAll() method
-
-commit 5a87b4cde12a98ed3d8aa03554803deb71469315
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 09:17:36 2025 -0400
-
-    enhanced regtests for documentdb - getall with filters/conunctions etc
-
-commit 98ee9304923ed0c14000bc5b84400a45227d0ff8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 11:22:35 2025 -0400
-
-    set SecurityProtocol in dockerfile more carefully so works on newer windows
-
-commit dcb416f42541bd23fa2da5e666861a63f52c53e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 11:23:39 2025 -0400
-
-    experiment with ltsc2025 for windows dockerfile
-
-commit a2a646801479441118eebfbee8380d111b21ce5d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 11:24:33 2025 -0400
-
-    Windows dockerfile - use VS_17_14_0
-
-commit 51a83ca5e6d0fb750d9f97c572162277b46975b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 11:27:06 2025 -0400
-
-    Minor syntax tweaks to get compiling with new vs2k 17.14.0
-
-commit da7476415ca7dd583c11807a922dfe7aa0b8ca25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 12:55:14 2025 -0400
-
-    bug defines for _MSC_VER_2k22_17Pt14_; and lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy - qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
-
-commit a54c0b59fdc4c513d5deb636fa28301fa7508560
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri May 16 07:13:38 2025 -0400
-
-    updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
-
-commit ba15a98f27ef297cf55188c35f0f1c3abd04ee27
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri May 16 08:14:14 2025 -0400
-
-    new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
-
-commit 5ea9cffc02d0fee1644f4d026677188f673ea7f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 08:42:14 2025 -0400
-
-    fixed docker build for windows so using servercore:ltsc2025
-
-commit 7b960734343b17b9d419a4bab7082b7da884ed96
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 10:50:52 2025 -0400
-
-    try runs_on windows-2025 for building windows containers
-
-commit 57dfd5984be28789ea60d530f49395c4b88245de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 11:39:06 2025 -0400
-
-    parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
-
-commit 7a306017f5f2f0242c2dbcd78a9bf75c5c9cb637
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 12:05:33 2025 -0400
-
-    run on windows-latest not windows-2025 for docker build containers cuz runs out of space otherwise
-
-5a4343297a109d9bcd6e0d2ef3af3c005ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 13:11:18 2025 -0400
-
+  - bug defines for _MSC_VER_2k22_17Pt14_; 
+  - lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy: qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
+  -  updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
+  -  new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
     updated compiler versions for qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-
-commit 2971b80aa69c12b723205be00c153e9546cde1a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 13:16:58 2025 -0400
-
     docs and fix qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy to be broken on clang++20 and ubuntu 25.04
-
-commit 2f0abb5c5bbfcea694d0d535d1c7ad68443acb76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 06:57:15 2025 -0400
-
     fixed bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy for apple
 
-commit a0543545825d3bdea4d95488615c463acfa31658
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 07:26:37 2025 -0400
+- DockerFile
+  - Windows
+    - set SecurityProtocol in dockerfile more carefully so works on newer windows
+    - experiment with ltsc2025 for windows dockerfile
+    - use VS_17_14_0
+    - fixed docker build for windows so using servercore:ltsc2025
+    - container use env:VS_17_14_2
 
-    mostly cosmetic boost makefile tweaks
+- Github Actions
+  -     try runs_on windows-2025 for building windows containers
+  -  parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
+  -  run on windows-latest not windows-2025 for docker build containers cuz runs out of space otherwise
 
-commit 19971ac6f5e9b06344d27085b50e266f5624e08f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 07:39:32 2025 -0400
+- Scripts
+  -  new helper scripot ScriptsLib/ResolveIP
 
-    google test 1.17.0
+- ThirdPartyComponents
+  - googletest
+    - google test 1.17.0
+  -  sqlite
+    - 3490200
+  - StrawberryPerl
+    - PERL_VERSION_=5.40.2.1 strawberry perl
 
-commit 27b04789f165cf9e59b2bfd73202fb8b2e0aa8b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 07:44:04 2025 -0400
+  - libxml2 
+    - 2.14.3
 
-    start adding Test with filter and projection but not working - database document tests
-
-commit 5365adbe231a53d5196ba617cc3bc5296dadc61f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 08:55:07 2025 -0400
-
-    sqlite 3490200
-
-commit 64e1aa0ac87525a70dff875ca54b88970ae9f1b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 08:55:40 2025 -0400
-
-    clenaup documentsdb regtests
-
-commit 6f9c0bf85f0dddd62159a8ff89d485ec5521abfc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 08:56:07 2025 -0400
-
-    PERL_VERSION_=5.40.2.1 strawberry perl
-
-commit 60fe0d4308fbfbf2eef61ade8c139c9e0d52d8fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 08:56:33 2025 -0400
-
-    libxml2 =2.14.3
-
-commit ec8aedc641f7f3bf3e7aea8f48e76a7949310bbd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 17 15:36:58 2025 -0400
-
+  - mongo-cxx-driver
     incomplete progress towards supporting MONGOCXXDRIRVER_VERSION_=r4.1.0
-
-commit ac8999200eb20494863b8d0782f2c734e93022f6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 18 10:54:38 2025 -0400
-
     mongo-cxx-driver supports r4.1.0 on windows (so enabling by default)
-
-commit d545e6d1aaae4944b62511f087e6313145a15290
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 19 07:34:20 2025 -0400
-
     fixed mongoc client (new version) build for unix (also need same patch of rc files for static link)
-
-commit 28b563cb6e7606fcbcfff525e5150cd2cf44155d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed May 21 08:39:38 2025 -0400
-
-    changed rleease note docs to use medusa instead of hercules
-
-commit 612c3fd7fe672efd9d5117d1daa5a6f4ca53e6e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 21 10:37:45 2025 -0400
-
     makefile fixed makefile issue with ThirdPartyComponents/mongo-cxx-driver/Makefile
-
-commit 2df54c0db09b0352b746655fa96b9c72c542066a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu May 22 13:56:02 2025 -0400
-
-    new helper scripot ScriptsLib/ResolveIP
-
-commit ffbd0433c2de86c77f69cc526d3c263a3761d65d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu May 22 14:18:03 2025 -0400
-
     workaround issue wtih Wfree-nonheap-object warnings from mongo-cxx-driver
 
-commit 2ed30eea932a6142cbf6b9998ce3e09ce483e856
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 15:38:04 2025 -0400
+  - Build System 
+    - using Medusa instead of Hercules for builds (updated notes/docs on build lines etc)
+    - use EXTRA_DOCKER_ARGS= with add-host line and new ResolveIP script to workaround issues with docker containers accessing names that cannot be resolved inside container(?? at least I cannot figure easy way how)
 
-    fixed ScriptsLib/ResolveIP for windows
+  - Build Scripts
+    - configure
+      - Wfree-nonheap-object warning changes - one suppression -and removed configure suppression of this for some cases -just handle more locally in cpp files as needed
+    - Top Level Makefile
+      - Added xxd to list of check-prerequisite-tools-common: since used in regtests to build regtests (and elsewhere)
 
-commit d0b6a05c695c36b5412fd3bd010ac3c1d93f2635
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 16:05:40 2025 -0400
-
-    use EXTRA_DOCKER_ARGS= with add-host line and new ResolveIP script to workaround issues with docker containers accessing names that cannot be resolved inside container(?? at least I cannot figure easy way how)
-
-commit d24eb2b8b686b671907f49829bda151792d4d81a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 16:38:37 2025 -0400
-
-    docker container use env:VS_17_14_2
-
-commit 896da401d8407b95d90f22d75a307db90dddcdfc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 17:00:07 2025 -0400
-
-    fixed typo in mongo-cxx-driver/Makefile
-
-commit 0302a76e4407e19409b7bd0bd378f418bfb088fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 20:34:45 2025 -0400
-
-    build docs
-
-commit 4a61d128512669f0aa13e676393af08e43bc7a3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 23 10:48:25 2025 -0400
-
-    Wfree-nonheap-object warning changes - one suppression -a nd removed configure suppression of this for some cases -just handle more locally in cpp files as needed
-
-
+- Samples
+  - 
 use dpg-deb --root-owner-group instead of deb to build .deb installers (avoid warning on latest ubuntu)
-
-
-Added xxd to list of check-prerequisite-tools-common: since used in regtests to build regtests (and elsewhere)
-
-
-re-enable (and expand) no-free-nonheap-object configure BWA, since localized BWA in CPP file didnt work/suppress
-
-fixed Frameworks/Auth/OAuth/Configuration.h ODR violation (decltype of lambda) used in type)
-#endif
 
 
 -----
