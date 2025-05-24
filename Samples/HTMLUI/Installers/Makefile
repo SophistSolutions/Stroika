@@ -218,6 +218,10 @@ doBld_:
 	mkdir -p $(WIX_WORKDIR)dlls
 	/bin/find $(TARGET_OUT_DIR)Backend -name "*.dll" -exec cp '{}' $(WIX_WORKDIR)/dlls \;
 	cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
+	if [ -z "$(ls -A ${BUILT_HTML_DIR})" ]; then
+		# if no files - make some file so build doesn't fail
+		echo "<html><body>empty</body></html>" > ${BUILT_HTML_DIR}/index.html
+	fi
 	$(WIX_PATH_PREFIX) heat dir $(HTMLDIR_WINDOWSPATH) -nologo -o $(WIXHTMLFRAGFILE_WINDOWPATH) \
 		-scom -frag -srd -sreg -gg \
 		-cg SampleHTMLUI_html_comp -dr HTML_DIR_REF
