@@ -11,11 +11,16 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 
-- todo
+- DocumentDB support
+  - various MongoDB client bugfixes
+  - many more SQLite bugfixes (not works pretty decently - at least usable).
+- SQLite (documentdb and sql) - improved busy handling
+- lose support for ubuntu 24.10 - now end of life replaced by 25.04
 
 #### Upgrade Notes (3.0d18 to 3.0d19)
 
-- None
+- Streams::BufferedInputStream
+  - use Seekability overload instead of bool for New methods
 
 #### Change Details
 
