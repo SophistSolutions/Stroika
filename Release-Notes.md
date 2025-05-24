@@ -28,6 +28,8 @@ especially those they need to be aware of when upgrading.
           - new Includes method
           - docs
           - compare operators
+          - fixed bug in FilterElements::Equals::Matches
+
         - MongoDBCLient
           - fixed bug with filter in GetAll - and other small minor cleanups for debugging mostly
           - fix projection-filter code to not project server side when we have custom filter that cannot be done server side
@@ -37,16 +39,28 @@ especially those they need to be aware of when upgrading.
           - projection support (inside db) - for includes - not excludes
           - refactor CollectionRep_::GetOne Projection code into ExtractRowValueAfterStep_
           - refactor of GetAll() in SQLITE documentDB to use filter and projection from sqlite query
+          - ignore error result from ::sqlite3_finalize - document why
+          - for SQLITE support - document default busy-timeout behavior for library, and provide my own kBusyTimeout_Default (for now set to 10s)
+          -     comments about sqlite sharedcache code why not a good idea to use and why still used
+      - SQL
+        - SQLite
+          - for SQLITE support - document default busy-timeout behavior for library, and provide my own kBusyTimeout_Default (for now set to 10s)
+          -     comments about sqlite sharedcache code why not a good idea to use and why still used
+
+
 
     - DataExchange
       - Variant
         - JSON
           - Reader
             - support case of non-seekable stream handed to JSONReader - just document it doesn't get seek offset reliably set in that case
+      - VariantValue
+        - **fixed serveral serious bugs in equals/threeway comparer for VariantValue** (and added regtest to capture some)
+
     - Memory
       - Common
         - Insert() cleanups
-        - Cleanups to CopyOverlappingBytes
+        - Cleanups to CopyOverlappingBytes etc (Common.inl)
 
 
     - Streams
@@ -63,6 +77,11 @@ especially those they need to be aware of when upgrading.
   - AppSettings
     - fixedup error handling so doesn't crash
     - re-enabled Samples-AppSettings/AppSettings in regression tests script
+  - SQL
+    -   lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
+  - DocumentDB
+    -   lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
+
 
 - lose support for ubuntu 24.10 - now end of life replaced by 25.04
   (docker containers, .github actions, etc)
@@ -74,217 +93,20 @@ especially those they need to be aware of when upgrading.
   - osmetic regtest cleanups (raw strings mostly)
   - Improvements to documentdb regtest
 
-#if 0
 
-commit 1e1bfca5dce64dc75cecc4cc0c221521d63da20f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 13:25:57 2025 -0400
 
+Frameworks/SystemPerformance/Instruments/Filesystem
     fixed typo in name (rarely used so dont worry - fBytesTransfered -> fBytesTransferred
 
-commit 2794d0cf04bdba25ef6de021eb00d0f1ad428216
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 13:26:30 2025 -0400
 
-    progress on DocumentDB SQLIte GetAll() filter/projection
-
-commit 632ee0e27312671b3d98c9de158cf3340cc4f6d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 16:08:26 2025 -0400
-
-    Database/Document/SQLite first testable draft of GetAll filter code
-
-commit ffeb6785458e568724286e678789f76934c35206
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 2 16:08:45 2025 -0400
-
-    cosmetic
-
-commit efbbb75bb7c1a860aae4128d45daff3b028122c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 3 09:41:44 2025 -0400
-
-    warning BWA
-
-commit e843d388e1a69624ecc5982acac1aa6198612430
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 3 09:41:59 2025 -0400
-
-    cleanup compiler warning
-
-commit c7d5800392e7d77adf273523c687a1c0c1363e79
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat May 3 21:08:10 2025 -0400
-
-    Cosmetic
-
-commit b1866e4f8e33915d6e61b97ae366b9c7eb0ba699
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat May 3 21:08:47 2025 -0400
-
-    qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy seems broken for new case for _LIBCPP_VERSION = 200100 on ubuntu 25.04
-
-commit bbe30ac2803054f1013333e7a0aa6aac1cb127b8
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat May 3 21:09:06 2025 -0400
-
-    silence another warning for clang++-20
-
-commit 8f14caf063d13fa9306afe0cd54bbbecfbae1b3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 3 21:25:07 2025 -0400
-
-    better error reporting in Samples DocumentDB
-
-commit 00e6c893a57788e8b6a03d8aa9667402d1ee8ad2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat May 3 21:31:34 2025 -0400
-
-    cosmetic
-
-commit e7f002d330e41002e7cd996a99a885f8fc1e33a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 4 08:55:38 2025 -0400
-
-    regtest script cleanup
-
-commit 7705750708f5aaa22d37b6f637df11bdaa1fd554
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 4 09:55:29 2025 -0400
-
-    Comments
-
-commit 2fc29fe64c7ac0d558ffcb1de6706a406ca0bd37
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 4 10:29:05 2025 -0400
-
-    ignore error result from ::sqlite3_finalize - document why
-
-commit 8325df1190dc8242a27d6f8b367108dbf38231f6
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun May 4 10:33:10 2025 -0400
-
-    minor message cleanups in Samples DocumenbtDB
-
-commit cfe61ac8a21ffca0fdb2ab9944fcec19fdcfd761
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 4 10:49:07 2025 -0400
-
-    cosmetic
-
-commit 6775127ed5fef0776cc1c58c1390db6ac93a8106
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 4 17:24:47 2025 -0400
-
-    upped timeout on threads test for slow performance rarely on raspberrypi
-
-commit ff03a44679cdd0a03f8812e94ee109a6451e267b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 4 23:41:54 2025 -0400
-
-    for SQLITE support (documentdb and sql) - document default busy-timeout behavior for library, and provide my own kBusyTimeout_Default (for now set to 10s)
-
-commit cf3f6ae967d0564b82938e563c26fb17179fa087
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 4 23:42:38 2025 -0400
-
-    lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
-
-commit bfa7000e78b64f4661de5412e2a3034f3ac56e8e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 5 22:22:13 2025 -0400
-
-    fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy bug define
-
-commit 75f3b86a1dd06104ecb352921daae82038b76efc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 6 10:40:31 2025 -0400
-
-    fixed bad assertions in sample (cuz of my changes) - and improved message
-
-commit 6b7706349d98658147ccebbe70f347282e736f62
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 6 15:32:20 2025 -0400
-
-    cleanups to Foundation/Memory/Common.inl
-
-commit 708a55e4801485332c67ae8d100bd7c6b1886dcd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 6 15:32:50 2025 -0400
-
-    comments about sqlite sharedcache code why not a good idea to use and why still used
-
-commit 4af70b65beb98504795f6645f386d7c197ec1831
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 14 19:46:14 2025 +0200
-
-    mostly cosmetic sqlite cleanups
-
-commit 8b96e0c26e63c429d080e02fdcc5123087e476c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 14 20:16:23 2025 -0400
-
-    minor Database/Document/Projection cleanups
-
-commit 1c53aa102c9dd7834245c79f11d8b66b3c610f39
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 14 20:16:58 2025 -0400
-
-    Minor Database/Document/Filter cleanups
-
-commit 45ea01590af5a47d16c85c789d23e01f4aa52429
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 14 20:20:15 2025 -0400
-
-    Foundation/Database/Document/SQLite cleanups, and fixes to Partition_() function
-
-commit 9314ffc71047c07a21835371eae9806bf558be12
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 08:15:35 2025 -0400
-
+- Compiler Bug Defines
+  -     qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy seems broken for new case for _LIBCPP_VERSION = 200100 on ubuntu 25.04
+  - fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy bug define
     qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy BWA
 
-commit 466dc22906c368732ea2a6cc1b618b5304237947
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 08:15:44 2025 -0400
 
-    cosmetic
 
-commit 55ad4e8e822f7ccd49a773ce3e2cfd0537ddca2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 07:45:17 2025 -0400
-
-    fixed bug in FilterElements::Equals::Matches
-
-commit c28d0c3429571d95c4ecc53fcae51f5f2c92e4c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 08:33:16 2025 -0400
-
-    cosmetic/docs
-
-commit b6e0f249930afd1214f68d8a2a2c08d8dc07832d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 08:34:16 2025 -0400
-
-    fixed serveral serious bugs in equals/threeway comparer for VariantValue (and added regtest to capture some)
-
-commit 15704a418feaab4765858241a12e5347a4b90d89
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 08:34:39 2025 -0400
-
-    cosmetic
-
-commit 87635d0d73e2da708034987dc452ba1412962ea1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 09:12:45 2025 -0400
-
-    cosmetic
-
-commit dd3f4cecf385130c40e4e9714eb4959e0f10cc23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 15 09:14:25 2025 -0400
-
-    SQLite documentdb support: fixed conjunction support in getall query
+#if 0
 
 commit 1a76bf34dea640d23bff44c1906f40016f60d0f4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -334,23 +156,11 @@ Date:   Thu May 15 12:55:14 2025 -0400
 
     bug defines for _MSC_VER_2k22_17Pt14_; and lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy - qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
 
-commit 9cf88c44d7f9665da5f80f37ba72a92e8cd98968
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 07:12:30 2025 -0400
-
-    docs
-
 commit a54c0b59fdc4c513d5deb636fa28301fa7508560
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri May 16 07:13:38 2025 -0400
 
     updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
-
-commit 8e28e454287cd9f776e1f95b959b4d23b34e4c3d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri May 16 07:32:48 2025 -0400
-
-    cosmetic
 
 commit ba15a98f27ef297cf55188c35f0f1c3abd04ee27
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -364,24 +174,6 @@ Date:   Fri May 16 08:42:14 2025 -0400
 
     fixed docker build for windows so using servercore:ltsc2025
 
-commit 0fabc7d10511a6fdf725e7df70def6a31f244724
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 08:48:21 2025 -0400
-
-    cosmetic
-
-commit d60f200b083b94e65e44b7826e4aef85e8eaa2db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 08:48:54 2025 -0400
-
-    cosmetic
-
-commit e822e3897b41acd389307811b48769d32d1a3644
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 08:49:05 2025 -0400
-
-    cosmetic
-
 commit 7b960734343b17b9d419a4bab7082b7da884ed96
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 16 10:50:52 2025 -0400
@@ -394,31 +186,13 @@ Date:   Fri May 16 11:39:06 2025 -0400
 
     parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
 
-commit a0ef01ff5a4adb88ea104afbf2639fcb7d2a5fd1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 11:47:22 2025 -0400
-
-    fixed last checkin
-
-commit b73efb87eddbc221c3d05bdc6b025f0bbecf52e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 11:49:48 2025 -0400
-
-    cosmetic
-
 commit 7a306017f5f2f0242c2dbcd78a9bf75c5c9cb637
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 16 12:05:33 2025 -0400
 
     run on windows-latest not windows-2025 for docker build containers cuz runs out of space otherwise
 
-commit 3800ddeb2265e0edf2116751e4c0851ff59a2cd7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 16 12:59:41 2025 -0400
-
-    fixed typo in recent github action docker contianer build actions
-
-commit 6eece5a4343297a109d9bcd6e0d2ef3af3c005ae
+5a4343297a109d9bcd6e0d2ef3af3c005ae
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 16 13:11:18 2025 -0400
 
@@ -490,29 +264,11 @@ Date:   Sun May 18 10:54:38 2025 -0400
 
     mongo-cxx-driver supports r4.1.0 on windows (so enabling by default)
 
-commit efcbb1962ab7813f2e2f8d76ffd550411c7c7e4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 18 11:12:14 2025 -0400
-
-    docs for next release
-
 commit d545e6d1aaae4944b62511f087e6313145a15290
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 19 07:34:20 2025 -0400
 
     fixed mongoc client (new version) build for unix (also need same patch of rc files for static link)
-
-commit 4030859e3325de6cf0b65bfa2aba97dcd49261b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 19 09:48:11 2025 -0400
-
-    Minor tweak to Characters/Character
-
-commit 584eef5de9e45a7e3994d1ae3edfc6f4063dcdf0
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed May 21 08:39:23 2025 -0400
-
-    mostly cosmetic
 
 commit 28b563cb6e7606fcbcfff525e5150cd2cf44155d
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -550,18 +306,6 @@ Date:   Thu May 22 16:05:40 2025 -0400
 
     use EXTRA_DOCKER_ARGS= with add-host line and new ResolveIP script to workaround issues with docker containers accessing names that cannot be resolved inside container(?? at least I cannot figure easy way how)
 
-commit 0d4aaaf4e4a933e9318336277bb1e3533b4f5334
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 16:12:28 2025 -0400
-
-    tweak last docs checkins
-
-commit 895a6675266384cda313bf916d36688477fc689f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 16:13:39 2025 -0400
-
-    tweak last docs checkins
-
 commit d24eb2b8b686b671907f49829bda151792d4d81a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 22 16:38:37 2025 -0400
@@ -574,59 +318,17 @@ Date:   Thu May 22 17:00:07 2025 -0400
 
     fixed typo in mongo-cxx-driver/Makefile
 
-commit 61e3a50b9c4c0e96e818e86e13fe3d0b66989f77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 18:31:29 2025 -0400
-
-    fixed typo
-
-commit f9a1fbfe68d467cc25353d4246d7ee1e48181f28
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 20:23:35 2025 -0400
-
-    fixed typo in build docs
-
-commit beee22378b47919fc58f5ded4ef26206727b0393
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 20:26:38 2025 -0400
-
-    fixed typo in build docs
-
-commit 6c80d9bde471744e61ffc777707f20a24f2da76a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 22 20:34:33 2025 -0400
-
-    fixed makefile typo
-
 commit 0302a76e4407e19409b7bd0bd378f418bfb088fb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 22 20:34:45 2025 -0400
 
     build docs
 
-commit 0fbdf12e25f73d8ccd9b426ac8faf347a5a89563
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 23 06:41:03 2025 -0400
-
-    rleease docs
-
 commit 4a61d128512669f0aa13e676393af08e43bc7a3c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 23 10:48:25 2025 -0400
 
     Wfree-nonheap-object warning changes - one suppression -a nd removed configure suppression of this for some cases -just handle more locally in cpp files as needed
-
-commit b84c8cba9d1e3c114eae77358b20513bcab8945b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 23 10:53:51 2025 -0400
-
-    docs notes
-
-commit 9d00d0b90e742695f38b09bf065f71f38c472ce6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 23 10:56:08 2025 -0400
-
-    start 3.0d19 release
 
 
 use dpg-deb --root-owner-group instead of deb to build .deb installers (avoid warning on latest ubuntu)
