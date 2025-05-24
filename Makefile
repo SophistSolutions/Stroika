@@ -83,7 +83,7 @@ help:
 	@$(ECHO) "                                      e.g. EXTRA_CONFIGURE_ARGS='--openssl-extraargs purify --block-allocation disable' make default-configurations"
 	@$(ECHO) "                                      OR EXTRA_CONFIGURE_ARGS='--build-platform VisualStudio.Net-2022' make default-configurations"
 	@$(ECHO) "                                      OR PLATFORM='VisualStudio.Net-2022' make default-configurations"
-	@$(ECHO) "    list-configurations:         -    prints all available configurations (each can be used as arg to CONFIGURAITON= make lines)"
+	@$(ECHO) "    list-configurations:         -    prints all available configurations (each can be used as arg to CONFIGURATION= make lines)"
 	@$(ECHO) "    list-configuration-tags:     -    prints a list of all configurtion tags (configuration tags impute groups of configurations)"
 	@$(ECHO) "    check-prerequisite-tools:    -    Check the tools needed to build Stroika are installed."
 	@$(ECHO) "Special Variables:               -    Extra params you can pass to the make line that may help..."
@@ -333,7 +333,7 @@ format-code:
 #	check-prerequisite-tools-current-configuration which checks a given argument CONFIGURATION.
 #
 #	We use take target files IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON and IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
-#	to make sure each configuraiton is checked at least once before build, so we get easier to understand error messages
+#	to make sure each configuration is checked at least once before build, so we get easier to understand error messages
 #	(tool x missing instead of xxx failed)
 #
 check-prerequisite-tools:

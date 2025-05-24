@@ -252,7 +252,7 @@ Targets:
                                       e.g. EXTRA_CONFIGURE_ARGS='--openssl-extraargs purify --block-allocation disable' make default-configurations
                                       OR EXTRA_CONFIGURE_ARGS='--platform VisualStudio.Net-2019' make default-configurations
                                       OR PLATFORM='VisualStudio.Net-2022' make default-configurations
-    list-configurations:         -    prints all available configurations (each can be used as arg to CONFIGURAITON= make lines)
+    list-configurations:         -    prints all available configurations (each can be used as arg to CONFIGURATION= make lines)
     list-configuration-tags:     -    prints a list of all configurtion tags (configuration tags impute groups of configurations)
     check-prerequisite-tools:    -    Check the tools needed to build Stroika are installed.
 Special Variables:               -    Extra params you can pass to the make line that may help...
@@ -321,7 +321,7 @@ The reason this is so important, is that it allows an external build system like
 
 ## Static Linking vs. Dynamic Libraries
 
-Stroika itself is only provided as a static library. This is because static libraries are much simpler, better for optimizing, and more flexible about configuraiton of the particular build options desired.
+Stroika itself is only provided as a static library. This is because static libraries are much simpler, better for optimizing, and more flexible about configuration of the particular build options desired.
 
 I cannot rule out ever providing a dynamic link option/feature, but I see exceedingly little point to it.
 

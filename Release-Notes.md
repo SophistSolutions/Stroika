@@ -3917,7 +3917,7 @@ fixed Frameworks/Auth/OAuth/Configuration.h ODR violation (decltype of lambda) u
     - Common
       - Properties
         - **not backward comaptible** - several properties named starting with 'p' renamed to just lower case prefix name as new (already documented) convention; - no need for backward compat here cuz not widely used interfaces and PITA to be backward compat and pretty obvious how it fails/updates
-    - Configuraiton:
+    - Configuration:
       - Compiler support
         - Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
         - fixed compiler bug defines for gcc 12.3

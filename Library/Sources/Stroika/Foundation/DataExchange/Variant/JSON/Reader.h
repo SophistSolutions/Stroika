@@ -69,7 +69,6 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *
      *  \note   Aliases: JSONReader, JSON Reader, JSON-Reader.
      *
-     *
      *  \note   If the inputStream which is 'Read' is seekable, it will automatically be positioned to the end
      *          of the argument JSON on successful exit. However, if its not seekable, it will be left in an arbitrary
      *          location (possibly well past the end of the valid JSON).

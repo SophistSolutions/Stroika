@@ -21,7 +21,7 @@ OK_GNU_MAKE_VERSION_ := $(filter $(NEED_GNU_MAKE_),$(firstword $(sort $(MAKE_VER
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples-HTMLUI/HTML:"
 ifeq ($(CONFIGURATION),)
-	@echo "Cannot complete build without a configuraiton" && exit 1;
+	@echo "Cannot complete build without a configuration" && exit 1;
 endif
 ifeq ($(OK_GNU_MAKE_VERSION_),)
 	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(shell realpath --canonicalize-missing $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)
