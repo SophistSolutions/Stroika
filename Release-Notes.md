@@ -7,36 +7,40 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### NOTES for 3.0d19 release
+### 3.0d19 {2025-05-??} {[diff](../../compare/3.0d18...3.0d19)}   NOT FINAL
+
+#### TLDR
+
+- todo
+
+#### Upgrade Notes (3.0d18 to 3.0d19)
+
+- None
+
+#### Change Details
 
 - Documentation
   - build docs
-
 - Library
   - Foundation
     - Common
       - KeyValuePair
         - A few minor noexcept cleanups
-
     - Containers
       - DataStructures
         - A few minor noexcept cleanups
-
     - Database
       - Document
         - ToString/Format support for some types in Database::Document to facilitate debugging
         - Projection 
-          - various cleanups 
+          - various cleanups & docs
           - new Includes method
-          - docs
           - compare operators
           - fixed bug in FilterElements::Equals::Matches
-
         - MongoDBCLient
           - fixed bug with filter in GetAll - and other small minor cleanups for debugging mostly
           - fix projection-filter code to not project server side when we have custom filter that cannot be done server side
           - (ugly) fix for _id lookup/filter in MongoDBCLient GetAll() method
-
         - SQLite
           - improved use of json functions/package
           - cleanup prepared statement use
@@ -45,15 +49,13 @@ especially those they need to be aware of when upgrading.
           - refactor of GetAll() in SQLITE documentDB to use filter and projection from sqlite query
           - ignore error result from ::sqlite3_finalize - document why
           - for SQLITE support - document default busy-timeout behavior for library, and provide my own kBusyTimeout_Default (for now set to 10s)
-          -     comments about sqlite sharedcache code why not a good idea to use and why still used
+          - comments about sqlite sharedcache code why not a good idea to use and why still used
         - TrivialDocumentDB
           - minor cleanups
-
       - SQL
         - SQLite
           - for SQLITE support - document default busy-timeout behavior for library, and provide my own kBusyTimeout_Default (for now set to 10s)
-          -     comments about sqlite sharedcache code why not a good idea to use and why still used
-
+          - comments about sqlite sharedcache code why not a good idea to use and why still used
     - DataExchange
       - Variant
         - JSON
@@ -61,35 +63,38 @@ especially those they need to be aware of when upgrading.
             - support case of non-seekable stream handed to JSONReader - just document it doesn't get seek offset reliably set in that case
       - VariantValue
         - **fixed serveral serious bugs in equals/threeway comparer for VariantValue** (and added regtest to capture some)
-
     - Memory
       - Common
         - Insert() cleanups
         - Cleanups to CopyOverlappingBytes etc (Common.inl)
-
-
     - Streams
       - BufferedInputStream 
         - use Seekability overload instead of bool for New methods
         - fixed missing SeekRead() method from BufferedInputStream and fixed Read to handle fSeekOffset_ == fBufferOfAllReadDataSoFar_.size() case better
-
       - Common
         - Streams::GetSeekability() now undeprecated - useful method (though trivial) and often better to call IsSeekable
       - TextToBinary
         - Reader module (New) supports optional<SeekableFlag> or documents which overloads always produce seekable results
-
+  - Frameworks
+    - SystemPerformance
+      - Instruments
+        - Filesystem
+          - fixed typo in name (rarely used so dont worry - fBytesTransfered -> fBytesTransferred
+    - Auth
+      - OAuth
+        - Configuration
+          - ODR violation fixed (decltype of lambda used in type)
 - Samples
   - AppSettings
     - fixedup error handling so doesn't crash
     - re-enabled Samples-AppSettings/AppSettings in regression tests script
   - SQL
-    -   lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
+    - lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
   - DocumentDB
-    -   lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
-
+    - lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
 
 - lose support for ubuntu 24.10 - now end of life replaced by 25.04
-  (docker containers, .github actions, etc)
+  - (docker containers, .github actions, etc)
 
 - Build Scripts
   - configure and build script support for VSVARS_MSVC_RUNTIME_LIBRARY variable and --msvc-runtime-library argument for visual studio
@@ -102,28 +107,17 @@ especially those they need to be aware of when upgrading.
     - new tests getall with filters/conunctions etc
     - start adding Test with filter and projection but not working - database document tests
 
-
-- Frameworks
-  - SystemPerformance
-    - Instruments
-      - Filesystem
-        - fixed typo in name (rarely used so dont worry - fBytesTransfered -> fBytesTransferred
-  - Auth
-    - OAuth
-      - Configuration
-        - ODR violation fixed (decltype of lambda used in type)
-
 - Compiler Bug Defines
   -     qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy seems broken for new case for _LIBCPP_VERSION = 200100 on ubuntu 25.04
   - fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy bug define
     qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy BWA
   - bug defines for _MSC_VER_2k22_17Pt14_; 
   - lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy: qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
-  -  updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
-  -  new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
-    updated compiler versions for qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-    docs and fix qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy to be broken on clang++20 and ubuntu 25.04
-    fixed bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy for apple
+  - updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
+  - new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
+  - updated compiler versions for qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+  - docs and fix qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy to be broken on clang++20 and ubuntu 25.04
+  - fixed bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy for apple
 
 - DockerFile
   - Windows
@@ -134,44 +128,68 @@ especially those they need to be aware of when upgrading.
     - container use env:VS_17_14_2
 
 - Github Actions
-  -     try runs_on windows-2025 for building windows containers
-  -  parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
-  -  run on windows-latest not windows-2025 for docker build containers cuz runs out of space otherwise
+  - try runs_on windows-2025 for building windows containers
+  - parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
+  - run on windows-latest not windows-2025 for docker build containers cuz runs out of space otherwise
 
 - Scripts
-  -  new helper scripot ScriptsLib/ResolveIP
+  - new helper scripot ScriptsLib/ResolveIP
 
 - ThirdPartyComponents
   - googletest
-    - google test 1.17.0
-  -  sqlite
-    - 3490200
+    - VERSION=1.17.0
+  - sqlite
+    - VERSION: 3490200
   - StrawberryPerl
     - PERL_VERSION_=5.40.2.1 strawberry perl
-
   - libxml2 
-    - 2.14.3
-
+    - VERSION=2.14.3
   - mongo-cxx-driver
-    incomplete progress towards supporting MONGOCXXDRIRVER_VERSION_=r4.1.0
-    mongo-cxx-driver supports r4.1.0 on windows (so enabling by default)
-    fixed mongoc client (new version) build for unix (also need same patch of rc files for static link)
-    makefile fixed makefile issue with ThirdPartyComponents/mongo-cxx-driver/Makefile
-    workaround issue wtih Wfree-nonheap-object warnings from mongo-cxx-driver
-
+    - Supporting MONGOCXXDRIRVER_VERSION_=r4.1.0
+    - mongo-cxx-driver supports r4.1.0 on windows (so enabling by default)
+    - fixed mongoc client (new version) build for unix (also need same patch of rc files for static link)
+    - makefile fixed makefile issue with ThirdPartyComponents/mongo-cxx-driver/Makefile
+    - workaround issue wtih Wfree-nonheap-object warnings from mongo-cxx-driver
   - Build System 
     - using Medusa instead of Hercules for builds (updated notes/docs on build lines etc)
     - use EXTRA_DOCKER_ARGS= with add-host line and new ResolveIP script to workaround issues with docker containers accessing names that cannot be resolved inside container(?? at least I cannot figure easy way how)
-
   - Build Scripts
     - configure
       - Wfree-nonheap-object warning changes - one suppression -and removed configure suppression of this for some cases -just handle more locally in cpp files as needed
     - Top Level Makefile
       - Added xxd to list of check-prerequisite-tools-common: since used in regtests to build regtests (and elsewhere)
-
 - Samples
-  - 
-use dpg-deb --root-owner-group instead of deb to build .deb installers (avoid warning on latest ubuntu)
+  - use dpg-deb --root-owner-group instead of deb to build .deb installers (avoid warning on latest ubuntu)
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14. 15 }
+  - Clang++ { unix: 15, 16, 17, 18, 19, 20; XCode: 15.2, 15.3, 16.0 }
+  - MSVC: { 17.14.2 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20241208.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 25.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
 
 -----
