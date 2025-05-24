@@ -220,7 +220,7 @@ doBld_:
 	cp -r $(BUILT_HTML_DIR) $(WIX_WORKDIR)html
 	if [ -z "$(ls -A ${WIX_WORKDIR}html)" ]; then\
 		# if no files - make some file so build doesn't fail\
-		echo "<html><body>empty</body></html>" > ${WIX_WORKDIR}html/index.html\
+		echo "<html><body>empty</body></html>" > ${WIX_WORKDIR}html/index.html;\
 	fi
 	$(WIX_PATH_PREFIX) heat dir $(HTMLDIR_WINDOWSPATH) -nologo -o $(WIXHTMLFRAGFILE_WINDOWPATH) \
 		-scom -frag -srd -sreg -gg \
