@@ -152,9 +152,10 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 
-- WSL (tested on Ubuntu 22.04) test
+- WSL (tested on Ubuntu 24.04) test
   (inside WSL2 bash prompt)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
+  [[apx 7 hrs]]
 
   ```bash
   MONGO_CONNECTION_STRING=mongodb://admin:pass@mongodb:27017 ScriptsLib/RunLocalWSLRegressionTests
