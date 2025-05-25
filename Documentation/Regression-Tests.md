@@ -158,5 +158,5 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
   [[apx 7 hrs]]
 
   ```bash
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@mongodb:27017 ScriptsLib/RunLocalWSLRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 ScriptsLib/RunLocalWSLRegressionTests
   ```
