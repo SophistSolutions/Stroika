@@ -143,7 +143,7 @@ docker frequently reports this as corruption and 500 errors and no other indicat
 (used for LGP development - very optional)
 
 - `make stroika-dev-containers`
-- `for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2410 Stroika-Dev-2504; do docker start $i; docker exec -it $i sudo service ssh start; done`
+- `for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504; do docker start $i; docker exec -it $i sudo service ssh start; done`
 
 ## Troubleshooting
 
