@@ -3674,7 +3674,7 @@ TRIED alignas to fix on the array but no luck
 /**
  *  \def Stroika_Foundation_Common_STRUCT_PACKED
  *
- *  Make the argument strucuture packed - with as little empty space between elements as possible. This is not portable,
+ *  Make the argument structure packed - with as little empty space between elements as possible. This is not portable,
  *  but generally works.
  *
  *  \par Example Usage

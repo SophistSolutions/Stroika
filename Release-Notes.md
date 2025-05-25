@@ -13,7 +13,7 @@ especially those they need to be aware of when upgrading.
 
 - DocumentDB support
   - various MongoDB client bugfixes
-  - many more SQLite bugfixes (not works pretty decently - at least usable).
+  - many SQLite bugfixes - projection and filter done in DB now
 - SQLite (documentdb and sql) - improved busy handling
 - lose support for ubuntu 24.10 - now end of life replaced by 25.04
 
@@ -25,10 +25,41 @@ especially those they need to be aware of when upgrading.
 #### Change Details
 
 - Documentation
-  - build docs
+  - build docs etc
+- Build System
+  - lose support for ubuntu 24.10 - now end of life replaced by 25.04
+    - (docker containers, .github actions, etc)
+  - using Medusa instead of Hercules for builds (updated notes/docs on build lines etc)
+  - use EXTRA_DOCKER_ARGS= with add-host line and new ResolveIP script to workaround issues with docker containers accessing names that cannot be resolved inside container(?? at least I cannot figure easy way how)
+  - DockerFile
+    - Windows
+      - set SecurityProtocol in dockerfile more carefully so works on newer windows
+      - experiment with ltsc2025 for windows dockerfile
+      - fixed docker build for windows so using servercore:ltsc2025 (except on github actions)
+      - container use env:VS_17_14_2
+  - Github Actions
+    - try runs_on windows-2025 for building windows containers
+    - parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
+    - run on windows-latest not windows-2025 for docker build containers cuz runs out of space otherwise
+  - Makefile (top level)
+    - Added xxd to list of check-prerequisite-tools-common: since used in regtests to build regtests (and elsewhere)
+  - Scripts
+    - configure and build script support for VSVARS_MSVC_RUNTIME_LIBRARY variable and --msvc-runtime-library argument for visual studio
+    - configure
+      - Wfree-nonheap-object warning changes - one suppression -and removed configure suppression of this for some cases -just handle more locally in cpp files as needed
+    - **new** ScriptsLib/ResolveIP
 - Library
   - Foundation
     - Common
+      - Compiler Bug Defines
+        - fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy bug define (new case for _LIBCPP_VERSION = 200100 on ubuntu 25.04) etc
+          qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy BWA
+        - bug defines for _MSC_VER_2k22_17Pt14_; 
+        - lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy: qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
+        - updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
+        - new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
+        - docs and fix qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy to be broken on clang++20 and ubuntu 25.04
+        - fixed bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy for apple
       - KeyValuePair
         - A few minor noexcept cleanups
     - Containers
@@ -79,7 +110,7 @@ especially those they need to be aware of when upgrading.
       - Common
         - Streams::GetSeekability() now undeprecated - useful method (though trivial) and often better to call IsSeekable
       - TextToBinary
-        - Reader module (New) supports optional<SeekableFlag> or documents which overloads always produce seekable results
+        - Reader module (New) supports optional\<SeekableFlag> or documents which overloads always produce seekable results
   - Frameworks
     - SystemPerformance
       - Instruments
@@ -90,6 +121,8 @@ especially those they need to be aware of when upgrading.
         - Configuration
           - ODR violation fixed (decltype of lambda used in type)
 - Samples
+  - Multiple Samples
+    - use dpg-deb --root-owner-group instead of deb to build .deb installers (avoid warning on latest ubuntu)
   - AppSettings
     - fixedup error handling so doesn't crash
     - re-enabled Samples-AppSettings/AppSettings in regression tests script
@@ -97,49 +130,13 @@ especially those they need to be aware of when upgrading.
     - lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
   - DocumentDB
     - lose .fBusyTimeout option setting from samples - just use builin default now (may need to revisit/tune both)
-
-- lose support for ubuntu 24.10 - now end of life replaced by 25.04
-  - (docker containers, .github actions, etc)
-
-- Build Scripts
-  - configure and build script support for VSVARS_MSVC_RUNTIME_LIBRARY variable and --msvc-runtime-library argument for visual studio
-
-- Regression Tests
+- Tests
   - cosmetic regtest cleanups (raw strings mostly)
   - Improvements to documentdb regtest
   - Document DB regtests
     - many cleanups/improvements
     - new tests getall with filters/conunctions etc
     - start adding Test with filter and projection but not working - database document tests
-
-- Compiler Bug Defines
-  -     qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy seems broken for new case for _LIBCPP_VERSION = 200100 on ubuntu 25.04
-  - fixed qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy bug define
-    qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy BWA
-  - bug defines for _MSC_VER_2k22_17Pt14_; 
-  - lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy: qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
-  - updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
-  - new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
-  - updated compiler versions for qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-  - docs and fix qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy to be broken on clang++20 and ubuntu 25.04
-  - fixed bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy for apple
-
-- DockerFile
-  - Windows
-    - set SecurityProtocol in dockerfile more carefully so works on newer windows
-    - experiment with ltsc2025 for windows dockerfile
-    - use VS_17_14_0
-    - fixed docker build for windows so using servercore:ltsc2025
-    - container use env:VS_17_14_2
-
-- Github Actions
-  - try runs_on windows-2025 for building windows containers
-  - parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
-  - run on windows-latest not windows-2025 for docker build containers cuz runs out of space otherwise
-
-- Scripts
-  - new helper scripot ScriptsLib/ResolveIP
-
 - ThirdPartyComponents
   - googletest
     - VERSION=1.17.0
@@ -155,16 +152,6 @@ especially those they need to be aware of when upgrading.
     - fixed mongoc client (new version) build for unix (also need same patch of rc files for static link)
     - makefile fixed makefile issue with ThirdPartyComponents/mongo-cxx-driver/Makefile
     - workaround issue wtih Wfree-nonheap-object warnings from mongo-cxx-driver
-  - Build System 
-    - using Medusa instead of Hercules for builds (updated notes/docs on build lines etc)
-    - use EXTRA_DOCKER_ARGS= with add-host line and new ResolveIP script to workaround issues with docker containers accessing names that cannot be resolved inside container(?? at least I cannot figure easy way how)
-  - Build Scripts
-    - configure
-      - Wfree-nonheap-object warning changes - one suppression -and removed configure suppression of this for some cases -just handle more locally in cpp files as needed
-    - Top Level Makefile
-      - Added xxd to list of check-prerequisite-tools-common: since used in regtests to build regtests (and elsewhere)
-- Samples
-  - use dpg-deb --root-owner-group instead of deb to build .deb installers (avoid warning on latest ubuntu)
 
 #### Release-Validation
 
@@ -196,9 +183,7 @@ especially those they need to be aware of when upgrading.
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-
 -----
-
 
 ### 3.0d18 {2025-04-22} {[diff](../../compare/3.0d17...3.0d18)}
 
