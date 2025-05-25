@@ -11,7 +11,7 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 
-- DocumentDB support
+- Foundation::Database::Document
   - various MongoDB client bugfixes
   - many SQLite bugfixes - projection and filter done in DB now
 - SQLite (documentdb and sql) - improved busy handling
@@ -56,9 +56,7 @@ especially those they need to be aware of when upgrading.
           qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy BWA
         - bug defines for _MSC_VER_2k22_17Pt14_; 
         - lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy: qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
-        - updated qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy define so clang++15 builds work on ubuntu
         - new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
-        - docs and fix qCompilerAndStdLib_inline_const_order_wrong_sometimes_Buggy to be broken on clang++20 and ubuntu 25.04
         - fixed bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy for apple
       - KeyValuePair
         - A few minor noexcept cleanups
