@@ -7,7 +7,7 @@ git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
 ~~~
 
-## Optionally enable VS2k22 tools (not needed for stroika)
+## Optionally enable VS2k22 tools (not needed for stroika, requires using cmd)
 
 ~~~
 "c:\Program Files\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"

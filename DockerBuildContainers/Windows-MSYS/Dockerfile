@@ -114,10 +114,13 @@ RUN IF ($env:INSTALL_QUASAR -eq 1) { \
 # and much worse with windows (in part due to available shell commands)
 CMD ["bash.exe", "--login"]
 
-## @todo - NOT SURE A GOOD IDEA - EXPLAIN WHY WE CARE - think had todo with runnning -exec and coming up in a reasonable spot? And maybe
-## home dir??? soemthign quirly with bashrc default scripts on startup - dont remember
-# MSYS defaults to ignorning the inherited path - see https://www.msys2.org/wiki/MSYS2-introduction/
+# NOT sure if this is a good idea. Docs on MSYS2_PATH_TYPE in https://www.msys2.org/wiki/MSYS2-introduction/
+# suggest its NOT a good idea. But without it, I get:
+#       Missing component jq: try pacman -S mingw-w64-x86_64-jq; and maybe add export PATH="$PATH:/mingw64/bin" to ~/.bashrc
+#       make[1]: *** [Makefile:363: check-prerequisite-tools-common] Error 1
+# when I try to build Stroika inside a container (following the instructions in Getting-Started-With-Stroika.md)
 ENV MSYS2_PATH_TYPE=inherit
+
 
 ### NOTE TO RUN
 ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
