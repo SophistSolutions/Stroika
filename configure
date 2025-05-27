@@ -602,6 +602,14 @@ sub     GetClangVersion_
 	}
 }
 
+sub     HasStdLib_
+{
+	my $compilerDriver = trim(shift(@_));
+	my $stdLib = trim(shift(@_));
+	return system("printf \"#include <ciso646>\nint main () {}\" | $compilerDriver -E -stdlib=$stdLib -x c++ -dM - 2>/dev/null > /dev/null") == 0;
+}
+
+
 sub     IsMSVCCompiler_
 {
 	my $x = shift(@_);
@@ -3331,6 +3339,10 @@ if ($onlyGenerateIfCompilerExists) {
 		if ($generate && $itsVersion < 16.0 && $STDCXXLIB eq "libc++" && $ubuntuVersion == 24.04) {
 			$generate = false;
 			$generateBecause = "Libc++ only supports Clang 16 and later on ubuntu 24.04";
+		}
+		if ($generate && !HasStdLib_ ($COMPILER_DRIVER_CPlusPlus, $STDCXXLIB)) {
+			$generate = false;
+			$generateBecause = "$STDCXXLIB not available for $COMPILER_DRIVER_CPlusPlus";
 		}
 	}
 	if ($generate && $ubuntuVersion != 0) {
