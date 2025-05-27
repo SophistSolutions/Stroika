@@ -27,10 +27,10 @@ ARG CHOCO_VERSION_ARG=""
 # install cygwin
 RUN choco install -y cygwin cyg-get
 
-# # Add cygwin to the path (appears not necessary, if we use full path to bash.exe in CMD)
-# RUN  \
-#     $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin'; \
-#     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
+# Add cygwin to the path
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin'; \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
 # Set HOME so we know where to copy bash_profile (seems to default to "" before we've actually run cygwin)
 RUN  \
@@ -57,8 +57,7 @@ RUN IF %INSTALL_QUASAR%==1 ( npm i -g npm @quasar/cli )
 
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
-# Use full path to bash.exe so we don't need to add c:/tools/cygwin/bin to $PATH
-CMD ["c:/tools/cygwin/bin/bash.exe", "--login"]
+CMD ["bash.exe", "--login"]
 
 ### NOTE TO RUN
 ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
