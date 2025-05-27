@@ -14,4 +14,4 @@ get_script_dir_ () {
      echo "$DIR"
 }
 
-powershell -ExecutionPolicy Bypass -File "$(get_script_dir_)/WarnIfNotWindowsDeveloperMode.ps1"
+cd $(get_script_dir_); powershell -ExecutionPolicy Bypass -File "WarnIfNotWindowsDeveloperMode.ps1"
