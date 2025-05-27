@@ -8,6 +8,8 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/IO/FileSystem/Exception.h"
 
 #include "CommandLine.h"
 
@@ -224,29 +226,40 @@ CommandLine::CommandLine (const String& cmdLine)
 {
 }
 
-CommandLine ::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
+CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
 {
-#if qStroika_Foundation_Common_Platform_Windows
-    // this is the version of CMD.exe to invoke (I think)
-    // https://en.wikipedia.org/wiki/COMSPEC
-    static const String kCOMPSEC_ = [] () -> String {
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        if (const char* env_p = std::getenv ("COMSPEC")) {
-            return String::FromNarrowSDKString (env_p);
-        }
-        DISABLE_COMPILER_MSC_WARNING_END (4996)
-        return "C:\\WINDOWS\\system32\\cmd.exe"sv;
-    }();
-#endif
     switch (wrapInShell) {
         case WrapInShell::eBash:
+#if qStroika_Foundation_Common_Platform_Windows
+        {
+            // https://stroika.atlassian.net/browse/STK-1029
+            // Weird bug workaround only needed on Medusa? - unclear why
+            if (optional<filesystem::path> pp = FindExecutableInPath ("bash"sv)) {
+                fArgs_ += String{*pp};
+            }
+            else {
+                Throw (IO::FileSystem::Exception{make_error_code (errc::no_such_file_or_directory), filesystem::path{"bash"sv}});
+            }
+        }
+#else
             fArgs_ += "bash"sv;
+#endif
             fArgs_ += "-c"sv;
             fArgs_ += cmdLine;
             fShellStyleQuoting_ = StringShellQuoting::eBash;
             break;
 #if qStroika_Foundation_Common_Platform_Windows
         case WrapInShell::eWindowsCMD:
+            // this is the version of CMD.exe to invoke (I think)
+            // https://en.wikipedia.org/wiki/COMSPEC
+            static const String kCOMPSEC_ = [] () -> String {
+                DISABLE_COMPILER_MSC_WARNING_START (4996)
+                if (const char* env_p = std::getenv ("COMSPEC")) {
+                    return String::FromNarrowSDKString (env_p);
+                }
+                DISABLE_COMPILER_MSC_WARNING_END (4996)
+                return "C:\\WINDOWS\\system32\\cmd.exe"sv;
+            }();
             fArgs_ += kCOMPSEC_;
             // fArgs_ += "/D";
             //   fArgs_ += "/E:OFF";
