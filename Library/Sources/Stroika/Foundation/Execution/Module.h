@@ -92,6 +92,16 @@ namespace Stroika::Foundation::Execution {
      *  On Windows, if ext is missing, also check kPathEXT
      * 
      *  If no matches, return nullopt.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          if (optional<filesystem::path> pp = FindExecutableInPath ("bash"sv)) {
+     *              fArgs_ += String{*pp};
+     *          }
+     *          else {
+     *              Throw (IO::FileSystem::Exception{make_error_code (errc::no_such_file_or_directory), filesystem::path{"bash"sv}});
+     *          }
+     *      \endcode
      */
     optional<filesystem::path> FindExecutableInPath (const filesystem::path& fn);
 
