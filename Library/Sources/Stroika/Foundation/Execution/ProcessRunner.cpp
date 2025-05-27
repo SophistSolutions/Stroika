@@ -1145,10 +1145,10 @@ namespace {
                          */
                         auto mkPipeNoWait_ = [] (HANDLE ioHandle) -> void {
                             if (ioHandle != INVALID_HANDLE_VALUE) {
-                                DWORD stdinMode = 0;
-                                Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
-                                stdinMode |= PIPE_NOWAIT;
-                                Verify (::SetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr));
+                                DWORD mode = 0;
+                                Verify (::GetNamedPipeHandleState (ioHandle, &mode, nullptr, nullptr, nullptr, nullptr, 0));
+                                mode |= PIPE_NOWAIT;
+                                Verify (::SetNamedPipeHandleState (ioHandle, &mode, nullptr, nullptr));
                             }
                         };
                         mkPipeNoWait_ (useSTDIN);
@@ -1255,25 +1255,10 @@ namespace {
 
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-
-                if (useSTDOUT != INVALID_HANDLE_VALUE) {
-                    DWORD stdoutMode = 0;
-                    Verify (::GetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr, nullptr, nullptr, 0));
-                    stdoutMode &= ~PIPE_NOWAIT;
-                    Verify (::SetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr));
-
-                    /*
-                     *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
-                     */
-                    if (out != nullptr) {
-                        byte  buf[kReadBufSize_];
-                        DWORD nBytesRead = 0;
-                        while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
-                            out.Write (span{buf, nBytesRead});
-                        }
-                    }
-                }
-
+               
+                readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
+                readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
+                
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
                         Throw (ProcessRunner::Exception{"Child process failed"sv, nullopt, processExitCode});
@@ -1283,8 +1268,6 @@ namespace {
                     processResult->store (ProcessRunner::ProcessResultType{static_cast<int> (processExitCode)});
                 }
             }
-
-            // @todo MAYBE need to copy STDERRR TOO!!!
         }
         catch (...) {
             // sadly and confusingly, CreateProcess() appears to set processInfo.hProcess and processInfo.hThread to nullptr - at least on some failures
