@@ -249,7 +249,7 @@ CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
             fShellStyleQuoting_ = StringShellQuoting::eBash;
             break;
 #if qStroika_Foundation_Common_Platform_Windows
-        case WrapInShell::eWindowsCMD:
+        case WrapInShell::eWindowsCMD: {
             // this is the version of CMD.exe to invoke (I think)
             // https://en.wikipedia.org/wiki/COMSPEC
             static const String kCOMPSEC_ = [] () -> String {
@@ -267,7 +267,7 @@ CommandLine::CommandLine (WrapInShell wrapInShell, const String& cmdLine)
             fArgs_ += "/C"sv; // Carries out the command specified by string and then terminates
             fArgs_ += cmdLine;
             fShellStyleQuoting_ = StringShellQuoting::eWindowsCMD;
-            break;
+        } break;
 #endif
         default:
             RequireNotReached ();
