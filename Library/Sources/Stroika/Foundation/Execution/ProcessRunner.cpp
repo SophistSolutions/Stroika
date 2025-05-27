@@ -1255,10 +1255,10 @@ namespace {
 
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-               
+
                 readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
                 readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
-                
+
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
                         Throw (ProcessRunner::Exception{"Child process failed"sv, nullopt, processExitCode});
