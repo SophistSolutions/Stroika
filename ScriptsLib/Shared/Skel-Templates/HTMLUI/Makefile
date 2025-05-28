@@ -145,7 +145,7 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # this to make the out of box experience installing Stroika a little more seemless.
 # SEE https://stroika.atlassian.net/browse/STK-940
 Builds/__AUTOMATIC_MAKE_PROJECT_FILES__:
-	@make project-files
+	@$(MAKE) project-files
 	@touch Builds/__AUTOMATIC_MAKE_PROJECT_FILES__
 endif
 
