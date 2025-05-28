@@ -370,7 +370,7 @@ ifneq (,$(findstring Darwin,$(DETECTED_HOST_OS)))
 	@ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type gsed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool gsed && exit 1)"
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@$(StroikaRoot)/ScriptsLib/WarnIfNotWindowsDeveloperMode
+	@$(StroikaRoot)ScriptsLib/WarnIfNotWindowsDeveloperMode
 endif
 	@mkdir -p IntermediateFiles; touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON
 
