@@ -594,9 +594,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
 void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
 {
-    Require (not IsDone_ ()); // NOTE - SAW FAIL ONCE - 2024-09-27 - MacOS - github - https://github.com/SophistSolutions/Stroika/actions/runs/11062067662/job/30735869523
-        // and https://github.com/SophistSolutions/Stroika/actions/runs/11230328605/job/31217486475 MACOS ONLY - 2024-10-08
-        // and https://github.com/SophistSolutions/Stroika/actions/runs/12872068258/job/35888537430 MACOS ONLY - 2025-01-20
+    // NOTE - SAW not IsDone_ FAIL ONCE - 2024-09-27 - MacOS - github - https://github.com/SophistSolutions/Stroika/actions/runs/11062067662/job/30735869523
+    // and https://github.com/SophistSolutions/Stroika/actions/runs/11230328605/job/31217486475 MACOS ONLY - 2024-10-08
+    // and https://github.com/SophistSolutions/Stroika/actions/runs/12872068258/job/35888537430 MACOS ONLY - 2025-01-20
+    // and https://github.com/SophistSolutions/Stroika/actions/runs/15288729158/job/43004184991 MACOS ONLY - 2025-05-28
+    Require (not IsDone_ ());
+
     Require (fAbortRequested_);
     //TraceContextBumper ctx{"Thread::Rep_::NotifyOfAbortFromAnyThread_"};
 
