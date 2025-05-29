@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d19 {2025-05-29} {[diff](../../compare/3.0d18...3.0d19)}   NOT FINAL
+### 3.0d19 {2025-05-29} {[diff](../../compare/3.0d18...3.0d19)}
 
 #### TLDR
 
@@ -64,7 +64,6 @@ especially those they need to be aware of when upgrading.
         - bug defines for _MSC_VER_2k22_17Pt14_; 
         - lose qCompilerAndStdLib_RecuriveTypeOrFunctionDependencyTooComplex_Buggy: qCompilerAndStdLib_function_dependency_too_complex_Buggy used instead - same thing
         - new bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy and BWA
-        - fixed bug define qCompilerAndStdLib_XXXCLANG16Bug_Crasher_Buggy for apple
       - KeyValuePair
         - A few minor noexcept cleanups
     - Containers
