@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Hack to detect problem in windows, and warn user
+#
 
 get_script_dir_ () {
      #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/

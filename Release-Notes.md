@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d19 {2025-05-??} {[diff](../../compare/3.0d18...3.0d19)}   NOT FINAL
+### 3.0d19 {2025-05-29} {[diff](../../compare/3.0d18...3.0d19)}   NOT FINAL
 
 #### TLDR
 
@@ -16,6 +16,7 @@ especially those they need to be aware of when upgrading.
   - many SQLite bugfixes - projection and filter done in DB now
 - SQLite (documentdb and sql) - improved busy handling
 - lose support for ubuntu 24.10 - now end of life replaced by 25.04
+- changed regression test server from hercules to medusa
 
 #### Upgrade Notes (3.0d18 to 3.0d19)
 
@@ -37,6 +38,7 @@ especially those they need to be aware of when upgrading.
       - experiment with ltsc2025 for windows dockerfile
       - fixed docker build for windows so using servercore:ltsc2025 (except on github actions)
       - container use env:VS_17_14_2
+      - Minor cleanups to windows docker cygwin dockerifle
   - Github Actions
     - try runs_on windows-2025 for building windows containers
     - parameterize WINDOWS_BASE_IMAGE setting for windows dockerfile container build-images, and use in github actions to swithc windows version for build cuz running out of space
@@ -47,7 +49,12 @@ especially those they need to be aware of when upgrading.
     - configure and build script support for VSVARS_MSVC_RUNTIME_LIBRARY variable and --msvc-runtime-library argument for visual studio
     - configure
       - Wfree-nonheap-object warning changes - one suppression -and removed configure suppression of this for some cases -just handle more locally in cpp files as needed
+      - for unix/clang = check HasStdLib_ if only-if- flag present in configure
+      - tweaks to configure for running under WSL (and missing /bad sudo and missing clang versions)
     - **new** ScriptsLib/ResolveIP
+    - Skel
+      - in skel makefile - use $(MAKE) instead of make to aviod + -j warning
+    - WarnIfNotWindowsDeveloperMode (hack to warn windows users)
 - Library
   - Foundation
     - Common
@@ -97,6 +104,11 @@ especially those they need to be aware of when upgrading.
             - support case of non-seekable stream handed to JSONReader - just document it doesn't get seek offset reliably set in that case
       - VariantValue
         - **fixed serveral serious bugs in equals/threeway comparer for VariantValue** (and added regtest to capture some)
+    - Execution
+      - CommandLine
+        - BWA in CommandLine::CommandLine for https://stroika.atlassian.net/browse/STK-1029 WrapInShell::eBash issue on Medusa
+      - ProcessRunner
+        - Windows ProcessRunner cleanups - factoring - and use readAnyAvailableAndCopy2StreamWithoutBlocking on stderr at end - so we capture oll stderr data
     - Memory
       - Common
         - Insert() cleanups
@@ -137,13 +149,14 @@ especially those they need to be aware of when upgrading.
     - start adding Test with filter and projection but not working - database document tests
 - ThirdPartyComponents
   - googletest
-    - VERSION=1.17.0
+    - 1.17.0
   - sqlite
-    - VERSION: 3490200
+    - 3490200
   - StrawberryPerl
-    - PERL_VERSION_=5.40.2.1 strawberry perl
+    - 5.40.2.1
   - libxml2 
-    - VERSION=2.14.3
+    - 2.14.3
+    - lose one setting of LIBXML2_WITH_ZLIB=OFF in libxml2 makefile
   - mongo-cxx-driver
     - Supporting MONGOCXXDRIRVER_VERSION_=r4.1.0
     - mongo-cxx-driver supports r4.1.0 on windows (so enabling by default)
