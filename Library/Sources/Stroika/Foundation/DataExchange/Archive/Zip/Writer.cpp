@@ -122,14 +122,6 @@ namespace {
             : fOutZipStream_{out}
             , fZipFile_{unzOpen2_64 ("", &fOutZipStream_)}
         {
-
-#if 0
-   err = zipOpenNewFileInZip3_64 (zf, savefilenameinzip, &zi, NULL, 0, NULL, 0, NULL /* comment*/,
-                                           (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
-                                           /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
-                                           -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64);
-#endif
-
             if (fZipFile_ == nullptr) [[unlikely]] {
                 static const RuntimeErrorException kException_{"failed to open zipfile"sv};
                 Throw (kException_);
@@ -143,6 +135,27 @@ namespace {
         virtual void Add (const String& fileName, const BLOB& data) override
         {
             // NYI
+#if 0
+            uint32_t crcFile = 0;
+            if ((password != NULL) && (err==ZIP_OK))
+                    err = getFileCrc(filenameinzip,buf,size_buf,&crcFile);
+
+
+   err = zipOpenNewFileInZip3_64 (zf, savefilenameinzip, &zi, NULL, 0, NULL, 0, NULL /* comment*/,
+                                           (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
+                                           /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
+                                           -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64);
+  err = zipWriteInFileInZip (zf,buf,(unsigned)size_read);
+                            if (err<0)
+                            {
+                                printf("error in writing %s in the zipfile\n",
+                                                 filenameinzip);
+                            }
+err = zipCloseFileInZip(zf);
+                    if (err!=ZIP_OK)
+                        printf("error in closing %s in the zipfile\n",
+                                    filenameinzip);
+#endif
         }
     };
 }
