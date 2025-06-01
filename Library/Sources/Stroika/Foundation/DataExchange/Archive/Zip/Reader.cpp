@@ -25,16 +25,16 @@ using std::byte;
 #if qStroika_HasComponent_zlib
 using namespace Stroika::Foundation::DataExchange::Archive::Zip::PrivateMinizip_;
 
-struct MyISeekInStream : zlib_filefunc64_def {
+struct MyZipLibInStream_ : zlib_filefunc64_def {
     Streams::InputStream::Ptr<byte> fInStream_;
 #if qStroika_Foundation_Debug_AssertionsChecked
     bool fOpened_{false};
 #endif
-    MyISeekInStream (const Streams::InputStream::Ptr<byte>& in)
+    MyZipLibInStream_ (const Streams::InputStream::Ptr<byte>& in)
         : fInStream_{in}
     {
         this->zopen64_file = [] (voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
-            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+            MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (not myThis->fOpened_);
             myThis->fOpened_ = true;
@@ -43,7 +43,7 @@ struct MyISeekInStream : zlib_filefunc64_def {
         };
         this->zread_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
             Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+            MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (myThis->fOpened_);
 #endif
@@ -57,7 +57,7 @@ struct MyISeekInStream : zlib_filefunc64_def {
         };
         this->ztell64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
             Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+            MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (myThis->fOpened_);
 #endif
@@ -65,7 +65,7 @@ struct MyISeekInStream : zlib_filefunc64_def {
         };
         this->zseek64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
             Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+            MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (myThis->fOpened_);
 #endif
@@ -88,7 +88,7 @@ struct MyISeekInStream : zlib_filefunc64_def {
         this->zclose_file = [] ([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
 #if qStroika_Foundation_Debug_AssertionsChecked
             Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+            MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
             Assert (myThis->fOpened_);
             myThis->fOpened_ = false;
 #endif
@@ -96,7 +96,7 @@ struct MyISeekInStream : zlib_filefunc64_def {
         };
         this->zerror_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
             Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-            [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+            [[maybe_unused]] MyZipLibInStream_* myThis = reinterpret_cast<MyZipLibInStream_*> (opaqueStream);
 #if qStroika_Foundation_Debug_AssertionsChecked
             Assert (myThis->fOpened_);
 #endif
@@ -104,7 +104,7 @@ struct MyISeekInStream : zlib_filefunc64_def {
         };
         this->opaque = this;
     }
-    ~MyISeekInStream ()
+    ~MyZipLibInStream_ ()
     {
 #if qStroika_Foundation_Debug_AssertionsChecked
         Assert (not fOpened_);
@@ -114,8 +114,8 @@ struct MyISeekInStream : zlib_filefunc64_def {
 
 class Zip::Reader::Rep_ : public Reader::_IRep {
 private:
-    MyISeekInStream fInSeekStream_;
-    unzFile         fZipFile_;
+    MyZipLibInStream_ fInSeekStream_;
+    unzFile           fZipFile_;
 
 public:
     Rep_ (const Streams::InputStream::Ptr<byte>& in)
