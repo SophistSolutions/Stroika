@@ -23,7 +23,6 @@ namespace Stroika::Foundation::DataExchange::Archive::Zip::PrivateMinizip_ {
     /*
      *  Part of Stroika IMPLEMENTATION - but not included in any Stroika headers.
      * 
-     * 
      * NOTE/CREDIT:
      *      This code originally cribbed from ZLib (http://www.zlib.net/) 1.2.8 contrib/minizip
      *

@@ -332,7 +332,7 @@ namespace {
 #endif
 
 }
-    /*
+/*
        Compare two filename (fileName1,fileName2).
        If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
        If iCaseSenisivity = 2, comparision is not case sensitivity (like strcmpi
@@ -342,15 +342,15 @@ namespace {
 
     */
 int PrivateMinizip_::unzStringFileNameCompare (const char* fileName1, const char* fileName2, int iCaseSensitivity)
-    {
-        if (iCaseSensitivity == 0)
-            iCaseSensitivity = CASESENSITIVITYDEFAULTVALUE;
+{
+    if (iCaseSensitivity == 0)
+        iCaseSensitivity = CASESENSITIVITYDEFAULTVALUE;
 
-        if (iCaseSensitivity == 1)
-            return strcmp (fileName1, fileName2);
+    if (iCaseSensitivity == 1)
+        return strcmp (fileName1, fileName2);
 
-        return STRCMPCASENOSENTIVEFUNCTION (fileName1, fileName2);
-    }
+    return STRCMPCASENOSENTIVEFUNCTION (fileName1, fileName2);
+}
 
 namespace {
 

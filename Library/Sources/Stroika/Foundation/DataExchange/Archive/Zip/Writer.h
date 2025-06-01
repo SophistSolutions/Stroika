@@ -12,13 +12,14 @@
 
 /**
  *  \file
- *
- * TODO:
  */
 
 namespace Stroika::Foundation::DataExchange::Archive::Zip::Writer {
 
 #if qStroika_HasComponent_zlib
+    /**
+     *  \req writeTo.IsSeekable ()
+     */
     Archive::Writer::Ptr New (const Streams::OutputStream::Ptr<byte>& writeTo);
 #endif
 

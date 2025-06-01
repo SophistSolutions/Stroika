@@ -116,8 +116,8 @@ private:
 
 public:
     Rep_ (const Streams::InputStream::Ptr<byte>& in)
-        : fInSeekStream_ (in)
-        , fZipFile_ (unzOpen2_64 ("", &fInSeekStream_))
+        : fInSeekStream_{in}
+        , fZipFile_{unzOpen2_64 ("", &fInSeekStream_)}
     {
         if (fZipFile_ == nullptr) [[unlikely]] {
             static const RuntimeErrorException kException_{"failed to open zipfile"sv};
