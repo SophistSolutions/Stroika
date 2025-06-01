@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Private_minizip_.h"
-#include "Stroika/Foundation/Execution/Finally.h"           // not needed yet, but maybe still - wait til working
+#include "Stroika/Foundation/Execution/Finally.h" // not needed yet, but maybe still - wait til working
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Writer.h"
@@ -54,8 +54,7 @@ namespace {
 #endif
                 myThis->fOutSteram_.Write (span{reinterpret_cast<const byte*> (buf), size});
                 return static_cast<uLong> (size);
-                
-             };
+            };
             this->ztell64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyZipLibOutStream_* myThis = reinterpret_cast<MyZipLibOutStream_*> (opaqueStream);
@@ -118,11 +117,19 @@ namespace {
 namespace {
     struct MyRep_ : Archive::Writer::IRep {
         MyZipLibOutStream_ fOutZipStream_;
-        unzFile           fZipFile_;
+        unzFile            fZipFile_;
         MyRep_ (const OutputStream::Ptr<byte>& out)
             : fOutZipStream_{out}
             , fZipFile_{unzOpen2_64 ("", &fOutZipStream_)}
         {
+
+#if 0
+   err = zipOpenNewFileInZip3_64 (zf, savefilenameinzip, &zi, NULL, 0, NULL, 0, NULL /* comment*/,
+                                           (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
+                                           /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
+                                           -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64);
+#endif
+
             if (fZipFile_ == nullptr) [[unlikely]] {
                 static const RuntimeErrorException kException_{"failed to open zipfile"sv};
                 Throw (kException_);
