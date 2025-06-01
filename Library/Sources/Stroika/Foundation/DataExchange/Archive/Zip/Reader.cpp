@@ -15,6 +15,7 @@
 #include "Reader.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
 using namespace Stroika::Foundation::Execution;
@@ -23,94 +24,96 @@ using std::byte;
 
 #if qStroika_HasComponent_zlib
 using namespace Stroika::Foundation::DataExchange::Archive::Zip::PrivateMinizip_;
+
+struct MyISeekInStream : zlib_filefunc64_def {
+    Streams::InputStream::Ptr<byte> fInStream_;
+#if qStroika_Foundation_Debug_AssertionsChecked
+    bool fOpened_{false};
+#endif
+    MyISeekInStream (const Streams::InputStream::Ptr<byte>& in)
+        : fInStream_{in}
+    {
+        this->zopen64_file = [] (voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
+            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (not myThis->fOpened_);
+            myThis->fOpened_ = true;
+#endif
+            return myThis;
+        };
+        this->zread_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
+            Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (myThis->fOpened_);
+#endif
+            size_t sz = myThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), size}).size ();
+            Assert (sz <= size);
+            return static_cast<uLong> (sz);
+        };
+        this->zwrite_file = [] (voidpf /*opaque*/, voidpf /*stream*/, const void* /*buf*/, uLong /*size*/) -> uLong {
+            RequireNotReached (); // read only zip
+            return static_cast<uLong> (UNZ_PARAMERROR);
+        };
+        this->ztell64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
+            Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (myThis->fOpened_);
+#endif
+            return myThis->fInStream_.GetOffset ();
+        };
+        this->zseek64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
+            Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (myThis->fOpened_);
+#endif
+            switch (origin) {
+                case ZLIB_FILEFUNC_SEEK_SET:
+                    myThis->fInStream_.Seek (offset);
+                    break;
+                case ZLIB_FILEFUNC_SEEK_CUR:
+                    myThis->fInStream_.Seek (Streams::eFromCurrent, offset);
+                    break;
+                case ZLIB_FILEFUNC_SEEK_END:
+                    myThis->fInStream_.Seek (Streams::eFromEnd, offset);
+                    break;
+                default:
+                    AssertNotReached ();
+                    return UNZ_PARAMERROR;
+            }
+            return UNZ_OK;
+        };
+        this->zclose_file = [] ([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+            MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+            Assert (myThis->fOpened_);
+            myThis->fOpened_ = false;
+#endif
+            return UNZ_OK;
+        };
+        this->zerror_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
+            Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
+            [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+#if qStroika_Foundation_Debug_AssertionsChecked
+            Assert (myThis->fOpened_);
+#endif
+            return UNZ_OK; // @todo - see what this means?
+        };
+        this->opaque = this;
+    }
+    ~MyISeekInStream ()
+    {
+#if qStroika_Foundation_Debug_AssertionsChecked
+        Assert (not fOpened_);
+#endif
+    }
+};
+
 class Zip::Reader::Rep_ : public Reader::_IRep {
 private:
-    struct MyISeekInStream : zlib_filefunc64_def {
-        Streams::InputStream::Ptr<byte> fInStream_;
-#if qStroika_Foundation_Debug_AssertionsChecked
-        bool fOpened_{false};
-#endif
-        MyISeekInStream (const Streams::InputStream::Ptr<byte>& in)
-            : fInStream_{in}
-        {
-            this->zopen64_file = [] (voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-#if qStroika_Foundation_Debug_AssertionsChecked
-                Assert (not myThis->fOpened_);
-                myThis->fOpened_ = true;
-#endif
-                return myThis;
-            };
-            this->zread_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
-                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-#if qStroika_Foundation_Debug_AssertionsChecked
-                Assert (myThis->fOpened_);
-#endif
-                size_t sz = myThis->fInStream_.ReadBlocking (span{reinterpret_cast<byte*> (buf), size}).size ();
-                Assert (sz <= size);
-                return static_cast<uLong> (sz);
-            };
-            this->zwrite_file = [] (voidpf /*opaque*/, voidpf /*stream*/, const void* /*buf*/, uLong /*size*/) -> uLong {
-                RequireNotReached (); // read only zip
-                return static_cast<uLong> (UNZ_PARAMERROR);
-            };
-            this->ztell64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
-                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-#if qStroika_Foundation_Debug_AssertionsChecked
-                Assert (myThis->fOpened_);
-#endif
-                return myThis->fInStream_.GetOffset ();
-            };
-            this->zseek64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
-                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-#if qStroika_Foundation_Debug_AssertionsChecked
-                Assert (myThis->fOpened_);
-#endif
-                switch (origin) {
-                    case ZLIB_FILEFUNC_SEEK_SET:
-                        myThis->fInStream_.Seek (offset);
-                        break;
-                    case ZLIB_FILEFUNC_SEEK_CUR:
-                        myThis->fInStream_.Seek (Streams::eFromCurrent, offset);
-                        break;
-                    case ZLIB_FILEFUNC_SEEK_END:
-                        myThis->fInStream_.Seek (Streams::eFromEnd, offset);
-                        break;
-                    default:
-                        AssertNotReached ();
-                        return UNZ_PARAMERROR;
-                }
-                return UNZ_OK;
-            };
-            this->zclose_file = [] ([[maybe_unused]] voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
-#if qStroika_Foundation_Debug_AssertionsChecked
-                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-                MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-                Assert (myThis->fOpened_);
-                myThis->fOpened_ = false;
-#endif
-                return UNZ_OK;
-            };
-            this->zerror_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
-                Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
-                [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
-#if qStroika_Foundation_Debug_AssertionsChecked
-                Assert (myThis->fOpened_);
-#endif
-                return UNZ_OK; // @todo - see what this means?
-            };
-            this->opaque = this;
-        }
-        ~MyISeekInStream ()
-        {
-#if qStroika_Foundation_Debug_AssertionsChecked
-            Assert (not fOpened_);
-#endif
-        }
-    };
     MyISeekInStream fInSeekStream_;
     unzFile         fZipFile_;
 
@@ -135,7 +138,6 @@ public:
         unz_global_info64 gi;
         int               err = unzGetGlobalInfo64 (fZipFile_, &gi);
         if (err != UNZ_OK) [[unlikely]] {
-            using namespace Characters;
             Throw (RuntimeErrorException{Format ("error {} with zipfile in unzGetGlobalInfo"_f, err)});
         }
         for (size_t i = 0; i < gi.number_entry; i++) {
@@ -146,14 +148,12 @@ public:
             //char charCrypt = ' ';
             err = ::unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof (filename_inzip), NULL, 0, NULL, 0);
             if (err != UNZ_OK) [[unlikely]] {
-                using namespace Characters;
                 Throw (RuntimeErrorException{Format ("error {} with zipfile in unzGetCurrentFileInfo64"_f, err)});
                 break;
             }
             if ((i + 1) < gi.number_entry) {
                 err = ::unzGoToNextFile_ (fZipFile_);
                 if (err != UNZ_OK) [[unlikely]] {
-                    using namespace Characters;
                     Throw (RuntimeErrorException{"error {} with zipfile in unzGoToNextFile"_f(err)});
                     break;
                 }
@@ -246,7 +246,6 @@ public:
     virtual Memory::BLOB GetData (const String& fileName) const override
     {
         if (unzLocateFile_ (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) [[unlikely]] {
-            using namespace Characters;
             Throw (RuntimeErrorException{Format ("File '{}' not found"_f, fileName)});
         }
         const char*                      password = nullptr;
@@ -257,7 +256,6 @@ public:
             byte buf[10 * 1024];
             err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (Memory::NEltsOf (buf)));
             if (err < 0) [[unlikely]] {
-                using namespace Characters;
                 Throw (RuntimeErrorException{Format (L"File '{}' error {} extracting"_f, fileName, err)});
             }
             else if (err > 0) {
