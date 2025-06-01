@@ -129,10 +129,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Statement.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Reader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Deflate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\GZip.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp" />
@@ -519,7 +520,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Utils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Writer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h" />
@@ -1026,6 +1030,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.inl" />

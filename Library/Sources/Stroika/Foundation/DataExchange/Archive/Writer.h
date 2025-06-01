@@ -28,7 +28,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
      *  SUPER simplistic for now (no depth/hierarchy, no editing functions - just create and append).
      */
 
-    class _IRep;
+    class IRep;
 
     class Ptr {
     protected:
@@ -36,29 +36,27 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
         Ptr ()           = delete;
         Ptr (const Ptr&) = delete;
         Ptr (Ptr&& src);
+        explicit Ptr (const shared_ptr<IRep>& rep);
         Ptr& operator= (const Ptr&) = delete;
-
-    protected:
-        explicit Ptr (const shared_ptr<_IRep>& rep);
 
     public:
         /**
-             */
+         */
         nonvirtual void Add (const String& fileName, const BLOB& data);
 
     protected:
-        nonvirtual _IRep&       _GetRep ();
-        nonvirtual const _IRep& _GetRep () const;
+        nonvirtual IRep&       _GetRep ();
+        nonvirtual const IRep& _GetRep () const;
 
     private:
-        shared_ptr<_IRep> fRep_;
+        shared_ptr<IRep> fRep_;
     };
 
     /**
      */
-    class _IRep {
+    class IRep {
     public:
-        virtual ~_IRep ()                                           = default;
+        virtual ~IRep ()                                            = default;
         virtual void Add (const String& fileName, const BLOB& data) = 0;
     };
 

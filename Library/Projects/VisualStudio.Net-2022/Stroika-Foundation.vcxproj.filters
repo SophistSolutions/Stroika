@@ -393,9 +393,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -938,6 +935,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.cpp">
       <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Writer.cpp">
+      <Filter>Sources\DataExchange\Archive\Zip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.cpp">
+      <Filter>Sources\DataExchange\Archive\Zip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2402,6 +2405,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_HashTable.h">
       <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Writer.h">
+      <Filter>Sources\DataExchange\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Writer.h">
+      <Filter>Sources\DataExchange\Archive\Zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Private_minizip_.h">
+      <Filter>Sources\DataExchange\Archive\Zip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3969,6 +3981,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\ReadMe.md">
       <Filter>Sources\DataExchange\JSON</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Writer.inl">
+      <Filter>Sources\DataExchange\Archive</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
