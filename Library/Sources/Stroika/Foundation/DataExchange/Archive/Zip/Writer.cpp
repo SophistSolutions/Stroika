@@ -5,7 +5,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Private_minizip_.h"
-#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Finally.h"           // not needed yet, but maybe still - wait til working
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Writer.h"
@@ -19,9 +19,10 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
 #if qStroika_HasComponent_zlib
+using namespace Stroika::Foundation::DataExchange::Archive::Zip::PrivateMinizip_;
+
 using Memory::BLOB;
 using std::byte;
-using namespace Stroika::Foundation::DataExchange::Archive::Zip::PrivateMinizip_;
 
 namespace {
     struct MyZipLibOutStream_ : zlib_filefunc64_def {
@@ -116,11 +117,11 @@ namespace {
 
 namespace {
     struct MyRep_ : Archive::Writer::IRep {
-        MyZipLibOutStream_ fInSeekStream_;
+        MyZipLibOutStream_ fOutZipStream_;
         unzFile           fZipFile_;
-        MyRep_ (const OutputStream::Ptr<byte>& in)
-            : fInSeekStream_{in}
-            , fZipFile_{unzOpen2_64 ("", &fInSeekStream_)}
+        MyRep_ (const OutputStream::Ptr<byte>& out)
+            : fOutZipStream_{out}
+            , fZipFile_{unzOpen2_64 ("", &fOutZipStream_)}
         {
             if (fZipFile_ == nullptr) [[unlikely]] {
                 static const RuntimeErrorException kException_{"failed to open zipfile"sv};
