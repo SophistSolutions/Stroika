@@ -196,9 +196,11 @@ endif
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && ${ECHO} "${CMAKE} --build . --config=${CMAKE_BUILD_TYPE_}" > BUILD-OUT.txt
+	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_} >> BUILD-OUT.txt 2>&1
 else
-	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build .  > BUILD-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && ${ECHO} "${CMAKE} --build ."  > BUILD-OUT.txt 2>&1
+	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}"  --build .  >> BUILD-OUT.txt 2>&1
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
