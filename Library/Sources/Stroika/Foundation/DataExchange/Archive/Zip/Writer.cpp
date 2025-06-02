@@ -162,7 +162,7 @@ err = zipCloseFileInZip(zf);
 
 /*
  ********************************************************************************
- ********************** DataExchange::Archive::Writer::Ptr **********************
+ ******************* DataExchange::Archive::Zip::Writer::New ********************
  ********************************************************************************
  */
 Archive::Writer::Ptr Archive::Zip::Writer::New (const OutputStream::Ptr<byte>& writeTo)

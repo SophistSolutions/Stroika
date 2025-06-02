@@ -6,9 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/DataExchange/VariantValue.h"
-#include "Stroika/Foundation/Memory/SharedByValue.h"
-#include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
 
 /**
  *  \file
@@ -16,7 +16,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
-namespace Stroika::Foundation::DataExchange::Archive {
+namespace Stroika::Foundation::DataExchange::Archive::Reader {
 
     using Characters::String;
     using Containers::Set;
@@ -25,18 +25,15 @@ namespace Stroika::Foundation::DataExchange::Archive {
     /**
      *  Abstraction for Readers that map files or streams to collections of files, like zip files, tar files, etc.
      */
-    class Reader {
-    protected:
-        class _IRep;
+    class IRep;
 
+    class Ptr {
     public:
-        Reader ()              = delete;
-        Reader (const Reader&) = delete;
-        Reader (Reader&& src);
-        Reader& operator= (const Reader&) = delete;
-
-    protected:
-        explicit Reader (const shared_ptr<_IRep>& rep);
+        Ptr ()           = delete;
+        Ptr (const Ptr&) = delete;
+        Ptr (Ptr&& src);
+        explicit Ptr (const shared_ptr<IRep>& rep);
+        Ptr& operator= (const Ptr&) = delete;
 
     public:
         /**
@@ -50,21 +47,22 @@ namespace Stroika::Foundation::DataExchange::Archive {
         nonvirtual BLOB GetData (const String& fileName) const;
 
     protected:
-        nonvirtual _IRep&       _GetRep ();
-        nonvirtual const _IRep& _GetRep () const;
+        nonvirtual IRep&       _GetRep ();
+        nonvirtual const IRep& _GetRep () const;
 
     private:
-        shared_ptr<_IRep> fRep_;
+        shared_ptr<IRep> fRep_;
     };
 
     /**
      */
-    class Reader::_IRep {
+    class IRep {
     public:
-        virtual ~_IRep ()                                          = default;
+        virtual ~IRep ()                                           = default;
         virtual Set<String> GetContainedFiles () const             = 0;
         virtual BLOB        GetData (const String& fileName) const = 0;
     };
+
 }
 
 /*

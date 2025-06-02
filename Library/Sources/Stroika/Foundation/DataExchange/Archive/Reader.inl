@@ -2,36 +2,36 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 
-namespace Stroika::Foundation::DataExchange::Archive {
+namespace Stroika::Foundation::DataExchange::Archive::Reader {
 
     /*
      ********************************************************************************
-     ********************* DataExchange::Archive::Reader ****************************
+     ********************* DataExchange::Archive::Reader::Ptr ***********************
      ********************************************************************************
      */
-    inline Reader::Reader (const shared_ptr<_IRep>& rep)
+    inline Ptr::Ptr (const shared_ptr<IRep>& rep)
         : fRep_{rep}
     {
     }
-    inline Reader::Reader (Reader&& src)
+    inline Ptr::Ptr (Ptr&& src)
         : fRep_{move (src.fRep_)}
     {
     }
-    inline Reader::_IRep& Reader::_GetRep ()
+    inline IRep& Ptr::_GetRep ()
     {
-        EnsureNotNull (fRep_.get ());
+        EnsureNotNull (fRep_);
         return *fRep_;
     }
-    inline const Reader::_IRep& Reader::_GetRep () const
+    inline const IRep& Ptr::_GetRep () const
     {
-        EnsureNotNull (fRep_.get ());
+        EnsureNotNull (fRep_);
         return *fRep_;
     }
-    inline Set<String> Reader::GetContainedFiles () const
+    inline Set<String> Ptr::GetContainedFiles () const
     {
         return _GetRep ().GetContainedFiles ();
     }
-    inline Memory::BLOB Reader::GetData (const String& fileName) const
+    inline Memory::BLOB Ptr::GetData (const String& fileName) const
     {
         return _GetRep ().GetData (fileName);
     }

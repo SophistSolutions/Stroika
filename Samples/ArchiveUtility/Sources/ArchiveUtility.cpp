@@ -124,17 +124,17 @@ namespace {
 }
 
 namespace {
-    DataExchange::Archive::Reader OpenArchive_ (const filesystem::path& archiveName)
+    DataExchange::Archive::Reader::Ptr OpenArchive_ (const filesystem::path& archiveName)
     {
 // @todo - must support other formats, have a registry, and autodetect
 #if qStroika_HasComponent_LZMA
         if (String{archiveName}.EndsWith (".7z"sv, Characters::eCaseInsensitive)) {
-            return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
+            return Archive::_7z::Reader::New(IO::FileSystem::FileInputStream::New (archiveName));
         }
 #endif
 #if qStroika_HasComponent_zlib
         if (String{archiveName}.EndsWith (".zip"sv, Characters::eCaseInsensitive)) {
-            return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
+            return Archive::Zip::Reader::New (IO::FileSystem::FileInputStream::New (archiveName));
         }
 #endif
         Execution::Throw (Execution::Exception{"Unrecognized format"sv});
@@ -152,7 +152,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"ExtractArchive_"};
         DbgTrace ("(archiveName={}, toDir={})"_f, archiveName, toDirectory);
-        DataExchange::Archive::Reader archive{OpenArchive_ (archiveName)};
+        DataExchange::Archive::Reader::Ptr archive{OpenArchive_ (archiveName)};
         for (String i : archive.GetContainedFiles ()) {
             String           srcFileName = i;
             filesystem::path trgFileName = toDirectory / srcFileName.As<filesystem::path> ();

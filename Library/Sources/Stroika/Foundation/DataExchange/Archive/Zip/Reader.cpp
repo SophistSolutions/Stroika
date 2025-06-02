@@ -16,6 +16,7 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
 using namespace Stroika::Foundation::Execution;
@@ -112,7 +113,7 @@ struct MyZipLibInStream_ : zlib_filefunc64_def {
     }
 };
 
-class Zip::Reader::Rep_ : public Reader::_IRep {
+struct Rep_ : public Reader::IRep {
 private:
     MyZipLibInStream_ fInSeekStream_;
     unzFile           fZipFile_;
@@ -267,8 +268,13 @@ public:
     }
 };
 
-Zip::Reader::Reader (const Streams::InputStream::Ptr<byte>& in)
-    : DataExchange::Archive::Reader{make_shared<Rep_> (in)}
+/*
+ ********************************************************************************
+ ***************** DataExchange::Archive::Zip::Reader::New **********************
+ ********************************************************************************
+ */
+Archive::Reader::Ptr Archive::Zip::Reader::New (const Streams::InputStream::Ptr<byte>& readFrom)
 {
+    return Archive::Reader::Ptr{make_shared<Rep_> (readFrom)};
 }
 #endif

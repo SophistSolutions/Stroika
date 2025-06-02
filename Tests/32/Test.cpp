@@ -179,7 +179,7 @@ namespace {
             0x00, 0x10, 0x00, 0x00, 0x0c, 0x81, 0x9b, 0x0a, 0x01, 0xa0, 0xee, 0xa0, 0x06, 0x00, 0x00};
         Assert (sizeof (ksample_zip_7z_) == 2157);
 #if qStroika_HasComponent_LZMA
-        Archive::_7z::Reader reader (
+        Archive::Reader::Ptr reader = Archive::_7z::Reader::New  (
             Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_7z_})));
         EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
                                                                              L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
@@ -357,7 +357,7 @@ namespace {
             0x00, 0x00, 0x4f, 0x09, 0x00, 0x00, 0x00, 0x00};
         Assert (sizeof (ksample_zip_) == 2948);
 #if qStroika_HasComponent_zlib
-        Archive::Zip::Reader reader{Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_}))};
+        Archive::Reader::Ptr reader = Archive::Zip::Reader::New (Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_})));
 
         EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
                                                                              "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));

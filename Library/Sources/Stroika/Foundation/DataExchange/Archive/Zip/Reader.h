@@ -6,9 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Streams/InputStream.h"
-
 #include "Stroika/Foundation/DataExchange/Archive/Reader.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
  *  \file
@@ -16,19 +15,12 @@
  * TODO:
  */
 
-namespace Stroika::Foundation::DataExchange::Archive::Zip {
+namespace Stroika::Foundation::DataExchange::Archive::Zip::Reader {
 
 #if qStroika_HasComponent_zlib
     /**
-     *  @todo add example usage (and docs)
      */
-    class Reader : public DataExchange::Archive::Reader {
-    public:
-        Reader (const Streams::InputStream::Ptr<byte>& in);
-
-    private:
-        class Rep_;
-    };
+    Archive::Reader::Ptr New (const Streams::InputStream::Ptr<byte>& readFrom);
 #endif
 
 }
