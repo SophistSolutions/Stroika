@@ -11,6 +11,7 @@
 #include "Writer.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
 using namespace Stroika::Foundation::DataExchange::Archive::Writer;
@@ -25,7 +26,13 @@ using Memory::BLOB;
 using std::byte;
 
 namespace {
-    struct MyZipLibOutStream_ : zlib_filefunc64_def {
+    void ThrowIfMinizipErr_ (int err, const String& doing)
+    {
+        if (err != UNZ_OK) [[unlikely]] {
+            Throw (RuntimeErrorException{Format ("error {} with zipfile in {}"_f, err, doing)});
+        }
+    }
+    struct MyZipLibOutStream_ final : zlib_filefunc64_def {
         OutputStream::Ptr<byte> fOutSteram_;
 #if qStroika_Foundation_Debug_AssertionsChecked
         bool fOpened_{false};
@@ -115,7 +122,7 @@ namespace {
 }
 
 namespace {
-    struct MyRep_ : Archive::Writer::IRep {
+    struct MyRep_ final : Archive::Writer::IRep {
         MyZipLibOutStream_ fOutZipStream_;
         unzFile            fZipFile_;
         MyRep_ (const OutputStream::Ptr<byte>& out)
@@ -134,9 +141,26 @@ namespace {
         }
         virtual void Add (const String& fileName, const BLOB& data) override
         {
-            // NYI
+            // password support NYIU - add options param for some of these options
+            const char* password = nullptr;
+            uint32_t    crcFile  = password == nullptr ? 0 : crc32_z (0, reinterpret_cast<const Bytef*> (data.data ()), data.size ());
+
+            bool zip64 = data.size () > numeric_limits<uint16_t>::max ();
+            // @todo figure out about code page for encoding filenames
+            zip_fileinfo zi{}; //???
+            uInt         opt_compress_level = 0;
+            zipOpenNewFileInZip3_64 (fZipFile_, fileName.AsUTF8<string> ().c_str (), &zi, NULL, 0, NULL, 0, NULL /* comment*/,
+                                     (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
+                                     /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
+                                     -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64);
+
+            auto err = zipWriteInFileInZip (fZipFile_, reinterpret_cast<const Bytef*> (data.data ()), data.size ());
+            /*if (err < 0) {
+                printf ("error in writing %s in the zipfile\n", filenameinzip);
+            }*/
+            err = zipCloseFileInZip (fZipFile_);
+
 #if 0
-            uint32_t crcFile = 0;
             if ((password != NULL) && (err==ZIP_OK))
                     err = getFileCrc(filenameinzip,buf,size_buf,&crcFile);
 
