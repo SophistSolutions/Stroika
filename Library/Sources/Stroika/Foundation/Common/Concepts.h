@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Common {
     }
 
     /**
-     *  \brief concept true if integral or floatpoint type 'T'. Not sure why not provided by std c++
+     *  \brief concept true if integral or floating-point type 'T'. Not sure why not provided by std c++
      *
      *  Also note - NOT marked true for arithmetic-like types, like big-num package (perhaps provide another concept for this).
      */
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::Common {
     static_assert (Weak_Equality_Comparable_With<nullopt_t, optional<int>>);
 
     /**
-     *  \brief like convertible_to, but also handling cases where T has an explict CTOR taking From
+     *  \brief like convertible_to, but also handling cases where T has an explicit CTOR taking From
      * 
      *  \see https://stackoverflow.com/questions/76547398/stdconvertible-to-failing-to-recognize-explicitly-convertible-types
      */
