@@ -129,7 +129,7 @@ namespace {
 // @todo - must support other formats, have a registry, and autodetect
 #if qStroika_HasComponent_LZMA
         if (String{archiveName}.EndsWith (".7z"sv, Characters::eCaseInsensitive)) {
-            return Archive::_7z::Reader::New(IO::FileSystem::FileInputStream::New (archiveName));
+            return Archive::_7z::Reader::New (IO::FileSystem::FileInputStream::New (archiveName));
         }
 #endif
 #if qStroika_HasComponent_zlib
