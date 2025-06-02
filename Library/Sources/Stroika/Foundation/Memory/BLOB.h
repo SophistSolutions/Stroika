@@ -43,6 +43,7 @@ namespace Stroika::Foundation::Memory {
      *  \note Satisfies Concepts:
      *      o   static_assert (totally_ordered<BLOB>);
      *      o   static_assert (regular<BLOB>);
+     *      o   static_assert (Common::explicitly_convertible_to<BLOB, span<const byte>>);
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -423,6 +424,7 @@ namespace Stroika::Foundation::Memory {
     };
     static_assert (totally_ordered<BLOB>);
     static_assert (regular<BLOB>);
+    static_assert (Common::explicitly_convertible_to<BLOB, span<const byte>>);
 
     // @todo make this work
     //static_assert (convertible_to<BLOB, span<byte>>);
