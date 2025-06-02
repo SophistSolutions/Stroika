@@ -82,7 +82,6 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/Samples $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent $@ 2> /dev/null || true;\

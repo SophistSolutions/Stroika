@@ -121,28 +121,18 @@ else
 endif
 
 
-clean:
+clean clobber:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
-		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Tests {$(CONFIGURATION)} ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Tests $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
+	@if [ "$@" = "clobber" ] ; then \
+		rm -rf Builds/$(CONFIGURATION)/Tests/;\
+	fi
 	@$(ECHO) done
-endif
-
-
-clobber:
-ifeq ($(CONFIGURATION),)
-	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations` ; do\
-		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
-	done
-else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
-	@rm -rf $(StroikaRoot)Builds/$(CONFIGURATION)/Tests/
 endif
 
 

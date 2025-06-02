@@ -52,7 +52,6 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i;\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ CONFIGURATION=$(CONFIGURATION) --no-print-directory $@ 2> /dev/null || true
 endif
 
