@@ -149,37 +149,16 @@ namespace {
             // @todo figure out about code page for encoding filenames
             zip_fileinfo zi{}; //???
             uInt         opt_compress_level = 0;
-            zipOpenNewFileInZip3_64 (fZipFile_, fileName.AsUTF8<string> ().c_str (), &zi, NULL, 0, NULL, 0, NULL /* comment*/,
+            ThrowIfMinizipErr_ (zipOpenNewFileInZip3_64 (fZipFile_, fileName.AsUTF8<string> ().c_str (), &zi, NULL, 0, NULL, 0,
+                                                       NULL /* comment*/,
                                      (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
                                      /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
-                                     -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64);
+                                                         -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64),
+                                "zipOpenNewFileInZip3_64"sv);
 
-            auto err = zipWriteInFileInZip (fZipFile_, reinterpret_cast<const Bytef*> (data.data ()), data.size ());
-            /*if (err < 0) {
-                printf ("error in writing %s in the zipfile\n", filenameinzip);
-            }*/
-            err = zipCloseFileInZip (fZipFile_);
+              [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { zipCloseFileInZip (fZipFile_); });
 
-#if 0
-            if ((password != NULL) && (err==ZIP_OK))
-                    err = getFileCrc(filenameinzip,buf,size_buf,&crcFile);
-
-
-   err = zipOpenNewFileInZip3_64 (zf, savefilenameinzip, &zi, NULL, 0, NULL, 0, NULL /* comment*/,
-                                           (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
-                                           /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
-                                           -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64);
-  err = zipWriteInFileInZip (zf,buf,(unsigned)size_read);
-                            if (err<0)
-                            {
-                                printf("error in writing %s in the zipfile\n",
-                                                 filenameinzip);
-                            }
-err = zipCloseFileInZip(zf);
-                    if (err!=ZIP_OK)
-                        printf("error in closing %s in the zipfile\n",
-                                    filenameinzip);
-#endif
+           ThrowIfMinizipErr_ (zipWriteInFileInZip (fZipFile_, reinterpret_cast<const Bytef*> (data.data ()), data.size ()), "zipWriteInFileInZip"sv);
         }
     };
 }
