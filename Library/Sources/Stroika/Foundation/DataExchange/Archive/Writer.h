@@ -53,7 +53,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
      */
     class IRep {
     public:
-        virtual ~IRep ()                                                  = default;
+        virtual ~IRep ()                                                        = default;
         virtual void Add (const String& fileName, const span<const byte>& data) = 0;
     };
 
