@@ -8,9 +8,6 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
-//#include "Stroika/Foundation/DataExchange/VariantValue.h"
-//#include "Stroika/Foundation/Memory/SharedByValue.h"
-//#include "Stroika/Foundation/Streams/InputStream.h"
 
 /**
  *  \file
@@ -57,7 +54,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
     class IRep {
     public:
         virtual ~IRep ()                                            = default;
-        virtual void Add (const String& fileName, const BLOB& data) = 0;
+        virtual void Add (const String& fileName, const span<byte>& data) = 0;
     };
 
 }

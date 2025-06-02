@@ -139,7 +139,7 @@ namespace {
             AssertNotNull (fZipFile_);
             unzClose (fZipFile_);
         }
-        virtual void Add (const String& fileName, const BLOB& data) override
+        virtual void Add (const String& fileName, const span<byte>& data) override
         {
             // password support NYIU - add options param for some of these options
             const char* password = nullptr;
@@ -150,15 +150,14 @@ namespace {
             zip_fileinfo zi{}; //???
             uInt         opt_compress_level = 0;
             ThrowIfMinizipErr_ (zipOpenNewFileInZip3_64 (fZipFile_, fileName.AsUTF8<string> ().c_str (), &zi, NULL, 0, NULL, 0,
-                                                       NULL /* comment*/,
-                                     (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
-                                     /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
+                                                         NULL /* comment*/, (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
+                                                         /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
                                                          -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64),
                                 "zipOpenNewFileInZip3_64"sv);
 
-              [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { zipCloseFileInZip (fZipFile_); });
+            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { zipCloseFileInZip (fZipFile_); });
 
-           ThrowIfMinizipErr_ (zipWriteInFileInZip (fZipFile_, reinterpret_cast<const Bytef*> (data.data ()), data.size ()), "zipWriteInFileInZip"sv);
+            ThrowIfMinizipErr_ (zipWriteInFileInZip (fZipFile_, reinterpret_cast<const Bytef*> (data.data ()), data.size ()), "zipWriteInFileInZip"sv);
         }
     };
 }
