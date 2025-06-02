@@ -139,7 +139,7 @@ namespace {
             AssertNotNull (fZipFile_);
             unzClose (fZipFile_);
         }
-        virtual void Add (const String& fileName, const span<byte>& data) override
+        virtual void Add (const String& fileName, const span<const byte>& data) override
         {
             // password support NYI - add options param for some of these options
             const char* password = nullptr;

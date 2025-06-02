@@ -29,7 +29,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
     }
     inline void Ptr::Add (const String& fileName, const Memory::BLOB& data)
     {
-        return _GetRep ().Add (fileName, data);
+        return _GetRep ().Add (fileName, span{data});
     }
 
 }
