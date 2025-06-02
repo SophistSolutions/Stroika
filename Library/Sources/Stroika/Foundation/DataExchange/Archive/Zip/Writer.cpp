@@ -141,7 +141,7 @@ namespace {
         }
         virtual void Add (const String& fileName, const span<byte>& data) override
         {
-            // password support NYIU - add options param for some of these options
+            // password support NYI - add options param for some of these options
             const char* password = nullptr;
             uint32_t    crcFile  = password == nullptr ? 0 : crc32_z (0, reinterpret_cast<const Bytef*> (data.data ()), data.size ());
 
