@@ -130,7 +130,7 @@ else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Tests $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
 	@if [ "$@" = "clobber" ] ; then \
-		rm -rf Builds/$(CONFIGURATION)/Tests/;\
+		rm -rf $(StroikaRoot)Builds/$(CONFIGURATION)/Tests/;\
 	fi
 	@$(ECHO) done
 endif
