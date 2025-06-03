@@ -89,6 +89,7 @@ namespace Stroika::Foundation::Memory {
             requires (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or
                       is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>);
         BLOB (span<const byte> s);
+        BLOB (span<const uint8_t> s);
         BLOB (const byte* start, const byte* end);
         BLOB (const uint8_t* start, const uint8_t* end);
         BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);

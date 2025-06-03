@@ -93,6 +93,11 @@ namespace Stroika::Foundation::Memory {
     {
         Ensure (s.size () == size ());
     }
+    inline BLOB::BLOB (span<const uint8_t> s)
+        : BLOB{as_bytes (s)}
+    {
+        Ensure (s.size () == size ());
+    }
     inline BLOB::BLOB (const byte* start, const byte* end)
         : BLOB{span{start, end}}
     {
