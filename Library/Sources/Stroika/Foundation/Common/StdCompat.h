@@ -213,9 +213,9 @@ namespace Stroika::Foundation::Common::StdCompat {
     template <class T, class E>
     class expected {
     public:
-        using value_type      = T;
-        using error_type      = E;
-      //  using unexpected_type = unexpected<E>;
+        using value_type = T;
+        using error_type = E;
+        //  using unexpected_type = unexpected<E>;
 
         constexpr expected () noexcept                       = default;
         constexpr expected (const expected& _Other) noexcept = default;
