@@ -222,15 +222,15 @@ namespace Stroika::Foundation::Common::StdCompat {
             : fData_{e}
         {
         }
-        operator bool () noexcept const
+        explicit operator bool () const noexcept
         {
             return std::get_if<T> (&fData_) != nullptr;
         }
-        T value () noexcept const
+        T value () const noexcept
         {
             return get<T> (fData_);
         }
-        E error () noexcept const
+        E error () const noexcept
         {
             return get<E> (fData_);
         }
