@@ -15,6 +15,7 @@
 #endif
 #if qStroika_HasComponent_zlib
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
+#include "Stroika/Foundation/DataExchange/Archive/Zip/Writer.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
@@ -29,6 +30,7 @@ using namespace Stroika::Foundation::Characters;
 #if qStroika_HasComponent_LZMA || qStroika_HasComponent_zlib
 using namespace Stroika::Foundation::DataExchange;
 #endif
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
 
 using Containers::Sequence;
@@ -49,45 +51,44 @@ namespace {
         optional<bool>             fNoFailOnMissingLibrary; // for regression tests
     };
 
-    using Execution::StandardCommandLineOptions::kHelp;
+    using StandardCommandLineOptions::kHelp;
 
-    const Execution::CommandLine::Option kNoFailOnMissingO_{.fLongName       = "no-fail-on-missing-library"sv,
-                                                            .fHelpOptionText = "just warns when we fail because of missing library"sv};
-    const Execution::CommandLine::Option kListO_{.fLongName = "list"sv, .fHelpOptionText = "prints all the files in the argument archive"sv};
-    const Execution::CommandLine::Option kCreateO_{.fLongName = "create"sv,
-                                                   .fHelpOptionText = "creates the argument ARCHIVE-FILE and adds the argument FILE(s) to it"sv};
-    const Execution::CommandLine::Option kExtractO_{
+    const CommandLine::Option kNoFailOnMissingO_{.fLongName       = "no-fail-on-missing-library"sv,
+                                                 .fHelpOptionText = "just warns when we fail because of missing library"sv};
+    const CommandLine::Option kListO_{.fLongName = "list"sv, .fHelpOptionText = "prints all the files in the argument archive"sv};
+    const CommandLine::Option kCreateO_{.fLongName = "create"sv, .fHelpOptionText = "creates the argument ARCHIVE-FILE and adds the argument FILE(s) to it"sv};
+    const CommandLine::Option kExtractO_{
         .fLongName = "extract"sv,
         .fHelpOptionText = "extracts all the files from the argument ARCHIVE-FILE and to the output directory specified by --ouptutDirectory "sv};
-    const Execution::CommandLine::Option kUpdateO_{.fLongName = "update"sv,
-                                                   .fHelpOptionText = "adds to the argument ARCHIVE-FILE and adds the argument FILE(s) to it "sv};
-    const Execution::CommandLine::Option kArchiveFileO_{
-        .fSupportsArgument = true,
-        .fRequired         = true,
-        .fHelpArgName      = "ARCHIVE-FILE"sv,
-        .fHelpOptionText   = "ARCHIVE-FILE can be the single character - to designate stdin"sv // NYI stdin part...
+    const CommandLine::Option kUpdateO_{.fLongName       = "update"sv,
+                                        .fHelpOptionText = "adds to the argument ARCHIVE-FILE and adds the argument FILE(s) to it "sv};
+    const CommandLine::Option kArchiveFileO_{
+        .fRequired       = true,
+        .fHelpArgName    = "ARCHIVE-FILE"sv,
+        .fHelpOptionText = "ARCHIVE-FILE can be the single character - to designate stdin"sv // NYI stdin part...
     };
-    const Execution::CommandLine::Option kOtherFilenamesO_{
-        .fSupportsArgument = true,
-        .fRepeatable       = true,
-        .fHelpArgName      = "FILE"sv,
+    const CommandLine::Option kOtherFilenamesO_{
+        .fRepeatable          = true,
+        .fSkipFirstNArguments = 1,
+        .fHelpArgName         = "FILE"sv,
     };
-    const Execution::CommandLine::Option kOutputDirO_{.fLongName = "outputDirectory"sv, .fSupportsArgument = true, .fHelpOptionText = "(defaulting to .)"sv};
+    const CommandLine::Option kOutputDirO_{.fLongName = "outputDirectory"sv, .fSupportsArgument = true, .fHelpOptionText = "(defaulting to .)"sv};
 
-    const initializer_list<Execution::CommandLine::Option> kAllOptions_{
+    const initializer_list<CommandLine::Option> kAllOptions_{
         kHelp, kNoFailOnMissingO_, kListO_, kCreateO_, kExtractO_, kUpdateO_, kOutputDirO_, kArchiveFileO_, kOtherFilenamesO_,
     };
 
     // Emits errors to stderr, and Usage, etc, if needed, and not Optional<> has_value()
     optional<Options_> ParseOptions_ (int argc, const char* argv[])
     {
-        Options_               result{};
-        Execution::CommandLine cmdLine{argc, argv};
+        Options_    result{};
+        CommandLine cmdLine{argc, argv};
 
         try {
             cmdLine.Validate (kAllOptions_);
         }
         catch (...) {
+            cerr << ToString (current_exception ()) << endl;
             cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
             return optional<Options_>{};
         }
@@ -114,10 +115,11 @@ namespace {
             return optional<Options_>{};
         }
         result.fArchiveFileName = Memory::ValueOf (cmdLine.GetArgument (kArchiveFileO_)).As<filesystem::path> ();
+        result.fFiles2Add       = cmdLine.GetArguments (kOtherFilenamesO_);
         if (auto o = cmdLine.GetArgument (kOutputDirO_)) {
             result.fOutputDirectory = o->As<filesystem::path> ();
         }
-        // @todo add more.. - files etc
+        // @todo add more.. - update support etc...
         result.fNoFailOnMissingLibrary = cmdLine.Has (kNoFailOnMissingO_);
         return result;
     }
@@ -137,7 +139,7 @@ namespace {
             return Archive::Zip::Reader::New (IO::FileSystem::FileInputStream::New (archiveName));
         }
 #endif
-        Execution::Throw (Execution::Exception{"Unrecognized format"sv});
+        Throw (Exception{"Unrecognized format"sv});
     }
 }
 
@@ -164,11 +166,27 @@ namespace {
             ostream.Write (b);
         }
     }
+    void CreateArchive_ (const filesystem::path& archiveName, const Sequence<String>& files2Add)
+    {
+        Debug::TraceContextBumper ctx{"CreateArchive_"};
+        DbgTrace ("(archiveName={}, files2Add={})"_f, archiveName, files2Add);
+        // for now require just zip
+        if (String{archiveName}.EndsWith (".zip"sv, Characters::eCaseInsensitive)) {
+            DataExchange::Archive::Writer::Ptr archive =
+                DataExchange::Archive::Zip::Writer::New (IO::FileSystem::FileOutputStream::New (archiveName));
+            for (auto f2a : files2Add) {
+                archive.Add (f2a, IO::FileSystem::FileInputStream::New (f2a.As<filesystem::path> ()).ReadAll ());
+            }
+        }
+        else {
+            cerr << "that format NYI" << endl;
+        }
+    }
 }
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Execution::CommandLine{argc, argv})};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, CommandLine{argc, argv})};
     if (optional<Options_> o = ParseOptions_ (argc, argv)) {
         try {
             switch (o->fOperation) {
@@ -178,12 +196,15 @@ int main (int argc, const char* argv[])
                 case Options_::Operation::eExtract:
                     ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.value_or ("."sv));
                     break;
+                case Options_::Operation::eCreate:
+                    CreateArchive_ (o->fArchiveFileName, o->fFiles2Add.value_or ({}));
+                    break;
                 default:
                     cerr << "that option NYI" << endl;
                     break;
             }
         }
-        catch (const Execution::InvalidCommandLineArgument&) {
+        catch (const InvalidCommandLineArgument&) {
             String exceptMsg = Characters::ToString (current_exception ());
             cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << endl;
             return EXIT_FAILURE;
