@@ -14,9 +14,12 @@
 #include "Stroika/Foundation/Containers/Association.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/DataExchange/Archive/Reader.h"
+#include "Stroika/Foundation/DataExchange/Archive/Writer.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #if qStroika_HasComponent_zlib
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
+#include "Stroika/Foundation/DataExchange/Archive/Zip/Writer.h"
 #include "Stroika/Foundation/DataExchange/Compression/Zip/Reader.h"
 #endif
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
@@ -380,6 +383,11 @@ namespace {
             catch (...) {
                 // good
             }
+        }
+        {
+            MemoryStream::Ptr<byte> store  = MemoryStream::New<byte> ();
+            Archive::Writer::Ptr    writer = Archive::Zip::Writer::New (store);
+            writer.Add ("file-a.zip", Memory::BLOB{ksample_zip_});
         }
 #endif
     }

@@ -124,10 +124,10 @@ namespace {
 namespace {
     struct MyRep_ final : Archive::Writer::IRep {
         MyZipLibOutStream_ fOutZipStream_;
-        unzFile            fZipFile_;
+        zipFile            fZipFile_;
         MyRep_ (const OutputStream::Ptr<byte>& out)
             : fOutZipStream_{out}
-            , fZipFile_{unzOpen2_64 ("", &fOutZipStream_)}
+            , fZipFile_{zipOpen2_64 ("", APPEND_STATUS_CREATE, nullptr, &fOutZipStream_)}
         {
             if (fZipFile_ == nullptr) [[unlikely]] {
                 static const RuntimeErrorException kException_{"failed to open zipfile"sv};
@@ -137,7 +137,7 @@ namespace {
         ~MyRep_ ()
         {
             AssertNotNull (fZipFile_);
-            unzClose (fZipFile_);
+            zipClose (fZipFile_, nullptr);
         }
         virtual void Add (const String& fileName, const span<const byte>& data) override
         {
@@ -157,7 +157,8 @@ namespace {
 
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { zipCloseFileInZip (fZipFile_); });
 
-            ThrowIfMinizipErr_ (zipWriteInFileInZip (fZipFile_, reinterpret_cast<const Bytef*> (data.data ()), data.size ()), "zipWriteInFileInZip"sv);
+            ThrowIfMinizipErr_ (zipWriteInFileInZip (fZipFile_, reinterpret_cast<const Bytef*> (data.data ()), static_cast<unsigned int> (data.size ())),
+                                "zipWriteInFileInZip"sv);
         }
     };
 }
