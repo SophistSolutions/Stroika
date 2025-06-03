@@ -1714,6 +1714,8 @@ namespace Stroika::Foundation::Characters {
     /**
      *  operator<< ostream adapters work as you would expect and allow writing Stroika strings easily to ostreams such as cout.
      * 
+     *  \note uses AsNarrowSDKString (eIgnoreErrors)
+     * 
      *  The only catch - is that Stroika strings are UNICODE based, and so may not fit perfectly with 'char' based basic_ostream<>.
      *  To address this, Stroika strings are mapped to 'narrow sdk strings' - ignoring any errors. As this is generally not a very
      *  good practice to do (lossy) - and generally just done for debugging/diagnostic output, this was deemed acceptable (as of Stroika v3.0d6).

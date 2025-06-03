@@ -207,12 +207,12 @@ int main (int argc, const char* argv[])
         cmdLine.Validate (kAllOptions_);
     }
     catch (const InvalidCommandLineArgument&) {
-        cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
-        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        cerr << Characters::ToString (current_exception ()) << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_FAILURE;
     }
     if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
-        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_SUCCESS;
     }
 

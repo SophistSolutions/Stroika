@@ -268,7 +268,7 @@ int main (int argc, const char* argv[])
         }
     }
     catch (const Execution::InvalidCommandLineArgument&) {
-        cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
+        cerr << "Error encountered: " << Characters::ToString (current_exception ()) << endl;
         cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
         return EXIT_SUCCESS;
     }

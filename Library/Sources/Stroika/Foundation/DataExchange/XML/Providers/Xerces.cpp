@@ -1393,7 +1393,7 @@ namespace {
                             String   tmpFileNameStr = String{tmpFileName};
                             size_t   idx            = tmpFileNameStr.find (".xml");
                             String   newTmpFile     = tmpFileNameStr.substr (0, idx) + "_MSG.txt";
-                            ofstream msgOut{newTmpFile.AsNarrowSDKString ().c_str ()};
+                            ofstream msgOut{newTmpFile.AsNarrowSDKString (eIgnoreErrors).c_str ()};
                             msgOut << "Reason:" << vf.GetDetails () << endl;
                             optional<unsigned int> lineNum;
                             optional<unsigned int> colNumber;

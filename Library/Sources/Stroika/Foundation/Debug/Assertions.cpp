@@ -35,7 +35,7 @@ namespace {
                                                            fileName == nullptr ? L"" : fileName, lineNum);
             DbgTrace ("{}"_f, msg);
 #if qStroika_Foundation_Common_Platform_POSIX
-            fprintf (stderr, "%s\n", msg.AsNarrowSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors).c_str ());
+            fprintf (stderr, "%s\n", msg.AsNarrowSDKString (eIgnoreErrors).c_str ());
 #endif
 #if qStroika_Foundation_Debug_DefaultTracingOn
             {

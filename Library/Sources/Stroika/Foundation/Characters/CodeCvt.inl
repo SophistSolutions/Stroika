@@ -29,7 +29,9 @@ namespace Stroika::Foundation::Characters {
         void   ThrowCodePageNotSupportedException_ (CodePage cp);
         void   ThrowCharsetNotSupportedException_ (const Charset& charset);
         void   ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
+        #if 0
         string AsNarrowSDKString_ (const String& s);
+        #endif
     }
 
     /*

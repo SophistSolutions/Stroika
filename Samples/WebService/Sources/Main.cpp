@@ -62,7 +62,7 @@ int main (int argc, const char* argv[])
         return EXIT_SUCCESS;
     }
     catch (...) {
-        cerr << "Error encountered: " << Characters::ToString (current_exception ()).AsNarrowSDKString () << " - terminating..." << endl;
+        cerr << "Error encountered: " << Characters::ToString (current_exception ()) << " - terminating..." << endl;
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
