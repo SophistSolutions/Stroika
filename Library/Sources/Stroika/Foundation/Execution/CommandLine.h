@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Execution {
          *          cmdLine.Validate (kAllOptions_);        // throws InvalidCommandLineArgument if bad args so catch/report usage
          *      \endcode
          */
-        nonvirtual void Validate (Iterable<Option> options) const;
+        nonvirtual void Validate (const Iterable<Option>& options) const;
 
     public:
         /**
@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Execution {
          *          }
          *      \endcode
          */
-        nonvirtual optional<InvalidCommandLineArgument> ValidateQuietly (Iterable<Option> options) const;
+        nonvirtual optional<InvalidCommandLineArgument> ValidateQuietly (const Iterable<Option>& options) const;
 
     public:
         /**

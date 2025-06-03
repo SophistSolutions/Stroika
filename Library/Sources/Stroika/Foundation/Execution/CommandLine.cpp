@@ -335,14 +335,14 @@ String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>
     return sb;
 }
 
-void CommandLine::Validate (Iterable<Option> options) const
+void CommandLine::Validate (const Iterable<Option>& options) const
 {
     if (auto oe = ValidateQuietly (options)) {
         Throw (*oe);
     }
 }
 
-nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (Iterable<Option> options) const
+nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (const Iterable<Option>& options) const
 {
     Set<Option> all{options};
     Set<Option> unused{all};
