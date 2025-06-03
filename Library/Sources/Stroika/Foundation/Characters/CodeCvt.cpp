@@ -74,18 +74,6 @@ void Characters::Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCod
     Execution::Throw (kException_);
 }
 
-#if 0
-/*
- ********************************************************************************
- ********************** Private_::AsNarrowSDKString_ ****************************
- ********************************************************************************
- */
-string Characters::Private_::AsNarrowSDKString_ (const String& s)
-{
-    return s.AsNarrowSDKString ();
-}
-#endif
-
 /*
  ********************************************************************************
  ************** Private_::BuiltinSingleByteTableCodePageRep_ ********************

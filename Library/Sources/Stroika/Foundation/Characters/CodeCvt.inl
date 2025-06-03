@@ -24,14 +24,11 @@ namespace Stroika::Foundation::Characters {
             ~deletable_facet_ () = default;
         };
         DISABLE_COMPILER_MSC_WARNING_END (4996)
-        void   ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError);
-        void   ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
-        void   ThrowCodePageNotSupportedException_ (CodePage cp);
-        void   ThrowCharsetNotSupportedException_ (const Charset& charset);
-        void   ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
-        #if 0
-        string AsNarrowSDKString_ (const String& s);
-        #endif
+        void ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError);
+        void ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
+        void ThrowCodePageNotSupportedException_ (CodePage cp);
+        void ThrowCharsetNotSupportedException_ (const Charset& charset);
+        void ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
     }
 
     /*
