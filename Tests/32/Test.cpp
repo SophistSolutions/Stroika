@@ -184,8 +184,8 @@ namespace {
 #if qStroika_HasComponent_LZMA
         Archive::Reader::Ptr reader = Archive::_7z::Reader::New (
             Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_7z_})));
-        EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
-                                                                             L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
+        EXPECT_EQ (reader.GetContainedFiles (), (Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
+                                                                         "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
 
         {
             EXPECT_EQ (reader.GetData ("sample_zip/TODO.txt").size (), 243u);
@@ -385,9 +385,17 @@ namespace {
             }
         }
         {
-            MemoryStream::Ptr<byte> store  = MemoryStream::New<byte> ();
-            Archive::Writer::Ptr    writer = Archive::Zip::Writer::New (store);
-            writer.Add ("file-a.zip", Memory::BLOB{ksample_zip_});
+            MemoryStream::Ptr<byte> store = MemoryStream::New<byte> ();
+            {
+                Archive::Writer::Ptr writer = Archive::Zip::Writer::New (store);
+                writer.Add ("file-a.zip", Memory::BLOB{ksample_zip_});
+            }
+            // now see if we can read it back
+            {
+                Archive::Reader::Ptr reader = Archive::Zip::Reader::New (store);
+                EXPECT_EQ (reader.GetContainedFiles (), (Containers::Set<String>{"file-a.zip"}));
+                EXPECT_EQ (reader.GetData ("file-a.zip"), Memory::BLOB{ksample_zip_});
+            }
         }
 #endif
     }
