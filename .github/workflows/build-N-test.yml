@@ -155,6 +155,7 @@ jobs:
           du -hs Builds/*/* IntermediateFiles/*/* ThirdPartyComponents/Origs-Cache/
           make --directory Library --silent clean
           make --directory ThirdPartyComponents --silent clean
+          make --directory Tools --silent clean
           rm -f Builds/${{ matrix.config_name }}/ThirdPartyComponents/bin/* ThirdPartyComponents/Origs-Cache/*
           echo ""*************After cleanups"*************:"
           df -h
