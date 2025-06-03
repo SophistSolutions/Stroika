@@ -206,6 +206,11 @@ namespace Stroika::Foundation::Common::StdCompat {
     using expected = std::expected<T, E>;
 #else
     template <class T, class E>
+    class expected;
+    template <class T, class E>
+        requires std::is_void_v<T>
+    class expected<T, E>;
+    template <class T, class E>
     class expected {
     public:
         using value_type      = T;
@@ -238,9 +243,7 @@ namespace Stroika::Foundation::Common::StdCompat {
     private:
         variant<T, E> fData_;
     };
-    /*template <class T, class E>
-        requires std::is_void_v<T>
-    class expected<T, E>;*/
+   
 #endif
 
 }
