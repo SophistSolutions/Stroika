@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Common::StdCompat {
     public:
         using value_type      = T;
         using error_type      = E;
-        using unexpected_type = unexpected<E>;
+      //  using unexpected_type = unexpected<E>;
 
         constexpr expected () noexcept                       = default;
         constexpr expected (const expected& _Other) noexcept = default;
