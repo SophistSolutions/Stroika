@@ -17,6 +17,7 @@
 
 #include "Private_minizip_.h"
 
+#if qStroika_HasComponent_zlib
 using namespace Stroika::Foundation::DataExchange::Archive::Zip;
 using namespace Stroika::Foundation::DataExchange::Archive::Zip::PrivateMinizip_;
 
@@ -3688,3 +3689,4 @@ int PrivateMinizip_::zipRemoveExtraInfoBlock (char* pData, int* dataLen, short s
 }
 
 /// END OF zip.c
+#endif
