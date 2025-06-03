@@ -243,7 +243,7 @@ namespace Stroika::Foundation::Common::StdCompat {
     private:
         variant<T, E> fData_;
     };
-   
+
 #endif
 
 }
