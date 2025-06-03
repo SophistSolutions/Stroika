@@ -626,7 +626,7 @@ namespace Stroika::Foundation::Common {
     class EnumNames;
     template <>
     constexpr EnumNames<Characters::CompareOptions> DefaultNames<Characters::CompareOptions>::k{{{
-        {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
         {Characters::CompareOptions::eWithCase, L"With-Case"},
+        {Characters::CompareOptions::eCaseInsensitive, L"Case-Insensitive"},
     }}};
 }
