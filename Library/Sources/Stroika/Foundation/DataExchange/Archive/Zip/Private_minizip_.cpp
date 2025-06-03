@@ -2791,10 +2791,10 @@ namespace {
 
         if ((err == ZIP_OK) && (zi->ci.zip64)) {
             // write the Zip64 extended info
-            short    HeaderID         = 1;
-            short    DataSize         = 16;
-            ZPOS64_T CompressedSize   = 0;
-            ZPOS64_T UncompressedSize = 0;
+            constexpr short    HeaderID         = 1;
+            constexpr short    DataSize         = 16;
+            constexpr ZPOS64_T CompressedSize   = 0;
+            constexpr ZPOS64_T UncompressedSize = 0;
 
             // Remember position of Zip64 extended info for the local file header. (needed when we update size after done with file)
             zi->ci.pos_zip64extrainfo = ZTELL64 (zi->z_filefunc, zi->filestream);
