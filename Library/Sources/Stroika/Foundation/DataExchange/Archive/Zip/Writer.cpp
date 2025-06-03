@@ -147,13 +147,16 @@ namespace {
 
             bool zip64 = data.size () > numeric_limits<uint16_t>::max ();
             // @todo figure out about code page for encoding filenames
-            zip_fileinfo zi{}; //???
-            uInt         opt_compress_level = 0;
-            ThrowIfMinizipErr_ (zipOpenNewFileInZip3_64 (fZipFile_, fileName.AsUTF8<string> ().c_str (), &zi, NULL, 0, NULL, 0,
+            zip_fileinfo  zi{}; //???
+            uInt          opt_compress_level = 0;
+            constexpr int VERSIONMADEBY      = (0x0); /* platform dependent */
+            // see https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT   - Bit 11: Language encoding flag (EFS).
+            constexpr uLong flagBase = 1 << 11; // UTF-8 filenames
+            ThrowIfMinizipErr_ (zipOpenNewFileInZip4_64 (fZipFile_, fileName.AsUTF8<string> ().c_str (), &zi, NULL, 0, NULL, 0,
                                                          NULL /* comment*/, (opt_compress_level != 0) ? Z_DEFLATED : 0, opt_compress_level, 0,
                                                          /* -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, */
-                                                         -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, zip64),
-                                "zipOpenNewFileInZip3_64"sv);
+                                                         -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, crcFile, VERSIONMADEBY, flagBase, zip64),
+                                "zipOpenNewFileInZip4_64"sv);
 
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { zipCloseFileInZip (fZipFile_); });
 

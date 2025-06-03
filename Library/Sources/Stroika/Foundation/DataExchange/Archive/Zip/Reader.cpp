@@ -165,7 +165,8 @@ namespace {
                 if (filename_inzip[::strlen (filename_inzip) - 1] == '/') {
                     continue; // only list files - not directories for now
                 }
-                result.Add (String{filename_inzip}); // not sure about codepage for conversion - for now assume ascii?
+                // From https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT, must check bit 11 to see if really unicode, but not sure what code page if not unicode so just assume unicode!
+                result.Add (String::FromUTF8 (filename_inzip));
             }
 #if 0
         // Keep temporarily, because we will want a traversal variant that captures this extra info
@@ -248,7 +249,8 @@ namespace {
         }
         virtual Memory::BLOB GetData (const String& fileName) const override
         {
-            if (unzLocateFile_ (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) [[unlikely]] {
+            // See comments in GetContainedFiles about filename character encoding
+            if (unzLocateFile_ (fZipFile_, fileName.AsUTF8<string> ().c_str (), 1) != UNZ_OK) [[unlikely]] {
                 Throw (RuntimeErrorException{Format ("File '{}' not found"_f, fileName)});
             }
             const char*             password = nullptr;
