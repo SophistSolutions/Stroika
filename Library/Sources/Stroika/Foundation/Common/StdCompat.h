@@ -12,6 +12,10 @@
 #include <cstdarg>
 #include <ranges>
 
+#if __cpp_lib_expected
+#include <expected>
+#endif
+
 // Various kooky constraints
 //      (1) clang++15/16 don't set __cpp_lib_format, so cannot check __cpp_lib_format >= 201907 instead check __has_include(<format>)
 //      (2) has_include <format> false positives on some versions of XCode, and no reason to even build qStroika_HasComponent_fmtlib unless
@@ -192,6 +196,51 @@ namespace Stroika::Foundation::Common::StdCompat {
     };
 #else
     using compare_three_way = std::compare_three_way;
+#endif
+
+    /**
+     *  Wrap a simplified version of std::expected, cuz handy even if c++23 not present
+     */
+#if __cpp_lib_expected
+    template <class T, class E>
+    using expected = std::expected<T, E>;
+#else
+    template <class T, class E>
+    class expected {
+    public:
+        using value_type      = T;
+        using error_type      = E;
+        using unexpected_type = unexpected<E>;
+
+        constexpr expected () noexcept                       = default;
+        constexpr expected (const expected& _Other) noexcept = default;
+        constexpr expected (T v)
+            : fData_{v}
+        {
+        }
+        constexpr expected (E e)
+            : fData_{e}
+        {
+        }
+        operator bool () noexcept const
+        {
+            return std::get_if<T> (&fData_) != nullptr;
+        }
+        T value () noexcept const
+        {
+            return get<T> (fData_);
+        }
+        E error () noexcept const
+        {
+            return get<E> (fData_);
+        }
+
+    private:
+        variant<T, E> fData_;
+    };
+    /*template <class T, class E>
+        requires std::is_void_v<T>
+    class expected<T, E>;*/
 #endif
 
 }
