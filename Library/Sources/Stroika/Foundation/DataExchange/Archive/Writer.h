@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_Archive_Writer_h_
-#define _Stroika_Foundation_DataExchange_Archive_Writerh_ 1
+#define _Stroika_Foundation_DataExchange_Archive_Writer_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -66,4 +66,4 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
  */
 #include "Writer.inl"
 
-#endif /*_Stroika_Foundation_DataExchange_Archive_Writerh_*/
+#endif /*_Stroika_Foundation_DataExchange_Archive_Writer_h_*/

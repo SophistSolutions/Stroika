@@ -6,7 +6,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
 
     /*
      ********************************************************************************
-     ***************** DataExchange::Archive::Writer::Ptr ***************************
+     ******************** DataExchange::Archive::Writer::Ptr ************************
      ********************************************************************************
      */
     inline Ptr::Ptr (const shared_ptr<IRep>& rep)
