@@ -89,8 +89,7 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]
 
 optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    auto i =
-        argList.Find ([matchesArgPattern] (const String& i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    auto i = argList.Find ([matchesArgPattern] (const String& i) -> bool { return MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
         ++i;
         if (i == argList.end ()) [[unlikely]] {
@@ -166,6 +165,9 @@ String CommandLine::Option::ToString () const
     sb << "IfSupportsArgumentThenRequired: "sv << fIfSupportsArgumentThenRequired << ","sv;
     sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
     sb << "Repeatable: "sv << fRepeatable << ","sv;
+    if (fSkipFirstNArguments) {
+        sb << "SkipFirstNArguments: "sv << fSkipFirstNArguments << ","sv;
+    }
     if (fHelpArgName) {
         sb << "HelpArgName: "sv << *fHelpArgName << ","sv;
     }
@@ -348,7 +350,7 @@ nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (It
                 }
                 return false;
             })) {
-            Execution::Throw (InvalidCommandLineArgument{"Unrecognized argument: "sv + *argi, *argi});
+            return InvalidCommandLineArgument{"Unrecognized argument: "sv + *argi, *argi};
         }
     }
     if (auto o = unused.First ([] (Option o) { return o.fRequired; })) {
@@ -371,18 +373,26 @@ String CommandLine::GetAppName (bool onlyBaseName) const
 
 tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
 {
-    bool             found = false;
+    bool   found        = false;
+    size_t nMore2Skip   = o.fSkipFirstNArguments.value_or (0);
+    bool   isPositional = o.IsPositionArgument ();
+    Assert (nMore2Skip == 0 or isPositional);
     Sequence<String> arguments;
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
         if (optional<pair<bool, optional<String>>> oRes = ParseOneArg_ (o, &argi)) {
-            if (oRes->first) {
-                found = true;
+            //   if (oRes->first) {
+            found = true;
+            //   }
+            if (nMore2Skip == 0 /* and oRes->first == false*/) {
+                if (oRes->second) {
+                    arguments += *oRes->second;
+                    if (not o.fRepeatable) {
+                        break; // no need to keep looking
+                    }
+                }
             }
-            if (oRes->second) {
-                arguments += *oRes->second;
-            }
-            if (not o.fRepeatable) {
-                break; // no need to keep looking
+            else {
+                --nMore2Skip;
             }
         }
     }
@@ -448,8 +458,8 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
         }
         return make_pair (true, nullopt);
     }
-    // anything that cannot be an option (-x or --y...) is skipped, but anything else - that could be a plain filename (even a bare '-') is matched as 'argument'
-    if (not o.fSingleCharName and not o.fLongName and o.fSupportsArgument and not(ai.size () >= 2 and ai.StartsWith ("-"sv))) {
+    // anything that cannot be an option (-x or --y...) is skipped, but anything else - that could be a positional parameter (even a bare '-') is matched as 'argument'
+    if (o.IsPositionArgument () and /* o.fSupportsArgument and */ not(ai.size () >= 2 and ai.StartsWith ("-"sv))) {
         // note we add the argument, but don't set 'found'
         return make_pair (false, **argi);
     }

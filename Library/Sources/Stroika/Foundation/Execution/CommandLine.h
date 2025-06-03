@@ -144,10 +144,12 @@ namespace Stroika::Foundation::Execution {
             Characters::CompareOptions fLongNameCaseSensitive{Characters::eCaseInsensitive};
 
             /**
-             *  Look for argument after option.
+             *  Look for argument after option (note this refers to named arguments, NOT positional arguments - see IsPositionalArgument ())
              * 
              *  if true, and long-form option, look for -OPT=XXX and copy out XXX as the argument
              *  if true, and either form option given, if no =, look for next argi, and if there, use that as argument.
+             * 
+             *  But either way, this refers to supporting NAMED arguments, not POSITIONAL arguments.
              */
             bool fSupportsArgument{false};
 
@@ -170,7 +172,18 @@ namespace Stroika::Foundation::Execution {
             bool fRequired{false};
 
             /**
+             *  used for positional arguments, where its known what number position (not including -/-- arguments) to find these arguments.
+             * 
+             *  Causes GetArguments () to skip the given number of file arguments if provided.
+             * 
+             *      \req IsPositionArgument()
+             */
+            optional<size_t> fSkipFirstNArguments;
+
+            /**
              *  If provided, its the name used in generating help, for the argument to this option.
+             * 
+             *  This is HELPFUL to use for positional parameters, so they can be shown in help.
              */
             optional<String> fHelpArgName;
 
@@ -189,6 +202,11 @@ namespace Stroika::Foundation::Execution {
 #endif
 
             nonvirtual String GetArgumentDescription (bool includeArg = false) const;
+
+            /**
+             *  Return true iff the argument (option) is not a named option (e..g not -n, or --blah, but positional in the argument list)
+             */
+            constexpr bool IsPositionArgument () const;
 
             nonvirtual String ToString () const;
         };
@@ -251,8 +269,9 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-        *  \pre o.fSupportsArgument
-        * 
+         *  if the option o.fSupportsArgument, this returns the NAMED argument --name=X for example.
+         *  if the option not o.fSupportsArgument, then this returns the first (if any) unnamed argument (positional argument)
+         * 
          *  \par Example Usage
          *      \code
          *          constexpr CommandLine::Option   kOutFileOption_ = CommandLine::Option{.fSingleCharName = 'o', .fSupportsArgument = true };
@@ -312,7 +331,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual String ToString () const;
 
     private:
-        /*
+        /**
          *  This may throw, but NOT for not finding option o, just for finding o, but ill-formed.
          *  Returns nullopt if Option 'o' not found at this point in sequence, or the result if it is found.
          */

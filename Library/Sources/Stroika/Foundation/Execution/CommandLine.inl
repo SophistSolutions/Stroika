@@ -6,6 +6,16 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
+     ************************** CommandLine::Option *********************************
+     ********************************************************************************
+     */
+    constexpr bool CommandLine::Option::IsPositionArgument () const
+    {
+        return not fSingleCharName.has_value () and not fLongName.has_value ();
+    }
+
+    /*
+     ********************************************************************************
      ********************************** CommandLine *********************************
      ********************************************************************************
      */
@@ -34,7 +44,6 @@ namespace Stroika::Foundation::Execution {
     }
     inline optional<String> CommandLine::GetArgument (const Option& o) const
     {
-        Require (o.fSupportsArgument);
         auto r = get<Sequence<String>> (Get (o));
         return r.empty () ? optional<String>{} : r[0];
     }
@@ -44,7 +53,6 @@ namespace Stroika::Foundation::Execution {
     }
     inline Sequence<String> CommandLine::GetArguments (const Option& o) const
     {
-        Require (o.fSupportsArgument);
         return get<Sequence<String>> (Get (o));
     }
     inline auto CommandLine::GetStringShellQuoting () const -> optional<StringShellQuoting>
