@@ -334,8 +334,12 @@ namespace Stroika::Foundation::Execution {
         /**
          *  This may throw, but NOT for not finding option o, just for finding o, but ill-formed.
          *  Returns nullopt if Option 'o' not found at this point in sequence, or the result if it is found.
+         * 
+         *  \notes
+         *      o   outer optional refers to if the option was found.
+         *      o   inner optional refers to if the option had an argument
          */
-        static optional<pair<bool, optional<String>>> ParseOneArg_ (const Option& o, Traversal::Iterator<String>* argi);
+        static optional<optional<String>> ParseOneArg_ (const Option& o, Traversal::Iterator<String>* argi);
 
     private:
         optional<StringShellQuoting> fShellStyleQuoting_;

@@ -112,7 +112,7 @@ DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-dec
  */
 String CommandLine::Option::GetArgumentDescription (bool includeArg) const
 {
-    if (not this->fSupportsArgument) {
+    if (not this->fSupportsArgument and not this->IsPositionArgument ()) {
         includeArg = false;
     }
     String argName = this->fHelpArgName.value_or ("ARG"sv);
@@ -160,10 +160,14 @@ String CommandLine::Option::ToString () const
     if (fLongName) {
         sb << "LongName: "sv << *fLongName << ","sv;
     }
+    if (this->IsPositionArgument ()) {
+        sb << "POSITIONAL ARGUMENT,"sv;
+    }
     sb << "CaseSensitive: "sv << fLongNameCaseSensitive << ","sv;
-    sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
-    sb << "IfSupportsArgumentThenRequired: "sv << fIfSupportsArgumentThenRequired << ","sv;
-    sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
+    if (not this->IsPositionArgument ()) {
+        sb << "SupportsArgument: "sv << fSupportsArgument << ","sv;
+        sb << "IfSupportsArgumentThenRequired: "sv << fIfSupportsArgumentThenRequired << ","sv;
+    }
     sb << "Repeatable: "sv << fRepeatable << ","sv;
     if (fSkipFirstNArguments) {
         sb << "SkipFirstNArguments: "sv << fSkipFirstNArguments << ","sv;
@@ -297,10 +301,10 @@ String CommandLine::GenerateUsage (const Iterable<Option>& options) const
 
 String CommandLine::GenerateUsage (const String& exeName, const Iterable<Option>& options)
 {
-    const String  kIndent_ = "    "sv;
-    StringBuilder sb;
+    static const String kIndent_ = "    "sv;
+    StringBuilder       sb;
     sb << "Usage: "sv << exeName;
-    options.Apply ([&] (Option o) {
+    options.Apply ([&] (const Option& o) {
         sb << " [" << o.GetArgumentDescription (true) << "]"sv;
         if (o.fRepeatable) {
             if (o.fRequired) {
@@ -344,7 +348,7 @@ nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (It
     Set<Option> unused{all};
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
         if (not all.First ([&] (Option o) {
-                if (optional<pair<bool, optional<String>>> oRes = ParseOneArg_ (o, &argi)) {
+                if (optional<optional<String>> oRes = ParseOneArg_ (o, &argi)) {
                     unused.RemoveIf (o);
                     return true;
                 }
@@ -379,13 +383,11 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
     Assert (nMore2Skip == 0 or isPositional);
     Sequence<String> arguments;
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
-        if (optional<pair<bool, optional<String>>> oRes = ParseOneArg_ (o, &argi)) {
-            //   if (oRes->first) {
+        if (optional<optional<String>> oRes = ParseOneArg_ (o, &argi)) {
             found = true;
-            //   }
-            if (nMore2Skip == 0 /* and oRes->first == false*/) {
-                if (oRes->second) {
-                    arguments += *oRes->second;
+            if (nMore2Skip == 0) {
+                if (*oRes) {
+                    arguments += **oRes;
                     if (not o.fRepeatable) {
                         break; // no need to keep looking
                     }
@@ -410,10 +412,14 @@ String CommandLine::ToString () const
     return this->As<String> (); // hides some details, but most useful summary typically
 }
 
-optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
+optional<optional<String>> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
 {
     RequireNotNull (argi);
     Require (not argi->Done ());
+
+    // Sorry api is confusing about these two optionals - not clear how todo better, but its private so no biggie
+    static const optional<String>           kMissingArgument_;
+    static const optional<optional<String>> kMissingOption_;
 
     String ai = **argi;
     if (o.fSingleCharName and ai.length () == 2 and ai[0] == '-' and ai[1] == o.fSingleCharName) {
@@ -423,13 +429,13 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
                 if (o.fIfSupportsArgumentThenRequired) {
                     Throw (InvalidCommandLineArgument{"Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
                 }
-                return make_pair (true, nullopt);
+                return kMissingArgument_;
             }
             else {
-                return make_pair (true, **argi);
+                return **argi;
             }
         }
-        return make_pair (true, nullopt);
+        return kMissingArgument_;
     }
 
     // this isn't right!!! - in case where no argument supported - must match all of string (and if next char not =)
@@ -440,7 +446,7 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
             // see if '=' follows longname
             String restOfArgi = ai.SubString (2 + o.fLongName->size ());
             if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
-                return make_pair (true, restOfArgi.SubString (1));
+                return restOfArgi.SubString (1);
             }
             else {
                 ++(*argi);
@@ -449,21 +455,21 @@ optional<pair<bool, optional<String>>> CommandLine::ParseOneArg_ (const Option& 
                         Throw (InvalidCommandLineArgument{
                             "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
                     }
-                    return make_pair (true, nullopt);
+                    return kMissingArgument_;
                 }
                 else {
-                    return make_pair (true, **argi);
+                    return **argi;
                 }
             }
         }
-        return make_pair (true, nullopt);
+        return kMissingArgument_;
     }
     // anything that cannot be an option (-x or --y...) is skipped, but anything else - that could be a positional parameter (even a bare '-') is matched as 'argument'
     if (o.IsPositionArgument () and /* o.fSupportsArgument and */ not(ai.size () >= 2 and ai.StartsWith ("-"sv))) {
         // note we add the argument, but don't set 'found'
-        return make_pair (false, **argi);
+        return **argi;
     }
-    return nullopt;
+    return kMissingOption_;
 }
 
 template <>
