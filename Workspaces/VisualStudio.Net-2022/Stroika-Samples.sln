@@ -106,6 +106,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SQL", "..\..\Samples\SQL\Projects\VisualStudio.Net-2022\SQL.vcxproj", "{D6301E5A-7A66-4929-9367-7F4EDA95730F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+		{91C825D0-2702-4800-98DD-B83727D51F5E} = {91C825D0-2702-4800-98DD-B83727D51F5E}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HTMLUI", "HTMLUI", "{51C603C8-C0DC-48C8-8E10-50887A1C7C80}"
@@ -268,6 +269,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "utils", "utils", "{13B1FCE5
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocumentDB", "..\..\Samples\DocumentDB\Projects\VisualStudio.Net-2022\DocumentDB.vcxproj", "{BE935FEC-0086-4C5C-9EDD-3FCC6A2A436D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
