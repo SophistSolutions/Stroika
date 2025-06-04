@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Characters {
 #if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
                 return span<const byte>{Private_ ::kUTF32_BE_bom, sizeof (Private_ ::kUTF32_BE_bom)};
 #else
-                return span<const byte>{Private_ ::kUTF32_BE_bom, sizeof (Private_ ::kUTF32_BE_bom)};
+                return span{Private_ ::kUTF32_BE_bom, sizeof (Private_ ::kUTF32_BE_bom)};
 #endif
             }
             case UnicodeExternalEncodings::eUTF32_LE: {

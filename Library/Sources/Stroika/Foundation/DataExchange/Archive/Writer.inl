@@ -29,7 +29,11 @@ namespace Stroika::Foundation::DataExchange::Archive::Writer {
     }
     inline void Ptr::Add (const String& fileName, const Memory::BLOB& data)
     {
+        #if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
+        return _GetRep ().Add (fileName, span<const byte>{data});
+        #else
         return _GetRep ().Add (fileName, span{data});
+        #endif
     }
 
 }
