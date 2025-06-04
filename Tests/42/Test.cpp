@@ -117,8 +117,10 @@ namespace {
             CommandLine               cl{"test --mongoConnectionString b"};
             EXPECT_EQ (cl.GetArgument (kMongoConnectionStringOpt_), "b"sv);
             EXPECT_EQ ((cl.ValidateQuietly ({kMongoConnectionStringOpt_})), nullopt);
-            CommandLine clBadName{"test --mongoConnectionStringXXX b"};
+            CommandLine clBadName{"test --mongoXXX b"};
             EXPECT_EQ (clBadName.GetArgument (kMongoConnectionStringOpt_), nullopt);
+            CommandLine clBadName2{"test --mongoConnectionStringXXX b"};
+            EXPECT_EQ (clBadName2.GetArgument (kMongoConnectionStringOpt_), nullopt);
         }
     }
 }

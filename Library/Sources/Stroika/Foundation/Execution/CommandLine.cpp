@@ -446,31 +446,35 @@ Common::StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgume
         return kMissingArgument_;
     }
 
-    // this isn't right!!! - in case where no argument supported - must match all of string (and if next char not =)
-    // but its CLOSE--LGP 2024-03-05
+    String argiUpToEquals = ai;
+    if (optional<size_t> indexOfEquals = argiUpToEquals.Find ('=')) {
+        argiUpToEquals = argiUpToEquals.SubString (0, *indexOfEquals);
+    }
     if (o.fLongName and ai.length () >= 2 + o.fLongName->size () and ai[0] == '-' and ai[1] == '-' and
-        String::EqualsComparer{o.fLongNameCaseSensitive}(ai.SubString (2, o.fLongName->size () + 2), *o.fLongName)) {
+        String::EqualsComparer{o.fLongNameCaseSensitive}(argiUpToEquals.SubString (2), *o.fLongName)) {
+        String restOfArgi = ai.SubString (2 + o.fLongName->size ());
         if (o.fSupportsArgument) {
             // see if '=' follows longname
-            String restOfArgi = ai.SubString (2 + o.fLongName->size ());
             if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
                 return RT{OptionallyHasOption{restOfArgi.SubString (1)}};
             }
-            else {
-                ++(*argi);
-                if ((*argi).Done ()) {
-                    if (o.fIfSupportsArgumentThenRequired) {
-                        return RT{InvalidCommandLineArgument{
-                            "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
-                    }
-                    return kMissingArgument_;
+            ++(*argi);  // Look for argument as string just after --option
+            if ((*argi).Done ()) {
+                if (o.fIfSupportsArgumentThenRequired) {
+                    return RT{InvalidCommandLineArgument{
+                        "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
                 }
-                else {
-                    return RT{OptionallyHasOption{**argi}};
-                }
+                return kMissingArgument_;
             }
+            else {
+                return RT{OptionallyHasOption{**argi}};
+            }
+            AssertNotReached ();
         }
-        return kMissingArgument_;
+        else {
+            return kMissingArgument_;
+        }
+        AssertNotReached ();
     }
     // anything that cannot be an option (-x or --y...) is skipped, but anything else - that could be a positional parameter (even a bare '-') is matched as 'argument'
     if (o.IsPositionArgument () and /* o.fSupportsArgument and */ not(ai.size () >= 2 and ai.StartsWith ("-"sv))) {
