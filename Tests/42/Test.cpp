@@ -105,11 +105,20 @@ namespace {
         {
             String           cmdLine = "/bin/sh\t b c     -d";
             Sequence<String> l       = CommandLine{cmdLine}.GetArguments ();
-            EXPECT_TRUE (l.size () == 4);
-            EXPECT_TRUE (l[0] == "/bin/sh");
-            EXPECT_TRUE (l[1] == "b");
-            EXPECT_TRUE (l[2] == "c");
-            EXPECT_TRUE (l[3] == "-d");
+            EXPECT_EQ (l.size (), 4u);
+            EXPECT_EQ (l[0], "/bin/sh");
+            EXPECT_EQ (l[1], "b");
+            EXPECT_EQ (l[2], "c");
+            EXPECT_EQ (l[3] , "-d");
+        }
+
+        {
+            const CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
+            CommandLine               cl{"test --mongoConnectionString b"};
+            EXPECT_EQ (cl.GetArgument (kMongoConnectionStringOpt_), "b"sv);
+            EXPECT_EQ ((cl.ValidateQuietly ({kMongoConnectionStringOpt_})), nullopt);
+            CommandLine clBadName{"test --mongoConnectionStringXXX b"};
+            EXPECT_EQ (clBadName.GetArgument (kMongoConnectionStringOpt_), nullopt);
         }
     }
 }
