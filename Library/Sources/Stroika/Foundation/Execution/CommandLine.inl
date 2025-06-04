@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
     inline bool CommandLine::Has (const Option& o) const
     {
         for (Traversal::Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
-            if (optional<optional<String>> oRes = ParseOneArg_ (o, &argi)) {
+            if (auto oRes = ParseOneArg_ (o, &argi); oRes and *oRes) {
                 return true;
             }
         }

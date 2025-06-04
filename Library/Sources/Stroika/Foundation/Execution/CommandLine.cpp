@@ -110,14 +110,14 @@ DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-dec
  ************************** CommandLine::Option *********************************
  ********************************************************************************
  */
-String CommandLine::Option::GetArgumentDescription (bool includeArg) const
+String CommandLine::Option::GetArgumentDescription (bool includeArgName) const
 {
     if (not this->fSupportsArgument and not this->IsPositionArgument ()) {
-        includeArg = false;
+        includeArgName = false;
     }
     String argName = this->fHelpArgName.value_or ("ARG"sv);
     if (fSingleCharName and fLongName) {
-        if (includeArg) {
+        if (includeArgName) {
             return "(-{} {}|--{}={})"_f(*fSingleCharName, argName, *fLongName, argName);
         }
         else {
@@ -125,7 +125,7 @@ String CommandLine::Option::GetArgumentDescription (bool includeArg) const
         }
     }
     else if (this->fSingleCharName) {
-        if (includeArg) {
+        if (includeArgName) {
             return "-{} {}"_f(*fSingleCharName, argName);
         }
         else {
@@ -133,7 +133,7 @@ String CommandLine::Option::GetArgumentDescription (bool includeArg) const
         }
     }
     else if (fLongName) {
-        if (includeArg) {
+        if (includeArgName) {
             return "--"sv + *fLongName + "="sv + argName;
         }
         else {
@@ -141,7 +141,7 @@ String CommandLine::Option::GetArgumentDescription (bool includeArg) const
         }
     }
     else {
-        if (includeArg) {
+        if (includeArgName) {
             return argName;
         }
         else {
@@ -347,8 +347,12 @@ nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (co
     Set<Option> all{options};
     Set<Option> unused{all};
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
-        if (not all.First ([&] (Option o) {
-                if (optional<optional<String>> oRes = ParseOneArg_ (o, &argi)) {
+        if (not all.First ([&] (const Option& o) {
+                auto oRes = ParseOneArg_ (o, &argi);
+                if (!oRes) {
+                    Throw (oRes.error ());
+                }
+                if (*oRes) {
                     unused.RemoveIf (o);
                     return true;
                 }
@@ -357,8 +361,8 @@ nonvirtual optional<InvalidCommandLineArgument> CommandLine::ValidateQuietly (co
             return InvalidCommandLineArgument{"Unrecognized argument: "sv + *argi, *argi};
         }
     }
-    if (auto o = unused.First ([] (Option o) { return o.fRequired; })) {
-        return InvalidCommandLineArgument{"Required command line argument "sv + o->GetArgumentDescription () + " was not provided"sv};
+    if (auto o = unused.First ([] (const Option& o) { return o.fRequired; })) {
+        return InvalidCommandLineArgument{"Required command line argument "sv + o->GetArgumentDescription (true) + " was not provided"sv};
     }
     return nullopt;
 }
@@ -383,7 +387,7 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
     Assert (nMore2Skip == 0 or isPositional);
     Sequence<String> arguments;
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
-        if (optional<optional<String>> oRes = ParseOneArg_ (o, &argi)) {
+        if (optional<optional<String>> oRes = ThrowIfFailed (ParseOneArg_ (o, &argi))) {
             found = true;
             if (nMore2Skip == 0) {
                 if (*oRes) {
@@ -412,14 +416,17 @@ String CommandLine::ToString () const
     return this->As<String> (); // hides some details, but most useful summary typically
 }
 
-optional<optional<String>> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
+Common::StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgument> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
 {
     RequireNotNull (argi);
     Require (not argi->Done ());
+    using OptionalArgument    = optional<String>;
+    using OptionallyHasOption = optional<OptionalArgument>;
+    using RT                  = Common::StdCompat::expected<OptionallyHasOption, InvalidCommandLineArgument>;
 
     // Sorry api is confusing about these two optionals - not clear how todo better, but its private so no biggie
-    static const optional<String>           kMissingArgument_;
-    static const optional<optional<String>> kMissingOption_;
+    static const RT kMissingArgument_ = RT{OptionallyHasOption{OptionalArgument{}}};
+    static const RT kMissingOption_   = RT{OptionallyHasOption{}};
 
     String ai = **argi;
     if (o.fSingleCharName and ai.length () == 2 and ai[0] == '-' and ai[1] == o.fSingleCharName) {
@@ -427,12 +434,13 @@ optional<optional<String>> CommandLine::ParseOneArg_ (const Option& o, Iterator<
             ++(*argi);
             if ((*argi).Done ()) {
                 if (o.fIfSupportsArgumentThenRequired) {
-                    Throw (InvalidCommandLineArgument{"Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
+                    return RT{InvalidCommandLineArgument{
+                        "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
                 }
                 return kMissingArgument_;
             }
             else {
-                return **argi;
+                return RT{OptionallyHasOption{**argi}};
             }
         }
         return kMissingArgument_;
@@ -446,19 +454,19 @@ optional<optional<String>> CommandLine::ParseOneArg_ (const Option& o, Iterator<
             // see if '=' follows longname
             String restOfArgi = ai.SubString (2 + o.fLongName->size ());
             if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
-                return restOfArgi.SubString (1);
+                return RT{OptionallyHasOption{restOfArgi.SubString (1)}};
             }
             else {
                 ++(*argi);
                 if ((*argi).Done ()) {
                     if (o.fIfSupportsArgumentThenRequired) {
-                        Throw (InvalidCommandLineArgument{
-                            "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai});
+                        return RT{InvalidCommandLineArgument{
+                            "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
                     }
                     return kMissingArgument_;
                 }
                 else {
-                    return **argi;
+                    return RT{OptionallyHasOption{**argi}};
                 }
             }
         }
@@ -467,7 +475,7 @@ optional<optional<String>> CommandLine::ParseOneArg_ (const Option& o, Iterator<
     // anything that cannot be an option (-x or --y...) is skipped, but anything else - that could be a positional parameter (even a bare '-') is matched as 'argument'
     if (o.IsPositionArgument () and /* o.fSupportsArgument and */ not(ai.size () >= 2 and ai.StartsWith ("-"sv))) {
         // note we add the argument, but don't set 'found'
-        return **argi;
+        return RT{OptionallyHasOption{**argi}};
     }
     return kMissingOption_;
 }

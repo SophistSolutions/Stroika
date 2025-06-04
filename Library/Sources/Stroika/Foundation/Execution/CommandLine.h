@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/SDKChar.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 
@@ -201,7 +202,7 @@ namespace Stroika::Foundation::Execution {
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
 
-            nonvirtual String GetArgumentDescription (bool includeArg = false) const;
+            nonvirtual String GetArgumentDescription (bool includeArgName = false) const;
 
             /**
              *  Return true iff the argument (option) is not a named option (e..g not -n, or --blah, but positional in the argument list)
@@ -339,7 +340,8 @@ namespace Stroika::Foundation::Execution {
          *      o   outer optional refers to if the option was found.
          *      o   inner optional refers to if the option had an argument
          */
-        static optional<optional<String>> ParseOneArg_ (const Option& o, Traversal::Iterator<String>* argi);
+        static Common::StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgument> ParseOneArg_ (const Option& o,
+                                                                                                                 Traversal::Iterator<String>* argi);
 
     private:
         optional<StringShellQuoting> fShellStyleQuoting_;
