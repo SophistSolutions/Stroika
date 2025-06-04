@@ -149,4 +149,20 @@ namespace Stroika::Foundation::Execution {
         ThrowIfNull (p, kException_);
     }
 
+    /*
+     ********************************************************************************
+     *************************** Execution::ThrowIfFailed ***************************
+     ********************************************************************************
+     */
+    template <typename EXPECTED>
+    inline auto ThrowIfFailed (const EXPECTED& e) -> typename EXPECTED::value_type
+    {
+        if (e) {
+            return e.value ();
+        }
+        else {
+            Throw (e.error ());
+        }
+    }
+
 }

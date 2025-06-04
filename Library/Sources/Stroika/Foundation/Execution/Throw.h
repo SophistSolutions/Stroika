@@ -104,6 +104,16 @@ namespace Stroika::Foundation::Execution {
     void ThrowIfNull (const T& p)
         requires (not equality_comparable_with<nullptr_t, T>);
 
+    /**
+     *  If the first argument is failed throw the exception, and else return the value. Works with std::expected, to Common::StdCompat::expected
+     * 
+     *  For some reason, this doesn't appear to be part of the std::expected interface, so we define it here. Maybe there is a way with
+     *  transform, etc, but it doesn't appear to be so (without using a two step process where you create the expected, and then can
+     *  reference it in a second step, binding it into the lambda with transform_error or some such).
+     */
+    template <typename EXPECTED>
+    typename EXPECTED::value_type ThrowIfFailed (const EXPECTED& e);
+    
     /** 
      *  \def IgnoreExceptionsForCall - ignore all exceptions for the given argument call (evaluate arg)
      *
