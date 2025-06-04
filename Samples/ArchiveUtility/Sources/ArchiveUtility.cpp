@@ -165,7 +165,7 @@ namespace {
     }
     void ExtractArchive_ (const filesystem::path& archiveName, const filesystem::path& toDirectory)
     {
-        Debug::TraceContextBumper ctx{"ExtractArchive_", Stroika_Foundation_Debug_OptionalizeTraceArgs()"(archiveName={}, toDir={})"_f, archiveName, toDirectory)};
+        Debug::TraceContextBumper ctx{"ExtractArchive_", Stroika_Foundation_Debug_OptionalizeTraceArgs("(archiveName={}, toDir={})"_f, archiveName, toDirectory)};
         DataExchange::Archive::Reader::Ptr archive{OpenArchive_ (archiveName)};
         for (String i : archive.GetContainedFiles ()) {
             String           srcFileName = i;
