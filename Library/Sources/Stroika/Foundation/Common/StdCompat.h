@@ -203,15 +203,19 @@ namespace Stroika::Foundation::Common::StdCompat {
     /**
      *  Wrap a simplified version of std::expected, cuz handy even if c++23 not present
      */
-#if __cpp_lib_expected
+#if __cpp_lib_expected && 0
     template <class T, class E>
-    using expected = std::expected<T, E>;
+    struct expected : std::expected<T, E> {
+        using expected::expected;
+    };
+    /*template <class T, class E>
+        requires is_void_v<T>
+    struct expected<T,E> : std::expected<T, E> {
+        using expected::expected;
+    };*/
 #else
     template <class T, class E>
     class expected;
-    template <class T, class E>
-        requires std::is_void_v<T>
-    class expected<T, E>;
     template <class T, class E>
     class expected {
     public:
@@ -229,15 +233,29 @@ namespace Stroika::Foundation::Common::StdCompat {
             : fData_{e}
         {
         }
+        template <typename T1, typename E1>
+        constexpr expected (expected<T1, E1> e)
+        {
+            if (e) {
+                fData_ = e.value ();
+            }
+            else {
+                fData_ = e.error ();
+            }
+        }
         explicit operator bool () const noexcept
         {
             return std::get_if<T> (&fData_) != nullptr;
         }
-        T value () const noexcept
+        T operator* () const
+        {
+            return value ();
+        }
+        T value () const
         {
             return get<T> (fData_);
         }
-        E error () const noexcept
+        E error () const
         {
             return get<E> (fData_);
         }
