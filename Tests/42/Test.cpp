@@ -109,7 +109,7 @@ namespace {
             EXPECT_EQ (l[0], "/bin/sh");
             EXPECT_EQ (l[1], "b");
             EXPECT_EQ (l[2], "c");
-            EXPECT_EQ (l[3] , "-d");
+            EXPECT_EQ (l[3], "-d");
         }
 
         {
