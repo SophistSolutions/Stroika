@@ -14,6 +14,8 @@
 
 #if __cpp_lib_expected
 #include <expected>
+#else
+#include <variant>
 #endif
 
 // Various kooky constraints
@@ -218,7 +220,7 @@ namespace Stroika::Foundation::Common::StdCompat {
         //  using unexpected_type = unexpected<E>;
 
         constexpr expected () noexcept                       = default;
-        constexpr expected (const expected& _Other) noexcept = default;
+        constexpr expected (const expected& ) noexcept = default;
         constexpr expected (T v)
             : fData_{v}
         {
