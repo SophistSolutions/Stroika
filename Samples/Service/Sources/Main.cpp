@@ -74,10 +74,8 @@ namespace {
              << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
         cerr << "\t--" << String{Main::CommandNames::kRunDirectly} << "          /* Run this process as a directly (doesn't exit until the serivce is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */"
              << endl;
-        cerr << "\t--" << String{Main::CommandNames::kStart}
-             << "                 /* Service/Control Function: Start the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kStop}
-             << "                  /* Service/Control Function: Stop the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kStart} << "                 /* Service/Control Function: Start the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kStop} << "                  /* Service/Control Function: Stop the service */" << endl;
         cerr << "\t--" << String{Main::CommandNames::kForcedStop}
              << "            /* Service/Control Function: Forced stop the service (after trying to normally stop) */" << endl;
         cerr << "\t--" << String{Main::CommandNames::kRestart}
@@ -85,10 +83,8 @@ namespace {
         cerr << "\t--" << String{Main::CommandNames::kForcedRestart}
              << "         /* Service/Control Function: Stop (force if needed) and then re-start the service (ok if already stopped) */" << endl;
         cerr << "\t--" << String{Main::CommandNames::kReloadConfiguration} << "  /* Reload service configuration */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kPause}
-             << "                 /* Service/Control Function: Pause the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kContinue}
-             << "              /* Service/Control Function: Continue the paused service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kPause} << "                 /* Service/Control Function: Pause the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kContinue} << "              /* Service/Control Function: Continue the paused service */" << endl;
         cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
         cerr << "\t--Version               /* print this application version */ " << endl;
         cerr << "\t--help                  /* Print this help. */ " << endl;
@@ -197,8 +193,7 @@ int main (int argc, const char* argv[])
             return EXIT_SUCCESS;
         }
         else if (cmdLine.Has (kVersion)) {
-            cout << m.GetServiceDescription ().fPrettyName << ": "sv
-                 << Characters::ToString (AppVersion::kVersion) << endl;
+            cout << m.GetServiceDescription ().fPrettyName << ": "sv << Characters::ToString (AppVersion::kVersion) << endl;
             return EXIT_SUCCESS;
         }
         else {

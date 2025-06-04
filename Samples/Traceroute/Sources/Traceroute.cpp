@@ -107,15 +107,15 @@ int main (int argc, const char* argv[])
                 //   options.fSampleInfo                   = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
                 NetworkMonitor::Ping::SampleResults t =
                     NetworkMonitor::Ping::Sample (addr, Ping::SampleOptions{kInterSampleTime_, sampleCount}, options);
-                cout << "Ping to " << addr.ToString ()<< ": " << Characters::ToString (t) << endl;
+                cout << "Ping to " << addr.ToString () << ": " << Characters::ToString (t) << endl;
             } break;
             case MajorOp::eTraceroute: {
                 Traceroute::Options options{};
                 options.fPacketPayloadSize = Traceroute::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
                 options.fMaxHops = maxHops;
 
-                cout << "Tracing Route to " << targetAddress << " ["
-                     << Characters::ToString (addr) << "] over a maximum of " << maxHops << " hops." << endl;
+                cout << "Tracing Route to " << targetAddress << " [" << Characters::ToString (addr) << "] over a maximum of " << maxHops
+                     << " hops." << endl;
                 cout << endl;
 
                 // quickie - weak attempt at formatting the output

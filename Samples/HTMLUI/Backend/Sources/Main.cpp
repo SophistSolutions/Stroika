@@ -99,7 +99,7 @@ namespace {
             }
 
             if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
-                cerr << cmdLine.GenerateUsage (kAllOptions_)  << endl;
+                cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
                 return EXIT_SUCCESS;
             }
             else if (cmdLine.Has (Main::CommandOptions::kStatus)) {
@@ -111,8 +111,7 @@ namespace {
             else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
                 // no need to wrap in logger, and load options for this
                 Main m{make_shared<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
-                cout << m.GetServiceDescription ().fPrettyName << ": "sv
-                     << Characters::ToString (AppVersion::kVersion) << endl;
+                cout << m.GetServiceDescription ().fPrettyName << ": "sv << Characters::ToString (AppVersion::kVersion) << endl;
                 return EXIT_SUCCESS;
             }
 

@@ -75,7 +75,7 @@ namespace {
     {
         cout << "Instrument:" << endl;
         for (const Instrument& i : SystemPerformance::GetAllInstruments ()) {
-            cout << "  " << i.instrumentName ().GetPrintName ()<< endl;
+            cout << "  " << i.instrumentName ().GetPrintName () << endl;
             // print measurements too?
         }
     }
