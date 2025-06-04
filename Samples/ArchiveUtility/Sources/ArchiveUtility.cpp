@@ -152,7 +152,7 @@ namespace {
             return DataExchange::Archive::Zip::Writer::New (IO::FileSystem::FileOutputStream::New (archiveName));
         }
 #endif
-        Throw(Exception{"Unrecognized format"sv});
+        Throw (Exception{"Unrecognized format"sv});
     }
 }
 
@@ -180,7 +180,8 @@ namespace {
     }
     void CreateArchive_ (const filesystem::path& archiveName, const Sequence<String>& files2Add)
     {
-        Debug::TraceContextBumper ctx{"CreateArchive_", Stroika_Foundation_Debug_OptionalizeTraceArgs("(archiveName={}, files2Add={})"_f, archiveName, files2Add)};
+        Debug::TraceContextBumper          ctx{"CreateArchive_",
+                                      Stroika_Foundation_Debug_OptionalizeTraceArgs ("(archiveName={}, files2Add={})"_f, archiveName, files2Add)};
         DataExchange::Archive::Writer::Ptr archive = CreateWritingArchive_ (archiveName);
         for (String f2a : files2Add) {
             archive.Add (f2a, IO::FileSystem::FileInputStream::New (f2a.As<filesystem::path> ()).ReadAll ());
