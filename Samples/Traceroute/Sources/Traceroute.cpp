@@ -62,9 +62,9 @@ int main (int argc, const char* argv[])
 
     auto usage = [&] (const optional<String>& extraArg = {}) {
         if (extraArg) {
-            cerr << extraArg->AsNarrowSDKString () << endl;
+            cerr << *extraArg << endl;
         }
-        cerr << Execution::CommandLine::GenerateUsage ("traceroute", kAllOptions_).AsNarrowSDKString ();
+        cerr << Execution::CommandLine::GenerateUsage ("traceroute"sv, kAllOptions_);
     };
 
     Execution::CommandLine cmdLine{argc, argv};
@@ -107,15 +107,15 @@ int main (int argc, const char* argv[])
                 //   options.fSampleInfo                   = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
                 NetworkMonitor::Ping::SampleResults t =
                     NetworkMonitor::Ping::Sample (addr, Ping::SampleOptions{kInterSampleTime_, sampleCount}, options);
-                cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
+                cout << "Ping to " << addr.ToString ()<< ": " << Characters::ToString (t) << endl;
             } break;
             case MajorOp::eTraceroute: {
                 Traceroute::Options options{};
                 options.fPacketPayloadSize = Traceroute::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
                 options.fMaxHops = maxHops;
 
-                cout << "Tracing Route to " << targetAddress.AsNarrowSDKString () << " ["
-                     << Characters::ToString (addr).AsNarrowSDKString () << "] over a maximum of " << maxHops << " hops." << endl;
+                cout << "Tracing Route to " << targetAddress << " ["
+                     << Characters::ToString (addr) << "] over a maximum of " << maxHops << " hops." << endl;
                 cout << endl;
 
                 // quickie - weak attempt at formatting the output
@@ -135,7 +135,7 @@ int main (int argc, const char* argv[])
                         }
                     }();
                     String timeStr = h.fTime.empty () ? "timeout\t"_k : h.fTime.PrettyPrint ();
-                    cout << hopIdx++ << "\t" << timeStr.AsNarrowSDKString () << "\t" << hopName.AsNarrowSDKString () << endl;
+                    cout << hopIdx++ << "\t" << timeStr << "\t" << hopName << endl;
                 };
                 // can call without callback, and just get all the hops in a list, which is simpler. But using the callback allows you to see
                 // per hop progress as its accumulated, which is more typical for traceroute UI
@@ -144,8 +144,7 @@ int main (int argc, const char* argv[])
         }
     }
     catch (...) {
-        String exceptMsg = Characters::ToString (current_exception ());
-        cerr << "Exception - " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
+        cerr << "Exception - " << Characters::ToString (current_exception ()) << " - terminating..." << endl;
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

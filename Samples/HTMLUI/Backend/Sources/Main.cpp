@@ -93,26 +93,26 @@ namespace {
                 cmdLine.Validate (kAllOptions_);
             }
             catch (const InvalidCommandLineArgument&) {
-                cerr << Characters::ToString (current_exception ()).AsNarrowSDKString () << endl;
-                cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+                cerr << Characters::ToString (current_exception ()) << endl;
+                cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
                 return EXIT_FAILURE;
             }
 
             if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
-                cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+                cerr << cmdLine.GenerateUsage (kAllOptions_)  << endl;
                 return EXIT_SUCCESS;
             }
             else if (cmdLine.Has (Main::CommandOptions::kStatus)) {
                 // no need to wrap in logger, and load options for this
                 Main m{make_shared<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
-                cout << m.GetServiceStatusMessage ().AsNarrowSDKString ();
+                cout << m.GetServiceStatusMessage ();
                 return EXIT_SUCCESS;
             }
             else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
                 // no need to wrap in logger, and load options for this
                 Main m{make_shared<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
-                cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
-                     << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
+                cout << m.GetServiceDescription ().fPrettyName << ": "sv
+                     << Characters::ToString (AppVersion::kVersion) << endl;
                 return EXIT_SUCCESS;
             }
 
@@ -187,7 +187,7 @@ int main (int argc, char* argv[])
         return myApp.Run (cmdLine);
     }
     catch (...) {
-        cerr << endl << "EXCEPTION: {}"_f(current_exception ()).AsNarrowSDKString () << endl;
+        cerr << endl << "EXCEPTION: {}"_f(current_exception ()) << endl;
     }
     return EXIT_SUCCESS;
 }

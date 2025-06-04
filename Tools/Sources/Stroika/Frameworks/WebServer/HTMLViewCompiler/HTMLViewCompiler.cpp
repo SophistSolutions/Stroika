@@ -81,7 +81,7 @@ private:
                             gettingName = true;
                             break;
                         default: {
-                            cerr << "Unknown argument '" << String::FromSDKString (argi).AsNarrowSDKString () << "'\n";
+                            cerr << "Unknown argument '" << String::FromSDKString (argi) << "'\n";
                             Usage_ ();
                             return false;
                         } break;
@@ -123,8 +123,8 @@ private:
         wstring orig =
             Streams::BinaryToText::Reader::New (Streams::iostream::InputStreamFromStdIStream::New<std::byte> (in)).ReadAll ().As<wstring> ();
 
-        out << "/*Auto-Generated C++ file from the Source HTML file '" << String::FromSDKString (fInputFile).AsNarrowSDKString () << "'*/" << endl;
-        out << "void    " << String::FromSDKString (fFormGeneratorName).AsNarrowSDKString () << " ()" << endl;
+        out << "/*Auto-Generated C++ file from the Source HTML file '" << String::FromSDKString (fInputFile) << "'*/" << endl;
+        out << "void    " << String::FromSDKString (fFormGeneratorName) << " ()" << endl;
         out << "{" << endl;
         {
             bool inCode           = false;
@@ -171,7 +171,7 @@ private:
                 }
                 else {
                     if (inCode) {
-                        out << String{wstring{i, next}}.AsNarrowSDKString ();
+                        out << String{wstring{i, next}};
                     }
                     else {
                         // Really long 'C' strings cause MSVC to barf - so break it up

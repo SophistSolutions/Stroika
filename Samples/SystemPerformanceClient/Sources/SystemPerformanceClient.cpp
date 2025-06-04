@@ -75,7 +75,7 @@ namespace {
     {
         cout << "Instrument:" << endl;
         for (const Instrument& i : SystemPerformance::GetAllInstruments ()) {
-            cout << "  " << i.instrumentName ().GetPrintName ().AsNarrowSDKString () << endl;
+            cout << "  " << i.instrumentName ().GetPrintName ()<< endl;
             // print measurements too?
         }
     }
@@ -96,9 +96,9 @@ namespace {
             capturer.AddCaptureSet (cs);
         }
         capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
-            cout << "    Measured-At: " << toDisp_ (ms.fMeasuredAt).ToString ().AsNarrowSDKString () << endl;
+            cout << "    Measured-At: " << toDisp_ (ms.fMeasuredAt).ToString () << endl;
             for (const Measurement& mi : ms.fMeasurements) {
-                cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+                cout << "    " << mi.fType.GetPrintName () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
             }
         });
 
@@ -114,16 +114,16 @@ namespace {
                     continue;
                 }
             }
-            cout << "  " << i.instrumentName ().GetPrintName ().AsNarrowSDKString () << endl;
+            cout << "  " << i.instrumentName ().GetPrintName () << endl;
             Execution::Sleep (captureInterval);
             MeasurementSet m = i.Capture ();
             if (m.fMeasurements.empty ()) {
                 cout << "    NO DATA" << endl;
             }
             else {
-                cout << "    Measured-At: " << toDisp_ (m.fMeasuredAt).ToString ().AsNarrowSDKString () << endl;
+                cout << "    Measured-At: " << toDisp_ (m.fMeasuredAt).ToString () << endl;
                 for (const Measurement& mi : m.fMeasurements) {
-                    cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
+                    cout << "    " << mi.fType.GetPrintName () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
                 }
             }
         }
@@ -194,14 +194,14 @@ namespace {
             using namespace Memory; // for optional operator overloads
             cout << "\tPass: " << pass << endl;
             cout << "\t\tSys: " << endl;
-            cout << "\t\t\tRun-Q Length:                 " << Characters::ToString (runQLength).AsNarrowSDKString () << endl;
-            cout << "\t\t\tTotal CPU Usage:              " << Characters::ToString (totalCPUUsage).AsNarrowSDKString () << " ("
-                 << Characters::ToString (totalCPURatio * 100.0).AsNarrowSDKString () << "% of computer)" << endl;
+            cout << "\t\t\tRun-Q Length:                 " << Characters::ToString (runQLength) << endl;
+            cout << "\t\t\tTotal CPU Usage:              " << Characters::ToString (totalCPUUsage) << " ("
+                 << Characters::ToString (totalCPURatio * 100.0) << "% of computer)" << endl;
             cout << "\t\tThis Process: " << endl;
-            cout << "\t\t\tUptime:                       " << Characters::ToString (thisProcUptime).AsNarrowSDKString () << endl;
-            cout << "\t\t\tAverage CPU Time Used:        " << Characters::ToString (thisProcAverageCPUTimeUsed).AsNarrowSDKString () << endl;
-            cout << "\t\t\tWorking Or Resident-Set Size: " << Characters::ToString (thisProcWorkingOrResidentSetSize).AsNarrowSDKString () << endl;
-            cout << "\t\t\tCombined IO Rate:             " << Characters::ToString (thisProcCombinedIORate).AsNarrowSDKString () << endl;
+            cout << "\t\t\tUptime:                       " << Characters::ToString (thisProcUptime) << endl;
+            cout << "\t\t\tAverage CPU Time Used:        " << Characters::ToString (thisProcAverageCPUTimeUsed) << endl;
+            cout << "\t\t\tWorking Or Resident-Set Size: " << Characters::ToString (thisProcWorkingOrResidentSetSize) << endl;
+            cout << "\t\t\tCombined IO Rate:             " << Characters::ToString (thisProcCombinedIORate) << endl;
             Execution::Sleep (30s);
             ++pass;
         }
@@ -248,7 +248,7 @@ int main (int argc, const char* argv[])
         cmdLine.GetArguments (kRunInstrumentArg_).Map<Set<InstrumentNameType>> ([] (const String& s) { return InstrumentNameType{s}; });
 
     if (printUsage) {
-        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
+        cerr << cmdLine.GenerateUsage (kAllOptions_);
         return EXIT_SUCCESS;
     }
 
@@ -269,7 +269,7 @@ int main (int argc, const char* argv[])
     }
     catch (const Execution::InvalidCommandLineArgument&) {
         cerr << "Error encountered: " << Characters::ToString (current_exception ()) << endl;
-        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_SUCCESS;
     }
     catch (...) {

@@ -78,7 +78,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     }
 
     if (cmdLine.Has (StandardCommandLineOptions::kHelp)) {
-        cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString () << endl;
+        cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_SUCCESS;
     }
 
@@ -113,8 +113,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         return EXIT_SUCCESS;
     }
     catch (...) {
-        String exceptMsg = Characters::ToString (current_exception ());
-        cerr << "Exception - " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
+        cerr << "Exception - " << Characters::ToString (current_exception ()) << " - terminating..." << endl;
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

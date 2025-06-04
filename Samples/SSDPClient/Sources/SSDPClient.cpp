@@ -43,7 +43,7 @@ namespace {
             Response        r = c.GET (deviceDescriptionURL);
             if (r.GetSucceeded ()) {
                 DeviceDescription deviceInfo = DeSerialize (r.GetData ());
-                cout << "\t\tDevice-Decsciption: " << Characters::ToString (deviceInfo).AsNarrowSDKString () << endl;
+                cout << "\t\tDevice-Decsciption: " << Characters::ToString (deviceInfo) << endl;
             }
         }
         catch (...) {
@@ -149,8 +149,7 @@ int main (int argc, const char* argv[])
         return EXIT_SUCCESS;
     }
     catch (...) {
-        String exceptMsg = Characters::ToString (current_exception ());
-        cerr << "Exception - " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
+        cerr << "Exception - " << Characters::ToString (current_exception ()) << " - terminating..." << endl;
         return EXIT_FAILURE;
     }
 

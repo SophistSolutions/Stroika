@@ -89,11 +89,11 @@ namespace {
         }
         catch (...) {
             cerr << ToString (current_exception ()) << endl;
-            cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
             return optional<Options_>{};
         }
         if (cmdLine.Has (kHelp)) {
-            cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
             return optional<Options_>{};
         }
 
@@ -111,7 +111,7 @@ namespace {
         }
         else {
             cerr << "Missing operation" << endl;
-            cerr << cmdLine.GenerateUsage (kAllOptions_).AsNarrowSDKString ();
+            cerr << cmdLine.GenerateUsage (kAllOptions_);
             return optional<Options_>{};
         }
         result.fArchiveFileName = Memory::ValueOf (cmdLine.GetArgument (kArchiveFileO_)).As<filesystem::path> ();
@@ -147,7 +147,7 @@ namespace {
     void ListArchive_ (const filesystem::path& archiveName)
     {
         for (String i : OpenArchive_ (archiveName).GetContainedFiles ()) {
-            cout << i.AsNarrowSDKString () << endl;
+            cout << i << endl;
         }
     }
     void ExtractArchive_ (const filesystem::path& archiveName, const filesystem::path& toDirectory)
@@ -197,7 +197,7 @@ int main (int argc, const char* argv[])
                     ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.value_or ("."sv));
                     break;
                 case Options_::Operation::eCreate:
-                    CreateArchive_ (o->fArchiveFileName, o->fFiles2Add.value_or ({}));
+                    CreateArchive_ (o->fArchiveFileName, o->fFiles2Add.value_or (Sequence<String>{}));
                     break;
                 default:
                     cerr << "that option NYI" << endl;
@@ -205,13 +205,12 @@ int main (int argc, const char* argv[])
             }
         }
         catch (const InvalidCommandLineArgument&) {
-            String exceptMsg = Characters::ToString (current_exception ());
-            cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << endl;
+            cerr << "Exception: " << Characters::ToString (current_exception ()) << endl;
             return EXIT_FAILURE;
         }
         catch (...) {
             String exceptMsg = Characters::ToString (current_exception ());
-            cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
+            cerr << "Exception: " << exceptMsg << " - terminating..." << endl;
             if (o->fNoFailOnMissingLibrary.value_or (false)) {
 #if !qStroika_HasComponent_LZMA || !qStroika_HasComponent_zlib
                 if (exceptMsg.Contains ("Unrecognized format"sv)) {

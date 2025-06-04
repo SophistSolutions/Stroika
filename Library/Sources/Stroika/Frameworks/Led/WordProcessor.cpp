@@ -4241,10 +4241,10 @@ void WordProcessor::OnInsertURLCommand ()
     SDKString title;
     SDKString url;
     if (GetDialogSupport ().ShowAddURLEmbeddingInfoDialog (&title, &url)) {
-        UndoableContextHelper context (*this, GetCommandNames ().fInsertURLCommandName, false);
+        UndoableContextHelper context {*this, GetCommandNames ().fInsertURLCommandName, false};
         {
-            SimpleEmbeddedObjectStyleMarker* e = new StandardURLStyleMarker (Led_URLD (
-                String::FromSDKString (url).AsNarrowSDKString ().c_str (), String::FromSDKString (title).AsNarrowSDKString ().c_str ()));
+            SimpleEmbeddedObjectStyleMarker* e = new StandardURLStyleMarker {Led_URLD {
+                String::FromSDKString (url).AsNarrowSDKString ().c_str (), String::FromSDKString (title).AsNarrowSDKString ().c_str ()}};
             AddEmbedding (e, GetTextStore (), GetSelectionStart (), GetStyleDatabase ().get ());
             SetSelection (e->GetEnd (), e->GetEnd ());
         }
