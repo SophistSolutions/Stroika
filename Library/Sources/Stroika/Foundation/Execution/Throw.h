@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename EXPECTED>
     typename EXPECTED::value_type ThrowIfFailed (const EXPECTED& e);
-    
+
     /** 
      *  \def IgnoreExceptionsForCall - ignore all exceptions for the given argument call (evaluate arg)
      *
