@@ -7,9 +7,7 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Archive/Reader.h"
-#include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/DataExchange/Archive/Writer.h"
 #if qStroika_HasComponent_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
@@ -17,6 +15,9 @@
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
 #include "Stroika/Foundation/DataExchange/Archive/Zip/Writer.h"
 #endif
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
@@ -171,9 +172,7 @@ namespace {
         for (String i : archive.GetContainedFiles ()) {
             String           srcFileName = i;
             filesystem::path trgFileName = toDirectory / srcFileName.As<filesystem::path> ();
-            //DbgTrace ("(srcFileName={}, trgFileName={})"_f, srcFileName, trgFileName);
             BLOB b = archive.GetData (srcFileName);
-            //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
             create_directories (trgFileName.parent_path ());
             IO::FileSystem::FileOutputStream::Ptr ostream = IO::FileSystem::FileOutputStream::New (trgFileName);
             ostream.Write (b);
