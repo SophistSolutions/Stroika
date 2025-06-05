@@ -202,25 +202,12 @@ namespace Stroika::Foundation::Common::StdCompat {
 
     /**
      *  Wrap a simplified version of std::unexpected, cuz handy even if c++23 not present
-     * 
-     *      \note STILL VERY ROUGH DRAFT - IN USE - BUT NOT SURE ITS RIGHT (cuz mine works but delegating to
-     *            MSFT one not working, so maybe mine wrong).
      */
-#if __cpp_lib_expected && 0
-    template <class T, >
-    using unexpected : std::unexpected<T>;
-    template <class T, class E>
-    using expected : std::expected<T, E>;
-#elif __cpp_lib_expected && 0
-    template <class T, class E>
-    struct expected : std::expected<T, E> {
-        using expected::expected;
-    };
-    /*template <class T, class E>
-        requires is_void_v<T>
-    struct expected<T,E> : std::expected<T, E> {
-        using expected::expected;
-    };*/
+#if __cpp_lib_expected
+    template <typename T>
+    using unexpected = std::unexpected<T>;
+    template <typename T, typename E>
+    using expected = std::expected<T, E>;
 #else
     template <typename T>
     class unexpected {
