@@ -458,7 +458,7 @@ Common::StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgume
             if (restOfArgi.size () >= 1 and restOfArgi[0] == '=') {
                 return RT{OptionallyHasOption{restOfArgi.SubString (1)}};
             }
-            ++(*argi);  // Look for argument as string just after --option
+            ++(*argi); // Look for argument as string just after --option
             if ((*argi).Done ()) {
                 if (o.fIfSupportsArgumentThenRequired) {
                     return RT{InvalidCommandLineArgument{
