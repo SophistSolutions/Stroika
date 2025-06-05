@@ -212,24 +212,22 @@ namespace Stroika::Foundation::Common::StdCompat {
     template <typename T>
     class unexpected {
     public:
-        template <class _UError = T>
+        template <typename _UError = T>
             requires (!is_same_v<remove_cvref_t<_UError>, unexpected> && !is_same_v<remove_cvref_t<_UError>, in_place_t> && is_constructible_v<T, _UError>)
         constexpr explicit unexpected (_UError&& _Unex)
-            : _Unexpected (_STD forward<_UError> (_Unex))
+            : _Unexpected (forward<_UError> (_Unex))
         {
         }
-
-        template <class... _Args>
+        template <typename... _Args>
             requires is_constructible_v<T, _Args...>
         constexpr explicit unexpected (in_place_t, _Args&&... _Vals)
-            : _Unexpected (_STD forward<_Args> (_Vals)...)
+            : _Unexpected ( forward<_Args> (_Vals)...)
         {
         }
-
-        template <class _Uty, class... _Args>
+        template <typename _Uty, typename... _Args>
             requires is_constructible_v<T, initializer_list<_Uty>&, _Args...>
         constexpr explicit unexpected (in_place_t, initializer_list<_Uty> _Ilist, _Args&&... _Vals)
-            : _Unexpected (_Ilist, _STD forward<_Args> (_Vals)...)
+            : _Unexpected (_Ilist,  forward<_Args> (_Vals)...)
         {
         }
 
@@ -280,9 +278,9 @@ namespace Stroika::Foundation::Common::StdCompat {
      *      \note STILL VERY ROUGH DRAFT - IN USE - BUT NOT SURE ITS RIGHT (cuz mine works but delegating to
      *            MSFT one not working, so maybe mine wrong).
      */
-    template <class T, class E>
+    template <typename T, typename E>
     class expected;
-    template <class T, class E>
+    template <typename T, typename E>
     class expected {
     public:
         using value_type      = T;
