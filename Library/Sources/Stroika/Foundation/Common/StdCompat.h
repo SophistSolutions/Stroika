@@ -221,13 +221,13 @@ namespace Stroika::Foundation::Common::StdCompat {
         template <typename... _Args>
             requires is_constructible_v<T, _Args...>
         constexpr explicit unexpected (in_place_t, _Args&&... _Vals)
-            : _Unexpected ( forward<_Args> (_Vals)...)
+            : _Unexpected (forward<_Args> (_Vals)...)
         {
         }
         template <typename _Uty, typename... _Args>
             requires is_constructible_v<T, initializer_list<_Uty>&, _Args...>
         constexpr explicit unexpected (in_place_t, initializer_list<_Uty> _Ilist, _Args&&... _Vals)
-            : _Unexpected (_Ilist,  forward<_Args> (_Vals)...)
+            : _Unexpected (_Ilist, forward<_Args> (_Vals)...)
         {
         }
 
