@@ -201,9 +201,17 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
 
     /**
-     *  Wrap a simplified version of std::expected, cuz handy even if c++23 not present
+     *  Wrap a simplified version of std::unexpected, cuz handy even if c++23 not present
+     * 
+     *      \note STILL VERY ROUGH DRAFT - IN USE - BUT NOT SURE ITS RIGHT (cuz mine works but delegating to
+     *            MSFT one not working, so maybe mine wrong).
      */
 #if __cpp_lib_expected && 0
+    template <class T, >
+    using unexpected : std::unexpected<T>;
+    template <class T, class E>
+    using expected : std::expected<T, E>;
+#elif __cpp_lib_expected && 0
     template <class T, class E>
     struct expected : std::expected<T, E> {
         using expected::expected;
@@ -214,14 +222,85 @@ namespace Stroika::Foundation::Common::StdCompat {
         using expected::expected;
     };*/
 #else
+    template <typename T>
+    class unexpected {
+    public:
+        template <class _UError = T>
+            requires (!is_same_v<remove_cvref_t<_UError>, unexpected> && !is_same_v<remove_cvref_t<_UError>, in_place_t> && is_constructible_v<T, _UError>)
+        constexpr explicit unexpected (_UError&& _Unex)
+            : _Unexpected (_STD forward<_UError> (_Unex))
+        {
+        }
+
+        template <class... _Args>
+            requires is_constructible_v<T, _Args...>
+        constexpr explicit unexpected (in_place_t, _Args&&... _Vals)
+            : _Unexpected (_STD forward<_Args> (_Vals)...)
+        {
+        }
+
+        template <class _Uty, class... _Args>
+            requires is_constructible_v<T, initializer_list<_Uty>&, _Args...>
+        constexpr explicit unexpected (in_place_t, initializer_list<_Uty> _Ilist, _Args&&... _Vals)
+            : _Unexpected (_Ilist, _STD forward<_Args> (_Vals)...)
+        {
+        }
+
+        constexpr const T& error () const& noexcept
+        {
+            return _Unexpected;
+        }
+        constexpr T& error () & noexcept
+        {
+            return _Unexpected;
+        }
+        constexpr const T&& error () const&& noexcept
+        {
+            return std::move (_Unexpected);
+        }
+        constexpr T&& error () && noexcept
+        {
+            return std::move (_Unexpected);
+        }
+
+        constexpr void swap (unexpected& _Other)
+        {
+            using std::swap;
+            swap (_Unexpected, _Other._Unexpected); // intentional ADL
+        }
+
+        friend constexpr void swap (unexpected& _Left, unexpected& _Right)
+            requires is_swappable<T>::value // TRANSITION, /permissive needs ::value
+        {
+            _Left.swap (_Right);
+        }
+
+        template <class _UErr>
+        friend constexpr bool operator== (const unexpected& _Left, const unexpected<_UErr>& _Right)
+        {
+            return _Left._Unexpected == _Right.error ();
+        }
+
+    private:
+        T _Unexpected;
+    };
+    template <typename T>
+    unexpected (T) -> unexpected<T>;
+
+    /**
+     *  Wrap a simplified version of std::expected, cuz handy even if c++23 not present
+     * 
+     *      \note STILL VERY ROUGH DRAFT - IN USE - BUT NOT SURE ITS RIGHT (cuz mine works but delegating to
+     *            MSFT one not working, so maybe mine wrong).
+     */
     template <class T, class E>
     class expected;
     template <class T, class E>
     class expected {
     public:
-        using value_type = T;
-        using error_type = E;
-        //  using unexpected_type = unexpected<E>;
+        using value_type      = T;
+        using error_type      = E;
+        using unexpected_type = unexpected<E>;
 
         constexpr expected () noexcept                = default;
         constexpr expected (const expected&) noexcept = default;
@@ -229,12 +308,12 @@ namespace Stroika::Foundation::Common::StdCompat {
             : fData_{v}
         {
         }
-        constexpr expected (E e)
-            : fData_{e}
+        constexpr expected (const unexpected_type& e)
+            : fData_{e.error ()}
         {
         }
         template <typename T1, typename E1>
-        constexpr expected (expected<T1, E1> e)
+        constexpr expected (const expected<T1, E1>& e)
         {
             if (e) {
                 fData_ = e.value ();
@@ -263,7 +342,6 @@ namespace Stroika::Foundation::Common::StdCompat {
     private:
         variant<T, E> fData_;
     };
-
 #endif
 
 }

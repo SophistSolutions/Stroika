@@ -16,6 +16,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Traversal;
 
@@ -381,8 +382,8 @@ String CommandLine::GetAppName (bool onlyBaseName) const
 
 tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
 {
-    bool   found        = false;
-    size_t nMore2Skip   = o.fSkipFirstNArguments.value_or (0);
+    bool   found      = false;
+    size_t nMore2Skip = o.fSkipFirstNArguments.value_or (0);
     Assert (nMore2Skip == 0 or o.IsPositionArgument ());
     Sequence<String> arguments;
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
@@ -415,13 +416,14 @@ String CommandLine::ToString () const
     return this->As<String> (); // hides some details, but most useful summary typically
 }
 
-Common::StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgument> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
+StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgument> CommandLine::ParseOneArg_ (const Option& o, Iterator<String>* argi)
 {
     RequireNotNull (argi);
     Require (not argi->Done ());
     using OptionalArgument    = optional<String>;
     using OptionallyHasOption = optional<OptionalArgument>;
-    using RT                  = Common::StdCompat::expected<OptionallyHasOption, InvalidCommandLineArgument>;
+    using RT                  = StdCompat::expected<OptionallyHasOption, InvalidCommandLineArgument>;
+    using ERRT                = StdCompat::unexpected<InvalidCommandLineArgument>;
 
     // Sorry api is confusing about these two optionals - not clear how todo better, but its private so no biggie
     static const RT kMissingArgument_ = RT{OptionallyHasOption{OptionalArgument{}}};
@@ -433,7 +435,7 @@ Common::StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgume
             ++(*argi);
             if ((*argi).Done ()) {
                 if (o.fIfSupportsArgumentThenRequired) {
-                    return RT{InvalidCommandLineArgument{
+                    return ERRT{InvalidCommandLineArgument{
                         "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
                 }
                 return kMissingArgument_;
@@ -460,7 +462,7 @@ Common::StdCompat::expected<optional<optional<String>>, InvalidCommandLineArgume
             ++(*argi); // Look for argument as string just after --option
             if ((*argi).Done ()) {
                 if (o.fIfSupportsArgumentThenRequired) {
-                    return RT{InvalidCommandLineArgument{
+                    return ERRT{InvalidCommandLineArgument{
                         "Command line argument requires an argument to it, but none provided (= or following argument)"sv, ai}};
                 }
                 return kMissingArgument_;
