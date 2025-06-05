@@ -20,7 +20,6 @@ using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Traversal;
 
-
 /*
  ********************************************************************************
  ******************* Execution::InvalidCommandLineArgument **********************

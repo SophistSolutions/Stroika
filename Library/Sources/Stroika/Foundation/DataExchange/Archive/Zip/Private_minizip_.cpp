@@ -3097,8 +3097,10 @@ namespace {
 #ifndef NOCRYPT
             uInt i;
             int  t;
+            DISABLE_COMPILER_MSC_WARNING_START (4244) // warning C4244: '=': conversion from 'int' to 'Byte', possible loss of data
             for (i = 0; i < zi->ci.pos_in_buffered_data; i++)
                 zi->ci.buffered_data[i] = zencode (zi->ci.keys, zi->ci.pcrc_32_tab, zi->ci.buffered_data[i], t);
+            DISABLE_COMPILER_MSC_WARNING_END (4244)
 #endif
         }
 
