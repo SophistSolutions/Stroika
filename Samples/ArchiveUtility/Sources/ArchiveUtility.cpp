@@ -172,7 +172,7 @@ namespace {
         for (String i : archive.GetContainedFiles ()) {
             String           srcFileName = i;
             filesystem::path trgFileName = toDirectory / srcFileName.As<filesystem::path> ();
-            BLOB b = archive.GetData (srcFileName);
+            BLOB             b           = archive.GetData (srcFileName);
             create_directories (trgFileName.parent_path ());
             IO::FileSystem::FileOutputStream::Ptr ostream = IO::FileSystem::FileOutputStream::New (trgFileName);
             ostream.Write (b);
