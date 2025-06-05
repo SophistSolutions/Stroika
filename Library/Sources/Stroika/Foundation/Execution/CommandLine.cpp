@@ -20,6 +20,7 @@ using namespace Stroika::Foundation::Common;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Traversal;
 
+
 /*
  ********************************************************************************
  ******************* Execution::InvalidCommandLineArgument **********************
@@ -30,13 +31,11 @@ InvalidCommandLineArgument::InvalidCommandLineArgument ()
 {
 }
 InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)
-    : RuntimeErrorException<>{message.As<wstring> ()}
-    , fMessage{message}
+    : RuntimeErrorException<>{message}
 {
 }
 InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message, const String& argument)
-    : RuntimeErrorException<> (message.As<wstring> ())
-    , fMessage{message}
+    : RuntimeErrorException<>{message}
     , fArgument{argument}
 {
 }

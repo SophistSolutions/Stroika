@@ -33,7 +33,6 @@ namespace Stroika::Foundation::Execution {
         InvalidCommandLineArgument (const String& message, const String& argument);
 
     public:
-        String fMessage;
         String fArgument;
     };
 
