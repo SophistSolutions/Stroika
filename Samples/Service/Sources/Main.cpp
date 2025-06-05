@@ -53,14 +53,13 @@ using Containers::Sequence;
 #if qUseLogger
 #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Execution/Logger.h"
-using Execution::Logger;
 #endif
 
 namespace {
-    void ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
+    void ShowUsage_ (const Main& m, const InvalidCommandLineArgument& e = {})
     {
-        if (not e.fMessage.empty ()) {
-            cerr << "Error: " << e.fMessage.AsUTF8<string> () << endl;
+        if (not e.As<String> ().empty ()) {
+            cerr << "Error: " << e.As<String> () << endl;
             cerr << endl;
         }
         cerr << "Usage: " << m.GetServiceDescription ().fRegistrationName << " [options] where options can be :\n ";
@@ -71,8 +70,8 @@ namespace {
                  << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
         }
         cerr << "\t--" << String{Main::CommandNames::kRunAsService}
-             << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kRunDirectly} << "          /* Run this process as a directly (doesn't exit until the serivce is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */"
+             << "        /* Run this process as a service (doesn't exit until the service is done ...) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kRunDirectly} << "          /* Run this process as a directly (doesn't exit until the service is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */"
              << endl;
         cerr << "\t--" << String{Main::CommandNames::kStart} << "                 /* Service/Control Function: Start the service */" << endl;
         cerr << "\t--" << String{Main::CommandNames::kStop} << "                  /* Service/Control Function: Stop the service */" << endl;
@@ -89,7 +88,7 @@ namespace {
         cerr << "\t--Version               /* print this application version */ " << endl;
         cerr << "\t--help                  /* Print this help. */ " << endl;
         cerr << endl
-             << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual "
+             << "\tExtra unrecognized parameters for start/restart, and forced restart operations will be passed along to the actual "
                 "service process"
              << endl;
         cerr << endl;
@@ -102,8 +101,8 @@ int main (int argc, const char* argv[])
     Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
-    [[maybe_unused]] auto&& cleanupReport = Execution::Finally (
-        [] () { DbgTrace ("Exiting main with thread {} running"_f, Execution::Thread::GetStatistics ().fRunningThreads); });
+    [[maybe_unused]] auto&& cleanupReport = Finally (
+        [] () { DbgTrace ("Exiting main with thread {} running"_f, Thread::GetStatistics ().fRunningThreads); });
 #endif
 
     /*
@@ -118,7 +117,7 @@ int main (int argc, const char* argv[])
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
-    Debug::RegisterDefaultFatalErrorHandlers (Execution::DefaultLoggingFatalErrorHandler);
+    Debug::RegisterDefaultFatalErrorHandlers (DefaultLoggingFatalErrorHandler);
 
     /*
      *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
@@ -176,9 +175,8 @@ int main (int argc, const char* argv[])
      *  Run request.
      */
     try {
-        using Execution::CommandLine;
-        using Execution::StandardCommandLineOptions::kHelp;
-        using Execution::StandardCommandLineOptions::kVersion;
+        using StandardCommandLineOptions::kHelp;
+        using StandardCommandLineOptions::kVersion;
 
         Sequence<CommandLine::Option> allMyOptions =
             Sequence<CommandLine::Option>{Main::CommandOptions::kAll} + Sequence<CommandLine::Option>{kHelp, kVersion};
@@ -203,7 +201,7 @@ int main (int argc, const char* argv[])
             m.Run (cmdLine);
         }
     }
-    catch (const Execution::InvalidCommandLineArgument& e) {
+    catch (const InvalidCommandLineArgument& e) {
         ShowUsage_ (m, e);
     }
     catch (...) {
