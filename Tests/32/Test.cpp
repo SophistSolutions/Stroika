@@ -360,12 +360,12 @@ namespace {
             0x00, 0x00, 0x4f, 0x09, 0x00, 0x00, 0x00, 0x00};
         Assert (sizeof (ksample_zip_) == 2948);
 #if qStroika_HasComponent_zlib
-        Archive::Reader::Ptr reader = Archive::Zip::Reader::New (
-            Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_})));
-
-        EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
-                                                                             "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
         {
+            Archive::Reader::Ptr reader = Archive::Zip::Reader::New (
+                Streams::ExternallyOwnedSpanInputStream::New<byte> (Memory::SpanBytesCast<span<const byte>> (span{ksample_zip_})));
+
+            EXPECT_EQ (reader.GetContainedFiles (), (Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
+                                                                             "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
             EXPECT_EQ (reader.GetData ("sample_zip/TODO.txt").size (), 243u);
             EXPECT_EQ (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size (), 4296u);
             EXPECT_EQ (reader.GetData ("sample_zip/Common-Valgrind.supp").size (), 1661u);
