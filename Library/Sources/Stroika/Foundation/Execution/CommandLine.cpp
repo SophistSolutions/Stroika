@@ -383,8 +383,7 @@ tuple<bool, Sequence<String>> CommandLine::Get (const Option& o) const
 {
     bool   found        = false;
     size_t nMore2Skip   = o.fSkipFirstNArguments.value_or (0);
-    bool   isPositional = o.IsPositionArgument ();
-    Assert (nMore2Skip == 0 or isPositional);
+    Assert (nMore2Skip == 0 or o.IsPositionArgument ());
     Sequence<String> arguments;
     for (Iterator<String> argi = fArgs_.begin () + 1; argi != fArgs_.end (); ++argi) {
         if (optional<optional<String>> oRes = ThrowIfFailed (ParseOneArg_ (o, &argi))) {
