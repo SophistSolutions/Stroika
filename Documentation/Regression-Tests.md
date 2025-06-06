@@ -157,6 +157,12 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
   (may work on WSL1, but very slow, and not worth it - just test WSL2 from now on)
   [[apx 7 hrs]]
 
+On WINDOWS:
   ```bash
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 ScriptsLib/RunLocalWSLRegressionTests
+./ScriptsLib/ResolveIP medusa
+  ```
+
+  ```bash
+./ScriptsLib/ResolveIP medusa
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.248:27017 ScriptsLib/RunLocalWSLRegressionTests
   ```
