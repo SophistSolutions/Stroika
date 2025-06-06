@@ -7,6 +7,531 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+
+
+
+
+
+
+#if 0
+commit 21dab911be47099f826af821971cecdb7bc71bdc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 29 17:44:07 2025 -0400
+
+    start 3.0d20x
+
+commit a6c992c5c46662c1d80eee190e348b51e2e7fed8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 31 08:52:17 2025 -0400
+
+    fixed typo
+
+commit bd91195d6a6e672f1a71e54e838a22d529b31ceb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 31 08:52:56 2025 -0400
+
+    draft Foundation::DataExchange::Archive::Writer support
+
+commit 644e308164d08ca0ac8dd90248caa324be38c838
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 09:23:59 2025 -0400
+
+    refactor DataExchange/Archive/Zip reader code so Private_minizip_ factored out (Private_minizip_); added very early draft DataExchange/Archive/Zip/Writer using Private_Minzip_
+
+commit 9930c4d63c80f07e2f1537157f541adaaf32c96a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 09:46:05 2025 -0400
+
+    cosmetic, and small progress on DataExchange::Archive::Writer
+
+commit e0bb570e9d3029209ffe5c8b3ac3a0233913c540
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 09:51:41 2025 -0400
+
+    minor code cleanups/factoring of DataExchange/Archive/Zip/Reader
+
+commit 8e60090eb4ec59659d60e30f1c021b1efacd799c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 10:03:03 2025 -0400
+
+    more cosmetic DataExchange/Archive/Zip/Reader cleanups
+
+commit eb21289da0ba5e524f11b3a387aa0b80b12ada76
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 10:11:12 2025 -0400
+
+    progress on DataExchange/Archive/Zip/Writer - almost testable
+
+commit 961a3cb9ab7cdc3a8538853628b3e40a725a8b65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 10:20:19 2025 -0400
+
+    mostly cosmetic
+
+commit d9c9d72ad8d03dcabadc02073dca5e0fcb04fb8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 10:38:13 2025 -0400
+
+    tiny progress on DataExchange/Archive/Zip/Writer
+
+commit 4cd7bb11cc70a971584ce984fdcc3492b8d57300
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 10:54:59 2025 -0400
+
+    Added zip file support to DataExchange/Archive/Zip/Private_minizip_ (from contrib sample)
+
+commit 4cb0ac9e7991c8b3cb8e131ead6e2ac3c61e8407
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 1 13:28:50 2025 -0400
+
+    todo comments
+
+commit 8e85a073b9b41b33592b3a76ed374b0bbe00221f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 08:12:55 2025 -0400
+
+    workaround https://jira.mongodb.org/browse/CXX-3291  issue - copying pdb files
+
+commit 606c64da5452b6ec56efdbebe327791a03e9f075
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 08:17:53 2025 -0400
+
+    **not backward compat** - changed Archive::Reader to namespace (from class with nested _IRep); upgrade notes: Archive::Zip::Reader reader becomes Archive::Reader::Ptr reader = Archive::Zip::Reader::New; similarly for _7z (so constructor becomes new type name and when actually constructing use New)
+
+commit 7cd1f4b68871aa822541a56ea38a69554687eee7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 09:41:23 2025 -0400
+
+    code cleanups in DataExchange/Archive/Zip/Reader
+
+commit 4d8e1758d927f277059674ebefea10f95c4ca833
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 09:42:05 2025 -0400
+
+    modest progress on DataExchange/Archive/Zip/Writer - maybe almost testable
+
+commit fe4ba44d0005b5e11e594e52aeb0975f90ac1372
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 09:42:23 2025 -0400
+
+    cosmetic
+
+commit 6de5ecb0ba3e519c26be66ac41d9aaa236d9fab8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 09:48:40 2025 -0400
+
+    cleanups to DataExchange/Archive/Zip/Writer - ready to start testing
+
+commit 246c51099ee70fcc1940777fde90a854d078bf32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 09:53:45 2025 -0400
+
+    minor ThirdPartyComponents/mongo-cxx-driver/Makefile cleanup
+
+commit 69860e73f409620574df0cd7c8a094b32151c699
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 10:20:32 2025 -0400
+
+    minor cleanups to DataExchange/Archive/Zip/Writer
+
+commit ca5d640640b2e89219489c7d18c92ddd393408fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 13:29:13 2025 -0400
+
+    Minor cleanup to makefile clean/clobber so can say all in one line make CONFIGURATION=Debug clean all run-tests -j8 EVEN if no such configuration as Debug
+
+commit e59cdc07fa3432ad5956ce2e0b5efd065222980b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 13:29:26 2025 -0400
+
+    cosmetic
+
+commit 85ef384f5de78f58eb0f651313a7987349082f26
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 14:06:52 2025 -0400
+
+    fixed typo in recent span DataExchange/Archive/Writer change
+
+commit ee52a39bac3c339cceb4941ddfbc3c610dfac33d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 14:07:15 2025 -0400
+
+    cosmetic
+
+commit d73d2d585fe4123640fb860a4a7697c3cc657ae1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 14:07:50 2025 -0400
+
+    Added satisfies Concepts docs/static assert checks for InlineBuffer and BLOB to span<const byte>
+
+commit f62cb04b53565ca9ad8ef03fc691c14c05bea8ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 2 14:13:00 2025 -0400
+
+    cosmetic
+
+commit eb6dbf41bb20b1729b650ab403cb4ccbb5ccf1aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 07:28:40 2025 -0400
+
+    fixed make clobber issue with Tests folder
+
+commit 3caf04b6c8a6b09a00530d2cd21f576b77935e76
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 07:31:23 2025 -0400
+
+    github action save space tweaks
+
+commit 9421d62e84f6ebabf3ec198707820921a312a2d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 07:32:05 2025 -0400
+
+    fixed typo
+
+commit 8ecd77041d5e98427da2617197c50620003b0c17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 07:32:41 2025 -0400
+
+    BLOB CTOR - allow construct from span (uint8)
+
+commit 26d3cb592cfa7f9e1869c71c4ac8c7527b9a1196
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 07:44:47 2025 -0400
+
+    zip file add support progress (writer) and early draft regtest
+
+commit 45ea4045b96aff50b304dd26dea29fd8d863d743
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 08:14:52 2025 -0400
+
+    further improved Archive::Zip::Writer regtests (read back results - seems OK)
+
+commit 495f4a3ee59c1499e79d4de63573ebba0693fb31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 10:02:53 2025 -0400
+
+    fixed misisng SLN dependnecy (visual studio)
+
+commit 1ae517928a7abb36dc576eed37aea0d571d3b59a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 11:27:15 2025 -0400
+
+    CommandLine::Option::IsPositionArgument () support; new option fSkipFirstNArguments; fixes to CommandLine::Get () to support this; fixed bug where CommandLine::ValidateQuietly sometimes threw
+
+commit eaf4121102ec84fac2d32945df48ae78017da142
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 12:41:55 2025 -0400
+
+    draft (early) StdCompat support for unexpected
+
+commit 92ff81fb7f0bf2bc61a6f9b6c3d50fd4e70620ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 12:43:07 2025 -0400
+
+    fixed (I hope) zip file archive unicode filename support (mostly)
+
+commit 91ec6eceab61f5e8891562a9fe299e1066bf4019
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 12:56:52 2025 -0400
+
+    fixed typo in DefaultNames<Characters::CompareOptions>
+
+commit 1b2d3a8788cb00e39a005ad77a8fa6e94badadaf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 16:40:16 2025 -0400
+
+    maybe fix StdCompat expected
+
+commit 824952aeb26682f99ba6d519b44689fa907c28e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 16:49:39 2025 -0400
+
+    Execution/CommandLine: Cleanup internal ParseOneArg_ (including bugfixes); fix recent regression in GenerateUsage () due to options handling changes; cleanup ToString() for cent changes to Options and docs
+
+commit fe966cab4004c0df52c2519c37bd39bc9f692250
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 16:50:48 2025 -0400
+
+    Sample::Archive - support CreateArchive command for zip files, and slightly improved error handling/reporting
+
+commit 29e99ebe46bc3c83c45ae2a6fb0c3de7e767e993
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 17:56:54 2025 -0400
+
+    progress on StdCompat::expected
+
+commit 294e689c5170fa4a2439129b8a75c9d6b8c40027
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 17:57:46 2025 -0400
+
+    mostly cosmetic
+
+commit f55499b022617539c3f9f99efa91b843ee064df5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 18:04:50 2025 -0400
+
+    avoid a few calls to AsNarrowSDKString (since operator << for String already does this); and use eIgnoreErrors on a few more existing calls to AsNarrowSDKString - where used for debug messages - really no point in failing due to charset conversion issue
+
+commit 90fa40387a4c5b88d8533ec9cdb2c2f9ac119ea1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 18:05:17 2025 -0400
+
+    cosmetic
+
+commit 3dcd07fb995ed11fba26ba9d47334b0ec572808e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 18:11:33 2025 -0400
+
+    cosmetic
+
+commit 2ab975ac06bbcd5a47fa9078ff23577174196c19
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 18:11:59 2025 -0400
+
+    mostly minor
+
+commit 719166fe0cc3fb230171d9feba968dba88fac046
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 18:16:11 2025 -0400
+
+    tmphack getting expected working on StdCompat
+
+commit 53226a1b83ae8d9ea3e773390ef4c6a3d6a78a0f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 3 18:19:28 2025 -0400
+
+    fixed typo in Private_minizip_ code
+
+commit ff0af9feb25f11cb9e06f7bbc67e5d6d840e8eb5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 19:59:11 2025 -0400
+
+    Cosmetic
+
+commit c13b5e60726c554dd6d5e262afe0a19573368308
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 3 20:30:54 2025 -0400
+
+    fix issue with StdCompat on linux
+
+commit fad68c2f08ae4583872612d56921f060358c9f50
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 3 20:31:35 2025 -0400
+
+    Lose several uneeded .AsNarrowSDKString () calls when used with iostreams cuz now automatic
+
+commit ecac4f4c64d83103970a4c0d70e98bed192bdc4d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 20:52:24 2025 -0400
+
+    .vscode/tasks.json: edit /.config.json new command, and tweaked rebuild command
+
+commit 9b81c0b3491dff20214f00d134ea9737ff83e859
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 21:09:30 2025 -0400
+
+    cosmetic
+
+commit 6b53c232137fc7ce23df03667aefdd2fc2d71fb2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 21:09:48 2025 -0400
+
+    cosmetic
+
+commit 04f4ed3e87639896435c6adbfbd6dcdd67db0bf7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 3 21:10:18 2025 -0400
+
+    cosmetic
+
+commit f4ad80d921e1082c88dd77bdbc3e1cdda58a7b0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 08:56:27 2025 -0400
+
+    slight cleanup to Archive Utility sample (and fixed build error on no-thrid-party compoennts config)
+
+commit 13c155d2bd4b7ac7217bee7ad5050966450f18ce
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Jun 4 09:01:23 2025 -0400
+
+    fixed typo; and fixed new code to respect qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy BWA
+
+commit c215c463be19a7a93d98f58e5c63130fc5a039cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 09:07:53 2025 -0400
+
+    Cosmetic
+
+commit ab02841655f909808f72a7e4e00089f9489cd6c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 09:51:46 2025 -0400
+
+    fixed typo
+
+commit 27144f9c6fc0b46f308ea7c7e89f0f65c09975aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 12:57:57 2025 -0400
+
+    Addec Execution::ThrowIfFailed for std::expected (and StdCompat::expected)
+
+commit 886a11bffe1d0007160d79818f305a0b741003db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 12:59:01 2025 -0400
+
+    Minor tweaks to StdCompat::expected - so works in first test case but not using visual studios std::expected, so dont have somethign right it appears
+
+commit 4bead784362876973072333c1324b3afb028e128
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 12:59:29 2025 -0400
+
+    cosmetic
+
+commit eb4675f7c31810038cb4b36c56a11e7bcf987715
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 12:59:52 2025 -0400
+
+    cosmetic
+
+commit ab9fb7c41bf560a03fd4e799b6fffea698f7f930
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 13:50:01 2025 -0400
+
+    Execution::CommandLine using experimental StdCompat::expected, which avoids a couple throws we didnt want in ValdateQuietly (and others), and a few related cleanups to COmmandline code
+
+commit 5d753c0a3cd3f4452d86b263cddf37d14ce8eae1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 13:53:40 2025 -0400
+
+    dont just ignore erors on CheckValidConfiguration - dont do it on make clobber/clean (cuz OK - just nothing todo)
+
+commit 6c3509e0b04d99c354254944087af71ebccd0383
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 13:54:13 2025 -0400
+
+    improved CommandLine regtests
+
+commit 5749dec908cf4c8dcf35b69e50a31049b389cc78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 16:20:22 2025 -0400
+
+    cosmetic
+
+commit e01e9654ab76800e0a0d32e785b34e95ffb095d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 15:01:00 2025 -0400
+
+    more regtests for CommandLine code and another fix
+
+commit fe686c899ce08224faa4ddb349adc62a07e5f880
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 4 22:45:40 2025 -0400
+
+    cosmetic
+
+commit a9e51cbebd88fd206ef1c8cf0993ff250d46ee55
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 08:25:08 2025 -0400
+
+    Silence warning
+
+commit 0e8f9c8e6bb2e867ba20733fdea855abb714b800
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Jun 5 08:32:01 2025 -0400
+
+    Cleanups to Samples/ArchiveUtility
+
+commit 11b25c11df055332c8ee6c1a095d284fd88b674e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 08:37:41 2025 -0400
+
+    minor cleanup
+
+commit f1cc4861dceb8b5107fccc3ab5d6adf834af3b55
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 10:20:25 2025 -0400
+
+    Cosmetic
+
+commit 5ec9dec0974fdfbf44fa2c88caaa066bb0b3b79e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 11:01:38 2025 -0400
+
+    fixes to StdCompat expected/unexpected
+
+commit 096be86298374e8e7479b1b38082ba4cf3ddf4b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 11:02:18 2025 -0400
+
+    minor fixes to skel generated makefiles (already done outside of skel)
+
+commit 1639875a73ce25f762b9c7649470efd73ea345d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 11:13:39 2025 -0400
+
+    Cleanup StdCompat expected/unexpected (testing alias impl to std version)
+
+commit 6d098b2c139a2cd8fe3078d7eb746e72ef95646a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 11:14:34 2025 -0400
+
+    lose fMessage field of Execution::InvalidCommandLineArgument
+
+commit 6797358409bd6bca59d99e571f13ad9982502f84
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 11:17:51 2025 -0400
+
+    Silence warning
+
+commit ccdac4f0d205a27312ca4e4ce09cd04defd750fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 11:44:59 2025 -0400
+
+    Minor sample cleanups
+
+commit 1fc25883a40c69d6d8545226919b9e2d5f360040
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 12:07:17 2025 -0400
+
+    maybe fix warning about bad reg key in WarnIfNotWindowsDeveloperMode/Docker windows
+
+commit 58c0357ff47c7cb9c86ebb8c202e8ef4444e1371
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 12:07:29 2025 -0400
+
+    cosmetic
+
+commit 4f5212ae4a82436cedb600b9ae3d981cd2981fb9
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Jun 5 13:00:06 2025 -0400
+
+    fixed typo
+
+commit d459b9e775b9eb971b9c54c035190d0fb897876a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 5 13:01:51 2025 -0400
+
+    cosmetic
+
+commit 5e8e64086583a5cba84ca9a22bff6e3b23b95332
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 6 11:09:17 2025 -0400
+
+    docs
+
+commit 6fa0c76e6af5c833d09be374a238240c96998482
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 6 11:09:31 2025 -0400
+
+    3.0d20
+#endif
+
+
+
+-----------
+
+
+
 ### 3.0d19 {2025-05-29} {[diff](../../compare/3.0d18...3.0d19)}
 
 #### TLDR
