@@ -143,6 +143,8 @@ namespace Stroika::Foundation::DataExchange {
          *  file suffix includes the dot; This COULD have been defined as a filesystem::path, as path::extension() returns path.
          *  But I think this is generally more convenient as a string and this class provides overloads when passing in an extension
          *  taking a filesystem::path.
+         * 
+         *  \note FileSuffixType MUST be non-empty, and MUST start with a '.' (dot) character.
          */
         using FileSuffixType = String;
 
