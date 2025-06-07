@@ -163,6 +163,5 @@ On WINDOWS:
   ```
 
   ```bash
-./ScriptsLib/ResolveIP medusa
   MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.248:27017 ScriptsLib/RunLocalWSLRegressionTests
   ```
