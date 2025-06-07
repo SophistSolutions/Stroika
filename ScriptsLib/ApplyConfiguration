@@ -24,6 +24,8 @@ use constant false => 0;
 use constant true  => 1;
 use constant DEFAULT_BOOL_OPTIONS => -1;
 
+use File::Path qw(make_path);
+use File::Basename qw(dirname);
 
 
 my $MAKE_INDENT_LEVEL = $ENV{'MAKE_INDENT_LEVEL'};
@@ -593,6 +595,7 @@ sub WriteVS2kIntellisenseConfigFile
 	# Read in existing config info
 	local %mapOfExistingEntries;
 	{
+		make_path (dirname ($vs2kIntellisenseCng));
 		open my $in, "<:encoding(utf8)", $vs2kIntellisenseCng;
 		local $extractingConfiguration = "";
 		while (my $line = <$in>) {
@@ -764,6 +767,7 @@ sub WriteVSCodeCPPExtensionConfigFile
 		print ("SKIPPED SINCE jq not installed ... ");
 		return;
 	}
+	make_path (dirname ($vsCodeCppExtensionCng));
 	if (!(-e $vsCodeCppExtensionCng)) {
 		`echo "{\\\"configurations\\\":[]}" > $vsCodeCppExtensionCng`;
 	}
