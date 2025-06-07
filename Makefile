@@ -241,11 +241,11 @@ endif
 
 project-files-visual-studio:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Creating default visual-studio project files:"
+	@mkdir -p Workspaces/VisualStudio.Net
 	@$(MAKE) --directory Tests --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) project-files
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@rsync --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 else
-	@mkdir -p Workspaces/VisualStudio.Net
 	@cp --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 endif
 
