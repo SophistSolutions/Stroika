@@ -16,11 +16,22 @@ especially those they need to be aware of when upgrading.
 
 
 -- major
+  - **new* DataExchange::Archive::Writer (zip only) and refactored DataExchange::Archive::Reader
+ - new StdCompat::expected/unexpected
 
 -- upgrade
+  -  lose fMessage field of Execution::InvalidCommandLineArgument  (use As\<String>())
 
 
 -- details
+
+- across whole app
+  -     avoid a few calls to AsNarrowSDKString (since operator << for String already does this); and use eIgnoreErrors on a few more existing calls to AsNarrowSDKString - where used for debug messages - really no point in failing due to charset conversion issue
+    Lose several uneeded .AsNarrowSDKString () calls when used with iostreams cuz now automatic
+
+
+- Characters
+    fixed typo in DefaultNames<Characters::CompareOptions>
 
  - draft Foundation::DataExchange::Archive::Writer support
   - refactor DataExchange/Archive/Zip reader code so Private_minizip_ factored out (Private_minizip_); added very early draft DataExchange/Archive/Zip/Writer using Private_Minzip_
@@ -29,6 +40,8 @@ especially those they need to be aware of when upgrading.
 - 
     code cleanups in DataExchange/Archive/Zip/Reader
     **not backward compat** - changed Archive::Reader to namespace (from class with nested _IRep); upgrade notes: Archive::Zip::Reader reader becomes Archive::Reader::Ptr reader = Archive::Zip::Reader::New; similarly for _7z (so constructor becomes new type name and when actually constructing use New)
+
+    fixed  zip file archive unicode filename support (mostly)
 
 
 - thirdpartycomponentts
@@ -39,176 +52,49 @@ especially those they need to be aware of when upgrading.
 
 - top level makefile (and some changes to others to accomodate)
     Minor cleanup to makefile clean/clobber so can say all in one line make CONFIGURATION=Debug clean all run-tests -j8 EVEN if no such configuration as Debug
+        dont just ignore erors on CheckValidConfiguration - dont do it on make clobber/clean (cuz OK - just nothing todo)
+
+CommandLine
+ -     CommandLine::Option::IsPositionArgument () support;
+  -  new option fSkipFirstNArguments;
+  - fixed bug where CommandLine::ValidateQuietly sometimes threw (using StdCompat::unexpected)
+    Execution/CommandLine: Cleanup internal ParseOneArg_ (including bugfixes); fix recent regression in GenerateUsage () due to options handling changes; cleanup ToString() for cent changes to Options and docs
+    lose fMessage field of Execution::InvalidCommandLineArgument
+
+    Execution::CommandLine using experimental StdCompat::expected, which avoids a couple throws we didnt want in ValdateQuietly (and others), and a few related cleanups to COmmandline code
+
+
+- Execution
+    Addec Execution::ThrowIfFailed for std::expected (and StdCompat::expected)
 
 Memory
 
  -     Added satisfies Concepts docs/static assert checks for InlineBuffer and BLOB to span<const byte>
+    BLOB CTOR - allow construct from span (uint8)
 
 Regtests
 
     improved Archive::Zip::Writer regtests (read back results - seems OK)
-
-
-#if 0
-
-commit 8ecd77041d5e98427da2617197c50620003b0c17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 07:32:41 2025 -0400
-
-    BLOB CTOR - allow construct from span (uint8)
-
-commit 26d3cb592cfa7f9e1869c71c4ac8c7527b9a1196
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 07:44:47 2025 -0400
-
-    zip file add support progress (writer) and early draft regtest
-
-commit 495f4a3ee59c1499e79d4de63573ebba0693fb31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 10:02:53 2025 -0400
-
-    fixed misisng SLN dependnecy (visual studio)
-
-commit 1ae517928a7abb36dc576eed37aea0d571d3b59a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 11:27:15 2025 -0400
-
-    CommandLine::Option::IsPositionArgument () support; new option fSkipFirstNArguments; fixes to CommandLine::Get () to support this; fixed bug where CommandLine::ValidateQuietly sometimes threw
-
-commit eaf4121102ec84fac2d32945df48ae78017da142
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 12:41:55 2025 -0400
-
-    draft (early) StdCompat support for unexpected
-
-commit 92ff81fb7f0bf2bc61a6f9b6c3d50fd4e70620ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 12:43:07 2025 -0400
-
-    fixed (I hope) zip file archive unicode filename support (mostly)
-
-commit 91ec6eceab61f5e8891562a9fe299e1066bf4019
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 12:56:52 2025 -0400
-
-    fixed typo in DefaultNames<Characters::CompareOptions>
-
-commit 1b2d3a8788cb00e39a005ad77a8fa6e94badadaf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 16:40:16 2025 -0400
-
-    maybe fix StdCompat expected
-
-commit 824952aeb26682f99ba6d519b44689fa907c28e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 16:49:39 2025 -0400
-
-    Execution/CommandLine: Cleanup internal ParseOneArg_ (including bugfixes); fix recent regression in GenerateUsage () due to options handling changes; cleanup ToString() for cent changes to Options and docs
-
-commit fe966cab4004c0df52c2519c37bd39bc9f692250
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 16:50:48 2025 -0400
-
-    Sample::Archive - support CreateArchive command for zip files, and slightly improved error handling/reporting
-
-commit f55499b022617539c3f9f99efa91b843ee064df5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 18:04:50 2025 -0400
-
-    avoid a few calls to AsNarrowSDKString (since operator << for String already does this); and use eIgnoreErrors on a few more existing calls to AsNarrowSDKString - where used for debug messages - really no point in failing due to charset conversion issue
-
-commit fad68c2f08ae4583872612d56921f060358c9f50
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Jun 3 20:31:35 2025 -0400
-
-    Lose several uneeded .AsNarrowSDKString () calls when used with iostreams cuz now automatic
-
-commit ecac4f4c64d83103970a4c0d70e98bed192bdc4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 3 20:52:24 2025 -0400
-
-    .vscode/tasks.json: edit /.config.json new command, and tweaked rebuild command
-
-commit f4ad80d921e1082c88dd77bdbc3e1cdda58a7b0e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 4 08:56:27 2025 -0400
-
-    slight cleanup to Archive Utility sample (and fixed build error on no-thrid-party compoennts config)
-
-commit 13c155d2bd4b7ac7217bee7ad5050966450f18ce
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Jun 4 09:01:23 2025 -0400
-
-    fixed typo; and fixed new code to respect qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy BWA
-
-commit 27144f9c6fc0b46f308ea7c7e89f0f65c09975aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 4 12:57:57 2025 -0400
-
-    Addec Execution::ThrowIfFailed for std::expected (and StdCompat::expected)
-
-commit 886a11bffe1d0007160d79818f305a0b741003db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 4 12:59:01 2025 -0400
-
-    Minor tweaks to StdCompat::expected - so works in first test case but not using visual studios std::expected, so dont have somethign right it appears
-
-commit ab9fb7c41bf560a03fd4e799b6fffea698f7f930
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 4 13:50:01 2025 -0400
-
-    Execution::CommandLine using experimental StdCompat::expected, which avoids a couple throws we didnt want in ValdateQuietly (and others), and a few related cleanups to COmmandline code
-
-commit 5d753c0a3cd3f4452d86b263cddf37d14ce8eae1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 4 13:53:40 2025 -0400
-
-    dont just ignore erors on CheckValidConfiguration - dont do it on make clobber/clean (cuz OK - just nothing todo)
-
-commit 6c3509e0b04d99c354254944087af71ebccd0383
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 4 13:54:13 2025 -0400
-
     improved CommandLine regtests
 
-commit e01e9654ab76800e0a0d32e785b34e95ffb095d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 4 15:01:00 2025 -0400
-
-    more regtests for CommandLine code and another fix
-
-commit 0e8f9c8e6bb2e867ba20733fdea855abb714b800
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jun 5 08:32:01 2025 -0400
-
+Samples
+    Sample::Archive - support CreateArchive command for zip files, and slightly improved error handling/reporting
     Cleanups to Samples/ArchiveUtility
 
-commit 096be86298374e8e7479b1b38082ba4cf3ddf4b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 5 11:02:18 2025 -0400
+BuildScripots
+
+ -     maybe fix warning about bad reg key in WarnIfNotWindowsDeveloperMode/Docker windows
 
     minor fixes to skel generated makefiles (already done outside of skel)
 
-commit 6d098b2c139a2cd8fe3078d7eb746e72ef95646a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 5 11:14:34 2025 -0400
+.vscode
 
-    lose fMessage field of Execution::InvalidCommandLineArgument
+    .vscode/tasks.json: edit /.config.json new command, and tweaked rebuild command
 
-commit ccdac4f0d205a27312ca4e4ce09cd04defd750fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 5 11:44:59 2025 -0400
+- ApplyConfigurations
+  - minor tweak to force creation of appropriate directiroes before writing config files
 
-    Minor sample cleanups
-
-commit 1fc25883a40c69d6d8545226919b9e2d5f360040
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 5 12:07:17 2025 -0400
-
-    maybe fix warning about bad reg key in WarnIfNotWindowsDeveloperMode/Docker windows
-
-#endif
-
+- added another qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy BWA
 
 
 -----------
