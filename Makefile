@@ -245,6 +245,7 @@ project-files-visual-studio:
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@rsync --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 else
+	@mkdir -p Workspaces/VisualStudio.Net
 	@cp --update Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user-default.props Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
 endif
 
