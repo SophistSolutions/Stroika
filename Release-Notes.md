@@ -8,23 +8,36 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+### 3.0d20 {2025-06-??} {[diff](../../compare/3.0d19...3.0d20)}   -- DRAFT
 
+#### TLDR
 
+- **new** DataExchange::Archive::Writer (zip only) and refactored DataExchange::Archive::Reader
+- new StdCompat::expected/unexpected
 
+#### Upgrade Notes (3.0d19 to 3.0d20)
 
-### 3.0d20 relnotes draft
+- lose fMessage field of Execution::InvalidCommandLineArgument  (use As\<String>())
+- Archive::Zip::Reader reader becomes Archive::Reader::Ptr reader = Archive::Zip::Reader::New; similarly for _7z (so constructor becomes new type name and when actually constructing use New)
 
+#### Change Details
 
--- major
-  - **new* DataExchange::Archive::Writer (zip only) and refactored DataExchange::Archive::Reader
- - new StdCompat::expected/unexpected
-
--- upgrade
-  -  lose fMessage field of Execution::InvalidCommandLineArgument  (use As\<String>())
-   Archive::Zip::Reader reader becomes Archive::Reader::Ptr reader = Archive::Zip::Reader::New; similarly for _7z (so constructor becomes new type name and when actually constructing use New)
-
--- details
-
+- Documentation
+  - Minor Changes
+- Build System
+  - Makefile (top level)
+    - (and some changes to others to accomodate)
+    - Minor cleanup to makefile clean/clobber so can say all in one line make CONFIGURATION=Debug clean all run-tests -j8 EVEN if no such configuration as Debug
+    - dont just ignore erors on CheckValidConfiguration - dont do it on make clobber/clean (cuz OK - just nothing todo)
+    - cleanups for generating Stroika-Current-Version and a few other chagnes to rules for apply-configurations
+  - ScriptsLib
+    - maybe fix warning about bad reg key in WarnIfNotWindowsDeveloperMode/Docker windows
+    - ApplyConfigurations
+      - minor tweak to force creation of appropriate directiroes before writing config files
+    - Skel
+      - minor fixes to skel generated makefiles (already done outside of skel)
+  - .vscode
+    - .vscode/tasks.json: edit /.config.json new command, and tweaked rebuild command
 - Library
   - across whole app
     - Lose several uneeded .AsNarrowSDKString () calls when used with iostreams cuz now automatic, and
@@ -32,7 +45,9 @@ especially those they need to be aware of when upgrading.
   - Foundation
     - Characters
       - fixed typo in DefaultNames<Characters::CompareOptions>
-
+    - Common
+      - Compiler Bug Defines
+        - added another qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy BWA
     - DataExchange
       - Archive
         - Reader 
@@ -42,66 +57,62 @@ especially those they need to be aware of when upgrading.
         - refactor DataExchange/Archive/Zip reader code so Private_minizip_ factored out (Private_minizip_); added very early draft DataExchange/Archive/Zip/Writer using Private_Minzip_
         - Zip
           - fixed zip file archive unicode filename support
-
-
-CommandLine
- -     CommandLine::Option::IsPositionArgument () support;
-  -  new option fSkipFirstNArguments;
-  - fixed bug where CommandLine::ValidateQuietly sometimes threw (using StdCompat::unexpected)
-    Execution/CommandLine: Cleanup internal ParseOneArg_ (including bugfixes); fix recent regression in GenerateUsage () due to options handling changes; cleanup ToString() for cent changes to Options and docs
-    lose fMessage field of Execution::InvalidCommandLineArgument
-
-    Execution::CommandLine using experimental StdCompat::expected, which avoids a couple throws we didnt want in ValdateQuietly (and others), and a few related cleanups to COmmandline code
-
-
-- Execution
-    Addec Execution::ThrowIfFailed for std::expected (and StdCompat::expected)
-
-Memory
-
- -     Added satisfies Concepts docs/static assert checks for InlineBuffer and BLOB to span<const byte>
-    BLOB CTOR - allow construct from span (uint8)
-
-
-
-- thirdpartycomponentts
+    - Execution
+      - CommandLine
+        - Option::IsPositionArgument () support;
+        - new option fSkipFirstNArguments;
+        - fixed bug where CommandLine::ValidateQuietly sometimes threw (using StdCompat::unexpected)
+          using experimental StdCompat::expected, which avoids a couple throws we didnt want in ValdateQuietly (and others), and a few related cleanups to COmmandline code
+        - cleanup internal ParseOneArg_ (including bugfixes);
+        - cleanup ToString() for cent changes to Options and docs
+        - lose fMessage field of Execution::InvalidCommandLineArgument
+      - Added ThrowIfFailed for std/StdCompat ::expected/unexpected (and StdCompat::expected)
+    - Memory
+      - Added satisfies Concepts docs/static assert checks for InlineBuffer and BLOB to span<const byte>
+      - BLOB CTOR - allow construct from span (uint8)
+- Samples
+  - ArchiveUtility 
+    - support CreateArchive command for zip files, and slightly improved error handling/reporting
+    - Cleanups
+- Tests
+  - improved Archive::Zip::Writer regtests (read back results - seems OK)
+  - improved CommandLine regtests
+- ThirdPartyComponents
   - mongocxxdrier
-    -     workaround https://jira.mongodb.org/browse/CXX-3291  issue - copying pdb files
-    minor ThirdPartyComponents/mongo-cxx-driver/Makefile cleanup
+    - workaround https://jira.mongodb.org/browse/CXX-3291  issue - copying pdb files
+    - minor ThirdPartyComponents/mongo-cxx-driver/Makefile cleanup
 
+#### Release-Validation
 
-- top level makefile (and some changes to others to accomodate)
-    Minor cleanup to makefile clean/clobber so can say all in one line make CONFIGURATION=Debug clean all run-tests -j8 EVEN if no such configuration as Debug
-        dont just ignore erors on CheckValidConfiguration - dont do it on make clobber/clean (cuz OK - just nothing todo)
-
-Regtests
-
-    improved Archive::Zip::Writer regtests (read back results - seems OK)
-    improved CommandLine regtests
-
-Samples
-    Sample::Archive - support CreateArchive command for zip files, and slightly improved error handling/reporting
-    Cleanups to Samples/ArchiveUtility
-
-BuildScripots
-
- -     maybe fix warning about bad reg key in WarnIfNotWindowsDeveloperMode/Docker windows
-
-    minor fixes to skel generated makefiles (already done outside of skel)
-
-.vscode
-
-    .vscode/tasks.json: edit /.config.json new command, and tweaked rebuild command
-
-- ApplyConfigurations
-  - minor tweak to force creation of appropriate directiroes before writing config files
-
-- added another qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy BWA
-
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14. 15 }
+  - Clang++ { unix: 15, 16, 17, 18, 19, 20; XCode: 15.2, 15.3, 16.0 }
+  - MSVC: { 17.14.2 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 24H2
+    - mcr.microsoft.com/windows/servercore:ltsc2022 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20241208.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 15.0.1 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 25.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
 -----------
-
-
 
 ### 3.0d19 {2025-05-29} {[diff](../../compare/3.0d18...3.0d19)}
 
