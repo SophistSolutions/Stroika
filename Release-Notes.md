@@ -21,38 +21,28 @@ especially those they need to be aware of when upgrading.
 
 -- upgrade
   -  lose fMessage field of Execution::InvalidCommandLineArgument  (use As\<String>())
-
+   Archive::Zip::Reader reader becomes Archive::Reader::Ptr reader = Archive::Zip::Reader::New; similarly for _7z (so constructor becomes new type name and when actually constructing use New)
 
 -- details
 
-- across whole app
-  -     avoid a few calls to AsNarrowSDKString (since operator << for String already does this); and use eIgnoreErrors on a few more existing calls to AsNarrowSDKString - where used for debug messages - really no point in failing due to charset conversion issue
-    Lose several uneeded .AsNarrowSDKString () calls when used with iostreams cuz now automatic
+- Library
+  - across whole app
+    - Lose several uneeded .AsNarrowSDKString () calls when used with iostreams cuz now automatic, and
+      use eIgnoreErrors on a few more existing calls to AsNarrowSDKString for dbg messages
+  - Foundation
+    - Characters
+      - fixed typo in DefaultNames<Characters::CompareOptions>
 
+    - DataExchange
+      - Archive
+        - Reader 
+          - **not backward compat** - changed Archive::Reader to namespace (from class with nested _IRep); 
+          - upgrade notes: Archive::Zip::Reader reader becomes Archive::Reader::Ptr reader = Archive::Zip::Reader::New; similarly for _7z (so constructor becomes new type name and when actually constructing use New)
+        - **new** Writer support (Zip format only - primitive support)
+        - refactor DataExchange/Archive/Zip reader code so Private_minizip_ factored out (Private_minizip_); added very early draft DataExchange/Archive/Zip/Writer using Private_Minzip_
+        - Zip
+          - fixed zip file archive unicode filename support
 
-- Characters
-    fixed typo in DefaultNames<Characters::CompareOptions>
-
- - draft Foundation::DataExchange::Archive::Writer support
-  - refactor DataExchange/Archive/Zip reader code so Private_minizip_ factored out (Private_minizip_); added very early draft DataExchange/Archive/Zip/Writer using Private_Minzip_
-    minor code cleanups/factoring of DataExchange/Archive/Zip/Reader
-    Added zip file support to DataExchange/Archive/Zip/Private_minizip_ (from contrib sample)
-- 
-    code cleanups in DataExchange/Archive/Zip/Reader
-    **not backward compat** - changed Archive::Reader to namespace (from class with nested _IRep); upgrade notes: Archive::Zip::Reader reader becomes Archive::Reader::Ptr reader = Archive::Zip::Reader::New; similarly for _7z (so constructor becomes new type name and when actually constructing use New)
-
-    fixed  zip file archive unicode filename support (mostly)
-
-
-- thirdpartycomponentts
-  - mongocxxdrier
-    -     workaround https://jira.mongodb.org/browse/CXX-3291  issue - copying pdb files
-    minor ThirdPartyComponents/mongo-cxx-driver/Makefile cleanup
-
-
-- top level makefile (and some changes to others to accomodate)
-    Minor cleanup to makefile clean/clobber so can say all in one line make CONFIGURATION=Debug clean all run-tests -j8 EVEN if no such configuration as Debug
-        dont just ignore erors on CheckValidConfiguration - dont do it on make clobber/clean (cuz OK - just nothing todo)
 
 CommandLine
  -     CommandLine::Option::IsPositionArgument () support;
@@ -71,6 +61,18 @@ Memory
 
  -     Added satisfies Concepts docs/static assert checks for InlineBuffer and BLOB to span<const byte>
     BLOB CTOR - allow construct from span (uint8)
+
+
+
+- thirdpartycomponentts
+  - mongocxxdrier
+    -     workaround https://jira.mongodb.org/browse/CXX-3291  issue - copying pdb files
+    minor ThirdPartyComponents/mongo-cxx-driver/Makefile cleanup
+
+
+- top level makefile (and some changes to others to accomodate)
+    Minor cleanup to makefile clean/clobber so can say all in one line make CONFIGURATION=Debug clean all run-tests -j8 EVEN if no such configuration as Debug
+        dont just ignore erors on CheckValidConfiguration - dont do it on make clobber/clean (cuz OK - just nothing todo)
 
 Regtests
 
