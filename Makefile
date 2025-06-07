@@ -454,9 +454,7 @@ IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIG
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@$(StroikaRoot)ScriptsLib/ApplyConfiguration $(CONFIGURATION) --only-vscode 
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\" ... "
-	@$(StroikaRoot)ScriptsLib/MakeVersionFile STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
-	@echo "done"
+	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h
 
 IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h:	 STROIKA_VERSION
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\" ... "
@@ -473,9 +471,7 @@ endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@$(StroikaRoot)ScriptsLib/ApplyConfiguration $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\" ... "
-	@$(StroikaRoot)ScriptsLib/MakeVersionFile STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
-	@echo "done"
+	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h
 
 
 # This variable (defaults to nothing) is added to all configurations built by make 'default-configurations' operation
