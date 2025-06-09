@@ -12,6 +12,7 @@
 #
 
 import os
+import argparse
 
 import xml.etree.ElementTree as ET
 import os
@@ -125,11 +126,15 @@ def generate_stroika_frameworks_pc_file_(config: Configuration, prefix_directory
 
 
 if __name__ == "__main__":
-    CONFIG = "Debug"
+    parser = argparse.ArgumentParser(description="Create pkgconfig files for Stroika libraries from ConfigurationFiles configuration")
+    parser.add_argument( "--configuration",action="store",required=True, help="one of output of ./ScriptsLib/GetConfigurations --all")
+    args = parser.parse_args()
+
+    CONFIG = args.configuration
     xml_file = f"ConfigurationFiles/{CONFIG}.xml"  # Replace with your XML file path
     cfgFile = Configuration(configFileName=xml_file)
     output_directory = f"Builds/{CONFIG}/EXPERIMENTAL/"  # Replace with your output directory
-    print (f"Writing stroika-platform.pc, stroika-foundation.pc, stroika-frameworks.pc to: {output_directory}")
+    print (f"Writing stroika-platform.pc, stroika-foundation.pc, stroika-frameworks.pc to: {output_directory}lib/pkgconfig")
     generate_stroika_platform_pc_file_(cfgFile, output_directory)
     generate_stroika_foundation_pc_file_(cfgFile, output_directory)
     generate_stroika_frameworks_pc_file_(cfgFile, output_directory)

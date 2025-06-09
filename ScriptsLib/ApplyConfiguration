@@ -942,6 +942,10 @@ if ($GEN_CONFIG_MAKE) {
 		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
 		WriteStroikaConfigMakeHeader ();
 		print("done\n");
+
+		# For now, write the file iff we write the config.mk file...
+		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL`);
+		system($thisScriptDir . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
 	}
 }
 
