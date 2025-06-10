@@ -1,0 +1,9 @@
+libdir=${pcfiledir}/..
+includedir=${pcfiledir}/../../include
+
+Name: sqlite
+Description: SQLite library
+Version: x
+
+Libs: -L${libdir} -lsqlite
+Cflags: -I${includedir}

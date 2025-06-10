@@ -4,6 +4,9 @@
 #				(repeated in most ThirdPartyComponents makefiles)
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
+#
+#	@todo REDO using entire build system and cmake - full sqlite-src instead of amalagamation (that has .pc file)
+#
 StroikaRoot:=$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
@@ -82,6 +85,11 @@ Objs:=\
 	$(LibObjs)\
 	$(ObjDir)shell${OBJ_SUFFIX}\
 
+
+#PKG_CONFIG_STROIKA_DEPENDS_ON := $(filter zlib,$(PKG_CONFIG_STROIKA_DEPENDS_ON))
+PKG_CONFIG_STROIKA_DEPENDS_ON := 
+
+
 # Use the stroika link macro (DEFAULT_LINK_LINE), but omit the stroika lib itself, and other injected depepdencies
 # for sqlite executable
 LinkerArgs_LibDependencies:=
@@ -93,6 +101,7 @@ endif
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite/sqlite3.h	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(SQLITE3LIB) \
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/pkgconfig/sqlite.pc \
 	$(TARGETEXE)
 
 
@@ -144,6 +153,8 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE,$(TARGETEXE))';\
 	fi
+	@mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
+	@cp sqlite.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	@$(call DEFAULT_LINK_LINE,$(TARGETEXE)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
 
 
