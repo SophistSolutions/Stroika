@@ -1,0 +1,9 @@
+libdir=${pcfiledir}/..
+includedir=${pcfiledir}/../../include
+
+Name: lzma
+Description: lzma library
+Version: x
+
+Libs: -L${libdir} -llzma
+Cflags: -I${includedir}

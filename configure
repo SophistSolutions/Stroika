@@ -820,53 +820,25 @@ sub     FillDefaultLibDependencies_
 			push (@packageCfgNames, "libxml-2.0");
 		}
 		if ($FEATUREFLAG_mongocxxdriver ne $LIBFEATUREFLAG_No) {
-			# push (@packageCfgNames, "libbson-static-1.0");
-			# push (@packageCfgNames, "libmongoc-static-1.0");
-			# push (@packageCfgNames, "libbsoncxx-static");
 			push (@packageCfgNames, "libmongocxx-static");
 		}
-
-		#	$ pkg-config --static --libs openssl
-		#		which produces
-		#			-lssl -ldl -lcrypto -ldl
 		if ($FEATUREFLAG_OpenSSL ne $LIBFEATUREFLAG_No) {
 			push (@packageCfgNames, "openssl");
 		}
-
-
-		#	PKG_CONFIG_PATH=Builds/Debug/ThirdPartyComponents/lib/pkgconfig/ pkg-config --static --libs libcurl
-		#		which produces
-		#			-L/mnt/c/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/lib -lcurl -lssl -lcrypto -lssl -lcrypto -ldl -lpthread
 		if ($FEATUREFLAG_LIBCURL ne $LIBFEATUREFLAG_No) {
 			push (@packageCfgNames, "libcurl");
 		}
-
 		if ($FEATUREFLAG_fmtlib ne $LIBFEATUREFLAG_No) {
 			push (@packageCfgNames, "fmt");
 		}
-
-		# if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
-		# 	PortablyAddLibToLibDependencies_("lzma");
-		# }
-		# if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
-		# 	PortablyAddLibToLibDependencies_("sqlite");
-		# }
+		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
+			push (@packageCfgNames, "lzma");
+		}
 		if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
 			push (@packageCfgNames, "sqlite");
 		}
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
-			# if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			# 	# Static libs not referenced in zlib.pc (on windows at least) --LGP 2025-03-11
-			# 	if ($gAssertionsEnabled) {
-			# 		PortablyAddLibToLibDependencies_("zlibstaticd");
-			# 	}
-			# 	else {
-			# 		PortablyAddLibToLibDependencies_("zlibstatic");
-			# 	}
-			# }
-			# else {
-				push (@packageCfgNames, "zlib");
-			# }
+			push (@packageCfgNames, "zlib");
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
 			push (@packageCfgNames, "gtest_main");
