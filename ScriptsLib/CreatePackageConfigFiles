@@ -60,6 +60,7 @@ class Configuration:
                 self.CFLAGS = getText_(root.find('CFLAGS'))
                 self.CXXFLAGS = getText_(root.find('CXXFLAGS'))
                 self.PkgConfigNames = getText_(root.find('PkgConfigNames'))
+                self.LinkerArgs_LibDependencies = getText_(root.find('LinkerArgs_LibDependencies')).split() if root.find('LinkerArgs_LibDependencies') is not None else []
 
     # We return CXXFLAGS here since that is what pkg-config uses for CFLAGS
     @property
@@ -74,7 +75,7 @@ class Configuration:
         opts = [opt for opt in opts if opt.startswith('-DqStroika_')]
         return " ".join(opts)
 
-def generate_pc_file_common_(prefix_directory: str, name: str, libs: str, cflags: str, requires: list, description: str):
+def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflags: str, requires: list, description: str):
     outFilePath = os.path.join(prefix_directory, 'lib', 'pkgconfig', f'{name}.pc')
     os.makedirs(os.path.dirname(outFilePath), exist_ok=True)
     outFile = open(outFilePath, "w")
@@ -93,7 +94,7 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: str, cflags
     if requires:
         outFile.write(f"Requires: {", ".join(requires)}\n")
     if libs:
-        outFile.write(f"Libs: {libs}\n")
+        outFile.write(f"Libs: {" ".join(libs)}\n")
     if cflags:
         outFile.write(f"Cflags: {cflags}\n")
     outFile.close ()
@@ -110,7 +111,7 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: str, cflags
 def generate_stroika_platform_pc_file_(config: Configuration, prefix_directory: str):
     name = 'stroika-platform'
     # todo alot left todo here
-    libs = "-L${libdir}"
+    libs = ["-L${libdir}"] + config.LinkerArgs_LibDependencies
     cflags = config.full_CFLAG_Platform
     requires = None
     description = "Stroika-specific pkg-config file to facilitate factoring builds using pkgconfig; settings for std c++ library, sdk (e.g. windows), etc. This is used in building third-party-components to assure they reference a consistent version of std c++ etc libs";
@@ -119,7 +120,7 @@ def generate_stroika_platform_pc_file_(config: Configuration, prefix_directory: 
 def generate_stroika_foundation_pc_file_(config: Configuration, prefix_directory: str):
     name = 'stroika-foundation'
     # todo alot left todo here
-    libs = "-L${libdir} -lstroika-foundation"
+    libs = ["-L${libdir}", "-lstroika-foundation"]
     cflags = config.full_CFLAG_Foundation
     requires = ["stroika-platform"] + config.PkgConfigNames.split()
     description = "Stroika-specific pkg-config file the Stroika Foundation library"
@@ -128,7 +129,7 @@ def generate_stroika_foundation_pc_file_(config: Configuration, prefix_directory
 def generate_stroika_frameworks_pc_file_(config: Configuration, prefix_directory: str):
     name = 'stroika-frameworks'
     # todo alot left todo here
-    libs = "-L${libdir} -lstroika-frameworks"
+    libs = ["-L${libdir}", "-lstroika-frameworks"]
     cflags = None
     requires = ["stroika-foundation"]
     description = "Stroika-specific pkg-config file the Stroika Frameworks (UPNP, Test, WebServices, etc) library"
