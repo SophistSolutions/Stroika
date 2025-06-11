@@ -767,16 +767,6 @@ sub     FillDefaultLibsPathIfNeeded_
 		push @LinkerArgs_LibPath, $var;
 	}
 }
-sub		PortablyAddLibToLibDependencies_
-{
-	my $libBaseName = trim(shift(@_));
-	if ($BuildPlatform =~ /^VisualStudio.Net/) {
-		$LinkerArgs_LibDependencies .= "$libBaseName.lib ";
-	}
-	else {
-		$LinkerArgs_LibDependencies .= "-l$libBaseName ";
-	}
-}
 sub     FillDefaultLibDependencies_
 {
 	#IF we set lib dependencies explicitly, then suppress adding libs automatically (based on features etc) - just explicitly added ones from the commandline
