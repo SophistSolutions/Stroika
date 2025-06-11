@@ -27,8 +27,11 @@ endif
 #
 #		Directory where the library (.lib, or .a) Stroika libraries are found (Buidlds/$(CONFIGURATION)/)
 #
+#		Note - StroikaLibDir was StroikaPlatformTargetBuildDir (aka $(StroikaRoot)Builds/$(CONFIGURATION)/)	before Stroika 3.0d21
+#		but was switched to this format to be more consistent with how pkgconfig works.
+#
 ifndef StroikaLibDir
-	StroikaLibDir		:=	$(StroikaPlatformTargetBuildDir)
+	StroikaLibDir		:=	$(StroikaPlatformTargetBuildDir)lib/
 endif
 
 
