@@ -150,12 +150,15 @@ endif
 #		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
 #	    NOTE: As of 2025-06-10, this does still appear to be needed (didnt dig into why) but build of sqlite fails without it
 #             on Windows with MSYS2
-#		RE-DISABLED - and try to enable in just the files where its needed to get to the bottom of this --LGP 2025-06-11
+# "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/cl.exe" -D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=0 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=0 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=1 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -D_DISABLE_VECTOR_ANNOTATION -D_DISABLE_STRING_ANNOTATION -I"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include" -I"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/include" -I"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/ucrt" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/um" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/shared" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/winrt" -I"C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/cppwinrt" -I"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.6.1/include/um" -I"C:/Sandbox/Stroika/DevRoot/Builds/Debug/ThirdPartyComponents/include/" -I"C:/Sandbox/Stroika/DevRoot/Library/Sources/" -I"C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/" $(/c/Sandbox/Stroika/DevRoot/ScriptsLib/FixupDashIs $(pkg-config --cflags ${PKG_CONFIG_STROIKA_DEPENDS_ON})) -std:c++latest -EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address -c Statistics.cpp -FoC:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/Library/Foundation/Cache/Statistics.obj
+# Please specify at least one package name on the command line.
+# Statistics.cpp
+# C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cache\Statistics.cpp : fatal error C1083: Cannot open compiler generated file: 'C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cache\C:\msys64\Sandbox\Stroika\DevRoot\IntermediateFiles\Debug\Library\Foundation\Cache\Statistics.obj': Invalid argument
 #
-# ifeq ($(DETECTED_HOST_OS),MSYS)
-# # See https://www.msys2.org/docs/filesystem-paths/
-# export MSYS2_ARG_CONV_EXCL=*
-# endif
+ifeq ($(DETECTED_HOST_OS),MSYS)
+# See https://www.msys2.org/docs/filesystem-paths/
+export MSYS2_ARG_CONV_EXCL=*
+endif
 
 
 #

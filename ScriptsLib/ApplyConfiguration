@@ -949,7 +949,16 @@ if ($GEN_CONFIG_MAKE) {
 
 		# For now, write the file iff we write the config.mk file...
 		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL`);
-		system($thisScriptDir . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
+
+
+		if ("$^O" eq "msys" or "$^O" eq "cygwin") {
+			# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
+			#$ENV{'MSYS2_ARG_CONV_EXCL'} = '';
+			system(trim(`cygpath -m $thisScriptDir`) . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
+		}
+		else {
+			system($thisScriptDir . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
+		}
 	}
 }
 

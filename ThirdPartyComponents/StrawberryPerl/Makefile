@@ -11,18 +11,6 @@ StroikaRoot	:=	$(abspath ../..)/
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 #
-# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
-#		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
-#	    NOTE: As of 2025-06-10, this does still appear to be needed (didnt dig into why) but build of this module fails without it
-#             on Windows with MSYS2
-#
-ifeq ($(DETECTED_HOST_OS),MSYS)
-# See https://www.msys2.org/docs/filesystem-paths/
-export MSYS2_ARG_CONV_EXCL=*
-endif
-
-
-#
 # CHECK FOR UPDATED VERSIONS https://strawberryperl.com/releases.html
 #	MAYBE BETTER https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases
 #
