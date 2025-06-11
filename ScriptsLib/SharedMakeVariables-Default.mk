@@ -101,11 +101,13 @@ endif
 #
 # Workaround MSYS compatabilty issues with microsoft visual C++ tools.
 #		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
+#	    NOTE: As of 2025-06-10, this does still appear to be needed (didnt dig into why) but build of sqlite fails without it
+#             on Windows with MSYS2
 #
-# ifeq ($(DETECTED_HOST_OS),MSYS)
-# # See https://www.msys2.org/docs/filesystem-paths/
-# export MSYS2_ARG_CONV_EXCL=*
-# endif
+ifeq ($(DETECTED_HOST_OS),MSYS)
+# See https://www.msys2.org/docs/filesystem-paths/
+export MSYS2_ARG_CONV_EXCL=*
+endif
 
 
 #
