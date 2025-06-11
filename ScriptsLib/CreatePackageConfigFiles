@@ -144,9 +144,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     CONFIG = args.configuration
-    xml_file = f"ConfigurationFiles/{CONFIG}.xml"  # Replace with your XML file path
+    xml_file = f"ConfigurationFiles/{CONFIG}.xml"
     cfgFile = Configuration(configFileName=xml_file)
-    output_directory = f"Builds/{CONFIG}/EXPERIMENTAL/"  # Replace with your output directory
+    output_directory = f"Builds/{CONFIG}/"
     print (f"Writing stroika-platform.pc, stroika-foundation.pc, stroika-frameworks.pc to: {output_directory}lib/pkgconfig")
     generate_stroika_platform_pc_file_(cfgFile, output_directory)
     generate_stroika_foundation_pc_file_(cfgFile, output_directory)
