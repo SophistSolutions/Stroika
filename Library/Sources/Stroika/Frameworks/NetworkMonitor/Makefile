@@ -13,7 +13,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
-CXXFLAGS+=-Fd$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb
+CXXFLAGS+=-Fd$(StroikaLibDir)stroika-frameworks.pdb
 endif
 
 

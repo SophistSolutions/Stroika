@@ -500,6 +500,10 @@ sub WriteStroikaConfigMakeHeader
 		{
 			# Not a great way to test, but hopefully adequate for now
 			# esp since not critical always right -- LGP 2019-09-17
+			#
+			# Also note - we tend to use -Z7 - so this really doesn't get used
+			# much - may not be needed anymore. Not sure why we would use this 'feature' of the linker system on MSVCD
+			# -- LGP 2025-06-11
 			if (index($CXXFLAGS, "-Zi") != -1 || index($CXXFLAGS, "-Zl") != -1) {
 				print (OUT "WIN_USE_PROGRAM_DATABASE=1\n");
 			}
