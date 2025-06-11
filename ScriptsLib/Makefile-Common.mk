@@ -42,9 +42,10 @@ DETECTED_HOST_OS:=$(shell $(StroikaRoot)/ScriptsLib/DetectedHostOS)
 
 .PHONY:			all clean clobber check
 
-##
-## Use this to strip /I"..." includes from a CFLAGS or CXXFLAGS list of arguments (to a windows compiler) since these
-## sometimes cause trouble (not 100% sure why - this is a bit of a hack)
-##
-STRIP_INCLUDE_COMPILER_FLAGS= \
-	$(shell  echo '$1' | sed 's/[\/\-]I"[^"]*"//g')
+### LOSE STRIP_INCLUDE_COMPILER_FLAGS DEFINE AS OBSOLETE/UNUSED as of STROIKA 3.0d21 - LGP 2025-06-10 
+# ##
+# ## Use this to strip /I"..." includes from a CFLAGS or CXXFLAGS list of arguments (to a windows compiler) since these
+# ## sometimes cause trouble (not 100% sure why - this is a bit of a hack)
+# ##
+# STRIP_INCLUDE_COMPILER_FLAGS= \
+# 	$(shell  echo '$1' | sed 's/[\/\-]I"[^"]*"//g')
