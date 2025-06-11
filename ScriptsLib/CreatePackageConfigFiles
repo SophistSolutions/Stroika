@@ -113,7 +113,7 @@ def generate_stroika_platform_pc_file_(config: Configuration, prefix_directory: 
     # todo alot left todo here
     libs = ["-L${libdir}"] + config.LinkerArgs_LibDependencies
     # todo map foo.lib to -lfoo (for windows only but harmless otherwise)
-    libs = [lib if lib.startswith('-l') else f'-l{lib}' for lib in libs]
+    libs = [lib if lib.startswith('-') else f'-l{lib.removesuffix(".lib")}' for lib in libs]
     cflags = config.full_CFLAG_Platform
     requires = None
     description = "Stroika-specific pkg-config file to facilitate factoring builds using pkgconfig; settings for std c++ library, sdk (e.g. windows), etc. This is used in building third-party-components to assure they reference a consistent version of std c++ etc libs";
