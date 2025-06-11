@@ -56,6 +56,11 @@ PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Bui
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)/
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 
+SED=sed
+ifeq ($(DETECTED_HOST_OS),Darwin)
+SED=gsed
+endif
+
 
 FETCHURLS=
 #
@@ -77,19 +82,23 @@ FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/xercesc/dom/DOM.hpp
 
+
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq (${AssertionsEnabled},1)
+MAYBED_=d
+else
+MAYBED_=
+endif
+endif
+
+
 ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libxerces-c.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-ifeq (Debug,$(CMAKE_CONFIGURATION))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/xerces-c_3D.lib
-endif
-ifeq (Release,$(CMAKE_CONFIGURATION))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/xerces-c_3.lib
-endif
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/xerces-c_3${MAYBED_}.lib
 endif
 
 
@@ -248,7 +257,14 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
 	@#We get warnings about a missing pdb file when linking otherwise...(not sure why since symbol info sb in the .lib)
 	@$(ECHO) "cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR_}lib/ 2>/dev/null || :" >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)INSTALL.OUT
 	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)src/xerces-c.dir/$(CMAKE_CONFIGURATION)/xerces*.pdb ${PER_CONFIGURATION_BUILDS_DIR_}lib/ 2>/dev/null || :
+	@#
+	@#The prefix= line is windows format and refers to intermediatefiles (and windows syntax on windows)- so not good - replace it with pcfiledir relative name
+	@${SED} -i "s/^prefix=.*\$$/prefix=\$${pcfiledir}\/..\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/xerces-c.pc"
+	@${SED} -i "s/^libdir=.*\$$/libdir=\$${pcfiledir}\/../g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/xerces-c.pc"
+	@#need _3d or _3 for windows
+	@${SED} -i "s/-lxerces-c/-lxerces-c_3${MAYBED_}/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/xerces-c.pc"
 endif
+	@${SED} -i "s/^CFlags: /CFlags: -DXML_LIBRARY=1 -DXERCES_STATIC_LIBRARY=1/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/xerces-c.pc"
 
 
 check-prerequisite-tools:

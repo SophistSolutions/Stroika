@@ -797,25 +797,9 @@ sub     FillDefaultLibDependencies_
 	}
 
 	if ($includeAutomaticLibDependencies) {
-		## @todo lose this - use xerces.pc
 		if ($FEATUREFLAG_Xerces ne $LIBFEATUREFLAG_No) {
-			# @todo could fix xerces.pc file so this isn't necessary, but low priority since I really dont use
-			# Xerces much anymore... --LGP 2025-03-12
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				if ($gAssertionsEnabled) {
-					PortablyAddLibToLibDependencies_("xerces-c_3D");
-				}
-				else {
-					PortablyAddLibToLibDependencies_("xerces-c_3");
-				}
-			}
-			else {
-				PortablyAddLibToLibDependencies_("xerces-c");
-			}
-			push @CPPFLAGS_B4Includes, '-DXML_LIBRARY=1';				# cannot use pkg-config for this because then wouldn't be seen in .vscode etc
-			push @CPPFLAGS_B4Includes, '-DXERCES_STATIC_LIBRARY=1';	# ""
+			push (@packageCfgNames, "xerces-c");
  		}
-
 		if ($FEATUREFLAG_libxml2 ne $LIBFEATUREFLAG_No) {
 			push (@packageCfgNames, "libxml-2.0");
 		}
