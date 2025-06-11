@@ -33,10 +33,18 @@ endif
 
 
 ifndef StroikaFoundationLib
-	StroikaFoundationLib		:=	$(StroikaLibDir)Stroika-Foundation$(LIB_SUFFIX)
+ifeq (${BuildPlatform}, Unix)
+	StroikaFoundationLib		:=	$(StroikaLibDir)libstroika-foundation$(LIB_SUFFIX)
+else
+	StroikaFoundationLib		:=	$(StroikaLibDir)stroika-foundation$(LIB_SUFFIX)
+endif
 endif
 ifndef StroikaFrameworksLib
-	StroikaFrameworksLib		:=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
+ifeq (${BuildPlatform}, Unix)
+	StroikaFrameworksLib		:=	$(StroikaLibDir)libstroika-frameworks$(LIB_SUFFIX)
+else
+	StroikaFrameworksLib		:=	$(StroikaLibDir)stroika-frameworks$(LIB_SUFFIX)
+endif
 endif
 
 
