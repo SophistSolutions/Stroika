@@ -1,12 +1,12 @@
 StroikaRoot	:=	$(abspath ../../../../..)/
+SrcDir		:=  $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/WebServer/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	:=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/WebServer/
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 

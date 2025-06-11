@@ -1,7 +1,6 @@
 StroikaRoot	:=	$(abspath ../../../../../../)/
-
-SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebService/Server/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/WebService/OpenAPI/
+SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebService/Server/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/WebService/OpenAPI/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber

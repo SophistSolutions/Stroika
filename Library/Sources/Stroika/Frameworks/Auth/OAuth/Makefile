@@ -1,4 +1,6 @@
 StroikaRoot	:=	$(abspath ../../../../../../)/
+SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/Auth/OAuth/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Auth/OAuth/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -6,10 +8,6 @@ ifneq ($(CONFIGURATION),)
 endif
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
-SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Auth/OAuth/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Auth/OAuth/
-
 
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)

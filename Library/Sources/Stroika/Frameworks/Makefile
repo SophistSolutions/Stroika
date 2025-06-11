@@ -1,4 +1,6 @@
 StroikaRoot	:=	$(abspath ../../../../)/
+SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
 
 ifneq ($(CONFIGURATION),)
 ifneq ($(MAKECMDGOALS),clean)
@@ -13,8 +15,6 @@ endif
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
 
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)

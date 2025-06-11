@@ -1,7 +1,6 @@
 StroikaRoot	:=	$(abspath ../../../../../../)/
-
-SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/Support/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/Support/
+SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/Support/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/Support/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
