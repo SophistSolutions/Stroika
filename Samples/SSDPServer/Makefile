@@ -1,11 +1,10 @@
-StroikaRoot:=$(abspath ../../)/
+StroikaRoot	:=	$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
@@ -23,7 +22,7 @@ Objs	:=	\
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 
 all:

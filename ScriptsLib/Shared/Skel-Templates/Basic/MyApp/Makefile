@@ -1,11 +1,10 @@
 export TOP_ROOT:=$(abspath ../)/
-StroikaRoot:=$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
+StroikaRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 

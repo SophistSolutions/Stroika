@@ -1,4 +1,4 @@
-StroikaRoot:=$(abspath ../../../)/
+StroikaRoot	:=	$(abspath ../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -9,10 +9,9 @@ BASIC_NAME_LC=stroika-sampleservice
 BASIC_NAME=Stroika-SampleService
 OUTDIR_NAME=Samples-Service
 
-
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
+SrcDir				:=	$(StroikaRoot)Samples/Service/Instalers/
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 

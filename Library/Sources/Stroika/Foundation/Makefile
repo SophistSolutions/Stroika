@@ -1,4 +1,4 @@
-StroikaRoot:=$(abspath ../../../../)/
+StroikaRoot	:=	$(abspath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
 ifneq ($(MAKECMDGOALS),clean)
@@ -11,7 +11,6 @@ endif
 -include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/

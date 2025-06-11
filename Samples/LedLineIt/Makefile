@@ -1,16 +1,14 @@
-StroikaRoot:=$(abspath ../../)/
+StroikaRoot	:=	$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir			:=	$(StroikaRoot)Samples/LedLineIt/
 ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedLineIt/
-
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 

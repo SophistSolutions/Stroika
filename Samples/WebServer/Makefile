@@ -1,11 +1,10 @@
-StroikaRoot:=$(abspath ../../)/
+StroikaRoot	:=	$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir			:=	$(StroikaRoot)Samples/WebServer/
@@ -17,7 +16,7 @@ TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-WebServer/
 TARGETEXE		:=	$(TARGETDIR)WebServer${EXE_SUFFIX}
 
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 
 Objs	:=	\

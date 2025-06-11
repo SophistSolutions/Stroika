@@ -1,9 +1,9 @@
 #
 # This optional component may be used on windows to build windows installers (MSI files)
 #
-StroikaRoot:=$(abspath ../..)/
+StroikaRoot	:=	$(abspath ../..)/
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ### https://wixtoolset.org/docs/releasenotes/
 ### We are way behind here - but some work to update -  up to WIX v5 --LGP 2024-07-18

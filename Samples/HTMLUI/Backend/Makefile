@@ -1,17 +1,16 @@
 export TOP_ROOT:=$(abspath ../../../)/
-StroikaRoot:=$(TOP_ROOT)
+StroikaRoot	:=	$(TOP_ROOT)
+SrcDir		:=	$(TOP_ROOT)Samples/HTMLUI/Backend/
+ObjDir		:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
+ResDir		:=	$(ObjDir)Resources/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir			:=	$(TOP_ROOT)Samples/HTMLUI/Backend/
-ObjDir			:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
-ResDir			:=	$(ObjDir)Resources/
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
 
@@ -20,7 +19,7 @@ TARGETHTMLDIR	:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/html/
 TARGETEXE		:=	$(TARGETDIR)HTMLUI${EXE_SUFFIX}
 
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 
 SubDirs:=\

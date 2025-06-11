@@ -1,19 +1,18 @@
 export TOP_ROOT:=$(abspath ../../../)/
-StroikaRoot:=$(TOP_ROOT)
+StroikaRoot	:=	$(TOP_ROOT)
+
+BASIC_NAME_LC=stroika-sample-htmlui
+BASIC_NAME=Stroika-Sample-HTMLUI
+OUTDIR_NAME=Samples-HTMLUI
+
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
+
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-BASIC_NAME_LC=stroika-sample-htmlui
-BASIC_NAME=Stroika-Sample-HTMLUI
-OUTDIR_NAME=Samples-HTMLUI
-
-
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
-
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 

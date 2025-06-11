@@ -1,14 +1,12 @@
-StroikaRoot:=$(abspath ../../../../../../../)/
+StroikaRoot	:=	$(abspath ../../../../../../../)/
+SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Variant/FormURLEncoded/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/Variant/FormURLEncoded/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Variant/FormURLEncoded/
-ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/DataExchange/Variant/FormURLEncoded/
-
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 

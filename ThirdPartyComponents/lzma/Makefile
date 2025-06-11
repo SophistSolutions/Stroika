@@ -8,13 +8,12 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 
-StroikaRoot:=$(abspath ../..)/
+StroikaRoot	:=	$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 .PHONY:	all clean clobber check doBuilds_

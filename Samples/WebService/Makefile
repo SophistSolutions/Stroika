@@ -1,15 +1,14 @@
-StroikaRoot:=$(abspath ../../)/
+StroikaRoot	:=	$(abspath ../../)/
+SrcDir		:=	$(StroikaRoot)Samples/WebService/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebService/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir			:=	$(StroikaRoot)Samples/WebService/
-ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebService/
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebService/)
 
@@ -17,7 +16,7 @@ TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-WebService/
 TARGETEXE		:=	$(TARGETDIR)WebService${EXE_SUFFIX}
 
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 
 Objs	:=	\

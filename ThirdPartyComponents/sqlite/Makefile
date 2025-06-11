@@ -7,13 +7,12 @@
 #
 #	@todo REDO using entire build system and cmake - full sqlite-src instead of amalagamation (that has .pc file)
 #
-StroikaRoot:=$(abspath ../..)/
+StroikaRoot	:=	$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

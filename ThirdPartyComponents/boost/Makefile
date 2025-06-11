@@ -13,14 +13,13 @@
 #		@todo	Now that we pass in CFLAGS, CXXFLAGS etc, we probably can get away with fewer explicit settings in the build process (like _GLIBCXX_DEBUG)
 #
 
-StroikaRoot:=$(abspath ../..)/
+StroikaRoot	:=	$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SHELL=/bin/bash
 

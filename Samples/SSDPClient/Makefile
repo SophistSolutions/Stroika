@@ -1,20 +1,19 @@
-StroikaRoot:=$(abspath ../../)/
+StroikaRoot	:=	$(abspath ../../)/
+SrcDir		:=	$(StroikaRoot)Samples/SSDPClient/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPClient/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir			:=	$(StroikaRoot)Samples/SSDPClient/
-ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPClient/
 
 TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPClient/
 TARGETEXE		:=	$(TARGETDIR)SSDPClient${EXE_SUFFIX}
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 Objs	:=	\
 	$(ObjDir)SSDPClient${OBJ_SUFFIX}\

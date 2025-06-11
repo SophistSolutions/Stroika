@@ -5,8 +5,7 @@ ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/

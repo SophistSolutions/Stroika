@@ -8,7 +8,7 @@
 #	NOTE this project/makefile DOESNT explicitly list the MongoC driver or other dependencies - these are automatically fetched
 #	by the MongoCXX build scripts.
 #
-StroikaRoot:=$(abspath ../..)/
+StroikaRoot	:=	$(abspath ../..)/
 
 ifneq (${CONFIGURATION},)
 	-include ${StroikaRoot}IntermediateFiles/${CONFIGURATION}/Configuration.mk

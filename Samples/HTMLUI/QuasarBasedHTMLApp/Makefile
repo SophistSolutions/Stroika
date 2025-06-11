@@ -5,7 +5,7 @@
 ###				for preqequisites, or more importantly already built html
 
 export TOP_ROOT:=$(abspath ../../../)/
-StroikaRoot:=$(TOP_ROOT)
+StroikaRoot	:=	$(TOP_ROOT)
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk

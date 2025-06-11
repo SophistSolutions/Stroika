@@ -1,7 +1,6 @@
 export TOP_ROOT?=$(shell realpath ../../)/
 export StroikaRoot?=$(shell realpath StroikaRoot)/
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 all:

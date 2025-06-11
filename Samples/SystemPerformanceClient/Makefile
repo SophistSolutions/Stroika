@@ -1,21 +1,19 @@
-StroikaRoot:=$(abspath ../../)/
+StroikaRoot	:=	$(abspath ../../)/
+SrcDir		:=	$(StroikaRoot)Samples/SystemPerformanceClient/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SystemPerformanceClient/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
-SrcDir			:=	$(StroikaRoot)Samples/SystemPerformanceClient/
-ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SystemPerformanceClient/
 
 
 TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SystemPerformanceClient/
 TARGETEXE		:=	$(TARGETDIR)SystemPerformanceClient${EXE_SUFFIX}
 
-VPATH	=			$(SrcDir)/Sources/
+VPATH	=			$(SrcDir)Sources/
 
 
 Objs	=	\

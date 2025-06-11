@@ -12,6 +12,10 @@ $(error("StroikaRoot must be defined and included before this file"))
 endif
 export StroikaRoot
 
+
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
+
 ifndef ObjDir
 	ObjDir		:=	./
 endif

@@ -1,15 +1,14 @@
-StroikaRoot:=$(abspath ../../)/
+StroikaRoot	:=	$(abspath ../../)/
+SrcDir		:=	$(StroikaRoot)Samples/HTMLUI/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir			:=	$(StroikaRoot)Samples/HTMLUI/
-ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/
 
 #not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say
 # make clobber all you don't want those to happen at the same time. And make libraries samples wouldn't really work since all the libraries
