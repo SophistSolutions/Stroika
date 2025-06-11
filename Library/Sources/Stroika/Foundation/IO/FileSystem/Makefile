@@ -2,7 +2,6 @@ StroikaRoot	:=	$(abspath ../../../../../../)/
 SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/FileSystem/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/FileSystem/
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -28,6 +27,7 @@ Objs	:=	\
 	$(ObjDir)ThroughTmpFileWriter${OBJ_SUFFIX}\
 	$(ObjDir)WellKnownLocations${OBJ_SUFFIX}\
 
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 all:	$(Objs)
 

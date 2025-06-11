@@ -2,7 +2,10 @@
 #
 #
 ifndef StroikaRoot
-$(error "StroikaRoot must be defined and included before this file")
+$(error "StroikaRoot must be defined before is included SharedBuildRules-Default.mk")
+endif
+ifeq ($(DETECTED_HOST_OS),)
+$(warning "SharedMakeVariables-Default.mk must be included before SharedBuildRules-Default.mk")
 endif
 
 .SUFFIXES:	${OBJ_SUFFIX} .cpp .i .h .swsp .a

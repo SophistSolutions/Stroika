@@ -1,8 +1,10 @@
 export TOP_ROOT:=$(abspath ../)/
 StroikaRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 SrcDir			:=	$(TOP_ROOT)${APP_NAME}/
 

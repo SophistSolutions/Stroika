@@ -2,7 +2,6 @@ StroikaRoot	:=	$(abspath ../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Debug/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Debug/
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -24,5 +23,6 @@ Objs	:=	\
 	$(ObjDir)Trace${OBJ_SUFFIX}\
 	$(ObjDir)Visualizations${OBJ_SUFFIX}\
 
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 all:	$(Objs)

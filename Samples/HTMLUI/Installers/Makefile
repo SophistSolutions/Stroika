@@ -7,8 +7,10 @@ OUTDIR_NAME=Samples-HTMLUI
 
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 
 TARGET_OUT_DIR=			$(TOP_ROOT)Builds/$(CONFIGURATION)/$(OUTDIR_NAME)/

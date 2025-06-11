@@ -2,7 +2,6 @@ StroikaRoot	:=	$(abspath ../../../../../../../)/
 SrcDir		:=  $(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Resources/Concrete/
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Execution/Resources/Concrete/
 
-include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
@@ -20,6 +19,7 @@ ifneq ($(findstring Windows,$(TargetPlatforms)),)
 Objs+=	$(ObjDir)WindowsResourceManager${OBJ_SUFFIX}
 endif
 
+include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 all:	 $(Objs)
 
