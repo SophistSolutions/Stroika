@@ -9,10 +9,6 @@
 #
 StroikaRoot	:=	$(abspath ../..)/
 
-ifneq ($(CONFIGURATION),)
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

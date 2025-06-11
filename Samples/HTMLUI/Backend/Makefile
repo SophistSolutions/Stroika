@@ -4,11 +4,6 @@ SrcDir		:=	$(TOP_ROOT)Samples/HTMLUI/Backend/
 ObjDir		:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/
 ResDir		:=	$(ObjDir)Resources/
 
-ifneq ($(CONFIGURATION),)
-	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 

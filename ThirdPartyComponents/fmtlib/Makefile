@@ -6,12 +6,7 @@
 #				exceedingly rare case; but certainly a defect of this approach.
 StroikaRoot	:=	$(abspath ../..)/
 
-ifneq ($(CONFIGURATION),)
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 ifneq (${CONFIGURATION},)
 include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS

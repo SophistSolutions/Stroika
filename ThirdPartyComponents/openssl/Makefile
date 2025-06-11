@@ -7,13 +7,11 @@
 #				exceedingly rare case; but certainly a defect of this approach.
 StroikaRoot	:=	$(abspath ../..)/
 
-ifneq ($(CONFIGURATION),)
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
+ifneq ($(CONFIGURATION),)
 	CONFIGURED_EXTRA_ARGS			=	$(qFeatureFlag_OpenSSL_ExtraArgs)
 endif
-
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 .PHONY:	all clean clobber check doBuild
 

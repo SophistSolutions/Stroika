@@ -7,12 +7,6 @@ OUTDIR_NAME=Samples-HTMLUI
 
 ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/$(OUTDIR_NAME)/
 
-
-ifneq ($(CONFIGURATION),)
-	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 

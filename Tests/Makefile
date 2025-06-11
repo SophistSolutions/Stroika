@@ -1,11 +1,6 @@
 export StroikaRoot?=$(abspath ../)/
 
-ifneq ($(CONFIGURATION),)
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
 
 
 .PHONY:	tests all check clobber

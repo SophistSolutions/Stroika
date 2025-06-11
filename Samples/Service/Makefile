@@ -1,14 +1,9 @@
 StroikaRoot	:=	$(abspath ../../)/
-
-ifneq ($(CONFIGURATION),)
-	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
+SrcDir		:=	$(StroikaRoot)Samples/Service/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir		:=	$(StroikaRoot)Samples/Service/
-ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Service/)
 

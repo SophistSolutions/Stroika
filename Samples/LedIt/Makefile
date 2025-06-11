@@ -1,14 +1,9 @@
 StroikaRoot	:=	$(abspath ../../)/
+SrcDir		:=	$(StroikaRoot)Samples/LedIt/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedIt/
 
-ifneq ($(CONFIGURATION),)
-	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
-SrcDir			:=	$(StroikaRoot)Samples/LedIt/
-ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedIt/
 
 TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/
 TARGETEXE		:=	$(TARGETDIR)LedIt${EXE_SUFFIX}

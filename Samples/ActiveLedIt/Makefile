@@ -2,20 +2,12 @@ StroikaRoot		:=	$(abspath ../../)/
 SrcDir			:=	$(StroikaRoot)Samples/ActiveLedIt/
 ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-ActiveLedIt/
 
-ifneq ($(CONFIGURATION),)
-	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
 
 TARGETDIR			:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt/
 TARGETEXE			:=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
 
-
 VPATH	=			$(SrcDir)Sources/
-
 
 Objs	:=	\
 	$(ObjDir)ActiveLedIt${OBJ_SUFFIX}\

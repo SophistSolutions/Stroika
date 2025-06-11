@@ -2,12 +2,6 @@ StroikaRoot	:=	$(abspath .)/
 
 include ScriptsLib/SharedMakeVariables-Default.mk
 
-ifneq ($(CONFIGURATION),)
-	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-
-
 ifeq ($(filter 3.81, $(firstword $(sort $(MAKE_VERSION) 3.81))),)
 $(info Warning - version of GNU Make - $(MAKE_VERSION) - appears too old)
 endif

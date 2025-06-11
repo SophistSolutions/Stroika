@@ -10,7 +10,6 @@ $(shell $(MAKE) --directory $(StroikaRoot) --no-print-directory CONFIGURATION=$(
 endif
 endif
 endif
--include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk

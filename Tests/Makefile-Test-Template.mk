@@ -1,14 +1,8 @@
-export StroikaRoot?=$(abspath ../../)/
-
-ifneq ($(CONFIGURATION),)
-	#no error if missing cuz could be doing make clobber
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
+export StroikaRoot	:=	$(abspath ../../)/
+SrcDir				:=	$(StroikaRoot)Tests/$(TEST_NUM)/
+ObjDir				:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
-
-SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
 
 ifndef TEST_NUM
 	TEST_NUM		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_

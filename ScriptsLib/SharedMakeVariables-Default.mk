@@ -13,6 +13,14 @@ endif
 export StroikaRoot
 
 
+ifneq ($(CONFIGURATION),)
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+endif
+
+
+
+
 #Common bits of script / functions that maybe used in Stroika makefiles.
 #This has no dependencies (besides gnu make)
 
