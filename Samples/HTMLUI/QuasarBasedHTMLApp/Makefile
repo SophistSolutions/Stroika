@@ -7,7 +7,6 @@
 export TOP_ROOT:=$(abspath ../../../)/
 StroikaRoot	:=	$(TOP_ROOT)
 
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGETDIR		:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/

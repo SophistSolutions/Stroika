@@ -1,6 +1,6 @@
 StroikaRoot	:=	$(abspath .)/
 
-include ScriptsLib/Makefile-Common.mk
+include ScriptsLib/SharedMakeVariables-Default.mk
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber

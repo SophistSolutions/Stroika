@@ -10,6 +10,17 @@ StroikaRoot	:=	$(abspath ../..)/
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
+#
+# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
+#		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
+#	    NOTE: As of 2025-06-10, this does still appear to be needed (didnt dig into why) but build of this module fails without it
+#             on Windows with MSYS2
+#
+ifeq ($(DETECTED_HOST_OS),MSYS)
+# See https://www.msys2.org/docs/filesystem-paths/
+export MSYS2_ARG_CONV_EXCL=*
+endif
+
 
 #
 # CHECK FOR UPDATED VERSIONS https://strawberryperl.com/releases.html
@@ -29,6 +40,8 @@ FETCHURLS_=
 FETCHURLS_+=https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_${COMPRESS_PERL_VERSION_}_64bit_UCRT/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
 FETCHURLS_+=https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_${COMPRESS_PERL_VERSION_}_64bit/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
 #FETCHURLS_+=https://strawberryperl.com/download/${PERL_VERSION_}/strawberry-perl-${PERL_VERSION_}-64bit-portable.zip
+
+
 
 ${ZIPPED_SOURCES_FILE_}:
 	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}ScriptsLib/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}

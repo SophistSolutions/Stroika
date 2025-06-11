@@ -7,6 +7,8 @@ endif
 
 .SUFFIXES:	${OBJ_SUFFIX} .cpp .i .h .swsp .a
 
+.PHONY:			all clean clobber check
+
 
 # 
 # Though it might make sense to spread this around to just the makefiles that need it, that would be onerous
