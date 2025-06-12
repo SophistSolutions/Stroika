@@ -15,11 +15,6 @@ extern "C" {
 }
 #endif
 
-// #if qStroika_HasComponent_LZMA && defined(_MSC_VER)
-// // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-// #pragma comment(lib, "lzma.lib")
-// #endif
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
