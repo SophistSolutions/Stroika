@@ -38,7 +38,7 @@ FETCHURLS+=https://sourceforge.net/projects/sevenzip/files/LZMA%20SDK/$(BASENAME
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
-PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents)/
+PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/lzma)/
 
 # Only needed on MacOS due to make 3.81, I believe --LGP 2024-07-01

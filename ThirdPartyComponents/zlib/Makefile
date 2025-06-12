@@ -32,7 +32,7 @@ FETCHURLS_+=http://prdownloads.sourceforge.net/libpng/zlib-${ZLIB_VERSION_}.tar.
 #FETCHURLS_+=http://sourceforge.net/projects/libpng/files/zlib/${ZLIB_VERSION_}/zlib-${ZLIB_VERSION_}.tar.gz/download
 
 
-PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing ../../Builds/${CONFIGURATION}/ThirdPartyComponents)/
+PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/zlib)/
 OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zlib/CURRENT)
@@ -182,7 +182,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/ThirdPartyComponents/include/{zlib,zconf}.h
+	@rm -rf ${StroikaRoot}Builds/*/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/include/{zlib,zconf}.h
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}

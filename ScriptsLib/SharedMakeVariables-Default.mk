@@ -72,6 +72,9 @@ ifndef ObjDir
 endif
 
 
+#
+#	This is typically the --prefix - in most third-party-component makefile/configure lines
+#
 ifndef StroikaPlatformTargetBuildDir
 	StroikaPlatformTargetBuildDir		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/
 endif
@@ -114,6 +117,7 @@ ECHO_BUILD_LINES	?=	0
 #	StroikaLibs
 #
 #		This is a space separated list of full-pathnames to the stroika library file(s)
+#			PROBABLY WILL DEPRECATE IN FAVOR OF PC FILES
 #
 ifndef StroikaLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated

@@ -11,7 +11,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 TARGETDIR		:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/
 
-PER_CONFIGURATION_BUILDS_DIR_:=$(shell realpath --canonicalize-missing $(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/html)/
+PER_CONFIGURATION_BUILDS_DIR_:=${TARGETDIR}html/
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing $(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/html)/
 
 NEED_GNU_MAKE_ := 4.0.0
