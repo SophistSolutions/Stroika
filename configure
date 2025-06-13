@@ -2307,6 +2307,8 @@ sub GetDefaultCZZFLAGS_flags_
 	my @flags  = ();
 	my @flagValues2Remove  = @GetDefaultCZZFLAGS_flags_flagValues2Remove;
 	my $doCFLAGS = shift(@_);
+	my $doPlatform = shift(@_);
+	my $doFoundation = shift(@_);
 	# print "entering GetDefaultCZZFLAGS_flags_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
 
 	my $isVisualStudio = 		($BuildPlatform =~ /^VisualStudio.Net/);
@@ -2317,131 +2319,149 @@ sub GetDefaultCZZFLAGS_flags_
 		$isVisualStudio = false;
 	}
 
-	if ($doCFLAGS eq 2) {
-		# C++ only flags
-		if (not ($CPPSTD_VERSION_FLAG eq "")) {
-			push @flags, $CPPSTD_VERSION_FLAG;
-		}
-	}
+	# Unitl Stroika v2.1d18 these were written to Stroika-Config.h, but now all just provided to C++ compiler via -D
+	# Doing this way means the defines appear in compiles of third-party-components, but they should not interfere, and if they ever
+	# did we could add a new separate flag to extract/remove/keep them out (e.g STROIKA_CPP_DEFINE_ARGS, and just -filter-out all those from the CXXFLAGS)
+	#
+	# Doing ALL the flags through the command line is somewhat clear than having MOST done through the Stroika-Configs.h file but a few done through the commandline.
+	#
+	# It has ONE possible disadvantage, which is confusing some tools that preparse the the (like visual studio code) but we must just find some way
+	# to get them to also know about these defines (TBD)
+	#		--LGP 2019-02-10
+	my $dashFlag="-D";
 
-	if ($doCFLAGS eq 2) {
-		if (not ($CXXWARNING_FLAGS eq "")) {
-			### @todo - need separate flags for C and CXX
-			for my $i (split / /, $CXXWARNING_FLAGS) {
-				push @flags, "$i";
+	if ($doPlatform) {
+		if ($doCFLAGS eq 2) {
+			# C++ only flags
+			if (not ($CPPSTD_VERSION_FLAG eq "")) {
+				push @flags, $CPPSTD_VERSION_FLAG;
 			}
 		}
-	}
 
-	if (not ($doCFLAGS eq 0)) {
-		if (not ($COPTIMIZE_FLAGS eq "")) {
-			push @flags, $COPTIMIZE_FLAGS;
-		}
-
-		if (defined $SharedSymbolVisibility) {
-			push @flags, "-fvisibility=$SharedSymbolVisibility";
-		}
-		
-		if ($INCLUDE_SYMBOLS_LIB) {
-			if ($isVisualStudio) {
-				####? push @flags, "-Z7";
-			}
-			else {
-				push @flags, "-g";
+		if ($doCFLAGS eq 2) {
+			if (not ($CXXWARNING_FLAGS eq "")) {
+				### @todo - need separate flags for C and CXX
+				for my $i (split / /, $CXXWARNING_FLAGS) {
+					push @flags, "$i";
+				}
 			}
 		}
-		if ( $isVisualStudio ) {
-			if ($Windows_Exceptions_SupportStructuredExceptions == true) {
-				push @flags, "-EHa";
-			}
-			else {
-				push @flags, "-EHsc";
-			}
-			push @flags, "-nologo";
-			push @flags, "-GR";			#  Enable Run-Time Type Information
-			push @flags, "-Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
-			push @flags, "-W4";			#  Warning Level (most less than WALL)
-			#push @flags, "-WX-";		#  (Dont) treat warnings as errors
-			#push @flags, "-JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
-			push @flags, "-Zc:inline";	#  Remove unreferenced code and data
-			push @flags, "-FC";			#  Use full paths in diagnostic messages
-			push @flags, "-bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
 
-	#		push @flags, "-errorReport:prompt";	users can add this if desired
+		if (not ($doCFLAGS eq 0)) {
+			if (not ($COPTIMIZE_FLAGS eq "")) {
+				push @flags, $COPTIMIZE_FLAGS;
+			}
 
-			###push @flags, "-experimental:module";
+			if (defined $SharedSymbolVisibility) {
+				push @flags, "-fvisibility=$SharedSymbolVisibility";
+			}
 			
-			if ($ApplyDebugFlags == true) {
-				push @flags, "-RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
-				push @flags, "-GS";			#	Enable Security Check
-				push @flags, "-Oy-";		#	(Dont) omit frame pointers
-				push @flags, "-Od";			#	Disable Optimization
-			}
-			if ($ApplyReleaseFlags == true) {
-				push @flags, "-GS-";		#	Disable Security Check
-				push @flags, "-Gy";			#	Enable Function Level Linking
-				push @flags, "-Oy";			#	Omit frame pointers
-				push @flags, "-O2";			#	Maximum Optimization (Favor Speed)
-				push @flags, "-GL";			#	Whole Program Optimization
-				push @flags, "-Oi";			#	Enable Intrinsic Functions
-				push @flags, "-GF";			#	Enable String Pooling
-			}
-			##push @flags, "-fp:precise";	#vs2k sample projects define this, but maybe can use default?
-		
-			if ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreaded") {
-				push @flags, "-MT";			#	Multithreaded (not debug not dll)
-			}
-			elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebug") {
-				push @flags, "-MTd";		#	Multithreaded (Debug; but not dll)
-			}
-			elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDLL") {
-				push @flags, "-MD";			#	NOT SURE REALLY SUPPORTED
-			}
-			elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebugDLL") {
-				push @flags, "-MDd";		#	NOT SURE REALLY SUPPORTED
-			}
-			else {
-				print ("WARNING: Unrecognized MSVC_RUNTIME_LIBRARY: $VSVARS_MSVC_RUNTIME_LIBRARY\n");
-			}
-
 			if ($INCLUDE_SYMBOLS_LIB) {
-				if ($WinFlag_DebugProgramDatabase) {
-					push @flags, "-Zi";		#	Program Database (Debug Information)
-					push @flags, "-FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
+				if ($isVisualStudio) {
+					####? push @flags, "-Z7";
 				}
 				else {
-					push @flags, "-Z7";		#	Use intra-obj file debug info format 
+					push @flags, "-g";
+				}
+			}
+			if ( $isVisualStudio ) {
+				if ($Windows_Exceptions_SupportStructuredExceptions == true) {
+					push @flags, "-EHa";
+				}
+				else {
+					push @flags, "-EHsc";
+				}
+				push @flags, "-nologo";
+				push @flags, "-GR";			#  Enable Run-Time Type Information
+				push @flags, "-Gd";			#  Calling Convention - the default setting, specifies the __cdecl calling convention for all functions
+				push @flags, "-W4";			#  Warning Level (most less than WALL)
+				#push @flags, "-WX-";		#  (Dont) treat warnings as errors
+				#push @flags, "-JMC";		#  Just my code debugging (DONT TURN ON - let users add this but dont default on)
+				push @flags, "-Zc:inline";	#  Remove unreferenced code and data
+				push @flags, "-FC";			#  Use full paths in diagnostic messages
+				push @flags, "-bigobj";		# Avoid these failures - fatal error C1128: number of sections exceeded object file format limit: compile with /bigobj
+
+		#		push @flags, "-errorReport:prompt";	users can add this if desired
+
+				###push @flags, "-experimental:module";
+				
+				if ($ApplyDebugFlags == true) {
+					push @flags, "-RTCsu";		# 	Run-Time Error Checks - https://docs.microsoft.com/en-us/cpp/build/reference/rtc-run-time-error-checks?view=vs-2019
+					push @flags, "-GS";			#	Enable Security Check
+					push @flags, "-Oy-";		#	(Dont) omit frame pointers
+					push @flags, "-Od";			#	Disable Optimization
+				}
+				if ($ApplyReleaseFlags == true) {
+					push @flags, "-GS-";		#	Disable Security Check
+					push @flags, "-Gy";			#	Enable Function Level Linking
+					push @flags, "-Oy";			#	Omit frame pointers
+					push @flags, "-O2";			#	Maximum Optimization (Favor Speed)
+					push @flags, "-GL";			#	Whole Program Optimization
+					push @flags, "-Oi";			#	Enable Intrinsic Functions
+					push @flags, "-GF";			#	Enable String Pooling
+				}
+				##push @flags, "-fp:precise";	#vs2k sample projects define this, but maybe can use default?
+			
+				if ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreaded") {
+					push @flags, "-MT";			#	Multithreaded (not debug not dll)
+				}
+				elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebug") {
+					push @flags, "-MTd";		#	Multithreaded (Debug; but not dll)
+				}
+				elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDLL") {
+					push @flags, "-MD";			#	NOT SURE REALLY SUPPORTED
+				}
+				elsif ($VSVARS_MSVC_RUNTIME_LIBRARY eq "MultiThreadedDebugDLL") {
+					push @flags, "-MDd";		#	NOT SURE REALLY SUPPORTED
+				}
+				else {
+					print ("WARNING: Unrecognized MSVC_RUNTIME_LIBRARY: $VSVARS_MSVC_RUNTIME_LIBRARY\n");
+				}
+
+				if ($INCLUDE_SYMBOLS_LIB) {
+					if ($WinFlag_DebugProgramDatabase) {
+						push @flags, "-Zi";		#	Program Database (Debug Information)
+						push @flags, "-FS";		# 	Force Synchronous PDB Writes (needed for parallel make/build)
+					}
+					else {
+						push @flags, "-Z7";		#	Use intra-obj file debug info format 
+					}
+				}
+			}
+		}
+		if ($doCFLAGS eq 0) {
+			if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
+				push @flags, "-D_GLIBCXX_DEBUG";
+			}
+			if ( $isVisualStudio ) {
+				push @flags, "-D_UNICODE";
+				push @flags, "-DUNICODE";
+				push @flags, "-D_WINDOWS";	# just because visual studio .net sample projects defined this
+				
+				if ($ApplyDebugFlags == true) {
+					push @flags, "-D_DEBUG";
+				}
+				if ($ApplyReleaseFlags == true) {
+					push @flags, "-DNDEBUG";
+				}
+			}
+			{
+				foreach my $var (@useExtraCDefines)
+				{
+					my ($define, $name, $value) = split(/ /, $var);
+					if (!($define eq '#define')) {
+						die ("NYI: mapping extraCDEFINE: $var");
+					}
+					if ($value eq "") {
+						$value = 0;
+					}
+					push @flags, $dashFlag . "$name=" . $value;
 				}
 			}
 		}
 	}
-	if ($doCFLAGS eq 0) {
-		if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
-			push @flags, "-D_GLIBCXX_DEBUG";
-		}
-		if ( $isVisualStudio ) {
-			push @flags, "-D_UNICODE";
-			push @flags, "-DUNICODE";
-			push @flags, "-D_WINDOWS";	# just because visual studio .net sample projects defined this
-			
-			if ($ApplyDebugFlags == true) {
-				push @flags, "-D_DEBUG";
-			}
-			if ($ApplyReleaseFlags == true) {
-				push @flags, "-DNDEBUG";
-			}
-		}
-		{
-			# Unitl Stroika v2.1d18 these were written to Stroika-Config.h, but now all just provided to C++ compiler via -D
-			# Doing this way means the defines appear in compiles of third-party-components, but they should not interfere, and if they ever
-			# did we could add a new separate flag to extract/remove/keep them out (e.g STROIKA_CPP_DEFINE_ARGS, and just -filter-out all those from the CXXFLAGS)
-			#
-			# Doing ALL the flags through the command line is somewhat clear than having MOST done through the Stroika-Configs.h file but a few done through the commandline.
-			#
-			# It has ONE possible disadvantage, which is confusing some tools that preparse the the (like visual studio code) but we must just find some way
-			# to get them to also know about these defines (TBD)
-			#		--LGP 2019-02-10
-			my $dashFlag="-D";
+	if ($doFoundation ) {
+		if ($doCFLAGS eq 0) {
 			push @flags, $dashFlag . "qStroika_Foundation_Debug_AssertionsChecked=" . ZERO_OR_1_ ($gAssertionsEnabled);
 			if (defined $FEATUREFLAG_ATLMFC) {
 				push @flags, $dashFlag . "qStroika_HasComponent_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
@@ -2465,21 +2485,9 @@ sub GetDefaultCZZFLAGS_flags_
 					push @flags, $dashFlag . "qStroika_Foundation_Debug_DefaultTracingOn=1";
 				}
 			}
-
-			foreach my $var (@useExtraCDefines)
-			{
-				my ($define, $name, $value) = split(/ /, $var);
-				if (!($define eq '#define')) {
-					die ("NYI: mapping extraCDEFINE: $var");
-				}
-				if ($value eq "") {
-					$value = 0;
-				}
-				push @flags, $dashFlag . "$name=" . $value;
-			}
 		}
 	}
-
+	
 	for my $r (@GetDefaultCZZFLAGS_flags_flags) {
 		my $i = indexOf (@flags, $r);
 		if ($i != -1) {
@@ -2495,7 +2503,8 @@ sub GetDefaultCZZFLAGS_flags_
 			splice (@flags, $i, 1);
 		}
 	}
-	#print " GetDefaultCZZFLAGS_flags_: returning flags=", join("\n", @flags),"\n";
+
+	# print " GetDefaultCZZFLAGS_flags_: returning flags=", join("\n", @flags),"\n";
 	return @flags;
 }
 
@@ -2822,17 +2831,17 @@ sub PostProcessOptions_ ()
 	if ($CPPFLAGS_Overridden eq false) {
 		@GetDefaultCZZFLAGS_flags_flags = @CPPFLAGS_B4Includes;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CPPFLAGS2Remove;
-		@CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0);
+		@CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0, true, true);
 	}
 	if ($CFLAGS_Overridden eq false) {
 		@GetDefaultCZZFLAGS_flags_flags = @CFLAGS;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CFLAGS2Remove;
-		@CFLAGS = GetDefaultCZZFLAGS_flags_ (1);
+		@CFLAGS = GetDefaultCZZFLAGS_flags_ (1, true, true);
 	}
 	if ($CXXFLAGS_Overridden eq false) {
 		@GetDefaultCZZFLAGS_flags_flags = @CXXFLAGS;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CXXFLAGS2Remove;
-		@CXXFLAGS = GetDefaultCZZFLAGS_flags_ (2);
+		@CXXFLAGS = GetDefaultCZZFLAGS_flags_ (2, true, true);
 	}
 
 	# Append these last so they can be used to override earlier options
