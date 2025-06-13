@@ -247,8 +247,19 @@ DEFAULT_CXX_LINE=\
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
 		| sed -n '1!p'
-endif
 
+# #EXPERIEMNTAL REPLACEMENT
+# USE_CXX_FLAGS=$(shell pkg-config --msvc --cflags-only-I stroika-frameworks) $(shell pkg-config --cflags-only-other stroika-frameworks)
+# # USE_CXX_FLAGS=$(shell pkg-config --cflags stroika-frameworks)
+# # $(info USE_CXX_FLAGS=${USE_CXX_FLAGS})
+# DEFAULT_CXX_LINE=\
+# 	"$(CXX)" \
+# 		${USE_CXX_FLAGS} \
+# 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
+# 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
+# 		| sed -n '1!p'
+
+endif
 
 
 #
