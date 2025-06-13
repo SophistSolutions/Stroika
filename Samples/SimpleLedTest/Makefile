@@ -5,7 +5,7 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleLedTes
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGETDIR	:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/
+TARGETDIR	:=	${StroikaPlatformTargetBuildDir}Samples-SimpleLedTest/
 TARGETEXE	:=	$(TARGETDIR)SimpleLedTest${EXE_SUFFIX}
 
 

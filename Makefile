@@ -163,7 +163,7 @@ else
 	@#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
 	@if [ "$@" = "clobber" ] ; then \
 		rm -rf IntermediateFiles/$(CONFIGURATION);\
-		rm -rf Builds/$(CONFIGURATION);\
+		rm -rf ${StroikaPlatformTargetBuildDir};\
 	fi
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -444,7 +444,7 @@ ifneq ($(CONFIGURATION),)
 IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIGURATION).xml
 	@$(MAKE) --no-print-directory apply-configuration
 	
-.vscode/c_cpp_properties.json:	 $(wildcard Builds/${CONFIGURATION}/ThirdPartyComponents/lib/pkgconfig/*.pc)
+.vscode/c_cpp_properties.json:	 $(wildcard ${StroikaPlatformTargetBuildDir}lib/pkgconfig/*.pc)
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"

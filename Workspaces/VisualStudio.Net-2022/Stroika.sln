@@ -87,7 +87,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\GetMessageForMissingTool = ..\..\ScriptsLib\GetMessageForMissingTool
 		..\..\ScriptsLib\HasCompiler = ..\..\ScriptsLib\HasCompiler
 		..\..\ScriptsLib\MakeBuildRoot = ..\..\ScriptsLib\MakeBuildRoot
-		..\..\ScriptsLib\Makefile-Common.mk = ..\..\ScriptsLib\Makefile-Common.mk
 		..\..\ScriptsLib\MakeSymbolicLink = ..\..\ScriptsLib\MakeSymbolicLink
 		..\..\ScriptsLib\MakeVersionFile = ..\..\ScriptsLib\MakeVersionFile
 		..\..\ScriptsLib\MapArch2DebFileArchitecture = ..\..\ScriptsLib\MapArch2DebFileArchitecture

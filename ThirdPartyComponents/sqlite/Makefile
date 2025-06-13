@@ -205,7 +205,7 @@ check:
 clobber::	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
-	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/sqlite $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*sqlite.*
+	@rm -rf  $(StroikaRoot)Builds/*/include/sqlite $(StroikaRoot)Builds/*/lib/*sqlite.*  $(StroikaRoot)Builds/*/lib/pkgconfig/sqlite.pc
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite
 endif

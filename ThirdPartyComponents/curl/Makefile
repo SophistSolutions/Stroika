@@ -311,7 +311,7 @@ endif
 clobber:	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGs
-	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{libcurl}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/curl
+	@rm -rf $(StroikaRoot)Builds/*/lib/{libcurl}* $(StroikaRoot)Builds/*/include/curl
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/curl
 endif

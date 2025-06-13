@@ -142,7 +142,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	# @rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/ThirdPartyComponents/include/{zlib,zconf}.h
+	# @rm -rf ${StroikaRoot}Builds/*/lib/{gmock,gtest,gtest_main}${LIB_SUFFIX} ${StroikaRoot}Builds/*/include/{gmock,gtest}
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}

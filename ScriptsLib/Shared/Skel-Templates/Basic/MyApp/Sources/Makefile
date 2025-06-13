@@ -14,7 +14,7 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 CXXFLAGS += -I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/${APP_NAME}/)"
 
 
-TARGETEXEDir	:=	$(StroikaRoot)Builds/$(CONFIGURATION)/${APP_NAME}/
+TARGETEXEDir	:=	${StroikaPlatformTargetBuildDir}${APP_NAME}/
 TARGETEXE		:=	$(TARGETEXEDir)${APP_NAME}${EXE_SUFFIX}
 
 

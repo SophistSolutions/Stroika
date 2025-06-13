@@ -7,7 +7,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 VPATH = $(SrcDir)
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler${EXE_SUFFIX}
+TARGETEXE				=	${StroikaPlatformTargetBuildDir}HTMLViewCompiler${EXE_SUFFIX}
 
 Objs	:=	\
 	$(ObjDir)HTMLViewCompiler${OBJ_SUFFIX}

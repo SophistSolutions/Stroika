@@ -5,7 +5,7 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Containers/
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Containers/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-Containers/
 TARGETEXE		:=	$(TARGETDIR)Containers${EXE_SUFFIX}
 
 # ONLY depend on foundation library, not frameworks library

@@ -6,7 +6,7 @@ SrcDir			:=	$(StroikaRoot)Samples/SQL/
 ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SQL/
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SQL/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-SQL/
 TARGETEXE		:=	$(TARGETDIR)SQL${EXE_SUFFIX}
 
 Objs	:=	\

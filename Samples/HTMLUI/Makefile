@@ -11,7 +11,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 .NOTPARALLEL:
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-HTMLUI/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

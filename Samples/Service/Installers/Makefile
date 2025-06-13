@@ -13,7 +13,7 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
 
-TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/$(OUTDIR_NAME)/
+TARGET_OUT_DIR=			${StroikaPlatformTargetBuildDir}$(OUTDIR_NAME)/
 
 BUILT_SERVICE_EXE				=	$(TARGET_OUT_DIR)Service${EXE_SUFFIX}
 

@@ -5,7 +5,7 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPClient/
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPClient/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-SSDPClient/
 TARGETEXE		:=	$(TARGETDIR)SSDPClient${EXE_SUFFIX}
 
 VPATH	=			$(SrcDir)Sources/

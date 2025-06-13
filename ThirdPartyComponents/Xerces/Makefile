@@ -163,7 +163,7 @@ endif
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/*xerces* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/*xerces*
+	@rm -rf $(StroikaRoot)Builds/*/lib/*xerces* $(StroikaRoot)Builds/*/include/*xerces*
 	@rm -rf CURRENT
 else
 	@rm -fr $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/xercesc

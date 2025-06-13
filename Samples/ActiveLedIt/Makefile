@@ -4,7 +4,7 @@ ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-ActiveLedIt
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-TARGETDIR			:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt/
+TARGETDIR			:=	${StroikaPlatformTargetBuildDir}Samples-ActiveLedIt/
 TARGETEXE			:=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
 
 VPATH	=			$(SrcDir)Sources/

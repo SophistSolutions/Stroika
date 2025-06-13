@@ -130,7 +130,7 @@ endif
 
 
 ifndef HTMLViewCompiler
-	HTMLViewCompiler	:=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
+	HTMLViewCompiler	:=	"${StroikaPlatformTargetBuildDir}/HTMLViewCompiler"
 endif
 
 

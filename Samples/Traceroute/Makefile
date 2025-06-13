@@ -5,7 +5,7 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Traceroute/
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Traceroute/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-Traceroute/
 TARGETEXE		:=	$(TARGETDIR)Traceroute${EXE_SUFFIX}
 
 

@@ -9,7 +9,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 TESTS=	        $(shell ScriptsLib/PrintTestsList)
 
 BASEEXEPATTERN=Test$$i${EXE_SUFFIX}
-EXEPATTERN=../Builds/$(CONFIGURATION)/Tests/${BASEEXEPATTERN}
+EXEPATTERN=${StroikaPlatformTargetBuildDir}Tests/${BASEEXEPATTERN}
 
 
 GTEST_ARGS_=
@@ -124,7 +124,7 @@ else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika Tests $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
 	@if [ "$@" = "clobber" ] ; then \
-		rm -rf $(StroikaRoot)Builds/$(CONFIGURATION)/Tests/;\
+		rm -rf ${StroikaPlatformTargetBuildDir}Tests/;\
 	fi
 	@$(ECHO) done
 endif
@@ -190,7 +190,7 @@ endif
 			    FAILED=1;\
 			fi;\
 			if [ -e PerformanceDump.txt ]; then\
-			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null;\
+			  mv PerformanceDump.txt ${StroikaPlatformTargetBuildDir}PerformanceDump.txt 2>/dev/null;\
 			fi;\
 		done;\
 		if [ "$$FAILED" -ne 0 ]; then\

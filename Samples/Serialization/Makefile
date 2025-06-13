@@ -4,17 +4,15 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Serializatio
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Serialization/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-Serialization/
 TARGETEXE		:=	$(TARGETDIR)Serialization${EXE_SUFFIX}
 
 Objs	:=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
-	\
 	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\
 
-
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
 
 # ONLY depend on foundation library, not frameworks library
 StroikaLibs					=	$(StroikaFoundationLib)

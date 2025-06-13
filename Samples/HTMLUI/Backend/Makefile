@@ -9,8 +9,8 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-HTMLUI/Backend/)
 
-TARGETDIR		:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/Backend/
-TARGETHTMLDIR	:=	$(TOP_ROOT)Builds/$(CONFIGURATION)/Samples-HTMLUI/html/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/Backend/
+TARGETHTMLDIR	:=	${StroikaPlatformTargetBuildDir}Samples-HTMLUI/html/
 TARGETEXE		:=	$(TARGETDIR)HTMLUI${EXE_SUFFIX}
 
 

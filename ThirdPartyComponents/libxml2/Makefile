@@ -22,7 +22,6 @@ endif
 libxml2_VERSION_:=2.14.3
 #libxml2_VERSION_:=2.14.1
 #libxml2_VERSION_:=2.13.6
-#libxml2_VERSION_:=2.13.5
 
 
 ZIPPED_SOURCES_FILE_:=../Origs-Cache/libxml2-${libxml2_VERSION_}.tar.gz
@@ -196,7 +195,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libxml2* ${StroikaRoot}Builds/*/ThirdPartyComponents/include/libxml2 ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/pkgconfig/libxml-2.0.pc
+	@rm -rf ${StroikaRoot}Builds/*/lib/libxml2* ${StroikaRoot}Builds/*/include/libxml2 ${StroikaRoot}Builds/*/lib/pkgconfig/libxml-2.0.pc
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}

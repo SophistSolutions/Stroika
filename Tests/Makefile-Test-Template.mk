@@ -8,7 +8,7 @@ ifndef TEST_NUM
 	TEST_NUM		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_
 endif
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Tests/Test$(TEST_NUM)${EXE_SUFFIX}
+TARGETEXE				=	${StroikaPlatformTargetBuildDir}Tests/Test$(TEST_NUM)${EXE_SUFFIX}
 
 vpath %.h $(SrcDir) ../TestHarness/
 vpath %.cpp $(SrcDir) ../TestHarness/

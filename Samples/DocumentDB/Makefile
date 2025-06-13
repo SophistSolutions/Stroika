@@ -6,7 +6,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-DocumentDB/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-DocumentDB/
 TARGETEXE		:=	$(TARGETDIR)DocumentDB${EXE_SUFFIX}
 
 Objs	:=	\

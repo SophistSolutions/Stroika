@@ -670,7 +670,7 @@ sub WriteVS2kIntellisenseConfigFile
 		}
 	}
 	if (not (trim($PkgConfigNames) eq "")) {
-		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/ThirdPartyComponents/lib/pkgconfig pkg-config --cflags-only-other $PkgConfigNames 2>/dev/null`) {
+		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $PkgConfigNames 2>/dev/null`) {
 			if (index ($element, "-D") == 0) {
 				if ($defs2Print ne "") {
 					$defs2Print .= ';'
@@ -689,7 +689,7 @@ sub WriteVS2kIntellisenseConfigFile
 		$paths2Print .= $element;
 	}
 	if (not (trim($PkgConfigNames) eq "")) {
-		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/ThirdPartyComponents/lib/pkgconfig pkg-config --cflags-only-I $PkgConfigNames 2>/dev/null`) {
+		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $PkgConfigNames 2>/dev/null`) {
 			if (index ($element, "-I") == 0) {
 				local $v = trim (substr($element, 2));
 				if ("$^O" eq "cygwin" or "$^O" eq "msys") {
@@ -847,7 +847,7 @@ sub WriteVSCodeCPPExtensionConfigFile
 			$newCfgObj .= "\\\"$element\\\"";
 		}
 		if (not (trim($PkgConfigNames) eq "")) {
-			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/ThirdPartyComponents/lib/pkgconfig pkg-config --cflags-only-I $PkgConfigNames 2>/dev/null`) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $PkgConfigNames 2>/dev/null`) {
 				if (index ($element, "-I") == 0) {
 					local $v = trim (substr($element, 2));
 					if ("$^O" eq "cygwin" or "$^O" eq "msys") {
@@ -883,7 +883,7 @@ sub WriteVSCodeCPPExtensionConfigFile
 			}
 		}
 		if (not (trim($PkgConfigNames) eq "")) {
-			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/ThirdPartyComponents/lib/pkgconfig pkg-config --cflags-only-other $PkgConfigNames 2>/dev/null`) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $PkgConfigNames 2>/dev/null`) {
 				if (index ($element, "-D") == 0) {
 					if ($first) {
 						$first = false;

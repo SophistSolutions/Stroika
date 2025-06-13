@@ -8,6 +8,48 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+## 3.0d21 PREP
+
+### UPGRADE NOTES
+upgrade notes
+
+in makefiles
+
+lose 
+include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+
+lose 
+ifneq ($(CONFIGURATION),)
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+endif
+
+
+replacigin with  if needed
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+
+move to SrcDir/ObjDir to top of file, for example:
+
+export TOP_ROOT=$(abspath ../../)/
+StroikaRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
+SrcDir		:=	$(TOP_ROOT)API-Server/Sources/
+ObjDir		:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/IPAM/API-Server/
+
+
+Assure include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+
+is AFTER 
+include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+
+
+preferable after define of Objs
+
+
+
+
+
+----------------------------
+
 ### 3.0d20 {2025-06-08} {[diff](../../compare/3.0d19...3.0d20)}
 
 #### TLDR

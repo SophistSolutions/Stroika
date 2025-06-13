@@ -218,7 +218,7 @@ clean:
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{lzma}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/lzma
+	@rm -rf $(StroikaRoot)Builds/*/{lzma}* $(StroikaRoot)Builds/*/include/lzma
 	@rm -rf CURRENT
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/lzma

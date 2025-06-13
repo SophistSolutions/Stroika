@@ -5,7 +5,7 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SystemPerfor
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SystemPerformanceClient/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-SystemPerformanceClient/
 TARGETEXE		:=	$(TARGETDIR)SystemPerformanceClient${EXE_SUFFIX}
 
 VPATH	=			$(SrcDir)Sources/

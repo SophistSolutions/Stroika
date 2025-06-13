@@ -7,7 +7,7 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 CXXFLAGS				+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-WebServer/)
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-WebServer/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-WebServer/
 TARGETEXE		:=	$(TARGETDIR)WebServer${EXE_SUFFIX}
 
 

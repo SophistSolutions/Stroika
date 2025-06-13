@@ -111,9 +111,9 @@ endif
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/include/boost
-	@rm -f $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/libboost_*
-	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/share/boost-build
+	@rm -rf $(StroikaRoot)Builds/*/include/boost
+	@rm -f $(StroikaRoot)Builds/*/lib/libboost_*
+	@rm -rf $(StroikaRoot)Builds/*/share/boost-build
 	@rm -rf CURRENT
 else
 	@rm -rf $(PER_CONFIGURATION_BUILDS_DIR_)include/boost

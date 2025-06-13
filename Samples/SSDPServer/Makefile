@@ -5,7 +5,7 @@ ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPServer/
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/
+TARGETDIR		:=	${StroikaPlatformTargetBuildDir}Samples-SSDPServer/
 TARGETEXE		:=	$(TARGETDIR)SSDPServer${EXE_SUFFIX}
 
 

@@ -185,7 +185,7 @@ endif
 clobber:	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
-	@rm -rf $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/{libcrypto,libssl}* $(StroikaRoot)Builds/*/ThirdPartyComponents/include/openssl $(StroikaRoot)Builds/*/ThirdPartyComponents/bin/openssl
+	@rm -rf $(StroikaRoot)Builds/*/lib/{libcrypto,libssl}* $(StroikaRoot)Builds/*/include/openssl $(StroikaRoot)Builds/*/bin/openssl
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/openssl
 endif

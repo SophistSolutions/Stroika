@@ -129,7 +129,7 @@ check:
 clobber::	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf CURRENT ORIGS
-	@rm -rf  $(StroikaRoot)Builds/*/ThirdPartyComponents/include/fmtlib $(StroikaRoot)Builds/*/ThirdPartyComponents/lib/libfmt.*
+	@rm -rf  $(StroikaRoot)Builds/*/include/fmtlib $(StroikaRoot)Builds/*/lib/libfmt.*
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(PER_CONFIGURATION_BUILDS_DIR_)include/fmt
 endif
