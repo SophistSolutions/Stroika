@@ -149,6 +149,11 @@ endif
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 endif
+	# includedir=C:/Sandbox/Stroika/DevRoot/Builds/Debug/include
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@${SED} -i "s/^includedir=.*/includedir=$(shell cygpath -m ${StroikaPlatformTargetBuildDir}include | ${SED} 's/\//\\\//g')/g" "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/libxml-2.0.pc"
+endif
+
 
 
 ${ZIPPED_SOURCES_FILE_}:
