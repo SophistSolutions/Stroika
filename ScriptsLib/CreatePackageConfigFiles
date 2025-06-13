@@ -72,13 +72,15 @@ class Configuration:
         # now add appropriate -I lines
         # tmphack to separate out ones we dont want (later fix in configure script and use diff names)
         if self.INCLUDES_PATH:
-            opts = opts + [f'-I"{incPath}"' for incPath in self.INCLUDES_PATH.split(";") if not "DevRoot" in incPath]
+            opts = opts + [f'-I\"{incPath}\"' for incPath in self.INCLUDES_PATH.split(";") if not "DevRoot" in incPath]
         return " ".join(opts)
 
     @property
     def full_CFLAG_Foundation(self):
         opts = self.CPPFLAGS_NOTINCLUDES.split()
         opts = [opt for opt in opts if opt.startswith('-DqStroika_')]
+        if self.INCLUDES_PATH:
+            opts = opts + [f'-I"{incPath}"' for incPath in self.INCLUDES_PATH.split(";") if  "DevRoot" in incPath]
         return " ".join(opts)
 
 def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflags: str, requires: list, description: str):
