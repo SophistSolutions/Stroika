@@ -21,11 +21,6 @@ endif
 
 SHELL=/bin/bash
 
-SED=sed
-ifeq ($(DETECTED_HOST_OS),Darwin)
-SED=gsed
-endif
-
 
 
 #not parallel because submakefiles use parallelism, but generally best to sequence these top level requests. Like if you say

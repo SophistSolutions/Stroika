@@ -174,6 +174,18 @@ endif
 
 
 #
+#
+#
+ifeq ($(DETECTED_HOST_OS),Darwin)
+SED=gsed
+else
+SED=sed
+endif
+
+
+
+
+#
 # This macro takes two arguments:
 #	$1 input src name
 #	$2 OUTFILE OBJ name
