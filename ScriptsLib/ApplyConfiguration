@@ -80,6 +80,7 @@ my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $LinkerArgs_ExtraPrefix = "";
 my $LinkerArgs_ExtraSuffix = "";
+my $PLATFORM_CPPFLAGS_NOTINCLUDES = "";
 my $CPPFLAGS_NOTINCLUDES = "";
 my $CPPFLAGS = "";
 my $CXXFLAGS = "";
@@ -164,7 +165,8 @@ sub	ReadConfiguration_
 	$AR = GetConfigurationParameter($activeConfiguration, "AR");
 	$LIBTOOL = GetConfigurationParameter($activeConfiguration, "LIBTOOL");
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
-	$CPPFLAGS_NOTINCLUDES = GetConfigurationParameter($activeConfiguration, "CPPFLAGS_NOTINCLUDES");
+	$PLATFORM_CPPFLAGS_NOTINCLUDES = GetConfigurationParameter($activeConfiguration, "PLATFORM_CPPFLAGS_NOTINCLUDES");
+	$CPPFLAGS_NOTINCLUDES = $PLATFORM_CPPFLAGS_NOTINCLUDES . " " . GetConfigurationParameter($activeConfiguration, "FOUNDATION_CPPFLAGS_NOTINCLUDES");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "CXXFLAGS");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
 	$LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "LinkerArgs_ExtraPrefix");
@@ -325,6 +327,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_PLATFORM_INCLUDES_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_MSVC_RUNTIME_LIBRARY");
 
+	WriteStroikaConfigMakeHeader_CachedLineItem_("PLATFORM_CPPFLAGS_NOTINCLUDES");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS_NOTINCLUDES");
 
 	my $CPPFLAGS2WRITE = $CPPFLAGS;

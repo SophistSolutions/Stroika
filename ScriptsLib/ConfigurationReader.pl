@@ -239,9 +239,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'STRIP'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CPPFLAGS_NOTINCLUDES>");
+		my $pps = ReadValue_($line, "<PLATFORM_CPPFLAGS_NOTINCLUDES>");
 		if (defined $pps) {
-			$configuration {'CPPFLAGS_NOTINCLUDES'} = $pps;
+			$configuration {'PLATFORM_CPPFLAGS_NOTINCLUDES'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<FOUNDATION_CPPFLAGS_NOTINCLUDES>");
+		if (defined $pps) {
+			$configuration {'FOUNDATION_CPPFLAGS_NOTINCLUDES'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<CFLAGS>");
 		if (defined $pps) {

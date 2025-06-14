@@ -95,10 +95,12 @@ my @useExtraCDefines;
 my @useExtraMakeDefines;
 my @packageCfgNames;
 
-my @CPPFLAGS_B4Includes = qw ();		# anything called --append CPPFLAGS here! - not including STK_INCLUDES
+my @Platform_CPPFLAGS_B4Includes = qw ();		# anything called --append CPPFLAGS here! - not including STK_INCLUDES
 # my @CPPFLAGS = qw ();
 my @CPPFLAGS2Remove = qw ();
 my $CPPFLAGS_Overridden = false;
+my @StroikaFoundation_CPPFLAGS_B4Includes = qw ();
+
 my @CFLAGS = qw ();
 my @CFLAGS2Remove = qw ();
 my $CFLAGS_Overridden = false;
@@ -1353,8 +1355,8 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
 	if (IsMSVCCompiler_($COMPILER_DRIVER) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER) >= 192930037 && IsTargettingSanitizer_ ('address')) {
 		## Workaround issue which started in 17.6 compiler
-		push @CPPFLAGS_B4Includes, '-D_DISABLE_VECTOR_ANNOTATION';
-		push @CPPFLAGS_B4Includes, '-D_DISABLE_STRING_ANNOTATION';
+		push @Platform_CPPFLAGS_B4Includes, '-D_DISABLE_VECTOR_ANNOTATION';
+		push @Platform_CPPFLAGS_B4Includes, '-D_DISABLE_STRING_ANNOTATION';
 	}
 
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) and (GetGCCVersion_ ($COMPILER_DRIVER) >= 11.0)) {
@@ -1917,7 +1919,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-CPPFLAGS")) {
 			$i++;
 			$var = $args[$i];
-			push @CPPFLAGS_B4Includes, $var;
+			push @Platform_CPPFLAGS_B4Includes, $var;
 		}
 		elsif ((lc ($var) eq "-remove-CPPFLAGS") or (lc ($var) eq "--remove-CPPFLAGS")) {
 			$i++;
@@ -1928,7 +1930,7 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			for my $i (split / /, $var) {
-				push @CPPFLAGS_B4Includes, "$i";
+				push @Platform_CPPFLAGS_B4Includes, "$i";
 			}
 			$CPPFLAGS_Overridden = true;
 		}
@@ -1971,7 +1973,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-cppflags")) {
 			$i++;
 			$var = $args[$i];
-			push @CPPFLAGS_B4Includes, $var;
+			push @Platform_CPPFLAGS_B4Includes, $var;
 		}
 		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
 			$i++;
@@ -2829,9 +2831,12 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($CPPFLAGS_Overridden eq false) {
-		@GetDefaultCZZFLAGS_flags_flags = @CPPFLAGS_B4Includes;
+		@GetDefaultCZZFLAGS_flags_flags = @Platform_CPPFLAGS_B4Includes;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CPPFLAGS2Remove;
-		@CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0, true, true);
+		@Platform_CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0, true, false);
+		@GetDefaultCZZFLAGS_flags_flags = qw();
+		@GetDefaultCZZFLAGS_flags_flagValues2Remove = qw();
+		@StroikaFoundation_CPPFLAGS_B4Includes = GetDefaultCZZFLAGS_flags_ (0, false, true);
 	}
 	if ($CFLAGS_Overridden eq false) {
 		@GetDefaultCZZFLAGS_flags_flags = @CFLAGS;
@@ -3115,9 +3120,9 @@ sub	WriteConfigFile_
 	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
 	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
 
-	my $firstTime = true;
-	print (OUT "    <CPPFLAGS_NOTINCLUDES>");
-		foreach my $var (@CPPFLAGS_B4Includes) {
+ 	my $firstTime = true;
+	print (OUT "    <PLATFORM_CPPFLAGS_NOTINCLUDES>");
+		foreach my $var (@Platform_CPPFLAGS_B4Includes) {
 			if ($firstTime) {
 				$firstTime = false;
 			}
@@ -3126,8 +3131,22 @@ sub	WriteConfigFile_
 			}
 			print (OUT "$var");
 		}
-	print (OUT "</CPPFLAGS_NOTINCLUDES>\n");
+	print (OUT "</PLATFORM_CPPFLAGS_NOTINCLUDES>\n");
 
+	$firstTime = true;
+	print (OUT "    <FOUNDATION_CPPFLAGS_NOTINCLUDES>");
+		foreach my $var (@StroikaFoundation_CPPFLAGS_B4Includes) {
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</FOUNDATION_CPPFLAGS_NOTINCLUDES>\n");
+
+	
 	$firstTime = true;
 	print (OUT "    <CFLAGS>");
 		foreach my $var (@CFLAGS) {
