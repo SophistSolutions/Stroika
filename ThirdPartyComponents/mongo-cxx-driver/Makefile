@@ -44,6 +44,15 @@ OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVaria
 COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/mongo-cxx-driver/CURRENT)
 
 
+
+
+CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
+CFLAGS 		:= 	${PLATFORM_CFLAGS}
+CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+
+
+
+
 ## Crazy but mongo build script depends on python, needs to know version, and provides very long elaborate script to find the
 ## version, but it sometimes doesn't work --LGP 2025-03-10
 PYTHON_VERSION_= $(shell (python --version 2>/dev/null || python3 --version 2>/dev/null) | awk '{print $$2}')

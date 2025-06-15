@@ -110,6 +110,14 @@ SILENT_BUILD_FLAG=
 endif
 
 
+
+
+CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
+CFLAGS 		:= 	${PLATFORM_CFLAGS}
+CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+
+
+
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/sqlite Build $(VERSION) {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)

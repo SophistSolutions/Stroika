@@ -34,6 +34,14 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 
+
+
+CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
+CFLAGS 		:= 	${PLATFORM_CFLAGS}
+CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+
+
+
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug

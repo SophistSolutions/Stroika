@@ -60,6 +60,13 @@ FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.
 SHELL=/bin/bash
 
 
+
+CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
+CFLAGS 		:= 	${PLATFORM_CFLAGS}
+CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+
+
+
 CONFIG_ARGS=
 
 ifneq ($(CC),)

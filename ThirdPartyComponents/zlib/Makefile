@@ -8,6 +8,15 @@
 StroikaRoot	:=	$(abspath ../..)/
 
 include ${StroikaRoot}/ScriptsLib/SharedMakeVariables-Default.mk
+
+
+
+CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
+CFLAGS 		:= 	${PLATFORM_CFLAGS}
+CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+
+
+
 ifneq (${CONFIGURATION},)
 include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
@@ -32,6 +41,8 @@ PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/zlib)/
 OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
 COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zlib/CURRENT)
+
+
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))

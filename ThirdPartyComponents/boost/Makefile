@@ -44,6 +44,12 @@ ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 .NOTPARALLEL:
 
 
+
+CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
+CFLAGS 		:= 	${PLATFORM_CFLAGS}
+CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
+
+
 all:	
 ifeq ($(CONFIGURATION),)
 	@for i in `../../ScriptsLib/GetConfigurations` ; do\
