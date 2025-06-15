@@ -19,6 +19,15 @@ ifneq ($(CONFIGURATION),)
 endif
 
 
+###TMPHACK CUZ WILL BE OVERRIDEN SOON
+#;C:/Sandbox/Stroika/DevRoot/Library/Sources/;C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+X=$(shell cygpath -m ${StroikaRoot})
+else
+X=${StroikaRoot}
+endif
+CPPFLAGS += "-I${X}Library/Sources/"
+CPPFLAGS += "-I${X}IntermediateFiles/Debug/"
 
 
 #Common bits of script / functions that maybe used in Stroika makefiles.
