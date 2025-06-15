@@ -1,0 +1,31 @@
+#!python3
+
+# Requirements:
+# xml
+#
+
+#
+#   EXMAPLE
+#   ./ScriptsLib/SplitCFLAGS.txt --type=CFLAGS -- -DX -x
+#   -x
+#   ./ScriptsLib/SplitCFLAGS.txt --type=CPPFLAGS -- -DX -x
+#   -DX
+
+
+import os
+import argparse
+
+import xml.etree.ElementTree as ET
+import os
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="xxx")
+    parser.add_argument( "--type",action="store",required=True, help="xxx")
+    parser.add_argument('args2Examine', nargs=argparse.REMAINDER)
+    args = parser.parse_args()
+    args2Examine = args.args2Examine
+    isCPP = args.type == "CPPFLAGS"
+    if isCPP:
+        print (' '.join ([arg for arg in args2Examine[1:] if arg.startswith ('-D') or arg.startswith('-I')]))
+    else:
+        print (' '.join ([arg for arg in args2Examine[1:] if not arg.startswith ('-D') and not arg.startswith('-I')]))
