@@ -84,7 +84,8 @@ my $PLATFORM_CPPFLAGS_NOTINCLUDES = "";
 my $CPPFLAGS_NOTINCLUDES = "";
 my $CPPFLAGS = "";
 my $CXXFLAGS = "";
-my @INCLUDES_PATH = qw();
+my @PLATFORM_INCLUDES_PATH = qw();
+my @FOUNDATION_INCLUDES_PATH = qw();
 
 
 #quite unclear why this is needed - or even if it is - but it appears to be that
@@ -186,7 +187,8 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
 	$FEATUREFLAG_fmtlib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_fmtlib");
 	$gAssertionsEnabled = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "AssertionsEnabled"));
-	$INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
+	$PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "PLATFORM_INCLUDES_PATH");
+	$FOUNDATION_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "FOUNDATION_INCLUDES_PATH");
 	$VSVARS_PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "VSVARS_PLATFORM_INCLUDES_PATH");
 	$VSVARS_MSVC_RUNTIME_LIBRARY = GetConfigurationParameter($activeConfiguration, "VSVARS_MSVC_RUNTIME_LIBRARY");
 	$LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibPath");
@@ -207,7 +209,7 @@ sub	ReadConfiguration_
 	}
 	{
 		$CPPFLAGS = $CPPFLAGS_NOTINCLUDES;
-		foreach (split /$PATH_SEPERATOR/, $INCLUDES_PATH) {
+		foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
 			if (not ($CPPFLAGS eq '')) {
 				$CPPFLAGS .= ' ';
 			}
@@ -323,7 +325,8 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AssertionsEnabled", $gAssertionsEnabled);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkerArgs_LibPath");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkTime_CopyFilesToEXEDir");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("INCLUDES_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("PLATFORM_INCLUDES_PATH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("FOUNDATION_INCLUDES_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_PLATFORM_INCLUDES_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_MSVC_RUNTIME_LIBRARY");
 
@@ -685,7 +688,8 @@ sub WriteVS2kIntellisenseConfigFile
 	print (OUT "    <NMakePreprocessorDefinitions>$defs2Print</NMakePreprocessorDefinitions>\n");
 
 	local $paths2Print = "";
-	foreach my $element (split /$PATH_SEPERATOR/, $INCLUDES_PATH) {
+	local $myIncludesPath = $PLATFORM_INCLUDES_PATH . $FOUNDATION_INCLUDES_PATH;
+	foreach my $element (split /$PATH_SEPERATOR/, $myIncludesPath) {
 		if ($paths2Print ne "") {
 			$paths2Print .= ';'
 		}

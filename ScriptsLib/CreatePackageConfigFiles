@@ -60,7 +60,8 @@ class Configuration:
                 self.FOUNDATION_CPPFLAGS_NOTINCLUDES = getText_(root.find('FOUNDATION_CPPFLAGS_NOTINCLUDES'))
                 self.CFLAGS = getText_(root.find('CFLAGS'))
                 self.CXXFLAGS = getText_(root.find('CXXFLAGS'))
-                self.INCLUDES_PATH = getText_(root.find('INCLUDES_PATH'))
+                self.PLATFORM_INCLUDES_PATH = getText_(root.find('PLATFORM_INCLUDES_PATH'))
+                self.FOUNDATION_INCLUDES_PATH = getText_(root.find('FOUNDATION_INCLUDES_PATH'))
                 self.PkgConfigNames = getText_(root.find('PkgConfigNames'))
                 self.LinkerArgs_LibDependencies = getText_(root.find('LinkerArgs_LibDependencies')).split() if root.find('LinkerArgs_LibDependencies') is not None else []
 
@@ -68,20 +69,17 @@ class Configuration:
     @property
     def full_CFLAG_Platform(self):
         opts = self.CXXFLAGS.split() + self.PLATFORM_CPPFLAGS_NOTINCLUDES.split()
-        # opts = [opt for opt in opts if not opt.startswith('-DqStroika_')]
-
         # now add appropriate -I lines
         # tmphack to separate out ones we dont want (later fix in configure script and use diff names)
-        if self.INCLUDES_PATH:
-            opts = opts + [f'-I\"{incPath}\"' for incPath in self.INCLUDES_PATH.split(";") if not "DevRoot" in incPath]
+        if self.PLATFORM_INCLUDES_PATH:
+            opts = opts + [f'-I\"{incPath}\"' for incPath in self.PLATFORM_INCLUDES_PATH.split(";")]
         return " ".join(opts)
 
     @property
     def full_CFLAG_Foundation(self):
         opts = self.FOUNDATION_CPPFLAGS_NOTINCLUDES.split()
-        # opts = [opt for opt in opts if opt.startswith('-DqStroika_')]
-        if self.INCLUDES_PATH:
-            opts = opts + [f'-I"{incPath}"' for incPath in self.INCLUDES_PATH.split(";") if  "DevRoot" in incPath]
+        if self.FOUNDATION_INCLUDES_PATH:
+            opts = opts + [f'-I"{incPath}"' for incPath in self.FOUNDATION_INCLUDES_PATH.split(";")]
         return " ".join(opts)
 
 def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflags: str, requires: list, description: str):

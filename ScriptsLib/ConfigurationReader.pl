@@ -267,9 +267,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'VSVARS_MSVC_RUNTIME_LIBRARY'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<INCLUDES_PATH>");
+		my $pps = ReadValue_($line, "<PLATFORM_INCLUDES_PATH>");
 		if (defined $pps) {
-			$configuration {'INCLUDES_PATH'} = $pps;
+			$configuration {'PLATFORM_INCLUDES_PATH'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<FOUNDATION_INCLUDES_PATH>");
+		if (defined $pps) {
+			$configuration {'FOUNDATION_INCLUDES_PATH'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<LinkerArgs_LibPath>");
 		if (defined $pps) {

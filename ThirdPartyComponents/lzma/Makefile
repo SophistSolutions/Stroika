@@ -170,7 +170,7 @@ else
 			LD='$(LINKER)' \
 			AR='$(LIBTOOL)' \
 			BuildPlatform='$(BuildPlatform)' \
-			INCLUDE='$(INCLUDES_PATH)' \
+			INCLUDE='$(PLATFORM_INCLUDES_PATH)' \
 			LIBS='oleaut32.lib ole32.lib user32.lib' \
 			ARCRATEFLAGS='-nologo' \
 			ARTARGETPREFIX=-out: \

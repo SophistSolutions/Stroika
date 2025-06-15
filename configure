@@ -216,8 +216,9 @@ my $LinkerArgs_ExtraSuffix = "";
 my $RunPrefix = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;		## Looks for BOTH compiler and assocaited stdlib if std=libc++
+my @VC_PLATFORM_INCLUDES_PATH = qw();
 my @PLATFORM_INCLUDES_PATH = qw();
-my @INCLUDES_PATH = qw();
+my @FOUNDATION_INCLUDES_PATH = qw();
 my $INCLUDES_PATH_SET = false;
 my @INCLUDES_PATH_ADD  = qw();
 my @LinkerArgs_LibPath = qw();
@@ -715,26 +716,25 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
+			# @todo unclear if we want to add this to platform includes path - probably yes
 			push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
 		}
-		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
-		push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
-		@INCLUDES_PATH = qw ();
+		@PLATFORM_INCLUDES_PATH = qw ();
+		push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
+		push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
 
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			@PLATFORM_INCLUDES_PATH = qw ();
+			@VC_PLATFORM_INCLUDES_PATH = qw ();
 			my $x = GetMSVCVarName_ ("INCLUDE");
 			for my $i (split /;/, $x) {
-				push @PLATFORM_INCLUDES_PATH, $i;
+				push @VC_PLATFORM_INCLUDES_PATH, $i;
 			}
-			for my $i (@PLATFORM_INCLUDES_PATH) {
-				push @INCLUDES_PATH, $i;
-			}
+			@PLATFORM_INCLUDES_PATH = @VC_PLATFORM_INCLUDES_PATH;
 		}
 	}
 	my $var;
 	foreach $var (@INCLUDES_PATH_ADD) {
-		push @INCLUDES_PATH, $var;
+		push @PLATFORM_INCLUDES_PATH, $var;
 	}
 }
 sub     FillDefaultLibsPathIfNeeded_
@@ -1978,9 +1978,9 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
 			$i++;
 			$var = $args[$i];
-			@INCLUDES_PATH = qw ();
+			@PLATFORM_INCLUDES_PATH = qw ();
 			for my $i (split /$PATH_SEPERATOR/, $var) {
-				push @INCLUDES_PATH, $i;
+				push @PLATFORM_INCLUDES_PATH, $i;
 			}
 			$INCLUDES_PATH_SET = true;
 		}
@@ -2935,13 +2935,17 @@ sub	WriteConfigFile_
 {
 	# probably belongs elsewhere
 	if ($BuildPlatform =~ /^VisualStudio.Net/) {
-		for my $i (0 .. $#INCLUDES_PATH)
+		for my $i (0 .. $#VC_PLATFORM_INCLUDES_PATH)
 		{
-			$INCLUDES_PATH[$i] = trim (`cygpath --mixed "$INCLUDES_PATH[$i]"`);
+			$VC_PLATFORM_INCLUDES_PATH[$i] = trim (`cygpath --mixed "$VC_PLATFORM_INCLUDES_PATH[$i]"`);
 		}
 		for my $i (0 .. $#PLATFORM_INCLUDES_PATH)
 		{
 			$PLATFORM_INCLUDES_PATH[$i] = trim (`cygpath --mixed "$PLATFORM_INCLUDES_PATH[$i]"`);
+		}
+		for my $i (0 .. $#FOUNDATION_INCLUDES_PATH)
+		{
+			$FOUNDATION_INCLUDES_PATH[$i] = trim (`cygpath --mixed "$FOUNDATION_INCLUDES_PATH[$i]"`);
 		}
 		for my $i (0 .. $#LinkerArgs_LibPath)
 		{
@@ -3111,14 +3115,24 @@ sub	WriteConfigFile_
 	if (defined $TOOLS_PATH_ADDITIONS) {
 		print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	}
-	if ($#PLATFORM_INCLUDES_PATH != 0) {
-		my $platformIncludesPathStr = join ($PATH_SEPERATOR, @PLATFORM_INCLUDES_PATH);
+	if ($#VC_PLATFORM_INCLUDES_PATH != 0) {
+		my $platformIncludesPathStr = join ($PATH_SEPERATOR, @VC_PLATFORM_INCLUDES_PATH);
 		print (OUT "    <VSVARS_PLATFORM_INCLUDES_PATH>$platformIncludesPathStr</VSVARS_PLATFORM_INCLUDES_PATH>\n");
 	}
 
 	print (OUT "\n    <!--Compiling-->\n");
-	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
-	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
+	my $includesPathStr = join ($PATH_SEPERATOR, @PLATFORM_INCLUDES_PATH);
+	print (OUT "    <PLATFORM_INCLUDES_PATH>$includesPathStr</PLATFORM_INCLUDES_PATH>\n");
+	
+	$includesPathStr = join ($PATH_SEPERATOR, @FOUNDATION_INCLUDES_PATH);
+	print (OUT "    <FOUNDATION_INCLUDES_PATH>$includesPathStr</FOUNDATION_INCLUDES_PATH>\n");
+	
+	#tmphack
+	{
+		my @INCLUDES_PATH = ( @PLATFORM_INCLUDES_PATH, @FOUNDATION_INCLUDES_PATH );
+		$includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
+		print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
+	}
 
  	my $firstTime = true;
 	print (OUT "    <PLATFORM_CPPFLAGS_NOTINCLUDES>");
