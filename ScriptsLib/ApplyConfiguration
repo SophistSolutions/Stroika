@@ -86,6 +86,8 @@ my $CPPFLAGS = "";
 my $CXXFLAGS = "";
 my @PLATFORM_INCLUDES_PATH = qw();
 my @FOUNDATION_INCLUDES_PATH = qw();
+my $PLATFORM_CPPFLAGS = "";
+
 
 
 #quite unclear why this is needed - or even if it is - but it appears to be that
@@ -227,6 +229,27 @@ sub	ReadConfiguration_
 			}
 		}
 	}
+
+	{
+		$PLATFORM_CPPFLAGS = $PLATFORM_CPPFLAGS_NOTINCLUDES;
+		foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
+			if (not ($PLATFORM_CPPFLAGS eq '')) {
+				$PLATFORM_CPPFLAGS .= ' ';
+			}
+			if ($BuildPlatform =~ /^VisualStudio.Net/) {
+				##
+				## From https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170
+				## 		CL accepts filenames separated either by backslashes (\) or forward slashes (/). 
+				##		Filenames that contain spaces must be surrounded by double quote characters
+				##
+				my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo, and wrap in double-quotes cuz often with spaces (and cl doesnt like single quotes)
+				$PLATFORM_CPPFLAGS .= "-I\"$wpath\"";
+			}
+			else {
+				$PLATFORM_CPPFLAGS .= "-I$_";
+			}
+		}
+	}
 }
 
 
@@ -332,6 +355,14 @@ sub WriteStroikaConfigMakeHeader
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("PLATFORM_CPPFLAGS_NOTINCLUDES");
 	# WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS_NOTINCLUDES");
+
+
+	print (OUT "#COMBO OF PLATFORM_CPPFLAGS and PLATFORM_INCLUDES_PATH (reforatted)\n");
+	print (OUT "PLATFORM_CPPFLAGS :=	$PLATFORM_CPPFLAGS\n");
+
+	print (OUT "PLATFORM_CFLAGS :=	$CFLAGS\n");		## more to add
+
+	print (OUT "PLATFORM_CXXFLAGS :=	$CXXFLAGS\n");		## more to add
 
 	my $CPPFLAGS2WRITE = $CPPFLAGS;
 	my $LinkerArgs_LibDependencies2WRITE = $LinkerArgs_LibDependencies;
