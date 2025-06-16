@@ -17,6 +17,10 @@ import argparse
 import xml.etree.ElementTree as ET
 import os
 
+
+pathSep =  ':' if os.sep=='/' else  ';'
+
+
 def getText_(element: ET.Element) -> str:
     if element is not None :
         return element.text
@@ -72,14 +76,14 @@ class Configuration:
         # now add appropriate -I lines
         # tmphack to separate out ones we dont want (later fix in configure script and use diff names)
         if self.PLATFORM_INCLUDES_PATH:
-            opts = opts + [f'-I\"{incPath}\"' for incPath in self.PLATFORM_INCLUDES_PATH.split(";")]
+            opts = opts + [f'-I\"{incPath}\"' for incPath in self.PLATFORM_INCLUDES_PATH.split(pathSep)]
         return " ".join(opts)
 
     @property
     def full_CFLAG_Foundation(self):
         opts = self.FOUNDATION_CPPFLAGS_NOTINCLUDES.split()
         if self.FOUNDATION_INCLUDES_PATH:
-            opts = opts + [f'-I"{incPath}"' for incPath in self.FOUNDATION_INCLUDES_PATH.split(";")]
+            opts = opts + [f'-I"{incPath}"' for incPath in self.FOUNDATION_INCLUDES_PATH.split(pathSep)]
         return " ".join(opts)
 
 def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflags: str, requires: list, description: str):
