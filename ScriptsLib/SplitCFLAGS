@@ -1,4 +1,5 @@
-#!python3
+#!/usr/bin/env python3
+#!C:\Users\lewis\AppData\Local\Microsoft\WindowsApps\python3.exe
 
 # Requirements:
 # xml
@@ -24,8 +25,9 @@ if __name__ == "__main__":
     parser.add_argument('args2Examine', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     args2Examine = args.args2Examine
+    filter = lambda arg: arg.startswith ('-D') or arg.startswith('-I') or arg.startswith('-U') or arg.startswith('/D')  or arg.startswith('/I') or arg.startswith('/U') 
     isCPP = args.type == "CPPFLAGS"
     if isCPP:
-        print (' '.join ([arg for arg in args2Examine[1:] if arg.startswith ('-D') or arg.startswith('-I')]))
+        print (' '.join ([arg for arg in args2Examine[1:] if filter(arg)]))
     else:
-        print (' '.join ([arg for arg in args2Examine[1:] if not arg.startswith ('-D') and not arg.startswith('-I')]))
+        print (' '.join ([arg for arg in args2Examine[1:] if not filter(arg)]))

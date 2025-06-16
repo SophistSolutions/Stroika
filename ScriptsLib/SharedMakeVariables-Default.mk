@@ -6,6 +6,16 @@
 #
 # NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list
 
+## REMINDER ABOUT GNU MAKEFILES
+#
+#	In GNU Make, the assignment operators := and = define how and when variables are expanded. Specifically: 
+#		:= (immediate expansion): The right-hand side of the assignment is expanded immediately when the makefile is parsed. 
+#			This means any variables or functions on the right side are evaluated at that moment.
+#		= (deferred expansion): The right-hand side of the assignment is not expanded until the variable is 
+#			actually used in a rule or another context where it's needed. This allows variables to 
+#			refer to other variables that might be defined later in the makefile. 
+#
+
 
 ifndef StroikaRoot
 $(error("StroikaRoot must be defined and included before this file"))
@@ -19,15 +29,7 @@ ifneq ($(CONFIGURATION),)
 endif
 
 
-###TMPHACK CUZ WILL BE OVERRIDEN SOON
-#;C:/Sandbox/Stroika/DevRoot/Library/Sources/;C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-X=$(shell cygpath -m ${StroikaRoot})
-else
-X=${StroikaRoot}
-endif
-CPPFLAGS += "-I${X}Library/Sources/"
-CPPFLAGS += "-I${X}IntermediateFiles/Debug/"
+
 
 
 #Common bits of script / functions that maybe used in Stroika makefiles.
@@ -132,7 +134,7 @@ ifndef StroikaLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	# NOTE - for UNIX linker - we must put libraries that depend on other libraries first
 	# in the list, since the linker doesn't make multiple passes (crazy)
-	StroikaLibs					=	$(StroikaFrameworksLib) $(StroikaFoundationLib)
+	StroikaLibs			:=	$(StroikaFrameworksLib) $(StroikaFoundationLib)
 endif
 
 
@@ -190,6 +192,47 @@ SED=gsed
 else
 SED=sed
 endif
+
+
+
+
+
+# ###TMPHACK CUZ WILL BE OVERRIDEN SOON
+# #;C:/Sandbox/Stroika/DevRoot/Library/Sources/;C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/
+# ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+# X=$(shell cygpath -m ${StroikaRoot})
+# else
+# X=${StroikaRoot}
+# endif
+# CPPFLAGS += "-I${X}Library/Sources/"
+# CPPFLAGS += "-I${X}IntermediateFiles/Debug/"
+# @todo move to Configuration.mk (ApplyConfiguration)
+
+
+# Common values include
+#		o	stroika-platform
+#		o	stroika-foundation
+#		o	stroika-frameworks
+#	But - define in your makefile
+ifndef PackageDependencies
+# will soon be no default?
+PackageDependencies	:=	stroika-frameworks
+endif
+
+## bad - must separete out flags into CPP vs not
+# use = instead of := for CPPFLAGS cuz CPPFLAGS overwritten sometimes in some makefiles and dont want to call pkg-config if inappropriate
+# often users will APPEND to CPPFLAGS which itself will force the evaluation
+ifeq ($(wildcard $(StroikaLibDir)pkgconfig/stroika-frameworks.pc),)
+CPPFLAGS       :=
+CFLAGS         :=
+CXXFLAGS       :=
+else
+X=$(shell cygpath -m ${StroikaRoot})
+CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies})) $(shell pkg-config --msvc --cflags-only-I ${PackageDependencies})
+CFLAGS         =       $$(${X}ScriptsLib/SplitCFLAGS --type=CFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies}))
+CXXFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CXXFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies}))
+endif
+
 
 
 

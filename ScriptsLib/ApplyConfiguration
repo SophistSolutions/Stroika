@@ -81,12 +81,12 @@ my $EXTRA_COMPILER_ARGS = "";
 my $LinkerArgs_ExtraPrefix = "";
 my $LinkerArgs_ExtraSuffix = "";
 my $PLATFORM_CPPFLAGS_NOTINCLUDES = "";
+my $PLATFORM_CPPFLAGS_INCLUDES = "";
 my $CPPFLAGS_NOTINCLUDES = "";
-my $CPPFLAGS = "";
+my $CFLAGS = "";
 my $CXXFLAGS = "";
 my @PLATFORM_INCLUDES_PATH = qw();
 my @FOUNDATION_INCLUDES_PATH = qw();
-my $PLATFORM_CPPFLAGS = "";
 
 
 
@@ -170,6 +170,7 @@ sub	ReadConfiguration_
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
 	$PLATFORM_CPPFLAGS_NOTINCLUDES = GetConfigurationParameter($activeConfiguration, "PLATFORM_CPPFLAGS_NOTINCLUDES");
 	$CPPFLAGS_NOTINCLUDES = $PLATFORM_CPPFLAGS_NOTINCLUDES . " " . GetConfigurationParameter($activeConfiguration, "FOUNDATION_CPPFLAGS_NOTINCLUDES");
+	$CFLAGS = GetConfigurationParameter($activeConfiguration, "CFLAGS");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "CXXFLAGS");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
 	$LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "LinkerArgs_ExtraPrefix");
@@ -209,32 +210,31 @@ sub	ReadConfiguration_
 	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
 		push (@useExtraMakeDefines, $mdef);
 	}
-	{
-		$CPPFLAGS = $CPPFLAGS_NOTINCLUDES;
-		foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
-			if (not ($CPPFLAGS eq '')) {
-				$CPPFLAGS .= ' ';
-			}
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				##
-				## From https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170
-				## 		CL accepts filenames separated either by backslashes (\) or forward slashes (/). 
-				##		Filenames that contain spaces must be surrounded by double quote characters
-				##
-				my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo, and wrap in double-quotes cuz often with spaces (and cl doesnt like single quotes)
-				$CPPFLAGS .= "-I\"$wpath\"";
-			}
-			else {
-				$CPPFLAGS .= "-I$_";
-			}
-		}
-	}
+	# {
+	# 	$CPPFLAGS = $CPPFLAGS_NOTINCLUDES;
+	# 	foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
+	# 		if (not ($CPPFLAGS eq '')) {
+	# 			$CPPFLAGS .= ' ';
+	# 		}
+	# 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+	# 			##
+	# 			## From https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170
+	# 			## 		CL accepts filenames separated either by backslashes (\) or forward slashes (/). 
+	# 			##		Filenames that contain spaces must be surrounded by double quote characters
+	# 			##
+	# 			my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo, and wrap in double-quotes cuz often with spaces (and cl doesnt like single quotes)
+	# 			$CPPFLAGS .= "-I\"$wpath\"";
+	# 		}
+	# 		else {
+	# 			$CPPFLAGS .= "-I$_";
+	# 		}
+	# 	}
+	# }
 
 	{
-		$PLATFORM_CPPFLAGS = $PLATFORM_CPPFLAGS_NOTINCLUDES;
 		foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
-			if (not ($PLATFORM_CPPFLAGS eq '')) {
-				$PLATFORM_CPPFLAGS .= ' ';
+			if (not ($PLATFORM_CPPFLAGS_INCLUDES eq '')) {
+				$PLATFORM_CPPFLAGS_INCLUDES .= ' ';
 			}
 			if ($BuildPlatform =~ /^VisualStudio.Net/) {
 				##
@@ -243,10 +243,10 @@ sub	ReadConfiguration_
 				##		Filenames that contain spaces must be surrounded by double quote characters
 				##
 				my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo, and wrap in double-quotes cuz often with spaces (and cl doesnt like single quotes)
-				$PLATFORM_CPPFLAGS .= "-I\"$wpath\"";
+				$PLATFORM_CPPFLAGS_INCLUDES .= "-I\"$wpath\"";
 			}
 			else {
-				$PLATFORM_CPPFLAGS .= "-I$_";
+				$PLATFORM_CPPFLAGS_INCLUDES .= "-I$_";
 			}
 		}
 	}
@@ -354,14 +354,18 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("VSVARS_MSVC_RUNTIME_LIBRARY");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("PLATFORM_CPPFLAGS_NOTINCLUDES");
-	# WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS_NOTINCLUDES");
+	
+	print (OUT "\n#Compiler include format of varaible PLATFORM_INCLUDES_PATH\n");
+	print (OUT "PLATFORM_CPPFLAGS_INCLUDES :=	$PLATFORM_CPPFLAGS_INCLUDES\n");
 
+	print (OUT "\n# Utility combination (widely used in building third party components)\n");
+	print (OUT "PLATFORM_CPPFLAGS :=	\${PLATFORM_CPPFLAGS_NOTINCLUDES} \${PLATFORM_CPPFLAGS_INCLUDES}\n");
 
-	print (OUT "#COMBO OF PLATFORM_CPPFLAGS and PLATFORM_INCLUDES_PATH (reforatted)\n");
-	print (OUT "PLATFORM_CPPFLAGS :=	$PLATFORM_CPPFLAGS\n");
+	print (OUT "\n# SB same as cached config variable but not done yet\n");
+	my $PLATFORM_CFLAGS = GetConfigurationParameter($activeConfiguration, "CFLAGS");
+	print (OUT "PLATFORM_CFLAGS :=	$CFLAGS\n");
 
-	print (OUT "PLATFORM_CFLAGS :=	$CFLAGS\n");		## more to add
-
+	print (OUT "\n# SB same as cached config variable but not done yet\n");
 	print (OUT "PLATFORM_CXXFLAGS :=	$CXXFLAGS\n");		## more to add
 
 	my $CPPFLAGS2WRITE = $CPPFLAGS;
@@ -386,15 +390,14 @@ sub WriteStroikaConfigMakeHeader
 		}
 	}
 
-
-	{
-		###WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
-		print (OUT "#COMBINATION of CPPFLAGS_NOTINCLUDES and processed INCLUDES_PATH and pkgConfig subst dynamically\n");
-		print (OUT "CPPFLAGS := $CPPFLAGS2WRITE\n");
-		print (OUT "\n");
-	}
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("CXXFLAGS");
+	# {
+	# 	###WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
+	# 	print (OUT "#COMBINATION of CPPFLAGS_NOTINCLUDES and processed INCLUDES_PATH and pkgConfig subst dynamically\n");
+	# 	print (OUT "CPPFLAGS := $CPPFLAGS2WRITE\n");
+	# 	print (OUT "\n");
+	# }
+	# WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
+	# WriteStroikaConfigMakeHeader_CachedLineItem_("CXXFLAGS");
 
 	print (OUT "\n");
 
