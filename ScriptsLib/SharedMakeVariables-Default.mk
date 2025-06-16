@@ -29,6 +29,14 @@ ifneq ($(CONFIGURATION),)
 endif
 
 
+#
+# Some makefiles - apps building stroika as a part - may define TOP_ROOT (often will). Allow Stroika makefiles to referene
+# TOP_ROOT even if not in that context (just treat as alias for StroikaRoot)
+#
+ifndef TOP_ROOT
+export TOP_ROOT=$(StroikaRoot)
+endif
+
 
 
 
