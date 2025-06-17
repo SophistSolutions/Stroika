@@ -3098,7 +3098,7 @@ sub	WriteConfigFile_
 
 
 	
-	print (OUT "\n    <!--SDK Settings-->\n");
+	print (OUT "\n    <!--Platform Settings-->\n");
 	if (defined $VSVARS_WindowsSdkDir) {
 		print (OUT "    <VSVARS_WindowsSdkDir>$VSVARS_WindowsSdkDir</VSVARS_WindowsSdkDir>\n");
 	}
