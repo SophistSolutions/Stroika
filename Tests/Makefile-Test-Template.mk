@@ -1,6 +1,7 @@
 export StroikaRoot	:=	$(abspath ../../)/
 SrcDir				:=	$(StroikaRoot)Tests/$(TEST_NUM)/
 ObjDir				:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/$(TEST_NUM)/
+PackageDependencies :=  stroika-frameworks
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
