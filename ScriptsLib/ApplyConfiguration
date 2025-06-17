@@ -999,6 +999,9 @@ if ($GEN_CONFIG_MAKE) {
 		else {
 			system ($thisScriptDir . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
 		}
+		if ($? != 0) {
+			die ("Error running CreatePackageConfigFiles - exiting\n");
+		}
 	}
 }
 
