@@ -101,9 +101,11 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflag
     outFile.write("URL: https://www.sophists.com\n")    
     outFile.write("\n")
     if requires:
-        outFile.write(f"Requires: {", ".join(requires)}\n")
+        tmp = ", ".join(requires)
+        outFile.write(f"Requires: {tmp}\n")
     if libs:
-        outFile.write(f"Libs: {" ".join(libs)}\n")
+        tmp = ", ".join(libs)
+        outFile.write(f"Libs: {" ".join(tmp)}\n")
     if cflags:
         outFile.write(f"Cflags: {cflags}\n")
     outFile.close ()
