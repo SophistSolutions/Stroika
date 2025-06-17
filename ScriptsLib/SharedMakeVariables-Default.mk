@@ -240,7 +240,11 @@ X=$(shell cygpath -m ${StroikaRoot})
 else
 X=${StroikaRoot}
 endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies})) $(shell pkg-config --msvc --cflags-only-I ${PackageDependencies})
+else
+CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies})) $(shell pkg-config --cflags-only-I ${PackageDependencies})
+endif
 CFLAGS         =       $$(${X}ScriptsLib/SplitCFLAGS --type=CFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies}))
 CXXFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CXXFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies}))
 endif
