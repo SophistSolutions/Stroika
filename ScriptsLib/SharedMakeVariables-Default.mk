@@ -235,7 +235,7 @@ CPPFLAGS       :=
 CFLAGS         :=
 CXXFLAGS       :=
 else
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq (${DETECTED_HOST_OS},MSYS)
 X=$(shell cygpath -m ${StroikaRoot})
 else
 X=${StroikaRoot}
