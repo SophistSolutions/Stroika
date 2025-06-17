@@ -74,7 +74,6 @@ class Configuration:
     def full_CFLAG_Platform(self):
         opts = self.CXXFLAGS.split() + self.PLATFORM_CPPFLAGS_NOTINCLUDES.split()
         # now add appropriate -I lines
-        # tmphack to separate out ones we dont want (later fix in configure script and use diff names)
         if self.PLATFORM_INCLUDES_PATH:
             opts = opts + [f'-I\"{incPath}\"' for incPath in self.PLATFORM_INCLUDES_PATH.split(pathSep)]
         return " ".join(opts)
