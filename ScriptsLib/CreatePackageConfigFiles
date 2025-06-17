@@ -12,14 +12,18 @@
 #
 
 import os
+import sys
 import argparse
-
 import xml.etree.ElementTree as ET
-import os
 
-
-pathSep =  ';' if os.name == 'nt' else  ':'
-
+def isWindowsSystem_() -> bool:
+    if os.name == 'nt':
+        return True
+    if sys.platform=='cygwin':
+        return True
+    return False
+    
+pathSep =  ';' if isWindowsSystem_() else  ':'
 
 def getText_(element: ET.Element) -> str:
     if element is not None and element.text is not None:
