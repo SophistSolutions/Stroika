@@ -183,8 +183,8 @@ sub	ReadConfiguration_
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
 	$PLATFORM_CPPFLAGS_NOTINCLUDES = GetConfigurationParameter($activeConfiguration, "PLATFORM_CPPFLAGS_NOTINCLUDES");
 	$CPPFLAGS_NOTINCLUDES = $PLATFORM_CPPFLAGS_NOTINCLUDES . " " . GetConfigurationParameter($activeConfiguration, "FOUNDATION_CPPFLAGS_NOTINCLUDES");
-	$CFLAGS = GetConfigurationParameter($activeConfiguration, "CFLAGS");
-	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "CXXFLAGS");
+	$CFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CFLAGS");
+	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CXXFLAGS");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
 	$LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "LinkerArgs_ExtraPrefix");
 	$LinkerArgs_ExtraSuffix = GetConfigurationParameter($activeConfiguration, "LinkerArgs_ExtraSuffix");
