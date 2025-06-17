@@ -84,18 +84,11 @@ RUN  \
 # xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16) - weirdly in vim package
 RUN \
     function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-    msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen pkg-config mingw-w64-x86_64-jq vim'; \
+    msys 'pacman --noconfirm -S base-devel git unzip p7zip doxygen pkg-config mingw-w64-x86_64-jq vim mingw-w64-x86_64-python'; \
     msys 'pacman --noconfirm -Syuu'
 
 COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
 COPY Windows-MSYS/.bash_profile $MSYS_DIR/home/
-
-# Needed for mongodb for example
-ARG INSTALL_PYTHON=0
-RUN IF ($env:INSTALL_PYTHON -eq 1) { \
-    function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
-    msys 'pacman --noconfirm -S mingw-w64-x86_64-python'; \
-}
 
 ARG INSTALL_QUASAR=0
 # SHELL ["cmd", "/S", "/C"]

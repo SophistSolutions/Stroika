@@ -40,15 +40,10 @@ RUN  \
 # doxygen for generating docs - optional
 # gdb for debugging - optional
 # xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16)
-RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq xxd
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq xxd python3
 
 COPY Windows-Cygwin/Getting-Started-With-Stroika.md ./tools/cygwin/home
 COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
-
-# Needed for mongodb for example
-ARG INSTALL_PYTHON=0
-SHELL ["cmd", "/S", "/C"]
-RUN IF %INSTALL_PYTHON%==1 ( choco install -y --force python )
 
 ARG INSTALL_QUASAR=0
 SHELL ["cmd", "/S", "/C"]

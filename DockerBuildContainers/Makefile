@@ -8,7 +8,6 @@ DETECTED_HOST_OS=$(shell ../ScriptsLib/DetectedHostOS)
 BUILD_DEV_IMAGES?=1
 
 INSTALL_QUASAR?=1
-INSTALL_PYTHON?=1
 
 help:
 	@echo "make docker-images to create the docker images on your computer"
@@ -97,10 +96,10 @@ sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=${WINDOWS_BASE_IMAGE} -t $@ .
 
 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
-	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} --build-arg INSTALL_PYTHON=${INSTALL_PYTHON} -t $@ .
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} -t $@ .
 
 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
-	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} --build-arg INSTALL_PYTHON=${INSTALL_PYTHON} -t $@ .
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 --build-arg INSTALL_QUASAR=${INSTALL_QUASAR} -t $@ .
 
 
 sophistsolutionsinc/stroika-dev:
