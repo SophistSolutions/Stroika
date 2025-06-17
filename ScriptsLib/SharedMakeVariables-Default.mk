@@ -241,12 +241,12 @@ else
 X=${StroikaRoot}
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies})) $(shell pkg-config --msvc --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
 else
-CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies})) $(shell pkg-config --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
 endif
-CFLAGS         =       $$(${X}ScriptsLib/SplitCFLAGS --type=CFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies}))
-CXXFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CXXFLAGS -- $$(pkg-config --cflags-only-other ${PackageDependencies}))
+CFLAGS         =       $$(${X}ScriptsLib/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
+CXXFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
 endif
 
 
