@@ -103,6 +103,19 @@ sub trim($)
 	return $string;
 }
 
+
+sub isHostMSYS_
+{
+	if ("$^O" eq "msys") {
+		return true;
+	}
+	if ("$^O" eq "cygwin") {
+		# Crazy but sometimes this returns cygwin on msys?
+		return substr(trim(`uname -s`),0,4) eq "MSYS";
+	}
+	return false;
+}
+
 sub	DoHelp_
 {
 	print("Usage:\n");
@@ -991,7 +1004,7 @@ if ($GEN_CONFIG_MAKE) {
 		# For now, write the file iff we write the config.mk file...
 		print(`$thisScriptDir/PrintLevelLeader $MAKE_INDENT_LEVEL`);
 
-		if ("$^O" eq "msys" or "$^O" eq "cygwin") {
+		if (isHostMSYS_()) {
 			# Workaround MSYS compatabilty issues with microsoft visual C++ tools.
 			#$ENV{'MSYS2_ARG_CONV_EXCL'} = '';
 			system (trim(`cygpath -m $thisScriptDir`) . "/CreatePackageConfigFiles --configuration $activeConfiguration\n");
