@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 import os
 
 
-pathSep =  ':' if os.sep=='/' else  ';'
+pathSep =  ';' if os.name == 'nt' else  ':'
 
 
 def getText_(element: ET.Element) -> str:
