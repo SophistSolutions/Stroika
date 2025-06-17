@@ -105,7 +105,7 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflag
         outFile.write(f"Requires: {tmp}\n")
     if libs:
         tmp = ", ".join(libs)
-        outFile.write(f"Libs: {" ".join(tmp)}\n")
+        outFile.write(f"Libs: {tmp}\n")
     if cflags:
         outFile.write(f"Cflags: {cflags}\n")
     outFile.close ()
