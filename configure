@@ -2430,6 +2430,14 @@ sub GetDefaultCZZFLAGS_flags_
 					}
 				}
 			}
+
+
+			## Not sure if/where to add this - was someplace wierld before 3.0d21
+			# if ($runtimeStackProtectorFlag == true) {
+			# 	unshift(@CFLAGS, '-fstack-protector-all');
+			# 	unshift(@CXXFLAGS, '-fstack-protector-all');
+			# }
+
 		}
 		if ($doCFLAGS eq 0) {
 			if (not $isVisualStudio and $ENABLE_GLIBCXX_DEBUG eq 1) {
@@ -3121,19 +3129,7 @@ sub	WriteConfigFile_
 	}
 
 	print (OUT "\n    <!--Compiling-->\n");
-	my $includesPathStr = join ($PATH_SEPERATOR, @PLATFORM_INCLUDES_PATH);
-	print (OUT "    <PLATFORM_INCLUDES_PATH>$includesPathStr</PLATFORM_INCLUDES_PATH>\n");
 	
-	$includesPathStr = join ($PATH_SEPERATOR, @FOUNDATION_INCLUDES_PATH);
-	print (OUT "    <FOUNDATION_INCLUDES_PATH>$includesPathStr</FOUNDATION_INCLUDES_PATH>\n");
-	
-	#tmphack
-	# {
-	# 	my @INCLUDES_PATH = ( @PLATFORM_INCLUDES_PATH, @FOUNDATION_INCLUDES_PATH );
-	# 	$includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
-	# 	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
-	# }
-
  	my $firstTime = true;
 	print (OUT "    <PLATFORM_CPPFLAGS_NOTINCLUDES>");
 		foreach my $var (@Platform_CPPFLAGS_B4Includes) {
@@ -3147,20 +3143,9 @@ sub	WriteConfigFile_
 		}
 	print (OUT "</PLATFORM_CPPFLAGS_NOTINCLUDES>\n");
 
-	$firstTime = true;
-	print (OUT "    <FOUNDATION_CPPFLAGS_NOTINCLUDES>");
-		foreach my $var (@StroikaFoundation_CPPFLAGS_B4Includes) {
-			if ($firstTime) {
-				$firstTime = false;
-			}
-			else {
-				print (OUT " ");
-			}
-			print (OUT "$var");
-		}
-	print (OUT "</FOUNDATION_CPPFLAGS_NOTINCLUDES>\n");
+	my $includesPathStr = join ($PATH_SEPERATOR, @PLATFORM_INCLUDES_PATH);
+	print (OUT "    <PLATFORM_INCLUDES_PATH>$includesPathStr</PLATFORM_INCLUDES_PATH>\n");
 
-	
 	$firstTime = true;
 	print (OUT "    <CFLAGS>");
 		foreach my $var (@CFLAGS) {
@@ -3187,11 +3172,24 @@ sub	WriteConfigFile_
 		}
 	print (OUT "</CXXFLAGS>\n");
 
-	if ($runtimeStackProtectorFlag == true) {
-		unshift(@CFLAGS, '-fstack-protector-all');
-		unshift(@CXXFLAGS, '-fstack-protector-all');
-	}
+	$firstTime = true;
+	print (OUT "    <FOUNDATION_CPPFLAGS_NOTINCLUDES>");
+		foreach my $var (@StroikaFoundation_CPPFLAGS_B4Includes) {
+			if ($firstTime) {
+				$firstTime = false;
+			}
+			else {
+				print (OUT " ");
+			}
+			print (OUT "$var");
+		}
+	print (OUT "</FOUNDATION_CPPFLAGS_NOTINCLUDES>\n");
 
+	$includesPathStr = join ($PATH_SEPERATOR, @FOUNDATION_INCLUDES_PATH);
+	print (OUT "    <FOUNDATION_INCLUDES_PATH>$includesPathStr</FOUNDATION_INCLUDES_PATH>\n");
+	
+	
+	
 	print (OUT "\n    <!--Linking-->\n");
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
