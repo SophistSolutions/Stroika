@@ -247,13 +247,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'FOUNDATION_CPPFLAGS_NOTINCLUDES'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CFLAGS>");
+		my $pps = ReadValue_($line, "<PLATFORM_CFLAGS>");
 		if (defined $pps) {
-			$configuration {'CFLAGS'} = $pps;
+			$configuration {'PLATFORM_CFLAGS'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CXXFLAGS>");
+		my $pps = ReadValue_($line, "<PLATFORM_CXXFLAGS>");
 		if (defined $pps) {
-			$configuration {'CXXFLAGS'} = $pps;
+			$configuration {'PLATFORM_CXXFLAGS'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<EXTRA_COMPILER_ARGS>");
 		if (defined $pps) {

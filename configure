@@ -3147,7 +3147,7 @@ sub	WriteConfigFile_
 	print (OUT "    <PLATFORM_INCLUDES_PATH>$includesPathStr</PLATFORM_INCLUDES_PATH>\n");
 
 	$firstTime = true;
-	print (OUT "    <CFLAGS>");
+	print (OUT "    <PLATFORM_CFLAGS>");
 		foreach my $var (@CFLAGS) {
 			if ($firstTime) {
 				$firstTime = false;
@@ -3157,10 +3157,10 @@ sub	WriteConfigFile_
 			}
 			print (OUT "$var");
 		}
-	print (OUT "</CFLAGS>\n");
+	print (OUT "</PLATFORM_CFLAGS>\n");
 
 	$firstTime = true;
-	print (OUT "    <CXXFLAGS>");
+	print (OUT "    <PLATFORM_CXXFLAGS>");
 		foreach my $var (@CXXFLAGS) {
 			if ($firstTime) {
 				$firstTime = false;
@@ -3170,7 +3170,7 @@ sub	WriteConfigFile_
 			}
 			print (OUT "$var");
 		}
-	print (OUT "</CXXFLAGS>\n");
+	print (OUT "</PLATFORM_CXXFLAGS>\n");
 
 	$firstTime = true;
 	print (OUT "    <FOUNDATION_CPPFLAGS_NOTINCLUDES>");
