@@ -3128,11 +3128,11 @@ sub	WriteConfigFile_
 	print (OUT "    <FOUNDATION_INCLUDES_PATH>$includesPathStr</FOUNDATION_INCLUDES_PATH>\n");
 	
 	#tmphack
-	{
-		my @INCLUDES_PATH = ( @PLATFORM_INCLUDES_PATH, @FOUNDATION_INCLUDES_PATH );
-		$includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
-		print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
-	}
+	# {
+	# 	my @INCLUDES_PATH = ( @PLATFORM_INCLUDES_PATH, @FOUNDATION_INCLUDES_PATH );
+	# 	$includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
+	# 	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
+	# }
 
  	my $firstTime = true;
 	print (OUT "    <PLATFORM_CPPFLAGS_NOTINCLUDES>");
