@@ -741,21 +741,6 @@ sub     FillDefaultLibsPathIfNeeded_
 {
 	my $includeAutomaticDependencies = not $LinkerArgs_LibPath_SET;
 	if ($includeAutomaticDependencies) {
-		if (
-			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_mongocxxdriver eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP ||
-			$FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP
-		) {
-			push @LinkerArgs_LibPath_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
-		}
 		@LinkerArgs_LibPath = qw ();
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("LIB");
