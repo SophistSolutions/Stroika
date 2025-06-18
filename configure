@@ -3108,7 +3108,7 @@ sub	WriteConfigFile_
 	if (defined $TOOLS_PATH_ADDITIONS) {
 		print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	}
-	if ($#VC_PLATFORM_INCLUDES_PATH != 0) {
+	if (@VC_PLATFORM_INCLUDES_PATH != 0) {
 		my $platformIncludesPathStr = join ($PATH_SEPERATOR, @VC_PLATFORM_INCLUDES_PATH);
 		print (OUT "    <VSVARS_PLATFORM_INCLUDES_PATH>$platformIncludesPathStr</VSVARS_PLATFORM_INCLUDES_PATH>\n");
 	}
