@@ -10,6 +10,16 @@ especially those they need to be aware of when upgrading.
 
 ## 3.0d21 PREP
 
+### major change
+  - Configure / build system now much more driven off pkgconfig files
+    - stroika-frameworks.pc has little to it but a requires of stroika-foundation.pc
+    - stroika-foundation.pc has all the requires on third party components it is built off (e.g xerces, boost, libcurl, etc)
+      and depends on stroika-platform
+    - stroika-platform.pc contains all the 'native platform' library depenencies, and C #defines etc for std c++ libraries, etc.
+
+    (NOTE IN PROGRESS - INCOMPLETE - BUT WORKING RIGHT NOW - just didn the CFLAGS part - must do linker part and more cleanups)
+
+
 ### UPGRADE NOTES
 upgrade notes
 
