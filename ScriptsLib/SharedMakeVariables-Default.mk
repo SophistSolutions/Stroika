@@ -407,29 +407,37 @@ DEFAULT_LINK_LINE=\
 
 
 # DEFAULT_LINK_LINE2 - NEW VERSION
+# WILL EVENTUALLY REPLACE DEFAULT_LINK_LINE
 #	$1 is the output file name (EXE)
-#	$2 pkg-config dependencies (e.g. stroika-frameworks, stroika-foundation, or stroika-platform, or empty)
-
+#	$2 [optional argument - defaults to stroika-frameworks] pkg-config dependencies for pkg-config --libs call (e.g. stroika-frameworks, stroika-foundation, or stroika-platform)
+#   $3 [optional argument - defaults to empty] EXTRA LDFLAGS BEFORE OBJS
+#	$4 [optional argument - defaults to empty] EXTRA LDFLAGS AFTER OBJS
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq ($(DETECTED_HOST_OS),MSYS)
 DEFAULT_LINK_LINE2=\
 	"$(LINKER)" \
+		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs  $2)
+		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
+		$4
 else
 DEFAULT_LINK_LINE2=\
 	"$(LINKER)" \
+		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs  $2)
+		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
+		$4
 endif
 else
 DEFAULT_LINK_LINE2=\
 	"$(LINKER)" \
+		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs  $2)
+		$$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs $(if $2,$2,stroika-frameworks)) \
+		$4
 endif
 
 

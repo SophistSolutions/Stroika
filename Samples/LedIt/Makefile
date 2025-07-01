@@ -88,15 +88,16 @@ $(ObjDir)LedIt.res:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
+LinkerArgs_ExtraSuffix_	:=
 ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
-Platform_LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
-Platform_LinkerArgs_ExtraSuffix+= -ENTRY:wWinMainCRTStartup
+LinkerArgs_ExtraSuffix_	+= -SUBSYSTEM:Windows
+LinkerArgs_ExtraSuffix_	+= -ENTRY:wWinMainCRTStartup
 endif
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE2,$@,stroika-frameworks, , ${LinkerArgs_ExtraSuffix_})';\
 	fi
-	@$(call DEFAULT_LINK_LINE,$@)
+	@$(call DEFAULT_LINK_LINE2,$@, stroika-frameworks, , ${LinkerArgs_ExtraSuffix_}) 

@@ -87,6 +87,8 @@ class Configuration:
                 self.PkgConfigNames = getText_(root.find('PkgConfigNames'))
                 self.Platform_LinkerArgs_LibDependencies = getText_(root.find('Platform_LinkerArgs_LibDependencies')).split() if root.find('Platform_LinkerArgs_LibDependencies') is not None else []
                 self.Platform_LinkerArgs_LibPath = cmdLineRespectingSplit_(getText_(root.find('Platform_LinkerArgs_LibPath'))) if root.find('Platform_LinkerArgs_LibPath') is not None else []
+                self.Platform_LinkerArgs_ExtraPrefix = cmdLineRespectingSplit_(getText_(root.find('Platform_LinkerArgs_ExtraPrefix'))) if root.find('Platform_LinkerArgs_ExtraPrefix') is not None else []
+                self.Platform_LinkerArgs_ExtraSuffix = cmdLineRespectingSplit_(getText_(root.find('Platform_LinkerArgs_ExtraSuffix'))) if root.find('Platform_LinkerArgs_ExtraSuffix') is not None else []
 
     # We return CXXFLAGS here since that is what pkg-config uses for CFLAGS
     @property
@@ -141,7 +143,7 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflag
 def generate_stroika_platform_pc_file_(config: Configuration, prefix_directory: str):
     name = 'stroika-platform'
     # todo alot left todo here
-    libs = ["-L${libdir}"] + config.Platform_LinkerArgs_LibPath + config.Platform_LinkerArgs_LibDependencies
+    libs = config.Platform_LinkerArgs_ExtraPrefix  + ["-L${libdir}"] + config.Platform_LinkerArgs_LibPath + config.Platform_LinkerArgs_LibDependencies + config.Platform_LinkerArgs_ExtraSuffix
     # todo map foo.lib to -lfoo (for windows only but harmless otherwise)
     libs = [lib if lib.startswith('-') or lib.startswith('/') else f'-l{lib.removesuffix(".lib")}' for lib in libs]
     cflags = config.full_CFLAG_Platform

@@ -151,17 +151,6 @@ $(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_AR
 ${TARGETEXE}:	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
 
 
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-StroikaRootW_ := $(shell cygpath --mixed ${StroikaRoot})/
-LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRootW_}ScriptsLib/pkg-config-msvc --static --libs stroika-platform)
-else
-LinkerArgs_LibDependencies = $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs stroika-platform)
-endif
-
-
-
-# LinkerArgs_LibDependencies += -libpath:"$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR_)lib)"	
-# $(info LinkerArgs_LibDependencies=$(LinkerArgs_LibDependencies))
 # trick of using word 1 is to get this triggered just once
 $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)
@@ -173,16 +162,7 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin 
 	@mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	cp sqlite.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(LINKER) ${Platform_LinkerArgs_ExtraPrefix} $(Platform_LinkerArgs_LibPath) ${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE)) $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) $(Platform_LinkerArgs_LibDependencies) $(Platform_LinkerArgs_ExtraSuffix)';\
-	fi
-	"$(LINKER)" \
-		${Platform_LinkerArgs_ExtraPrefix} \
-		$(Platform_LinkerArgs_LibPath) \
-		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE)) \
-		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(LinkerArgs_LibDependencies) \
-		$(Platform_LinkerArgs_ExtraSuffix)
+	$(call DEFAULT_LINK_LINE2,$(TARGETEXE), stroika-platform) 
 
 
 #
@@ -214,11 +194,8 @@ vpath %c $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 
 
 $(ObjDir)%${OBJ_SUFFIX} : %.c
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CC_LINE,$<,$@)';\
-	fi
-	@mkdir -p `dirname $@`
-	@$(call DEFAULT_CC_LINE,$<,$@)
+	mkdir -p `dirname $@`
+	$(call DEFAULT_CC_LINE,$<,$@)
 
 
 check-prerequisite-tools:
