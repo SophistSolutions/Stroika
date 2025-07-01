@@ -396,14 +396,14 @@ endif
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 #
 #		$(Platform_LinkerArgs_LibPath) REMOVED
-DEFAULT_LINK_LINE=\
-	"$(LINKER)" \
-		$(Platform_LinkerArgs_ExtraPrefix) \
-		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibs)) \
-		$(LinkerArgs_LibDependencies) \
-		$(Platform_LinkerArgs_ExtraSuffix)
+# DEFAULT_LINK_LINE=\
+# 	"$(LINKER)" \
+# 		$(Platform_LinkerArgs_ExtraPrefix) \
+# 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
+# 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
+# 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibs)) \
+# 		$(LinkerArgs_LibDependencies) \
+# 		$(Platform_LinkerArgs_ExtraSuffix)
 
 
 # DEFAULT_LINK_LINE2 - NEW VERSION
@@ -443,9 +443,11 @@ endif
 
 # copy LinkTime_CopyFilesToEXEDir files to EXEDIR
 ifneq ($(LinkTime_CopyFilesToEXEDir),)
-	DEFAULT_LINK_LINE += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
+	# DEFAULT_LINK_LINE += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
 	DEFAULT_LINK_LINE2 += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
 endif
+
+DEFAULT_LINK_LINE=DEFAULT_LINK_LINE2
 
 
 #
