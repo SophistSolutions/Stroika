@@ -142,10 +142,8 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflag
 # Cflags: -I${includedir} -D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -D_DISABLE_VECTOR_ANNOTATION -D_DISABLE_STRING_ANNOTATION
 def generate_stroika_platform_pc_file_(config: Configuration, prefix_directory: str):
     name = 'stroika-platform'
-    # todo alot left todo here
-    libs = config.Platform_LinkerArgs_ExtraPrefix  + ["-L${libdir}"] + config.Platform_LinkerArgs_LibPath + config.Platform_LinkerArgs_LibDependencies + config.Platform_LinkerArgs_ExtraSuffix
     # todo map foo.lib to -lfoo (for windows only but harmless otherwise)
-    libs = [lib if lib.startswith('-') or lib.startswith('/') else f'-l{lib.removesuffix(".lib")}' for lib in libs]
+    libs = config.Platform_LinkerArgs_ExtraPrefix  + ["-L${libdir}"] + config.Platform_LinkerArgs_LibPath +  [lib if lib.startswith('-') or lib.startswith('/') else f'-l{lib.removesuffix(".lib")}' for lib in config.Platform_LinkerArgs_LibDependencies] + config.Platform_LinkerArgs_ExtraSuffix
     cflags = config.full_CFLAG_Platform
     requires = None
     description = "Stroika-specific pkg-config file to facilitate factoring builds using pkgconfig; settings for std c++ library, sdk (e.g. windows), etc. This is used in building third-party-components to assure they reference a consistent version of std c++ etc libs";
