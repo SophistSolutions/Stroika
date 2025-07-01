@@ -97,9 +97,9 @@ Platform_LinkerArgs_ExtraSuffix += -DEF:Sources/ActiveLedIt.def
 $(TARGETEXE):	$(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)';\
 	fi
-	@$(call DEFAULT_LINK_LINE,$@)
+	@$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)
 
 
 

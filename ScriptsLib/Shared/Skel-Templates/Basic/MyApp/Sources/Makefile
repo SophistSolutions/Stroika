@@ -51,9 +51,9 @@ Objs += $(SUBDIR_OBJS)
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE2,$@, stroika-frameworks)';\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)';\
 	fi
-	@$(call DEFAULT_LINK_LINE2,$@, stroika-frameworks)
+	@$(call DEFAULT_LINK_LINE, $@, stroika-frameworks)
 
 
 clean::

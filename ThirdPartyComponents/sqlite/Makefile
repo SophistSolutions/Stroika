@@ -162,7 +162,7 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin 
 	@mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	cp sqlite.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
-	$(call DEFAULT_LINK_LINE2,$(TARGETEXE), stroika-platform) 
+	$(call DEFAULT_LINK_LINE, $(TARGETEXE), stroika-platform) 
 
 
 #

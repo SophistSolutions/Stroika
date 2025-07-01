@@ -380,41 +380,14 @@ endif
 endif
 
 
-# #
-# # LinkerArgs_StroikaDependentLibDependencies is just like LinkerArgs_LibDependencies, but
-# # Its for libraries that are built and dependent on Stroika.
-# #
-# # The reason for this distiction has todo with ordering (on unix linkers - not needed for windows linker).
-# # Dependencies in earlier libraries can be found in later, but not the other way around.
-# #
-# LinkerArgs_StroikaDependentLibDependencies :=
-
-
-#
-# This macro takes a single argument - the output filename for the link command
-#
-# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-#
-#		$(Platform_LinkerArgs_LibPath) REMOVED
-# DEFAULT_LINK_LINE=\
-# 	"$(LINKER)" \
-# 		$(Platform_LinkerArgs_ExtraPrefix) \
-# 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-# 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-# 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibs)) \
-# 		$(LinkerArgs_LibDependencies) \
-# 		$(Platform_LinkerArgs_ExtraSuffix)
-
-
-# DEFAULT_LINK_LINE2 - NEW VERSION
-# WILL EVENTUALLY REPLACE DEFAULT_LINK_LINE
+# This macro takes produces a 'LINK' line from the given arguments
 #	$1 is the output file name (EXE)
 #	$2 [optional argument - defaults to stroika-frameworks] pkg-config dependencies for pkg-config --libs call (e.g. stroika-frameworks, stroika-foundation, or stroika-platform)
 #   $3 [optional argument - defaults to empty] EXTRA LDFLAGS BEFORE OBJS
 #	$4 [optional argument - defaults to empty] EXTRA LDFLAGS AFTER OBJS
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq ($(DETECTED_HOST_OS),MSYS)
-DEFAULT_LINK_LINE2=\
+DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
 		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
@@ -422,7 +395,7 @@ DEFAULT_LINK_LINE2=\
 		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
 		$4
 else
-DEFAULT_LINK_LINE2=\
+DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
 		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
@@ -431,7 +404,7 @@ DEFAULT_LINK_LINE2=\
 		$4
 endif
 else
-DEFAULT_LINK_LINE2=\
+DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
 		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
@@ -443,11 +416,9 @@ endif
 
 # copy LinkTime_CopyFilesToEXEDir files to EXEDIR
 ifneq ($(LinkTime_CopyFilesToEXEDir),)
-	# DEFAULT_LINK_LINE += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
-	DEFAULT_LINK_LINE2 += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
+	DEFAULT_LINK_LINE += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
 endif
 
-DEFAULT_LINK_LINE=DEFAULT_LINK_LINE2
 
 
 #
