@@ -380,14 +380,14 @@ endif
 endif
 
 
-#
-# LinkerArgs_StroikaDependentLibDependencies is just like LinkerArgs_LibDependencies, but
-# Its for libraries that are built and dependent on Stroika.
-#
-# The reason for this distiction has todo with ordering (on unix linkers - not needed for windows linker).
-# Dependencies in earlier libraries can be found in later, but not the other way around.
-#
-LinkerArgs_StroikaDependentLibDependencies :=
+# #
+# # LinkerArgs_StroikaDependentLibDependencies is just like LinkerArgs_LibDependencies, but
+# # Its for libraries that are built and dependent on Stroika.
+# #
+# # The reason for this distiction has todo with ordering (on unix linkers - not needed for windows linker).
+# # Dependencies in earlier libraries can be found in later, but not the other way around.
+# #
+# LinkerArgs_StroikaDependentLibDependencies :=
 
 
 #
