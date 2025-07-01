@@ -207,8 +207,8 @@ sub	ReadConfiguration_
 	$FOUNDATION_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "FOUNDATION_INCLUDES_PATH");
 	$VSVARS_PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "VSVARS_PLATFORM_INCLUDES_PATH");
 	$VSVARS_MSVC_RUNTIME_LIBRARY = GetConfigurationParameter($activeConfiguration, "VSVARS_MSVC_RUNTIME_LIBRARY");
-	$LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibPath");
-	$LinkerArgs_LibDependencies = GetConfigurationParameter($activeConfiguration, "LinkerArgs_LibDependencies");
+	$Platform_LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_LibPath");
+	$Platform_LinkerArgs_LibDependencies = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_LibDependencies");
 
 	$IncludeDebugSymbolsInExecutables = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInExecutables");
 	$IncludeDebugSymbolsInLibraries = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInLibraries");
@@ -359,7 +359,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("MIDL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AssertionsEnabled", $gAssertionsEnabled);
-	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkerArgs_LibPath");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("Platform_LinkerArgs_LibPath");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkTime_CopyFilesToEXEDir");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("PLATFORM_INCLUDES_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("FOUNDATION_INCLUDES_PATH");
@@ -382,17 +382,17 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "PLATFORM_CXXFLAGS :=	$CXXFLAGS\n");		## more to add
 
 	my $CPPFLAGS2WRITE = $CPPFLAGS;
-	my $LinkerArgs_LibDependencies2WRITE = $LinkerArgs_LibDependencies;
+	# my $LinkerArgs_LibDependencies2WRITE = "\${Platform_LinkerArgs_LibDependencies}";
 	{
 		#NB: delay evaluation of PKG_CONFIG_STROIKA_DEPENDS_ON until last minute, as its value can change (thats why double dollar sign)
 		if (not (trim($PkgConfigNames) eq "")) {
 			# NOTE intention is pkg-config to be evaluated at the point of use, so any changes to PKG_CONFIG_STROIKA_DEPENDS_ON applied
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
-			}
-			else {
-				$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
-			}
+			# if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			# 	$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
+			# }
+			# else {
+			# 	$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
+			# }
 			#NOT GREAT but perhaps workable... --LGP 2025-03-12
 			if ($BuildPlatform =~ /^VisualStudio.Net/) {
 				$CPPFLAGS2WRITE .=  " \$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}))";
@@ -474,9 +474,8 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n\n");
 	print (OUT "\n\n");
 	print (OUT "#Linker flags\n");
-	print (OUT "LinkerArgs_LibPath := $LinkerArgs_LibPath\n");
-	print (OUT "#LinkerArgs_LibDependencies from configfile + pkg-config\n");
-	print (OUT "LinkerArgs_LibDependencies := $LinkerArgs_LibDependencies2WRITE\n");
+	print (OUT "Platform_LinkerArgs_LibPath := $Platform_LinkerArgs_LibPath\n");
+	print (OUT "Platform_LinkerArgs_LibDependencies := $Platform_LinkerArgs_LibDependencies\n");
 	print (OUT "#\n");
 	print (OUT "LinkerArgs_ExtraPrefix :=	$LinkerArgs_ExtraPrefix\n");
 	print (OUT "LinkerArgs_ExtraSuffix :=	$LinkerArgs_ExtraSuffix\n");

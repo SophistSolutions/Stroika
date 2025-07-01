@@ -275,17 +275,17 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'FOUNDATION_INCLUDES_PATH'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<LinkerArgs_LibPath>");
+		my $pps = ReadValue_($line, "<Platform_LinkerArgs_LibPath>");
 		if (defined $pps) {
-			$configuration {'LinkerArgs_LibPath'} = $pps;
+			$configuration {'Platform_LinkerArgs_LibPath'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<LinkTime_CopyFilesToEXEDir>");
 		if (defined $pps) {
 			$configuration {'LinkTime_CopyFilesToEXEDir'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<LinkerArgs_LibDependencies>");
+		my $pps = ReadValue_($line, "<Platform_LinkerArgs_LibDependencies>");
 		if (defined $pps) {
-			$configuration {'LinkerArgs_LibDependencies'} = $pps;
+			$configuration {'Platform_LinkerArgs_LibDependencies'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<CrossCompiling>");
 		if (defined $pps) {

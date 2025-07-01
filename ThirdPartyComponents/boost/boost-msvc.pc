@@ -1,0 +1,11 @@
+libdir=${pcfiledir}/..
+includedir=${pcfiledir}/../../include
+
+Name: boost
+Description: boost
+Version: x
+
+## DRAFT BOOST.PC file - not sure why not already part of boost - 
+# https://stackoverflow.com/questions/3971703/how-to-use-c-boost-library-with-pkg-config
+Libs: -L${libdir} -llibboost_filesystem -llibboost_system -llibboost_thread -llibboost_chrono -llibboost_json
+Cflags: -I${includedir}

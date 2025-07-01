@@ -743,6 +743,7 @@ sub     FillDefaultLibsPathIfNeeded_
 	if ($includeAutomaticDependencies) {
 		@LinkerArgs_LibPath = qw ();
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
+			# Add the list of library search paths to Platform_LinkerArgs_LibPath (which makes it into stroika-platform.pc as -L lines)
 			my $x = GetMSVCVarName_ ("LIB");
 			for my $i (split /;/, $x) {
 				push @LinkerArgs_LibPath, $i;
@@ -803,6 +804,9 @@ sub     FillDefaultLibDependencies_
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
 			push (@packageCfgNames, "gtest_main");
+		}
+		if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
+			push (@packageCfgNames, "boost");
 		}
 	}
 
@@ -2788,15 +2792,6 @@ sub PostProcessOptions_ ()
 				push @LinkerArgs_LibDependencies_ADD, "-lstdc++fs";
 			}
 		}
-
-		# if boost is available, Stroika adds utilities that depend on parts of it
-		if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
-			push @LinkerArgs_LibDependencies_ADD, "-lboost_filesystem";
-			push @LinkerArgs_LibDependencies_ADD, "-lboost_system";
-			push @LinkerArgs_LibDependencies_ADD, "-lboost_thread";
-			push @LinkerArgs_LibDependencies_ADD, "-lboost_chrono";
-			push @LinkerArgs_LibDependencies_ADD, "-lboost_json";
-		}
 	}
 
 	FillDefaultIncludesPathIfNeeded_();
@@ -3178,8 +3173,8 @@ sub	WriteConfigFile_
 	print (OUT "\n    <!--Linking-->\n");
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
-	print (OUT "    <LinkerArgs_LibPath>$LinkerArgs_LibPathString</LinkerArgs_LibPath>\n");
-	print (OUT "    <LinkerArgs_LibDependencies>$LinkerArgs_LibDependencies</LinkerArgs_LibDependencies>\n");
+	print (OUT "    <Platform_LinkerArgs_LibPath>$LinkerArgs_LibPathString</Platform_LinkerArgs_LibPath>\n");
+	print (OUT "    <Platform_LinkerArgs_LibDependencies>$LinkerArgs_LibDependencies</Platform_LinkerArgs_LibDependencies>\n");
 	print (OUT "    <LinkerArgs_ExtraPrefix>$LinkerArgs_ExtraPrefix</LinkerArgs_ExtraPrefix>\n");
 	print (OUT "    <LinkerArgs_ExtraSuffix>$LinkerArgs_ExtraSuffix</LinkerArgs_ExtraSuffix>\n");
 

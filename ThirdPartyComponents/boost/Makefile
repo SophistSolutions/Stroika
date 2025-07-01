@@ -86,7 +86,8 @@ FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOT
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config.hpp				\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/process.hpp				\
-	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/type_traits.hpp
+	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/type_traits.hpp 			\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/pkgconfig/boost.pc
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_date_time$(LIB_SUFFIX)		\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_filesystem$(LIB_SUFFIX)	\
@@ -324,6 +325,11 @@ else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
 	    $(ECHO) "$(B2FullPath) $(B2_CONFIGURATION_ARGS) install" >> ConfigureAndBuild-OUT.txt &&\
 	    ($(B2FullPath) $(B2_CONFIGURATION_ARGS) install >> ConfigureAndBuild-OUT.txt)
+endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@cp boost-msvc.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/boost.pc"
+else
+	@cp boost.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 endif
 	@
 	@#

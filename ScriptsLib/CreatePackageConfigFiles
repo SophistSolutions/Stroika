@@ -30,6 +30,19 @@ def getText_(element: ET.Element) -> str:
         return element.text
     return ""
 
+def cmdLineRespectingSplit_(cmdLine: str, win: bool = True) -> list:
+    """
+    Split a command line string into a list of arguments, respecting quotes and escaping.
+    """
+    if not cmdLine:
+        return []
+    import shlex
+    r = shlex.split(cmdLine, posix=True)
+    if win:
+        r = [arg.replace('-LIBPATH:', '-L') for arg in r]
+    r = [f'-L"{arg[2:]}"' if arg.startswith('-L') else arg for arg in r]  # Convert backslashes to forward slashes for consistency
+    return r
+
 def getVersion_() -> str:
     with open('STROIKA_VERSION', 'r') as f:
         return f.read().strip()
@@ -48,6 +61,7 @@ def getVersion_() -> str:
 #     <CPPFLAGS_NOTINCLUDES>-D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=1 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=0 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=1 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -D_DISABLE_VECTOR_ANNOTATION -D_DISABLE_STRING_ANNOTATION</CPPFLAGS_NOTINCLUDES>
 #     <CFLAGS>-EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</CFLAGS>
 #     <CXXFLAGS>-std:c++latest -EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</CXXFLAGS>
+#     <Platform_LinkerArgs_LibPath>-LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/lib/x64" -LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/lib/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/lib/um/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/ucrt/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/um/x64" </Platform_LinkerArgs_LibPath>
 
 class Configuration:
     def __init__(self, elementTree:ET = None, configFileName: str = None):
@@ -71,7 +85,8 @@ class Configuration:
                 self.PLATFORM_INCLUDES_PATH = getText_(root.find('PLATFORM_INCLUDES_PATH'))
                 self.FOUNDATION_INCLUDES_PATH = getText_(root.find('FOUNDATION_INCLUDES_PATH'))
                 self.PkgConfigNames = getText_(root.find('PkgConfigNames'))
-                self.LinkerArgs_LibDependencies = getText_(root.find('LinkerArgs_LibDependencies')).split() if root.find('LinkerArgs_LibDependencies') is not None else []
+                self.Platform_LinkerArgs_LibDependencies = getText_(root.find('Platform_LinkerArgs_LibDependencies')).split() if root.find('Platform_LinkerArgs_LibDependencies') is not None else []
+                self.Platform_LinkerArgs_LibPath = cmdLineRespectingSplit_(getText_(root.find('Platform_LinkerArgs_LibPath'))) if root.find('Platform_LinkerArgs_LibPath') is not None else []
 
     # We return CXXFLAGS here since that is what pkg-config uses for CFLAGS
     @property
@@ -108,7 +123,7 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflag
         tmp = ", ".join(requires)
         outFile.write(f"Requires: {tmp}\n")
     if libs:
-        tmp = ", ".join(libs)
+        tmp = " ".join(libs)
         outFile.write(f"Libs: {tmp}\n")
     if cflags:
         outFile.write(f"Cflags: {cflags}\n")
@@ -126,9 +141,9 @@ def generate_pc_file_common_(prefix_directory: str, name: str, libs: list, cflag
 def generate_stroika_platform_pc_file_(config: Configuration, prefix_directory: str):
     name = 'stroika-platform'
     # todo alot left todo here
-    libs = ["-L${libdir}"] + config.LinkerArgs_LibDependencies
+    libs = ["-L${libdir}"] + config.Platform_LinkerArgs_LibPath + config.Platform_LinkerArgs_LibDependencies
     # todo map foo.lib to -lfoo (for windows only but harmless otherwise)
-    libs = [lib if lib.startswith('-') else f'-l{lib.removesuffix(".lib")}' for lib in libs]
+    libs = [lib if lib.startswith('-') or lib.startswith('/') else f'-l{lib.removesuffix(".lib")}' for lib in libs]
     cflags = config.full_CFLAG_Platform
     requires = None
     description = "Stroika-specific pkg-config file to facilitate factoring builds using pkgconfig; settings for std c++ library, sdk (e.g. windows), etc. This is used in building third-party-components to assure they reference a consistent version of std c++ etc libs";

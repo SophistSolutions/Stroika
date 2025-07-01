@@ -86,18 +86,11 @@ Objs:=\
 PKG_CONFIG_STROIKA_DEPENDS_ON := 
 
 
-# Use the stroika link macro (DEFAULT_LINK_LINE), but omit the stroika lib itself, and other injected depepdencies
-# for sqlite executable
-LinkerArgs_LibDependencies:=
-StroikaLibs:=
-ifeq (Unix,$(BuildPlatform))
-LinkerArgs_LibDependencies:=-lpthread
-endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite/sqlite3.h	\
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(SQLITE3LIB) \
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/pkgconfig/sqlite.pc \
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(SQLITE3LIB) 			\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/pkgconfig/sqlite.pc		\
 	$(TARGETEXE)
 
 
@@ -129,7 +122,9 @@ endif
 ifneq ($(QUICK_BUILD), 1)
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CURRENT
 endif
-	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
+	@$(MAKE) --no-print-directory $(PRODUCED_OUTPUT_ARTIFACTS) > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
@@ -142,24 +137,52 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIP
 	@rm -rf $@/sqlite-amalgamation-*
 	@touch $@
 
+# $(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
+# LinkerArgs_LibDependencies:=$(shell pkg-config --libs --msvc-syntax stroika-platform 2>/dev/null || echo "")
+# Platform_LinkerArgs_LibPath := -LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/lib/x64" -LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/lib/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/lib/um/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/ucrt/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/um/x64" 
+# Platform_LinkerArgs_LibDependencies := urlmon.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib 
 
+
+#ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
+#multiple tries to run the same rule. So remap all to making the first.
+$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+
+# @todo not sure why this is needed on WSL/Ubuntu?
+${TARGETEXE}:	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+
+
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+StroikaRootW_ := $(shell cygpath --mixed ${StroikaRoot})/
+LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRootW_}ScriptsLib/pkg-config-msvc --static --libs stroika-platform)
+else
+LinkerArgs_LibDependencies = $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs stroika-platform)
+endif
+
+
+
+# LinkerArgs_LibDependencies += -libpath:"$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR_)lib)"	
+# $(info LinkerArgs_LibDependencies=$(LinkerArgs_LibDependencies))
 # trick of using word 1 is to get this triggered just once
 $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)
-	@rm -f $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt && touch $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite $(VERSION) - Build (See $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
-	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite/sqlite3.h >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)lib >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
-	@$(MAKE) --no-print-directory $(Objs) ECHO_BUILD_LINES=1 >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
-	@$(call DEFAULT_LIBRARY_GEN_LINE,$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(SQLITE3LIB),$(LibObjs)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
-	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(call DEFAULT_LINK_LINE,$(TARGETEXE))';\
-	fi
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite
+	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite/sqlite3.h
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)lib
+	@$(MAKE) --no-print-directory $(Objs) ECHO_BUILD_LINES=1
+	@$(call DEFAULT_LIBRARY_GEN_LINE,$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(SQLITE3LIB),$(LibObjs))
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin 
 	@mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
-	@cp sqlite.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
-	@$(call DEFAULT_LINK_LINE,$(TARGETEXE)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)BUILD-OUT.txt 2>&1
+	cp sqlite.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
+	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(LINKER) ${LinkerArgs_ExtraPrefix} $(Platform_LinkerArgs_LibPath) ${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE)) $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) $(Platform_LinkerArgs_LibDependencies) $(LinkerArgs_ExtraSuffix)';\
+	fi
+	"$(LINKER)" \
+		${LinkerArgs_ExtraPrefix} \
+		$(Platform_LinkerArgs_LibPath) \
+		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE)) \
+		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
+		$(LinkerArgs_LibDependencies) \
+		$(LinkerArgs_ExtraSuffix)
 
 
 #

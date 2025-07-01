@@ -73,7 +73,7 @@ SHELL?=/bin/bash
 #			Linux
 #			Darwin
 #
-DETECTED_HOST_OS:=$(shell $(StroikaRoot)/ScriptsLib/DetectedHostOS)
+DETECTED_HOST_OS:=$(shell $(StroikaRoot)ScriptsLib/DetectedHostOS)
 
 
 
@@ -251,7 +251,18 @@ endif
 
 
 
-
+#LinkerArgs_LibDependencies from configfile + pkg-config
+### ${Platform_LinkerArgs_LibDependencies} 
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq ($(DETECTED_HOST_OS),MSYS)
+StroikaRootW_ := $(shell cygpath --mixed ${StroikaRoot})/
+else
+StroikaRootW_ := ${StroikaRoot}
+endif
+LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRootW_}ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
+else
+LinkerArgs_LibDependencies = $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
+endif
 
 #
 # This macro takes two arguments:
@@ -385,13 +396,12 @@ LinkerArgs_StroikaDependentLibDependencies :=
 #
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 #
+#		$(Platform_LinkerArgs_LibPath) REMOVED
 DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
 		$(LinkerArgs_ExtraPrefix) \
-		$(LinkerArgs_LibPath) \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		${LinkerArgs_StroikaDependentLibDependencies} \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibs)) \
 		$(LinkerArgs_LibDependencies) \
 		$(LinkerArgs_ExtraSuffix)

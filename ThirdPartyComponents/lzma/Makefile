@@ -163,7 +163,7 @@ ifeq (Unix,$(BuildPlatform))
 		CFLAGS='$(CFLAGS)' \
 		CXXFLAGS='$(CXXFLAGS)' \
 		LD='$(LINKER)' \
-		LDFLAGS='$(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)' \
+		LDFLAGS='${Platform_LinkerArgs_LibPath} $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)' \
 		BuildPlatform='$(BuildPlatform)' \
 		LIBS='$(LIBS)' \
 		all
@@ -187,7 +187,7 @@ else
 			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
 			CFLAGS='$(CFLAGS)' \
 			CXXFLAGS='$(CXXFLAGS)' \
-			LDFLAGS='-nologo -debug -incremental:no -opt:ref $(LinkerArgs_LibPath) ' \
+			LDFLAGS='-nologo -debug -incremental:no -opt:ref ${Platform_LinkerArgs_LibPath} ' \
 			all
 	# Now copy the output to the BUILD directory
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR_)lib/
