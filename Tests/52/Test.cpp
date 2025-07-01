@@ -1523,12 +1523,12 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    const Execution::CommandLine::Option kShowO_{.fLongName = "show"sv};
-    const Execution::CommandLine::Option kTimeMultiplierO_{.fSingleCharName = 'x', .fLongName = "x"sv, .fSupportsArgument = true};
+    const CommandLine::Option kShowO_{.fLongName = "show"sv};
+    const CommandLine::Option kTimeMultiplierO_{.fSingleCharName = 'x', .fLongName = "x"sv, .fSupportsArgument = true};
 
     // NOTE: run with --show or look for output in PERF-OUT.txt
     try {
-        Execution::CommandLine cmdLine{argc, argv};
+        CommandLine cmdLine{argc, argv};
         sShowOutput_ = cmdLine.Has (kShowO_);
         if (auto o = cmdLine.GetArgument (kTimeMultiplierO_)) {
             sTimeMultiplier_ = FloatConversion::ToFloat<double> (*o);

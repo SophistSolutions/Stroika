@@ -22,6 +22,7 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
 
@@ -100,20 +101,20 @@ int main (int argc, const char* argv[])
     Debug::TraceContextBumper ctx{
         Stroika_Foundation_Debug_OptionalizeTraceArgs ("main", "argv={}"_f, Characters::ToString (vector<const char*>{argv, argv + argc}))};
 #if qStroika_Foundation_Common_Platform_POSIX
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+    SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
     bool                  listen = false;
     optional<String>      searchFor;
     Time::DurationSeconds quitAfter = Time::kInfinity;
 
-    const Execution::CommandLine::Option kListenO_{
+    const CommandLine::Option kListenO_{
         .fSingleCharName = 'l',
     };
-    const Execution::CommandLine::Option kSearchO_{
+    const CommandLine::Option kSearchO_{
         .fSingleCharName = 's', .fSupportsArgument = true, .fHelpArgName = "SEARCHFOR"sv, .fHelpOptionText = "Search for the argument UPNP name"sv};
-    const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
+    const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true, .fHelpArgName = "NSECONDS"sv};
 
-    Execution::CommandLine cmdLine{argc, argv};
+    CommandLine cmdLine{argc, argv};
     listen    = cmdLine.Has (kListenO_);
     searchFor = cmdLine.GetArgument (kSearchO_);
     if (auto o = cmdLine.GetArgument (kQuitAfterO_)) {
@@ -137,14 +138,14 @@ int main (int argc, const char* argv[])
             DoSearching_ (&s, *searchFor);
         }
         if (listen or searchFor.has_value ()) {
-            Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
+            WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
         }
         else {
             cerr << "Specify -l to listen or -s STRING to search" << endl;
             return EXIT_FAILURE;
         }
     }
-    catch (const Execution::TimeOutException&) {
+    catch (const TimeOutException&) {
         cerr << "Timed out - so - exiting..." << endl;
         return EXIT_SUCCESS;
     }

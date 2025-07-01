@@ -90,7 +90,7 @@ namespace {
                     }
                     catch (...) {
                         DbgTrace ("Error {} experiment DB: {}: {}"_f, L"opening"sv, testDBFile, current_exception ());
-                        Execution::ReThrow ();
+                        ReThrow ();
                     }
                 }
                 DB ()
@@ -101,7 +101,7 @@ namespace {
                     }
                     catch (...) {
                         DbgTrace ("Error {} experiment DB: {}: {}"_f, L"opening"sv, L"MEMORY"sv, current_exception ());
-                        Execution::ReThrow ();
+                        ReThrow ();
                     }
                 }
                 DB (const DB&)                       = delete;
@@ -515,7 +515,7 @@ namespace {
                 Thread::CleanupPtr writeChecks{
                     Thread::CleanupPtr::eAbortBeforeWaiting,
                     Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks")};
-                Execution::WaitableEvent{}.WaitQuietly (15s);
+                WaitableEvent{}.WaitQuietly (15s);
             }
 
         }
@@ -758,7 +758,7 @@ namespace {
                 Thread::CleanupPtr writeChecks{
                     Thread::CleanupPtr::eAbortBeforeWaiting,
                     Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks")};
-                Execution::WaitableEvent{}.WaitQuietly (15s);
+                WaitableEvent{}.WaitQuietly (15s);
             }
         }
 
@@ -1120,10 +1120,10 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    const Execution::CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
+    const CommandLine::Option kMongoConnectionStringOpt_{.fLongName = "mongoConnectionString"sv, .fSupportsArgument = true};
 
     try {
-        Execution::CommandLine cmdLine{argc, argv};
+        CommandLine cmdLine{argc, argv};
         if (auto o = cmdLine.GetArgument (kMongoConnectionStringOpt_)) {
             sMongoConnectionString_ = *o;
         }

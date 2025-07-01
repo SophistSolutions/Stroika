@@ -24,6 +24,7 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters::Literals;
+using namespace Stroika::Foundation::Execution;
 
 using Characters::String;
 using Containers::Sequence;
@@ -32,17 +33,17 @@ using namespace StroikaSample::WebServices;
 
 int main (int argc, const char* argv[])
 {
-    Execution::CommandLine                               cmdLine{argc, argv};
-    Debug::TraceContextBumper                            ctx{"main", "argv={}"_f, cmdLine};
-    Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
+    CommandLine                               cmdLine{argc, argv};
+    Debug::TraceContextBumper                 ctx{"main", "argv={}"_f, cmdLine};
+    SignalHandlerRegistry::SafeSignalsManager safeSignals;
 #if qStroika_Foundation_Common_Platform_POSIX
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+    SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
     uint16_t              portNumber = 8080;
     Time::DurationSeconds quitAfter  = Time::kInfinity;
 
-    const Execution::CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
-    const Execution::CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
+    const CommandLine::Option kPortO_{.fLongName = "port"sv, .fSupportsArgument = true};
+    const CommandLine::Option kQuitAfterO_{.fLongName = "quit-after"sv, .fSupportsArgument = true};
 
     try {
         cmdLine.Validate ({kPortO_, kQuitAfterO_});
@@ -55,9 +56,9 @@ int main (int argc, const char* argv[])
         }
 
         WebServer myWebServer{portNumber, make_shared<WSImpl> ()}; // listen and dispatch while this object exists
-        Execution::WaitableEvent{}.Wait (quitAfter);               // wait quitAfter seconds, or til user hits ctrl-c
+        WaitableEvent{}.Wait (quitAfter);                          // wait quitAfter seconds, or til user hits ctrl-c
     }
-    catch (const Execution::TimeOutException&) {
+    catch (const TimeOutException&) {
         cerr << "Timed out - so - exiting..." << endl;
         return EXIT_SUCCESS;
     }

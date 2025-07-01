@@ -11,10 +11,11 @@ using namespace std;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters::Literals;
+using namespace Stroika::Foundation::Execution;
 
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    Debug::TraceContextBumper ctx{"main", "argv={}"_f, Execution::CommandLine{argc, argv}};
+    Debug::TraceContextBumper ctx{"main", "argv={}"_f, CommandLine{argc, argv}};
     return EXIT_SUCCESS;
 }
