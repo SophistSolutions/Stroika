@@ -174,15 +174,15 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	cp sqlite.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(LINKER) ${LinkerArgs_ExtraPrefix} $(Platform_LinkerArgs_LibPath) ${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE)) $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) $(Platform_LinkerArgs_LibDependencies) $(LinkerArgs_ExtraSuffix)';\
+	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1))  '$(LINKER) ${Platform_LinkerArgs_ExtraPrefix} $(Platform_LinkerArgs_LibPath) ${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE)) $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) $(Platform_LinkerArgs_LibDependencies) $(Platform_LinkerArgs_ExtraSuffix)';\
 	fi
 	"$(LINKER)" \
-		${LinkerArgs_ExtraPrefix} \
+		${Platform_LinkerArgs_ExtraPrefix} \
 		$(Platform_LinkerArgs_LibPath) \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(TARGETEXE)) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
 		$(LinkerArgs_LibDependencies) \
-		$(LinkerArgs_ExtraSuffix)
+		$(Platform_LinkerArgs_ExtraSuffix)
 
 
 #

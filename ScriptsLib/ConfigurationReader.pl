@@ -291,13 +291,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CrossCompiling'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<LinkerArgs_ExtraPrefix>");
+		my $pps = ReadValue_($line, "<Platform_LinkerArgs_ExtraPrefix>");
 		if (defined $pps) {
-			$configuration {'LinkerArgs_ExtraPrefix'} = $pps;
+			$configuration {'Platform_LinkerArgs_ExtraPrefix'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<LinkerArgs_ExtraSuffix>");
+		my $pps = ReadValue_($line, "<Platform_LinkerArgs_ExtraSuffix>");
 		if (defined $pps) {
-			$configuration {'LinkerArgs_ExtraSuffix'} = $pps;
+			$configuration {'Platform_LinkerArgs_ExtraSuffix'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<RunPrefix>");
 		if (defined $pps) {

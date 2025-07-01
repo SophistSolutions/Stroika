@@ -87,7 +87,7 @@ CMAKE_ARGS+=	-D LIBXML2_WITH_PYTHON="OFF"
 # appears to be preserved with the obj file, and used in link time codegen in the linker (visual studio 17.8.3)
 # -- LGP 2024-01-02
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
+ifeq (-LTCG,$(findstring -LTCG,$(Platform_LinkerArgs_ExtraPrefix)))
 CFLAGS	+= -wd4701
 CFLAGS	+= -wd4702
 CFLAGS	+= -wd4703

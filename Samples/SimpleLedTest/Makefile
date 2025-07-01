@@ -50,7 +50,7 @@ $(ObjDir)Test.res:
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
-LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
+Platform_LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 endif
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)

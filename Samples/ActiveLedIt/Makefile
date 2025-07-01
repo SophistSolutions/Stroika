@@ -55,9 +55,9 @@ check:
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
-LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
+Platform_LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 # OCX is a DLL, doesnt seem needed but examples pass this arg
-LinkerArgs_ExtraSuffix+= -DLL
+Platform_LinkerArgs_ExtraSuffix+= -DLL
 endif
 
 MIDL_OUTPUT_=$(ObjDir)ActiveLedIt.tlb $(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
@@ -70,7 +70,7 @@ $(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 MIDL_FLAGS +=	-env win32
 RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 # not sure if TLBID matters, but old msbuild script set it
-LinkerArgs_ExtraSuffix+=-TLBID:1
+Platform_LinkerArgs_ExtraSuffix+=-TLBID:1
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
@@ -92,7 +92,7 @@ $(ObjDir)ActiveLedIt.res:
 
 
 # without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
-LinkerArgs_ExtraSuffix += -DEF:Sources/ActiveLedIt.def
+Platform_LinkerArgs_ExtraSuffix += -DEF:Sources/ActiveLedIt.def
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "

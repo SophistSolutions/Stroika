@@ -78,8 +78,8 @@ my $AR = undef;
 my $LIBTOOL = undef;
 my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
-my $LinkerArgs_ExtraPrefix = "";
-my $LinkerArgs_ExtraSuffix = "";
+my $Platform_LinkerArgs_ExtraPrefix = "";
+my $Platform_LinkerArgs_ExtraSuffix = "";
 my $PLATFORM_CPPFLAGS_NOTINCLUDES = "";
 my $PLATFORM_CPPFLAGS_INCLUDES = "";
 my $CPPFLAGS_NOTINCLUDES = "";
@@ -186,8 +186,8 @@ sub	ReadConfiguration_
 	$CFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CFLAGS");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CXXFLAGS");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
-	$LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "LinkerArgs_ExtraPrefix");
-	$LinkerArgs_ExtraSuffix = GetConfigurationParameter($activeConfiguration, "LinkerArgs_ExtraSuffix");
+	$Platform_LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_ExtraPrefix");
+	$Platform_LinkerArgs_ExtraSuffix = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_ExtraSuffix");
 
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LibCurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_OpenSSL");
@@ -477,8 +477,8 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "Platform_LinkerArgs_LibPath := $Platform_LinkerArgs_LibPath\n");
 	print (OUT "Platform_LinkerArgs_LibDependencies := $Platform_LinkerArgs_LibDependencies\n");
 	print (OUT "#\n");
-	print (OUT "LinkerArgs_ExtraPrefix :=	$LinkerArgs_ExtraPrefix\n");
-	print (OUT "LinkerArgs_ExtraSuffix :=	$LinkerArgs_ExtraSuffix\n");
+	print (OUT "Platform_LinkerArgs_ExtraPrefix :=	$Platform_LinkerArgs_ExtraPrefix\n");
+	print (OUT "Platform_LinkerArgs_ExtraSuffix :=	$Platform_LinkerArgs_ExtraSuffix\n");
 
 	print (OUT "IncludeDebugSymbolsInExecutables :=	$IncludeDebugSymbolsInExecutables\n");
 	print (OUT "IncludeDebugSymbolsInLibraries :=	$IncludeDebugSymbolsInLibraries\n");

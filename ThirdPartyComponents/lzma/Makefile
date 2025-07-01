@@ -163,7 +163,7 @@ ifeq (Unix,$(BuildPlatform))
 		CFLAGS='$(CFLAGS)' \
 		CXXFLAGS='$(CXXFLAGS)' \
 		LD='$(LINKER)' \
-		LDFLAGS='${Platform_LinkerArgs_LibPath} $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)' \
+		LDFLAGS='${Platform_LinkerArgs_LibPath} $(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_ExtraSuffix)' \
 		BuildPlatform='$(BuildPlatform)' \
 		LIBS='$(LIBS)' \
 		all

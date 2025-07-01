@@ -255,11 +255,10 @@ endif
 ### ${Platform_LinkerArgs_LibDependencies} 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq ($(DETECTED_HOST_OS),MSYS)
-StroikaRootW_ := $(shell cygpath --mixed ${StroikaRoot})/
+LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
 else
-StroikaRootW_ := ${StroikaRoot}
+LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
 endif
-LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRootW_}ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
 else
 LinkerArgs_LibDependencies = $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
 endif
@@ -399,16 +398,45 @@ LinkerArgs_StroikaDependentLibDependencies :=
 #		$(Platform_LinkerArgs_LibPath) REMOVED
 DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
-		$(LinkerArgs_ExtraPrefix) \
+		$(Platform_LinkerArgs_ExtraPrefix) \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibs)) \
 		$(LinkerArgs_LibDependencies) \
-		$(LinkerArgs_ExtraSuffix)
+		$(Platform_LinkerArgs_ExtraSuffix)
+
+
+# DEFAULT_LINK_LINE2 - NEW VERSION
+#	$1 is the output file name (EXE)
+#	$2 pkg-config dependencies (e.g. stroika-frameworks, stroika-foundation, or stroika-platform, or empty)
+
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq ($(DETECTED_HOST_OS),MSYS)
+DEFAULT_LINK_LINE2=\
+	"$(LINKER)" \
+		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
+		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
+		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs  $2)
+else
+DEFAULT_LINK_LINE2=\
+	"$(LINKER)" \
+		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
+		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
+		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs  $2)
+endif
+else
+DEFAULT_LINK_LINE2=\
+	"$(LINKER)" \
+		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
+		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
+		$$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs  $2)
+endif
+
 
 # copy LinkTime_CopyFilesToEXEDir files to EXEDIR
 ifneq ($(LinkTime_CopyFilesToEXEDir),)
 	DEFAULT_LINK_LINE += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
+	DEFAULT_LINK_LINE2 += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
 endif
 
 

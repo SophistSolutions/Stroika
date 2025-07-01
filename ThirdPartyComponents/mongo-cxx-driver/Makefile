@@ -75,7 +75,7 @@ CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 # appears to be preserved with the obj file, and used in link time codegen in the linker
 #
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
+ifeq (-LTCG,$(findstring -LTCG,$(Platform_LinkerArgs_ExtraPrefix)))
 CFLAGS	+= -wd4701
 CFLAGS	+= -wd4702
 CFLAGS	+= -wd4724

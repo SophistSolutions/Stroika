@@ -239,8 +239,8 @@ endif
 #
 # Just for test apps that get built. DONT include LinkerArgs_LibDependencies because that includes other third party components
 # Unsure about most of this... --LGP 2022-01-22
-#LDFLAGS:=$(LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(LinkerArgs_LibDependencies) $(LinkerArgs_ExtraSuffix)
-LDFLAGS:=$(LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(LinkerArgs_ExtraSuffix)
+#LDFLAGS:=$(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(Platform_LinkerArgs_LibDependencies) $(Platform_LinkerArgs_ExtraSuffix)
+LDFLAGS:=$(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(Platform_LinkerArgs_ExtraSuffix)
 
 
 
@@ -249,7 +249,7 @@ LDFLAGS:=$(LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(LinkerArgs_E
 #		C:\Stroika\IntermediateFiles\Release-x86\ThirdPartyComponents\openssl\include\internal\ring_buf.h(131) : warning C4724: potential mod by 0
 #
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
+ifeq (-LTCG,$(findstring -LTCG,$(Platform_LinkerArgs_ExtraPrefix)))
 CFLAGS	+= -wd4724
 endif
 endif

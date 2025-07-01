@@ -3175,8 +3175,8 @@ sub	WriteConfigFile_
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
 	print (OUT "    <Platform_LinkerArgs_LibPath>$LinkerArgs_LibPathString</Platform_LinkerArgs_LibPath>\n");
 	print (OUT "    <Platform_LinkerArgs_LibDependencies>$LinkerArgs_LibDependencies</Platform_LinkerArgs_LibDependencies>\n");
-	print (OUT "    <LinkerArgs_ExtraPrefix>$LinkerArgs_ExtraPrefix</LinkerArgs_ExtraPrefix>\n");
-	print (OUT "    <LinkerArgs_ExtraSuffix>$LinkerArgs_ExtraSuffix</LinkerArgs_ExtraSuffix>\n");
+	print (OUT "    <Platform_LinkerArgs_ExtraPrefix>$LinkerArgs_ExtraPrefix</Platform_LinkerArgs_ExtraPrefix>\n");
+	print (OUT "    <Platform_LinkerArgs_ExtraSuffix>$LinkerArgs_ExtraSuffix</Platform_LinkerArgs_ExtraSuffix>\n");
 
 	### todo fix/wrong - only works for case of zero or one file
 	# ';' separated list of files to be copied into same directory as we link to, as part of linking operations.
