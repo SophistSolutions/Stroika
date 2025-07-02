@@ -203,20 +203,6 @@ endif
 
 
 
-
-
-# ###TMPHACK CUZ WILL BE OVERRIDEN SOON
-# #;C:/Sandbox/Stroika/DevRoot/Library/Sources/;C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/
-# ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-# X=$(shell cygpath -m ${StroikaRoot})
-# else
-# X=${StroikaRoot}
-# endif
-# CPPFLAGS += "-I${X}Library/Sources/"
-# CPPFLAGS += "-I${X}IntermediateFiles/Debug/"
-# @todo move to Configuration.mk (ApplyConfiguration)
-
-
 # Common values include
 #		o	stroika-platform
 #		o	stroika-foundation
@@ -325,18 +311,6 @@ DEFAULT_CXX_LINE=\
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
 		| sed -n '1!p'
-
-# #EXPERIEMNTAL REPLACEMENT
-# USE_CXX_FLAGS=$(shell pkg-config --msvc --cflags-only-I stroika-frameworks) $(shell pkg-config --cflags-only-other stroika-frameworks)
-# # USE_CXX_FLAGS=$(shell pkg-config --cflags stroika-frameworks)
-# # $(info USE_CXX_FLAGS=${USE_CXX_FLAGS})
-# DEFAULT_CXX_LINE=\
-# 	"$(CXX)" \
-# 		${USE_CXX_FLAGS} \
-# 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-# 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
-# 		| sed -n '1!p'
-
 endif
 
 
@@ -380,12 +354,25 @@ endif
 endif
 
 
-# This macro takes produces a 'LINK' line from the given arguments
+ifneq ($(LinkTime_CopyFilesToEXEDir),)
+# private - dont ref DEFAULT_LINK_LINE_EXTRA_TEXT_ directly
+DEFAULT_LINK_LINE_EXTRA_TEXT_ = && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
+endif
+
+
+#
+# The DEFAULT_LINK_LINE macro produces a 'LINK' line from the given arguments
 #	$1 is the output file name (EXE)
 #	$2 [optional argument - defaults to stroika-frameworks] pkg-config dependencies for pkg-config --libs call (e.g. stroika-frameworks, stroika-foundation, or stroika-platform)
 #   $3 [optional argument - defaults to empty] EXTRA LDFLAGS BEFORE OBJS
 #	$4 [optional argument - defaults to empty] EXTRA LDFLAGS AFTER OBJS
+#
+#	\note delayed evaluation
+#
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+# WEIRD - need to use $(shell instead of $$() for MSYS else fails - probably due to my not knowing how to fully enuf disable path covnersions
+# for MSYS --LGP 2025-07-02
+# No - something else - cuz fails on CYGWIN too. NOT sure why...
 ifeq ($(DETECTED_HOST_OS),MSYS)
 DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
@@ -393,7 +380,8 @@ DEFAULT_LINK_LINE=\
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
 		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
-		$4
+		$4 \
+		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
 else
 DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
@@ -401,7 +389,8 @@ DEFAULT_LINK_LINE=\
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
 		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
-		$4
+		$4 \
+		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
 endif
 else
 DEFAULT_LINK_LINE=\
@@ -410,13 +399,8 @@ DEFAULT_LINK_LINE=\
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
 		$$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs $(if $2,$2,stroika-frameworks)) \
-		$4
-endif
-
-
-# copy LinkTime_CopyFilesToEXEDir files to EXEDIR
-ifneq ($(LinkTime_CopyFilesToEXEDir),)
-	DEFAULT_LINK_LINE += && (cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1) || echo "...ignored")
+		$4 \
+		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_,$1)
 endif
 
 
@@ -429,8 +413,6 @@ MIDL_FLAGS=	${CPPFLAGS}
 MIDL_FLAGS+=	-nologo
 MIDL_FLAGS+=	-W1
 MIDL_FLAGS+=	-char signed
-#MIDL_FLAGS+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))
-#MIDL_FLAGS+=	-I$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)
 
 DEFAULT_MIDL_LINE=\
 	"$(MIDL)" \
