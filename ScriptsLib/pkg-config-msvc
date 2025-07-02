@@ -23,8 +23,6 @@ if __name__ == "__main__":
     useCWD = None
     useLibDir = None
     if isWindowsSystem_():
-        args = [args[0] , "--msvc-syntax"] + args[1:] 
-        # Didn't help - seems to be a problem with where this is invoked/how invoked (data returned by this script looks fine)
         # useEnv['MSYS2_ENV_CONV_EXCL'] = '*'
         # useEnv['MSYS2_PATH_CONV_EXCL'] = '*'
         # useEnv['MSYS2_ARG_CONV_EXCL'] = '*'
@@ -40,15 +38,37 @@ if __name__ == "__main__":
             useEnv['PKG_CONFIG_PATH'] = "."
     try:
         # print(f"useEnv=${useEnv}\n")
-        result = subprocess.run(args, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
-        out = result.stdout.strip()
-        out = out.replace ('/libpath:./', f'/libpath:"{useLibDir}"')
-        # maybe good idea to switch to unix format (- not /) but didnt seem to help msys problems so dont bother for now...
-        # out = out.replace (" /", " -")
-        # if (out.startswith("/")):
-        #     out = "-" + out[1:]
-        # with open("my_file.txt", "w") as file:
-        #     file.write(out)
+        if isWindowsSystem_():
+            # because --msvc-syntax appears to throw away some options (like --nologo) - must not do msvc-syntax for that
+            # part
+            if "--libs" in args:
+                tmpArgs =  ["--libs-only-other" if x == "--libs" else x for x in args]
+                # print(f"tmpArgs=${tmpArgs}\n", file=sys.stderr)
+                result = subprocess.run(tmpArgs, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+                savedOut = result.stdout.strip()
+                # print(f"savedOut=${savedOut}\n", file=sys.stderr)
+                # args = [args[0] , "--msvc-syntax"] + args[1:] 
+                tmpArgs =  ["--libs-only-L" if x == "--libs" else x for x in args] + ["--libs-only-l", "--msvc-syntax"]
+                result = subprocess.run(tmpArgs, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+                out = result.stdout.strip()
+                if useLibDir:
+                    out = out.replace ('/libpath:./', f'/libpath:"{useLibDir}"')
+                out = savedOut + " " + out
+            else:
+                args = [args[0] , "--msvc-syntax"] + args[1:] 
+                result = subprocess.run(args, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+                out = result.stdout.strip()
+                if useLibDir:
+                    out = out.replace ('/libpath:./', f'/libpath:"{useLibDir}"')
+                # maybe good idea to switch to unix format (- not /) but didnt seem to help msys problems so dont bother for now...
+                # out = out.replace (" /", " -")
+                # if (out.startswith("/")):
+                #     out = "-" + out[1:]
+                # with open("my_file.txt", "w") as file:
+                #     file.write(out)
+        else:
+            result = subprocess.run(args, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
+            out = result.stdout.strip()
         print(out)
         if result.stderr:
             print(result.stderr, file=sys.stderr)
