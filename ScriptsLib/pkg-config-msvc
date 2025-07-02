@@ -24,8 +24,10 @@ if __name__ == "__main__":
     useLibDir = None
     if isWindowsSystem_():
         args = [args[0] , "--msvc-syntax"] + args[1:] 
+        # Didn't help - seems to be a problem with where this is invoked/how invoked (data returned by this script looks fine)
         # useEnv['MSYS2_ENV_CONV_EXCL'] = '*'
         # useEnv['MSYS2_PATH_CONV_EXCL'] = '*'
+        # useEnv['MSYS2_ARG_CONV_EXCL'] = '*'
         if useEnv['PKG_CONFIG_PATH']:
             # At least for msys, this must be unix format, cuz : treated as path separator
             # print(f"useEnv['PKG_CONFIG_PATH']={useEnv['PKG_CONFIG_PATH']}", file=sys.stderr)
@@ -41,6 +43,12 @@ if __name__ == "__main__":
         result = subprocess.run(args, capture_output=True, text=True, check=True, env=useEnv, cwd=useCWD)
         out = result.stdout.strip()
         out = out.replace ('/libpath:./', f'/libpath:"{useLibDir}"')
+        # maybe good idea to switch to unix format (- not /) but didnt seem to help msys problems so dont bother for now...
+        # out = out.replace (" /", " -")
+        # if (out.startswith("/")):
+        #     out = "-" + out[1:]
+        # with open("my_file.txt", "w") as file:
+        #     file.write(out)
         print(out)
         if result.stderr:
             print(result.stderr, file=sys.stderr)
