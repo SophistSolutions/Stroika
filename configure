@@ -1173,6 +1173,9 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "24.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 19) {
 			$ENABLE_LTO = false;
 		}
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "25.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 20) {
+			$ENABLE_LTO = false;
+		}
 		## And another issue on clang++-15 with lto on ubuntu 22
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS &&  $lsb_release == "22.04" && IsClangOrClangPlusPlus_($COMPILER_DRIVER) && GetClangVersion_ ($COMPILER_DRIVER) < 16) {
 			$ENABLE_LTO = false;
