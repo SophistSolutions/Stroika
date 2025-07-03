@@ -208,7 +208,7 @@ sub	ReadConfiguration_
 	$VSVARS_PLATFORM_INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "VSVARS_PLATFORM_INCLUDES_PATH");
 	$VSVARS_MSVC_RUNTIME_LIBRARY = GetConfigurationParameter($activeConfiguration, "VSVARS_MSVC_RUNTIME_LIBRARY");
 	$Platform_LinkerArgs_LibPath = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_LibPath");
-	$Platform_LinkerArgs_LibDependencies = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_LibDependencies");
+	# $Platform_LinkerArgs_LibDependencies = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_LibDependencies");
 
 	$IncludeDebugSymbolsInExecutables = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInExecutables");
 	$IncludeDebugSymbolsInLibraries = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInLibraries");
@@ -475,7 +475,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n\n");
 	print (OUT "#Linker flags\n");
 	print (OUT "Platform_LinkerArgs_LibPath := $Platform_LinkerArgs_LibPath\n");
-	print (OUT "Platform_LinkerArgs_LibDependencies := $Platform_LinkerArgs_LibDependencies\n");
+	# print (OUT "Platform_LinkerArgs_LibDependencies := $Platform_LinkerArgs_LibDependencies\n");
 	print (OUT "#\n");
 	print (OUT "Platform_LinkerArgs_ExtraPrefix :=	$Platform_LinkerArgs_ExtraPrefix\n");
 	print (OUT "Platform_LinkerArgs_ExtraSuffix :=	$Platform_LinkerArgs_ExtraSuffix\n");

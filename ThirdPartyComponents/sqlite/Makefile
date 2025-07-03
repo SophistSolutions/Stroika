@@ -137,11 +137,6 @@ ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIP
 	@rm -rf $@/sqlite-amalgamation-*
 	@touch $@
 
-# $(info PKG_CONFIG_PATH=$(PKG_CONFIG_PATH))
-# LinkerArgs_LibDependencies:=$(shell pkg-config --libs --msvc-syntax stroika-platform 2>/dev/null || echo "")
-# Platform_LinkerArgs_LibPath := -LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/lib/x64" -LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/lib/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/lib/um/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/ucrt/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/um/x64" 
-# Platform_LinkerArgs_LibDependencies := urlmon.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib 
-
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
 #multiple tries to run the same rule. So remap all to making the first.

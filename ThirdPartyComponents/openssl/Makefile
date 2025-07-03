@@ -237,9 +237,7 @@ endif
 
 
 #
-# Just for test apps that get built. DONT include LinkerArgs_LibDependencies because that includes other third party components
 # Unsure about most of this... --LGP 2022-01-22
-#LDFLAGS:=$(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(Platform_LinkerArgs_LibDependencies) $(Platform_LinkerArgs_ExtraSuffix)
 LDFLAGS:=$(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(Platform_LinkerArgs_ExtraSuffix)
 
 

@@ -102,7 +102,7 @@ endif
 #
 #	StroikaLibDir
 #
-#		Directory where the library (.lib, or .a) Stroika libraries are found (Buidlds/$(CONFIGURATION)/)
+#		Directory where the library (.lib, or .a) Stroika libraries are found (Builds/$(CONFIGURATION)/)
 #
 #		Note - StroikaLibDir was StroikaPlatformTargetBuildDir (aka $(StroikaRoot)Builds/$(CONFIGURATION)/)	before Stroika 3.0d21
 #		but was switched to this format to be more consistent with how pkgconfig works.
@@ -128,7 +128,9 @@ endif
 endif
 
 
-
+#
+# If ECHO_BUILD_LINES is set to 1, the makefile default rules will echo the build line details
+#
 ECHO_BUILD_LINES	?=	0
 
 
@@ -237,17 +239,19 @@ endif
 
 
 
-#LinkerArgs_LibDependencies from configfile + pkg-config
-### ${Platform_LinkerArgs_LibDependencies} 
-ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-ifeq ($(DETECTED_HOST_OS),MSYS)
-LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
-else
-LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
-endif
-else
-LinkerArgs_LibDependencies = $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
-endif
+
+### DEPRECATED - NO LONGER USED - LGP 2025-07-02
+# #LinkerArgs_LibDependencies from configfile + pkg-config
+# ### ${Platform_LinkerArgs_LibDependencies} 
+# ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+# ifeq ($(DETECTED_HOST_OS),MSYS)
+# LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
+# else
+# LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
+# endif
+# else
+# LinkerArgs_LibDependencies = $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
+# endif
 
 #
 # This macro takes two arguments:
