@@ -119,8 +119,8 @@ endif
 endif
 
 # curl uses LDFLAGS, so provide it (needed to find other libraries, sanitizer flags - for those other libs, etc).
-LDFLAGS:=${LDFLAGS} ${Platform_LinkerArgs_LibPath} ${Platform_LinkerArgs_ExtraPrefix} ${Platform_LinkerArgs_ExtraSuffix}
-LDFLAGS:=$(filter-out --std=%, $(LDFLAGS))
+LDFLAGS:=	${Platform_LDFLAGS}
+LDFLAGS:=	$(filter-out --std=%, $(LDFLAGS))
 
 ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
@@ -223,15 +223,15 @@ ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #
 # BUT THEN got cross-compiling for raspberry pi on Ubuntu 22.04, so try a more sophisticated check
 ifneq ($(LINKER),)
-ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_ExtraSuffix)" brotlicommon),false)
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
-ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_ExtraSuffix)" brotlidec),false)
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" brotlidec),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
 # For some reason, fails with clang++14
 ifeq (clang,$(findstring clang,$(LINKER)))
-ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_ExtraSuffix)" z),false)
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" z),false)
 LIBCURL_CONFIGURE += --without-zlib
 endif
 endif
