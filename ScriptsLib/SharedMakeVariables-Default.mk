@@ -29,12 +29,33 @@ ifneq ($(CONFIGURATION),)
 endif
 
 
+
+#
+# Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069
+#	Enumeration of common DETECTED_HOST_OS to check for if #if code
+#			Cygwin
+#			MSYS
+#			Linux
+#			Darwin
+#
+DETECTED_HOST_OS	:=	$(shell $(StroikaRoot)ScriptsLib/DetectedHostOS)
+
+
+
+# Needed to workaround a few MSYS issues/bugs?
+ifeq (${DETECTED_HOST_OS},MSYS)
+StroikaRoot_MIXED	:=	$(shell cygpath --mixed ${StroikaRoot})
+else
+StroikaRoot_MIXED	:=	${StroikaRoot}
+endif
+
+
 #
 # Some makefiles - apps building stroika as a part - may define TOP_ROOT (often will). Allow Stroika makefiles to referene
 # TOP_ROOT even if not in that context (just treat as alias for StroikaRoot)
 #
 ifndef TOP_ROOT
-export TOP_ROOT=$(StroikaRoot)
+export TOP_ROOT	:=	$(StroikaRoot)
 endif
 
 
@@ -51,8 +72,14 @@ export ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable ECHO)
 
 FUNCTION_CAPITALIZE_WORD=$(shell $(ECHO) $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell $(ECHO) $1 | cut -c 2-99)
 
+#
+# If ECHO_BUILD_LINES is set to 1, the makefile default rules will echo the build line details
+#
 ECHO_BUILD_LINES?=0
 
+#
+#	WRITE_PREPROCESSOR_OUTPUT if set in make commandline, then .i files written next to each .o file
+#
 WRITE_PREPROCESSOR_OUTPUT?=0
 
 # intentionally export cuz sometimes MAKE_INDENT_LEVEL doesnt go up as fast as MAKELEVEL, and so submakes work out
@@ -66,26 +93,8 @@ SHELL?=/bin/bash
 
 
 #
-# Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069
-#	Enumeration of common DETECTED_HOST_OS to check for if #if code
-#			Cygwin
-#			MSYS
-#			Linux
-#			Darwin
 #
-DETECTED_HOST_OS:=$(shell $(StroikaRoot)ScriptsLib/DetectedHostOS)
-
-
-
-### LOSE STRIP_INCLUDE_COMPILER_FLAGS DEFINE AS OBSOLETE/UNUSED as of STROIKA 3.0d21 - LGP 2025-06-10 
-# ##
-# ## Use this to strip /I"..." includes from a CFLAGS or CXXFLAGS list of arguments (to a windows compiler) since these
-# ## sometimes cause trouble (not 100% sure why - this is a bit of a hack)
-# ##
-# STRIP_INCLUDE_COMPILER_FLAGS= \
-# 	$(shell  echo '$1' | sed 's/[\/\-]I"[^"]*"//g')
-
-
+#
 ifndef ObjDir
 	ObjDir		:=	./
 endif
@@ -112,6 +121,10 @@ ifndef StroikaLibDir
 endif
 
 
+#
+# StroikaFoundationLib and StroikaFrameworksLib are both defined for sake of dependency management, but probably
+# should not be used directly in makefiles - instead depend on .pc files (as of 2025-07-03)
+#
 ifndef StroikaFoundationLib
 ifeq (${BuildPlatform}, Unix)
 	StroikaFoundationLib		:=	$(StroikaLibDir)libstroika-foundation$(LIB_SUFFIX)
@@ -127,18 +140,11 @@ else
 endif
 endif
 
-
-#
-# If ECHO_BUILD_LINES is set to 1, the makefile default rules will echo the build line details
-#
-ECHO_BUILD_LINES	?=	0
-
-
 #
 #	StroikaLibs
 #
-#		This is a space separated list of full-pathnames to the stroika library file(s)
-#			PROBABLY WILL DEPRECATE IN FAVOR OF PC FILES
+# 		StroikaLibs defined for sake of dependency management, but probably
+# 		should not be used directly in makefiles - instead depend on .pc files (as of 2025-07-03)
 #
 ifndef StroikaLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
@@ -223,35 +229,15 @@ CPPFLAGS       :=
 CFLAGS         :=
 CXXFLAGS       :=
 else
-ifeq (${DETECTED_HOST_OS},MSYS)
-X=$(shell cygpath -m ${StroikaRoot})
-else
-X=${StroikaRoot}
-endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
 else
-CPPFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
 endif
-CFLAGS         =       $$(${X}ScriptsLib/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
-CXXFLAGS       =       $$(${X}ScriptsLib/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
+CFLAGS         =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
+CXXFLAGS       =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
 endif
 
-
-
-
-### DEPRECATED - NO LONGER USED - LGP 2025-07-02
-# #LinkerArgs_LibDependencies from configfile + pkg-config
-# ### ${Platform_LinkerArgs_LibDependencies} 
-# ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-# ifeq ($(DETECTED_HOST_OS),MSYS)
-# LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
-# else
-# LinkerArgs_LibDependencies = $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
-# endif
-# else
-# LinkerArgs_LibDependencies = $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --static --libs stroika-platform $${PKG_CONFIG_STROIKA_DEPENDS_ON})
-# endif
 
 #
 # This macro takes two arguments:
@@ -375,27 +361,15 @@ endif
 #
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 # WEIRD - need to use $(shell instead of $$() for MSYS else fails - probably due to my not knowing how to fully enuf disable path covnersions
-# for MSYS --LGP 2025-07-02
-# No - something else - cuz fails on CYGWIN too. NOT sure why...
-ifeq ($(DETECTED_HOST_OS),MSYS)
+# for MSYS and CYGWIN --LGP 2025-07-02
 DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
 		$3 \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" $(shell cygpath --mixed ${StroikaRoot})/ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
+		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot_MIXED}ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
 		$4 \
 		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
-else
-DEFAULT_LINK_LINE=\
-	"$(LINKER)" \
-		$3 \
-		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
-		$(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" ${StroikaRoot}ScriptsLib/pkg-config-msvc --static --libs $(if $2,$2,stroika-frameworks))\
-		$4 \
-		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_, $1)
-endif
 else
 DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
@@ -413,10 +387,7 @@ endif
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated (e.g. things added to CPPFLAGS get added to MIDL_FLAGS)
 #
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-MIDL_FLAGS=	${CPPFLAGS}
-MIDL_FLAGS+=	-nologo
-MIDL_FLAGS+=	-W1
-MIDL_FLAGS+=	-char signed
+MIDL_FLAGS=		${CPPFLAGS} -nologo -W1 -char signed
 
 DEFAULT_MIDL_LINE=\
 	"$(MIDL)" \
@@ -434,10 +405,9 @@ endif
 # Intentionally use '=' instead of ':=' so argument variables can get re-evaluated (e.g. things added to CPPFLAGS get added to RC_FLAGS)
 #
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
-RC_FLAGS=	${CPPFLAGS}
-RC_FLAGS+=	-nologo
-RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))"
-RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Library/Sources)"
+RC_FLAGS	=      ${CPPFLAGS} \
+						-nologo \
+						-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)IntermediateFiles/$(CONFIGURATION))"
 
 DEFAULT_RC_LINE=\
 	"$(RC)" \

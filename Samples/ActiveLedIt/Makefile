@@ -54,6 +54,7 @@ check:
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
+LinkerArgs_ExtraSuffix_	:=
 ifeq (Windows,$(findstring Windows,$(TargetPlatforms)))
 LinkerArgs_ExtraSuffix_	+= -SUBSYSTEM:Windows
 # OCX is a DLL, doesnt seem needed but examples pass this arg
