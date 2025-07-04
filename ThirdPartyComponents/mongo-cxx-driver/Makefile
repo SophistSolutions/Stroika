@@ -156,12 +156,6 @@ PRODUCED_OUTPUT_ARTIFACTS_+= \
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/mongoc2-static.pc
 endif
 
-#PKG_CONFIG_STROIKA_DEPENDS_ON filter to avoid warnings about missing/incomplete stuff from stuff being built but not ready yet...
-#NB: CFLAGS - for example = depends on PKG_CONFIG_STROIKA_DEPENDS_ON
-# ONLY include in PKG_CONFIG_STROIKA_DEPENDS_ON stuff we use here (zlib and openssl)
-PKG_CONFIG_STROIKA_DEPENDS_ON := $(filter zlib openssl,$(PKG_CONFIG_STROIKA_DEPENDS_ON))
-
-
 
 all:
 ifeq (${CONFIGURATION},)

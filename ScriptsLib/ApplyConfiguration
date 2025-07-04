@@ -340,10 +340,8 @@ sub WriteStroikaConfigMakeHeader
 	## NEW
 	print (OUT "#\n");
 	print (OUT "# PKG-CONFIG support\n");
-	print (OUT "PKG_CONFIG_PATH :=	\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/lib/pkgconfig)\n");
+	print (OUT "export PKG_CONFIG_PATH :=	\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/lib/pkgconfig)\n");
 	print (OUT "#\n");
-	print (OUT "export PKG_CONFIG_PATH\n");
-	print (OUT "export PKG_CONFIG_STROIKA_DEPENDS_ON := $PkgConfigNames\n");
 
 	print (OUT "\n");
 	print (OUT "\n");
@@ -381,34 +379,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n# SB same as cached config variable but not done yet\n");
 	print (OUT "PLATFORM_CXXFLAGS :=	$CXXFLAGS\n");		## more to add
 
-	my $CPPFLAGS2WRITE = $CPPFLAGS;
-	# my $LinkerArgs_LibDependencies2WRITE = "\${Platform_LinkerArgs_LibDependencies}";
-	{
-		#NB: delay evaluation of PKG_CONFIG_STROIKA_DEPENDS_ON until last minute, as its value can change (thats why double dollar sign)
-		if (not (trim($PkgConfigNames) eq "")) {
-			# NOTE intention is pkg-config to be evaluated at the point of use, so any changes to PKG_CONFIG_STROIKA_DEPENDS_ON applied
-			# if ($BuildPlatform =~ /^VisualStudio.Net/) {
-			# 	$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --msvc-syntax --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
-			# }
-			# else {
-			# 	$LinkerArgs_LibDependencies2WRITE .=  " \$\$(pkg-config --static --libs \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
-			# }
-			#NOT GREAT but perhaps workable... --LGP 2025-03-12
-			if ($BuildPlatform =~ /^VisualStudio.Net/) {
-				$CPPFLAGS2WRITE .=  " \$\$(\${StroikaRoot}ScriptsLib/FixupDashIs \$\$(pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON}))";
-			}
-			else {
-				$CPPFLAGS2WRITE .=  " \$\$(pkg-config --cflags \$\${PKG_CONFIG_STROIKA_DEPENDS_ON})";
-			}	
-		}
-	}
-
-	# {
-	# 	###WriteStroikaConfigMakeHeader_CachedLineItem_("CPPFLAGS");
-	# 	print (OUT "#COMBINATION of CPPFLAGS_NOTINCLUDES and processed INCLUDES_PATH and pkgConfig subst dynamically\n");
-	# 	print (OUT "CPPFLAGS := $CPPFLAGS2WRITE\n");
-	# 	print (OUT "\n");
-	# }
 	# WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");
 	# WriteStroikaConfigMakeHeader_CachedLineItem_("CXXFLAGS");
 

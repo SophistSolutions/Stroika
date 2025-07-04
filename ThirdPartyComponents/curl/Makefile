@@ -124,11 +124,6 @@ LDFLAGS:=$(filter-out --std=%, $(LDFLAGS))
 
 ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
-#PKG_CONFIG_STROIKA_DEPENDS_ON filter to avoid warnings about missing/incomplete stuff from stuff being built but not ready yet...
-#NB: CFLAGS - for example = depends on PKG_CONFIG_STROIKA_DEPENDS_ON
-# ONLY include in PKG_CONFIG_STROIKA_DEPENDS_ON stuff we use here (zlib and openssl)
-PKG_CONFIG_STROIKA_DEPENDS_ON := $(filter zlib openssl,$(PKG_CONFIG_STROIKA_DEPENDS_ON))
-
 ENVIRONMENT_CONFIGURE_PREFIX=
 ENVIRONMENT_CONFIGURE_PREFIX+= export ARCH=$(ARCH);
 ENVIRONMENT_CONFIGURE_PREFIX+= export CC=$(CC);
