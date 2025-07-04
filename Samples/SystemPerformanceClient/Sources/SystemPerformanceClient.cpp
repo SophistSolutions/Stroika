@@ -31,6 +31,7 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters::Literals;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 
@@ -38,8 +39,6 @@ using Characters::Character;
 using Characters::String;
 using Containers::Sequence;
 using Containers::Set;
-using Execution::pid_t;
-using Execution::Synchronized;
 using Time::DateTime;
 using Time::DisplayedRealtimeClock;
 using Time::Duration;
@@ -103,7 +102,7 @@ namespace {
         });
 
         // run til timeout and then fall out...
-        IgnoreExceptionsForCall (Execution::WaitableEvent{}.Wait (runFor));
+        IgnoreExceptionsForCall (WaitableEvent{}.Wait (runFor));
     }
     void Demo_Using_Direct_Capture_On_Instrument_ (Set<InstrumentNameType> run, bool oneLineMode, Duration captureInterval)
     {
@@ -140,7 +139,7 @@ namespace {
             Instruments::Process::Instrument fProcessInstrument;
 
             MyCapturer_ ()
-                : fProcessInstrument{Instruments::Process::Options{.fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()}}}
+                : fProcessInstrument{Instruments::Process::Options{.fRestrictToPIDs = Set<pid_t>{GetCurrentProcessID ()}}}
             {
                 AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
             }
@@ -182,7 +181,7 @@ namespace {
                 // It might not be found for some instruments (not implemented?)
                 Assert (om->size () <= 1);
                 if (om->size () == 1) {
-                    Instruments::Process::ProcessType thisProcess = (*om)[Execution::GetCurrentProcessID ()];
+                    Instruments::Process::ProcessType thisProcess = (*om)[GetCurrentProcessID ()];
                     if (auto o = thisProcess.fProcessStartedAt) {
                         thisProcUptime = now - *o;
                     }
@@ -210,26 +209,26 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Execution::CommandLine    cmdLine{argc, argv};
+    CommandLine    cmdLine{argc, argv};
     Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 #if qStroika_Foundation_Common_Platform_POSIX
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+    SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
-    using namespace Execution::StandardCommandLineOptions;
-    const Execution::CommandLine::Option kPrintNamesO_{.fSingleCharName = 'l', .fHelpOptionText = "prints only the instrument names"sv};
-    const Execution::CommandLine::Option kMostRecentO_{.fSingleCharName = 'm', .fHelpOptionText = "runs in most-recent-capture-mode"sv};
-    const Execution::CommandLine::Option kOneLineModeO_{.fSingleCharName = 'o', .fHelpOptionText = "prints instrument results (with newlines stripped)"sv};
-    const Execution::CommandLine::Option kRunInstrumentArg_{.fSingleCharName   = 'r',
+    using namespace StandardCommandLineOptions;
+    const CommandLine::Option kPrintNamesO_{.fSingleCharName = 'l', .fHelpOptionText = "prints only the instrument names"sv};
+    const CommandLine::Option kMostRecentO_{.fSingleCharName = 'm', .fHelpOptionText = "runs in most-recent-capture-mode"sv};
+    const CommandLine::Option kOneLineModeO_{.fSingleCharName = 'o', .fHelpOptionText = "prints instrument results (with newlines stripped)"sv};
+    const CommandLine::Option kRunInstrumentArg_{.fSingleCharName   = 'r',
                                                             .fSupportsArgument = true,
                                                             .fRepeatable       = true,
                                                             .fHelpArgName      = "RUN-INSTRUMENT"sv,
                                                             .fHelpOptionText   = "runs the given instrument (it can be repeated)"sv};
-    const Execution::CommandLine::Option kRunForO_{
+    const CommandLine::Option kRunForO_{
         .fSingleCharName = 't', .fSupportsArgument = true, .fHelpOptionText = "time to run for (if zero run each matching instrument once)"sv};
-    const Execution::CommandLine::Option kTimeBetweenCapturesO_{
+    const CommandLine::Option kTimeBetweenCapturesO_{
         .fSingleCharName = 'c', .fSupportsArgument = true, .fHelpArgName = "NSEC"sv, .fHelpOptionText = "time interval between captures"sv};
 
-    const initializer_list<Execution::CommandLine::Option> kAllOptions_ = {
+    const initializer_list<CommandLine::Option> kAllOptions_ = {
         kHelp, kPrintNamesO_, kMostRecentO_, kOneLineModeO_, kRunInstrumentArg_, kRunForO_, kTimeBetweenCapturesO_};
 
     bool                  printUsage            = cmdLine.Has (kHelp);
@@ -267,7 +266,7 @@ int main (int argc, const char* argv[])
             Demo_Using_Direct_Capture_On_Instrument_ (run, oneLineMode, Duration{captureInterval});
         }
     }
-    catch (const Execution::InvalidCommandLineArgument&) {
+    catch (const InvalidCommandLineArgument&) {
         cerr << "Error encountered: " << Characters::ToString (current_exception ()) << endl;
         cerr << cmdLine.GenerateUsage (kAllOptions_) << endl;
         return EXIT_SUCCESS;

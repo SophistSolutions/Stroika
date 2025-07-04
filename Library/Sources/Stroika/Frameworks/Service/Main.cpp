@@ -655,14 +655,14 @@ pid_t Main::BasicUNIXServiceImpl::_GetServicePID () const
 void Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 {
     if (install) {
-        SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, fOurSignalHandler_);
-        SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, fOurSignalHandler_);
-        SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
+        SignalHandlerRegistry::sThe.AddSignalHandler (SIGINT, fOurSignalHandler_);
+        SignalHandlerRegistry::sThe.AddSignalHandler (SIGTERM, fOurSignalHandler_);
+        SignalHandlerRegistry::sThe.AddSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
     }
     else {
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGINT, fOurSignalHandler_);
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGTERM, fOurSignalHandler_);
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
+        SignalHandlerRegistry::sThe.RemoveSignalHandler (SIGINT, fOurSignalHandler_);
+        SignalHandlerRegistry::sThe.RemoveSignalHandler (SIGTERM, fOurSignalHandler_);
+        SignalHandlerRegistry::sThe.RemoveSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
     }
 }
 

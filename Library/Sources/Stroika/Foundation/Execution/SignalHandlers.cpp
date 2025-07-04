@@ -292,12 +292,6 @@ SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
  */
 const SignalHandler SignalHandlerRegistry::kIGNORED = SignalHandler{SIG_IGN, SignalHandler::Type::eDirect};
 
-SignalHandlerRegistry& SignalHandlerRegistry::Get ()
-{
-    static SignalHandlerRegistry sThe_;
-    return sThe_;
-}
-
 SignalHandlerRegistry::SignalHandlerRegistry ()
 {
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
@@ -611,10 +605,10 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
 #endif
 
     /*
-     *  This (SignalHandlerRegistry::Get () SHOULD be safe. It can allocate memory, but only the first time
+     *  This (SignalHandlerRegistry::sThe SHOULD be safe. It can allocate memory, but only the first time
      *  called, and this cannot be our first call.
      */
-    SignalHandlerRegistry& SHR = Get ();
+    SignalHandlerRegistry& SHR = sThe;
 
     {
         /*

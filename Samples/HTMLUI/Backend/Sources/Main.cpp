@@ -77,9 +77,9 @@ namespace {
             Execution::Platform::Windows::RegisterDefaultHandler_StructuredException ();
 #endif
             Debug::RegisterDefaultFatalErrorHandlers (DefaultLoggingFatalErrorHandler);
-            SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
+            SignalHandlerRegistry::sThe.SetStandardCrashHandlerSignals (SignalHandler{DefaultLoggingCrashSignalHandler, SignalHandler::Type::eDirect});
 #if qStroika_Foundation_Common_Platform_POSIX
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
+            SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
         }
 

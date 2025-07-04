@@ -622,7 +622,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
         {
             [[maybe_unused]] lock_guard critSec{sHandlerInstalled_};
             if (not sHandlerInstalled_) {
-                SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+                SignalHandlerRegistry::sThe.AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
             }
         }
@@ -1033,13 +1033,13 @@ SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
     if (signalNumber) {
         [[maybe_unused]] lock_guard critSec{sHandlerInstalled_};
         if (sHandlerInstalled_) {
-            SignalHandlerRegistry::Get ().RemoveSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+            SignalHandlerRegistry::sThe.RemoveSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
             sHandlerInstalled_ = false;
         }
         sSignalUsedForThreadInterrupt_ = signalNumber.value ();
         // install new handler
         if (not sHandlerInstalled_) {
-            SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+            SignalHandlerRegistry::sThe.AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
             sHandlerInstalled_ = true;
         }
     }

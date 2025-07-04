@@ -333,7 +333,7 @@ int main (int argc, const char* argv[])
     // Many tests use pipes
     // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
     //  --LGP 2014-02-05
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+    Execution::SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
 
 #if qStroika_HasComponent_googletest

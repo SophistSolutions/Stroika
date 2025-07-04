@@ -437,7 +437,7 @@ namespace Stroika::Foundation::Execution {
     void DefaultLoggingFatalErrorHandler ([[maybe_unused]] const Characters::SDKChar* msg) noexcept;
 
     /**
-     * Sensible argument to SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals(...), if using Logger (but beware - caller must assure Logger::Activate called appropriately)
+     * Sensible argument to SignalHandlerRegistry::sThe.SetStandardCrashHandlerSignals(...), if using Logger (but beware - caller must assure Logger::Activate called appropriately)
      */
     void DefaultLoggingCrashSignalHandler (Execution::SignalID signal) noexcept;
 
