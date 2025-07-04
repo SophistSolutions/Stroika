@@ -34,7 +34,7 @@ namespace {
             Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
         {
             bool called = false;
-            SignalHandlerRegistry::sThetSignalHandlers (
+            SignalHandlerRegistry::sThe.SetSignalHandlers (
                 SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) noexcept -> void { called = true; }, SignalHandler::eDirect});
             [[maybe_unused]] auto&& cleanup2 =
                 Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
