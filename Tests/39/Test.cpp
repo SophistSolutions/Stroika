@@ -29,15 +29,15 @@ using Containers::Set;
 namespace {
     void Test1_Direct_ ()
     {
-        Set<SignalHandler>      saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        Set<SignalHandler>      saved = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
         [[maybe_unused]] auto&& cleanup =
-            Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+            Execution::Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
         {
             bool called = false;
             SignalHandlerRegistry::Get ().SetSignalHandlers (
                 SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) noexcept -> void { called = true; }, SignalHandler::eDirect});
             [[maybe_unused]] auto&& cleanup2 =
-                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
             EXPECT_TRUE (called);
         }

@@ -40,6 +40,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters::Literals;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
@@ -77,10 +78,10 @@ namespace {
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
                 else {
-                    Execution::ReThrow ();
+                    ReThrow ();
                 }
             }
-            catch (const Execution::TimeOutException& e) {
+            catch (const TimeOutException& e) {
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
 #if qStroika_HasComponent_libcurl
@@ -100,11 +101,11 @@ namespace {
                 //     DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see http://stroika-bugs.sophists.com/browse/STK-679"_f);
                 //     return;
                 // }
-                Execution::ReThrow ();
+                ReThrow ();
             }
 #endif
             catch (...) {
-                Execution::ReThrow ();
+                ReThrow ();
             }
         }
         void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
@@ -124,10 +125,10 @@ namespace {
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
                 else {
-                    Execution::ReThrow ();
+                    ReThrow ();
                 }
             }
-            catch (const Execution::TimeOutException& e) {
+            catch (const TimeOutException& e) {
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
         }
@@ -135,19 +136,19 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, SimpleConnnectionTests_)
     {
         Debug::TraceContextBumper     ctx{"{}::SimpleConnnectionTests_"};
-        constexpr Execution::Activity kActivity_{"running SimpleConnnectionTests_"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running SimpleConnnectionTests_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         using namespace Test_1_SimpleConnnectionTests_;
         try {
             DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
             DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
-            Execution::ReThrow ();
+            ReThrow ();
 #endif
         }
 
@@ -213,7 +214,7 @@ namespace {
                         Execution::Sleep (500ms * tryCount);
                         goto again;
                     }
-                    Execution::ReThrow ();
+                    ReThrow ();
                 }
 #endif
                 if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl::error_category ()}) {
@@ -226,11 +227,11 @@ namespace {
                         goto again;
                     }
                 }
-                Execution::ReThrow ();
+                ReThrow ();
             }
 #endif
             catch (...) {
-                Execution::ReThrow ();
+                ReThrow ();
             }
             Response r = *optResp;
             EXPECT_TRUE (r.GetSucceeded ());
@@ -310,10 +311,10 @@ namespace {
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
                 else {
-                    Execution::ReThrow ();
+                    ReThrow ();
                 }
             }
-            catch (const Execution::TimeOutException& e) {
+            catch (const TimeOutException& e) {
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
 #if qStroika_HasComponent_libcurl
@@ -328,7 +329,7 @@ namespace {
                 Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
             }
 #endif
-            catch (const Execution::RequiredComponentMissingException&) {
+            catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
@@ -345,19 +346,19 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, SimpleFetch_httpbin_)
     {
         Debug::TraceContextBumper     ctx{"{}::SimpleFetch_httpbin_"};
-        constexpr Execution::Activity kActivity_{"running SimpleFetch_httpbin_"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running SimpleFetch_httpbin_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         using namespace Test_2_SimpleFetch_httpbin_;
         try {
             DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
             DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
-            Execution::ReThrow ();
+            ReThrow ();
 #endif
         }
 #if qStroika_HasComponent_libcurl
@@ -394,10 +395,10 @@ namespace {
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
                 else {
-                    Execution::ReThrow ();
+                    ReThrow ();
                 }
             }
-            catch (const Execution::TimeOutException& e) {
+            catch (const TimeOutException& e) {
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
         }
@@ -405,19 +406,19 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, TextStreamResponse_)
     {
         Debug::TraceContextBumper     ctx{"{}::TextStreamResponse_"};
-        constexpr Execution::Activity kActivity_{"running TextStreamResponse_"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running TextStreamResponse_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         using namespace Test3_TextStreamResponse_;
         try {
             DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
             DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
-            Execution::ReThrow ();
+            ReThrow ();
 #endif
         }
 
@@ -443,8 +444,8 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, RefDocsTests_)
     {
         Debug::TraceContextBumper     ctx{"{}::RefDocsTests_"};
-        constexpr Execution::Activity kActivity_{"running RefDocsTests_"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running RefDocsTests_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         try {
             Test_4_RefDocsTests_::T1_get_ ();
         }
@@ -453,19 +454,19 @@ namespace {
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
             else {
-                Execution::ReThrow ();
+                ReThrow ();
             }
         }
-        catch (const Execution::TimeOutException& e) {
+        catch (const TimeOutException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
             DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
-            Execution::ReThrow ();
+            ReThrow ();
 #endif
         }
     }
@@ -491,24 +492,24 @@ namespace {
                     return;
                 }
 #endif
-                Execution::ReThrow ();
+                ReThrow ();
             }
-            catch (const Execution::RequiredComponentMissingException&) {
+            catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
                 DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
-                Execution::ReThrow ();
+                ReThrow ();
 #endif
             }
             catch (...) {
-                Execution::ReThrow ();
+                ReThrow ();
             }
         };
 
-        constexpr Execution::Activity kActivity_{"running Test_5_SSLCertCheckTests_"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running Test_5_SSLCertCheckTests_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         Connection::Options           o = kDefaultTestOptions_;
 
         // GOOD SSL SITE
@@ -517,7 +518,7 @@ namespace {
             o.fFailConnectionIfSSLCertificateInvalid = true;
             T1_get_ignore_SSLNotConfigured (o, kGoodSite_);
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
@@ -533,7 +534,7 @@ namespace {
             o.fFailConnectionIfSSLCertificateInvalid = false;
             T1_get_ignore_SSLNotConfigured (o, kGoodSite_);
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
@@ -563,7 +564,7 @@ namespace {
                 T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
                 // Getting here is fine - we should be able to ignore the invalid CERT
             }
-            catch (const Execution::RequiredComponentMissingException&) {
+            catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
                 // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
@@ -610,10 +611,10 @@ namespace {
                         Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                     }
                     else {
-                        Execution::ReThrow ();
+                        ReThrow ();
                     }
                 }
-                catch (const Execution::TimeOutException& e) {
+                catch (const TimeOutException& e) {
                     Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
                 }
             }
@@ -626,8 +627,8 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, TestWithCache_)
     {
         Debug::TraceContextBumper     ctx{"{}::TestWithCache_"};
-        constexpr Execution::Activity kActivity_{"running TestWithCache_"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running TestWithCache_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         using namespace Test_6_TestWithCache_;
 #if qStroika_HasComponent_libcurl
         DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
@@ -688,8 +689,8 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, TestWithConnectionPool_)
     {
         Debug::TraceContextBumper     ctx{"{}::TestWithConnectionPool_"};
-        constexpr Execution::Activity kActivity_{"running TestWithConnectionPool_"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running TestWithConnectionPool_"sv};
+        DeclareActivity    declareActivity{&kActivity_};
         using namespace Test_7_TestWithConnectionPool_;
 
         Cache::DefaultOptions cacheOptions{};
@@ -715,19 +716,19 @@ namespace {
                 Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
             }
             else {
-                Execution::ReThrow ();
+                ReThrow ();
             }
         }
-        catch (const Execution::TimeOutException& e) {
+        catch (const TimeOutException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
             DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
-            Execution::ReThrow ();
+            ReThrow ();
 #endif
         }
     }
@@ -737,8 +738,8 @@ namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, ErrTest)
     {
         Debug::TraceContextBumper     ctx{"{}::ErrTest"};
-        constexpr Execution::Activity kActivity_{"running ErrTest"sv};
-        Execution::DeclareActivity    declareActivity{&kActivity_};
+        constexpr Activity kActivity_{"running ErrTest"sv};
+        DeclareActivity    declareActivity{&kActivity_};
 
         try {
             using namespace Memory;
@@ -749,16 +750,16 @@ namespace {
         catch (const IO::Network::HTTP::Exception& e) {
             DbgTrace ("e={}"_f, e);
         }
-        catch (const Execution::TimeOutException& e) {
+        catch (const TimeOutException& e) {
             Stroika::Frameworks::Test::WarnTestIssue ("Ignoring {}"_f(e));
         }
-        catch (const Execution::RequiredComponentMissingException&) {
+        catch (const RequiredComponentMissingException&) {
 #if !qStroika_HasComponent_libcurl && !qStroika_HasComponent_WinHTTP
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
             // This is more like the absence of a feature beacuse of the missing component.
             DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp"_f);
 #else
-            Execution::ReThrow ();
+            ReThrow ();
 #endif
         }
     }
@@ -769,7 +770,7 @@ int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
 #if qStroika_Foundation_Common_Platform_POSIX
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+    SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 #if qStroika_HasComponent_googletest
     return RUN_ALL_TESTS ();
