@@ -31,13 +31,13 @@ namespace {
     {
         Set<SignalHandler>      saved = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
         [[maybe_unused]] auto&& cleanup =
-            Execution::Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
+            Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
         {
             bool called = false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (
+            SignalHandlerRegistry::sThetSignalHandlers (
                 SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) noexcept -> void { called = true; }, SignalHandler::eDirect});
             [[maybe_unused]] auto&& cleanup2 =
-                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
+                Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
             EXPECT_TRUE (called);
         }
@@ -49,12 +49,12 @@ namespace {
     {
         // safe signal handlers all run through another thread, so this amounts to thread sync
         {
-            Set<SignalHandler>      saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+            Set<SignalHandler>      saved = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
             [[maybe_unused]] auto&& cleanup =
-                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+                Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
             {
                 atomic<bool> called{false};
-                SignalHandlerRegistry::Get ().SetSignalHandlers (
+                SignalHandlerRegistry::sThe.SetSignalHandlers (
                     SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }});
                 ::raise (SIGINT);
                 Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
@@ -62,12 +62,12 @@ namespace {
             }
         }
         {
-            Set<SignalHandler>      saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+            Set<SignalHandler>      saved = SignalHandlerRegistry::sThe.GetSignalHandlers (SIGINT);
             [[maybe_unused]] auto&& cleanup =
-                Execution::Finally ([&] () noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+                Finally ([&] () noexcept { SignalHandlerRegistry::sThe.SetSignalHandlers (SIGINT, saved); });
             {
-                Execution::Synchronized<bool> called = false;
-                SignalHandlerRegistry::Get ().SetSignalHandlers (
+                Synchronized<bool> called = false;
+                SignalHandlerRegistry::sThe.SetSignalHandlers (
                     SIGINT, SignalHandler ([&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }));
                 ::raise (SIGINT);
                 Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
