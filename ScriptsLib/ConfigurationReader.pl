@@ -255,10 +255,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'PLATFORM_CXXFLAGS'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<EXTRA_COMPILER_ARGS>");
-		if (defined $pps) {
-			$configuration {'EXTRA_COMPILER_ARGS'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<VSVARS_PLATFORM_INCLUDES_PATH>");
 		if (defined $pps) {
 			$configuration {'VSVARS_PLATFORM_INCLUDES_PATH'} = $pps;

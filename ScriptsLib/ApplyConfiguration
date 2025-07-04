@@ -77,7 +77,6 @@ my $COMPILER_DRIVER_CPlusPlus = "";
 my $AR = undef;
 my $LIBTOOL = undef;
 my $RANLIB = undef;
-my $EXTRA_COMPILER_ARGS = "";
 my $Platform_LinkerArgs_ExtraPrefix = "";
 my $Platform_LinkerArgs_ExtraSuffix = "";
 my $PLATFORM_CPPFLAGS_NOTINCLUDES = "";
@@ -185,7 +184,6 @@ sub	ReadConfiguration_
 	$CPPFLAGS_NOTINCLUDES = $PLATFORM_CPPFLAGS_NOTINCLUDES . " " . GetConfigurationParameter($activeConfiguration, "FOUNDATION_CPPFLAGS_NOTINCLUDES");
 	$CFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CFLAGS");
 	$CXXFLAGS = GetConfigurationParameter($activeConfiguration, "PLATFORM_CXXFLAGS");
-	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
 	$Platform_LinkerArgs_ExtraPrefix = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_ExtraPrefix");
 	$Platform_LinkerArgs_ExtraSuffix = GetConfigurationParameter($activeConfiguration, "Platform_LinkerArgs_ExtraSuffix");
 
@@ -354,7 +352,6 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("RC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("MIDL");
-	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("AssertionsEnabled", $gAssertionsEnabled);
 	WriteStroikaConfigMakeHeader_CachedLineItem_("Platform_LinkerArgs_LibPath");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkTime_CopyFilesToEXEDir");
@@ -461,9 +458,6 @@ sub WriteStroikaConfigMakeHeader
 
 	print (OUT "\n");
 	print (OUT "\n");
-
-	print (OUT "#\n");
-	print (OUT "EXTRA_COMPILER_ARGS :=	$EXTRA_COMPILER_ARGS\n");
 
 	if ($BuildPlatform =~ /^VisualStudio.Net/) {
 		print (OUT "\n");
