@@ -247,7 +247,7 @@ LDFLAGS:=$(Platform_LinkerArgs_ExtraPrefix) $(Platform_LinkerArgs_LibPath) $(Pla
 #		C:\Stroika\IntermediateFiles\Release-x86\ThirdPartyComponents\openssl\include\internal\ring_buf.h(131) : warning C4724: potential mod by 0
 #
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-ifeq (-LTCG,$(findstring -LTCG,$(Platform_LinkerArgs_ExtraPrefix)))
+ifeq (-LTCG,$(findstring -LTCG,$(Platform_LDFLAGS)))
 CFLAGS	+= -wd4724
 endif
 endif

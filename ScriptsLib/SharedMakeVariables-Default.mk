@@ -354,6 +354,7 @@ endif
 #	$4 [optional argument - defaults to empty] EXTRA LDFLAGS AFTER OBJS
 #
 #	\note delayed evaluation
+#	\note does NOT use Platform_LDFLAGS or LDFLAGS (takes as argumements basically)
 #
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 # WEIRD - need to use $(shell instead of $$() for MSYS else fails - probably due to my not knowing how to fully enuf disable path covnersions
@@ -377,6 +378,13 @@ DEFAULT_LINK_LINE=\
 		$(call DEFAULT_LINK_LINE_EXTRA_TEXT_,$1)
 endif
 
+#
+#	Combination of all the LDFLAGS for the platform/basics
+#	This OFTEN cannot be used directly as the flags may need to be spread out differently (see DEFAULT_LINK_LINE)
+#
+#	\note delayed evaluation
+#
+Platform_LDFLAGS	=	${Platform_LinkerArgs_ExtraPrefix} ${Platform_LinkerArgs_LibPath} ${Platform_LinkerArgs_LibDependencies} ${Platform_LinkerArgs_ExtraSuffix}
 
 
 #
