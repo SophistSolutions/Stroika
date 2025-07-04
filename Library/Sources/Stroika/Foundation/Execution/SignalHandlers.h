@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Execution {
          * Access singleton implementation. None exists until this is called.
          */
         static  SignalHandlerRegistry  sThe;
-        static [[deprecated("Since Stroika v3.0d21, use SignalHandlerRegistry::sThe")]] SignalHandlerRegistry& Get()
+        [[deprecated("Since Stroika v3.0d21, use SignalHandlerRegistry::sThe")]] static  SignalHandlerRegistry& Get()
         {
             return sThe;
         }
