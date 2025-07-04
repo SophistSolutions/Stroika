@@ -716,12 +716,12 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_fmtlib eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
-			# @todo unclear if we want to add this to platform includes path - probably yes
-			push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
+			# @todo unclear if we want to add this to platform includes path - probably yes (alternative is FOUNDATION_INCLUDES_PATH below)
+			push @INCLUDES_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/include/`) . "/";
 		}
 		@PLATFORM_INCLUDES_PATH = qw ();
 		push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
-		push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
+		# push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
 
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
 			@VC_PLATFORM_INCLUDES_PATH = qw ();
