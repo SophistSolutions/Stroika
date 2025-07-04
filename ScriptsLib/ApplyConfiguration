@@ -697,7 +697,7 @@ sub WriteVS2kIntellisenseConfigFile
 	print (OUT "    <NMakePreprocessorDefinitions>$defs2Print</NMakePreprocessorDefinitions>\n");
 
 	local $paths2Print = "";
-	local $myIncludesPath = $PLATFORM_INCLUDES_PATH . $FOUNDATION_INCLUDES_PATH;
+	local $myIncludesPath = $PLATFORM_INCLUDES_PATH . $PATH_SEPERATOR . $FOUNDATION_INCLUDES_PATH;
 	foreach my $element (split /$PATH_SEPERATOR/, $myIncludesPath) {
 		if ($paths2Print ne "") {
 			$paths2Print .= ';'
@@ -858,7 +858,8 @@ sub WriteVSCodeCPPExtensionConfigFile
 	{
 		$newCfgObj .= " ,includePath: [";
 		$newCfgObj .= "\\\"\\\${myDefaultIncludePath}\\\"";
-		foreach my $element (split /$PATH_SEPERATOR/, $INCLUDES_PATH) {
+		local $myIncludesPath = $PLATFORM_INCLUDES_PATH . $PATH_SEPERATOR . $FOUNDATION_INCLUDES_PATH;
+		foreach my $element (split /$PATH_SEPERATOR/, $myIncludesPath) {
 			$newCfgObj .= " , ";
 			$newCfgObj .= "\\\"$element\\\"";
 		}
