@@ -22,7 +22,7 @@
 namespace Stroika::Foundation::Common {
 #endif
 
-#include "Stroika-Current-Version.h"
+#include "Stroika/Stroika-Current-Version.h"
 
     /**
      */

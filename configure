@@ -722,7 +722,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 		@PLATFORM_INCLUDES_PATH = qw ();
 		push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
 		# for now include this (for Stroika-Current-Version.h) but later package all these up in BUilds/$CONF/includes/Stroika
-		push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
+		# push @FOUNDATION_INCLUDES_PATH, trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
 
 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
 			@VC_PLATFORM_INCLUDES_PATH = qw ();
