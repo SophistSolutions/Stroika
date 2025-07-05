@@ -1307,6 +1307,16 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		}
 	}
 
+	if ($isVisualStudio) {
+		# Avoid this - not sure what the reason/need for this is.
+		# 	Creating library C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test13.lib and object C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\Test13.exp
+		#	--LGP 2025-07-05
+		if (not ($LinkerArgs_ExtraPrefix eq "")) {
+			$LinkerArgs_ExtraPrefix .= " ";
+		}
+		$LinkerArgs_ExtraPrefix .= "-noexp -noimplib";
+	}
+
 	if (!(defined $AR)) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
