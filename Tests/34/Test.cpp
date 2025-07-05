@@ -34,17 +34,17 @@
 
 namespace Resources_ {
     constexpr
-#include "Tests/34/SampleCCR.ccr.embed"
+#include "SampleCCR.ccr.embed"
         constexpr
-#include "Tests/34/ASTM_CCR_V1.xsd.embed"
+#include "ASTM_CCR_V1.xsd.embed"
         constexpr
-#include "Tests/34/personal.xml.embed"
+#include "personal.xml.embed"
         constexpr
-#include "Tests/34/personal.xsd.embed"
+#include "personal.xsd.embed"
         constexpr
-#include "Tests/34/HealthFrameWorks_v3.xml.embed"
+#include "HealthFrameWorks_v3.xml.embed"
         constexpr
-#include "Tests/34/ReferenceContent-2012-03.xsd.embed"
+#include "ReferenceContent-2012-03.xsd.embed"
 }
 
 using std::byte;

@@ -19,6 +19,10 @@ Objs	=	\
 	$(ObjDir)Test${OBJ_SUFFIX}\
 
 
+# For embeddings/resources (xxd)
+CPPFLAGS       +=     -I${ObjDir_ToolsSafe}
+
+
 include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
 
 all:	$(ObjDir) $(TARGETEXE)
