@@ -173,8 +173,8 @@ namespace Stroika::Foundation::Execution {
         /**
          * Access singleton implementation. None exists until this is called.
          */
-        static  SignalHandlerRegistry  sThe;
-        [[deprecated("Since Stroika v3.0d21, use SignalHandlerRegistry::sThe")]] static  SignalHandlerRegistry& Get()
+        static SignalHandlerRegistry                                                                            sThe;
+        [[deprecated ("Since Stroika v3.0d21, use SignalHandlerRegistry::sThe")]] static SignalHandlerRegistry& Get ()
         {
             return sThe;
         }
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Execution {
     private:
         static void FirstPassSignalHandler_ (SignalID signal);
     };
-     inline SignalHandlerRegistry SignalHandlerRegistry::sThe;
+    inline SignalHandlerRegistry SignalHandlerRegistry::sThe;
 
     /**
      *  A direct (eDirect) signal handler is invoked in the stack context in which the

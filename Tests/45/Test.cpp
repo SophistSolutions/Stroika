@@ -135,9 +135,9 @@ namespace {
     }
     GTEST_TEST (Foundation_IO_Network_Transfer, SimpleConnnectionTests_)
     {
-        Debug::TraceContextBumper     ctx{"{}::SimpleConnnectionTests_"};
-        constexpr Activity kActivity_{"running SimpleConnnectionTests_"sv};
-        DeclareActivity    declareActivity{&kActivity_};
+        Debug::TraceContextBumper ctx{"{}::SimpleConnnectionTests_"};
+        constexpr Activity        kActivity_{"running SimpleConnnectionTests_"sv};
+        DeclareActivity           declareActivity{&kActivity_};
         using namespace Test_1_SimpleConnnectionTests_;
         try {
             DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
@@ -345,9 +345,9 @@ namespace {
     }
     GTEST_TEST (Foundation_IO_Network_Transfer, SimpleFetch_httpbin_)
     {
-        Debug::TraceContextBumper     ctx{"{}::SimpleFetch_httpbin_"};
-        constexpr Activity kActivity_{"running SimpleFetch_httpbin_"sv};
-        DeclareActivity    declareActivity{&kActivity_};
+        Debug::TraceContextBumper ctx{"{}::SimpleFetch_httpbin_"};
+        constexpr Activity        kActivity_{"running SimpleFetch_httpbin_"sv};
+        DeclareActivity           declareActivity{&kActivity_};
         using namespace Test_2_SimpleFetch_httpbin_;
         try {
             DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
@@ -405,9 +405,9 @@ namespace {
     }
     GTEST_TEST (Foundation_IO_Network_Transfer, TextStreamResponse_)
     {
-        Debug::TraceContextBumper     ctx{"{}::TextStreamResponse_"};
-        constexpr Activity kActivity_{"running TextStreamResponse_"sv};
-        DeclareActivity    declareActivity{&kActivity_};
+        Debug::TraceContextBumper ctx{"{}::TextStreamResponse_"};
+        constexpr Activity        kActivity_{"running TextStreamResponse_"sv};
+        DeclareActivity           declareActivity{&kActivity_};
         using namespace Test3_TextStreamResponse_;
         try {
             DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
@@ -443,9 +443,9 @@ namespace {
     }
     GTEST_TEST (Foundation_IO_Network_Transfer, RefDocsTests_)
     {
-        Debug::TraceContextBumper     ctx{"{}::RefDocsTests_"};
-        constexpr Activity kActivity_{"running RefDocsTests_"sv};
-        DeclareActivity    declareActivity{&kActivity_};
+        Debug::TraceContextBumper ctx{"{}::RefDocsTests_"};
+        constexpr Activity        kActivity_{"running RefDocsTests_"sv};
+        DeclareActivity           declareActivity{&kActivity_};
         try {
             Test_4_RefDocsTests_::T1_get_ ();
         }
@@ -508,9 +508,9 @@ namespace {
             }
         };
 
-        constexpr Activity kActivity_{"running Test_5_SSLCertCheckTests_"sv};
-        DeclareActivity    declareActivity{&kActivity_};
-        Connection::Options           o = kDefaultTestOptions_;
+        constexpr Activity  kActivity_{"running Test_5_SSLCertCheckTests_"sv};
+        DeclareActivity     declareActivity{&kActivity_};
+        Connection::Options o = kDefaultTestOptions_;
 
         // GOOD SSL SITE
         const URI kGoodSite_{"https://badssl.com/"}; // ironically this is a site with good SSL cert
@@ -626,9 +626,9 @@ namespace {
     }
     GTEST_TEST (Foundation_IO_Network_Transfer, TestWithCache_)
     {
-        Debug::TraceContextBumper     ctx{"{}::TestWithCache_"};
-        constexpr Activity kActivity_{"running TestWithCache_"sv};
-        DeclareActivity    declareActivity{&kActivity_};
+        Debug::TraceContextBumper ctx{"{}::TestWithCache_"};
+        constexpr Activity        kActivity_{"running TestWithCache_"sv};
+        DeclareActivity           declareActivity{&kActivity_};
         using namespace Test_6_TestWithCache_;
 #if qStroika_HasComponent_libcurl
         DoRegressionTests_ForConnectionFactory_ ([=] () -> Connection::Ptr {
@@ -688,9 +688,9 @@ namespace {
     }
     GTEST_TEST (Foundation_IO_Network_Transfer, TestWithConnectionPool_)
     {
-        Debug::TraceContextBumper     ctx{"{}::TestWithConnectionPool_"};
-        constexpr Activity kActivity_{"running TestWithConnectionPool_"sv};
-        DeclareActivity    declareActivity{&kActivity_};
+        Debug::TraceContextBumper ctx{"{}::TestWithConnectionPool_"};
+        constexpr Activity        kActivity_{"running TestWithConnectionPool_"sv};
+        DeclareActivity           declareActivity{&kActivity_};
         using namespace Test_7_TestWithConnectionPool_;
 
         Cache::DefaultOptions cacheOptions{};
@@ -737,9 +737,9 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_IO_Network_Transfer, ErrTest)
     {
-        Debug::TraceContextBumper     ctx{"{}::ErrTest"};
-        constexpr Activity kActivity_{"running ErrTest"sv};
-        DeclareActivity    declareActivity{&kActivity_};
+        Debug::TraceContextBumper ctx{"{}::ErrTest"};
+        constexpr Activity        kActivity_{"running ErrTest"sv};
+        DeclareActivity           declareActivity{&kActivity_};
 
         try {
             using namespace Memory;

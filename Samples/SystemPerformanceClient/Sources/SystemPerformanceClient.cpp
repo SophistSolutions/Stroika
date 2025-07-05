@@ -209,7 +209,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    CommandLine    cmdLine{argc, argv};
+    CommandLine               cmdLine{argc, argv};
     Debug::TraceContextBumper ctx{"main", "argv={}"_f, cmdLine};
 #if qStroika_Foundation_Common_Platform_POSIX
     SignalHandlerRegistry::sThe.SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
@@ -219,10 +219,10 @@ int main (int argc, const char* argv[])
     const CommandLine::Option kMostRecentO_{.fSingleCharName = 'm', .fHelpOptionText = "runs in most-recent-capture-mode"sv};
     const CommandLine::Option kOneLineModeO_{.fSingleCharName = 'o', .fHelpOptionText = "prints instrument results (with newlines stripped)"sv};
     const CommandLine::Option kRunInstrumentArg_{.fSingleCharName   = 'r',
-                                                            .fSupportsArgument = true,
-                                                            .fRepeatable       = true,
-                                                            .fHelpArgName      = "RUN-INSTRUMENT"sv,
-                                                            .fHelpOptionText   = "runs the given instrument (it can be repeated)"sv};
+                                                 .fSupportsArgument = true,
+                                                 .fRepeatable       = true,
+                                                 .fHelpArgName      = "RUN-INSTRUMENT"sv,
+                                                 .fHelpOptionText   = "runs the given instrument (it can be repeated)"sv};
     const CommandLine::Option kRunForO_{
         .fSingleCharName = 't', .fSupportsArgument = true, .fHelpOptionText = "time to run for (if zero run each matching instrument once)"sv};
     const CommandLine::Option kTimeBetweenCapturesO_{
