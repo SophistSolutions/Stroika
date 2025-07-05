@@ -177,7 +177,8 @@ if __name__ == "__main__":
     xml_file = f"ConfigurationFiles/{CONFIG}.xml"
     cfgFile = Configuration(configFileName=xml_file)
     output_directory = f"Builds/{CONFIG}/"
-    print (f"Writing stroika-platform.pc, stroika-foundation.pc, stroika-frameworks.pc to: {output_directory}lib/pkgconfig")
+    print (f"Writing \"{output_directory}lib/pkgconfig/{{stroika-platform.pc,stroika-foundation.pc,stroika-frameworks.pc}}\" ... ", end="")
     generate_stroika_platform_pc_file_(cfgFile, output_directory)
     generate_stroika_foundation_pc_file_(cfgFile, output_directory)
     generate_stroika_frameworks_pc_file_(cfgFile, output_directory)
+    print (f"done")
