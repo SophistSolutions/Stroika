@@ -1,11 +1,16 @@
-# This file should generally not be edited. Mostly - one edits/configures the Configuration.mk, and then this generates the right
-# values in make variables to be used in the SharedBuildRules.mk file.
 #
 # One would mostly want to edit this file if there was some flag one wanted to add to CFLAGS for example, that wasn't arleady controlled
 # by a value in Configuration.mk
 #
 # NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list
+#
+# Common bits of script / functions that maybe used in Stroika makefiles.
+# This has no dependencies (besides gnu make)
+#
+# NB: we export variables like ECHO since they dont change from makefile to makefile and pass the values to submakes and avoid being recomputed/re-fetched(performance tweek on make)
+#
 
+#
 ## REMINDER ABOUT GNU MAKEFILES
 #
 #	In GNU Make, the assignment operators := and = define how and when variables are expanded. Specifically: 
@@ -21,7 +26,6 @@ ifndef StroikaRoot
 $(error("StroikaRoot must be defined and included before this file"))
 endif
 export StroikaRoot
-
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -59,12 +63,6 @@ export TOP_ROOT	:=	$(StroikaRoot)
 endif
 
 
-
-
-#Common bits of script / functions that maybe used in Stroika makefiles.
-#This has no dependencies (besides gnu make)
-
-#NB: we export variables like ECHO since they dont change from makefile to makefile and pass the values to submakes and avoid being recomputed/re-fetched(performance tweek on make)
 
 # intentionally export just as a performance hack (avoid call to getdefaultshellvariable)
 # nb we need to define ECHO at all (instead of using echo) because of some braindead default echo implementations, like AIX
@@ -157,7 +155,7 @@ endif
 
 
 ifndef HTMLViewCompiler
-	HTMLViewCompiler	:=	"${StroikaPlatformTargetBuildDir}/HTMLViewCompiler"
+	HTMLViewCompiler	:=	"${StroikaPlatformTargetBuildDir}bin/HTMLViewCompiler"
 endif
 
 
@@ -183,7 +181,6 @@ endif
 
 
 
-
 #
 # Workaround MSYS compatabilty issues with microsoft visual C++ tools.
 #		Note: MSYS2_ENV_CONV_EXCL doesn't appear necessary (as of 2022-01-25)
@@ -206,7 +203,6 @@ SED=sed
 endif
 
 
-
 # Common values include
 #		o	stroika-platform
 #		o	stroika-foundation
@@ -217,9 +213,21 @@ ifndef PackageDependencies
 PackageDependencies	:=	stroika-frameworks
 endif
 
-## bad - must separete out flags into CPP vs not
-# use = instead of := for CPPFLAGS cuz CPPFLAGS overwritten sometimes in some makefiles and dont want to call pkg-config if inappropriate
-# often users will APPEND to CPPFLAGS which itself will force the evaluation
+#
+# Makefiles have 3 varaibles (by convention - not well documented anywhere)
+#	CPPFLAGS	(for running c-pre-processor)
+#	CFLAGS		(specific to C compiler, not including CPPFLAGS)
+#	CXXFLAGS	(specific to c++ compiler, not including CPPFLAGS)
+#
+#	NOTE - not sure about any of these defintitions - cuz not well defined, and not well documented.
+#	
+#	pkgconfig - in contrast - has a single cflags element whch it uses for all of these
+#
+#	Use script SplitCFLAGS to split back into these three categories
+#
+#	\note delayed evaluation
+# 		  often users will APPEND to CPPFLAGS which itself will force the evaluation
+#
 ifeq ($(wildcard $(StroikaLibDir)pkgconfig/stroika-frameworks.pc),)
 CPPFLAGS       :=
 CFLAGS         :=
@@ -300,25 +308,33 @@ DEFAULT_CXX_LINE=\
 endif
 
 
+
 #
-# This macro takes two arguments:
-#	$1 OUTFILE library name
-#	$2 list of OBJS
+#	Used in DEFAULT_LIBRARY_GEN_LINE
 #
-# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-#
-DEFAULT_LIBRARY_GEN_LINE=
-ifneq ($(AR),)
-DEFAULT_LIBRARY_GEN_LINE+=	"$(AR)" cr $1 $2;
-endif
-ifneq ($(RANLIB),)
-DEFAULT_LIBRARY_GEN_LINE+=	"$(RANLIB)" $1
-endif
 ifneq ($(LIBTOOL),)
 LIBTOOLFLAGS += -nologo
 LIBTOOLFLAGS += -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
 ifeq (-GL,$(findstring -GL,$(CXXFLAGS)))
 LIBTOOLFLAGS += -LTCG
+endif
+
+
+
+#
+# This macro (DEFAULT_LIBRARY_GEN_LINE) takes two arguments:
+#	$1 OUTFILE library name
+#	$2 list of OBJS
+#
+#	\note immediate evaluation (though would be nice todo delayed - just hard to construct that way)
+#	@todo rewrite as delayed evaluation - maybe parameterize like I did for linkLine with args passed in
+#
+DEFAULT_LIBRARY_GEN_LINE=
+ifneq ($(AR),)
+DEFAULT_LIBRARY_GEN_LINE	=	"$(AR)" cr $1 $2;
+endif
+ifneq ($(RANLIB),)
+DEFAULT_LIBRARY_GEN_LINE	=	"$(RANLIB)" $1
 endif
 ifneq ($(findstring Windows,$(TargetPlatforms)),)
 # Windows now tends to run out of command-line space (depending on root dir name) - and this helps (see https://www.gnu.org/software/make/manual/html_node/File-Function.html)

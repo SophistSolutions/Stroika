@@ -7,7 +7,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 VPATH = $(SrcDir)
 
-TARGETEXE				=	${StroikaPlatformTargetBuildDir}HTMLViewCompiler${EXE_SUFFIX}
+TARGETEXE				=	${StroikaPlatformTargetBuildDir}bin/HTMLViewCompiler${EXE_SUFFIX}
 
 Objs	:=	\
 	$(ObjDir)HTMLViewCompiler${OBJ_SUFFIX}
@@ -21,6 +21,7 @@ all:	$(ObjDir) $(TARGETEXE)
 
 $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@echo "      Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $@)..."
+	@mkdir -p ${StroikaPlatformTargetBuildDir}bin
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE, $@, stroika-foundation)';\
 	fi
