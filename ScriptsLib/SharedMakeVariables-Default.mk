@@ -314,16 +314,7 @@ endif
 
 
 
-#
-#	Used in DEFAULT_LIBRARY_GEN_LINE
-#
-ifneq ($(LIBTOOL),)
-LIBTOOLFLAGS += -nologo
-LIBTOOLFLAGS += -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
-ifeq (-GL,$(findstring -GL,$(CXXFLAGS)))
-LIBTOOLFLAGS += -LTCG
-endif
-endif
+
 
 
 #
@@ -341,6 +332,12 @@ endif
 ifneq ($(RANLIB),)
 DEFAULT_LIBRARY_GEN_LINE	+=	"$(RANLIB)" $1
 endif
+ifneq ($(LIBTOOL),)
+LIBTOOLFLAGS += -nologo
+LIBTOOLFLAGS += -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}
+ifeq (-GL,$(findstring -GL,$(CXXFLAGS)))
+LIBTOOLFLAGS += -LTCG
+endif
 ifneq ($(findstring Windows,$(TargetPlatforms)),)
 # Windows now tends to run out of command-line space (depending on root dir name) - and this helps (see https://www.gnu.org/software/make/manual/html_node/File-Function.html)
 DEFAULT_LIBRARY_GEN_LINE+=\
@@ -357,6 +354,7 @@ DEFAULT_LIBRARY_GEN_LINE+=\
 		-OUT:$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		${LIBTOOLFLAGS} \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2)
+endif
 endif
 
 

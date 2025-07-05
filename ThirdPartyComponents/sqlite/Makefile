@@ -144,13 +144,13 @@ ${TARGETEXE}:	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
 # trick of using word 1 is to get this triggered just once
 $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite
-	@cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite/sqlite3.h
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)lib
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite
+	cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)sqlite3.h $(PER_CONFIGURATION_BUILDS_DIR_)include/sqlite/sqlite3.h
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)lib
 	@$(MAKE) --no-print-directory $(Objs) ECHO_BUILD_LINES=1
-	@$(call DEFAULT_LIBRARY_GEN_LINE,$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(SQLITE3LIB),$(LibObjs))
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin 
-	@mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
+	$(call DEFAULT_LIBRARY_GEN_LINE,$(PER_CONFIGURATION_BUILDS_DIR_)lib/$(SQLITE3LIB),$(LibObjs))
+	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR_)bin 
+	mkdir -p "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	cp sqlite.pc "${PER_CONFIGURATION_BUILDS_DIR_}/lib/pkgconfig/"
 	$(call DEFAULT_LINK_LINE, $(TARGETEXE), stroika-platform) 
 
