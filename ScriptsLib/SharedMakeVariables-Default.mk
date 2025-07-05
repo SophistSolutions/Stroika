@@ -54,6 +54,7 @@ StroikaRoot_MIXED	:=	${StroikaRoot}
 endif
 
 
+
 #
 # Some makefiles - apps building stroika as a part - may define TOP_ROOT (often will). Allow Stroika makefiles to referene
 # TOP_ROOT even if not in that context (just treat as alias for StroikaRoot)
@@ -96,7 +97,11 @@ SHELL?=/bin/bash
 ifndef ObjDir
 	ObjDir		:=	./
 endif
-
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(BuildPlatform)))
+ObjDir_ToolsSafe	=	$(shell cygpath --mixed ${ObjDir})
+else
+ObjDir_ToolsSafe	=	${ObjDir}
+endif
 
 #
 #	This is typically the --prefix - in most third-party-component makefile/configure lines
