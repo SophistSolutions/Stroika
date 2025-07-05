@@ -438,7 +438,7 @@ apply-configurations:
 
 apply-configurations-if-needed:
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory --silent IntermediateFiles/$$i/Configuration.mk .vscode/c_cpp_properties.json IntermediateFiles/$$i/Stroika-Current-Version.h CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory --silent IntermediateFiles/$$i/Configuration.mk .vscode/c_cpp_properties.json Builds/$$i/include/Stroika/Stroika-Current-Version.h CONFIGURATION=$$i;\
 	done
 
 ifneq ($(CONFIGURATION),)
