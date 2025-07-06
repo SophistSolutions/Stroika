@@ -93,7 +93,7 @@ my $VSVARS_VCToolsInstallDir=undef;
 
 my @useExtraCDefines;
 my @useExtraMakeDefines;
-my @packageCfgNames;
+my @foundationPackageCfgNames;
 
 my @Platform_CPPFLAGS_B4Includes = qw ();		# anything called --append CPPFLAGS here! - not including STK_INCLUDES
 # my @CPPFLAGS = qw ();
@@ -777,37 +777,37 @@ sub     FillDefaultLibDependencies_
 
 	if ($includeAutomaticLibDependencies) {
 		if ($FEATUREFLAG_Xerces ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "xerces-c");
+			push (@foundationPackageCfgNames, "xerces-c");
  		}
 		if ($FEATUREFLAG_libxml2 ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "libxml-2.0");
+			push (@foundationPackageCfgNames, "libxml-2.0");
 		}
 		if ($FEATUREFLAG_mongocxxdriver ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "libmongocxx-static");
+			push (@foundationPackageCfgNames, "libmongocxx-static");
 		}
 		if ($FEATUREFLAG_OpenSSL ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "openssl");
+			push (@foundationPackageCfgNames, "openssl");
 		}
 		if ($FEATUREFLAG_LIBCURL ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "libcurl");
+			push (@foundationPackageCfgNames, "libcurl");
 		}
 		if ($FEATUREFLAG_fmtlib ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "fmt");
+			push (@foundationPackageCfgNames, "fmt");
 		}
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "lzma");
+			push (@foundationPackageCfgNames, "lzma");
 		}
 		if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "sqlite");
+			push (@foundationPackageCfgNames, "sqlite");
 		}
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "zlib");
+			push (@foundationPackageCfgNames, "zlib");
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "gtest_main");
+			push (@foundationPackageCfgNames, "gtest_main");
 		}
 		if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
-			push (@packageCfgNames, "boost");
+			push (@foundationPackageCfgNames, "boost");
 		}
 	}
 
@@ -1139,7 +1139,10 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		#helpful to print stack traces in log (not critical, and has performance overhead)
 		#see Debug::BackTrace ()
 		if ($BuildPlatform eq 'Unix') {
-			$LinkerArgs_ExtraPrefix .= " -rdynamic";
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
+			}
+			$LinkerArgs_ExtraPrefix .= "-rdynamic";
 		}
 
 	}
@@ -1215,9 +1218,12 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 		}
 
 		if ($isVisualStudio) {
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
+			}
 			#	/OPT:REF eliminates functions and or data that are never referenced
 			#	/OPT:ICF[=iterations] to perform identical COMDAT folding
-			$LinkerArgs_ExtraPrefix .= " -OPT:REF";
+			$LinkerArgs_ExtraPrefix .= "-OPT:REF";
 			$LinkerArgs_ExtraPrefix .= " -OPT:ICF";
 		}
 	}
@@ -1242,7 +1248,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 				# /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
 				# NOTE EVEN WITH THIS WE STILL GET
 				#		Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Common/Property.h:123:11: note: type ‘struct ReadOnlyProperty’ defined in anonymous namespace cannot match across the translation unit boundary
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-odr';
+				$LinkerArgs_ExtraPrefix		.= ' -Wno-odr';
 			}
 			if (13.0 <= $itsVersion && $itsVersion < 14) {
 				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
@@ -1250,11 +1256,11 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . ' -Wno-subobject-linkage';
 
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-odr';
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-lto-type-mismatch';
+				$LinkerArgs_ExtraPrefix		.=  ' -Wno-odr';
+				$LinkerArgs_ExtraPrefix		.=  ' -Wno-lto-type-mismatch';
 
 				### this suppression doesnt seem eneeded for g++-14...--LGP 2024-03-26
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-tsan';
+				$LinkerArgs_ExtraPrefix		.= ' -Wno-tsan';
 			}
 			if (14.0 <= $itsVersion && $itsVersion < 14.1) {
 				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
@@ -1263,8 +1269,8 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 				# TEST AGAIN with the official g++-14 release (still experimental) --LGP 2024-03-26
 
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-odr';
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-lto-type-mismatch';
+				$LinkerArgs_ExtraPrefix		.=  ' -Wno-odr';
+				$LinkerArgs_ExtraPrefix		.=  ' -Wno-lto-type-mismatch';
 			}
 
 			# In function 'copy',
@@ -1280,7 +1286,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			# |                                                                          ^
 			#	NOTE - happens on g++-15 on Ubuntuy 25.04 as well
 			if ($itsVersion < 16.0) {
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-stringop-overflow';
+				$LinkerArgs_ExtraPrefix		.= ' -Wno-stringop-overflow';
 			}
 
 
@@ -1301,7 +1307,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 			#
 			# NOTE - happens on g++-15 on Ubuntu 25.04 as well (with no armhf) - and cannot suppress with direct DISABLE_COMPILER_GCC_WARNING_START on g++15 and ubuntu 25.04
 			if ($itsVersion < 16.0 ) {
-				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-free-nonheap-object';
+				$LinkerArgs_ExtraPrefix		.=  ' -Wno-free-nonheap-object';
 			}
 
 		}
@@ -3086,10 +3092,10 @@ sub	WriteConfigFile_
 		}
 	print (OUT "    </ExtraMakeDefines>\n");
 
-	print (OUT "    <PkgConfigNames>");
+	print (OUT "    <Foundation_PkgConfigNames>");
 	{
 		my $firstTime = true;
-		foreach my $var (@packageCfgNames) {
+		foreach my $var (@foundationPackageCfgNames) {
 			if (!$firstTime) {
 				print (OUT " ");
 			}
@@ -3097,7 +3103,7 @@ sub	WriteConfigFile_
 			print (OUT "$var");
 		}
 	}
-	print (OUT "</PkgConfigNames>\n");
+	print (OUT "</Foundation_PkgConfigNames>\n");
 
 
 	

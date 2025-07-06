@@ -84,7 +84,7 @@ class Configuration:
                 self.CXXFLAGS = getText_(root.find('PLATFORM_CXXFLAGS'))
                 self.PLATFORM_INCLUDES_PATH = getText_(root.find('PLATFORM_INCLUDES_PATH'))
                 self.FOUNDATION_INCLUDES_PATH = getText_(root.find('FOUNDATION_INCLUDES_PATH'))
-                self.PkgConfigNames = getText_(root.find('PkgConfigNames'))
+                self.Foundation_PkgConfigNames = getText_(root.find('Foundation_PkgConfigNames'))
                 self.Platform_LinkerArgs_LibDependencies = getText_(root.find('Platform_LinkerArgs_LibDependencies')).split() if root.find('Platform_LinkerArgs_LibDependencies') is not None else []
                 self.Platform_LinkerArgs_LibPath = cmdLineRespectingSplit_(getText_(root.find('Platform_LinkerArgs_LibPath'))) if root.find('Platform_LinkerArgs_LibPath') is not None else []
                 self.Platform_LinkerArgs_ExtraPrefix = cmdLineRespectingSplit_(getText_(root.find('Platform_LinkerArgs_ExtraPrefix'))) if root.find('Platform_LinkerArgs_ExtraPrefix') is not None else []
@@ -154,7 +154,7 @@ def generate_stroika_foundation_pc_file_(config: Configuration, prefix_directory
     # todo alot left todo here
     libs = ["-L${libdir}", "-lstroika-foundation"]
     cflags = config.full_CFLAG_Foundation
-    requires = ["stroika-platform"] + config.PkgConfigNames.split()
+    requires = ["stroika-platform"] + config.Foundation_PkgConfigNames.split()
     description = "Stroika-specific pkg-config file the Stroika Foundation library"
     generate_pc_file_common_(prefix_directory, name, libs, cflags, requires, description)
 

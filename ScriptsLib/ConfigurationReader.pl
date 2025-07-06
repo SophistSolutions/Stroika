@@ -307,9 +307,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			push (@useExtraMakeDefines, $pps);
 		}
-		my $pps = ReadValue_($line, "<PkgConfigNames>");
+		my $pps = ReadValue_($line, "<Foundation_PkgConfigNames>");
 		if (defined $pps) {
-			$configuration {'PkgConfigNames'} = $pps;
+			$configuration {'Foundation_PkgConfigNames'} = $pps;
 		}
 	}
 	$configuration {'ExtraMakeDefines'} = \@useExtraMakeDefines;

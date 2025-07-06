@@ -47,7 +47,7 @@ my $BuildToolsRoot=undef;
 
 
 my @useExtraMakeDefines;
-my $PkgConfigNames;
+my $Foundation_PkgConfigNames;
 
 #
 # BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
@@ -211,7 +211,7 @@ sub	ReadConfiguration_
 
 	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "STATIC_LINK_GCCRUNTIME"));
 
-	$PkgConfigNames = GetConfigurationParameter($activeConfiguration, "PkgConfigNames");
+	$Foundation_PkgConfigNames = GetConfigurationParameter($activeConfiguration, "Foundation_PkgConfigNames");
 
 	#print "BuildPlatform = $BuildPlatform\n";
 
@@ -682,8 +682,8 @@ sub WriteVS2kIntellisenseConfigFile
 			$defs2Print .= substr ($element, 2);
 		}
 	}
-	if (not (trim($PkgConfigNames) eq "")) {
-		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $PkgConfigNames 2>/dev/null`) {
+	if (not (trim($Foundation_PkgConfigNames) eq "")) {
+		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $Foundation_PkgConfigNames 2>/dev/null`) {
 			if (index ($element, "-D") == 0) {
 				if ($defs2Print ne "") {
 					$defs2Print .= ';'
@@ -702,8 +702,8 @@ sub WriteVS2kIntellisenseConfigFile
 		}
 		$paths2Print .= $element;
 	}
-	if (not (trim($PkgConfigNames) eq "")) {
-		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $PkgConfigNames 2>/dev/null`) {
+	if (not (trim($Foundation_PkgConfigNames) eq "")) {
+		foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $Foundation_PkgConfigNames 2>/dev/null`) {
 			if (index ($element, "-I") == 0) {
 				local $v = trim (substr($element, 2));
 				if ("$^O" eq "cygwin" or "$^O" eq "msys") {
@@ -861,8 +861,8 @@ sub WriteVSCodeCPPExtensionConfigFile
 			$newCfgObj .= " , ";
 			$newCfgObj .= "\\\"$element\\\"";
 		}
-		if (not (trim($PkgConfigNames) eq "")) {
-			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $PkgConfigNames 2>/dev/null`) {
+		if (not (trim($Foundation_PkgConfigNames) eq "")) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-I $Foundation_PkgConfigNames 2>/dev/null`) {
 				if (index ($element, "-I") == 0) {
 					local $v = trim (substr($element, 2));
 					if ("$^O" eq "cygwin" or "$^O" eq "msys") {
@@ -897,8 +897,8 @@ sub WriteVSCodeCPPExtensionConfigFile
 				$newCfgObj .= "\\\"$v\\\"";
 			}
 		}
-		if (not (trim($PkgConfigNames) eq "")) {
-			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $PkgConfigNames 2>/dev/null`) {
+		if (not (trim($Foundation_PkgConfigNames) eq "")) {
+			foreach my $element (split / /, `PKG_CONFIG_PATH=$thisScriptDir/../Builds/$activeConfiguration/lib/pkgconfig pkg-config --cflags-only-other $Foundation_PkgConfigNames 2>/dev/null`) {
 				if (index ($element, "-D") == 0) {
 					if ($first) {
 						$first = false;
