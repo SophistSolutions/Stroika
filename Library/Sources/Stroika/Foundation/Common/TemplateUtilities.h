@@ -40,6 +40,11 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
+     */
+    template <template <typename...> class Cont, typename... Ts>
+    using LazyType_t = typename LazyType<Cont, Ts...>::type;
+
+    /**
      *  \brief function object whose action is to map its argument, back to the same value it started with (identity function).
      * 
      *  \see also https://stackoverflow.com/questions/41767240/what-is-stdidentity-and-how-it-is-used 
