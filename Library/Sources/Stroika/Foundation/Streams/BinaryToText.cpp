@@ -479,8 +479,7 @@ auto BinaryToText::Reader::New (const InputStream::Ptr<byte>& src, const optiona
             // read possible BOM, and then chose CodeCvt according to codeCvtFlags
             byte                                                          bomData[Characters::kMaxBOMSize];
             optional<tuple<Characters::UnicodeExternalEncodings, size_t>> bomInfo;
-            if (src.ReadAll (span{bomData}).size () == std::size (bomData) and
-                (bomInfo = Characters::ReadByteOrderMark (span{bomData})).has_value ()) {
+            if (src.ReadAll (span{bomData}).size () == std::size (bomData) and (bomInfo = Characters::ReadByteOrderMark (span{bomData})).has_value ()) {
                 // adjust amount read from input stream if we over-read
                 src.Seek (savedSeek + get<size_t> (*bomInfo)); // adjust amount read from input stream if we read anything (could be a no-op seek)
                 return CodeCvt<>{get<UnicodeExternalEncodings> (*bomInfo)};

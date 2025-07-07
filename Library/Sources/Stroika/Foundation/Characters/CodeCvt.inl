@@ -419,10 +419,10 @@ namespace Stroika::Foundation::Characters {
                 const CHAR_T*               ignoreCharsConsumed   = nullptr;
                 extern_type*                bytesInvalChar        = fInvalidCharacterReplacementBytesBuf;
                 DISABLE_COMPILER_MSC_WARNING_START (4996)
-                auto r =
-                    fCodeCvt_->out (ignoredMBState, invalCharPartlyEncode.data (), invalCharPartlyEncode.data () + invalCharPartlyEncode.size (),
-                                    ignoreCharsConsumed, fInvalidCharacterReplacementBytesBuf,
-                                    fInvalidCharacterReplacementBytesBuf + size (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
+                auto r = fCodeCvt_->out (ignoredMBState, invalCharPartlyEncode.data (),
+                                         invalCharPartlyEncode.data () + invalCharPartlyEncode.size (), ignoreCharsConsumed,
+                                         fInvalidCharacterReplacementBytesBuf,
+                                         fInvalidCharacterReplacementBytesBuf + size (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
                 if (r == STD_CODE_CVT_T::ok) {
                     fInvalidCharacterReplacementBytes_ = as_writable_bytes (

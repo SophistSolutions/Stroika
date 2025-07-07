@@ -1898,8 +1898,7 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::PreDoModalHook ()
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, m.c_str ());
 
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg, messageText,
-                            std::ssize (messageText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg, messageText, std::ssize (messageText));
     m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fAppName);
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);

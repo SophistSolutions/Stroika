@@ -3093,7 +3093,7 @@ wstring IME::GetCompositionResultStringW (HWND hWnd)
         HIMC hImc = 0;
         if ((hImc = fImmGetContext (hWnd)) != 0) {
             wchar_t curIMEString[2048];
-            LONG nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (std::size (curIMEString)));
+            LONG    nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (std::size (curIMEString)));
 
             nChars /= sizeof (wchar_t); // why???? LGP 991214
             if (nChars >= 0 and static_cast<size_t> (nChars) < std::size (curIMEString)) {

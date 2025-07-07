@@ -96,7 +96,6 @@ namespace Stroika::Foundation::Debug {
         friend class Debug::TraceContextBumper;
     };
 
- 
     /*
      ********************************************************************************
      ******************************* TraceContextBumper *****************************

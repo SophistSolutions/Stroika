@@ -507,9 +507,8 @@ namespace {
         constexpr char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
         constexpr char kSrc4_[] = "0123456789";
 
-        static const BLOB kTestMessages_[] = {
-            BLOB::FromRaw (kSrc1_, std::size (kSrc1_) - 1), BLOB::FromRaw (kSrc2_, std::size (kSrc2_) - 1),
-            BLOB::FromRaw (kSrc3_, std::size (kSrc3_) - 1), BLOB::FromRaw (kSrc4_, std::size (kSrc4_) - 1)};
+        static const BLOB kTestMessages_[] = {BLOB::FromRaw (kSrc1_, std::size (kSrc1_) - 1), BLOB::FromRaw (kSrc2_, std::size (kSrc2_) - 1),
+                                              BLOB::FromRaw (kSrc3_, std::size (kSrc3_) - 1), BLOB::FromRaw (kSrc4_, std::size (kSrc4_) - 1)};
 
         static const Set<String> kLastSeenAllFailingCiphers_ = {"AES-128-OCB"sv,
                                                                 "AES-128-XTS"sv,
