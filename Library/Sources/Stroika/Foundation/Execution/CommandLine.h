@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \brief like Validate - but return optional< InvalidCommandLineArgument> instead of throwing
+         *  \brief like Validate - but return optional<InvalidCommandLineArgument> instead of throwing
          * 
          *  \par Example Usage
          *      \code
@@ -248,7 +248,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /*
          *  return 'argv[0]'
-         *  
+         *
+         * if onlyBaseName is true, then return just the base name (e.g. 'myapp' from '/usr/bin/myapp' or 'C:\Program Files\MyApp\myapp.exe').
          */
         nonvirtual String GetAppName (bool onlyBaseName = true) const;
 
