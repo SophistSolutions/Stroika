@@ -239,9 +239,10 @@ CFLAGS         :=
 CXXFLAGS       :=
 else
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+# use $(shell instead of $$() for windows else fails - probably due to my not knowing how to fully enuf disable path covnersions
 CPPFLAGS       =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --msvc --cflags-only-I ${PackageDependencies})
 else
-CPPFLAGS       =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $(shell PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
+CPPFLAGS       =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CPPFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies})) $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-I ${PackageDependencies})
 endif
 CFLAGS         =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
 CXXFLAGS       =       $$(${StroikaRoot_MIXED}ScriptsLib/SplitCFLAGS --type=CXXFLAGS -- $$(PKG_CONFIG_PATH="${PKG_CONFIG_PATH}" pkg-config --cflags-only-other ${PackageDependencies}))
