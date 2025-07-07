@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Memory {
      *              see if this too can be replaced with something in C++11?
      */
     template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
-    constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY]);
+   [[deprecated("Since C++-17 can use std::size(), so deprecated since Stroika v3.0d21")]] constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY]);
 
     /**
      *  \brief 'cast' the given POD data type argument to a span<const byte> - a bit like std::as_bytes, but any 'trivial' type T as argument (as_bytes takes span)

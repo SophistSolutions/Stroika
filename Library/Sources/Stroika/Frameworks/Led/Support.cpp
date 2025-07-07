@@ -533,11 +533,11 @@ void Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, c
     IUnknown* nextObj = nullptr;
     for (size_t i = 0; SUCCEEDED (iter->Next (1, &nextObj, nullptr)); ++i) {
         char nameBuf[1024];
-        (void)snprintf (nameBuf, Memory::NEltsOf (nameBuf), "obj#%d", static_cast<int> (i));
+        (void)snprintf (nameBuf, std::size (nameBuf), "obj#%d", static_cast<int> (i));
         char levelPrefixBuf[1024];
         Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf) / 2); // assert MUCH less
-        Characters::CString::Copy (levelPrefixBuf, Memory::NEltsOf (levelPrefixBuf), levelPrefix);
-        CString::Cat (levelPrefixBuf, Memory::NEltsOf (levelPrefixBuf), "\t");
+        Characters::CString::Copy (levelPrefixBuf, std::size (levelPrefixBuf), levelPrefix);
+        CString::Cat (levelPrefixBuf, std::size (levelPrefixBuf), "\t");
         DumpSupportedInterfaces (nextObj, nameBuf, levelPrefixBuf);
         AssertNotNull (nextObj);
         nextObj->Release ();
@@ -727,7 +727,7 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
 {
     Require (relURL.length () > 0 and relURL[0] == '/');
     char fullVersionBuf[1024];
-    (void)snprintf (fullVersionBuf, Memory::NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
+    (void)snprintf (fullVersionBuf, std::size (fullVersionBuf), "%d", qLed_FullVersion);
     string fullURL = "http://www.sophists.com" + relURL + "?AppName=" + appName +
 #if qStroika_Foundation_Common_Platform_Windows
                      string{"&Platform=Windows"} +

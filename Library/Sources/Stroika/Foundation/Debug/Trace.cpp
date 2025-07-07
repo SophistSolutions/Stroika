@@ -403,7 +403,7 @@ namespace {
             }
             else {
                 char buf[1024];
-                (void)::snprintf (buf, Memory::NEltsOf (buf), "%.*d", sMinWidth_.load (), threadIndex2Show);
+                (void)::snprintf (buf, std::size (buf), "%.*d", sMinWidth_.load (), threadIndex2Show);
                 return make_pair (wasNew, buf);
             }
         }
@@ -425,11 +425,11 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
         char               buf[1024];
         Thread::IDType     threadID     = Execution::Thread::GetCurrentThreadID ();
         pair<bool, string> threadIDInfo = mkThreadLabelForThreadID_ (threadID);
-        Verify (::snprintf (buf, Memory::NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (),
+        Verify (::snprintf (buf, std::size (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (),
                             static_cast<double> (curRelativeTime.time_since_epoch ().count ())) > 0);
         if (threadIDInfo.first) {
             char buf2[1024]; // intentionally un-initialized
-            Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (),
+            Verify (snprintf (buf2, std::size (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (),
                               Thread::FormatThreadID_A (threadID).c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
             (void)::strcat_s (buf, buf2);
@@ -437,7 +437,7 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
             (void)::strcat (buf, buf2);
 #endif
 #if qStroika_Foundation_Common_Platform_POSIX
-            Verify (::snprintf (buf2, Memory::NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
+            Verify (::snprintf (buf2, std::size (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
             (void)::strcat_s (buf, buf2);
 #else
@@ -445,7 +445,7 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
 #endif
 #endif
         }
-        Assert (::strlen (buf) < Memory::NEltsOf (buf) / 2); // really just needs to be <, but since this buffer unchecked, break if we get CLOSE
+        Assert (::strlen (buf) < std::size (buf) / 2); // really just needs to be <, but since this buffer unchecked, break if we get CLOSE
         DoEmit_ (buf);
     }
 #if qStroika_Foundation_Debug_DefaultTracingOn
@@ -470,7 +470,7 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
 
 void Debug::Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
-    Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_CHAR_));
+    Assert (bufferLastNChars < std::size (fLastNCharBuf_CHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
     (void)::memcpy (fLastNCharBuf_CHAR_, p, bufferLastNChars); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = false;
@@ -478,7 +478,7 @@ void Debug::Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const cha
 
 void Debug::Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
-    Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_WCHAR_));
+    Assert (bufferLastNChars < std::size (fLastNCharBuf_WCHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
     (void)::memcpy (fLastNCharBuf_WCHAR_, p, bufferLastNChars * sizeof (wchar_t)); // no need to nul-terminate because fLastNCharBufCharCount_ stores length
     fLastNCharBuf_WCHARFlag_ = true;
@@ -522,7 +522,7 @@ void Debug::Private_::Emitter::DoEmit_ (const char* p) noexcept
     else {
         char buf[1024]; // @todo if/when we always support constexpr can use that here!
         (void)::memcpy (buf, p, sizeof (buf));
-        buf[Memory::NEltsOf (buf) - 1] = 0;
+        buf[std::size (buf) - 1] = 0;
         ::OutputDebugStringA (buf);
         ::OutputDebugStringA ("...");
         ::OutputDebugStringA (kEOL<char>);
@@ -543,7 +543,7 @@ void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p) noexcept
     else {
         wchar_t buf[1024]; // @todo if/when we always support constexpr can use that here!
         (void)::memcpy (buf, p, sizeof (buf));
-        buf[Memory::NEltsOf (buf) - 1] = 0;
+        buf[std::size (buf) - 1] = 0;
         ::OutputDebugStringW (buf);
         ::OutputDebugStringW (L"...");
         ::OutputDebugStringW (kEOL<wchar_t>);

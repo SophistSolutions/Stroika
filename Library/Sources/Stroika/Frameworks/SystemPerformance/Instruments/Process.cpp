@@ -842,11 +842,11 @@ namespace {
             Streams::InputStream::Ptr<byte> in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
             byte   data[10 * 1024];
             size_t nBytes = in.ReadAll (span{data}).size ();
-            Assert (nBytes <= NEltsOf (data));
+            Assert (nBytes <= std::size (data));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("nBytes read = {}"_f, nBytes);
 #endif
-            if (nBytes == NEltsOf (data)) {
+            if (nBytes == std::size (data)) {
                 --nBytes; // ignore trailing byte so we can nul-terminate
             }
             data[nBytes] = byte{0}; // null-terminate so we can treat as c-string
@@ -1568,13 +1568,13 @@ namespace {
             if (::EnumProcessModules (hProcess, &hMod, sizeof (hMod), &cbNeeded)) {
                 TCHAR moduleFullPath[MAX_PATH];
                 moduleFullPath[0] = '\0';
-                if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, static_cast<DWORD> (NEltsOf (moduleFullPath))) != 0) {
+                if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, static_cast<DWORD> (std::size (moduleFullPath))) != 0) {
                     *processEXEPath = filesystem::path{moduleFullPath};
                 }
                 if (processName != nullptr) {
                     TCHAR moduleBaseName[MAX_PATH];
                     moduleBaseName[0] = '\0';
-                    if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, static_cast<DWORD> (NEltsOf (moduleBaseName))) != 0) {
+                    if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, static_cast<DWORD> (std::size (moduleBaseName))) != 0) {
                         *processName = String::FromSDKString (moduleBaseName);
                     }
                 }

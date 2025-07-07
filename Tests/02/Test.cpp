@@ -921,22 +921,22 @@ namespace {
         }
         {
             char buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, Memory::NEltsOf (buf), "3");
+            CString::Copy (buf, std::size (buf), "3");
             EXPECT_TRUE (::strcmp (buf, "3") == 0);
         }
         {
             wchar_t buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, Memory::NEltsOf (buf), L"3");
+            CString::Copy (buf, std::size (buf), L"3");
             EXPECT_TRUE (::wcscmp (buf, L"3") == 0);
         }
         {
             char buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, Memory::NEltsOf (buf), "12345");
+            CString::Copy (buf, std::size (buf), "12345");
             EXPECT_TRUE (::strcmp (buf, "12") == 0);
         }
         {
             wchar_t buf[3] = {'1', '1', '1'};
-            CString::Copy (buf, Memory::NEltsOf (buf), L"12345");
+            CString::Copy (buf, std::size (buf), L"12345");
             EXPECT_TRUE (::wcscmp (buf, L"12") == 0);
         }
     }

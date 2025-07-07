@@ -193,7 +193,7 @@ namespace {
                     fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
                 }
                 else {
-                    fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                    fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (std::size (toDecryptBuf)));
                     span<byte> outBufUsed = _runOnce (span{toDecryptBuf, n2Decrypt}, span{fOutBuf_});
                     Assert (outBufUsed.size () <= fOutBuf_.GetSize ());
                     if (outBufUsed.size () == 0) {

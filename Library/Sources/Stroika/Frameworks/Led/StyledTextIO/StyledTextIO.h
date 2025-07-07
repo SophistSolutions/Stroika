@@ -586,7 +586,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         fWindowTop_Offset = fCursor_Offset;
         fRealSrcStream.seek_to (fWindowTop_Offset); // probably could frequently optimize this call way if we were careful to cache last seek-offset from buffer
-        size_t bytesRead     = fRealSrcStream.read (fWindowTop_Data, Foundation::Memory::NEltsOf (fWindowTop_Data));
+        size_t bytesRead     = fRealSrcStream.read (fWindowTop_Data, std::size (fWindowTop_Data));
         fWindowBottom_Data   = fWindowTop_Data + bytesRead;
         fWindowBottom_Offset = fWindowTop_Offset + bytesRead;
         Assert (fCursor_Offset >= fWindowTop_Offset and fCursor_Offset <= fWindowBottom_Offset); // should only call FillCache in that case?
@@ -641,7 +641,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             */
         if (bytesReadSoFar < bytes) {
             size_t bytesLeftToRead = bytes - bytesReadSoFar;
-            if (bytesLeftToRead < Foundation::Memory::NEltsOf (fWindowTop_Data)) {
+            if (bytesLeftToRead < std::size (fWindowTop_Data)) {
                 FillCache ();
                 size_t bytesAvail    = fWindowBottom_Offset - fCursor_Offset; // must be > 0 UNLESS we are at EOF
                 size_t thisReadCount = min (bytesAvail, bytesLeftToRead);

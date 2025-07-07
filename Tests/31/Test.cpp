@@ -498,8 +498,8 @@ namespace {
         const char        kKey1_[]        = "Mr Key";
         const char        kKey2_[]        = "One Very Very Very Long key 123";
         static const BLOB kPassphrases_[] = {
-            BLOB::FromRaw (kKey1_, Memory::NEltsOf (kKey1_) - 1),
-            BLOB::FromRaw (kKey2_, Memory::NEltsOf (kKey2_) - 1),
+            BLOB::FromRaw (kKey1_, std::size (kKey1_) - 1),
+            BLOB::FromRaw (kKey2_, std::size (kKey2_) - 1),
         };
 
         constexpr char kSrc1_[] = "This is a very good test of a very good test";
@@ -508,8 +508,8 @@ namespace {
         constexpr char kSrc4_[] = "0123456789";
 
         static const BLOB kTestMessages_[] = {
-            BLOB::FromRaw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1), BLOB::FromRaw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
-            BLOB::FromRaw (kSrc3_, Memory::NEltsOf (kSrc3_) - 1), BLOB::FromRaw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
+            BLOB::FromRaw (kSrc1_, std::size (kSrc1_) - 1), BLOB::FromRaw (kSrc2_, std::size (kSrc2_) - 1),
+            BLOB::FromRaw (kSrc3_, std::size (kSrc3_) - 1), BLOB::FromRaw (kSrc4_, std::size (kSrc4_) - 1)};
 
         static const Set<String> kLastSeenAllFailingCiphers_ = {"AES-128-OCB"sv,
                                                                 "AES-128-XTS"sv,
@@ -628,10 +628,10 @@ namespace {
                             }
                         }
                     }
-                    if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)) {
+                    if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != std::size (kPassphrases_) * std::size (kTestMessages_)) {
                         // maybe this cipher/digest combo fails only on some inputs
                         Stroika::Frameworks::Test::WarnTestIssue ("Cipher {}, Digest {} failed {} times (not {})"_f(
-                            ci, di, nFailsForThisCipherDigestCombo, NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)));
+                            ci, di, nFailsForThisCipherDigestCombo, std::size (kPassphrases_) * std::size (kTestMessages_)));
                     }
                 }
             }

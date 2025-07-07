@@ -61,10 +61,10 @@ namespace {
                     (void)ioReady.WaitUntil (timeOutAt);
                     char data[1024];
 #if qStroika_Foundation_Common_Platform_POSIX
-                    int nb = ::read (fSD_, data, NEltsOf (data));
+                    int nb = ::read (fSD_, data, std::size (data));
 #elif qStroika_Foundation_Common_Platform_Windows
                     int flags = 0;
-                    int nb    = ::recv (fSD_, data, (int)NEltsOf (data), flags);
+                    int nb    = ::recv (fSD_, data, (int)std::size (data), flags);
 #endif
                     if (nb > 0) {
                         DbgTrace ("Warning: {} unread bytes to be read on socket when it was closed."_f,
@@ -238,9 +238,9 @@ namespace {
                     // But MUST check if is EOF or real data available
                     char buf[1024];
 #if qStroika_Foundation_Common_Platform_POSIX
-                    int tmp = Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); });
+                    int tmp = Handle_ErrNoResultInterruption ([&] () -> int { return ::recv (fSD_, buf, std::size (buf), MSG_PEEK); });
 #elif qStroika_Foundation_Common_Platform_Windows
-                    int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
+                    int tmp = ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, buf, static_cast<int> (std::size (buf)), MSG_PEEK));
 #else
                     AssertNotImplemented ();
 #endif

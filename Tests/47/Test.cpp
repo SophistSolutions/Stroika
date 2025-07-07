@@ -93,7 +93,7 @@ namespace {
             uint32_t srcBinData[] = {3, 5, 19, 2};
             double   resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            for (size_t i = 0; i < Memory::NEltsOf (srcBinData); ++i) {
+            for (size_t i = 0; i < std::size (srcBinData); ++i) {
                 EXPECT_EQ (srcBinData[i], resultData[i]);
             }
         }
@@ -267,7 +267,7 @@ namespace {
             mdKConstants.tunerInfoD       = NominalGrooveSpacing;
             auto fitFun                   = [=] (const K_Constants_& parameters) {
                 double result{};
-                size_t nEntries{Memory::NEltsOf (kCalData_)};
+                size_t nEntries{std::size (kCalData_)};
                 for (auto i : kCalData_) {
                     double computedWavelength = wavelengthModel (parameters, i.fValue);
                     Assert (computedWavelength > 0);

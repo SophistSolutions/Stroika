@@ -81,14 +81,14 @@ namespace {
         const byte* passwordBytes = passwd.begin ();
         byte        buf1[64];
         {
-            std::fill_n (buf1, NEltsOf (buf1), static_cast<byte> (0x36));
+            std::fill_n (buf1, std::size (buf1), static_cast<byte> (0x36));
             for (unsigned long i = 0; i < usePWDLen; ++i) {
                 buf1[i] ^= passwordBytes[i];
             }
         }
         byte buf2[64];
         {
-            std::fill_n (buf2, NEltsOf (buf2), static_cast<byte> (0x5C));
+            std::fill_n (buf2, std::size (buf2), static_cast<byte> (0x5C));
             for (unsigned long i = 0; i < usePWDLen; ++i) {
                 buf2[i] ^= passwordBytes[i];
             }

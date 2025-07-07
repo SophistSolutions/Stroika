@@ -131,7 +131,7 @@ filesystem::path AppTmpFileManager::GetTmpDir (const String& dirNameBase)
     create_directories (fn);
     for (int attempts = 0; attempts < 5; ++attempts) {
         char buf[1024];
-        (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
+        (void)snprintf (buf, std::size (buf), "-%d", ::rand ());
         filesystem::path trialName = fn / (dirNameBase + buf).As<filesystem::path> ();
         if (not is_directory (trialName)) {
             if (create_directories (trialName)) {
@@ -209,7 +209,7 @@ filesystem::path FileSystem::CreateTmpFile (const String& baseName, const filesy
     constexpr int kMaxAttempts_{100};
     for (int attempts = 0; attempts < kMaxAttempts_; ++attempts) {
         char buf[1024];
-        (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
+        (void)snprintf (buf, std::size (buf), "-%d", ::rand ());
         filesystem::path trialName = inFolder / (basename + buf + ext).As<filesystem::path> ();
         if (not exists (trialName)) {
 #if qStroika_Foundation_Common_Platform_Windows

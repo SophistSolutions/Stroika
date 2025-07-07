@@ -192,7 +192,7 @@ public:
      */
     void NotifyOfArrivalOfPossiblySafeSignal (SignalID signal)
     {
-        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fIncomingSignalCounts_)));
+        Require (0 <= signal and signal < static_cast<SignalID> (std::size (fIncomingSignalCounts_)));
         // Check fHanlderAvailable_ [] as a performance optimizaiton. This gets called by direct-sginals, even when there are no safe signals to
         // be delegated to
         if (fHanlderAvailable_[signal]) {
@@ -231,7 +231,7 @@ public:
 private:
     void PopulateSafeSignalHandlersCache_ (SignalID signal)
     {
-        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fHanlderAvailable_)));
+        Require (0 <= signal and signal < static_cast<SignalID> (std::size (fHanlderAvailable_)));
         fHanlderAvailable_[signal] = fHandlers_.rwget ()->Lookup (signal).has_value ();
     }
 
@@ -402,7 +402,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
             l->Add (signal, directHandlers);
         }
         // @todo see http://stroika-bugs.sophists.com/browse/STK-465
-        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
+        Require (0 <= signal and signal < static_cast<SignalID> (std::size (fDirectSignalHandlersCache_)));
         vector<function<void (SignalID)>> shs;
         for (const SignalHandler& sh : l->LookupValue (signal)) {
             shs.push_back (sh);
@@ -621,7 +621,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
          *  \note If you see a thread-sanitizer warning here - see 
          *          http://stroika-bugs.sophists.com/browse/STK-647
          */
-        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (SHR.fDirectSignalHandlersCache_)));
+        Require (0 <= signal and signal < static_cast<SignalID> (std::size (SHR.fDirectSignalHandlersCache_)));
     Again:
         [[maybe_unused]] auto&& cleanup = Finally ([&SHR] () noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
         if (SHR.fDirectSignalHandlersCache_Lock_++ == 0) {

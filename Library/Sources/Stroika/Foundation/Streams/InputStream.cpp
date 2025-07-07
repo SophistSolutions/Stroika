@@ -43,13 +43,13 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
         byte  buf[64 * 1024]; // intentionally uninitialized
         byte* s = std::begin (buf);
         byte* e = std::end (buf);
-        if (nEltsLeft < Memory::NEltsOf (buf)) {
+        if (nEltsLeft < std::size (buf)) {
             e = s + nEltsLeft;
         }
         Assert (s < e);
         size_t n = ReadBlocking (span{s, e}).size ();
         Assert (0 <= n and n <= nEltsLeft);
-        Assert (0 <= n and n <= Memory::NEltsOf (buf));
+        Assert (0 <= n and n <= std::size (buf));
         if (n == 0) {
             break;
         }

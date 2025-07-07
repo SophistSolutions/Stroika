@@ -466,7 +466,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
 
             constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
                                                  L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
-            for (size_t i = 0; i < NEltsOf (kMonths_); ++i) {
+            for (size_t i = 0; i < std::size (kMonths_); ++i) {
                 if (::wcscmp (monthStr, kMonths_[i]) == 0) {
                     month = static_cast<int> (i + 1); // one-based numbering
                     break;
@@ -493,7 +493,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 {L"S", Timezone{6 * 60}},    {L"T", Timezone{7 * 60}},    {L"U", Timezone{8 * 60}},    {L"V", Timezone{9 * 60}},
                 {L"W", Timezone{10 * 60}},   {L"X", Timezone{11 * 60}},   {L"Y", Timezone{12 * 60}},
             };
-            for (size_t i = 0; i < NEltsOf (kNamedTimezones_); ++i) {
+            for (size_t i = 0; i < std::size (kNamedTimezones_); ++i) {
                 if (::wcscmp (tzStr, kNamedTimezones_[i].first) == 0) {
                     tz = kNamedTimezones_[i].second;
                     break;

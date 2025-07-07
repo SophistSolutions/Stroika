@@ -413,12 +413,12 @@ namespace Stroika::Foundation::Streams::InputStream {
             Character  buf[16 * 1024];
             Character* s = std::begin (buf);
             Character* e = std::end (buf);
-            if (nEltsLeft < Memory::NEltsOf (buf)) {
+            if (nEltsLeft < std::size (buf)) {
                 e = s + nEltsLeft;
             }
             size_t n = ReadBlocking (span{s, e}).size ();
             Assert (0 <= n and n <= nEltsLeft);
-            Assert (0 <= n and n <= Memory::NEltsOf (buf));
+            Assert (0 <= n and n <= std::size (buf));
             if (n == 0) {
                 break;
             }

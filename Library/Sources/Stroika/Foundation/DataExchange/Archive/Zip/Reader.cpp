@@ -259,12 +259,12 @@ namespace {
             MemoryStream::Ptr<byte> tmpBuf   = MemoryStream::New<byte> ();
             do {
                 byte buf[10 * 1024];
-                err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (Memory::NEltsOf (buf)));
+                err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (std::size (buf)));
                 if (err < 0) [[unlikely]] {
                     Throw (RuntimeErrorException{Format (L"File '{}' error {} extracting"_f, fileName, err)});
                 }
                 else if (err > 0) {
-                    Assert (static_cast<size_t> (err) <= Memory::NEltsOf (buf));
+                    Assert (static_cast<size_t> (err) <= std::size (buf));
                     tmpBuf.Write (span{buf, static_cast<size_t> (err)});
                 }
             } while (err > 0);

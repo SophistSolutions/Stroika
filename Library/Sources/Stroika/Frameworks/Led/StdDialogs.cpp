@@ -1060,7 +1060,7 @@ SDKString Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
 {
 #if qStroika_Foundation_Common_Platform_Windows
     Characters::SDKChar widgetText[2 * 1024]; // sb big enough for the most part???
-    (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (Memory::NEltsOf (widgetText)));
+    (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (std::size (widgetText)));
     return widgetText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     return (char*)gtk_entry_get_text (GTK_ENTRY (itemID)); // gtk returns internal pointer - DON'T FREE
@@ -1892,14 +1892,14 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::PreDoModalHook ()
 #if qStroika_Foundation_Common_Platform_Windows
     ::SetForegroundWindow (GetHWND ());
     Characters::SDKChar messageText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, messageText, static_cast<int> (Memory::NEltsOf (messageText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, messageText, std::ssize (messageText));
     SDKString m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fAppName);
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, m.c_str ());
 
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg, messageText,
-                            static_cast<int> (Memory::NEltsOf (messageText)));
+                            std::ssize (messageText));
     m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fAppName);
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
@@ -2185,7 +2185,7 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
 {
 #if qStroika_Foundation_Common_Platform_Windows
     Characters::SDKChar messageText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, messageText, static_cast<int> (Memory::NEltsOf (messageText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, messageText, std::ssize (messageText));
 
     SDKString m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fEmbeddingTypeName);
@@ -2240,7 +2240,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
 {
 #if qStroika_Foundation_Common_Platform_Windows
     Characters::SDKChar messageText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg, messageText, static_cast<int> (Memory::NEltsOf (messageText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg, messageText, std::ssize (messageText));
 
     SDKString m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fEmbeddingTypeName);
@@ -2275,9 +2275,9 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
 {
 #if qStroika_Foundation_Common_Platform_Windows
     Characters::SDKChar bufText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TitleText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TitleText, bufText, std::ssize (bufText));
     fTitleText = bufText;
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, bufText, std::ssize (bufText));
     fURLText = bufText;
 #endif
 #if qStroika_Foundation_Common_Platform_Windows
@@ -2341,9 +2341,9 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
 {
 #if qStroika_Foundation_Common_Platform_Windows
     Characters::SDKChar bufText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, bufText, std::ssize (bufText));
     fTitleText = bufText;
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, bufText, std::ssize (bufText));
     fURLText = bufText;
 #endif
     inherited::OnOK ();

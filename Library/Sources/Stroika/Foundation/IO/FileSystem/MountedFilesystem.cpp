@@ -194,14 +194,14 @@ namespace {
         DWORD                        retLen = 0;
         Memory::StackBuffer<wchar_t> buf{};
         DWORD                        x = ::GetVolumePathNamesForVolumeNameW (get<0> (volumeName.c_str (&buf)), volPathsBuf,
-                                                                             static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
+                                                                             static_cast<DWORD> (std::size (volPathsBuf)), &retLen);
         if (x == 0) {
             return {}; // missing - no known - not empty - answer
         }
         else if (retLen <= 1) {
             return Set<DynamicDiskIDType_>{};
         }
-        Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < Memory::NEltsOf (volPathsBuf));
+        Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < std::size (volPathsBuf));
         volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).SubString (0, -1);
 
         // @todo - rewrite this - must somehow otherwise callocate this to be large enuf (dynamic alloc) - if we want more disk exents, but not sure when that happens...
@@ -246,12 +246,12 @@ namespace {
             }
         });
 
-        for (hVol = ::FindFirstVolume (volumeNameBuf, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE;) {
+        for (hVol = ::FindFirstVolume (volumeNameBuf, static_cast<DWORD> (std::size (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE;) {
             DWORD lpMaximumComponentLength;
             DWORD dwSysFlags;
             TCHAR fileSysNameBuf[1024];
-            if (::GetVolumeInformation (volumeNameBuf, nullptr, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf)), nullptr, &lpMaximumComponentLength,
-                                        &dwSysFlags, fileSysNameBuf, static_cast<DWORD> (Memory::NEltsOf (fileSysNameBuf)))) {
+            if (::GetVolumeInformation (volumeNameBuf, nullptr, static_cast<DWORD> (std::size (volumeNameBuf)), nullptr, &lpMaximumComponentLength,
+                                        &dwSysFlags, fileSysNameBuf, static_cast<DWORD> (std::size (fileSysNameBuf)))) {
                 MountedFilesystemType v;
                 v.fFileSystemType = String::FromSDKString (fileSysNameBuf);
                 v.fVolumeID       = String::FromSDKString (volumeNameBuf);
@@ -259,7 +259,7 @@ namespace {
 
                 TCHAR volPathsBuf[10 * 1024]; // intentionally uninitialized
                 DWORD retLen = 0;
-                DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
+                DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (std::size (volPathsBuf)), &retLen);
                 if (x == 0) {
                     DbgTrace ("Ignoring error getting paths (volume='{}')"_f, String::FromSDKString (volumeNameBuf));
                 }
@@ -276,7 +276,7 @@ namespace {
             }
 
             // find next
-            if (not::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf)))) {
+            if (not::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (std::size (volumeNameBuf)))) {
                 ::FindVolumeClose (hVol);
                 hVol = INVALID_HANDLE_VALUE;
             }

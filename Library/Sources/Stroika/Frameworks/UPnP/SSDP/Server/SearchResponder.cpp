@@ -183,7 +183,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                         SocketAddress from;
                         byte          buf[4 * 1024]; // not sure of max packet size
                         size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
-                        Assert (nBytesRead <= Memory::NEltsOf (buf));
+                        Assert (nBytesRead <= std::size (buf));
                         using namespace Streams;
                         ParsePacketAndRespond_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})),
                                                 advertisements, s, from);

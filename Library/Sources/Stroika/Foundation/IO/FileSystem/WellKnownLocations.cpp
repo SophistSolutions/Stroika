@@ -205,7 +205,7 @@ namespace {
 #elif qStroika_Foundation_Common_Platform_Windows
         // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
         SDKChar buf[4 * 1024];
-        if (::GetTempPath (static_cast<DWORD> (Memory::NEltsOf (buf)), buf) == 0) {
+        if (::GetTempPath (static_cast<DWORD> (std::size (buf)), buf) == 0) {
             return SDKSTR ("c:\\Temp\\");
         }
         else {
@@ -234,7 +234,7 @@ filesystem::path FileSystem::WellKnownLocations::GetTemporary ()
 #elif qStroika_Foundation_Common_Platform_Windows
         // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
         SDKChar buf[4 * 1024];
-        if (::GetTempPath (static_cast<DWORD> (Memory::NEltsOf (buf)), buf) == 0) {
+        if (::GetTempPath (static_cast<DWORD> (std::size (buf)), buf) == 0) {
             return SDKSTR ("c:\\Temp\\");
         }
         else {

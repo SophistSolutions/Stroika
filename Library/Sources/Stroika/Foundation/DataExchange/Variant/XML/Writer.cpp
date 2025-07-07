@@ -40,19 +40,19 @@ namespace {
     void PrettyPrint_ (long long int v, const OutputStream::Ptr<Character>& out)
     {
         wchar_t buf[1024];
-        ::swprintf (buf, Memory::NEltsOf (buf), L"%lld", v);
+        ::swprintf (buf, std::size (buf), L"%lld", v);
         out.Write (buf);
     }
     void PrettyPrint_ (unsigned long long int v, const OutputStream::Ptr<Character>& out)
     {
         wchar_t buf[1024];
-        ::swprintf (buf, Memory::NEltsOf (buf), L"%llu", v);
+        ::swprintf (buf, std::size (buf), L"%llu", v);
         out.Write (buf);
     }
     void PrettyPrint_ (long double v, const OutputStream::Ptr<Character>& out)
     {
         wchar_t buf[1024];
-        ::swprintf (buf, Memory::NEltsOf (buf), L"%Lf", v);
+        ::swprintf (buf, std::size (buf), L"%Lf", v);
         Assert (::wcslen (buf) >= 1);
         // trim trailing 0
         for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {

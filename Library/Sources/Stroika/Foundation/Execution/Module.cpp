@@ -84,8 +84,8 @@ filesystem::path Execution::GetEXEPath ()
     return SDKString{buf.begin (), buf.begin () + n};
 #elif qStroika_Foundation_Common_Platform_Windows
     SDKChar buf[MAX_PATH];
-    Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (Memory::NEltsOf (buf))));
-    buf[Memory::NEltsOf (buf) - 1] = '\0'; // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
+    Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (std::size (buf))));
+    buf[std::size (buf) - 1] = '\0'; // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
     return buf;
 #else
     AssertNotImplemented ();

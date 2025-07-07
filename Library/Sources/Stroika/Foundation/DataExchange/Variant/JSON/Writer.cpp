@@ -89,13 +89,13 @@ namespace {
     void PrettyPrint_ (const OptionValues_& /*options*/, long long int v, const OutputStream::Ptr<Character>& out)
     {
         wchar_t buf[1024];
-        (void)::swprintf (buf, Memory::NEltsOf (buf), L"%lld", v);
+        (void)::swprintf (buf, std::size (buf), L"%lld", v);
         out.Write (buf);
     }
     void PrettyPrint_ (const OptionValues_& /*options*/, unsigned long long int v, const OutputStream::Ptr<Character>& out)
     {
         wchar_t buf[1024];
-        (void)::swprintf (buf, Memory::NEltsOf (buf), L"%llu", v);
+        (void)::swprintf (buf, std::size (buf), L"%llu", v);
         out.Write (buf);
     }
     void PrettyPrint_ (const OptionValues_& options, const String& v, const OutputStream::Ptr<Character>& out);
@@ -144,12 +144,12 @@ namespace {
                     Character c = *i;
                     if (c.IsSurrogatePair ()) [[unlikely]] {
                         wchar_t buf[20];
-                        (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x\\u%04x", c.GetSurrogatePair ().first, c.GetSurrogatePair ().second);
+                        (void)::swprintf (buf, std::size (buf), L"\\u%04x\\u%04x", c.GetSurrogatePair ().first, c.GetSurrogatePair ().second);
                         sb.Append (buf);
                     }
                     else if (c.IsControl ()) [[unlikely]] {
                         wchar_t buf[10];
-                        (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c.GetCharacterCode ()));
+                        (void)::swprintf (buf, std::size (buf), L"\\u%04x", static_cast<char16_t> (c.GetCharacterCode ()));
                         sb.Append (buf);
                     }
                     else {

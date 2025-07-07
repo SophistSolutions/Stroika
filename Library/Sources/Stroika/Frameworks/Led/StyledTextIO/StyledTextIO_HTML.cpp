@@ -76,7 +76,7 @@ namespace {
     }
     inline bool ParseColorString_ (string colorStr, Color* color)
     {
-        for (size_t i = 0; i < Memory::NEltsOf (kColorNameTable_); ++i) {
+        for (size_t i = 0; i < std::size (kColorNameTable_); ++i) {
             if (Led_CasedStringsEqual (colorStr, kColorNameTable_[i].first)) {
                 colorStr = kColorNameTable_[i].second;
                 break;
@@ -395,7 +395,7 @@ HTMLInfo::EntityRefMapEntry HTMLInfo::sDefaultEntityRefMapTable[] = {
     EntityRefMapEntry{"lsaquo", 0x2039},
     EntityRefMapEntry{"rsaquo", 0x203a},
 };
-const size_t HTMLInfo::kDefaultEntityRefMapTable_Count = Memory::NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
+const size_t HTMLInfo::kDefaultEntityRefMapTable_Count = std::size (HTMLInfo::sDefaultEntityRefMapTable);
 
 FontSpecification::FontSize HTMLInfo::HTMLFontSizeToRealFontSize (int size)
 {
@@ -2361,7 +2361,7 @@ static inline string PrintColorString (Color color)
     buf[7]        = '"';
     buf[8]        = '\0';
     string result = string{buf};
-    for (size_t i = 0; i < Memory::NEltsOf (kColorNameTable_); ++i) {
+    for (size_t i = 0; i < std::size (kColorNameTable_); ++i) {
         if (Led_CasedStringsEqual (buf, string{"\""sv} + string{kColorNameTable_[i].second} + string{"\""sv})) {
             //result = "\'" + kColorNameTable_[i].first + "\'";
             result = kColorNameTable_[i].first;
@@ -2412,7 +2412,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
             char   sprintfBuffer[1024];
             string cssInfo = "style=\"";
             cssInfo += "font-family: '" + String::FromSDKString (newOne.GetFontName ()).AsNarrowSDKString () + "'; ";
-            cssInfo += (snprintf (sprintfBuffer, Memory::NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
+            cssInfo += (snprintf (sprintfBuffer, std::size (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
             cssInfo += "color: " + PrintColorString (newOne.GetTextColor ());
             cssInfo += "\"";
             WriteOpenTag (writerContext, "span",
@@ -2477,7 +2477,7 @@ string StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text)
         }
         else {
             char buf[1024];
-            (void)snprintf (buf, Memory::NEltsOf (buf), "&#%d;", static_cast<unsigned int> (*i));
+            (void)snprintf (buf, std::size (buf), "&#%d;", static_cast<unsigned int> (*i));
             result += buf;
         }
     }

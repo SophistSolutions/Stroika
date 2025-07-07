@@ -332,7 +332,7 @@ void FontComboBox::DrawItem (LPDRAWITEMSTRUCT lpDIS)
     bool isTrueType = false;
     {
         LOGFONT lf{};
-        Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), static_cast<const TCHAR*> (strText));
+        Characters::CString::Copy (lf.lfFaceName, std::size (lf.lfFaceName), static_cast<const TCHAR*> (strText));
         CWindowDC screenDC{nullptr};
         HDC       hDC = screenDC.m_hDC;
         ASSERT (hDC != NULL);

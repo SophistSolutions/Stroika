@@ -695,7 +695,7 @@ void FontSpecification::SetFromOSRep (const string& osRep)
 void FontSpecification::SetFontName (const SDKString& fontName)
 {
 #if qStroika_Foundation_Common_Platform_Windows
-    Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontName.c_str ());
+    Characters::CString::Copy (fFontInfo.lfFaceName, std::size (fFontInfo.lfFaceName), fontName.c_str ());
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
     fFontFamily = fontName;
@@ -705,14 +705,14 @@ void FontSpecification::SetFontName (const SDKString& fontName)
 #if qStroika_Foundation_Common_Platform_Windows
 FontSpecification::FontNameSpecifier::FontNameSpecifier (const Characters::SDKChar* from)
 {
-    Characters::CString::Copy (fName, Memory::NEltsOf (fName), from);
+    Characters::CString::Copy (fName, std::size (fName), from);
 }
 #endif
 
 void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
 {
 #if qStroika_Foundation_Common_Platform_Windows
-    Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontNameSpecifier.fName);
+    Characters::CString::Copy (fFontInfo.lfFaceName, std::size (fFontInfo.lfFaceName), fontNameSpecifier.fName);
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
     fFontFamily = fontNameSpecifier;
@@ -3093,10 +3093,10 @@ wstring IME::GetCompositionResultStringW (HWND hWnd)
         HIMC hImc = 0;
         if ((hImc = fImmGetContext (hWnd)) != 0) {
             wchar_t curIMEString[2048];
-            LONG nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (Memory::NEltsOf (curIMEString)));
+            LONG nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (std::size (curIMEString)));
 
             nChars /= sizeof (wchar_t); // why???? LGP 991214
-            if (nChars >= 0 and static_cast<size_t> (nChars) < Memory::NEltsOf (curIMEString)) {
+            if (nChars >= 0 and static_cast<size_t> (nChars) < std::size (curIMEString)) {
                 curIMEString[nChars] = '\0';
             }
             else {

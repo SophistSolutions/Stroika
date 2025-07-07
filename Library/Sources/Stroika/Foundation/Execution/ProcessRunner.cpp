@@ -835,7 +835,7 @@ namespace {
                             skipedThisMany = 0;
                         }
                     }
-                    buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = '\0';
+                    buf[(nBytesRead == std::size (buf)) ? (std::size (buf) - 1) : nBytesRead] = '\0';
                     DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, fd, nBytesRead,
                               String::FromNarrowSDKString (reinterpret_cast<const char*> (buf)));
 #endif
@@ -879,7 +879,7 @@ namespace {
                 // even if no input is ready to send to child.
                 while (true) {
                     if (optional<span<byte>> bytesReadFromStdIn = in.ReadNonBlocking (span{stdinBuf})) {
-                        Assert (bytesReadFromStdIn->size () <= Memory::NEltsOf (stdinBuf));
+                        Assert (bytesReadFromStdIn->size () <= std::size (stdinBuf));
                         if (bytesReadFromStdIn->empty ()) {
                             break;
                         }
@@ -942,7 +942,7 @@ namespace {
                           result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
                     StringBuilder stderrMsg;
-                    if (trailingStderrBufNWritten > Memory::NEltsOf (trailingStderrBuf)) {
+                    if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
                         stderrMsg << "..."sv;
                         stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
                     }
@@ -1039,7 +1039,7 @@ namespace {
                 bool bInheritHandles = true;
 
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
-                Characters::CString::Copy (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
+                Characters::CString::Copy (cmdLineBuf, std::size (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
 
                 optional<filesystem::path> useEXEPath = executable;
 
@@ -1131,7 +1131,7 @@ namespace {
                         o.Write (span{buf, nBytesRead});
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = byte{'\0'};
+                    buf[(nBytesRead == std::size (buf)) ? (std::size (buf) - 1) : nBytesRead] = byte{'\0'};
                     DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, p, nBytesRead, buf);
 #endif
                 }
@@ -1163,7 +1163,7 @@ namespace {
                         byte stdinBuf[kStackBufReadAtATimeSize_];
                         // blocking read to 'in' til it reaches EOF (returns 0)
                         while (size_t nbytes = in.ReadBlocking (span{stdinBuf}).size ()) {
-                            Assert (nbytes <= Memory::NEltsOf (stdinBuf));
+                            Assert (nbytes <= std::size (stdinBuf));
                             const byte* p = begin (stdinBuf);
                             const byte* e = p + nbytes;
                             while (p < e) {
@@ -1231,7 +1231,7 @@ namespace {
                     // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
                     // process actually finishes, it will change state and the wait should return immediately.
                     double remainingTimeout = (timesWaited <= 5) ? 0.1 : 0.5;
-                    DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (Memory::NEltsOf (events)), events, false,
+                    DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (std::size (events)), events, false,
                                                                         static_cast<int> (remainingTimeout * 1000));
                     ++timesWaited;
 

@@ -87,7 +87,7 @@ namespace {
         char buf[100]; // intentionally uninitalized
         (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x", macaddrBytes[0], macaddrBytes[1], macaddrBytes[2],
                         macaddrBytes[3], macaddrBytes[4], macaddrBytes[5]);
-        Assert (::strlen (buf) < NEltsOf (buf)); // else we must patch in '\0' but I think snprintf always works here
+        Assert (::strlen (buf) < std::size (buf)); // else we must patch in '\0' but I think snprintf always works here
         return String{buf};
     };
 }
@@ -199,7 +199,7 @@ namespace {
         newInterface.fFriendlyName = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
         auto getFlags              = [] (int sd, const char* name) {
             ifreq ifreq{};
-            CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
             Assert (r == 0 or errno == ENXIO); // ENXIO happens on MacOS sometimes, but never seen on linux
             return r == 0 ? ifreq.ifr_flags : 0;
@@ -209,7 +209,7 @@ namespace {
         auto getWirelessFlag = [] (int sd, const char* name) -> bool {
 #if defined(SIOCGIWNAME)
             iwreq pwrq{};
-            CString::Copy (pwrq.ifr_name, NEltsOf (pwrq.ifr_name), name);
+            CString::Copy (pwrq.ifr_name, std::size (pwrq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIWNAME, (char*)&pwrq);
             return r == 0;
 #else
@@ -243,7 +243,7 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Linux || qStroika_Foundation_Common_Platform_MacOS
         auto getNetMaskAsPrefix = [] (int sd, const char* name) -> optional<unsigned int> {
             ifreq ifreq{};
-            CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFNETMASK, (char*)&ifreq);
             // On MacOS this often fails, but I've never seen it fail on Linux
             if (r == 0) {
@@ -359,7 +359,7 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Linux
         auto getSpeed = [] (int sd, const char* name) -> optional<uint64_t> {
             ifreq ifreq{};
-            CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+            CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
             ethtool_cmd edata{};
             ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
             edata.cmd      = ETHTOOL_GSET;

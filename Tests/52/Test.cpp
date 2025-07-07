@@ -648,12 +648,12 @@ namespace {
     {
         {
             wchar_t buf[1024];
-            EXPECT_TRUE (swprintf (buf, NEltsOf (buf), L"a, %ls, %d", L"xxx", 33) == 10);
+            EXPECT_TRUE (swprintf (buf, std::size (buf), L"a, %ls, %d", L"xxx", 33) == 10);
             EXPECT_TRUE (wstring (buf) == L"a, xxx, 33");
         }
         {
             wchar_t buf[1024];
-            EXPECT_TRUE (swprintf (buf, NEltsOf (buf), L"0x%x", 0x20) == 4);
+            EXPECT_TRUE (swprintf (buf, std::size (buf), L"0x%x", 0x20) == 4);
             EXPECT_TRUE (wstring (buf) == L"0x20");
         }
     }
@@ -1445,7 +1445,7 @@ namespace {
                 r.reserve (100);
                 for (int i = 0; i < 100; ++i) {
                     char buf[1024];
-                    snprintf (buf, NEltsOf (buf), "hello %d", i);
+                    snprintf (buf, std::size (buf), "hello %d", i);
                     r.push_back (buf);
                 }
                 return r;

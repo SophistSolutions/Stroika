@@ -422,7 +422,7 @@ namespace Stroika::Foundation::Characters {
                 auto r =
                     fCodeCvt_->out (ignoredMBState, invalCharPartlyEncode.data (), invalCharPartlyEncode.data () + invalCharPartlyEncode.size (),
                                     ignoreCharsConsumed, fInvalidCharacterReplacementBytesBuf,
-                                    fInvalidCharacterReplacementBytesBuf + Memory::NEltsOf (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
+                                    fInvalidCharacterReplacementBytesBuf + size (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
                 DISABLE_COMPILER_MSC_WARNING_END (4996)
                 if (r == STD_CODE_CVT_T::ok) {
                     fInvalidCharacterReplacementBytes_ = as_writable_bytes (

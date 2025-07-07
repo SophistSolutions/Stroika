@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Streams {
     inline auto StreamReader<ELEMENT_TYPE>::Peek1FromCache_ () const -> optional<ElementType>
     {
         // first try last filled - generally will be the right one
-        for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
+        for (size_t i = fCacheBlockLastFilled_; i < std::size (fCacheBlocks_); ++i) {
             if (auto r = fCacheBlocks_[i].Peek1FromCache (this->fOffset_)) [[likely]] {
                 return r;
             }
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Streams {
     inline auto StreamReader<ELEMENT_TYPE>::Read1FromCache_ () -> optional<ElementType>
     {
         // first try last filled - generally will be the right one
-        for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
+        for (size_t i = fCacheBlockLastFilled_; i < std::size (fCacheBlocks_); ++i) {
             if (auto r = fCacheBlocks_[i].Read1FromCache (&this->fOffset_)) [[likely]] {
                 return r;
             }
@@ -309,7 +309,7 @@ namespace Stroika::Foundation::Streams {
     optional<size_t> StreamReader<ELEMENT_TYPE>::ReadFromCache_ (span<ElementType> into)
     {
         // first try last filled - generally will be the right one
-        for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
+        for (size_t i = fCacheBlockLastFilled_; i < std::size (fCacheBlocks_); ++i) {
             if (auto r = fCacheBlocks_[i].ReadFromCache (&this->fOffset_, into)) {
                 return r;
             }
@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Streams {
         if (fCacheBlocks_[fCacheBlockLastFilled_].GetEnd () != this->fOffset_ or
             fCacheBlocks_[fCacheBlockLastFilled_].GetSize () + thisFillSize > kMaxBufferedChunkSize_) {
             ++fCacheBlockLastFilled_;
-            if (fCacheBlockLastFilled_ >= Memory::NEltsOf (fCacheBlocks_)) {
+            if (fCacheBlockLastFilled_ >= std::size (fCacheBlocks_)) {
                 fCacheBlockLastFilled_ = 0;
             }
         }

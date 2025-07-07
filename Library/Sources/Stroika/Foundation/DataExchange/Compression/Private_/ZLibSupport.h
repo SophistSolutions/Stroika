@@ -104,7 +104,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
                 return nullopt;
             }
             if (fZStream_.avail_in == 0) {
-                Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
+                Assert (std::size (fInBuf_) < numeric_limits<uInt>::max ());
                 fZStream_.avail_in = static_cast<uInt> (fInStream_.ReadBlocking (span{fInBuf_}).size ()); // blocking read always OK by the time we get here
                 fZStream_.next_in = reinterpret_cast<Bytef*> (begin (fInBuf_));
             }

@@ -790,7 +790,7 @@ public:
         try {
             if constexpr (kUseSAX_) {
                 json::basic_parser<BoostSAXHandler_> p{json::parse_options{}};
-                const size_t                         targetChunkSize = NEltsOf (buf);
+                const size_t                         targetChunkSize = std::size (buf);
                 size_t                               actualChunkSize;
                 boost::system::error_code            ec;
                 while ((actualChunkSize = useInStream.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
@@ -818,7 +818,7 @@ public:
             }
             else {
                 json::stream_parser p;
-                const size_t        targetChunkSize = NEltsOf (buf);
+                const size_t        targetChunkSize = std::size (buf);
                 size_t              actualChunkSize;
                 while ((actualChunkSize = useInStream.ReadBlocking (span{buf, targetChunkSize}).size ()) != 0) {
                     boost::system::error_code ec;

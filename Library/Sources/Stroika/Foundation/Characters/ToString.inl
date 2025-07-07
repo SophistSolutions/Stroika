@@ -65,13 +65,13 @@ namespace Stroika::Foundation::Characters {
             wchar_t buf[1024];
             switch (flags) {
                 case ios_base::oct:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%o", t);
+                    (void)::swprintf (buf, std::size (buf), L"%o", t);
                     break;
                 case ios_base::dec:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%d", t);
+                    (void)::swprintf (buf, std::size (buf), L"%d", t);
                     break;
                 case ios_base::hex:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"0x%x", t);
+                    (void)::swprintf (buf, std::size (buf), L"0x%x", t);
                     break;
                 default:
                     AssertNotReached (); // @todo support octal
@@ -85,13 +85,13 @@ namespace Stroika::Foundation::Characters {
             static_assert (sizeof (t) == sizeof (long int));
             switch (flags) {
                 case ios_base::oct:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%lo", t);
+                    (void)::swprintf (buf, std::size (buf), L"%lo", t);
                     break;
                 case ios_base::dec:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%ld", t);
+                    (void)::swprintf (buf, std::size (buf), L"%ld", t);
                     break;
                 case ios_base::hex:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"0x%lx", t);
+                    (void)::swprintf (buf, std::size (buf), L"0x%lx", t);
                     break;
                 default:
                     AssertNotReached (); // @todo support octal
@@ -105,13 +105,13 @@ namespace Stroika::Foundation::Characters {
             static_assert (sizeof (t) == sizeof (long long int));
             switch (flags) {
                 case ios_base::oct:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%llo", t);
+                    (void)::swprintf (buf, std::size (buf), L"%llo", t);
                     break;
                 case ios_base::dec:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%lld", t);
+                    (void)::swprintf (buf, std::size (buf), L"%lld", t);
                     break;
                 case ios_base::hex:
-                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"0x%llx", t);
+                    (void)::swprintf (buf, std::size (buf), L"0x%llx", t);
                     break;
                 default:
                     AssertNotReached (); // @todo support octal

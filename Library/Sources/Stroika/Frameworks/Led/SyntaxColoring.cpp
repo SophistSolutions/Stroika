@@ -144,7 +144,7 @@ const Led_tChar* kCPlusPlusKeywordTable[] = {
     LED_TCHAR_OF ("void"),
     LED_TCHAR_OF ("while")};
 TableDrivenKeywordSyntaxAnalyzer::KeywordTable TableDrivenKeywordSyntaxAnalyzer::kCPlusPlusKeywords (kCPlusPlusKeywordTable,
-                                                                                                     Memory::NEltsOf (kCPlusPlusKeywordTable));
+                                                                                                     std::size (kCPlusPlusKeywordTable));
 
 const Led_tChar* kVisualBasicKeywordTable[] = {
     //nb: do to quirky lookup code, arrange table so no prefixing keyword comes before
@@ -382,7 +382,7 @@ const Led_tChar* kVisualBasicKeywordTable[] = {
     LED_TCHAR_OF ("Year"),
 };
 TableDrivenKeywordSyntaxAnalyzer::KeywordTable
-    TableDrivenKeywordSyntaxAnalyzer::kVisualBasicKeywords (kVisualBasicKeywordTable, Memory::NEltsOf (kVisualBasicKeywordTable), Led_tStrniCmp);
+    TableDrivenKeywordSyntaxAnalyzer::kVisualBasicKeywords (kVisualBasicKeywordTable, std::size (kVisualBasicKeywordTable), Led_tStrniCmp);
 
 TableDrivenKeywordSyntaxAnalyzer::TableDrivenKeywordSyntaxAnalyzer (const KeywordTable& keyTable)
     : inherited ()

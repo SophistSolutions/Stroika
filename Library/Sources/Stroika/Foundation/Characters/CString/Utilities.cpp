@@ -103,7 +103,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
     wchar_t                                 newFormat[5 * 1024];
     {
         size_t origFormatLen = ::wcslen (format);
-        Require (origFormatLen < Memory::NEltsOf (newFormat) / 2); // just to be sure safe - this is already crazy-big for format string...
+        Require (origFormatLen < std::size (newFormat) / 2); // just to be sure safe - this is already crazy-big for format string...
         // Could use Memory::StackBuffer<> but I doubt this will ever get triggered
         bool   lookingAtFmtCvt = false;
         size_t newFormatIdx    = 0;

@@ -63,10 +63,10 @@ namespace {
                                                     18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31,
                                                     32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
         value_in -= 43;
-        if (value_in < 0 || static_cast<unsigned char> (value_in) >= NEltsOf (kDecoding)) {
+        if (value_in < 0 || static_cast<unsigned char> (value_in) >= std::size (kDecoding)) {
             return -1;
         }
-        Assert (0 <= value_in and static_cast<unsigned char> (value_in) < NEltsOf (kDecoding));
+        Assert (0 <= value_in and static_cast<unsigned char> (value_in) < std::size (kDecoding));
         return kDecoding[(int)value_in];
     }
     size_t base64_decode_block_ (const signed char* code_in, size_t length_in, byte* plaintext_out, base64_decodestate_* state)
@@ -210,7 +210,7 @@ namespace {
     signed char base64_encode_value_ (signed char value_in)
     {
         const signed char BASE64_CHARS_[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        Assert (NEltsOf (BASE64_CHARS_) == (2 * 26 + 10 + 2 + 1));
+        Assert (std::size (BASE64_CHARS_) == (2 * 26 + 10 + 2 + 1));
         if (value_in > 63) {
             return '=';
         }

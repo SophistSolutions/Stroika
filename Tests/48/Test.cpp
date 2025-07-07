@@ -244,13 +244,13 @@ namespace {
                          Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
 
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
-                         Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
+                         Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + std::size (kSrc1_) - 1));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
-                         Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
+                         Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + std::size (kSrc2_) - 1));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
-                         Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
+                         Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + std::size (kSrc3_) - 1));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
-                         Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
+                         Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + std::size (kSrc4_) - 1));
         }
         {
             using Memory::BLOB;

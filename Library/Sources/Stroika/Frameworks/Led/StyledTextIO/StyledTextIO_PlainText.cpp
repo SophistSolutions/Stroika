@@ -78,13 +78,13 @@ void StyledTextIOWriter_PlainText::Write ()
 {
     Led_tChar buf[8 * 1024];
     size_t    bytesRead = 0;
-    while ((bytesRead = GetSrcStream ().readNTChars (buf, Memory::NEltsOf (buf))) != 0) {
+    while ((bytesRead = GetSrcStream ().readNTChars (buf, std::size (buf))) != 0) {
 #if qStroika_Foundation_Common_Platform_Windows
-        Led_tChar buf2[2 * Memory::NEltsOf (buf)];
+        Led_tChar buf2[2 * std::size (buf)];
 #else
-        Led_tChar buf2[Memory::NEltsOf (buf)];
+        Led_tChar buf2[std::size (buf)];
 #endif
-        bytesRead                                  = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
+        bytesRead                                  = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, std::size (buf2));
         Streams::MemoryStream::Ptr<byte> memStream = Streams::MemoryStream::New<byte> ();
         Streams::TextToBinary::Writer::New (memStream, Characters::CodeCvt<>{locale{}}).Write (span{buf2, bytesRead});
         auto b = memStream.As<Memory::BLOB> ();

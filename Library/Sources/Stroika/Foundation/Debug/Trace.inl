@@ -96,13 +96,7 @@ namespace Stroika::Foundation::Debug {
         friend class Debug::TraceContextBumper;
     };
 
-    namespace Private_ {
-        template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
-        inline constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
-        {
-            return SIZE_OF_ARRAY;
-        }
-    }
+ 
     /*
      ********************************************************************************
      ******************************* TraceContextBumper *****************************

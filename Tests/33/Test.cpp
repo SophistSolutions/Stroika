@@ -673,7 +673,7 @@ namespace {
                     }
                     auto readColorComponent = [] (const wchar_t* start, const wchar_t* end) -> uint8_t {
                         wchar_t buf[1024];
-                        Require (end - start < static_cast<ptrdiff_t> (Memory::NEltsOf (buf)));
+                        Require (end - start < static_cast<ptrdiff_t> (std::size (buf)));
                         memcpy (buf, start, (end - start) * sizeof (wchar_t));
                         buf[(end - start)] = '\0';
                         wchar_t* e         = nullptr;

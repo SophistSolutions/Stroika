@@ -164,7 +164,7 @@ inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const Styl
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
     string fontName = String::FromSDKString (isr.GetFontName ()).AsNarrowSDKString ();
-    Characters::CString::Copy (data.fFontName, Memory::NEltsOf (data.fFontName), fontName.c_str ());
+    Characters::CString::Copy (data.fFontName, std::size (data.fFontName), fontName.c_str ());
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
     data.fStyleSet |= isr.GetStyle_Bold () ? (1 << data.eBold) : 0;
@@ -265,7 +265,7 @@ inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const Styl
     // and write it again, they 'diff' equal. Even though this memset isn't needed for
     // accuracy, its nice todo anyhow, and pretty cheap - LGP 960531
     string fontName = String::FromSDKString (isr.GetFontName ()).AsNarrowSDKString ();
-    Characters::CString::Copy (data.fFontName, Memory::NEltsOf (data.fFontName), fontName.c_str ());
+    Characters::CString::Copy (data.fFontName, std::size (data.fFontName), fontName.c_str ());
     data.fThisRecordLength = data.RecordLenFromNameLen (fontName.length ());
 
     data.fStyleSet |= isr.GetStyle_Bold () ? (1 << data.eBold) : 0;

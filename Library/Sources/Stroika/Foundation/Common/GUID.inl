@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Common {
         , Data2{src.Data2}
         , Data3{src.Data3}
     {
-        for (size_t i = 0; i < Memory::NEltsOf (Data4); ++i) {
+        for (size_t i = 0; i < std::size (Data4); ++i) {
             Data4[i] = src.Data4[i];
         }
     }
@@ -65,13 +65,13 @@ namespace Stroika::Foundation::Common {
     {
         if constexpr (same_as<T, Characters::String>) {
             char buf[1024];
-            Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3,
+            Verify (::snprintf (buf, std::size (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3,
                                 Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
             return Characters::String{buf};
         }
         else if constexpr (same_as<T, std::string>) {
             char buf[1024];
-            Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3,
+            Verify (::snprintf (buf, std::size (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3,
                                 Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
             return buf;
         }

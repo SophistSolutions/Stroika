@@ -160,7 +160,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
 #elif qStroika_Foundation_Common_Platform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
         struct ::ifreq ifreq{};
-        Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+        Characters::CString::Copy (ifreq.ifr_name, std::size (ifreq.ifr_name), name);
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         // Since this is used only to filter the list of addresses, if we get an error, don't throw but
         // return 0
@@ -223,7 +223,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
         const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof (struct ifreq));
         for (const ifreq* it = ifc.ifc_req; it != end; ++it) {
             struct ifreq ifr{};
-            Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
+            Characters::CString::Copy (ifr.ifr_name, std::size (ifr.ifr_name), it->ifr_name);
             if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
                 if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
                     if (::ioctl (s.GetNativeSocket (), SIOCGIFHWADDR, &ifr) == 0) {
@@ -281,7 +281,7 @@ struct LinkMonitor::Rep_ {
         Rep_* rep = reinterpret_cast<Rep_*> (callerContext);
         if (Address != NULL) {
             char ipAddrBuf[1024];
-            (void)snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
+            (void)snprintf (ipAddrBuf, std::size (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
                             Address->Address.Ipv4.sin_addr.s_host, Address->Address.Ipv4.sin_addr.s_lh, Address->Address.Ipv4.sin_addr.s_impno);
             LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
             rep->SendNotifies (lc, String{}, String{ipAddrBuf});
@@ -331,7 +331,7 @@ struct LinkMonitor::Rep_ {
                                     ::if_indextoname (ifa->ifa_index, name);
                                     {
                                         char ipAddrBuf[1024];
-                                        ::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,
+                                        ::snprintf (ipAddrBuf, std::size (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,
                                                     (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
                                         SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String{ipAddrBuf});
                                     }

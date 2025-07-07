@@ -93,7 +93,7 @@ public:
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;
                     size_t        nBytesRead = s.ReceiveFrom (buf, 0, &from).size ();
-                    Assert (nBytesRead <= Memory::NEltsOf (buf));
+                    Assert (nBytesRead <= std::size (buf));
                     using namespace Streams;
                     ParsePacketAndNotifyCallbacks_ (BinaryToText::Reader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
                 }

@@ -41,11 +41,11 @@ namespace {
         DoInit_ ()
         {
             size_t fromI = 0;
-            for (size_t i = 0; i < NEltsOf (kMallocGuardHeader_); ++i) {
+            for (size_t i = 0; i < std::size (kMallocGuardHeader_); ++i) {
                 kMallocGuardHeader_[i] = kMallocGuardHeader_BASE_[fromI];
                 kMallocGuardFooter_[i] = kMallocGuardFooter_[fromI];
                 ++fromI;
-                if (fromI >= NEltsOf (kMallocGuardHeader_BASE_)) {
+                if (fromI >= std::size (kMallocGuardHeader_BASE_)) {
                     fromI = 0;
                 }
             }
@@ -74,7 +74,7 @@ sDoInit_x_;
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
             sDone_             = true;
             const char kMsg_[] = "Fatal Error detected in Stroika Malloc Guard\n";
-            ::write (2, kMsg_, NEltsOf (kMsg_));
+            ::write (2, kMsg_, std::size (kMsg_));
             DbgTrace ("%s", kMsg_);
             {
                 ::write (2, why, ::strlen (why));

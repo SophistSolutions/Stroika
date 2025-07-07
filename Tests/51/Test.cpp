@@ -397,7 +397,7 @@ namespace {
                 FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck));
             EXPECT_TRUE (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
             EXPECT_TRUE (
-                Memory::NEltsOf (kRefCheck_) ==
+                std::size (kRefCheck_) ==
                 FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck).size ());
         }
     }

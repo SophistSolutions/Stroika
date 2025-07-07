@@ -222,7 +222,7 @@ private:
             }
             else {
                 char buf[1024];
-                (void)::snprintf (buf, NEltsOf (buf), "\" L\"\\x%x\" L\"", *i);
+                (void)::snprintf (buf, std::size (buf), "\" L\"\\x%x\" L\"", *i);
                 out << buf;
             }
         }

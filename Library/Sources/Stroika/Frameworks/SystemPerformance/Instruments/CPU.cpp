@@ -226,7 +226,7 @@ namespace {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             {
                 double loadAve[3];
-                int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
+                int    lr = ::getloadavg (loadAve, std::size (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage{loadAve[0], loadAve[1], loadAve[2]};
                     auto tcNow          = Time::GetTickCount ();

@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Characters::CString {
      *  \par Example Usage
      *      \code
      *          char    urlBuf[1024];
-     *          CString::Copy (urlBuf, NEltsOf (urlBuf), url.c_str ());
+     *          CString::Copy (urlBuf, size (urlBuf), url.c_str ());
      *      \endcode
      */
     template <typename T>

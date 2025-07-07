@@ -103,7 +103,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
         ea[0].Trustee.TrusteeType  = TRUSTEE_IS_WELL_KNOWN_GROUP;
         ea[0].Trustee.ptstrName    = (LPTSTR)pSIDEveryone;
 
-        if (ERROR_SUCCESS != ::SetEntriesInAcl (static_cast<DWORD> (NEltsOf (ea)), ea, nullptr, &pACL)) {
+        if (ERROR_SUCCESS != ::SetEntriesInAcl (static_cast<DWORD> (std::size (ea)), ea, nullptr, &pACL)) {
             ::FreeSid (pSIDEveryone);
             return; // silently ignore errors - probably just old OS etc....
         }
@@ -205,8 +205,8 @@ String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath
     DWORD   ignored = 0;
     SDKChar volNameBuf[1024]{};
     SDKChar igBuf[1024]{};
-    BOOL    result = ::GetVolumeInformation (driveLetterAbsPath.c_str (), volNameBuf, static_cast<DWORD> (NEltsOf (volNameBuf)), nullptr,
-                                             &ignored, &ignored, igBuf, static_cast<DWORD> (NEltsOf (igBuf)));
+    BOOL    result = ::GetVolumeInformation (driveLetterAbsPath.c_str (), volNameBuf, static_cast<DWORD> (std::size (volNameBuf)), nullptr,
+                                             &ignored, &ignored, igBuf, static_cast<DWORD> (std::size (igBuf)));
     if (result) {
         return String::FromSDKString (volNameBuf);
     }
@@ -353,7 +353,7 @@ void IO::FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
         HANDLE events[2];
         events[0] = _THS_->fDoneEvent;
         events[1] = _THS_->fWatchEvent;
-        ::WaitForMultipleObjects (static_cast<DWORD> (NEltsOf (events)), events, false, INFINITE);
+        ::WaitForMultipleObjects (static_cast<DWORD> (std::size (events)), events, false, INFINITE);
         Verify (::FindNextChangeNotification (_THS_->fWatchEvent));
         if (not _THS_->fQuitting) {
             _THS_->ValueChanged ();

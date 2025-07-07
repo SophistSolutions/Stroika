@@ -1220,7 +1220,7 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
     ThrowIfErrorHRESULT (CComObject<ActiveLedIt_StaticCommandList>::CreateInstance (&o));
     builtinCmds = o;
 
-    o->AppendBuiltinCmds (kAllCmds, kAllCmds + Memory::NEltsOf (kAllCmds));
+    o->AppendBuiltinCmds (kAllCmds, kAllCmds + std::size (kAllCmds));
     {
         const vector<SDKString>& fontNames = GetUsableFontNames ();
         Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
@@ -1247,7 +1247,7 @@ UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
     CComVariant c (cmdObjOrName);
     if (SUCCEEDED (c.ChangeType (VT_BSTR))) {
         wstring lookForCmdName = c.bstrVal == NULL ? wstring () : wstring (c.bstrVal);
-        for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + Memory::NEltsOf (kAllCmds); ++i) {
+        for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + std::size (kAllCmds); ++i) {
             if (NormalizeCmdNameToInternal (String::FromNarrowSDKString ((*i).fInternalCmdName).As<wstring> ()) == lookForCmdName) {
                 return (*i).fCmdNum;
             }
@@ -1304,7 +1304,7 @@ UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
 wstring CmdNum2Name (UINT cmdNum)
 {
     // regular builtin CMD
-    for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + Memory::NEltsOf (kAllCmds); ++i) {
+    for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + std::size (kAllCmds); ++i) {
         if ((*i).fCmdNum == cmdNum) {
             return NormalizeCmdNameToInternal (String::FromNarrowSDKString ((*i).fInternalCmdName).As<wstring> ());
         }
