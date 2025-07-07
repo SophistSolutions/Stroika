@@ -9,12 +9,22 @@ namespace Stroika::Foundation::Execution {
      ************************************** Activity ********************************
      ********************************************************************************
      */
-    template <typename STRINGISH_T>
+    template <convertible_to<Characters::String> STRINGISH_T>
     constexpr Activity<STRINGISH_T>::Activity (const STRINGISH_T& arg)
+        requires (is_array_v<STRINGISH_T>)
+    {
+        static_assert (size (arg) == size (fArg_));
+        for (auto i = 0; i < size (arg); ++i) {
+            fArg_[i] = arg[i];
+        }
+    }
+    template <convertible_to<Characters::String> STRINGISH_T>
+    constexpr Activity<STRINGISH_T>::Activity (const STRINGISH_T& arg)
+        requires (not is_array_v<STRINGISH_T>)
         : fArg_{arg}
     {
     }
-    template <typename CTOR_ARG>
+    template <convertible_to<Characters::String> CTOR_ARG>
     Characters::String Activity<CTOR_ARG>::AsString () const
     {
         return fArg_;

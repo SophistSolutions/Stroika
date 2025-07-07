@@ -180,6 +180,11 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test4_Activities_"};
         Test4_Activities_::Private::T1_Basics_ ();
+        {
+            static const Activity test1{"performing sqlite document db employees sample on"sv};
+            static const Activity test2{"performing sqlite document db employees sample on {}"}; // before Stroika 3.0d21 had trouble compiling this
+            EXPECT_EQ (test2.AsString (), "performing sqlite document db employees sample on {}");
+        }
     }
 }
 

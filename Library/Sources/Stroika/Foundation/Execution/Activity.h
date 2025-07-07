@@ -10,14 +10,7 @@
 #include "Stroika/Foundation/Containers/Stack.h"
 
 /*
- *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- *
- *
- * Notes:
- *
- *
- *
  */
 
 namespace Stroika::Foundation::Execution {
@@ -65,10 +58,17 @@ namespace Stroika::Foundation::Execution {
      *          there they at least allow virtual constexpr methods. That might impact (indirectly) whether an object
      *          can be constexpr (having a virtual dtor).
      */
-    template <typename STRINGISH_T = Characters::String>
+    template <convertible_to<Characters::String> STRINGISH_T = Characters::String>
     class Activity final : public Private_::Activities_::AsStringObj_ {
     public:
-        constexpr Activity (const STRINGISH_T& arg);
+        /**
+         *  @todo unclear why we need to have two overloads here - but hard todo CTOR so works for arrays otherwise (see "before Stroika 3.0d21 had trouble compiling this")
+         */
+        constexpr Activity (const STRINGISH_T& arg)
+            requires (is_array_v<STRINGISH_T>);
+        constexpr Activity (const STRINGISH_T& arg)
+            requires (not is_array_v<STRINGISH_T>);
+
         Activity (const Activity& src) = default;
 
     public:
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Execution {
 
     /**
      */
-    template <typename CTOR_ARG>
+    template <convertible_to<Characters::String> CTOR_ARG>
     Activity (const CTOR_ARG& b) -> Activity<CTOR_ARG>;
 
     /**
