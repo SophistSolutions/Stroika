@@ -30,9 +30,11 @@ namespace Stroika::Foundation::Common {
     /**
      *  Utility to wrap a class that will not evaluate (illegal) for use with conditional_t (or other similar)
      *  where it wont actually get used, just so it will compile.
-     *  
+     * 
      *      Thanks to https://stackoverflow.com/users/65863/remy-lebeau for idea
      *      See https://stackoverflow.com/questions/65257926/problem-with-false-case-in-conditional-t-being-compiled-and-evaluated
+     * 
+     * \note this supports type arguments, but not size_t arguments, which would sometimes be useful too, but cannot see how to mix and match with variadic templates.
      */
     template <template <typename...> class Cont, typename... Ts>
     struct LazyType {
