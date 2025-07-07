@@ -13,8 +13,8 @@ namespace Stroika::Foundation::Execution {
     constexpr Activity<STRINGISH_T>::Activity (const STRINGISH_T& arg)
         requires (is_array_v<STRINGISH_T>)
     {
-        static_assert (size (arg) == size (fArg_));
-        for (auto i = 0; i < size (arg); ++i) {
+        Assert (size (arg) == size (fArg_));
+        for (size_t i = 0; i < size (arg); ++i) {
             fArg_[i] = arg[i];
         }
     }
