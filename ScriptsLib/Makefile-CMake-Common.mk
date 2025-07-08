@@ -2,10 +2,7 @@
 #
 # This makefile component ASSUMES you've already included /checked:
 #	$(CONFIGURATION) is Set (just skip include if not set)
-#	Set StroikaRoot
-#	$(CONFIGURATION)/Configuration.mk
-#	Include Makefile-Common.mk
-#	Include SharedMakeVariables-Default.mk
+#	Include SharedMakeVariables-Default.mk (which in turn requires StroikaRoot to be set)
 #
 ifndef StroikaRoot
 $(error "StroikaRoot must be defined before including Makefile-CMake-Common.mk")
