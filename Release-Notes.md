@@ -25,7 +25,7 @@ upgrade notes
 
 in makefiles
 
-lose 
+lose deprecated
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 lose 

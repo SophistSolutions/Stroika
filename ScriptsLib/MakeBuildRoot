@@ -9,7 +9,7 @@ if [ ! -e $ROOT ] ; then
 	exit 1;
 fi
 
-echo "$PREFIX""Linking Stroika output and configuration directories from `pwd` to $ROOT"
+echo "$PREFIX""Linking Stroika output and configuration directories from $(ScriptsLib/SubstituteBackVariables $(pwd)) to $ROOT"
 
 rm -rf Builds ConfigurationFiles IntermediateFiles
 
