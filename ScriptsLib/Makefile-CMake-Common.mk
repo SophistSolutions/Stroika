@@ -8,16 +8,13 @@
 #	Include SharedMakeVariables-Default.mk
 #
 ifndef StroikaRoot
-$(error("StroikaRoot must be defined before including Makefile-CMake-Common.mk"))
+$(error "StroikaRoot must be defined before including Makefile-CMake-Common.mk")
 endif
 ifeq ($(CONFIGURATION),)
-$(error("Only include Makefile-Common.mk if CONFIGURATION is set"))
-endif
-ifndef FUNCTION_CAPITALIZE_WORD
-$(error("be sure to include Makefile-Common.mk before including Makefile-CMake-Common.mk"))
+$(error "Only include Makefile-CMake-Common.mk if CONFIGURATION is set")
 endif
 ifndef StroikaLibDir
-$(error("be sure to include SharedMakeVariables-Default.mk before including Makefile-CMake-Common.mk"))
+$(error "be sure to include SharedMakeVariables-Default.mk before including Makefile-CMake-Common.mk")
 endif
 
 

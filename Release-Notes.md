@@ -56,7 +56,14 @@ preferable after define of Objs
 
 
 
+-LinkerArgs_LibDependencies += -lexiv2 -lexpat -lz
++LDFLAGS += -lexiv2 -lexpat -lz
 
+-EXTRA_SUFFIX_LINKER_ARGS+= -ignore:4286
++LDFLAGS+= -ignore:4286
+
+-       @$(call DEFAULT_LINK_LINE,$@)
++       @$(call DEFAULT_LINK_LINE,$@,stroika-frameworks,,${LDFLAGS})
 
 ----------------------------
 
