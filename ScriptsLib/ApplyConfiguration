@@ -219,26 +219,6 @@ sub	ReadConfiguration_
 	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
 		push (@useExtraMakeDefines, $mdef);
 	}
-	# {
-	# 	$CPPFLAGS = $CPPFLAGS_NOTINCLUDES;
-	# 	foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
-	# 		if (not ($CPPFLAGS eq '')) {
-	# 			$CPPFLAGS .= ' ';
-	# 		}
-	# 		if ($BuildPlatform =~ /^VisualStudio.Net/) {
-	# 			##
-	# 			## From https://learn.microsoft.com/en-us/cpp/build/reference/cl-filename-syntax?view=msvc-170
-	# 			## 		CL accepts filenames separated either by backslashes (\) or forward slashes (/). 
-	# 			##		Filenames that contain spaces must be surrounded by double quote characters
-	# 			##
-	# 			my $wpath = trim (`cygpath --mixed \'$_\'`);		# c:/foo as opposed to c:\foo, and wrap in double-quotes cuz often with spaces (and cl doesnt like single quotes)
-	# 			$CPPFLAGS .= "-I\"$wpath\"";
-	# 		}
-	# 		else {
-	# 			$CPPFLAGS .= "-I$_";
-	# 		}
-	# 	}
-	# }
 
 	{
 		foreach (split /$PATH_SEPERATOR/, $PLATFORM_INCLUDES_PATH) {
