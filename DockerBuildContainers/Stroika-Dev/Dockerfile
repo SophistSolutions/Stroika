@@ -11,9 +11,13 @@ RUN apt-get install -y openssh-server
 # handy dev tools to debug, etc...
 RUN apt-get install -y clang-format curl vim apt-file nodejs iproute2 lldb
 
+
+# RUN echo "sudo service ssh start" >> ~/.bashrc
+
 EXPOSE 22
 ## @todo have not figured out how to get sshd to start automatically
 ## so for now, start docker container and manually run sudo service ssh restart and then you can connect
 #CMD /usr/sbin/sshd && bash
 CMD bash
+
 
