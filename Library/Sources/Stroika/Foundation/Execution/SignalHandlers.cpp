@@ -623,7 +623,9 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
          */
         Require (0 <= signal and signal < static_cast<SignalID> (std::size (SHR.fDirectSignalHandlersCache_)));
     Again:
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"")
         [[maybe_unused]] auto&& cleanup = Finally ([&SHR] () noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"")
         if (SHR.fDirectSignalHandlersCache_Lock_++ == 0) {
             const vector<function<void (SignalID)>>* shs = &SHR.fDirectSignalHandlersCache_[signal];
             for (auto shi = shs->begin (); shi != shs->end (); ++shi) {
