@@ -21,17 +21,18 @@ If you wish to test against mongodb, a mongo instance can be setup as:
 docker run --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass mongo:latest
 ~~~
 
+or 
+
+~~~bash
+docker run --name mongodb -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=pass --restart=unless-stopped mongo:latest
+~~~
+
 Then pass this ENV variable to the regression tests
 
 ~~~bash
 MONGO_CONNECTION_STRING=mongodb://admin:pass@localhost:27017
 ~~~
 
-or 
-
-~~~bash
-MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017
-~~~
 or 
 
 ~~~bash
