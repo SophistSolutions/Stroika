@@ -42,6 +42,13 @@ fi
 ### Can set CMD2RUN=./ScriptsLib/RegressionTests
 CMD2RUN="${CMD2RUN:-bash}"
 
+# ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'"
+if [ "${ACTUAL_RUN_CMD}" == "" ] ; then
+	ACTUAL_RUN_CMD="bash -c '(sudo mkdir -p ~; sudo chmod a+w ~; sleep inf) > /dev/null'"
+fi
+
+
+
 if [ "${USER_FLAGS}" == "" ] ; then
 	USER_FLAGS="-u`id -u` `for i in $( id -G ); do echo -n " --group-add $i "; done`"
 fi
@@ -107,7 +114,6 @@ RunCMD_()
 ### so start with a boring task (sleep inf), and then run the CMD2RUN arg using exec, and then
 ### stop the container (it can then be safely restarted)
 
-
 ##NB: redirect to /dev/null so container ID not shown - actual errors go to stderr
 RunCMD_ "docker run \
 	${USER_FLAGS} ${PASSWORD_FILE_MOUNTS} \
@@ -123,7 +129,7 @@ RunCMD_ "docker run \
 	${EXTRA_DOCKER_ARGS} \
 	--detach \
 	${CONTAINER_IMAGE} \
-	bash -c '(sudo mkdir -p ~; sudo chmod a+w ~; sleep inf) > /dev/null'"
+	${ACTUAL_RUN_CMD}"
 
 # Run this to completion
 RunCMD_ docker exec ${CONTAINER_NAME} ${CMD2RUN} 

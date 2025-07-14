@@ -117,10 +117,15 @@ sophistsolutionsinc/stroika-dev-2504:
 
 stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
-	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22" ECHO_DOCKER_COMMANDS=1 ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10022:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2204 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2204 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10422:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2404 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2404 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10522:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+	cd .. && SANDBOX_FROM=/Sandbox CONTAINER_NAME=Stroika-Dev-2504 CONTAINER_IMAGE=sophistsolutionsinc/stroika-dev-2504 INCLUDE_EXTRA_PERSONAL_MOUNT_FILES=1 EXTRA_DOCKER_ARGS="--publish 10722:22 --restart=unless-stopped" ECHO_DOCKER_COMMANDS=1 ACTUAL_RUN_CMD="bash -c 'sudo mkdir -p ~; sudo chmod a+w ~; sudo mkdir /run/sshd; sudo /usr/sbin/sshd -D'" ScriptsLib/RunInDockerEnvironment
+endif
+
+start-stroika-dev-containers:
+ifeq (${DETECTED_HOST_OS},Linux)
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504; do docker start $i; done
 endif
 
 
