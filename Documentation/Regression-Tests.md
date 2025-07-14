@@ -41,6 +41,12 @@ MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017
 
 For my home regression tests, I run that on 'medusa', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017
 
+### Dev Docker Containers
+
+~~~
+make build-images stroika-dev-containers start-stroika-dev-containers
+~~~
+
 
 ## File Output (for each \$TEST_TARGET)
 

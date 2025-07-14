@@ -125,7 +125,7 @@ endif
 
 start-stroika-dev-containers:
 ifeq (${DETECTED_HOST_OS},Linux)
-	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504; do docker start $i; done
+	for i in Stroika-Dev Stroika-Dev-2204 Stroika-Dev-2404 Stroika-Dev-2504; do docker start $$i; done
 endif
 
 
