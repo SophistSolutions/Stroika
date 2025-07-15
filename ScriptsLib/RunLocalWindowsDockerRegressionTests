@@ -14,8 +14,12 @@ BRANCH="${BRANCH:-v3-Dev}"
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 DOCKER="${DOCKER:-docker.exe}"
 
-# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
-# DOCKER_NETWORK="${DOCKER_NETWORK:-Default Switch}"
+# Due to https://stroika.atlassian.net/browse/STK-742 - Invoke-WebRequest : The remote name could not be resolved: 
+#  Add 
+#  "dns": [
+#     "8.8.8.8"
+#   ],
+#   to Docker Desktop App / Settings / Docker Engine / JSON Configuration File
 
 CPUS_=6
 MEMORY_=12G
@@ -27,9 +31,6 @@ DOCKER_RUN_ARGS_+=" --interactive"
 DOCKER_RUN_ARGS_+=" --memory ${MEMORY_}"
 DOCKER_RUN_ARGS_+=" --cpus ${CPUS_}"
 DOCKER_RUN_ARGS_+=" --name $CONTAINER_NAME"
-if [[ "$DOCKER_NETWORK" != "" ]] ; then
-    DOCKER_RUN_ARGS_ = "${DOCKER_RUN_ARGS_} --network ${DOCKER_NETWORK}"
-fi
 DOCKER_RUN_ARGS_+=" --storage-opt size=${DISK_}"
 
 [[ "$($DOCKER ps -a | grep $CONTAINER_NAME)" ]] && $DOCKER rm -f $CONTAINER_NAME
