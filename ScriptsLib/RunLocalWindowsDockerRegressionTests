@@ -22,7 +22,7 @@ DOCKER="${DOCKER:-docker.exe}"
 #   to Docker Desktop App / Settings / Docker Engine / JSON Configuration File
 
 CPUS_=6
-MEMORY_=12G
+MEMORY_=13G
 DISK_=175G
 
 DOCKER_RUN_ARGS_=
