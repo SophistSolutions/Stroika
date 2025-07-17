@@ -65,6 +65,12 @@ preferable after define of Objs
 -       @$(call DEFAULT_LINK_LINE,$@)
 +       @$(call DEFAULT_LINK_LINE,$@,stroika-frameworks,,${LDFLAGS})
 
+
+Replace any occurances of:
+#include "Stroika-Current-Version.h"
+with
+#include "Stroika/Current-Version.h"
+
 ----------------------------
 
 ### 3.0d20 {2025-06-08} {[diff](../../compare/3.0d19...3.0d20)}

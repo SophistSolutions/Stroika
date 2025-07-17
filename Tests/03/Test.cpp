@@ -27,7 +27,7 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-#include "Stroika/Stroika-Current-Version.h"
+#include "Stroika/Current-Version.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Common;

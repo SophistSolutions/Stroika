@@ -192,7 +192,7 @@ libraries:
 	else\
 		$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION); \
 		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components; \
-		$(MAKE) --no-print-directory --silent .vscode/c_cpp_properties.json $(StroikaPlatformTargetBuildDir)include/Stroika/Stroika-Current-Version.h;\
+		$(MAKE) --no-print-directory --silent .vscode/c_cpp_properties.json $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h;\
 		$(MAKE) --directory Library --no-print-directory all; \
 	fi
 else
@@ -403,7 +403,7 @@ endif
 apply-configuration-if-needed_:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT
 ifneq ($(CONFIGURATION),)
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/Configuration.mk .vscode/c_cpp_properties.json $(StroikaPlatformTargetBuildDir)include/Stroika/Stroika-Current-Version.h
+	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/Configuration.mk .vscode/c_cpp_properties.json $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h
 endif
 
 
@@ -438,7 +438,7 @@ apply-configurations:
 
 apply-configurations-if-needed:
 	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory --silent IntermediateFiles/$$i/Configuration.mk .vscode/c_cpp_properties.json Builds/$$i/include/Stroika/Stroika-Current-Version.h CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory --silent IntermediateFiles/$$i/Configuration.mk .vscode/c_cpp_properties.json Builds/$$i/include/Stroika/Current-Version.h CONFIGURATION=$$i;\
 	done
 
 ifneq ($(CONFIGURATION),)
@@ -450,12 +450,12 @@ IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIG
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@$(StroikaRoot)ScriptsLib/ApplyConfiguration $(CONFIGURATION) --only-vscode 
-	@$(MAKE) --no-print-directory --silent $(StroikaPlatformTargetBuildDir)include/Stroika/Stroika-Current-Version.h
+	@$(MAKE) --no-print-directory --silent $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h
 
-$(StroikaPlatformTargetBuildDir)include/Stroika/Stroika-Current-Version.h:	 STROIKA_VERSION
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"$(StroikaPlatformTargetBuildDir)include/Stroika/Stroika-Current-Version.h\" ... "
+$(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h:	 STROIKA_VERSION
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"$(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h\" ... "
 	@mkdir -p $(StroikaPlatformTargetBuildDir)include/Stroika/
-	@$(StroikaRoot)ScriptsLib/MakeVersionFile STROIKA_VERSION $(StroikaPlatformTargetBuildDir)include/Stroika/Stroika-Current-Version.h StroikaLibVersion
+	@$(StroikaRoot)ScriptsLib/MakeVersionFile STROIKA_VERSION $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h StroikaLibVersion
 	@echo "done"
 endif
 
@@ -468,7 +468,7 @@ endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@$(StroikaRoot)ScriptsLib/ApplyConfiguration $(CONFIGURATION)
-	@$(MAKE) --no-print-directory --silent $(StroikaPlatformTargetBuildDir)include/Stroika/Stroika-Current-Version.h
+	@$(MAKE) --no-print-directory --silent $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h
 
 
 # This variable (defaults to nothing) is added to all configurations built by make 'default-configurations' operation
