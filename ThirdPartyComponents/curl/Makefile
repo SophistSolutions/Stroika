@@ -22,9 +22,10 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 #		0 0x62385118dbc1 in __interceptor_strchr.part.0 (/Sandbox/Stroika-Dev/Builds/Debug/Tests/Test45+0x8b1bbc1) (BuildId: 85749e70b409ca4f0e9e6bc7cb1c0bdd98820b6d)
 #		1 0x6238533f45bd in replace_existing /Sandbox/Stroika-Dev/IntermediateFiles/Debug/ThirdPartyComponents/curl/lib/cookie.c:976
 #		2 0x6238533f62f6 in Curl_cookie_add /Sandbox/Stroika-Dev/IntermediateFiles/Debug/ThirdPartyComponents/curl/lib/cookie.c:1123
+VERSION=8.15.0
 #VERSION=8.13.0
 
-VERSION=8.12.1
+#VERSION=8.12.1
 #VERSION=8.11.1
 #VERSION=8.11.0
 BASENAME=curl-$(VERSION)
