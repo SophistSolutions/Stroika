@@ -25,6 +25,16 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 #		0 0x62385118dbc1 in __interceptor_strchr.part.0 (/Sandbox/Stroika-Dev/Builds/Debug/Tests/Test45+0x8b1bbc1) (BuildId: 85749e70b409ca4f0e9e6bc7cb1c0bdd98820b6d)
 #		1 0x6238533f45bd in replace_existing /Sandbox/Stroika-Dev/IntermediateFiles/Debug/ThirdPartyComponents/curl/lib/cookie.c:976
 #		2 0x6238533f62f6 in Curl_cookie_add /Sandbox/Stroika-Dev/IntermediateFiles/Debug/ThirdPartyComponents/curl/lib/cookie.c:1123
+# NOTE SAME issue reported by valgrind:
+#     [45] Foundation::IO::Network::Transfer - valgrind -q --track-origins=yes --tool=memcheck --gen-suppressions=all --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp --suppressions=Valgrind-MemCheck-Common-x86_64.supp  /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2404_x86_64/Builds/valgrind-release-SSLPurify-NoBlockAlloc/Tests/Test45 --gtest_brief --gtest_brief
+# ==4020632== Invalid read of size 1
+# ==4020632==    at 0x484EF04: index (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+# ==4020632==    by 0x64FBA6: Curl_cookie_add.isra.0 (cookie.c:1124)
+#... ==4020632==    by 0x570B4D: state_performing.lto_priv.0 (multi.c:1888)
+# ==4020632==    by 0x578B25: multi_runsingle.lto_priv.0 (multi.c:2553)
+# ==4020632==    by 0x3993A4: UnknownInlinedFun (multi.c:2739)
+# ==4020632==    by 0x3993A4: (anonymous namespace)::Rep_::Send(Stroika::Foundation::IO::Network::Transfer::Request const&) [clone .lto_priv.0] (Connection_libcurl.cpp:268)
+
 #VERSION=8.15.0
 #VERSION=8.13.0
 
