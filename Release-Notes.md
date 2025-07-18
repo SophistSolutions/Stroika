@@ -71,6 +71,971 @@ Replace any occurances of:
 with
 #include "Stroika/Current-Version.h"
 
+
+
+
+
+
+
+
+
+
+#if 0
+commit f29d739dc3b8103ba466e10dfaa6ab1f8a8c92ca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 8 11:24:21 2025 -0400
+
+    start 3.0d21x dev
+
+commit d3f346829e56eafa68ac7c730f30a94579843bed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 9 11:29:20 2025 -0400
+
+    early draft of ScriptsLib/CreatePackageConfigFiles
+
+commit 903994e0b6ee5a9ac4b9acc0fad7a2c06ba42c99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 9 11:56:50 2025 -0400
+
+    call ScriptsLib/CreatePackageConfigFiles from ScriptsLib/ApplyConfiguration and draft commandline handling for CreatePackageConfigFiles
+
+commit 18a68cbffbb5bfd84b6f5773b7b0217eb6f532f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 9 16:16:49 2025 -0400
+
+    more progress on ScriptsLib/CreatePackageConfigFiles
+
+commit 1b06bf87fcd9ca3df322b3e3999cc953b5db5dc8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 9 16:35:48 2025 -0400
+
+    more progress on ScriptsLib/CreatePackageConfigFiles
+
+commit b8b38719ac280d2f255d707a1b691e90ba283786
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 15:12:55 2025 -0400
+
+    generate/fix pkgconfig files for sqlite, and zlib (static); lose explicit link dependencies in configure script (replacing with adding those pkgfiles to list of pkgconfig file names - progress towards using stroika-foundatipn.pc
+
+commit f6f5593c8785607ec692800af2c4960c445b352a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 15:15:34 2025 -0400
+
+    progress on ScriptsLib/CreatePackageConfigFiles
+
+commit b32b675a13b810036a79ff05555cd8cd7555cb7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 16:31:41 2025 -0400
+
+    ScriptsLib/CreatePackageConfigFiles progress
+
+commit d101c8840145058345b5a17ab23142e5aa62e76e
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 10 17:40:59 2025 -0400
+
+    fixed last checkin for lzma (lzma.pc) support
+
+commit 1a019c591c4310e8497c4ea97c8fb6d501027208
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 20:41:08 2025 -0400
+
+    fixed xerces build code to use .pc file (instead of configure add of libs etc)
+
+commit 3f83d7f5747fc3d8510d987ff512ebaf81a579f4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 20:41:38 2025 -0400
+
+    progress on ScriptsLib/CreatePackageConfigFiles
+
+commit 5a1cc9412275e603cee6db8f05823c29eafddd49
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 10 20:49:55 2025 -0400
+
+    get rid of commented out/deprecated makefile variables: StroikaFoundationSupportLibs PKG_CONFIG_STATIC_COMPONENTS, and TPP_PKG_CONFIG_PATH
+
+commit f3ee48b5d8e8c2394e0b6d7f18ed083a3f4b7940
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 10 20:58:18 2025 -0400
+
+    fixed stroika foundation/frameworks library names to fit with new .pc file usage
+
+commit 1e6fa89ba7e87279126515f8b09c70c3a3d8bc15
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 21:03:30 2025 -0400
+
+    configure script cleanup (losing now osbolete code)
+
+commit 64a8fbed27617dde2b52def760f8e0c632ee7548
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 21:11:15 2025 -0400
+
+    Comment out STRIP_INCLUDE_COMPILER_FLAGS since unused and appears  obosolete (Makefile-Common.mk)
+
+commit 65199d91d53e3a320992c07112ae1137994bfb81
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 10 21:17:45 2025 -0400
+
+    moved SharedMakeVariables-Default.mk StroikaLibDir to be (StroikaPlatformTargetBuildDir)lib/ (added lib/)
+
+commit f346b229c645c97ac1656094c1c83b102e914595
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 05:50:19 2025 -0400
+
+    experiemnt - see if MSYS2_ARG_CONV_EXCL=* still needed
+
+commit bd49cb84ed5bd43814cf6af4858c307a2575b6f7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 06:15:38 2025 -0400
+
+    reverted MSYS2_ARG_CONV_EXCL chnage - still needed
+
+commit f875431cb6e46bc0727bc86f9f427be3813d1823
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 07:59:44 2025 -0400
+
+    Big makefile refactoring - moving towards deprecating ScriptsLib/Makefile-Common.mk - just include SharedMakeVariables-Default.mk instead; and other related systemic makefile cleanups (ObjDir/SrcDir declared at top of file)
+
+commit e76b160c6313976285fa9560a0b56c8c11649b03
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 08:19:56 2025 -0400
+
+    cleanup WIN_USE_PROGRAM_DATABASE (largely unused anymore) feature to use StroikaLibDir name so works with new location of stroika libraries
+
+commit f55b0ea23dc56c844e8e3c02be5adc89507a5174
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 08:41:31 2025 -0400
+
+    tiny configure cleanup
+
+commit 973189b4824ee406e19e2f57df2c6f7135f07b3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 09:47:36 2025 -0400
+
+    Minor makefile cleanups (moved more SrcDir/ObjDir assigns to top of Makefile)
+
+commit 467e0ae5ea02374fc7ed9c5545c5f797623a3451
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 09:57:42 2025 -0400
+
+    updated ScriptsLib/CreatePackageConfigFiles to write to new correct directory (not experiemntal folder)
+
+commit bea24593075ef7bc201c774ef9fc25c581e11469
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 12:35:23 2025 -0400
+
+    deprecated Makefile-Common.mk and instead all its stuff in ScriptsLib/SharedMakeVariables-Default - use that instead; also - re-disabled MSYS2_ARG_CONV_EXCL wide use and instead just included it in two places it appears needed
+
+commit 9f4d310584cc65cee2f80da85c3a91814869a96c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 13:13:17 2025 -0400
+
+    MSYS2_ARG_CONV_EXCL BWA still needed (docuemnted why) - needed more complex BWA in ScriptsLib/ApplyConfiguration fpr MSYS2_ARG_CONV_EXCL issue
+
+commit dd0c2f347294133e695e0f239c6ece9a7e183b5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 13:37:37 2025 -0400
+
+    lose extra no longer needed include IntermediateFiles//Configuration.mk in each makefile - now done in ScriptsLib/SharedMakeVariables-Default.mk
+
+commit 73f1ff8ba2e4f5429c3289bbec938b9d10fb4e1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 15:17:17 2025 -0400
+
+    fixed regression in recent Makefile re-org - and better detect/document out of ourder .mk include files
+
+commit 25984752c0ba637832c4aea95b28fd1a7177fc45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 11 18:08:57 2025 -0400
+
+    fixed typo on last checkin
+
+commit 340b7894b7215f20d94333d8aec31805c3ea2635
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 12 07:43:25 2025 -0400
+
+    cosmetic
+
+commit 48984eeae9074ba940c7c9d1e33f42e9767025a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 12 08:06:49 2025 -0400
+
+    moved ThirdPartyComponents builds output to StroikaPlatformTargetBuildDir (one level up) - so more like standard unix --prefix and stroika libs all together with those of other libraries (prep for more use of .pc files)
+
+commit a8a2f46800eafbe7e32ae66b7d48bd071019b899
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 12 08:08:55 2025 -0400
+
+    better docs/warnings in ScriptsLib/SharedBuildRules-Default.mk
+
+commit c7a3ba7a21100aa423e772748a683d42971c2c83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 07:07:11 2025 -0400
+
+    more clenaups of recent dir changes, but mostly using ${StroikaPlatformTargetBuildDir} variable instead of $(StroikaRoot)Builds/$(CONFIGURATION)
+
+commit 4a2900abf9c17d4208594b702c880c1bd67a102e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 07:40:37 2025 -0400
+
+    fixed includes in CreatePackageConfigFiles
+
+commit e64c43785af0adc755456faecaf3c573aed0807d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 09:49:45 2025 -0400
+
+    minor hacks to ScriptsLib/CreatePackageConfigFiles so closer to testable (includes paths)
+
+commit 95301866c5a6338ea8dce4d30e1f1c5e8a218d2f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 10:25:06 2025 -0400
+
+    moved SED makefile variable into ScriptsLib/SharedMakeVariables-Default.mk
+
+commit bd07f2c8c77b87469d854c7cc0f490e45d1e3c2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 11:26:32 2025 -0400
+
+    cosmetic makefile cleanup
+
+commit c0b47ea49016b4be4df9839d75242a707d579d6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 11:30:47 2025 -0400
+
+    libxml2 makefile tweak to workaround issues with stroika-foundation.pc file (still experiemntal windows only)
+
+commit 6095dc7f19c63ed1a6c38a2dc5a33bbdde7f3d4f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 11:32:16 2025 -0400
+
+    EXPERIEMNTAL REPLACEMENT DEFAULT_CXX_LINE using pkg-config stroika-frameworks still not fully working
+
+commit 2b2b5efeabfe03d82da3b119631ebbdaf2100511
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 13 12:00:25 2025 -0400
+
+    prelim progress on configure support for writing more granular configfiles to support new stroika-foundation.pc
+
+commit 3d98da3bd8122eb3e4f306d1220b5b08ef651f80
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 14 08:12:04 2025 -0400
+
+    updated configure and ApplyConfiguration (etc) to store FOUNDATION_CPPFLAGS_NOTINCLUDES and PLATFORM_CPPFLAGS_NOTINCLUDES instead of CPPFLAGS_NOTINCLUDES
+
+commit b32f5cf7c200f3594bcb72cb1e1359a2cf163fb9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 14 08:14:01 2025 -0400
+
+    updated configure and ApplyConfiguration (etc) to store FOUNDATION_CPPFLAGS_NOTINCLUDES and PLATFORM_CPPFLAGS_NOTINCLUDES instead of CPPFLAGS_NOTINCLUDES
+
+commit cb7e756597cdfff3a9a737bdd1d22169449cd12f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 15 11:58:21 2025 -0400
+
+    new ScriptsLib/SplitCFLAGS
+
+commit f927d58189120fc69222a4e32ed8e46f4f8df576
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 15 12:01:21 2025 -0400
+
+    revised configuration INCLUDES  handling - replaced INCLUDES_PATH in ConfigurationFiles/X.xml with PLATFORM_INCLUDES_PATH and PLATFORM_INCLUDES_PATH (work in progress)
+
+commit dd01c7ffced172840487f94e3bb9d77f074af19e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 15 12:31:00 2025 -0400
+
+    fixed temporary CPPFLAGS strategy transition logic/hack
+
+commit 7c3f7ee127f25b0b07d856627eb0fcfb8e2423af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 15 12:33:59 2025 -0400
+
+    progress cleaning up CLFAGS etc usage - for ThirdPartyCompoennts makefiles
+
+commit 1850018d13848e6159c73c27163932c21f972b7d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 15 17:27:08 2025 -0400
+
+    try to get PLATFORM_CXXFLAGS etc workinguse new ./ScriptsLib/SplitCFLAGS
+
+commit 71731f72286fc0a936e8e2d9b866b39fa6a7a036
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 16 13:57:51 2025 -0400
+
+    progress getting new stroika-platform.pc build system code working - but still not 100%
+
+commit 395975a9130cf91883522a3564ca70e7dfbf9512
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 16 14:02:40 2025 -0400
+
+    minor script cleanup
+
+commit 88424a7ca20a79a380bdac31cff36b78dd170809
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jun 16 14:13:47 2025 -0400
+
+    fixed permissions on script file
+
+commit b5bec1fcad9591f5c28dec7babae84f55d856f22
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jun 16 14:19:37 2025 -0400
+
+    minor fixes to pyuthon invoke usage, and added TOP_ROOT to SharedMakeVariables-Default.mk
+
+commit 04215e5f6de833c42b7d808289dc295fff8486df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 16 19:38:32 2025 -0400
+
+    portabiliity fix to CreatePackageConfigFiles for unix
+
+commit c8dd5228c6d300716c5f38cb36152f81db864ea3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 16 19:53:46 2025 -0400
+
+    another fix to recent ScriptsLib/SharedMakeVariables-Default for unix
+
+commit 08783d34284c605e1894bff8d07c39544d907d11
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jun 16 20:02:48 2025 -0400
+
+    fixed typos and use python3 instead of python for shebangs
+
+commit f2097d51a5830b9b17c982fdc468a289e20b521b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jun 16 20:06:18 2025 -0400
+
+    more fixes to SharedMakeVariables-Default.mk regressions for unux
+
+commit 8d9d53bbe3005d75aafc22ed4aa88ceadacbce9e
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jun 16 20:42:38 2025 -0400
+
+    Lose INCLUDES_PATH from ConfigurationFiles /x.xml
+
+commit ff7bdf8aafc9d74427cc650ccacb916983db4845
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 16 20:46:40 2025 -0400
+
+    fixed portability typo in ScriptsLib/CreatePackageConfigFiles
+
+commit 73ed18cf3a6f33c32eb48746db1443334ba2916c
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jun 16 22:43:30 2025 -0400
+
+    cosmetic
+
+commit c4bafe0c28645d9f2fd0a0a38130b3e522f200d8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jun 16 22:53:04 2025 -0400
+
+    for now CreatePackageConfigFiles getText_ returns empty string on no data
+
+commit 5a858426aee5bdb656793160c7b4d19cb92e74e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 07:24:11 2025 -0400
+
+    attempt to workaorund issue with old python
+
+commit c89708f74f10b87fafe31be24cf0015a0d52c028
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Jun 17 07:32:20 2025 -0400
+
+    refixed python typo
+
+commit 68e4edd18c4d9700777302200f3e59bf74ed01db
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Jun 17 07:50:23 2025 -0400
+
+    minor configure cleanups
+
+commit 4d3b5c91099eca916d9fac390bb396b416f9d61b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 17 07:56:13 2025 -0400
+
+    hardening ScriptsLib/CreatePackageConfigFiles
+
+commit 4cd711da8e0ac4e8750c9757249ec896e2e8dd9a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 17 08:11:59 2025 -0400
+
+    in configure (etc) - use the name PLATFORM_CFLAGS instead of CFLAGS (and same for CXXFLAGS)
+
+commit 39b260c960e60c87802671bfac636251bf81afeb
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 17 08:31:11 2025 -0400
+
+    Minor cleanup of regtests makefiles
+
+commit cdef6175488903c05e367f7f51e591fdc8274604
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 17 08:31:51 2025 -0400
+
+    Minor cleanup of regtests makefiles
+
+commit d0e1ada9ec6aacddde9672f82553598af8d1803f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 17 09:35:54 2025 -0400
+
+    Silence some warnings from building tests (regression) - but nopt sure what I need redundant export of PKG_CONFIG_PATH but seems to help
+
+commit 88383584c4dc732946957d3525b73049a8703f5a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 17 10:01:26 2025 -0400
+
+    small Tests makefiles cleanups
+
+commit 7ebff4900e0d312a1556789b9f4b90588ec96226
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Jun 17 10:02:24 2025 -0400
+
+    minor cleanup to Tests/Makefile-Test-Template.mk
+
+commit 0f9da5569888462c41f07f3dee572974f4187b2d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 10:20:36 2025 -0400
+
+    better error checking in ScriptsLib/ApplyConfiguration
+
+commit b36b51a09b9598703cd61ca8292ae40f7fd2a49d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 10:22:50 2025 -0400
+
+    improved applyconfiguraiton error message
+
+commit 35e69206cf0a8132155d88f4b5a37ecedffe5186
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 11:23:19 2025 -0400
+
+    changed dockerfiles to always install python3 - not conditionally (cuz switching more of scripts over from perl to python, I think)
+
+commit 3166a39ccebe2c10b0a98e0ba1791a48dc0ff43d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 12:28:26 2025 -0400
+
+    isHostMSYS_ BWA in ApplyConfiguration script
+
+commit bd773e9eba3b2fa9f365627b97411dee8845439c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Jun 17 13:03:49 2025 -0400
+
+    fixed regression in ScriptsLib/ApplyConfiguration for recnet name changes
+
+commit 2b3da71ffdf2d2f09376e3970b84b54cdbddd645
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 16:48:08 2025 -0400
+
+    configuration cosmetic
+
+commit 0fcb31b5bbf4db878c7870b44733347e47eec4cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 16:57:32 2025 -0400
+
+    use DETECTED_HOST_OS MSYS insetad of BuildPlatform is VisualStudio for one BWA specific to MSYS
+
+commit 4a97bb6b1ec78963e9490a816f23f21cc7d30fd5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 18:05:25 2025 -0400
+
+    more trickery to get ScriptsLib/CreatePackageConfigFiles working portably
+
+commit 2e438f8ac2a6dd05aab9a2579174b8953d7801ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 18:09:02 2025 -0400
+
+    print python required tool
+
+commit 8a3c24ddc531f4fa34541fa02da108946c5f8682
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 20:26:42 2025 -0400
+
+    configure: no longer need to add onfigurationName/ThirdPartyComponents/lib/... to @LinkerArgs_LibPath_ADD
+
+commit fb5522c265170c13f496d3fddb9db11c5751fa52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 20:27:11 2025 -0400
+
+    configure: dont print VSVARS_PLATFORM_INCLUDES_PATH to config file if not needed
+
+commit b7ee92ec34144e171e11bbe73b89b618720d2083
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 17 20:36:10 2025 -0400
+
+    rel notes
+
+commit e541baead2a88ad82129e57fcd0188eab523fa5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 30 22:53:38 2025 -0400
+
+    new script pkg-config-msvc, new file boost/boost.pc; renamed CONFIGFILE entry LinkerArgs_LibPath -> Platform_LinkerArgs_LibPath and LinkerArgs_LibDependencies -> Platform_LinkerArgs_LibDependencies; dont add LinkerArgs_LibDependencies_ADD to linker-args any longer (using boost.pc); push (@packageCfgNames, boost); various makefile cleanups (esp to third party components) to get  more working using --libs and pkg-config
+
+commit afcc1360d671c3c0b27e1e5dc728d7f5fe5ce23a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 09:56:18 2025 -0400
+
+    Configure: renamed LinkerArgs_ExtraPrefix -> Platform_LinkerArgs_ExtraPrefix and LinkerArgs_ExtraSuffix -> Platform_LinkerArgs_ExtraSuffix; and draft DEFAULT_LINK_LINE2
+
+commit 5fdd7b8c36a84ac0352ff1125aaa01997faa687e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 11:23:15 2025 -0400
+
+    progress on DEFAULT_LINK_LINE2 linker configure code
+
+commit 392a6bf375e404009e1dae6bcb2af894fc538402
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 11:55:08 2025 -0400
+
+    fixed ScriptsLib/CreatePackageConfigFiles to not add -l to non lib entries
+
+commit a9e1b3d9e46178ae084f17b807414325a250f252
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 12:28:39 2025 -0400
+
+    cosmetic
+
+commit 3fe87ac17a63f2d9dfcf7ddd7a9fd2d32b6e1c9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 12:29:11 2025 -0400
+
+    lose obsolete LinkerArgs_StroikaDependentLibDependencies from SharedMakeVariables-Default.mk
+
+commit e00b4884ae3904524720d5e1e6a78400f2c60c65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 12:52:33 2025 -0400
+
+    switched DEFAULT_LINK_LINE=DEFAULT_LINK_LINE2 (temporary hack)
+
+commit 9180fc395c783041fe44a21a50062a551fe5d314
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 16:03:46 2025 -0400
+
+    lose DEFAULT_LINK_LINE2 and fixed DEFAULT_LINK_LINE usage (intermediate code testing rewrite of macro)
+
+commit 6e0a762dce4fa42c6984d856ce5f876387423cb3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 1 21:38:28 2025 -0400
+
+    fixup for changes in DEFAULT_LINK_LINE usage (LinkerArgs_ExtraSuffix)
+
+commit cb429ec44017012f0e8a6edd9bd004147b30e5f8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Jul 2 07:23:27 2025 -0400
+
+    workaround lto issue with clang++15 on ubuntu 22.04 (configure disable by default)
+
+commit 7f682e85b45e08186d473913cee76b9cf3852dd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 2 07:52:00 2025 -0400
+
+    Comments
+
+commit a3701e6e8c50565ef2969e809e8d58d4404dbea9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 2 11:04:07 2025 -0400
+
+    cleanups to DEFAULT_LINK_LINE makefile macro
+
+commit 1854552091f8a8048e3261c7b0f4ee721172edbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 2 08:54:14 2025 -0400
+
+    ScriptsLib/pkg-config-msvc comments
+
+commit bd7e41f6668e0b5801515afb2288af161aae264a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 2 12:52:08 2025 -0400
+
+    workaround pkg-config --msvc-syntax issue - dropping some non-l/L args (like nologo)
+
+commit 5362d143b9af8ed8cdd364a84ba5128b18d63495
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 2 22:53:13 2025 -0400
+
+    cleanup makefile reacent changes (and lose deprecated LinkerArgs_LibDependencies from SharedMakeVariables.mk)
+
+commit 5673ed89fe8753a8ba220009937e9193f0c0cb4d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Jul 2 23:10:25 2025 -0400
+
+    LTO sometimes broken now (maybe cuz of diff link args) with clang++-19 on ubuntu 25.04
+
+commit 05745fe348d320ad438ab54c258f14ac8d5c8ec2
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Jul 3 08:56:13 2025 -0400
+
+    disbale clang++-21 as well from LTO (by default) since doesn't seem to work (with new linking sheme)
+
+commit 2eca1b6b5d55dfb647942df29d11ab27c218568a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 3 23:09:14 2025 -0400
+
+    more makefile cleanups: SharedMakeVariables-Default.mk - lose deprecated LinkerArgs_LibDependencies, and cleanup RC_FLAGS/MIDL_FLAGS, StroikaRoot_MIXED cleanup
+
+commit 8e4acb3ea24bcb6e496e7cecb780cf2726a2d32c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Jul 4 08:12:27 2025 -0400
+
+    fixed makefile to silence new makefile warning
+
+commit 9d90c2d98149087bd384a01806448c3424827732
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 08:20:25 2025 -0400
+
+    lose PKG_CONFIG_STROIKA_DEPENDS_ON - from ApplyConfiguraiton/Configuration.mk etc - largely unused(done via pkgconfig)
+
+commit 85f365dfd9c2c64a3a0ac7f067d003f0eb1bb597
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 08:21:15 2025 -0400
+
+    cosmetic
+
+commit f4bd12168b71120c8c95a0736f8467bf590ea4d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 08:23:32 2025 -0400
+
+    lose support for EXTRA_COMPILER_ARGS in configuration
+
+commit 557a510d2f6889fd53506602fae30dcf10c21553
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 08:43:02 2025 -0400
+
+    fixed writing .vscode config file based on configuraiton (recent regression due to changes this release)
+
+commit e4565d4fb16c02d1c82dab6c36813c81dcb5ab6e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 08:43:44 2025 -0400
+
+    configure: just include Builds/1042configurationName/include in INCLUDES_PATH_ADD instead of FOUNDATION_INCLUDES_PATH
+
+commit e33afaca6d29eea351f22d49147279828d25948b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 08:48:24 2025 -0400
+
+    in vscode etc config files - list foundation includes before platform includes
+
+commit 3efd91a87ac963ff2226f8796f73374bf087867c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 09:15:24 2025 -0400
+
+    fixed small regression in configure script (still need IntermediateFiles/$CONFIG/ in includes path - probably not for long)
+
+commit 0302b9cd03f3d04c2e1ffb0270b14c843fbaf227
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 09:21:04 2025 -0400
+
+    SignalHandlerRegistry::Get () DEPRECATED (use sThis instead)
+
+commit 02df2863ab06a1ee9242c8fd38acb6e4b510585a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 09:26:11 2025 -0400
+
+    VS_17_14_7
+
+commit 7fa3c261f6f3f7e22764b82662bf3822cefa2dbd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 10:00:42 2025 -0400
+
+    mostly cosmetic
+
+commit b01fd99e9b4fe6931218d00e2e3e72f7cf8235a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 10:02:45 2025 -0400
+
+    mostlt cosmetic, and cleanup deprecated uses
+
+commit 65c6b89b90fba9c3811c6ae40a2ecf0fe0c474a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 11:07:08 2025 -0400
+
+    fixed typo
+
+commit a43ce63584d7aca6e111e198be302178a4e82d1b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 11:09:16 2025 -0400
+
+    progress on new Platform_LDFLAGS define in SharedMakeVariables-Default.mk
+
+commit b1269a379667e0675386eb9528ab4478227f2c8b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 11:13:39 2025 -0400
+
+    fixed typo
+
+commit c522fffef575f69a90e1051874aaf77f1f0faf76
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 4 15:48:31 2025 -0400
+
+    more clenaups of makefiles for new Platform_LDFLAGS and related
+
+commit 09ef1c14a16c0a2ec82c4725fe509ae95526c1bd
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Jul 4 18:57:37 2025 -0400
+
+    fixed typo
+
+commit fe4f01c5b2881c38137891cabe5c7073127767d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 07:43:19 2025 -0400
+
+    one more Platform_LDFLAGS cleanup
+
+commit 7fa78fa9bb36d18aed5ab15c5021533e33a7711d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 08:23:56 2025 -0400
+
+    more makefile clenaups; moved HTMLViewCompiler install to bin directory
+
+commit 4e4bbd41d1031f209d329ffccd8c76cbe1cc4fbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 09:37:49 2025 -0400
+
+    -noexp -noimplib linker args for visual studio to avoid Creating library ... message from linker
+
+commit b12d67310c7166d53d1989b4b880944a4a35b9c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 09:38:10 2025 -0400
+
+    CreatePackageConfigFiles message cleanups
+
+commit 524de0bfd768a6afd236ca2dd13ebe6f9eaaa41d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 10:01:30 2025 -0400
+
+    moved Stroika-Current-Version.h to Builds/$CONFIG/include/Stroika; and lose IntermediateFiles from FOUNDATION_INCLUDES_PATH; and other minor clenaups
+
+commit 2859e6ae85be6b1b8dba0f61e040df39e5bb7e40
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 10:10:54 2025 -0400
+
+    cosmetic
+
+commit ed7074af47052d7086a9c7ab5010cb494e049e52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 12:05:05 2025 -0400
+
+    fixed typo in recent makefile changes
+
+commit 366b07e400c959bd83e2dae1a5f5f3c8f973f1c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 12:19:47 2025 -0400
+
+    Added ObjDir_ToolsSafe to SharedMakeVariables-Default.mk
+
+commit d1e020029691ca1fea85b86f12a8749f7d52c891
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 12:20:58 2025 -0400
+
+    Added -I${ObjDir_ToolsSafe} to CPPFLAGS for Tests makefile template and fixed ref to where to #include from for test/34
+
+commit 3bbbe7c44ccaa173f16f3d4e8c5423c064cfc59d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 12:22:56 2025 -0400
+
+    minor tweaks to zlib makefile
+
+commit f83dbfb0ffcdaf937f6167ca833d7d70e9733847
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 12:30:08 2025 -0400
+
+    hopefully fixed regression in SharedMakeVariables-Default.mk for libtool (affected macos and sqlite)
+
+commit f4bd0554b39f4b60b03c00794bebe905a78d4221
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 18:08:11 2025 -0400
+
+    fixed top level makefile for recent Stroika-Current-Version.h move
+
+commit 5d2ca5863aac8b01c584f6fc1e80adf2db22bb46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 5 22:07:46 2025 -0400
+
+    renmamed configfile variable PkgConfigNames -> Foundation_PkgConfigNames
+
+commit 445b9c669c08aae8617463a59f959dc52b20bded
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 08:07:40 2025 -0400
+
+    test slight cleanup of SharedMakeVariables-Default.mk for CPPFLAGS
+
+commit 52ac286fa5ef4d2ed4533119fc0bcc9b1db504a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 11:09:56 2025 -0400
+
+    fix (though not elegantly - and with comments to improve later) - Activity CTOR - uses concepts more; fixes case of initialization with array (like C-string)
+
+commit 547770310d53c5bb40d4417f69537cac5bb7e850
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 11:10:23 2025 -0400
+
+    Comments
+
+commit acdd44c9502836b97dc2fb013d722974d0887e36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 11:18:18 2025 -0400
+
+    fixed typo
+
+commit f922fcb360594dbe7b4db647fc28bb56be3ae75b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 11:18:30 2025 -0400
+
+    use new LazyType_t
+
+commit 8e15b93930bfdc776e0d95fc8f301842be5b3de9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 11:21:34 2025 -0400
+
+    Comments
+
+commit 75133f63d3c1744f36c866642e33dd280902a687
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 11:57:21 2025 -0400
+
+    deprecated Memory::NEltsOf - use std::size() or std::ssize() instead
+
+commit af847e52054d18956c98c18d44b54da914362801
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 7 15:21:28 2025 -0400
+
+    make format-code
+
+commit 3cc4b356c1592b5ba0e3ffc6f74aa0a46c451066
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 8 07:47:46 2025 -0400
+
+    Minor mkaefile tweaks and docs fixes for recent make changes
+
+commit 90ca294fb7df0c39025f8c356262140cbfe95167
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 8 08:05:40 2025 -0400
+
+    docs and scripts tweaks
+
+commit a1783030272613b3158fcce7313871378d4e1c47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 8 10:25:18 2025 -0400
+
+    Cleanup makefile comments
+
+commit 1df536464339d4c977203c2ac6a741784b86c066
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 8 10:27:53 2025 -0400
+
+    cleanup messages in scripts
+
+commit 5efb0e7b186987156068a02ad9735fac972a265b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 8 22:47:57 2025 -0400
+
+    cosmetic
+
+commit 5fe44019dfe61515f3d1e4cc36382ab3e62d314b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 10 13:55:29 2025 -0400
+
+    DISABLE_COMPILER_CLANG_WARNING_START supress bad warning
+
+commit 3b9d7fc3e067ec44d4d0bd76226c7e7f0cb644d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 10 13:55:45 2025 -0400
+
+    suppress warning
+
+commit 1195052b0757eea6dd54922ff49f1a0b64d7d564
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Jul 10 14:09:43 2025 -0400
+
+    Always add Builds/$configurationName/include/ to include path in configure: even if no third party components (for stroika-version.h)
+
+commit 6b4fab8512d33b1ee7a9c56c353e41486a4bd7d0
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Jul 10 15:21:17 2025 -0400
+
+    progress (so far failed) getting openssh to autostart on dev containers
+
+commit b43e8616b96b0b9aa907be67f4499e095018d16b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 11 10:21:32 2025 -0400
+
+    VS_17_14_8
+
+commit c151ac53a7141cd385bf1f4eb3cee126c6592f6f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 14 07:10:56 2025 -0400
+
+    docs
+
+commit 94800dfb3b5689b970cbc60297ec4bc258d6211f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jul 14 09:07:58 2025 -0400
+
+    allow ACTUAL_RUN_CMD arg to RunInDockerEnvironemt script, and use to add start-stroika-dev-containers to makefile, and have them auto-restart on reboot - autostarting ssh
+
+commit 42e7a02cd7d69398b388e2f130fa693ff2702578
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Jul 14 09:20:00 2025 -0400
+
+    docs
+
+commit 331d06dd43b190767b3277bb8cc332571cde7cb2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 15 13:04:23 2025 -0400
+
+    lose DOCKER_NETWORK flag support in RunLocalWindowsDockerRegressionTests and instead better document to use the dns: 8.8.8.8 config setting to fix this problem
+
+commit 629e2219bc0297e3d94e649fec9d6ea299241880
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 17 09:56:56 2025 -0400
+
+    windows - docker image mem usage size upped 12G to 13G cuz sometiems runs out
+
+commit 0c23eea8f6106f849d537f0b3cab51da882e2cd3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 17 09:57:19 2025 -0400
+
+    renamed Stroika-Current-Version to Stroika/Current-Version.h
+
+commit 26d5d8228deb04dc5dc2282efb5ba7d8c4cc1c0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 17 10:08:23 2025 -0400
+
+    libcurl 8.15.0
+
+commit ccd10d1f8e7a993f0421daa3f5daf2f0bfa8dec8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 17 10:09:12 2025 -0400
+
+    libxml2 2.14.5
+
+commit 2e50e4c1f47fc4a696a45aaad3e9a6f571aa0712
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 17 10:09:48 2025 -0400
+
+    sqlite 3.50.2
+
+commit e6e83e952393cfb24f5daf24706aaeebe4e93ae3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 17 10:35:29 2025 -0400
+
+    4.1.1 of mongocxxdriver
+
+commit a5132773e968127b6cd4f45861610acaed43e86f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Jul 18 07:26:48 2025 -0400
+
+    revert to curl 8.12.1, cuz 8.15.0 seems to have same cookie bug (caught by asan - maybe)
+
+commit 0b39524eea1dd8ed5abb5839c3c2c24f93d0783f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 18 07:43:23 2025 -0400
+
+    bug workaround docs
+#endif
+
+
+
+
+
+
+
 ----------------------------
 
 ### 3.0d20 {2025-06-08} {[diff](../../compare/3.0d19...3.0d20)}
