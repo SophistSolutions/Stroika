@@ -1,0 +1,54 @@
+[==========] Running 23 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 23 tests from Foundation_Traversal
+[ RUN      ] Foundation_Traversal.Test_1_BasicRange_
+[       OK ] Foundation_Traversal.Test_1_BasicRange_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test_2_BasicDiscreteRangeIteration_
+[       OK ] Foundation_Traversal.Test_2_BasicDiscreteRangeIteration_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test_3_SimpleDiscreteRangeWithEnumsTest_
+[       OK ] Foundation_Traversal.Test_3_SimpleDiscreteRangeWithEnumsTest_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test4_FunctionalApplicationContext_MapTest_
+[       OK ] Foundation_Traversal.Test4_FunctionalApplicationContext_MapTest_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test5_ReduceTest_
+[       OK ] Foundation_Traversal.Test5_ReduceTest_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test6_FunctionApplicationContext_
+[       OK ] Foundation_Traversal.Test6_FunctionApplicationContext_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test7_FunctionApplicationContextWithDiscreteRangeEtc_
+[       OK ] Foundation_Traversal.Test7_FunctionApplicationContextWithDiscreteRangeEtc_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test8_DiscreteRangeTestFromDocs_
+[       OK ] Foundation_Traversal.Test8_DiscreteRangeTestFromDocs_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test9_Generators_
+[       OK ] Foundation_Traversal.Test9_Generators_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test10_MakeIterableFromIterator_
+[       OK ] Foundation_Traversal.Test10_MakeIterableFromIterator_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test11_GetDistanceSpanned_
+[       OK ] Foundation_Traversal.Test11_GetDistanceSpanned_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test12_RangeConstExpr_
+[       OK ] Foundation_Traversal.Test12_RangeConstExpr_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test13_DisjointRange_
+[       OK ] Foundation_Traversal.Test13_DisjointRange_ (5 ms)
+[ RUN      ] Foundation_Traversal.Range_ToString_
+[       OK ] Foundation_Traversal.Range_ToString_ (56 ms)
+[ RUN      ] Foundation_Traversal.Test15_Partition_
+[       OK ] Foundation_Traversal.Test15_Partition_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test16_LinqLikeFunctions_
+[       OK ] Foundation_Traversal.Test16_LinqLikeFunctions_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test17_DurationRange_
+[       OK ] Foundation_Traversal.Test17_DurationRange_ (0 ms)
+[ RUN      ] Foundation_Traversal.IterableConstructors_
+[       OK ] Foundation_Traversal.IterableConstructors_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test19_CreateGeneratorBug_
+[       OK ] Foundation_Traversal.Test19_CreateGeneratorBug_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test_Join
+[       OK ] Foundation_Traversal.Test_Join (0 ms)
+[ RUN      ] Foundation_Traversal.Test21_Repeat_
+[       OK ] Foundation_Traversal.Test21_Repeat_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test22_Top_
+[       OK ] Foundation_Traversal.Test22_Top_ (0 ms)
+[ RUN      ] Foundation_Traversal.Test23_Iterable_Map_
+[       OK ] Foundation_Traversal.Test23_Iterable_Map_ (0 ms)
+[----------] 23 tests from Foundation_Traversal (63 ms total)
+
+[----------] Global test environment tear-down
+[==========] 23 tests from 1 test suite ran. (63 ms total)
+[  PASSED  ] 23 tests.
