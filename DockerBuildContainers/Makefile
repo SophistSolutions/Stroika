@@ -91,6 +91,8 @@ sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests:
 
 
 # Default to ltsc2025, but github actions override to set to ltsc2022 cuz else run out of disk space --LGP 2025-05-16
+# On Windows 10, you may need to use:
+#     make build-images WINDOWS_BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019
 WINDOWS_BASE_IMAGE?=mcr.microsoft.com/windows/servercore:ltsc2025
 sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
 	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=${WINDOWS_BASE_IMAGE} -t $@ .
