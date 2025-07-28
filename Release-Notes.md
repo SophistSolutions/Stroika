@@ -174,6 +174,11 @@ with
 
 #if 0
 
+"in docker container, use msys 2025-06-22 release"
+
+#lose
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12,Tls13'; \
+
 commit 94800dfb3b5689b970cbc60297ec4bc258d6211f
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Mon Jul 14 09:07:58 2025 -0400
