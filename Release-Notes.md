@@ -17,8 +17,6 @@ especially those they need to be aware of when upgrading.
       and depends on stroika-platform
     - stroika-platform.pc contains all the 'native platform' library depenencies, and C #defines etc for std c++ libraries, etc.
 
-    (NOTE IN PROGRESS - INCOMPLETE - BUT WORKING RIGHT NOW - just didn the CFLAGS part - must do linker part and more cleanups)
-
 
 ### UPGRADE NOTES
 upgrade notes
@@ -75,6 +73,11 @@ with
 - Library
   - Common
     - **new** LazyType_t
+  - Execution
+    - SignalHandlerRegistry::Get () DEPRECATED (use sThis instead)
+    - fix (though not elegantly - and with comments to improve later) - Activity CTOR - uses concepts more; fixes case of initialization with array (like C-string)
+  - Memory
+    - deprecated Memory::NEltsOf - use std::size() or std::ssize() instead
 
 
 - Makefiles
@@ -98,6 +101,8 @@ with
   - cleanup makefile reacent changes (and lose deprecated LinkerArgs_LibDependencies from SharedMakeVariables.mk)
   - more makefile cleanups: SharedMakeVariables-Default.mk - lose deprecated LinkerArgs_LibDependencies, and cleanup RC_FLAGS/MIDL_FLAGS, StroikaRoot_MIXED cleanup
   - lose PKG_CONFIG_STROIKA_DEPENDS_ON - from ApplyConfiguraiton/Configuration.mk etc - largely unused(done via pkgconfig)
+  - progress on new Platform_LDFLAGS define in SharedMakeVariables-Default.mk
+  - Added ObjDir_ToolsSafe to SharedMakeVariables-Default.mk
 
 - Scripts
   - configure
@@ -110,6 +115,13 @@ with
     - dont add LinkerArgs_LibDependencies_ADD to linker-args any longer (using boost.pc); push (@packageCfgNames, boost); various makefile cleanups (esp to third party components) to get  more working using --libs and pkg-config
     - renamed LinkerArgs_ExtraPrefix -> Platform_LinkerArgs_ExtraPrefix and LinkerArgs_ExtraSuffix -> Platform_LinkerArgs_ExtraSuffix; and draft DEFAULT_LINK_LINE2
     - lose support for EXTRA_COMPILER_ARGS in configuration
+    - configure: just include Builds/1042configurationName/include in INCLUDES_PATH_ADD instead of FOUNDATION_INCLUDES_PATH
+    -noexp -noimplib linker args for visual studio to avoid Creating library ... message from linker
+    - moved Stroika-Current-Version.h to Builds/$CONFIG/include/Stroika; renamed Stroika-Current-Version to Stroika/Current-Version.h
+
+    - lose IntermediateFiles from FOUNDATION_INCLUDES_PATH
+    - renmamed configfile variable PkgConfigNames -> Foundation_PkgConfigNames
+    - Always add Builds/$configurationName/include/ to include path in configure: even if no third party components (for stroika-version.h)
 
   - fixed stroika foundation/frameworks library names to fit with new .pc file usage
   - **new** CreatePackageConfigFiles
@@ -121,169 +133,46 @@ with
 
 - ThirdPartyComponents
   - generate/fix pkgconfig files for sqlite, and zlib (static); lose explicit link dependencies in configure script (replacing with adding those pkgfiles to list of pkgconfig file names - using stroika-foundatipn.pc
+  - libcurl
+   -  tried 8.15.0; revert to curl 8.12.1, cuz 8.15.0 seems to have same cookie bug (caught by asan - maybe)
+
   - lzma
     - lzma.pc support
  - xerces
     - fixed xerces build code to use .pc file (instead of configure add of libs etc)
  - libxml2
    - makefile tweak to workaround issues with stroika-foundation.pc file (still experiemntal windows only)
+   - libxml2 2.14.5
+
+  - mongocxxdriver
+    - 4.1.1
+
+  - sqlite 
+    - 3.50.2
+
+  - zlib
+    -  minor tweaks makefile
+
+
+- Tests
+  - Added -I${ObjDir_ToolsSafe} to CPPFLAGS for Tests makefile template and fixed ref to where to #include from for test/34
+
+  - docker tests 
+    - windows - docker image mem usage size upped 12G to 13G cuz sometiems runs out
+
+- Tools
+  - HTMLViewCompiler
+    - moved HTMLViewCompiler install to bin directory
 
 
 - Docker
   - changed dockerfiles to always install python3 - not conditionally (cuz switching more of scripts over from perl to python, I think)
+  - get openssh to autostart on dev containers
 
 
+-    VS_17_14_8
 
 #if 0
-dcf10c21553
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 08:43:02 2025 -0400
-
-    fixed writing .vscode config file based on configuraiton (recent regression due to changes this release)
-
-commit e4565d4fb16c02d1c82dab6c36813c81dcb5ab6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 08:43:44 2025 -0400
-
-    configure: just include Builds/1042configurationName/include in INCLUDES_PATH_ADD instead of FOUNDATION_INCLUDES_PATH
-
-commit e33afaca6d29eea351f22d49147279828d25948b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 08:48:24 2025 -0400
-
-    in vscode etc config files - list foundation includes before platform includes
-
-commit 3efd91a87ac963ff2226f8796f73374bf087867c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 09:15:24 2025 -0400
-
-    fixed small regression in configure script (still need IntermediateFiles/$CONFIG/ in includes path - probably not for long)
-
-commit 0302b9cd03f3d04c2e1ffb0270b14c843fbaf227
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 09:21:04 2025 -0400
-
-    SignalHandlerRegistry::Get () DEPRECATED (use sThis instead)
-
-commit 02df2863ab06a1ee9242c8fd38acb6e4b510585a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 09:26:11 2025 -0400
-
-    VS_17_14_7
-
-commit a43ce63584d7aca6e111e198be302178a4e82d1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 11:09:16 2025 -0400
-
-    progress on new Platform_LDFLAGS define in SharedMakeVariables-Default.mk
-
-commit c522fffef575f69a90e1051874aaf77f1f0faf76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 4 15:48:31 2025 -0400
-
-    more clenaups of makefiles for new Platform_LDFLAGS and related
-
-commit fe4f01c5b2881c38137891cabe5c7073127767d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 07:43:19 2025 -0400
-
-    one more Platform_LDFLAGS cleanup
-
-commit 7fa78fa9bb36d18aed5ab15c5021533e33a7711d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 08:23:56 2025 -0400
-
-    more makefile clenaups; moved HTMLViewCompiler install to bin directory
-
-commit 4e4bbd41d1031f209d329ffccd8c76cbe1cc4fbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 09:37:49 2025 -0400
-
-    -noexp -noimplib linker args for visual studio to avoid Creating library ... message from linker
-
-commit b12d67310c7166d53d1989b4b880944a4a35b9c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 09:38:10 2025 -0400
-
-    CreatePackageConfigFiles message cleanups
-
-commit 524de0bfd768a6afd236ca2dd13ebe6f9eaaa41d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 10:01:30 2025 -0400
-
-    moved Stroika-Current-Version.h to Builds/$CONFIG/include/Stroika; and lose IntermediateFiles from FOUNDATION_INCLUDES_PATH; and other minor clenaups
-
-commit 366b07e400c959bd83e2dae1a5f5f3c8f973f1c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 12:19:47 2025 -0400
-
-    Added ObjDir_ToolsSafe to SharedMakeVariables-Default.mk
-
-commit d1e020029691ca1fea85b86f12a8749f7d52c891
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 12:20:58 2025 -0400
-
-    Added -I${ObjDir_ToolsSafe} to CPPFLAGS for Tests makefile template and fixed ref to where to #include from for test/34
-
-commit 3bbbe7c44ccaa173f16f3d4e8c5423c064cfc59d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 12:22:56 2025 -0400
-
-    minor tweaks to zlib makefile
-
-commit f83dbfb0ffcdaf937f6167ca833d7d70e9733847
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 12:30:08 2025 -0400
-
-    hopefully fixed regression in SharedMakeVariables-Default.mk for libtool (affected macos and sqlite)
-
-commit f4bd0554b39f4b60b03c00794bebe905a78d4221
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 18:08:11 2025 -0400
-
-    fixed top level makefile for recent Stroika-Current-Version.h move
-
-commit 5d2ca5863aac8b01c584f6fc1e80adf2db22bb46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 5 22:07:46 2025 -0400
-
-    renmamed configfile variable PkgConfigNames -> Foundation_PkgConfigNames
-
-commit 445b9c669c08aae8617463a59f959dc52b20bded
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 7 08:07:40 2025 -0400
-
-    test slight cleanup of SharedMakeVariables-Default.mk for CPPFLAGS
-
-commit 52ac286fa5ef4d2ed4533119fc0bcc9b1db504a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 7 11:09:56 2025 -0400
-
-    fix (though not elegantly - and with comments to improve later) - Activity CTOR - uses concepts more; fixes case of initialization with array (like C-string)
-
-commit 75133f63d3c1744f36c866642e33dd280902a687
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 7 11:57:21 2025 -0400
-
-    deprecated Memory::NEltsOf - use std::size() or std::ssize() instead
-
-commit 1195052b0757eea6dd54922ff49f1a0b64d7d564
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jul 10 14:09:43 2025 -0400
-
-    Always add Builds/$configurationName/include/ to include path in configure: even if no third party components (for stroika-version.h)
-
-commit 6b4fab8512d33b1ee7a9c56c353e41486a4bd7d0
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Jul 10 15:21:17 2025 -0400
-
-    progress (so far failed) getting openssh to autostart on dev containers
-
-commit b43e8616b96b0b9aa907be67f4499e095018d16b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 11 10:21:32 2025 -0400
-
-    VS_17_14_8
 
 commit 94800dfb3b5689b970cbc60297ec4bc258d6211f
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -296,48 +185,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jul 15 13:04:23 2025 -0400
 
     lose DOCKER_NETWORK flag support in RunLocalWindowsDockerRegressionTests and instead better document to use the dns: 8.8.8.8 config setting to fix this problem
-
-commit 629e2219bc0297e3d94e649fec9d6ea299241880
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 17 09:56:56 2025 -0400
-
-    windows - docker image mem usage size upped 12G to 13G cuz sometiems runs out
-
-commit 0c23eea8f6106f849d537f0b3cab51da882e2cd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 17 09:57:19 2025 -0400
-
-    renamed Stroika-Current-Version to Stroika/Current-Version.h
-
-commit 26d5d8228deb04dc5dc2282efb5ba7d8c4cc1c0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 17 10:08:23 2025 -0400
-
-    libcurl 8.15.0
-
-commit ccd10d1f8e7a993f0421daa3f5daf2f0bfa8dec8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 17 10:09:12 2025 -0400
-
-    libxml2 2.14.5
-
-commit 2e50e4c1f47fc4a696a45aaad3e9a6f571aa0712
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 17 10:09:48 2025 -0400
-
-    sqlite 3.50.2
-
-commit e6e83e952393cfb24f5daf24706aaeebe4e93ae3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 17 10:35:29 2025 -0400
-
-    4.1.1 of mongocxxdriver
-
-commit a5132773e968127b6cd4f45861610acaed43e86f
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Jul 18 07:26:48 2025 -0400
-
-    revert to curl 8.12.1, cuz 8.15.0 seems to have same cookie bug (caught by asan - maybe)
 
 #endif
 
