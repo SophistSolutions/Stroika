@@ -28,7 +28,6 @@ FROM ${BASE_IMAGE}
 # SHELL ["powershell"]
 # ENV CHOCO_URL=https://chocolatey.org/install.ps1
 # RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
-#  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
 #  iex ((New-Object System.Net.WebClient).DownloadString("$env:CHOCO_URL"));
 # # install via choco
 # SHELL ["cmd", "/S", "/C"]
@@ -51,7 +50,6 @@ ARG MSYS_20250622=https://github.com/msys2/msys2-installer/releases/download/202
 SHELL ["powershell"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
   $ErrorActionPreference = 'Stop'; \
-  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12,Tls13'; \
   Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20250622" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
