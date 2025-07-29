@@ -7,36 +7,35 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 3.0d21 {2025-07-28} {[diff](../../compare/3.0d20...3.0d21)}
 
-## 3.0d21 PREP
-
-### major change
+#### TLDR
   - Configure / build system now much more driven off pkgconfig files
     - stroika-frameworks.pc has little to it but a requires of stroika-foundation.pc
     - stroika-foundation.pc has all the requires on third party components it is built off (e.g xerces, boost, libcurl, etc)
       and depends on stroika-platform
     - stroika-platform.pc contains all the 'native platform' library depenencies, and C #defines etc for std c++ libraries, etc.
 
+#### Upgrade Notes (3.0d20 to 3.0d21)
 
-### UPGRADE NOTES
-upgrade notes
+##### in makefiles
 
-in makefiles
-
-lose deprecated
+- lose deprecated
+~~~
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+~~~
 
-lose 
+- lose 
+~~~
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
-
+~~~
 
 replacigin with  if needed
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-
-move to SrcDir/ObjDir to top of file, for example:
+- move to SrcDir/ObjDir to top of file, for example:
 
 export TOP_ROOT=$(abspath ../../)/
 StroikaRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
@@ -51,7 +50,6 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
 preferable after define of Objs
-
 
 
 -LinkerArgs_LibDependencies += -lexiv2 -lexpat -lz
@@ -70,6 +68,72 @@ with
 #include "Stroika/Current-Version.h"
 
 
+#### Change Details
+
+- Documentation
+  - Minor Changes
+- Build System
+  - Docker
+    - changed dockerfiles to always install python3 - not conditionally (cuz switching more of scripts over from perl to python, I think)
+    - get openssh to autostart on dev containers
+    - lose no longer needed [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12,Tls13' from windows
+      Dockerfiles
+    - VS_17_14_8
+    - use msys 2025-06-22 release
+    - allow ACTUAL_RUN_CMD arg to RunInDockerEnvironemt script, and use to add start-stroika-dev-containers to makefile, and have them auto-restart on reboot - autostarting ssh
+
+  - Makefiles
+    - get rid of commented out/deprecated makefile variables: StroikaFoundationSupportLibs PKG_CONFIG_STATIC_COMPONENTS, and TPP_PKG_CONFIG_PATH
+    - Comment out STRIP_INCLUDE_COMPILER_FLAGS since unused and appears  obosolete (Makefile-Common.mk)
+    - moved SharedMakeVariables-Default.mk StroikaLibDir to be (StroikaPlatformTargetBuildDir)lib/ (added lib/)
+    - Big makefile refactoring - deprecating ScriptsLib/Makefile-Common.mk - just include SharedMakeVariables-Default.mk instead; 
+    - ObjDir/SrcDir declared at top of file
+    - cleanup WIN_USE_PROGRAM_DATABASE (largely unused anymore) feature to use StroikaLibDir name so works with new location of stroika libraries
+    - MSYS2_ARG_CONV_EXCL BWA still needed (docuemnted why) - needed more complex BWA in ScriptsLib/ApplyConfiguration fpr MSYS2_ARG_CONV_EXCL issue
+    - lose extra no longer needed include IntermediateFiles//Configuration.mk in each makefile - now done in ScriptsLib/SharedMakeVariables-Default.mk
+    - moved ThirdPartyComponents builds output to StroikaPlatformTargetBuildDir (one level up) - so more like standard unix --prefix and stroika libs all together with those of other libraries (for more use of .pc files)
+      (instead of $(StroikaRoot)Builds/$(CONFIGURATION))
+    - better docs/warnings in ScriptsLib/SharedBuildRules-Default.mk
+    - moved SED makefile variable into ScriptsLib/SharedMakeVariables-Default.mk
+    - added TOP_ROOT to SharedMakeVariables-Default.mk
+    - minor cleanup to Tests/Makefile-Test-Template.mk
+    - use DETECTED_HOST_OS MSYS insetad of BuildPlatform is VisualStudio for one BWA specific to MSYS
+    - lose obsolete LinkerArgs_StroikaDependentLibDependencies from SharedMakeVariables-Default.mk
+    - cleanups to DEFAULT_LINK_LINE makefile macro (e.g LinkerArgs_ExtraSuffix changes)
+    - cleanup makefile reacent changes (and lose deprecated LinkerArgs_LibDependencies from SharedMakeVariables.mk)
+    - more makefile cleanups: SharedMakeVariables-Default.mk - lose deprecated LinkerArgs_LibDependencies, and cleanup RC_FLAGS/MIDL_FLAGS, StroikaRoot_MIXED cleanup
+    - lose PKG_CONFIG_STROIKA_DEPENDS_ON - from ApplyConfiguraiton/Configuration.mk etc - largely unused(done via pkgconfig)
+    - progress on new Platform_LDFLAGS define in SharedMakeVariables-Default.mk
+    - Added ObjDir_ToolsSafe to SharedMakeVariables-Default.mk
+
+  - Scripts
+    - configure
+      - revised configuration INCLUDES  handling - replaced INCLUDES_PATH in ConfigurationFiles/X.xml with PLATFORM_INCLUDES_PATH and PLATFORM_INCLUDES_PATH
+      - Lose INCLUDES_PATH from ConfigurationFiles /x.xml
+      - use the name PLATFORM_CFLAGS instead of CFLAGS (and same for CXXFLAGS)
+      - no longer need to add onfigurationName/ThirdPartyComponents/lib/... to @LinkerArgs_LibPath_ADD
+      - dont print VSVARS_PLATFORM_INCLUDES_PATH to config file if not needed
+      - renamed CONFIGFILE entry LinkerArgs_LibPath -> Platform_LinkerArgs_LibPath and LinkerArgs_LibDependencies -> Platform_LinkerArgs_LibDependencies;
+      - dont add LinkerArgs_LibDependencies_ADD to linker-args any longer (using boost.pc); push (@packageCfgNames, boost); various makefile cleanups (esp to third party components) to get  more working using --libs and pkg-config
+      - renamed LinkerArgs_ExtraPrefix -> Platform_LinkerArgs_ExtraPrefix and LinkerArgs_ExtraSuffix -> Platform_LinkerArgs_ExtraSuffix; and draft DEFAULT_LINK_LINE2
+      - lose support for EXTRA_COMPILER_ARGS in configuration
+      - configure: just include Builds/1042configurationName/include in INCLUDES_PATH_ADD instead of FOUNDATION_INCLUDES_PATH
+      - -noexp -noimplib linker args for visual studio to avoid 'Creating library ...'' message from linker
+      - moved Stroika-Current-Version.h to Builds/$CONFIG/include/Stroika; renamed Stroika-Current-Version to Stroika/Current-Version.h
+      - lose IntermediateFiles from FOUNDATION_INCLUDES_PATH
+      - renmamed configfile variable PkgConfigNames -> Foundation_PkgConfigNames
+      - Always add Builds/$configurationName/include/ to include path in configure: even if no third party components (for stroika-version.h)
+
+    - fixed stroika foundation/frameworks library names to fit with new .pc file usage
+    - **new** CreatePackageConfigFiles
+    - ApplyConfiguration
+      - call CreatePackageConfigFiles
+      - updated configure and ApplyConfiguration (etc) to store FOUNDATION_CPPFLAGS_NOTINCLUDES and PLATFORM_CPPFLAGS_NOTINCLUDES instead of CPPFLAGS_NOTINCLUDES
+    - **new** SplitCFLAGS
+    - new script pkg-config-msvc, new file boost/boost.pc; 
+    - RunLocalWindowsDockerRegressionTests
+      - lose DOCKER_NETWORK flag support and instead better document to use the dns: 8.8.8.8 config setting to fix this problem
+
 - Library
   - Common
     - **new** LazyType_t
@@ -79,63 +143,10 @@ with
   - Memory
     - deprecated Memory::NEltsOf - use std::size() or std::ssize() instead
 
-
-- Makefiles
-  - get rid of commented out/deprecated makefile variables: StroikaFoundationSupportLibs PKG_CONFIG_STATIC_COMPONENTS, and TPP_PKG_CONFIG_PATH
-  - Comment out STRIP_INCLUDE_COMPILER_FLAGS since unused and appears  obosolete (Makefile-Common.mk)
-  - moved SharedMakeVariables-Default.mk StroikaLibDir to be (StroikaPlatformTargetBuildDir)lib/ (added lib/)
-  - Big makefile refactoring - deprecating ScriptsLib/Makefile-Common.mk - just include SharedMakeVariables-Default.mk instead; 
-  - ObjDir/SrcDir declared at top of file
-  - cleanup WIN_USE_PROGRAM_DATABASE (largely unused anymore) feature to use StroikaLibDir name so works with new location of stroika libraries
-  - MSYS2_ARG_CONV_EXCL BWA still needed (docuemnted why) - needed more complex BWA in ScriptsLib/ApplyConfiguration fpr MSYS2_ARG_CONV_EXCL issue
-  - lose extra no longer needed include IntermediateFiles//Configuration.mk in each makefile - now done in ScriptsLib/SharedMakeVariables-Default.mk
-  - moved ThirdPartyComponents builds output to StroikaPlatformTargetBuildDir (one level up) - so more like standard unix --prefix and stroika libs all together with those of other libraries (for more use of .pc files)
-    (instead of $(StroikaRoot)Builds/$(CONFIGURATION))
-  - better docs/warnings in ScriptsLib/SharedBuildRules-Default.mk
-  - moved SED makefile variable into ScriptsLib/SharedMakeVariables-Default.mk
-  - added TOP_ROOT to SharedMakeVariables-Default.mk
-  - minor cleanup to Tests/Makefile-Test-Template.mk
-  - use DETECTED_HOST_OS MSYS insetad of BuildPlatform is VisualStudio for one BWA specific to MSYS
-  - lose obsolete LinkerArgs_StroikaDependentLibDependencies from SharedMakeVariables-Default.mk
-  - cleanups to DEFAULT_LINK_LINE makefile macro (e.g LinkerArgs_ExtraSuffix changes)
-  - cleanup makefile reacent changes (and lose deprecated LinkerArgs_LibDependencies from SharedMakeVariables.mk)
-  - more makefile cleanups: SharedMakeVariables-Default.mk - lose deprecated LinkerArgs_LibDependencies, and cleanup RC_FLAGS/MIDL_FLAGS, StroikaRoot_MIXED cleanup
-  - lose PKG_CONFIG_STROIKA_DEPENDS_ON - from ApplyConfiguraiton/Configuration.mk etc - largely unused(done via pkgconfig)
-  - progress on new Platform_LDFLAGS define in SharedMakeVariables-Default.mk
-  - Added ObjDir_ToolsSafe to SharedMakeVariables-Default.mk
-
-- Scripts
-  - configure
-    - revised configuration INCLUDES  handling - replaced INCLUDES_PATH in ConfigurationFiles/X.xml with PLATFORM_INCLUDES_PATH and PLATFORM_INCLUDES_PATH
-    - Lose INCLUDES_PATH from ConfigurationFiles /x.xml
-    - use the name PLATFORM_CFLAGS instead of CFLAGS (and same for CXXFLAGS)
-    - no longer need to add onfigurationName/ThirdPartyComponents/lib/... to @LinkerArgs_LibPath_ADD
-    - dont print VSVARS_PLATFORM_INCLUDES_PATH to config file if not needed
-    - renamed CONFIGFILE entry LinkerArgs_LibPath -> Platform_LinkerArgs_LibPath and LinkerArgs_LibDependencies -> Platform_LinkerArgs_LibDependencies;
-    - dont add LinkerArgs_LibDependencies_ADD to linker-args any longer (using boost.pc); push (@packageCfgNames, boost); various makefile cleanups (esp to third party components) to get  more working using --libs and pkg-config
-    - renamed LinkerArgs_ExtraPrefix -> Platform_LinkerArgs_ExtraPrefix and LinkerArgs_ExtraSuffix -> Platform_LinkerArgs_ExtraSuffix; and draft DEFAULT_LINK_LINE2
-    - lose support for EXTRA_COMPILER_ARGS in configuration
-    - configure: just include Builds/1042configurationName/include in INCLUDES_PATH_ADD instead of FOUNDATION_INCLUDES_PATH
-    -noexp -noimplib linker args for visual studio to avoid Creating library ... message from linker
-    - moved Stroika-Current-Version.h to Builds/$CONFIG/include/Stroika; renamed Stroika-Current-Version to Stroika/Current-Version.h
-
-    - lose IntermediateFiles from FOUNDATION_INCLUDES_PATH
-    - renmamed configfile variable PkgConfigNames -> Foundation_PkgConfigNames
-    - Always add Builds/$configurationName/include/ to include path in configure: even if no third party components (for stroika-version.h)
-
-  - fixed stroika foundation/frameworks library names to fit with new .pc file usage
-  - **new** CreatePackageConfigFiles
-  - ApplyConfiguration
-    - call CreatePackageConfigFiles
-    - updated configure and ApplyConfiguration (etc) to store FOUNDATION_CPPFLAGS_NOTINCLUDES and PLATFORM_CPPFLAGS_NOTINCLUDES instead of CPPFLAGS_NOTINCLUDES
-  - **new** SplitCFLAGS
-  - new script pkg-config-msvc, new file boost/boost.pc; 
-
 - ThirdPartyComponents
   - generate/fix pkgconfig files for sqlite, and zlib (static); lose explicit link dependencies in configure script (replacing with adding those pkgfiles to list of pkgconfig file names - using stroika-foundatipn.pc
   - libcurl
    -  tried 8.15.0; revert to curl 8.12.1, cuz 8.15.0 seems to have same cookie bug (caught by asan - maybe)
-
   - lzma
     - lzma.pc support
  - xerces
@@ -143,58 +154,19 @@ with
  - libxml2
    - makefile tweak to workaround issues with stroika-foundation.pc file (still experiemntal windows only)
    - libxml2 2.14.5
-
   - mongocxxdriver
     - 4.1.1
-
   - sqlite 
     - 3.50.2
-
   - zlib
     -  minor tweaks makefile
-
-
 - Tests
   - Added -I${ObjDir_ToolsSafe} to CPPFLAGS for Tests makefile template and fixed ref to where to #include from for test/34
-
   - docker tests 
     - windows - docker image mem usage size upped 12G to 13G cuz sometiems runs out
-
 - Tools
   - HTMLViewCompiler
     - moved HTMLViewCompiler install to bin directory
-
-
-- Docker
-  - changed dockerfiles to always install python3 - not conditionally (cuz switching more of scripts over from perl to python, I think)
-  - get openssh to autostart on dev containers
-
-
--    VS_17_14_8
-
-#if 0
-
-"in docker container, use msys 2025-06-22 release"
-
-#lose
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls12,Tls13'; \
-
-commit 94800dfb3b5689b970cbc60297ec4bc258d6211f
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Jul 14 09:07:58 2025 -0400
-
-    allow ACTUAL_RUN_CMD arg to RunInDockerEnvironemt script, and use to add start-stroika-dev-containers to makefile, and have them auto-restart on reboot - autostarting ssh
-
-commit 331d06dd43b190767b3277bb8cc332571cde7cb2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 15 13:04:23 2025 -0400
-
-    lose DOCKER_NETWORK flag support in RunLocalWindowsDockerRegressionTests and instead better document to use the dns: 8.8.8.8 config setting to fix this problem
-
-#endif
-
-
-
 
 
 
