@@ -10,10 +10,9 @@ especially those they need to be aware of when upgrading.
 ### 3.0d21 {2025-07-28} {[diff](../../compare/3.0d20...3.0d21)}
 
 #### TLDR
-  - Configure / build system now much more driven off pkgconfig files
-    - stroika-frameworks.pc has little to it but a requires of stroika-foundation.pc
-    - stroika-foundation.pc has all the requires on third party components it is built off (e.g xerces, boost, libcurl, etc)
-      and depends on stroika-platform
+  - Configure (build) system now much more driven off pkgconfig files
+    - stroika-frameworks.pc requires stroika-foundation.pc
+    - stroika-foundation.pc requires third party components it is built off (e.g xerces, boost, libcurl, etc), and stroika-platform
     - stroika-platform.pc contains all the 'native platform' library depenencies, and C #defines etc for std c++ libraries, etc.
 
 #### Upgrade Notes (3.0d20 to 3.0d21)
@@ -21,52 +20,70 @@ especially those they need to be aware of when upgrading.
 ##### in makefiles
 
 - lose deprecated
-~~~
-include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
-~~~
+  ~~~
+  include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
+  ~~~
 
 - lose 
-~~~
-ifneq ($(CONFIGURATION),)
-	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
-endif
-~~~
+  ~~~
+  ifneq ($(CONFIGURATION),)
+    -include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+  endif
+  ~~~
 
-replacigin with  if needed
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+  replacing with (if needed, but probably already present)
+  ~~~
+  include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+  ~~~
 
-- move to SrcDir/ObjDir to top of file, for example:
-
-export TOP_ROOT=$(abspath ../../)/
-StroikaRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
-SrcDir		:=	$(TOP_ROOT)API-Server/Sources/
-ObjDir		:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/IPAM/API-Server/
-
-
-Assure include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
-
-is AFTER 
-include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+- move SrcDir/ObjDir to top of file, for example:
+  ~~~
+  export TOP_ROOT=$(abspath ../../)/
+  StroikaRoot	:=	$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
+  SrcDir		:=	$(TOP_ROOT)API-Server/Sources/
+  ObjDir		:=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/IPAM/API-Server/
+  ~~~
 
 
-preferable after define of Objs
+- Assure 
+  ~~~
+  include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
+  ~~~
+  is AFTER 
+  ~~~
+  include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
+  ~~~
+  preferable after define of Objs
 
-
--LinkerArgs_LibDependencies += -lexiv2 -lexpat -lz
-+LDFLAGS += -lexiv2 -lexpat -lz
+- Replace use of LinkerArgs_LibDependencies with LDFLAGS
+  ~~~
+  -LinkerArgs_LibDependencies += -lexiv2 -lexpat -lz
+  ~~~
+  becomes:
+  ~~~
+  +LDFLAGS += -lexiv2 -lexpat -lz
+  ~~~
 
 -EXTRA_SUFFIX_LINKER_ARGS+= -ignore:4286
 +LDFLAGS+= -ignore:4286
 
--       @$(call DEFAULT_LINK_LINE,$@)
-+       @$(call DEFAULT_LINK_LINE,$@,stroika-frameworks,,${LDFLAGS})
+- replace calls to DEFAULT_LINK_LINE like this (if any changes to LDFLAGS made, else harmless but not needed):
+  ~~~
+  @$(call DEFAULT_LINK_LINE,$@)
+  ~~~
+  with:
+  ~~~
+  @$(call DEFAULT_LINK_LINE,$@,stroika-frameworks,,${LDFLAGS})
+  ~~~
 
-
-Replace any occurances of:
-#include "Stroika-Current-Version.h"
-with
-#include "Stroika/Current-Version.h"
-
+- Replace any occurances of:
+  ~~~
+  #include "Stroika-Current-Version.h"
+  ~~~
+  with
+  ~~~
+  #include "Stroika/Current-Version.h"
+  ~~~
 
 #### Change Details
 
@@ -123,7 +140,6 @@ with
       - lose IntermediateFiles from FOUNDATION_INCLUDES_PATH
       - renmamed configfile variable PkgConfigNames -> Foundation_PkgConfigNames
       - Always add Builds/$configurationName/include/ to include path in configure: even if no third party components (for stroika-version.h)
-
     - fixed stroika foundation/frameworks library names to fit with new .pc file usage
     - **new** CreatePackageConfigFiles
     - ApplyConfiguration
@@ -133,7 +149,6 @@ with
     - new script pkg-config-msvc, new file boost/boost.pc; 
     - RunLocalWindowsDockerRegressionTests
       - lose DOCKER_NETWORK flag support and instead better document to use the dns: 8.8.8.8 config setting to fix this problem
-
 - Library
   - Common
     - **new** LazyType_t
@@ -144,22 +159,22 @@ with
     - deprecated Memory::NEltsOf - use std::size() or std::ssize() instead
 
 - ThirdPartyComponents
-  - generate/fix pkgconfig files for sqlite, and zlib (static); lose explicit link dependencies in configure script (replacing with adding those pkgfiles to list of pkgconfig file names - using stroika-foundatipn.pc
+  - generate/fix pkgconfig files for sqlite, and zlib (static); lose explicit link dependencies in configure script (replacing with adding those pkgfiles to list of pkgconfig file names - using stroika-foundatipn.pc)
   - libcurl
-   -  tried 8.15.0; revert to curl 8.12.1, cuz 8.15.0 seems to have same cookie bug (caught by asan - maybe)
+    - tried 8.15.0; revert to curl 8.12.1, cuz 8.15.0 seems to have same cookie bug (caught by asan - maybe)
   - lzma
     - lzma.pc support
- - xerces
-    - fixed xerces build code to use .pc file (instead of configure add of libs etc)
- - libxml2
-   - makefile tweak to workaround issues with stroika-foundation.pc file (still experiemntal windows only)
-   - libxml2 2.14.5
+  - libxml2
+    - makefile tweak to workaround issues with stroika-foundation.pc file (still experiemntal windows only)
+    - libxml2 2.14.5
   - mongocxxdriver
     - 4.1.1
   - sqlite 
     - 3.50.2
+  - xerces
+    - fixed xerces build code to use .pc file (instead of configure add of libs etc)
   - zlib
-    -  minor tweaks makefile
+    - minor tweaks makefile
 - Tests
   - Added -I${ObjDir_ToolsSafe} to CPPFLAGS for Tests makefile template and fixed ref to where to #include from for test/34
   - docker tests 
