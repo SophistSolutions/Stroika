@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d21 {2025-07-28} {[diff](../../compare/3.0d20...3.0d21)}
+### 3.0d21 {2025-07-29} {[diff](../../compare/3.0d20...3.0d21)}
 
 #### TLDR
   - Configure (build) system now much more driven off pkgconfig files
@@ -31,7 +31,7 @@ especially those they need to be aware of when upgrading.
   endif
   ~~~
 
-  replacing with (if needed, but probably already present)
+  replacing with (if not already present)
   ~~~
   include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
   ~~~
