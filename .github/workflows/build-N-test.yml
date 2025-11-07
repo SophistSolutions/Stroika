@@ -100,10 +100,10 @@ jobs:
       - name: Save space (Before Start of Builds)
         if: always()
         run: |
-          ls -la /usr/local
-          du -hs /usr/local/*
-          sudo rm -rf /usr/local/.ghcup
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          apt-get clean || true
+          npm cache clean --force || true
+          rm -rf Archive License.txt
+          df -h
 
       - name: Configure ${{ matrix.config_name }}
         run: |
