@@ -314,6 +314,8 @@ jobs:
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/GoogleTest/INSTALL-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/CONFIGURE-OUT.txt
             IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/libxml2/BUILD-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/CONFIGURE-OUT.txt
+            IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/mongo-cxx-driver/BUILD-OUT.txt
             ${{ env.TMPDIR }}/Trace*.txt
       - name: Archive Sample Results
         uses: actions/upload-artifact@v4
