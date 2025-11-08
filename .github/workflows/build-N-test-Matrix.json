@@ -270,7 +270,7 @@
         "xcode": "15.3",
         "config_name": "Debug",
         "COMMENT-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable mongo-cxx-driver no",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --mongo-cxx-driver no",
         "run_on_branch": "always"
     },
     {
