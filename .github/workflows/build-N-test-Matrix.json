@@ -236,9 +236,10 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Debug",
-        "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "comment-LIBCURL-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
         "comment-2": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --libcurl no --fmtlib use",
+        "COMMENT-WHYNOMONGO-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --libcurl no --fmtlib use --mongo-cxx-driver no",
         "run_on_branch": "always"
     },
     {
@@ -247,9 +248,10 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Release",
-        "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "comment-LIBCURL-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
         "comment-2": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable --libcurl no --fmtlib use",
+        "COMMENT-WHYNOMONGO-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --libcurl no --fmtlib use --mongo-cxx-driver no",
         "run_on_branch": "v3-Release"
     },
     {
@@ -258,9 +260,10 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Debug",
-        "comment-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "comment-LIBCURL-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
         "comment-2": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components --libcurl no --fmtlib use",
+        "COMMENT-WHYNOMONGO-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components --libcurl no --fmtlib use --mongo-cxx-driver no",
         "run_on_branch": "v3-Release"
     },
     {
@@ -269,7 +272,7 @@
         "runs_on": "macos-14",
         "xcode": "15.3",
         "config_name": "Debug",
-        "COMMENT-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
+        "COMMENT-WHYNOMONGO-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --mongo-cxx-driver no",
         "run_on_branch": "always"
     },
