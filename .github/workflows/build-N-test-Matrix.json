@@ -1,6 +1,6 @@
 [
     {
-        "comment": "ubuntu 22.04"
+        "#": "ubuntu 22.04"
     },
     {
         "build_job": "Linux",
@@ -10,7 +10,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "COMMENT-1": "--boost no to save space, cuz else runs out of disk space",
+        "#": "--boost no to save space, cuz else runs out of disk space",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --boost no",
         "run_on_branch": "v3-Release"
     },
@@ -22,8 +22,8 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "COMMENT-1": "--append-CXXFLAGS -O1 (DIDNT WORK) --boost no to save space, cuz else runs out of disk space",
-        "extra_config_args-OLD_TESTING-IFWORKSUPDATECOMMENT-1": "--apply-default-debug-flags --trace2file enable --debug-symbols false --boost no",
+        "#": "--append-CXXFLAGS -O1 (DIDNT WORK) --boost no to save space, cuz else runs out of disk space",
+        "#": "--apply-default-debug-flags --trace2file enable --debug-symbols false --boost no",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
@@ -80,12 +80,12 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
-        "COMMENT-1": "SKIP cuz runs out of disk space",
+        "#": "SKIP cuz runs out of disk space",
         "run_on_branch": "never"
     },
     {},
     {
-        "comment": "ubuntu 24.04"
+        "#": "ubuntu 24.04"
     },
     {
         "build_job": "Linux",
@@ -155,7 +155,7 @@
     },
     {},
     {
-        "comment": "ubuntu 25.04"
+        "#": "ubuntu 25.04"
     },
     {
         "build_job": "Linux",
@@ -165,7 +165,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Release",
-        "COMMENT-1": "--boost no to save space, cuz else runs out of disk space",
+        "#": "--boost no to save space, cuz else runs out of disk space",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --boost no",
         "run_on_branch": "v3-Release"
     },
@@ -188,7 +188,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Release",
-        "COMMENT-1": "--boost no to save space, cuz else runs out of disk space",
+        "#": "--boost no to save space, cuz else runs out of disk space",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --boost no",
         "run_on_branch": "v3-Release"
     },
@@ -200,7 +200,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "COMMENT-1": "--boost no to save space, cuz else runs out of disk space, and -Os to make save space as well",
+        "#": "--boost no to save space, cuz else runs out of disk space, and -Os to make save space as well",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --boost no --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "always"
     },
@@ -212,7 +212,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Release",
-        "COMMENT-1": "--boost no to save space, cuz else runs out of disk space, and -O1 to make save space as well",
+        "#": "--boost no to save space, cuz else runs out of disk space, and -O1 to make save space as well",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --boost no",
         "run_on_branch": "v3-Release"
     },
@@ -228,7 +228,7 @@
         "run_on_branch": "v3-Release"
     },
     {
-        "comment": "MacOS"
+        "#": "MacOS"
     },
     {
         "build_job": "MacOS",
@@ -236,8 +236,8 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Debug",
-        "comment-LIBCURL-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
-        "comment-FMTLIB-1": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
+        "#": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "#": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --libcurl no --fmtlib use",
         "run_on_branch": "always"
     },
@@ -247,8 +247,8 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Release",
-        "comment-LIBCURL-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
-        "comment-FMTLIB-1": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
+        "#": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "#": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --libcurl no --fmtlib use",
         "run_on_branch": "v3-Release"
     },
@@ -258,10 +258,9 @@
         "runs_on": "macos-13",
         "xcode": "15.2",
         "config_name": "Debug",
-        "comment-LIBCURL-1": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
-        "comment-FMTLIB-1": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
-        "COMMENT-WHYNOMONGO-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components --libcurl no --fmtlib use --mongo-cxx-driver no",
+        "#": "as of 2024-11-13 we get link error on github action env so hard to debug why - just disable libcurl here",
+        "#": "as of 2024-11-25 must manually specify --fmtlib cuz cannot easily build in that container... to debug script",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components --libcurl no --fmtlib use",
         "run_on_branch": "v3-Release"
     },
     {
@@ -270,8 +269,7 @@
         "runs_on": "macos-14",
         "xcode": "15.3",
         "config_name": "Debug",
-        "COMMENT-WHYNOMONGO-1": "as of 2025-11-08 incompatible version of CMAKE in this version of xcode",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --mongo-cxx-driver no",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
         "run_on_branch": "always"
     },
     {
@@ -312,7 +310,7 @@
     },
     {},
     {
-        "comment": "Windows"
+        "#": "Windows"
     },
     {
         "build_job": "Windows",
