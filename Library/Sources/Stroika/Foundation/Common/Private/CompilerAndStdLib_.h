@@ -3021,6 +3021,10 @@ Stack dump:
 // appears broken in clang++-20
 #define qCompilerAndStdLib_template_second_concept_Buggy                                                                                   \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15) or (__clang_major__ == 18) or (__clang_major__ == 19) or (__clang_major__ == 20))
+#elif defined(__clang__) && defined(__APPLE__)
+// appears broken in clang++-17 crapple
+#define qCompilerAndStdLib_template_second_concept_Buggy                                                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ( (__clang_major__ == 17) )
 #else
 #define qCompilerAndStdLib_template_second_concept_Buggy 0
 #endif
