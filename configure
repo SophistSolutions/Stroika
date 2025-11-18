@@ -643,7 +643,7 @@ sub getUbuntuVersion
 	}
 }
 
-sub getMacOSVersion
+sub getMacOSVersion_
 {
 	return trim (`/usr/bin/sw_vers | grep ProductVersion | awk 'END {print \$2}'`);
 }
@@ -658,6 +658,13 @@ sub getXCodeVersion_
 	else {
 		return $a + 0;	## convert to a number
 	}
+}
+
+
+
+sub getXCodeSelect_
+{
+	return trim (`xcode-select -p`) ;
 }
 
 sub     IsTargettingSanitizer_
@@ -977,7 +984,7 @@ sub	SetDefaultsWhichDependOnCompilerDriverAndApplyDefaultsDebugOrRel_
 	# This appears to only be needed when running on m1 hardware, but no easy way I can find to
 	# tell that so always do this by default
 	if (!defined $MACOSX_DEPLOYMENT_TARGET && "$^O" eq "darwin") {
-		my $osVersion = getMacOSVersion();
+		my $osVersion = getMacOSVersion_();
 		($osVersion =~ /^((\d+)\.(\d+))/gm);	# force convert to 2-digit form as I've seen in examples but not sure makes much sense
 		$MACOSX_DEPLOYMENT_TARGET = $1;
 	}
@@ -3240,8 +3247,12 @@ sub	WriteConfigFile_
 		print (OUT "        <!--Ubuntu: $ubuntuVersion-->\n");
 	}
 	if ("$^O" eq "darwin") {
-		my $osVersion = getMacOSVersion();
+		my $osVersion = getMacOSVersion_();
 		print (OUT "        <!--MacOS: $osVersion-->\n");
+
+		my $xcodeVersion = getXCodeVersion_();
+		my $xcodeselect = getXCodeSelect_();
+		print (OUT "        <!--XCode: $xcodeVersion ; selected: $xcodeselect-->\n");
 	}
 
 	print (OUT "</Configuration>\n");
