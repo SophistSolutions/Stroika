@@ -74,7 +74,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 15 (XCode 15)"
 #endif
-#if (__clang_major__ > 16)
+#if (__clang_major__ > 17)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -474,6 +474,7 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #if defined(__clang__) && defined(__APPLE__)
 // reproduced on clang 15
 // reproduced on clang 16
+// testing clang++17
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -549,6 +550,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed broken in apply clang 15
 // first noticed broken in apply clang 16
+// testing clang++17
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -605,6 +607,17 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 /usr/bin/ld: /Sandbox/Stroika-Dev/Builds/c/Stroika-Foundation.a(WaitableEvent.o): in function `Stroika::Foundation::Execution::ConditionVariable<std::__1::mutex, std::__1::condition_variable_any>::wait_until(std::__1::unique_lock<std::__1::mutex>&, std::__1::chrono::time_point<std::__1::chrono::steady_clock, std::__1::chrono::duration<double, std::__1::ratio<1l, 1l> > >)':
 /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/./ConditionVariable.inl:84:(.text._ZN7Stroika10Foundation9Execution17ConditionVariableINSt3__15mutexENS3_22condition_variable_anyEE10wait_untilERNS3_11unique_lockIS4_EENS3_6chrono10time_pointINSA_12steady_clockENSA_8durationIdNS3_5ratioILl1ELl1EEEEEEE[_ZN7Stroika10Foundation9Execution17ConditionVariableINSt3__15mutexENS3_22condition_variable_anyEE10wait_untilERNS3_11unique_lockIS4_EENS3_6chrono10time_pointINSA_12steady_clockENSA_8durationIdNS3_5ratioILl1ELl1EEEEEEE]+0x3e): undefined reference to `Stroika::Foundation::Execution::Thread::IsCurrentThreadInterruptible()'
 
+
+78 warnings generated.
+1366 warnings generated.
+         Linking Builds/Release/Samples-HTMLUI/Backend/HTMLUI ... 
+Undefined symbols for architecture arm64:
+  "Stroika::Foundation::Execution::Thread::GetCurrentThreadStopToken()", referenced from:
+      Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(std::__1::chrono::time_point<std::__1::chrono::steady_clock, std::__1::chrono::duration<double, std::__1::ratio<1l, 1l>>>) in lto.o
+ld: symbol(s) not found for architecture arm64
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+make[5]: *** [/Users/lewis/Sandbox/StroikaDev/Builds/Release/Samples-HTMLUI/Backend/HTMLUI] Error 1
+make[4]: *** [all] Error 2
 */
 #ifndef qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 
@@ -612,7 +625,8 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 // first noticed broken in apply clang 14
 // replicated in xcode 15.0
 // replicated in xcode 16.0 *- release build only
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// replicated in xcode 17.0 clang++17
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__clang__)
 // first noticed broken in apply clang 14
 // replicated in clang 15.
@@ -1229,8 +1243,9 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 // Noticed broken in crapple-clang++14
 // reproduced in xcode 15
 // reproduced in xcode 16
+// reproduced in xcode 17
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
 // Noticed broken in -clang++14
 // noticed broken in clang++15 with LIBC++
@@ -1534,8 +1549,9 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 
 #if defined(__clang__) && defined(__APPLE__)
 // broken in clang++16
+// broken in clang++17
 #define qCompilerAndStdLib_template_ConstraintDiffersInTemplateRedeclaration_Buggy                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
@@ -1599,6 +1615,7 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 #ifndef qCompilerAndStdLib_template_concept_matcher_requires_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 // still broken in clang++16
+// testing clang++17
 #define qCompilerAndStdLib_template_concept_matcher_requires_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++17
@@ -1687,6 +1704,7 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 #ifndef qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
 
 #if defined(__clang__)
+// testing clang++17
 #define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy                                                        \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
 #else
@@ -1884,8 +1902,9 @@ In file included from SystemConfiguration.cpp:48:
 // First noticed in clang++-14
 // Reproduced in clang++-15
 // Reproduced in clang++-16
+// Reproduced in clang++-17
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #elif defined(__clang__) && !defined(__APPLE__)
 // broken in clang++-15
 // broken in clang++-16
@@ -1946,10 +1965,16 @@ C:\Sandbox\Stroika\DevRoot\Tests\22\Test.cpp(104): note: see reference to functi
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
 #elif defined(__clang__)
+#if defined(__APPLE__)
+// broken in clang++17 for Apple
+#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 17))
+#else
 // first broken in clang++ 19 (linux)
 // Still broken in clang++-20
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19 or __clang_major__ == 20))
+#endif
 #else
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
 #endif
@@ -3243,7 +3268,8 @@ TRIED alignas to fix on the array but no luck
 // reproduced on XCode 14
 // reproduced on XCode 15
 // reproduced on XCode 16
-#define qMacUBSanitizerifreqAlignmentIssue_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
+// reproduced on XCode 17
+#define qMacUBSanitizerifreqAlignmentIssue_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 17)
 #else
 #define qMacUBSanitizerifreqAlignmentIssue_Buggy 0
 #endif
@@ -3258,7 +3284,8 @@ TRIED alignas to fix on the array but no luck
 // Still BROKEN on XCode 14
 // Still BROKEN on XCode 15
 // Still BROKEN on XCode 16
-#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// Still BROKEN on XCode 17
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 17))
 #else
 #define qCompilerAndStdLib_locale_pctX_print_time_Buggy 0
 #endif
