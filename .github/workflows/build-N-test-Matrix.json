@@ -10,8 +10,8 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "#": "--boost no to save space, cuz else runs out of disk space (TEST IF --boost no still needed and doc why this better)",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false  --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
     {
@@ -22,7 +22,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "#": "--append-CXXFLAGS -O1 (DIDNT WORK) --boost no to save space, cuz else runs out of disk space (if that not enuf can use --boost no)",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
@@ -78,8 +78,8 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --all-available-third-party-components",
-        "#": "SKIP cuz runs out of disk space(testing if no works with -Os else go back to run_on_branch never",
         "run_on_branch": "v3-Release"
     },
     {},
@@ -165,10 +165,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Release",
-        "####": "try avoid runs out of disk space (-Os, and debug symbols false)",
-        "####extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
-        "####": "--boost no to save space, cuz else runs out of disk space",
-        "####extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --boost no",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
@@ -192,10 +189,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Release",
-        "####": "try avoid runs out of disk space (-Os, and debug symbols false)",
-        "####extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
-        "####": "--boost no to save space, cuz else runs out of disk space",
-        "###extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --boost no",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
@@ -207,8 +201,8 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "#": "--boost no to save space, cuz else runs out of disk space, and -Os to make save space as well(test if --boost no still needed)",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false); ALSO needed --boost no cuz -Os wasn't enuf",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
         "run_on_branch": "always"
     },
     {
@@ -219,7 +213,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Release",
-        "#": "--boost no to save space, cuz else runs out of disk space, and -O1 to make save space as well (TESTING IF FIXED BY -Os - else add back --boost no)",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
         "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os ",
         "run_on_branch": "v3-Release"
     },
