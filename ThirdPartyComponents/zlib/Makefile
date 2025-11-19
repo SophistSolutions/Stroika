@@ -10,7 +10,6 @@ StroikaRoot	:=	$(abspath ../..)/
 include ${StroikaRoot}/ScriptsLib/SharedMakeVariables-Default.mk
 
 
-
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
