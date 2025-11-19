@@ -8,5 +8,5 @@ Version: x
 ## DRAFT BOOST.PC file - not sure why not already part of boost - 
 # https://stackoverflow.com/questions/3971703/how-to-use-c-boost-library-with-pkg-config
 # NB: Keep this list in sync with those in boost*.pc and makefile PRODUCED_OUTPUT_ARTIFACTS
-Libs: -L${libdir} -llibboost_chrono -llibboost_filesystem  -llibboost_json -llibboost_thread 
+Libs: -L${libdir} -llibboost_chrono -llibboost_filesystem -llibboost_json -llibboost_thread 
 Cflags: -I${includedir}
