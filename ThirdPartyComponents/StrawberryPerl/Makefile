@@ -14,7 +14,8 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 # CHECK FOR UPDATED VERSIONS https://strawberryperl.com/releases.html
 #	MAYBE BETTER https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases
 #
-PERL_VERSION_=5.40.2.1
+PERL_VERSION_=5.42.0.1
+#PERL_VERSION_=5.40.2.1
 #PERL_VERSION_=5.40.0.1
 #PERL_VERSION_=5.38.2.2
 #PERL_VERSION_=5.32.1.1
