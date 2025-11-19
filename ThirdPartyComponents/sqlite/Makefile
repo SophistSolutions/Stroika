@@ -18,10 +18,10 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 .NOTPARALLEL:
 
 # https://www.sqlite.org/download.html
-VERSION:=3500200
+VERSION:=3510000
+#VERSION:=3500200
 #VERSION:=3490200
 #VERSION:=3490100
-#VERSION:=3470200
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
