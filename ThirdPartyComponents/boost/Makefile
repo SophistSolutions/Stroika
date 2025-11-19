@@ -29,7 +29,8 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 ## Check latest release: https://www.boost.org/users/download/
 ##
 
-VERSION:=1_88_0
+VERSION:=1_89_0
+#VERSION:=1_88_0
 #VERSION:=1_87_0
 #VERSION:=1_86_0
 VERSION_WITH_DOTS:=$(shell echo $(VERSION) | sed s/_/\./g)
@@ -68,30 +69,25 @@ endif
 endif
 
 
-### Haven't found any backup/mirrors and this only stores the last few versions. @todo - find a better backup! 
+### https://archives.boost.io location new (just found 2025-11-18) 
 FETCHURLS=
+FETCHURLS+=https://archives.boost.io/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
 FETCHURLS+=https://sourceforge.net/projects/boost/files/boost/$(VERSION_WITH_DOTS)/boost_$(VERSION).tar.gz/download
-# NOTE: github repo appears to be incomplete, not including the submodules like boost-build
-#FETCHURLS+=https://github.com/boostorg/boost/archive/refs/tags/boost-$(VERSION_WITH_DOTS).tar.gz
-# NOTE: since december 30 2023, jfrog seems broken - maybe temporarily...
-# FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
-#FETCHURLS+=ftp://ftp.sophists.com/Pub/Mirror/boost_$(VERSION).tar.gz
-#(reasonable but breaks github 100mb limit)FETCHURLS+=file:///../Mirror/boost_$(VERSION).tar.gz
-### the github.com/boostorg/boost/archive appear not fully compatible/real mirror of above - very different size and my build scripts dont work
-#FETCHURLS+=https://github.com/boostorg/boost/archive/boost-$(VERSION_WITH_DOTS).tar.gz
 
 
-
-## just a smatering of test files to see if it looks like copied
+## just a smattering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/config.hpp				\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/process.hpp				\
 	$(PER_CONFIGURATION_BUILDS_DIR_)include/boost/type_traits.hpp 			\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/pkgconfig/boost.pc
+# NB: Keep this list in sync with those in boost*.pc files
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_date_time$(LIB_SUFFIX)		\
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_chrono$(LIB_SUFFIX)		\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_filesystem$(LIB_SUFFIX)	\
-	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_system$(LIB_SUFFIX)
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_json$(LIB_SUFFIX)			
+	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libboost_thread$(LIB_SUFFIX)		\
+
 
 
 $(ZIPPEDFILE):
