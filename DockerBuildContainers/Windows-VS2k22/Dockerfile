@@ -127,8 +127,10 @@ RUN (%TEMP%\vs_buildtools.exe \
     && (del /f /q "%TEMP%\*.log") \
     && (echo got here 1) \
     && (dir "%TEMP%") \
-    && (echo "Waiting 10 seconds to workaround issue deleting files which maybe still busy on github actions build of container" && start /wait timeout /t 10 /nobreak) \
-    && (del /f /s /q "%TEMP%\*.*" || echo "ignoring errors on failed delete")
+    && (time/t) \
+    && (echo "Waiting 10 seconds to workaround issue deleting files which maybe still busy on github actions build of container" && start /wait timeout /t 100 /nobreak) \
+    && (time/t) \
+    && (echo del /f /s /q "%TEMP%\*.*" || echo "ignoring errors on failed delete")
 
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k22
