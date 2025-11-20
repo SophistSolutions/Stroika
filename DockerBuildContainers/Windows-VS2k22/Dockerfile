@@ -127,7 +127,7 @@ RUN (%TEMP%\vs_buildtools.exe \
     && (del /f /q "%TEMP%\*.log") \
     && (echo got here 1) \
     && (dir "%TEMP%") \
-    && (del /f /s /q "%TEMP%\*.*")
+    && (del /f /s /q "%TEMP%\*.*" || echo "ignoring errors on failed delete")
 
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k22
