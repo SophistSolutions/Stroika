@@ -126,6 +126,7 @@ RUN (%TEMP%\vs_buildtools.exe \
     && (dir "%TEMP%") \
     && (del /f /q "%TEMP%\*.log") \
     && (echo got here 1) \
+    && (wmic logicaldisk get deviceid, freespace, size, description) \
     && (dir "%TEMP%") \
     && (time/t) \
     && (echo "Waiting 10 seconds to workaround issue deleting files which maybe still busy on github actions build of container" && start /wait timeout /t 100 /nobreak) \
