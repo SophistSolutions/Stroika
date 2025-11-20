@@ -100,6 +100,7 @@ jobs:
           # Was running out of space, and doesn't seem to be commandline way to set storage opts, so
           # add --storage-opts ["size=60GB"] or some such, to this file, and see if it works better, but not needed for now --LGP 2024-02-26
           echo "C:/ProgramData/Docker/config/daemon.json:" -n ; cat "C:/ProgramData/Docker/config/daemon.json"
+          wmic logicaldisk get deviceid, freespace, size, description
       - name: Build Windows Container Images (sophistsolutionsinc/stroika-buildvm-windows-vs2k22)
         # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
         #   DIDNT WORKmake --directory DockerBuildContainers --no-print-directory EXTRA_DOCKER_BUILD_ARGS="--storage-opt 'size=50GB'" sophistsolutionsinc/stroika-buildvm-windows-vs2k22

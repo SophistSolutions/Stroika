@@ -124,7 +124,7 @@ RUN (%TEMP%\vs_buildtools.exe \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (dir "%TEMP%") \
-    && (del /f /q "%TEMP%\*.log") \
+    && (del /f /q "%TEMP%\*.log" "%TEMP%\*.json" "%TEMP%\*.tmp" "%TEMP%\*.exe") \
     && (echo got here 1) \
     && (wmic logicaldisk get deviceid, freespace, size, description) \
     && (dir "%TEMP%") \
