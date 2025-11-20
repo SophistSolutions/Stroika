@@ -124,8 +124,9 @@ RUN (%TEMP%\vs_buildtools.exe \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (dir "%TEMP%") \
-    && (del /f /s /q "%TEMP%\*.log") \
+    && (del /f /q "%TEMP%\*.log") \
     && (echo got here 1) \
+    && (dir "%TEMP%") \
     && (del /f /s /q "%TEMP%\*.*")
 
 # ### NOTE TO RUN
