@@ -214,7 +214,7 @@
         "cpp_version": "c++20",
         "config_name": "Release",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os ",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
     {
