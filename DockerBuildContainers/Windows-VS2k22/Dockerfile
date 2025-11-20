@@ -123,6 +123,9 @@ RUN (%TEMP%\vs_buildtools.exe \
     %REMOVE_WINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
+    && (dir "%TEMP%") \
+    && (del /f /s /q "%TEMP%\*.log") \
+    && (echo got here 1) \
     && (del /f /s /q "%TEMP%\*.*")
 
 # ### NOTE TO RUN
