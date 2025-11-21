@@ -103,7 +103,52 @@ jobs:
           ls -l "c:/"
           ls -l "d:/"
           ls -l "C:/ProgramData/docker"
-          
+
+      - name: Setup Docker to use D-Drive
+        shell: "bash"
+        run: |
+          df -h
+          uname -a
+          systeminfo
+          echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
+          echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+          # Was running out of space, and doesn't seem to be commandline way to set storage opts, so
+          # add --storage-opts ["size=60GB"] or some such, to this file, and see if it works better, but not needed for now --LGP 2024-02-26
+          echo "C:/ProgramData/Docker/config/daemon.json:" -n ; cat "C:/ProgramData/Docker/config/daemon.json"
+          ls -l "c:/"
+          ls -l "d:/"
+          ls -l "C:/ProgramData/docker"
+
+      - name: Create directory for Docker data on D drive
+        shell: powershell
+        run: mkdir D:\docker
+
+      - name: Configure Docker daemon's data-root
+        run: |
+          $configFile = "C:\ProgramData\Docker\config\daemon.json"
+          # Ensure the config file exists
+          if (-not (Test-Path $configFile)) {
+            New-Item $configFile -ItemType File
+            $config = @{}
+          } else {
+            $config = Get-Content $configFile | ConvertFrom-Json
+          }
+          # Set the data-root property
+          $config."data-root" = "D:\\docker"
+          # Write the updated config back to the file
+          $config | ConvertTo-Json -Depth 4 | Set-Content $configFile
+        shell: powershell
+
+      - name: Restart Docker service to apply changes
+        run: |
+          Stop-Service Docker
+          Start-Service Docker
+        shell: powershell
+
+      - name: Verify the new Docker Root Dir
+        run: docker info | Select-String "Docker Root Dir"
+        shell: powershell
+
       - name: Free up disk space
         shell: "cmd"
         run: |
