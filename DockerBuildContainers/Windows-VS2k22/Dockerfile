@@ -105,6 +105,9 @@ ARG REMOVE_WINSDK=""
 # ARG USE_UniversalBuildTools="--add Microsoft.VisualStudio.Workload.UniversalBuildTools"
 ARG USE_UniversalBuildTools=""
 
+    # --add Microsoft.VisualStudio.Component.VC.ATL \
+    # --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    # --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
 
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
@@ -116,9 +119,6 @@ RUN (%TEMP%\vs_buildtools.exe \
     --add Microsoft.VisualStudio.Component.VC.ASAN \
     --add Microsoft.VisualStudio.Component.VC.CLI.Support \
     --add Microsoft.VisualStudio.Component.VC.CMake.Project \ 
-    --add Microsoft.VisualStudio.Component.VC.ATL \
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
-    --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
     %USE_WINSDK% \
     %REMOVE_WINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
