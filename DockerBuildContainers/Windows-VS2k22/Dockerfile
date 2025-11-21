@@ -105,9 +105,6 @@ ARG REMOVE_WINSDK=""
 # ARG USE_UniversalBuildTools="--add Microsoft.VisualStudio.Workload.UniversalBuildTools"
 ARG USE_UniversalBuildTools=""
 
-    # --add Microsoft.VisualStudio.Component.VC.ATL \
-    # --add Microsoft.VisualStudio.Component.VC.ATLMFC \
-    # --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
 
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
@@ -123,15 +120,7 @@ RUN (%TEMP%\vs_buildtools.exe \
     %REMOVE_WINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
-    && (dir "%TEMP%") \
-    && (del /f /q "%TEMP%\*.log" "%TEMP%\*.json" "%TEMP%\*.tmp" "%TEMP%\*.exe") \
-    && (echo got here 1) \
-    && (wmic logicaldisk get deviceid, freespace, size, description) \
-    && (dir "%TEMP%") \
-    && (time/t) \
-    && (echo "Waiting 10 seconds to workaround issue deleting files which maybe still busy on github actions build of container" && start /wait timeout /t 100 /nobreak) \
-    && (time/t) \
-    && (echo del /f /s /q "%TEMP%\*.*" || echo "ignoring errors on failed delete")
+    && (dir "%TEMP%")
 
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k22
