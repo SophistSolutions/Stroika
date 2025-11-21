@@ -101,6 +101,7 @@ jobs:
           # add --storage-opts ["size=60GB"] or some such, to this file, and see if it works better, but not needed for now --LGP 2024-02-26
           echo "C:/ProgramData/Docker/config/daemon.json:" -n ; cat "C:/ProgramData/Docker/config/daemon.json"
       - name: Free up disk space
+        shell: "cmd"
         run: |
           del /F /Q %TEMP%\*
           rd /S /Q %TEMP%
