@@ -126,6 +126,7 @@ jobs:
       - name: Configure Docker daemon's data-root
         run: |
           $configFile = "C:\ProgramData\Docker\config\daemon.json"
+          $dockerRootDir = "D:\\docker"
           # Ensure the config file exists
           if (-not (Test-Path $configFile)) {
             New-Item $configFile -ItemType File
