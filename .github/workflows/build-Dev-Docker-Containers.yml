@@ -133,8 +133,9 @@ jobs:
           } else {
             $config = Get-Content $configFile | ConvertFrom-Json
           }
-          # Set the data-root property
-          $config."data-root" = "D:\\docker"
+          # Add or update the 'data-root' property using Add-Member
+          # -Force allows updating the property if it already exists
+          $config | Add-Member -MemberType NoteProperty -Name "data-root" -Value $dockerRootDir -Force
           # Write the updated config back to the file
           $config | ConvertTo-Json -Depth 4 | Set-Content $configFile
         shell: powershell
