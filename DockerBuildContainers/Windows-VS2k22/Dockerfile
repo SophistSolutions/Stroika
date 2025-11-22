@@ -108,6 +108,7 @@ ARG USE_UniversalBuildTools=""
 
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
+# RUN  (wmic logicaldisk get deviceid, freespace, size, description)
 RUN (%TEMP%\vs_buildtools.exe \
     --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
     --add Microsoft.VisualStudio.Workload.MSBuildTools  \
@@ -116,12 +117,14 @@ RUN (%TEMP%\vs_buildtools.exe \
     --add Microsoft.VisualStudio.Component.VC.ASAN \
     --add Microsoft.VisualStudio.Component.VC.CLI.Support \
     --add Microsoft.VisualStudio.Component.VC.CMake.Project \ 
+    --add Microsoft.VisualStudio.Component.VC.ATL \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
+    --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
     %USE_WINSDK% \
     %REMOVE_WINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
-    || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
-    && (dir "%TEMP%")
-
+    || IF "%ERRORLEVEL%"=="3010" EXIT 0)
+    
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k22
 # ###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
