@@ -140,6 +140,10 @@ jobs:
           $config | ConvertTo-Json -Depth 4 | Set-Content $configFile
         shell: powershell
 
+      - name: Print daemon.json content for debugging
+        run: Get-Content -Path C:\ProgramData\Docker\config\daemon.json
+        shell: powershell
+      
       - name: Restart Docker service to apply changes
         run: |
           Stop-Service Docker
