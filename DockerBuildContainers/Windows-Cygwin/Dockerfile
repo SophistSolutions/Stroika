@@ -28,7 +28,7 @@ ARG CHOCO_VERSION_ARG=""
 
 # install cygwin
 RUN echo "GOT THIS FAR1"
-RUN choco install -y cygwin 
+RUN choco install -y --execution-timeout=600000 cygwin 
 RUN echo "GOT THIS FAR2"
 RUN choco install -y cyg-get
 RUN echo "GOT THIS FAR3"
