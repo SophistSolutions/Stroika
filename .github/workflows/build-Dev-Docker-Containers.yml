@@ -140,7 +140,6 @@ jobs:
           del /F /Q %TEMP%\*
           rd /S /Q %TEMP%
           docker system prune -af
-          choco clean
       - name: Build Windows Container Images (sophistsolutionsinc/stroika-buildvm-windows-vs2k22)
         # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
         run: |
