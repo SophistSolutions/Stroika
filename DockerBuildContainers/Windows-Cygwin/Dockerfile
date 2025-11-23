@@ -13,7 +13,6 @@ FROM ${BASE_IMAGE}
 # install choco (from https://chocolatey.org/install#completely-offline-install)
 SHELL ["powershell"]
 
-RUN echo "GOT THIS FAR1"
 
 RUN \
     Set-ExecutionPolicy Bypass -Scope Process -Force; \
@@ -21,7 +20,6 @@ RUN \
     iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
 
-RUN echo "GOT THIS FAR2"
 
 # The default version of CHOCO CYGWIN fails to install as of 2024-03-08
 # Adding specific version to install worked around the problem (no longer issue as of 2024-05-23, but keep around note for a bit)
@@ -29,7 +27,11 @@ RUN echo "GOT THIS FAR2"
 ARG CHOCO_VERSION_ARG=""
 
 # install cygwin
-RUN choco install -y cygwin cyg-get
+RUN echo "GOT THIS FAR1"
+RUN choco install -y cygwin 
+RUN echo "GOT THIS FAR2"
+RUN choco install -y cyg-get
+RUN echo "GOT THIS FAR3"
 
 # Add cygwin to the path
 RUN  \
