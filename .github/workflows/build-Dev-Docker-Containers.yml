@@ -121,10 +121,10 @@ jobs:
           $config | ConvertTo-Json -Depth 4 | Set-Content $configFile
           # Print to verify updated properly
           Get-Content -Path $configFile
-          #
+          # Restart Docker to apply changes
           Stop-Service Docker
           Start-Service Docker
-          #Verify the new Docker Root Dir
+          # Verify the new Docker Root Dir
           docker info | Select-String "Docker Root Dir"
           docker info --format '{{.DockerRootDir}}'
           docker system df -v
@@ -138,8 +138,9 @@ jobs:
       - name: Build Windows Container Images (sophistsolutionsinc/stroika-buildvm-windows-vs2k22)
         # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
         run: |
-          # just to avoid running out of space add WINDOWS_BASE_IMAGE ltsc2022
-          make --directory DockerBuildContainers --no-print-directory WINDOWS_BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+          # # just to avoid running out of space add WINDOWS_BASE_IMAGE ltsc2022
+          # make --directory DockerBuildContainers --no-print-directory WINDOWS_BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+          make --directory DockerBuildContainers --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-vs2k22
       - name: "Build Windows Container Images (${{ matrix.container_images }})"
         run: |
           make --directory DockerBuildContainers --no-print-directory IMAGES="${{ matrix.container_images }}" WINDOWS_BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 build-images
