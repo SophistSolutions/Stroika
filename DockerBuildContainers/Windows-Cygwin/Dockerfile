@@ -31,11 +31,11 @@ ARG CHOCO_VERSION_ARG=""
 ENV \
     CYGWIN=winsymlinks:native
 
-    
+
 ### revert these hacks = once debugged
 # install cygwin
 RUN echo "GOT THIS FAR1"
-RUN choco install -y --execution-timeout=2700 cygwin 
+RUN choco install -y --confirm --execution-timeout=2700 cygwin || type C:\ProgramData\chocolatey\logs\chocolatey.log
 RUN echo "GOT THIS FAR2"
 RUN choco install -y cyg-get
 RUN echo "GOT THIS FAR3"
