@@ -105,9 +105,8 @@ jobs:
       - name: Setup Docker to use ${{env.USE_DOCKER_ROOT}} as data-root
         shell: powershell
         run: |
-          mkdir D:\docker
+          mkdir ${{env.USE_DOCKER_ROOT}}
           $configFile = "C:\ProgramData\Docker\config\daemon.json"
-          $dockerRootDir = "D:\\docker"
           # Ensure the config file exists
           if (-not (Test-Path $configFile)) {
             New-Item $configFile -ItemType File
@@ -117,19 +116,15 @@ jobs:
           }
           # Add or update the 'data-root' property using Add-Member
           # -Force allows updating the property if it already exists
-          $config | Add-Member -MemberType NoteProperty -Name "data-root" -Value $dockerRootDir -Force
+          $config | Add-Member -MemberType NoteProperty -Name "data-root" -Value "${{env.USE_DOCKER_ROOT}}" -Force
           # Write the updated config back to the file
           $config | ConvertTo-Json -Depth 4 | Set-Content $configFile
           # Print to verify updated properly
-          Get-Content -Path C:\ProgramData\Docker\config\daemon.json
-      - name: Restart Docker service to apply changes
-        shell: powershell
-        run: |
+          Get-Content -Path $configFile
+          #
           Stop-Service Docker
           Start-Service Docker
-      - name: Verify the new Docker Root Dir
-        shell: powershell
-        run: |
+          #Verify the new Docker Root Dir
           docker info | Select-String "Docker Root Dir"
           docker info --format '{{.DockerRootDir}}'
           docker system df -v
