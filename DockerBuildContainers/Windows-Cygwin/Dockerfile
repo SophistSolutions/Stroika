@@ -26,16 +26,19 @@ RUN \
 # ARG CHOCO_VERSION_ARG="--version 3.5.1"
 ARG CHOCO_VERSION_ARG=""
 
+
+
+ENV \
+    CYGWIN=winsymlinks:native
+
+    
+### revert these hacks = once debugged
 # install cygwin
 RUN echo "GOT THIS FAR1"
 RUN choco install -y --execution-timeout=2700 cygwin 
 RUN echo "GOT THIS FAR2"
 RUN choco install -y cyg-get
 RUN echo "GOT THIS FAR3"
-
-
-ENV \
-    CYGWIN=winsymlinks:native
 
 
 # Add cygwin to the path
