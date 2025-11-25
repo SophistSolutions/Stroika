@@ -122,12 +122,13 @@ jobs:
           # Print to verify updated properly
           Get-Content -Path $configFile
           # Restart Docker to apply changes
+          echo "Restarting Docker Service..."
           Stop-Service Docker
           Start-Service Docker
           # Verify the new Docker Root Dir
-          docker info | Select-String "Docker Root Dir"
-          docker info --format '{{.DockerRootDir}}'
-          docker system df -v
+          echo "docker info:"
+          # docker info | Select-String "Docker Root Dir"
+          echo "docker info:"
           docker info
       - name: Free up disk space
         shell: "cmd"
