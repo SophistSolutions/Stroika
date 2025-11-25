@@ -28,8 +28,8 @@ ARG CHOCO_VERSION_ARG=""
 
 
 
-ENV \
-    CYGWIN=winsymlinks:native
+# ENV \
+#     CYGWIN=winsymlinks:native
 
 
 ### revert these hacks = once debugged
