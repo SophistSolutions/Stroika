@@ -42,7 +42,7 @@ RUN echo "GOT THIS FAR1"
 RUN icacls 'C:\ProgramData\chocolatey' /grant 'Everyone:(OI)(CI)F' /T
 RUN echo "GOT THIS FAR1.1"
 
-RUN powershell try { choco install -y --confirm cygwin } catch { type C:\ProgramData\chocolatey\logs\chocolatey.log }
+RUN try { choco install -y --confirm cygwin } catch { type C:\ProgramData\chocolatey\logs\chocolatey.log }
 
 RUN echo "GOT THIS FAR1.5"
 
