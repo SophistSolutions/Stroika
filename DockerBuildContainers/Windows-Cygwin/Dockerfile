@@ -37,7 +37,7 @@ ARG CHOCO_VERSION_ARG=""
 RUN echo "GOT THIS FAR1"
 
 # Add this before the choco install step
-RUN powershell -Command "Start-Process powershell -Verb runAs -ArgumentList 'icacls \"C:\ProgramData\chocolatey\" /grant \'Everyone:\(OI\)\(CI\)F\' /T' -Wait"
+RUN powershell -Command "Start-Process powershell -Verb runAs -ArgumentList 'icacls \"C:\ProgramData\chocolatey\" /grant \"Everyone:(OI)(CI)F\" /T' -Wait"
 RUN echo "GOT THIS FAR1.1"
 
 RUN powershell try { choco install -y --confirm cygwin } catch { type C:\ProgramData\chocolatey\logs\chocolatey.log }
