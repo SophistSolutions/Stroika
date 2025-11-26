@@ -3,28 +3,14 @@ ARG BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22
 
 FROM ${BASE_IMAGE}
 
-# Sometimes we get sporadic failures building, and I THINK this is due to running out of disk space in builder, so
-# adding this to the docker engine config may help:
-# "storage-opts": [
-# "size=300GB"
-# ]
-# https://unrealcontainers.com/docs/environments/local-windows-10
-
 # install choco (from https://chocolatey.org/install#completely-offline-install)
 SHELL ["powershell"]
-
 
 RUN \
     Set-ExecutionPolicy Bypass -Scope Process -Force; \
     $ErrorActionPreference = 'Stop'; \
     iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-
-
-# The default version of CHOCO CYGWIN fails to install as of 2024-03-08
-# Adding specific version to install worked around the problem (no longer issue as of 2024-05-23, but keep around note for a bit)
-# ARG CHOCO_VERSION_ARG="--version 3.5.1"
-ARG CHOCO_VERSION_ARG=""
 
 # Since 2025-11-25 apx - this seems to be needed to get choco to install without errors about permissions
 RUN icacls 'C:\ProgramData\chocolatey' /grant 'Everyone:(OI)(CI)F' /T
@@ -36,7 +22,6 @@ RUN \
     catch {\
         type C:\ProgramData\chocolatey\logs\chocolatey.log\
     }
-
 
 # Add cygwin to the path
 RUN  \

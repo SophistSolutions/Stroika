@@ -11,16 +11,9 @@
 #
 # ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
 # ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022                          ## ltsc2022 works fine, but use latest  
-ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025                            
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2025                            ## now works but requres runs_on: windows-2025 in github actions
 
 FROM ${BASE_IMAGE}
-
-# Sometimes we get sporadic failures building, and I THINK this is due to running out of disk space in builder, so
-# adding this to the docker engine config may help:
-# "storage-opts": [
-# "size=300GB"
-# ]
-# https://unrealcontainers.com/docs/environments/local-windows-10
 
 
 #
