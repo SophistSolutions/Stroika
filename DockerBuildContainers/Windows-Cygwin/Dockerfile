@@ -26,36 +26,16 @@ RUN \
 # ARG CHOCO_VERSION_ARG="--version 3.5.1"
 ARG CHOCO_VERSION_ARG=""
 
-
-
-# ENV \
-#     CYGWIN=winsymlinks:native
-
-
-### revert these hacks = once debugged
-# install cygwin
-RUN echo "GOT THIS FAR1"
-
-# Add this before the choco install step
-# RUN powershell -Command "Start-Process powershell -Verb runAs -ArgumentList 'icacls \"C:\ProgramData\chocolatey\" /grant \\\"Everyone:(OI)(CI)F\\\" /T' -Wait"
-# RUN powershell -Command "Start-Process powershell -Verb runAs -ArgumentList \"icacls 'C:\ProgramData\chocolatey' /grant 'Everyone:(OI)(CI)F' /T\" -Wait"
+# Since 2025-11-25 apx - this seems to be needed to get choco to install without errors about permissions
 RUN icacls 'C:\ProgramData\chocolatey' /grant 'Everyone:(OI)(CI)F' /T
-RUN echo "GOT THIS FAR1.1"
-
-RUN try { choco install -y --confirm cygwin } catch { type C:\ProgramData\chocolatey\logs\chocolatey.log }
-
-RUN echo "GOT THIS FAR1.5"
 
 RUN \
     try { \
-        choco install -y --confirm --execution-timeout=2700 cygwin \
-     }\
-     catch {\
-         type C:\ProgramData\chocolatey\logs\chocolatey.log\
-     }
-RUN echo "GOT THIS FAR2"
-RUN choco install -y cyg-get
-RUN echo "GOT THIS FAR3"
+        choco install -y --confirm cygwin cyg-get \
+    }\
+    catch {\
+        type C:\ProgramData\chocolatey\logs\chocolatey.log\
+    }
 
 
 # Add cygwin to the path
