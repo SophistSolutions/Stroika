@@ -283,7 +283,7 @@
     {
         "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-cygwin-x86-Debug",
-        "runs_on": "windows-2022",
+        "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22",
         "config_name": "Debug",
         "extra_config_args": "--arch x86 --apply-default-debug-flags --trace2file enable",
@@ -292,7 +292,7 @@
     {
         "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-cygwin-x86-Release",
-        "runs_on": "windows-2022",
+        "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22",
         "config_name": "Release",
         "extra_config_args": "--arch x86 --apply-default-release-flags --trace2file enable",
@@ -301,7 +301,7 @@
     {
         "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-cygwin-x86_64-Release",
-        "runs_on": "windows-2022",
+        "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22",
         "config_name": "Release",
         "extra_config_args": "--arch x86_64 --apply-default-release-flags --trace2file enable",
@@ -310,7 +310,7 @@
     {
         "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-msys-x86-Debug",
-        "runs_on": "windows-2022",
+        "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22",
         "config_name": "Debug",
         "extra_config_args": "--arch x86 --apply-default-debug-flags --trace2file enable",
@@ -319,7 +319,7 @@
     {
         "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-msys-x86-Release",
-        "runs_on": "windows-2022",
+        "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22",
         "config_name": "Release",
         "extra_config_args": "--arch x86 --apply-default-release-flags --trace2file enable",
@@ -328,7 +328,7 @@
     {
         "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-msys-x86_64-Release",
-        "runs_on": "windows-2022",
+        "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22",
         "config_name": "Release",
         "extra_config_args": "--arch x86_64 --apply-default-release-flags --trace2file enable",
@@ -337,7 +337,7 @@
     {
         "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-msys-x86_64-All3rdParty-Debug",
-        "runs_on": "windows-2022",
+        "runs_on": "windows-2025",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22",
         "config_name": "Debug",
         "extra_config_args": "--arch x86_64 --apply-default-debug-flags --trace2file enable --all-available-third-party-components",
