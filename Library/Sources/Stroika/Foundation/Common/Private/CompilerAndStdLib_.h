@@ -414,7 +414,10 @@ In file included from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:887,
  */
 #ifndef qCompilerAndStdLib_AssumeWarningSpamming_Buggy
 
-#if defined(__clang__)
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_AssumeWarningSpamming_Buggy                                                                                     \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 17))
+#elif defined(__clang__) && !defined(__APPLE__)
 // also in clang++-20
 #define qCompilerAndStdLib_AssumeWarningSpamming_Buggy                                                                                     \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 19 or __clang_major__ == 20))
