@@ -139,7 +139,8 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false)",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "v3-Release"
     },
     {
