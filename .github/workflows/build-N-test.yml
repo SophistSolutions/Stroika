@@ -155,6 +155,7 @@ jobs:
         if: always()
         run: |
           make --directory=ThirdPartyComponents --silent clean
+          echo "After cleanup:" ; df -h
       - name: Make libraries and tools
         run: |
           make libraries tools
