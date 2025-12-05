@@ -100,29 +100,13 @@ jobs:
       - name: Save space (Before Start of Builds)
         if: always()
         run: |
+          echo "Before cleanup:" ; df -h
+          apt-get remove clang-*-doc clang-*-examples || true
+          apt-get remove manpages* || true
           apt-get clean || true
           npm cache clean --force || true
           rm -rf Archive License.txt
-          df -h
-
-      - name: Free Disk Space (Ubuntu)
-        uses: insightsengineering/disk-space-reclaimer@v1
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tools-cache: false
-
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true
-          # docker-images: true
-          # tools-cache: true
-
-  
+          echo "After cleanup:" ; df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
