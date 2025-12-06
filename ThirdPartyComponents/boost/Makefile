@@ -128,7 +128,7 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@rm -rf =$(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/boost/
+	@rm -rf $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/boost/
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 endif
