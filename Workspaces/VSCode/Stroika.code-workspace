@@ -5,12 +5,14 @@
 		}
 	],
 	"settings": {
-		"files.exclude": {
-			"**/.o": true,
-			"**/.obj": true,
+		"C_Cpp.files.exclude": {
 			"Archive/**": true,
 			"IntermediateFiles/**": true,
 			"ThirdPartyComponents/*/CURRENT/**": true
+		},
+		"files.exclude": {
+			"**/.o": true,
+			"**/.obj": true,
 		},
 		"files.associations": {
 			"system_error": "cpp",
@@ -162,6 +164,5 @@
 			"**/target": true
 		},
 		"dotnet.defaultSolution": "Workspaces/VisualStudio.Net-2022/Stroika.sln"
-
 	}
 }
