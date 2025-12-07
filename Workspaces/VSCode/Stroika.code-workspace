@@ -7,7 +7,10 @@
 	"settings": {
 		"files.exclude": {
 			"**/.o": true,
-			"**/.obj": true
+			"**/.obj": true,
+			"Archive/**": true,
+			"IntermediateFiles/**": true,
+			"ThirdPartyComponents/*/CURRENT/**": true
 		},
 		"files.associations": {
 			"system_error": "cpp",
