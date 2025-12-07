@@ -204,7 +204,7 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false); ALSO needed --boost/mongo-cxx-driver/libcurl/lzma no cuz -Os wasn't enuf",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no --mongo-cxx-driver no --LibCurl no --lzma no",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no --mongo-cxx-driver no --LibCurl no --lzma no --libxml2 no",
         "run_on_branch": "always"
     },
     {
