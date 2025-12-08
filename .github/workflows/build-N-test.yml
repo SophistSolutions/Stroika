@@ -98,6 +98,7 @@ jobs:
           grep MemTotal /proc/meminfo
           df -h
       - name: Save space (Before Start of Builds)
+        shell: "bash"
         if: always()
         env:
           APT_REMOVE_JSON_ARRAY_STRING: ${{ matrix.extra_apt_remove_packages }}
@@ -111,7 +112,7 @@ jobs:
           rm -rf Archive License.txt
 
           echo "***NEW CODE***"
-          echo "extra_apt_remove_packages=${APT_REMOVE_JSON_ARRAY_STRING}"
+          echo "extra_apt_remove_packages=\"${APT_REMOVE_JSON_ARRAY_STRING}"\"
           if [[ "$APT_REMOVE_JSON_ARRAY_STRING" == "" ]] ; then
             echo "The APT_REMOVE_JSON_ARRAY_STRING is empty."
           else
