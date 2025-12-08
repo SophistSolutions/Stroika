@@ -101,6 +101,7 @@ jobs:
         shell: "bash"
         if: always()
         env:
+          DEBIAN_FRONTEND: noninteractive
           APT_REMOVE_JSON_ARRAY_STRING: ${{ toJSON(matrix.extra_apt_remove_packages) }}
         run: |
           echo "Before cleanup:" ; df -h
