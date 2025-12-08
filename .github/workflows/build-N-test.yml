@@ -101,7 +101,7 @@ jobs:
         shell: "bash"
         if: always()
         env:
-          APT_REMOVE_JSON_ARRAY_STRING: ${{ matrix.extra_apt_remove_packages }}
+          APT_REMOVE_JSON_ARRAY_STRING: ${{ toJSON(matrix.extra_apt_remove_packages) }}
         run: |
           echo "Before cleanup:" ; df -h
           apt-get remove -y clang-*-doc clang-*-examples || true
