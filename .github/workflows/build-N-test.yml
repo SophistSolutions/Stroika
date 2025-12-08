@@ -100,7 +100,7 @@ jobs:
       - name: Save space (Before Start of Builds)
         if: always()
         env:
-          JSON_ARRAY_STRING: ${{ matrix.extra_apt_remove_packages }}
+          APT_REMOVE_JSON_ARRAY_STRING: ${{ matrix.extra_apt_remove_packages }}
         run: |
           echo "Before cleanup:" ; df -h
           apt-get remove -y clang-*-doc clang-*-examples || true
@@ -111,15 +111,16 @@ jobs:
           rm -rf Archive License.txt
 
           echo "***NEW CODE***"
-          echo "extra_apt_remove_packages=${JSON_ARRAY_STRING}"
-          if [[ "$JSON_ARRAY_STRING" == "" ]]; then
-            echo "The string is empty."
+          echo "extra_apt_remove_packages=${APT_REMOVE_JSON_ARRAY_STRING}"
+          if [[ "$APT_REMOVE_JSON_ARRAY_STRING" == "" ]] ; then
+            echo "The APT_REMOVE_JSON_ARRAY_STRING is empty."
           else
-            readarray -t extra_apt_remove_packages < <(echo "${JSON_ARRAY_STRING}" | jq -r '.[]')
+            readarray -t extra_apt_remove_packages < <(echo "$APT_REMOVE_JSON_ARRAY_STRING" | jq -r '.[]')
             for package in "${extra_apt_remove_packages[@]}"; do
               echo "DO REMOVE package: $package"
+              echo will do apt-get remove -y "$package" || true
+            done
           fi
-
           echo "After cleanup:" ; df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
