@@ -112,9 +112,13 @@ jobs:
 
           echo "***NEW CODE***"
           echo "extra_apt_remove_packages=${JSON_ARRAY_STRING}"
-          readarray -t extra_apt_remove_packages < <(echo "${JSON_ARRAY_STRING}" | jq -r '.[]')
-          for package in "${extra_apt_remove_packages[@]}"; do
-            echo "DO REMOVE package: $package"
+          if [[ -n "$JSON_ARRAY_STRING" ]]; then
+            readarray -t extra_apt_remove_packages < <(echo "${JSON_ARRAY_STRING}" | jq -r '.[]')
+            for package in "${extra_apt_remove_packages[@]}"; do
+              echo "DO REMOVE package: $package"
+          else
+            echo "The string is empty."
+          fi
 
           echo "After cleanup:" ; df -h
       - name: Configure ${{ matrix.config_name }}
