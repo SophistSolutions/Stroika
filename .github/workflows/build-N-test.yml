@@ -111,17 +111,18 @@ jobs:
           npm cache clean --force || true
           rm -rf Archive License.txt
 
-          echo "***NEW CODE***"
           echo "extra_apt_remove_packages=\"${APT_REMOVE_JSON_ARRAY_STRING}"\"
           if [[ "$APT_REMOVE_JSON_ARRAY_STRING" == "null" ]] ; then
-            echo "The APT_REMOVE_JSON_ARRAY_STRING is empty."
+            echo "matrix.extra_apt_remove_packages is empty."
           else
             readarray -t extra_apt_remove_packages < <(echo "$APT_REMOVE_JSON_ARRAY_STRING" | jq -r '.[]')
             for package in "${extra_apt_remove_packages[@]}"; do
-              echo "DO REMOVE package: $package"
-              echo will do apt-get remove -y "$package" || true
+              echo "apt-get remove -y $package"
+              apt-get remove -y "$package" || true
             done
+            apt-get autoremove -y || true
           fi
+
           echo "After cleanup:" ; df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
