@@ -62,12 +62,12 @@ namespace Stroika::Foundation::Memory {
      *
      *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
      *
-     *  For easiser use, probably the best approach is to @see UseBlockAllocationIfAppropriate
+     *  For easier use, probably the best approach is to @see UseBlockAllocationIfAppropriate
      *
-     *  \note   Design Note: alignas / alignemnt of allocated values
+     *  \note   Design Note: alignas / alignment of allocated values
      *          http://stroika-bugs.sophists.com/browse/STK-511
-     *          We use sizeof(). We always allocate large blocks which (I htink are always) aligned to the largest
-     *          alignemnt required by the system, and we that as an array.
+     *          We use sizeof(). We always allocate large blocks which (I think are always) aligned to the largest
+     *          alignment required by the system, and we that as an array.
      *
      *          But I think since sizeof(T) is the offset from one element of an array[T] - our allocations will always be aligned
      *          if the first big block is aligned.
