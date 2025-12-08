@@ -111,7 +111,7 @@ jobs:
           rm -rf Archive License.txt
 
           echo "***NEW CODE***"
-          echo "extra_apt_remove_packages=${{ matrix.extra_apt_remove_packages }}"
+          echo "extra_apt_remove_packages=${JSON_ARRAY_STRING}"
           readarray -t extra_apt_remove_packages < <(echo "${JSON_ARRAY_STRING}" | jq -r '.[]')
           for package in "${extra_apt_remove_packages[@]}"; do
             echo "DO REMOVE package: $package"
@@ -165,6 +165,8 @@ jobs:
         run: |
           make --directory=ThirdPartyComponents --silent clean
           # sometimes its useful to leave this around so when debugging you can still see source lines in debugger, but takes space and running out on github actions
+          du -hs ThirdPartyComponents/*/CURRENT || true
+          rm -rf ThirdPartyComponents/*/CURRENT
           echo "After cleanup:" ; df -h
       - name: Make libraries and tools
         run: |
