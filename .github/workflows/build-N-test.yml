@@ -202,7 +202,6 @@ jobs:
           make --directory Tests clobber
           echo ""*************After cleanups"*************:"
           df -h
-          du -hs Builds/*/* IntermediateFiles/*/*
       - name: Make samples
         run: |
           make samples
