@@ -113,7 +113,7 @@ jobs:
 
           echo "***NEW CODE***"
           echo "extra_apt_remove_packages=\"${APT_REMOVE_JSON_ARRAY_STRING}"\"
-          if [[ "$APT_REMOVE_JSON_ARRAY_STRING" == "" ]] ; then
+          if [[ "$APT_REMOVE_JSON_ARRAY_STRING" == "null" ]] ; then
             echo "The APT_REMOVE_JSON_ARRAY_STRING is empty."
           else
             readarray -t extra_apt_remove_packages < <(echo "$APT_REMOVE_JSON_ARRAY_STRING" | jq -r '.[]')
