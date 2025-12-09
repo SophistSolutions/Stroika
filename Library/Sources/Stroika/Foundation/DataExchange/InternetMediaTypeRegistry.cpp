@@ -639,11 +639,11 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             }
             catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("failure ignored");
+                DbgTrace ("failure ignored"_f);
 #endif
             }
 #else
-            DbgTrace ("/usr/share/mime/ ignored cuz no xml reader - not compiled with Xerces");
+            DbgTrace ("/usr/share/mime/ ignored cuz no xml reader - not compiled with libxml2 or Xerces"_f);
 #endif
             return nullopt;
         }
