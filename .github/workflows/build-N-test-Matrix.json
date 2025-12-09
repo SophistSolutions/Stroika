@@ -204,11 +204,10 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false); extra_apt_remove_packages also seems to help; ?? maybe more? ALSO needed --boost/mongo-cxx-driver/libcurl/lzma/libxml2/xerces no cuz -Os wasn't enuf",
-        "#2":"DEBUG WHY --boost no needed - not running out of space",
         "extra_apt_remove_packages": ["g++-14", "clang++-18", "clang++-19", "clang++-20"],
-        "#####extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no --mongo-cxx-driver no",
-        "#######extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "#2":"DEBUG WHY --boost no needed - not running out of space",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
+        "#extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "always"
     },
     {
