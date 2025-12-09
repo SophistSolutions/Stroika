@@ -19,7 +19,7 @@
  *
  *  @todo   Consider doing GetMem_Util_ code outside of the context of the lock-guard, and if
  *          we get multiple results, just patch them into the linked list. That way in case of
- *          multithreading (when we're paging in freepool) - we'll do less busy waiting. But, this would
+ *          multithreading (when we're paging in free pool) - we'll do less busy waiting. But, this would
  *          be at the cost of possibly allocating too many blocks when two threads both run out of memory
  *          in the same pool at the same time - though that could be undone).
  *
@@ -35,7 +35,7 @@
  *          optimization points!
  *
  *          There is now a C++ semi-standard for this, and working implementations (I haven't tried). But my current
- *          lockfree approach maybe better.
+ *          lock-free approach maybe better.
  *
  *  @todo   Maybe use TRAITS on BlockAllocator to define some stuff
  *          about strategies (options) - like how to share pools?
@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Memory {
      *
      *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
      *
-     *  For easier use, probably the best approach is to @see UseBlockAllocationIfAppropriate
+     *  For easier use, probably the best approach is to @see UseBlockAllocationIfAppropriate (this class ignores qStroika_Foundation_Memory_PreferBlockAllocation)
      *
      *  \note   Design Note: alignas / alignment of allocated values
      *          http://stroika-bugs.sophists.com/browse/STK-511
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  \pre (n == 1)
          *
-         *  \note - though this can throw due to memory exhaustion, it will not throw Thread::InterupptionException - it is not a cancelation point.
+         *  \note - though this can throw due to memory exhaustion, it will not throw Thread::InterruptionException - it is not a cancelation point.
          */
         nonvirtual [[nodiscard]] T* allocate (std::size_t n);
 
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-          * Return to the free store all deallocated blocks whcih can be returned.
+          * Return to the free store all deallocated blocks which can be returned.
           *
           * This takes O (N), where N is the total number of extant operator new allocations for this size.
           *
