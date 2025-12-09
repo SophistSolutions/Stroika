@@ -28,6 +28,9 @@ else
 export ALL_INCLUDES_BUILDING_DOCUMENTATION?=1
 endif
 
+
+export QUICK_BUILD?=1
+
 .DEFAULT_GOAL := help
 
 #Handy shortcut
@@ -87,7 +90,7 @@ help:
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 	@$(ECHO) "    WRITE_PREPROCESSOR_OUTPUT=1  -    Write next to each object file a corresponding .i (preprocessor output) file; useful to reproduce and narrow compiler bugs (for report especially)"
 	@$(ECHO) "    MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make"
-	@$(ECHO) "    QUICK_BUILD=1                -    Defaults=0, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; may skip detecting changes in libraries etc; used for some CI testing)"
+	@$(ECHO) "    QUICK_BUILD=1                -    Defaults=1, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; may skip detecting changes in libraries etc; used for some CI testing)"
 	@$(ECHO) "    TEST_FAILURES_CAUSE_FAILED_MAKE=0"
 	@$(ECHO) "                                      only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)"
 
@@ -187,7 +190,7 @@ else
 ifeq ($(QUICK_BUILD), 1)
 libraries:
 	@#See if files already there, and if so skip all this, and else do non-quick build
-	@if [[ -f Builds/$(CONFIGURATION)/Stroika-Foundation${LIB_SUFFIX} && -f Builds/$(CONFIGURATION)/Stroika-Frameworks${LIB_SUFFIX} ]]; then \
+	@if [[ -f $(StroikaFoundationLib) && -f $(StroikaFrameworksLib) ]]; then \
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika-Foundation and Stroika-Frameworks libraries exist and QUICK_BUILD=1"; \
 	else\
 		$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION); \
