@@ -34,16 +34,19 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y jq; \
     apt-get -qq install -y git; \
     apt-get -qq install -y xxd; \
-    apt-get -qq install -y python3;
+    apt-get -qq install -y python3; \
+    apt-get -qq clean -y;
 
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
-RUN apt-get -qq install -y g++
+RUN apt-get -qq install -y g++; \
+    apt-get -qq clean -y;
 
 # # Used for Samples/HTMLUI (not needed - autodetected) - disabled so we have some configs tested where not installed
 # RUN apt-get install -y nodejs ; npm i -g npm @quasar/cli
 
 #Only needed to use sanitizer builds
-RUN apt-get -qq install -y libasan6 libubsan1
+RUN apt-get -qq install -y libasan6 libubsan1; \
+    apt-get -qq clean -y;
 
 # echo on bash startup to read md file so more obvious how to get started
 COPY Shared-Files/Getting-Started-With-Stroika.md ./

@@ -10,7 +10,8 @@ RUN apt-get -qq install -y locales && locale-gen en_US en_US.UTF-8
 RUN apt-get -qq install -y lsb-release
 
 #install the latest (C++20 compat) g++ compilers
-RUN apt-get -qq install -y g++-14 g++-15
+RUN apt-get -qq install -y g++-14 g++-15; \
+    apt-get -qq clean -y;
 
 # For reasons which elude me, installing libc++-N removes all the other
 # https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
@@ -19,16 +20,22 @@ RUN apt-get -qq install -y g++-14 g++-15
 #and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
 RUN apt-get update  # unclear why update needed but container build fails without
 # RUN apt-get -qq install -y clang++-17 # COULD test but tested elsewhere and run out of space on github actions
-RUN apt-get -qq install -y clang++-18
-RUN apt-get -qq install -y clang++-19
-RUN apt-get -qq install -y clang++-20 && apt-get install -y libc++-20-dev libc++abi-20-dev
+RUN apt-get -qq install -y clang++-18; \
+    apt-get -qq clean -y;
+RUN apt-get -qq install -y clang++-19; \
+    apt-get -qq clean -y;
+RUN apt-get -qq install -y clang++-20 && apt-get install -y libc++-20-dev libc++abi-20-dev; \
+    apt-get -qq clean -y;
 
 #Only needed to run with valgrind regtests
-RUN apt-get -qq install -y valgrind
+RUN apt-get -qq install -y valgrind; \
+    apt-get -qq clean -y;
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get -qq install -y g++-14-arm-linux-gnueabihf iputils-ping
+RUN apt-get -qq install -y g++-14-arm-linux-gnueabihf iputils-ping; \
+    apt-get -qq clean -y;
 
 # Used for Samples/HTMLUI (not needed - autodetected)
-RUN apt-get update; apt-get install -y nodejs npm; npm i -g npm @quasar/cli
+RUN apt-get update; apt-get install -y nodejs npm; npm i -g npm @quasar/cli; \
+    apt-get -qq clean -y;
 

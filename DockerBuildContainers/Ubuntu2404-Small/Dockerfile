@@ -18,7 +18,8 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #    E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
 #
 # --LGP 2024-10-16
-RUN apt-get update && apt-get -qq install -y build-essential
+RUN apt-get update && apt-get -qq install -y build-essential; \
+    apt-get -qq clean -y;
 
 
 #
@@ -45,14 +46,17 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y jq; \
     apt-get -qq install -y git; \
     apt-get -qq install -y xxd; \
-    apt-get -qq install -y python3;
+    apt-get -qq install -y python3; \
+    apt-get -qq clean -y;
     
 
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
-RUN apt-get -qq install -y g++
+RUN apt-get -qq install -y g++; \
+    apt-get -qq clean -y;
 
 #Only needed to use sanitizer builds
-RUN apt-get -qq install -y libasan5 libasan6 libubsan1
+RUN apt-get -qq install -y libasan5 libasan6 libubsan1; \
+    apt-get -qq clean -y;
 
 # echo on bash startup to read md file so more obvious how to get started
 COPY Shared-Files/Getting-Started-With-Stroika.md ./
