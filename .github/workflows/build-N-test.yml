@@ -239,9 +239,9 @@ jobs:
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
           COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
           mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/"
-          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
-          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
-          cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/WIX-Installer-Build-Output.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
+          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/*-Build-Output.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
       - name: Archive Samples Results
         uses: actions/upload-artifact@v4
         with:
