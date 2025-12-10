@@ -97,6 +97,25 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
+      - name: Do to insufficient disk space error on ubuntu-latest github actions, use smaller initial base container and add stuff needed
+        shell: "bash"
+        if: always()
+        env:
+          DEBIAN_FRONTEND: noninteractive
+          APT_ADD_JSON_ARRAY_STRING: ${{ toJSON(matrix.extra_apt_add_packages) }}
+        run: |
+            echo "extra_apt_add_packages=\"${APT_ADD_JSON_ARRAY_STRING}"\"
+            if [[ "$APT_ADD_JSON_ARRAY_STRING" == "null" ]] ; then
+              echo "matrix.extra_apt_add_packages is empty."
+            else
+              readarray -t extra_apt_add_packages < <(echo "$APT_ADD_JSON_ARRAY_STRING" | jq -r '.[]')
+              for package in "${extra_apt_add_packages[@]}"; do
+                echo "apt-get install -qq -y $package"
+                apt-get install -qq -y "$package" || true
+              done
+              apt-get autoremove -y || true
+            fi
+            apt clean || true
       - name: Save space (Before Start of Builds)
         shell: "bash"
         if: always()
