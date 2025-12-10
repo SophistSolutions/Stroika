@@ -204,10 +204,10 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "#": "try avoid runs out of disk space (-Os, and debug symbols false); extra_apt_remove_packages also seems to help; ?? maybe more? ALSO needed --boost/mongo-cxx-driver/libcurl/lzma/libxml2/xerces no cuz -Os wasn't enuf",
-        "extra_apt_remove_packages": ["clang-18", "clang-19", "clang-20", "valgrind", "g++-14-arm-linux-gnueabihf"],
-        "#2":"DEBUG WHY --boost no needed - not running out of space (something about trying to use clang++-17 to build???? bootstrap)",
-        "###extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
+        "#2":"DEBUG WHY --boost no needed - not running out of space (something about trying to use clang++-17 to build???? bootstrap) - cuz layers immutable so remove doesnt help!",
+        "extra_apt_remove_packages": [],
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
+        "###extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os",
         "run_on_branch": "always"
     },
     {
