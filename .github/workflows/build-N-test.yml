@@ -238,7 +238,7 @@ jobs:
           (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
           COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
-          echo "DEBUGGING WHY THIS DOESNT SHOW?- "${COPY_FROM_ROOT_}"
+          echo "DEBUGGING WHY THIS DOESNT SHOW?- ${COPY_FROM_ROOT_}"
           mkdir -p \
             "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" \
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
