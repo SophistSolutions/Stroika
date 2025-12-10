@@ -235,6 +235,8 @@ jobs:
         if: always()
         run: |
           mkdir -p $ARTIFACTS_DIR
+          NORMALIZED_WORKSPACE_DIR_=`cygpath --mixed "${GITHUB_WORKSPACE}"`
+          echo "NORMALIZED_WORKSPACE_DIR_=${NORMALIZED_WORKSPACE_DIR_}"
           (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
           COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
@@ -442,7 +444,7 @@ jobs:
           NORMALIZED_WORKSPACE_DIR_=`cygpath --mixed "${GITHUB_WORKSPACE}"`
           # echo "ARTIFACTS_DIR=${ARTIFACTS_DIR}"
           # echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
-          # echo "NORMALIZED_WORKSPACE_DIR_=${NORMALIZED_WORKSPACE_DIR_}"
+          echo "NORMALIZED_WORKSPACE_DIR_=${NORMALIZED_WORKSPACE_DIR_}"
           mkdir -p $ARTIFACTS_DIR
           (docker exec --workdir c:/ buildContainer bash -c 'mkdir -p c:/TRACE_LOGS; cp $TEMP/Trace*.txt c:/TRACE_LOGS/') || :
           # due to flaws in docker (windows must stop) - and docker cp doesn't support wildcards
