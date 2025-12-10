@@ -235,14 +235,14 @@ jobs:
         if: always()
         run: |
           mkdir -p $ARTIFACTS_DIR
-          NORMALIZED_WORKSPACE_DIR_=`cygpath --mixed "${GITHUB_WORKSPACE}"`
-          echo "NORMALIZED_WORKSPACE_DIR_=${NORMALIZED_WORKSPACE_DIR_}"
-          (cp -r --dereference "${NORMALIZED_WORKSPACE_DIR_}/Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
+          echo "pwd=`pwd`"
+          echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+          # (cp -r --dereference "${GITHUB_WORKSPACE}/Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
+          (cp -r --dereference "Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
           COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
           echo "DEBUGGING WHY THIS DOESNT SHOW?- ${COPY_FROM_ROOT_}"
-          mkdir -p \
-            "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" \
+          mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/"
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}/Samples-HTMLUI/html/WIX-Installer-Build-Output.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
