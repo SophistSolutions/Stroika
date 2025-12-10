@@ -105,6 +105,7 @@ jobs:
           APT_REMOVE_JSON_ARRAY_STRING: ${{ toJSON(matrix.extra_apt_remove_packages) }}
         run: |
           echo "Before cleanup:" ; df -h
+          df
           apt-get remove -y clang-*-doc clang-*-examples || true
           apt-get remove -y manpages* || true
           apt-get autoremove -y || true
@@ -125,6 +126,7 @@ jobs:
           fi
 
           echo "After cleanup:" ; df -h
+          df
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
