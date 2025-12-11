@@ -241,16 +241,20 @@ jobs:
           mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/"
           cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
           cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
-          echo "XXX DEBUG"
-          echo ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/"
-          ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/"
+          # echo "XXX DEBUG"
+          # echo ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/"
+          # ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/"
           echo "XXX1 DEBUG"
-          ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" || :
-          ls -l ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt || :
-          ls -ld ${COPY_FROM_ROOT_}Samples-HTMLUI/ || :
-          ls -ld ${COPY_FROM_ROOT_}Samples-HTMLUI/* || :
+          # ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" || :
+          # ls -l ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt || :
+          # ls -ld ${COPY_FROM_ROOT_}Samples-HTMLUI/ || :
+          # ls -ld ${COPY_FROM_ROOT_}Samples-HTMLUI/* || :
+          echo ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt"  || :
+          ls -l ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt  || :
           echo cp "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
           cp ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
+          echo ls -l "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
+          ls -l "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
       - name: Archive Samples Results
         uses: actions/upload-artifact@v4
         with:
