@@ -238,13 +238,15 @@ jobs:
           (cp -r --dereference "Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
           rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
           COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
-          mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/"
-          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
-          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
+          mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/"
+          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
+          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
           echo "XXX DEBUG"
           ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/"
+          echo "XXX1 DEBUG"
+          ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt"
           echo cp "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
-          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
+          cp ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
       - name: Archive Samples Results
         uses: actions/upload-artifact@v4
         with:
