@@ -170,7 +170,9 @@ jobs:
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/openssl/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/sqlite/" \
             "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" \
-            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/"
+            "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" \
+            "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/"
+          # NOTE - some of these copies may fail, if the item is not present, but not a problem (like if we dont build libxml2 the log files wont be there)
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/BOOTSTRAP-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/boost/ConfigureAndBuild-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/boost/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/curl/CONFIGURE-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/curl/" || :
@@ -189,6 +191,7 @@ jobs:
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/Xerces/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/Xerces/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/BUILD-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
           cp "IntermediateFiles/${{ matrix.config_name }}/ThirdPartyComponents/zlib/INSTALL-OUT.txt" "${ARTIFACTS_DIR_BUILDLOGS}/ThirdPartyComponents/zlib/" || :
+          cp "IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/*.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
       - name: Save space (Safe)
         if: always()
         run: |
@@ -231,30 +234,23 @@ jobs:
       - name: Build System Info
         run: |
           df -h
-      - name: Copy Build Artifacts (Sample apps etc)
-        if: always()
-        run: |
-          mkdir -p $ARTIFACTS_DIR
-          (cp -r --dereference "Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
-          rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
-          COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
-          mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/"
-          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
-          cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
-          # echo "XXX DEBUG"
-          # echo ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/"
-          # ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/"
-          echo "XXX1 DEBUG"
-          # ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" || :
-          # ls -l ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt || :
-          # ls -ld ${COPY_FROM_ROOT_}Samples-HTMLUI/ || :
-          # ls -ld ${COPY_FROM_ROOT_}Samples-HTMLUI/* || :
-          echo ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt"  || :
-          ls -l ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt  || :
-          echo cp "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
-          cp ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
-          echo ls -l "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
-          ls -l "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
+      # - name: Copy Build Artifacts (Sample apps etc)
+      #   if: always()
+      #   run: |
+      #     mkdir -p $ARTIFACTS_DIR
+      #     (cp -r --dereference "Builds/${{ matrix.config_name }}/"Samples-* "${ARTIFACTS_DIR}") || echo "Error copying builds ignored"
+      #     rm -rf "${ARTIFACTS_DIR}/"{ThirdPartyComponents,Tests,*.lib} "${ARTIFACTS_DIR}/"*/*.{pdb,wixpdb}
+      #     COPY_FROM_ROOT_="IntermediateFiles/${{ matrix.config_name }}/"
+      #     mkdir -p "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/"
+      #     cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/NPM-Install.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
+      #     cp "${COPY_FROM_ROOT_}Samples-HTMLUI/html/Build.txt" "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/html/" || :
+      #     echo "XXX1 DEBUG"
+      #     echo ls -l "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt"  || :
+      #     ls -l ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt  || :
+      #     echo cp "${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/" || :
+      #     cp ${COPY_FROM_ROOT_}Samples-HTMLUI/*.txt "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
+      #     echo ls -l "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
+      #     ls -l "${ARTIFACTS_DIR_BUILDLOGS}Samples-HTMLUI/" || :
       - name: Archive Samples Results
         uses: actions/upload-artifact@v4
         with:
