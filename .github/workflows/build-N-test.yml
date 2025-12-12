@@ -239,7 +239,7 @@ jobs:
           mkdir -p \
             "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/"
           # NOTE - some of these copies may fail, if the item is not present, but not a problem (like if we dont build libxml2 the log files wont be there)
-          cp "IntermediateFiles/${{ matrix.config_name }}/Samples-HTMLUI/html/*.txt" "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
+          cp IntermediateFiles/"${{ matrix.config_name }}"/Samples-HTMLUI/html/*.txt "${ARTIFACTS_DIR_BUILDLOGS}/Samples-HTMLUI/html/" || :
       - name: Archive Samples Results
         uses: actions/upload-artifact@v4
         with:
