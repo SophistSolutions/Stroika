@@ -110,8 +110,8 @@ jobs:
               echo "apt-get install -qq -y $package"
               apt-get install -qq -y "$package" || true
             done
-            apt-get autoremove -y || true
-            apt clean || true
+            apt-get autoremove -qq -y || true
+            apt-get clean -qq -y || true
       - name: Save space (Before Start of Builds)
         shell: "bash"
         if: always()
