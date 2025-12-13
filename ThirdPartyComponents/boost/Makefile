@@ -29,10 +29,10 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 ## Check latest release: https://www.boost.org/users/download/
 ##
 
-VERSION:=1_89_0
+VERSION:=1_90_0
+#VERSION:=1_89_0
 #VERSION:=1_88_0
 #VERSION:=1_87_0
-#VERSION:=1_86_0
 VERSION_WITH_DOTS:=$(shell echo $(VERSION) | sed s/_/\./g)
 ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 
@@ -43,7 +43,6 @@ ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 # have to be built before the samples etc...
 #		(ALSO THIS COULD BE REASON BEHIND FLAKY FAIL ON HearHE Windows building boost) --LGP 2025-02-01
 .NOTPARALLEL:
-
 
 
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
