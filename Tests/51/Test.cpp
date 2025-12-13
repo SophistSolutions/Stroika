@@ -761,12 +761,15 @@ namespace {
                 (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()),
                 "[4/4/03 ... 4/5/03]");
         }
-        {
-            Common::ScopedUseLocale tmpLocale{Common::FindNamedLocale ("en", "us")};
+        if (auto ol = Common::FindNamedLocaleQuietly ("en", "us")) {
+            Common::ScopedUseLocale tmpLocale{*ol};
             using namespace Time;
             EXPECT_EQ (
                 (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString ()),
                 "[4/4/1903 ... 4/5/1903]");
+        }
+        else {
+            Stroika::Frameworks::Test::WarnTestIssue ("Skipping test cuz missing en-us locale");
         }
         {
             EXPECT_EQ ((Range<int>{3, nullopt}.ToString ()), "[3 ... ]");
