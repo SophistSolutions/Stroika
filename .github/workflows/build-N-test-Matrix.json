@@ -204,10 +204,10 @@
         "#container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "#": "try avoid runs out of disk space (-Os, and debug symbols false);  ALSO needed --boost no cuz -Os wasn't enuf (and extra_apt_remove_packages didn't work cuz of how layers work)",
+        "#": "try avoid runs out of disk space (-Os, and debug symbols false); ALSO needed --boost no cuz -Os wasn't enuf (and extra_apt_remove_packages didn't work cuz of how layers work)",
         "extra_apt_remove_packages": [],
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -Os --append-CFLAGS -Os --boost no",
-        "run_on_branch": "always"
+        "run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
