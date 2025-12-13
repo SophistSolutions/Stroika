@@ -413,11 +413,16 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                     // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
                     Containers::Set<FileSuffixType> fileSuffixes;
                     for (size_t i = 1; i < line.length (); ++i) {
-                        Assert (not line[i].empty ());
-                        String suffix = "."sv + line[i];
-                        fSuffix2MediaTypeMap_.Add (suffix, ct);
-                        fMediaType2PreferredSuffixMap_.Add (ct, suffix, AddReplaceMode::eAddIfMissing);
-                        fileSuffixes.Add (suffix);
+                        if (line[i].empty ()) {
+                            DbgTrace ("Ignoring bad looking parsing potential media type entry ({})"_f, line);
+                        }
+                        else {
+                            Assert (not line[i].empty ());
+                            String suffix = "."sv + line[i];
+                            fSuffix2MediaTypeMap_.Add (suffix, ct);
+                            fMediaType2PreferredSuffixMap_.Add (ct, suffix, AddReplaceMode::eAddIfMissing);
+                            fileSuffixes.Add (suffix);
+                        }
                     }
                     fMediaType2SuffixesMap_.Add (ct, fileSuffixes);
                 }
