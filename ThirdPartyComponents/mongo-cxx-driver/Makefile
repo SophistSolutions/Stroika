@@ -70,6 +70,14 @@ CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 # endif
 
 
+
+## WIN ONLY SETTINGS (tmphack BWA while getting zstd stuff working)
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+CMAKE_ARGS+= -DENABLE_ZSTD=OFF
+endif
+
+
+
 #
 # Silence a bunch of warnings cuz we don't write this code!
 # And weirdly, with link time codegen, these warnings come out at link time, not when I compile this!
