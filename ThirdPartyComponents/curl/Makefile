@@ -10,7 +10,6 @@ StroikaRoot	:=	$(abspath ../..)/
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-
 #
 # CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
 #
@@ -86,7 +85,6 @@ PRODUCED_OUTPUT_ARTIFACTS=\
 endif
 
 
-#TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/libcurl $(VERSION) Build {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
@@ -175,9 +173,9 @@ endif
 ifeq ($(qFeatureFlag_ZLib), no)
 LIBCURL_CONFIGURE += --without-zlib
 else
-#LIBCURL_CONFIGURE += --with-zlib=$(PER_CONFIGURATION_BUILDS_DIR_)
-#finds right one through PKG_CONFIG_PATH
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" z),false)
 LIBCURL_CONFIGURE += --with-zlib
+endif
 endif
 
 # Not sure why this test is needed, since this sort of check should be done by configure script itself, but doesn't appear
@@ -219,10 +217,6 @@ LIBCURL_CONFIGURE += --disable-curldebug
 endif
 
 
-
-CLANG_VERSION_ := $(shell $(StroikaRoot)/ScriptsLib/GetClangVersion "$(LINKER)" -i)
-
-
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # https://stroika.atlassian.net/browse/STK-759
 ### On M1 Mac (even if running under rosetta) - really just one mac tested - 
@@ -255,28 +249,16 @@ endif
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" brotlidec),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
-# For some reason, fails with clang++14
-ifeq (clang,$(findstring clang,$(LINKER)))
-ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" z),false)
-LIBCURL_CONFIGURE += --without-zlib
-endif
-endif
 endif
 endif
 
-### clang++15 on ubuntu 22 fails with brotli
-### configure: error: one or more libs available at link-time are not available run-time. Libs used at link-time: -lssl -lcrypto -lssl -lcrypto -lbrotlidec  -lz 
-ifeq (${DETECTED_HOST_OS}, Linux)
-ifeq ($(CLANG_VERSION_), 15)
-LIBCURL_CONFIGURE += --without-brotli
-endif
-endif
 
 ifeq ($(DETECTED_HOST_OS), Darwin)
 # https://stroika.atlassian.net/browse/STK-759
 # Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
 LIBCURL_CONFIGURE +=  LIBS='-framework Foundation -framework SystemConfiguration'
 endif
+
 
 	
 .PHONY:	doBuilds_
