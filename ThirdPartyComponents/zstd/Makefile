@@ -32,16 +32,14 @@ FETCHURLS_=https://github.com/facebook/zstd/archive/refs/heads/${ZSTD_VERSION_}.
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/zstd)/
 OUTPUT_WORKDIR_PRETTYNAME_="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)")"
-COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zstd/CURRENT)
+COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zstd/CURRENT)/
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
-MAYBED_=d
 else
 CMAKE_BUILD_TYPE_=Release
-MAYBED_=
 endif
 endif
 
@@ -52,9 +50,12 @@ else
 CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE_}
 endif
 
+# This is NEEDED to build on Windows, but not elsewhere, but SB harmless as the library doesn't appear to use c++
+CMAKE_ARGS+= -UCMAKE_CXX_COMPILER
+
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-OUTPUT_LIB_=zstdstatic${MAYBED_}${LIB_SUFFIX}
+OUTPUT_LIB_=zstd_static${LIB_SUFFIX}
 else
 OUTPUT_LIB_=libzstd${LIB_SUFFIX}
 endif
@@ -103,9 +104,9 @@ endif
 
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Configure (see ${OUTPUT_WORKDIR_PRETTYNAME_}CONFIGURE-OUT.txt) ..."
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}"
-	@echo "${CMAKE}" ${CMAKE_ARGS} -S "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" --build . >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
+	@echo "${CMAKE}" ${CMAKE_ARGS} -S "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}build/cmake" -B . >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}CONFIGURE-OUT.txt" 2>&1
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} -S ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} -B . >> CONFIGURE-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" ${CMAKE_ARGS} -S ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}build/cmake -B . >> CONFIGURE-OUT.txt 2>&1
 	@
 # ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 # 	@# Since version 1.3, these vcxproj have the wrong value set, so we must correct --LGP 2024-02-06
