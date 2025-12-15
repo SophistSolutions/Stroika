@@ -69,7 +69,6 @@ endif
 
 
 
-
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
@@ -180,6 +179,15 @@ else
 #finds right one through PKG_CONFIG_PATH
 LIBCURL_CONFIGURE += --with-zlib
 endif
+
+# Not sure why this test is needed, since this sort of check should be done by configure script itself, but doesn't appear
+# to always be working on Ubuntu 25.04 -- LGP 2025-12-15
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" zstd),false)
+LIBCURL_CONFIGURE += --without-zstd
+endif
+
+
+
 LIBCURL_CONFIGURE += --disable-shared
 #LIBCURL_CONFIGURE += --without-cyassl
 LIBCURL_CONFIGURE += --without-librtmp
