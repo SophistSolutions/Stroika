@@ -188,6 +188,7 @@ my $FEATUREFLAG_WinHTTP = undef;
 my $FEATUREFLAG_WIX = undef;
 my $FEATUREFLAG_libxml2 = undef;
 my $FEATUREFLAG_ZLib = undef;
+my $FEATUREFLAG_zstd = undef;
 my $TargettingValgrind = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
 my $qCompiler_ValgrindLTO_Buggy = undef;
@@ -366,6 +367,9 @@ sub	DoSetThirdPartyComponents_
 		if (!defined $FEATUREFLAG_ZLib) {
 			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 		}
+		if (!defined $FEATUREFLAG_zstd) {
+			$FEATUREFLAG_zstd = $LIBFEATUREFLAG_UseStaticTPP;
+		}
 		if (!defined $FEATUREFLAG_GoogleTest) {
 			$FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
 		}
@@ -406,6 +410,9 @@ sub	DoSetThirdPartyComponents_
 		}
 		if (!defined $FEATUREFLAG_ZLib) {
 			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_No;
+		}
+		if (!defined $FEATUREFLAG_zstd) {
+			$FEATUREFLAG_zstd = $LIBFEATUREFLAG_No;
 		}
 		if (!defined $FEATUREFLAG_GoogleTest) {
 			$FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_No;	}
@@ -472,6 +479,7 @@ sub	DoHelp_
 		print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
 		print("	    --libxml2 {build-only|use|use-system|no}        /* Enables/disables use of libxml2 for this configuration [default use] */\n");
 		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
+		print("	    --zstd {build-only|use|use-system|no}           /* Enables/disables use of zstd for this configuration [default use] */\n");
 		print("	    --all-available-third-party-components          /* equivilent to --Xerces (etc) use - for all that are available on this platform (except polyfill components like fmtlib) */\n");
 		print("	    --default-third-party-components                /* reset third party settings to their default value (maybe less than all-available-third-party-components) */\n");
 		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no ...  */\n");
@@ -797,6 +805,9 @@ sub     FillDefaultLibDependencies_
 		}
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
 			push (@foundationPackageCfgNames, "zlib");
+		}
+		if ($FEATUREFLAG_zstd ne $LIBFEATUREFLAG_No) {
+			# push (@foundationPackageCfgNames, "zstd");
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
 			push (@foundationPackageCfgNames, "gtest_main");
@@ -1814,6 +1825,12 @@ sub	ParseCommandLine_Remaining_
 			ValidateUseArg_($var, '--zlib');
 			$FEATUREFLAG_ZLib = $var;
 		}
+		elsif ((lc ($var) eq "-zstd") or (lc ($var) eq "--zstd")) {
+			$i++;
+			$var = $args[$i];
+			ValidateUseArg_($var, '--zstd');
+			$FEATUREFLAG_zstd = $var;
+		}
 		elsif ((lc ($var) eq "-googletest") or (lc ($var) eq "--googletest")) {
 			$i++;
 			$var = $args[$i];
@@ -2501,6 +2518,7 @@ sub GetDefaultCZZFLAGS_flags_
 			push @flags, $dashFlag . "qStroika_HasComponent_xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qStroika_HasComponent_libxml2=" . ZERO_OR_1_ (($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qStroika_HasComponent_zlib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qStroika_HasComponent_zstd=" . ZERO_OR_1_ (($FEATUREFLAG_zstd eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_zstd eq $LIBFEATUREFLAG_UseSystem));
 			if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 				push @flags, $dashFlag . "qStroika_Foundation_Debug_TraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
 				#override the default (true iff qStroika_Foundation_Debug_AssertionsChecked) - if set the trace2file option set 
@@ -3070,6 +3088,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_libxml2>$FEATUREFLAG_libxml2</qFeatureFlag_libxml2>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
+	print (OUT "    <qFeatureFlag_zstd>$FEATUREFLAG_zstd</qFeatureFlag_zstd>\n");
 	if ($gAssertionsEnabled != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <AssertionsEnabled>$gAssertionsEnabled</AssertionsEnabled>\n");
 	}

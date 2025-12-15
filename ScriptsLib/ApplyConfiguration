@@ -67,6 +67,7 @@ my $FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_zstd = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
@@ -193,6 +194,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_XERCES = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_Xerces");
 	$FEATUREFLAG_GoogleTest = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_GoogleTest");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ZLib");
+	$FEATUREFLAG_zstd = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_zstd");
 	$FEATUREFLAG_sqlite = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_sqlite");
 	$FEATUREFLAG_mongocxxdriver = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_mongocxxdriver");
 	$FEATUREFLAG_boost = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_boost");
@@ -392,6 +394,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_Xerces");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_libxml2");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ZLib");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_zstd");
 	
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ConfigTags");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("SanitizerFlags");

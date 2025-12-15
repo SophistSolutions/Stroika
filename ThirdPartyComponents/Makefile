@@ -23,7 +23,8 @@ AllSubDirs_= \
 	WIX \
 	Xerces \
 	libxml2 \
-	zlib
+	zlib \
+	zstd
 
 
 
@@ -68,6 +69,9 @@ endif
 ifeq ($(qFeatureFlag_ZLib), use)
 	BUILD_zlib=1
 endif
+ifeq ($(qFeatureFlag_zstd), use)
+	BUILD_zstd=1
+endif
 
 
 SubDirs=
@@ -110,6 +114,9 @@ endif
 ifeq ($(BUILD_zlib), 1)
 	SubDirs+= zlib
 endif
+ifeq ($(BUILD_zstd), 1)
+	SubDirs+= zstd
+endif
 
 
 ##WINDOWS ONLY
@@ -130,11 +137,17 @@ ifeq ($(BUILD_boost), 1)
 ifeq ($(BUILD_zlib), 1)
 boost:		zlib
 endif
+ifeq ($(BUILD_zstd), 1)
+boost:		zstd
+endif
 endif
 
 ifeq ($(BUILD_curl), 1)
 ifeq ($(BUILD_openssl), 1)
 curl:		openssl
+endif
+ifeq ($(BUILD_zstd), 1)
+curl:		zstd
 endif
 endif
 
