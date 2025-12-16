@@ -256,6 +256,8 @@ endif
 endif
 ifeq (${MONGOCXXDRIRVER_VERSION_},r4.1.4)
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@# REPORTED AS https://jira.mongodb.org/browse/CXX-3387
+	@#
 	@# FIX: 
 	@#		Requires: bson2-static
 	@#		Libs: ${libdir}/mongoc2.lib -lDnsapi secur32.lib crypt32.lib Bcrypt.lib ncrypt.lib -lC:/Sandbox/Stroika/DevRoot/Builds/Debug/lib/zstd.lib
