@@ -47,11 +47,9 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 
-
 CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
-
 
 
 
@@ -63,15 +61,16 @@ CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 
+#
 # If we have zlib, use it, instead of the one included in the mongo-cxx-driver
 # makes sense todo, but triggered linker errors for me, so diasble for now...--LGP 2025-03-19
-
-## WITH CLANG++-15 we get
-# 	/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/clang++-15-debug-libc++/lib/libz.a(trees.c.o): warning: relocation against `_length_code' in read-only section `.text'
-# 	/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/clang++-15-debug-libc++/lib/libz.a(trees.c.o): relocation R_X86_64_PC32 against symbol `_length_code' can not be used when making a shared object; recompile with -fPIC
-# 	/usr/bin/ld: final link failed: bad value
-# during mongo-cxx-driver build
-# SEE IF ONLY HAPPENS WITH CLANG? See if only this version?
+#
+#	# WITH CLANG++-15 we get
+# 		/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/clang++-15-debug-libc++/lib/libz.a(trees.c.o): warning: relocation against `_length_code' in read-only section `.text'
+# 		/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/clang++-15-debug-libc++/lib/libz.a(trees.c.o): relocation R_X86_64_PC32 against symbol `_length_code' can not be used when making a shared object; recompile with -fPIC
+# 		/usr/bin/ld: final link failed: bad value
+# 	during mongo-cxx-driver build
+# SEE IF ONLY HAPPENS WITH CLANG? See if only this version? --LGP 2025-12-16
 ifneq (clang,$(findstring clang,$(CXX)))
 ifneq (${qFeatureFlag_ZLib}, no)
 CMAKE_ARGS+= -DENABLE_ZLIB=SYSTEM
