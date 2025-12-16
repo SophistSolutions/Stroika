@@ -16,7 +16,7 @@ CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 
 ifneq (${CONFIGURATION},)
-include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
+include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for CMAKE_ARGS etc
 endif
 
 #
@@ -66,16 +66,10 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/zstd.h
 
 
-
 # Verbose output to debug cmake processing
 #CMAKE_ARGS+= --trace
 #CMAKE_BUILD_AND_INSTALL_ARGS+= --trace
 
-# ifeq (Unix,$(BuildPlatform))
-# # @todo document - not sure needed - maybe related to shared/.so file stuff
-# CMAKE_ARGS+=	-D CMAKE_SKIP_INSTALL_RPATH="YES"
-# CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
-# endif
 
 #In macOS and Xcode, the linker prioritizes dynamic libraries (.dylib) over static libraries (.a) when both are present in
 #But disable shared for all, cuz I prefer static
@@ -121,7 +115,7 @@ endif
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
 	@# on windows, file named zstd_static.lib but referenced as zstd.lib in .pc file
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-	mv ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd_static${LIB_SUFFIX} ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd${LIB_SUFFIX}
+	@mv ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd_static${LIB_SUFFIX} ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd${LIB_SUFFIX}
 endif
 
 ${ZIPPED_SOURCES_FILE_}:
@@ -165,7 +159,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	@rm -rf ${StroikaRoot}Builds/*/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/include/{zstd,zconf}.h
+	@rm -rf ${StroikaRoot}Builds/*/lib/*zstd${LIB_SUFFIX} ${StroikaRoot}Builds/*/include/{zstd}.h
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}
