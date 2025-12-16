@@ -51,8 +51,10 @@ else
 CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE_}
 endif
 
-# This is NEEDED to build on Windows, but not elsewhere, but SB harmless as the library doesn't appear to use c++
-CMAKE_ARGS+= -UCMAKE_CXX_COMPILER
+# This is NEEDED to build on Windows, as the library doesn't appear to use c++
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ CMAKE_ARGS+= -UCMAKE_CXX_COMPILER
+endif
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
