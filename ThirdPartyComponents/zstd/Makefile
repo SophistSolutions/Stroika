@@ -22,12 +22,13 @@ endif
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/facebook/zstd/tags
 #
-ZSTD_VERSION_=dev
-# ZSTD_VERSION_=1.5.7
+ZSTD_VERSION_=1.5.7
+#ZSTD_VERSION_=1.5.6
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/zstd-${ZSTD_VERSION_}.tar.gz
 
-FETCHURLS_=https://github.com/facebook/zstd/archive/refs/heads/${ZSTD_VERSION_}.tar.gz
+
+FETCHURLS_=https://github.com/facebook/zstd/releases/download/v${ZSTD_VERSION_}/zstd-${ZSTD_VERSION_}.tar.gz
 
 PER_CONFIGURATION_BUILDS_DIR_:=${StroikaPlatformTargetBuildDir}
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/${CONFIGURATION}/ThirdPartyComponents/zstd)/
