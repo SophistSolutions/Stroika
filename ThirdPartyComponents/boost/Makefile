@@ -166,10 +166,9 @@ B2FullPath=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/b2${EXE_SUFF
 
 ScriptsLibPath=$(shell realpath ../../ScriptsLib)
 
-ifeq ($(DETECTED_HOST_OS),Cygwin)
-CXX:= $(shell cygpath --mixed "$(CXX)")
-B2FullPath:= $(shell cygpath --mixed "$(B2FullPath)")
-else ifeq ($(DETECTED_HOST_OS),MSYS)
+
+
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 CXX:= $(shell cygpath --mixed "$(CXX)")
 B2FullPath:= $(shell cygpath --mixed "$(B2FullPath)")
 endif
