@@ -807,7 +807,7 @@ sub     FillDefaultLibDependencies_
 			push (@foundationPackageCfgNames, "zlib");
 		}
 		if ($FEATUREFLAG_zstd ne $LIBFEATUREFLAG_No) {
-			# push (@foundationPackageCfgNames, "zstd");
+			push (@foundationPackageCfgNames, "libzstd");
 		}
 		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
 			push (@foundationPackageCfgNames, "gtest_main");

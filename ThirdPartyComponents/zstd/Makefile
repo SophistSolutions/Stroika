@@ -55,7 +55,7 @@ CMAKE_ARGS+= -UCMAKE_CXX_COMPILER
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
-OUTPUT_LIB_=zstd_static${LIB_SUFFIX}
+OUTPUT_LIB_=zstd${LIB_SUFFIX}
 else
 OUTPUT_LIB_=libzstd${LIB_SUFFIX}
 endif
@@ -119,7 +119,10 @@ endif
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build .  ${CMAKE_BUILD_AND_INSTALL_ARGS} ${CMAKE_BUILD_TYPE_EXTRA_ARG_}  > BUILD-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zstd ${ZSTD_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
-
+	@# on windows, file named zstd_static.lib but referenced as zstd.lib in .pc file
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	mv ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd_static${LIB_SUFFIX} ${PER_CONFIGURATION_BUILDS_DIR_}lib/zstd${LIB_SUFFIX}
+endif
 
 ${ZIPPED_SOURCES_FILE_}:
 	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}ScriptsLib/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
