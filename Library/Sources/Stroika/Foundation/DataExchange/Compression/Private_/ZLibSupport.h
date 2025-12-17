@@ -184,7 +184,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
             }
         }
     };
-    struct DeflateRep_ : BaseRep_ {
+    struct DeflateRep_ final : BaseRep_ , Memory::UseBlockAllocationIfAppropriate<DeflateRep_>{
         Compress::Options fOptions_;
         DeflateRep_ (const Streams::InputStream::Ptr<byte>& in, Compress::Options o, bool useGZip)
             : BaseRep_{in}
@@ -227,7 +227,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
             return ::deflate (&fZStream_, isEOF ? Z_FINISH : Z_NO_FLUSH);
         }
     };
-    struct InflateRep_ : BaseRep_ {
+    struct InflateRep_ final : BaseRep_, Memory::UseBlockAllocationIfAppropriate<InflateRep_> {
         InflateRep_ (const Streams::InputStream::Ptr<byte>& in, bool gzip)
             : BaseRep_{in}
         {
