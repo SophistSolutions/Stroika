@@ -63,7 +63,7 @@ Compression::Ptr GZip::Compress::New (const GZip::Compress::Options& o)
 Compression::Ptr GZip::Decompress::New ([[maybe_unused]] const GZip::Decompress::Options& o)
 {
 #if qStroika_HasComponent_zlib
-    struct MyRep_ : IRep , public Memory::UseBlockAllocationIfAppropriate<MyRep_>{
+    struct MyRep_ : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
         shared_ptr<InflateRep_>        fDelegate2;
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {

@@ -40,13 +40,11 @@ namespace Stroika::Foundation::DataExchange::Compression::ZStd {
      *  \note if not kSupported, these 'New ()' functions just throw FeatureNotSupportedException{}
      */
     namespace Compress {
-        struct Options : Compression::Compress::Options {
-        };
+        struct Options : Compression::Compress::Options {};
         Ptr New (const Options& o = {});
     }
     namespace Decompress {
-        struct Options : Compression::Compress::Options {
-        };
+        struct Options : Compression::Compress::Options {};
         Ptr New (const Options& o = {});
     }
 

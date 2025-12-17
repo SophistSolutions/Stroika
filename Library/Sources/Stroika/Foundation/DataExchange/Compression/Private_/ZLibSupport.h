@@ -184,7 +184,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
             }
         }
     };
-    struct DeflateRep_ final : BaseRep_ , Memory::UseBlockAllocationIfAppropriate<DeflateRep_>{
+    struct DeflateRep_ final : BaseRep_, Memory::UseBlockAllocationIfAppropriate<DeflateRep_> {
         Compress::Options fOptions_;
         DeflateRep_ (const Streams::InputStream::Ptr<byte>& in, Compress::Options o, bool useGZip)
             : BaseRep_{in}
