@@ -39,7 +39,7 @@ namespace {
     inline void ThrowIfZStdErr_ (size_t rc) // CHECK_ZSTD
     {
         if (ZSTD_isError (rc)) {
-            Execution::Throw (Execution::RuntimeErrorException{"ZStd error: {}"_f(String::FromSDKString (::ZSTD_getErrorName (rc)))});
+            Execution::Throw (Execution::RuntimeErrorException{"ZStd error: {}"_f(String::FromNarrowSDKString (::ZSTD_getErrorName (rc)))});
         }
     }
 
@@ -197,7 +197,7 @@ namespace {
             Require (not o.fCompressionLevel.has_value () or (0 <= o.fCompressionLevel and o.fCompressionLevel <= 1));
             if (o.fCompressionLevel.has_value ()) {
                 ThrowIfZStdErr_ (::ZSTD_CCtx_setParameter (
-                    fCCtx_, ZSTD_c_compressionLevel, (::ZSTD_maxCLevel () - ::ZSTD_minCLevel ()) * (*o.fCompressionLevel) + ZSTD_minCLevel ()));
+                    fCCtx_, ZSTD_c_compressionLevel, static_cast<int> ((::ZSTD_maxCLevel () - ::ZSTD_minCLevel ()) * (*o.fCompressionLevel)) + ZSTD_minCLevel ()));
             }
             else {
                 ThrowIfZStdErr_ (::ZSTD_CCtx_setParameter (fCCtx_, ZSTD_c_compressionLevel, ZSTD_CLEVEL_DEFAULT));
@@ -229,7 +229,7 @@ namespace {
         }
     };
     struct DecompressRep_ final : BaseRep_, Memory::UseBlockAllocationIfAppropriate<DecompressRep_> {
-        DecompressRep_ (const Streams::InputStream::Ptr<byte>& in, bool gzip)
+        DecompressRep_ (const Streams::InputStream::Ptr<byte>& in)
             : BaseRep_{in}
         {
 #if 0
@@ -303,7 +303,7 @@ Compression::Ptr ZStd::Decompress::New ([[maybe_unused]] const ZStd::Decompress:
         shared_ptr<DecompressRep_>     fDelegate2;
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<DecompressRep_> (src, true);
+            fDelegate2 = make_shared<DecompressRep_> (src);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
