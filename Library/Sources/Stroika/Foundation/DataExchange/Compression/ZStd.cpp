@@ -190,7 +190,7 @@ namespace {
         //     }
         // }
     };
-    struct CompressRep_ final : InputStream::IRep<byte>, Memory::UseBlockAllocationIfAppropriate<CompressRep_> {
+    struct CompressingByteStreamRep_ final : InputStream::IRep<byte>, Memory::UseBlockAllocationIfAppropriate<CompressingByteStreamRep_> {
         unique_ptr<Streams::StreamReader<byte>> fInStreamReader_;                               // wrapped/buffered provided input stream
         Memory::InlineBuffer<byte> fInputBuf_{Memory::eUninitialized, ::ZSTD_CStreamInSize ()}; // used to cache extra input (uncompressed) bytes not yet proceessed
         span<byte> fRawUnprocessedInputBytes_{};                                                /// empty or subspan of fInputBuf_
@@ -200,7 +200,7 @@ namespace {
         SeekOffsetType                                                 fSeekOffset_{};
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
-        CompressRep_ (const Streams::InputStream::Ptr<byte>& in, Compress::Options o)
+        CompressingByteStreamRep_ (const Streams::InputStream::Ptr<byte>& in, Compress::Options o)
             : fInStreamReader_{make_unique<Streams::StreamReader<byte>> (in)}
         {
             Require (not o.fCompressionLevel.has_value () or (0 <= o.fCompressionLevel and o.fCompressionLevel <= 1));
@@ -217,7 +217,7 @@ namespace {
             // from example - not sure if helpful
             ThrowIfZStdErr_ (::ZSTD_CCtx_setParameter (fCCtx_, ZSTD_c_checksumFlag, 1));
         }
-        virtual ~CompressRep_ ()
+        virtual ~CompressingByteStreamRep_ ()
         {
             if (fCCtx_ != nullptr) {
                 ::ZSTD_freeCCtx (fCCtx_);
@@ -248,12 +248,38 @@ namespace {
         virtual optional<size_t> AvailableToRead () override
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-#if 1
-            AssertNotImplemented ();
+            if (fOutputBufCache_.size () != 0) {
+                return fOutputBufCache_.size ();
+            }
+
+            // else tricky - cuz we don't want to block
+
+            // Combine existing fInputBuf_ cached data with a bit more we try to read, so we pass as big a chunk as possible to ZStd lib
+            // Read argument windows into fInputBuf_, just after any bytes already read
+            if (optional<span<byte>> n =
+                    fInStreamReader_->Read (span{fInputBuf_}.subspan (fRawUnprocessedInputBytes_.size ()), NoDataAvailableHandling::eDontBlock)) {
+                fRawUnprocessedInputBytes_ = span{fInputBuf_}.first (fRawUnprocessedInputBytes_.size () + n->size ());
+            }
+
+            // if we have any data in fRawUnprocessedInputBytes_, translate it and copy it into fOutputBufCache_.
+            // return sizes of know available data.
+            ZSTD_inBuffer  input     = {fRawUnprocessedInputBytes_.data (), fRawUnprocessedInputBytes_.size (), 0};
+            ZSTD_outBuffer output    = {fOutBuf_.data (), fOutBuf_.size () - fOutputBufCache_.size (), 0};
+            size_t const   remaining = ::ZSTD_compressStream2 (fCCtx_, &output, &input, ZSTD_e_continue);
+            ThrowIfZStdErr_ (remaining);
+
+            // if anything produced cache it
+            if (output.pos > 0) {
+                // remove consumed input bytes
+                fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (input.pos);
+                // extend the fOutputBufCache_
+                fOutputBufCache_ = span{fOutBuf_}.first (fOutputBufCache_.size () + output.pos);
+                // but dont update seek offset, cuz we didn't actually read anything
+            }
+            if (fOutputBufCache_.size () != 0) {
+                return fOutputBufCache_.size ();
+            }
             return nullopt;
-#else
-            return _Available2Read ([this] (bool isEOF) { return DoProcess_ (isEOF); });
-#endif
         }
         virtual optional<SeekOffsetType> RemainingLength () override
         {
@@ -293,17 +319,19 @@ namespace {
             Assert (fOutputBufCache_.empty ());
             // Now if we have any input bytes to compress, run it through the library
             if (not fRawUnprocessedInputBytes_.empty ()) {
-                ZSTD_inBuffer  input     = {fRawUnprocessedInputBytes_.data (), fRawUnprocessedInputBytes_.size (), 0};
-                ZSTD_outBuffer output    = {intoBuffer.data (), intoBuffer.size (), 0};
-                size_t const   remaining = ::ZSTD_compressStream2 (fCCtx_, &output, &input, endFlag);
-                ThrowIfZStdErr_ (remaining);
+                {
+                    ZSTD_inBuffer  input     = {fRawUnprocessedInputBytes_.data (), fRawUnprocessedInputBytes_.size (), 0};
+                    ZSTD_outBuffer output    = {intoBuffer.data (), intoBuffer.size (), 0};
+                    size_t const   remaining = ::ZSTD_compressStream2 (fCCtx_, &output, &input, endFlag);
+                    ThrowIfZStdErr_ (remaining);
 
-                // if anything produced, adjust cache(s) and return it
-                if (output.pos > 0) {
-                    fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (input.pos);
-                    fSeekOffset_ += output.pos;
-                    // Note if remaining > 0, there are more bytes to be flushed out later, retained in the context
-                    return intoBuffer.subspan (0, output.pos);
+                    // if anything produced, adjust cache(s) and return it
+                    if (output.pos > 0) {
+                        fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (input.pos);
+                        fSeekOffset_ += output.pos;
+                        // Note if remaining > 0, there are more bytes to be flushed out later, retained in the context
+                        return intoBuffer.subspan (0, output.pos);
+                    }
                 }
 
                 Assert (output.pos == 0);
@@ -488,15 +516,15 @@ Compression::Ptr ZStd::Compress::New (const ZStd::Compress::Options& o)
 {
 #if qStroika_HasComponent_zstd
     struct MyRep_ : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
-        ZStd::Compress::Options  fOptions_;
-        shared_ptr<CompressRep_> fDelegate2;
+        ZStd::Compress::Options               fOptions_;
+        shared_ptr<CompressingByteStreamRep_> fDelegate2;
         MyRep_ (const ZStd::Compress::Options& o)
             : fOptions_{o}
         {
         }
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<CompressRep_> (src, fOptions_);
+            fDelegate2 = make_shared<CompressingByteStreamRep_> (src, fOptions_);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
