@@ -652,7 +652,7 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         *  incoming intoBuffer must be a valid, non-empty span of elements (to be overwritten).
+         *  \req incoming intoBuffer must be a valid, non-empty span of elements (to be overwritten).
          * 
          *  Returns empty span iff EOF, and otherwise intoBuffer.subspan(0,number of ELEMENT_TYPE elements read).
          *  BLOCKING until data is available, but can return with fewer bytes than bufSize
