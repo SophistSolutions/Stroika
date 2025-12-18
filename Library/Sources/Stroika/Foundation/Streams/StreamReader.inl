@@ -274,6 +274,24 @@ namespace Stroika::Foundation::Streams {
         return not Peek ().has_value ();
     }
     template <typename ELEMENT_TYPE>
+    inline optional<bool> StreamReader<ELEMENT_TYPE>::IsAtEOF (NoDataAvailableHandling blockFlag)
+    {
+        Assert (fOffset_ <= fFarthestReadInUnderlyingStream_);
+        if (fOffset_ < fFarthestReadInUnderlyingStream_) [[likely]] {
+            return false;
+        }
+        switch (blockFlag) {
+            case NoDataAvailableHandling::eBlockIfNoDataAvailable:
+                return not Peek ().has_value ();
+            case NoDataAvailableHandling::eDontBlock:
+                Assert (fOffset_ == fFarthestReadInUnderlyingStream_);
+                return fStrm_.IsAtEOF (NoDataAvailableHandling::eDontBlock);
+            default:
+                AssertNotReached ();
+                return nullopt;
+        }
+    }
+    template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Peek1FromCache_ () const -> optional<ElementType>
     {
         // first try last filled - generally will be the right one

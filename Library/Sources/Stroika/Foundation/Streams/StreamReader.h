@@ -25,7 +25,9 @@ namespace Stroika::Foundation::Streams {
      * \see also https://learn.microsoft.com/en-us/dotnet/api/system.io.streamreader?view=net-8.0 - similar idea, except there you specify conversion from
      *      binary stream.
      *
-     *  StreamReader is an unnecessary class for using the Streams library, but it is easy to use, has a similar API to InputStream<T>::Ptr, and significantly more performant
+     *  StreamReader is an unnecessary class for using the Streams library, but it is easy to use, has a similar API to InputStream<T>::Ptr, and significantly more performant.
+     * 
+     *  \note Stream reader is always fully seekable, and requires its argument (construction time) to be fully seekable as well.
      * 
      *  \note Similar to BufferedInputStream - but that provides an actual Stream object, and is slightly less performant for direct use.
      * 
@@ -194,7 +196,15 @@ namespace Stroika::Foundation::Streams {
         nonvirtual void SynchronizeFromUnderlyingStream ();
 
     public:
+        /**
+         *  \brief check if the stream is currently at EOF
+         *
+         *  \note - IsAtEOF/0 may do a blocking Read () call.
+         *  \note - IsAtEOF (eDontBlock) returns optional<bool> - nullopt if would block, and false if known not at EOF, and true if known EOF; 
+         *          this differs from most Stroika streams APIs - in that nullopt here means 'EWouldBlock';
+         */
         nonvirtual bool IsAtEOF ();
+        nonvirtual optional<bool> IsAtEOF (NoDataAvailableHandling blockFlag);
 
     public:
         [[deprecated ("Since Stroika v3.0d5 use Read/1-span")]] size_t Read (ElementType* intoStart, ElementType* intoEnd)
