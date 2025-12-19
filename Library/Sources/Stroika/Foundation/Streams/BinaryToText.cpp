@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/IterableToInputStream.h"
@@ -459,8 +460,8 @@ namespace {
         -> InputStream::Ptr<Character>
     {
         using Ptr = InputStream::Ptr<Character>;
-        Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
-                                                      : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
+        Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{Memory::MakeSharedPtr<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
+                                                      : Ptr{Memory::MakeSharedPtr<UnseekableBinaryStreamRep_> (src, codeConverter)};
         Ensure (p.IsSeekable () == (seekable == SeekableFlag::eSeekable));
         return p;
     }

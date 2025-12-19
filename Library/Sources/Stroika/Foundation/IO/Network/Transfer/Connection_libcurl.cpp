@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Connection_libcurl.h"
 
@@ -438,6 +439,6 @@ namespace {
  */
 Connection::Ptr Transfer::LibCurl::Connection::New (const Options& options)
 {
-    return Connection::Ptr{make_shared<Rep_> (options)};
+    return Connection::Ptr{Memory::MakeSharedPtr<Rep_> (options)};
 }
 #endif

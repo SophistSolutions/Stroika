@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
 
 #include "Router.h"
@@ -290,7 +291,7 @@ namespace {
     }
 }
 Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
-    : inherited{make_shared<Rep_> (routes, FillIn_ (corsOptions))}
+    : inherited{Memory::MakeSharedPtr<Rep_> (routes, FillIn_ (corsOptions))}
 {
 }
 

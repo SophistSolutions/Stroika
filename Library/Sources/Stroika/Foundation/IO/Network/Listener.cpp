@@ -29,7 +29,7 @@ using namespace Stroika::Foundation::Traversal;
  ************************* IO::Network::Listener::Rep_ **************************
  ********************************************************************************
  */
-struct Listener::Rep_ {
+struct Listener::Rep_ final {
     Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog,
           const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor)
     {
@@ -101,7 +101,7 @@ Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs,
 
 Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags,
                     const function<void (const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
-    : fRep_{make_shared<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor)}
+    : fRep_{Memory::MakeSharedPtr<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor)}
 {
 }
 

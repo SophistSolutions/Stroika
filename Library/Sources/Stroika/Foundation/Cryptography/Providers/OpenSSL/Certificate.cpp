@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Certificate.h"
 
@@ -90,7 +91,7 @@ namespace {
  */
 auto OpenSSL::Certificate::New (LibRepType&& x509) -> Ptr
 {
-    return make_shared<Rep_> (move (x509));
+    return Memory::MakeSharedPtr<Rep_> (move (x509));
 }
 
 auto OpenSSL::Certificate::New (const SelfSignedCertParams& params) -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>

@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Socket-Private_.h"
 
@@ -22,7 +23,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 namespace {
-    struct Rep_ : BackSocketImpl_<ConnectionOrientedMasterSocket::_IRep> {
+    struct Rep_ final : BackSocketImpl_<ConnectionOrientedMasterSocket::_IRep> {
         using inherited = BackSocketImpl_<ConnectionOrientedMasterSocket::_IRep>;
         Rep_ (Socket::PlatformNativeHandle sd)
             : inherited{sd}
@@ -65,10 +66,10 @@ namespace {
  */
 ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol)
 {
-    return Ptr{make_shared<Rep_> (_Protected::mkLowLevelSocket_ (family, socketKind, protocol))};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (_Protected::mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
 ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::Attach (PlatformNativeHandle sd)
 {
-    return Ptr{make_shared<Rep_> (sd)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (sd)};
 }

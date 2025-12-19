@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Memory/BlockAllocator.h"
 
 #include "Reader.h"
 
@@ -237,17 +238,17 @@ namespace {
     public:
         virtual InputStream::Ptr<byte> Compress (const InputStream::Ptr<byte>& src) const override
         {
-            return InputStream::Ptr<byte>{make_shared<DeflateRep_> (src)};
+            return InputStream::Ptr<byte>{Memory::MakeSharedPtr<DeflateRep_> (src)};
         }
         virtual InputStream::Ptr<byte> Decompress (const InputStream::Ptr<byte>& src) const override
         {
-            return InputStream::Ptr<byte>{make_shared<InflateRep_> (src)};
+            return InputStream::Ptr<byte>{Memory::MakeSharedPtr<InflateRep_> (src)};
         }
     };
 }
 
 Zip::Reader::Reader ()
-    : DataExchange::Compression::Reader{make_shared<Rep_> ()}
+    : DataExchange::Compression::Reader{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 #endif

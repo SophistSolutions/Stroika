@@ -3,6 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 #include "Resource.h"
 
 using namespace Stroika::Foundation;
@@ -69,5 +71,5 @@ ResolverPtr MemoryResolver::New (const Iterable<Definition>& defs)
         }
         Iterable<Definition> fDefs_;
     };
-    return ResolverPtr{make_shared<R> (defs)};
+    return ResolverPtr{Memory::MakeSharedPtr<R> (defs)};
 }

@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
@@ -401,7 +402,7 @@ namespace {
 #else
         using inherited = InstrumentRepBase_<SystemPerformance::Support::Context>;
 #endif
-        MemoryInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
+        MemoryInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = Memory::MakeSharedPtr<_Context> ())
             : inherited{options, context}
         {
             Require (_fOptions.fMinimumAveragingInterval > 0s);

@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "SQLite.h"
@@ -679,7 +680,7 @@ namespace {
                     return "SQLite"sv;
                 }
             };
-            static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
+            static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
         }
         virtual Set<String> GetCollections () override
@@ -708,7 +709,7 @@ namespace {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             return Document::Collection::Ptr{
-                make_shared<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
+                Memory::MakeSharedPtr<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
         }
         virtual Document::Transaction mkTransaction () override
         {
@@ -861,7 +862,7 @@ Document::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto Document::SQLite::Connection::New (const Options& options) -> Ptr
 {
-    return Ptr{make_shared<ConnectionRep_> (options)};
+    return Ptr{Memory::MakeSharedPtr<ConnectionRep_> (options)};
 }
 
 /*

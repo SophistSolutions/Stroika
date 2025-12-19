@@ -35,6 +35,7 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/IO/Network/DNS.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ConnectionlessSocket.h"
 
@@ -383,7 +384,7 @@ struct LinkMonitor::Rep_ {
  ********************************************************************************
  */
 LinkMonitor::LinkMonitor ()
-    : fRep_{make_shared<Rep_> ()}
+    : fRep_{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 

@@ -9,10 +9,10 @@
 #include "Stroika/Foundation/Debug/Main.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Execution/Finally.h"
-
-#include "Common.h"
-#include "Sleep.h"
-#include "TimeOutException.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ThreadPool.h"
 
@@ -548,7 +548,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
 
 ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
-    shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
+    shared_ptr<MyRunnable_> r{Memory::MakeSharedPtr<ThreadPool::MyRunnable_> (*this)};
     StringBuilder entryName = "TPE #{}"_f(fNextThreadEntryNumber_++); // make name so short cuz unix only shows first 15 chars - http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
     entryName += " {"sv + fThreadPoolName_.value_or ("anonymous-thread-pool"sv) + "}"sv;
     Thread::Ptr t = Thread::New ([r] () { r->Run (); }, Thread::eAutoStart, entryName); // race condition for updating this number, but who cares - its purely cosmetic...

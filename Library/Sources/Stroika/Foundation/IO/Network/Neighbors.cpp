@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
@@ -250,7 +251,7 @@ public:
 };
 
 NeighborsMonitor::NeighborsMonitor (const Options& options)
-    : fRep_{make_shared<Rep_> (options)}
+    : fRep_{Memory::MakeSharedPtr<Rep_> (options)}
 {
 }
 

@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/BufferedInputStream.h"
@@ -124,7 +125,7 @@ namespace {
  */
 auto TextToBinary::Reader::New (const InputStream::Ptr<Character>& srcStream, optional<SeekableFlag> seekable) -> InputStream::Ptr<byte>
 {
-    auto result = InputStream::Ptr<byte>{make_shared<Rep_> (srcStream)};
+    auto result = InputStream::Ptr<byte>{Memory::MakeSharedPtr<Rep_> (srcStream)};
     // @todo - this could be more efficient by working embedding some of this logic into Rep_
     if (seekable == SeekableFlag::eSeekable) {
         result = BufferedInputStream::New (result, SeekableFlag::eSeekable);

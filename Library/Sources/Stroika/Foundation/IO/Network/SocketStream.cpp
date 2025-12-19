@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedInputOutputStream.h"
 
 #include "SocketStream.h"
@@ -140,7 +141,7 @@ namespace {
  */
 auto SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (sd)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (sd)};
 }
 
 auto SocketStream::New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr

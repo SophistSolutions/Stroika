@@ -138,7 +138,7 @@ namespace {
  ************************** Variant::XML::Writer ********************************
  ********************************************************************************
  */
-class Variant::XML::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+class Variant::XML::Writer::Rep_ final : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ (const SerializationConfiguration& config)
         : fSerializationConfiguration_{config}

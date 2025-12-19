@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "MessageUtilities.h"
 
@@ -127,7 +128,7 @@ shared_ptr<const IRep> Manager::LookupHandler (const locale& l) const
             }
         }
         // if nothing applies, return this...
-        return {l, make_shared<Impl_en> ()};
+        return {l, Memory::MakeSharedPtr<Impl_en> ()};
     }();
     fLocaleCache_.store (cachedVal);
     return cachedVal->fValue;

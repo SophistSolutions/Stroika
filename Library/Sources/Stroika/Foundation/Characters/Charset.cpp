@@ -4,16 +4,18 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Charset.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+using namespace Stroika::Foundation::Memory;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-struct Charset::Rep_ {
+struct Charset::Rep_ : Memory::UseBlockAllocationIfAppropriate<Charset::Rep_>{
     Rep_ (const String& v)
         : fValue{v}
     {
@@ -27,15 +29,15 @@ struct Charset::Rep_ {
  ********************************************************************************
  */
 Charset::Charset (const std::string& charsetName)
-    : fRep_{make_shared<Rep_> (String{charsetName})} // conversion throws if not valid ascii
+    : fRep_{MakeSharedPtr<Rep_> (String{charsetName})} // conversion throws if not valid ascii
 {
 }
 Charset::Charset (const std::string_view& charsetName)
-    : fRep_{make_shared<Rep_> (String{charsetName})} // conversion asserts valid ASCII
+    : fRep_{MakeSharedPtr<Rep_> (String{charsetName})} // conversion asserts valid ASCII
 {
 }
 Charset::Charset (const String& charsetName)
-    : fRep_{make_shared<Rep_> (charsetName)}
+    : fRep_{MakeSharedPtr<Rep_> (charsetName)}
 {
 }
 

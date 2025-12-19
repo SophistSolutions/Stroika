@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/ConditionVariable.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ConnectionPool.h"
 
@@ -153,7 +154,7 @@ public:
         }
         // wrap the connection-ptr in an envelope that will restore the connection to the pool
         return Connection::Ptr{
-            make_shared<DelegatingConnectionRepWithDeleteHook_> (*poolEntryResult, [this] (const Ptr& p) { this->AddConnection_ (p); })};
+            Memory::MakeSharedPtr<DelegatingConnectionRepWithDeleteHook_> (*poolEntryResult, [this] (const Ptr& p) { this->AddConnection_ (p); })};
     }
     optional<Connection::Ptr> FindAndAllocateFromAvailableByURIMatch_ (const URI& matchScemeAndAuthority)
     {

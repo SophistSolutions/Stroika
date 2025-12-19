@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Main.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 #include "Common.h"
@@ -958,7 +959,7 @@ Thread::CleanupPtr::~CleanupPtr ()
 Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration)
 {
     // All Thread::New () overloads vector through this one...
-    Ptr ptr = Ptr{make_shared<Ptr::Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
+    Ptr ptr = Ptr{Memory::MakeSharedPtr<Ptr::Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
     if (name) {
         ptr.SetThreadName (*name);
     }

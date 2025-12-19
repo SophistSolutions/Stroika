@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Stroika/Frameworks/WebServer/DefaultFaultInterceptor.h"
@@ -324,7 +325,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetTCPNoDelay (*fEffectiveOptions_.fTCPNoDelay);
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
-    shared_ptr<Connection> conn = make_shared<Connection> (s, fUseDefaultConnectionOptions_);
+    shared_ptr<Connection> conn = Memory::MakeSharedPtr<Connection> (s, fUseDefaultConnectionOptions_);
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {

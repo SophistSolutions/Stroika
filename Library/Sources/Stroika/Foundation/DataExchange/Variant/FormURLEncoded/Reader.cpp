@@ -33,11 +33,9 @@ using Traversal::Iterable;
  ****************** DataExchange::::FormURLEncoded::Reader **********************
  ********************************************************************************
  */
-class FormURLEncoded::Reader::Rep_ : public Variant::Reader::_IRep {
+class FormURLEncoded::Reader::Rep_ final : public Variant::Reader::_IRep {
 public:
-    Rep_ ()
-    {
-    }
+    Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
         return make_shared<Rep_> ();

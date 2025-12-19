@@ -248,7 +248,7 @@ namespace {
  ************************** DataExchange::JSON::Writer **************************
  ********************************************************************************
  */
-class Variant::JSON::Writer::Rep_ : public Variant::Writer::_IRep {
+class Variant::JSON::Writer::Rep_ final : public Variant::Writer::_IRep {
 public:
     OptionValues_ fOptions_;
     Rep_ (const Options& options)

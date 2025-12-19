@@ -45,6 +45,6 @@ public:
 ********************************************************************************
 */
 WindowsResourceManager::WindowsResourceManager (HMODULE hModule)
-    : Manager{make_shared<Rep_> (hModule)}
+    : Manager{Memory::MakeSharedPtr<Rep_> (hModule)}
 {
 }

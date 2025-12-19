@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Date.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -260,13 +261,13 @@ ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseRe
 }
 
 ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff)
-    : ReadDownToReader (make_shared<ReadDownToReader> (theUseReader, tagToHandOff), contextTag)
+    : ReadDownToReader (Memory::MakeSharedPtr<ReadDownToReader> (theUseReader, tagToHandOff), contextTag)
 {
     RequireNotNull (theUseReader);
 }
 
 ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag1, const Name& contextTag2, const Name& tagToHandOff)
-    : ReadDownToReader (make_shared<ReadDownToReader> (theUseReader, contextTag2, tagToHandOff), contextTag1)
+    : ReadDownToReader (Memory::MakeSharedPtr<ReadDownToReader> (theUseReader, contextTag2, tagToHandOff), contextTag1)
 {
     RequireNotNull (theUseReader);
 }

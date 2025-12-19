@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Reader.h"
@@ -31,7 +32,7 @@ using Traversal::Iterable;
  ************** DataExchange::::CharacterDelimitedLines::Reader *****************
  ********************************************************************************
  */
-class CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_IRep {
+class CharacterDelimitedLines::Reader::Rep_ final : public Variant::Reader::_IRep {
 public:
     Set<Character> fDelimiters_;
     bool           fTrimTokens_{false};
@@ -42,7 +43,7 @@ public:
     }
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (fDelimiters_, fTrimTokens_);
+        return Memory::MakeSharedPtr<Rep_> (fDelimiters_, fTrimTokens_);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -83,7 +84,7 @@ public:
     }
 };
 CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters, bool trimTokens)
-    : inherited{make_shared<Rep_> (columnDelimiters, trimTokens)}
+    : inherited{Memory::MakeSharedPtr<Rep_> (columnDelimiters, trimTokens)}
 {
 }
 

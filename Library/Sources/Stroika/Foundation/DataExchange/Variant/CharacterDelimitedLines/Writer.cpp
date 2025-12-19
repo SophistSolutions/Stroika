@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Writer.h"
@@ -22,7 +23,7 @@ using namespace DataExchange::Variant;
  *********** DataExchange::Variant::CharacterDelimitedLines::Writer *************
  ********************************************************************************
  */
-class CharacterDelimitedLines::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+class CharacterDelimitedLines::Writer::Rep_ final : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ (const Options& options)
         : fOptions_{options}
@@ -30,7 +31,7 @@ public:
     }
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (fOptions_); // no instance data
+        return Memory::MakeSharedPtr<Rep_> (fOptions_); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -81,7 +82,7 @@ private:
 };
 
 CharacterDelimitedLines::Writer::Writer (const Options& options)
-    : inherited{make_shared<Rep_> (options)}
+    : inherited{Memory::MakeSharedPtr<Rep_> (options)}
 {
 }
 

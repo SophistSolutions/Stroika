@@ -3,6 +3,8 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 #include "ProgressMonitor.h"
 
 using namespace Stroika::Foundation;
@@ -14,7 +16,7 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 ProgressMonitor::ProgressMonitor ()
-    : fRep_{make_shared<Rep_> ()}
+    : fRep_{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 
@@ -41,7 +43,7 @@ ProgressMonitor::ProgressMonitor (Traversal::Iterable<ChangedCallbackType> callb
 void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
 {
     RequireNotNull (fRep_);
-    fRep_->fCallbacks_.rwget ().rwref ().Append (make_shared<ChangedCallbackType> (progressChangedCallback));
+    fRep_->fCallbacks_.rwget ().rwref ().Append (Memory::MakeSharedPtr<ChangedCallbackType> (progressChangedCallback));
 }
 
 void ProgressMonitor::Cancel ()

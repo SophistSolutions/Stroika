@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "SQLite.h"
@@ -297,7 +298,7 @@ namespace {
                     return false;
                 }
             };
-            static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
+            static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
         }
         virtual SQL::Statement mkStatement (const String& sql) override
@@ -456,7 +457,7 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto SQL::SQLite::Connection::New (const Options& options) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (options)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (options)};
 }
 
 /*

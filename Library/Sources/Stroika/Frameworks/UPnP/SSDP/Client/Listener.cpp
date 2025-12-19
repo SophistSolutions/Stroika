@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/Network/ConnectionlessSocket.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 
@@ -192,7 +193,7 @@ private:
  ********************************************************************************
  */
 Listener::Listener (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_{make_shared<Rep_> (ipVersion)}
+    : fRep_{Memory::MakeSharedPtr<Rep_> (ipVersion)}
 {
 }
 

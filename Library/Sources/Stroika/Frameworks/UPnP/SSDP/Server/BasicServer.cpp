@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include "Stroika/Foundation/IO/Network/Socket.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Stroika/Frameworks/UPnP/SSDP/Advertisement.h"
@@ -120,6 +121,6 @@ public:
 ********************************************************************************
 */
 BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_{make_shared<Rep_> (d, dd, fi, ipVersion)}
+    : fRep_{Memory::MakeSharedPtr<Rep_> (d, dd, fi, ipVersion)}
 {
 }

@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Certificate.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "PEMFile.h"
@@ -109,10 +110,10 @@ namespace {
  */
 auto Cryptography::Providers::OpenSSL::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {
-    return make_shared<Rep_> (pemData);
+    return Memory::MakeSharedPtr<Rep_> (pemData);
 }
 auto Cryptography::Providers::OpenSSL::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
 {
-    return make_shared<Rep_> (entries);
+    return Memory::MakeSharedPtr<Rep_> (entries);
 }
 #endif

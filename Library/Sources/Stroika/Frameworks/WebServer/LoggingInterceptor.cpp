@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "LoggingInterceptor.h"
 
@@ -23,7 +24,7 @@ using namespace Stroika::Frameworks::WebServer;
  */
 shared_ptr<ILogHandler::MessageInstance> ILogHandler::Started (Message& m)
 {
-    return make_shared<MessageInstance> (m, Time::GetTickCount ());
+    return Memory::MakeSharedPtr<MessageInstance> (m, Time::GetTickCount ());
 }
 
 /*
@@ -73,6 +74,6 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
 };
 
 LoggingInterceptor::LoggingInterceptor (const shared_ptr<ILogHandler>& logger)
-    : inherited{make_shared<Rep_> (logger)}
+    : inherited{Memory::MakeSharedPtr<Rep_> (logger)}
 {
 }

@@ -24,6 +24,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
@@ -438,12 +439,12 @@ private:
 };
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream::Ptr<byte>& out)
-    : fRep_ (make_shared<Rep_> (out))
+    : fRep_ (Memory::MakeSharedPtr<Rep_> (out))
 {
 }
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream::Ptr<Characters::Character>& out)
-    : fRep_ (make_shared<Rep_> (out))
+    : fRep_ (Memory::MakeSharedPtr<Rep_> (out))
 {
 }
 
@@ -473,7 +474,7 @@ private:
 };
 
 Logger::FileAppender::FileAppender (const filesystem::path& fileName, bool truncateOnOpen)
-    : fRep_ (make_shared<Rep_> (fileName, truncateOnOpen))
+    : fRep_ (Memory::MakeSharedPtr<Rep_> (fileName, truncateOnOpen))
 {
 }
 
@@ -560,7 +561,7 @@ Logger::Activator::Activator (const Options& options)
 {
     Debug::TraceContextBumper ctx{"Logger::Activator::Activator"};
     Assert (sThe.fRep_ == nullptr); // only one activator object at a time
-    sThe.fRep_ = make_shared<Rep_> ();
+    sThe.fRep_ = Memory::MakeSharedPtr<Rep_> ();
     sThe.SetSuppressDuplicates (options.fSuppressDuplicatesThreshold);
     if (options.fLogBufferingEnabled) {
         sThe.SetBufferingEnabled (*options.fLogBufferingEnabled);

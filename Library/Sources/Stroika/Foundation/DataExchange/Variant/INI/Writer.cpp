@@ -24,11 +24,9 @@ using namespace DataExchange::Variant;
  *********************** DataExchange::Variant::INI::Writer *********************
  ********************************************************************************
  */
-class INI::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+class INI::Writer::Rep_ final : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
-    Rep_ ()
-    {
-    }
+    Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
         return make_shared<Rep_> (); // no instance data

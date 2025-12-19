@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Execution/Common.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "CodePage.h"
@@ -851,7 +852,7 @@ CodePagesInstalled::CodePagesInstalled ()
 {
     Assert (fCodePages_.size () == 0);
 
-    shared_ptr<set<CodePage>> accum = make_shared<set<CodePage>> ();
+    shared_ptr<set<CodePage>> accum = Memory::MakeSharedPtr<set<CodePage>> ();
 #if qStroika_Foundation_Common_Platform_Windows
     static mutex sCritSec_;
     {

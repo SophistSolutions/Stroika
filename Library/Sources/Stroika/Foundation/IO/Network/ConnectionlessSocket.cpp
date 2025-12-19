@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Socket-Private_.h"
 
@@ -271,10 +272,10 @@ namespace {
 ConnectionlessSocket::Ptr ConnectionlessSocket::New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol)
 {
     Require (socketKind != Type::STREAM); // use ConnectionOrientedStreamSocket or ConnectionOrientedMasterSocket
-    return Ptr{make_shared<Rep_> (_Protected::mkLowLevelSocket_ (family, socketKind, protocol))};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (_Protected::mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
 ConnectionlessSocket::Ptr ConnectionlessSocket::Attach (PlatformNativeHandle sd)
 {
-    return Ptr{make_shared<Rep_> (sd)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (sd)};
 }

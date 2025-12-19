@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Streams;
  ************************** DataExchange::INI::Reader ***************************
  ********************************************************************************
  */
-class Variant::INI::Reader::Rep_ : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+class Variant::INI::Reader::Rep_ final : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     virtual _SharedPtrIRep Clone () const override
     {

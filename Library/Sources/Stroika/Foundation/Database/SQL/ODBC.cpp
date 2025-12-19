@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Database/Exception.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ODBC.h"
 
@@ -135,7 +136,7 @@ namespace {
                     return false;
                 }
             };
-            return make_shared<const MyEngineProperties_> (); // dynamic info based on connection/dsn
+            return Memory::MakeSharedPtr<const MyEngineProperties_> (); // dynamic info based on connection/dsn
         }
         virtual SQL::Statement mkStatement (const String& sql) override
         {
@@ -176,7 +177,7 @@ SQL::ODBC::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto SQL::ODBC::Connection::New (const Options& options) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (options)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (options)};
 }
 
 /*

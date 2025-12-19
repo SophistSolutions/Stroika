@@ -22,6 +22,7 @@
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Date.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 
@@ -482,7 +483,7 @@ namespace {
                 fSessionHandle_.reset ();
             }
             if (fSessionHandle_ == nullptr) {
-                fSessionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.As<wstring> ().c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY,
+                fSessionHandle_ = Memory::MakeSharedPtr<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.As<wstring> ().c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY,
                                                                                  WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
                 fSessionHandle_UserAgent_ = userAgent;
                 if (fOptions_.fMaxAutomaticRedirects == 0) {
@@ -506,7 +507,7 @@ namespace {
                     Execution::Throw (kException_);
                 }
                 // NOT SURE - for IPv6 address - if we want to pass encoded value here?
-                fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (
+                fConnectionHandle_ = Memory::MakeSharedPtr<AutoWinHINTERNET_> (::WinHttpConnect (
                     *fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->As<String> (URI::StringPCTEncodedFlag::ePCTEncoded).As<wstring> ().c_str (),
                     fURL_.GetPortValue (), 0));
             }
@@ -548,6 +549,6 @@ namespace {
  */
 Connection::Ptr Transfer::WinHTTP::Connection::New (const Options& options)
 {
-    return Connection::Ptr{make_shared<Rep_> (options)};
+    return Connection::Ptr{Memory::MakeSharedPtr<Rep_> (options)};
 }
 #endif

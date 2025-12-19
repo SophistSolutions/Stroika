@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "PrivateKey.h"
 
@@ -106,6 +107,6 @@ namespace {
 #if qStroika_HasComponent_OpenSSL
 auto OpenSSL::PrivateKey::New (LibRepType&& p) -> Ptr
 {
-    return make_shared<Rep_> (move (p));
+    return Memory::MakeSharedPtr<Rep_> (move (p));
 }
 #endif

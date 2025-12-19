@@ -57,7 +57,7 @@ namespace {
     };
 
     // use StreamReader to get buffering of input data (performance tweak), and a couple helper methods
-    struct MyBufferedStreamReader_ : StreamReader<Character> {
+    struct MyBufferedStreamReader_ final : StreamReader<Character> {
         MyBufferedStreamReader_ (const InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted)
             : StreamReader<Character>{underlyingReadFromStreamAdopted}
         {

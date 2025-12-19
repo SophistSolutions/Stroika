@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
 #include "TrivialDocumentDB.h"
@@ -170,7 +171,7 @@ namespace {
                     return "TrivialDocumentDB"sv;
                 }
             };
-            static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
+            static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
         }
         virtual Set<String> GetCollections () override
@@ -192,7 +193,7 @@ namespace {
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             return Document::Collection::Ptr{
-                make_shared<MyCollectionRep_> (Debug::UncheckedDynamicPointerCast<MemoryDatabaseRep_> (shared_from_this ()), name)};
+                Memory::MakeSharedPtr<MyCollectionRep_> (Debug::UncheckedDynamicPointerCast<MemoryDatabaseRep_> (shared_from_this ()), name)};
         }
         virtual Document::Transaction mkTransaction () override
         {
@@ -212,10 +213,10 @@ namespace {
 auto Document::TrivialDocumentDB::New (const Options& options) -> Ptr
 {
     if (get_if<Options::MemoryStorage> (&options.fStorage)) {
-        return Ptr{make_shared<MemoryDatabaseRep_> (options)};
+        return Ptr{Memory::MakeSharedPtr<MemoryDatabaseRep_> (options)};
     }
     else if (get_if<Options::FilesystemStorage> (&options.fStorage)) {
-        return Ptr{make_shared<FilesystemDatabaseRep_> (options)};
+        return Ptr{Memory::MakeSharedPtr<FilesystemDatabaseRep_> (options)};
     }
     AssertNotImplemented ();
     return nullptr;

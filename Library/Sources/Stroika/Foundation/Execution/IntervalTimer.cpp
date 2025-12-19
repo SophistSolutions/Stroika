@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
 #include "IntervalTimer.h"
@@ -144,7 +145,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             auto lk = fThread_.rwget ();
             if (lk.cref () == nullptr) {
                 using namespace Execution;
-                lk.store (make_shared<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
+                lk.store (Memory::MakeSharedPtr<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
                                                            Thread::New ([this] () { RunnerLoop_ (); }, Thread::eAutoStart, "Default-Interval-Timer"sv)));
             }
             else {
@@ -155,7 +156,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
 };
 
 IntervalTimer::Manager::DefaultRep::DefaultRep ()
-    : fHiddenRep_{make_shared<Rep_> ()}
+    : fHiddenRep_{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 
@@ -194,7 +195,7 @@ IntervalTimer::Manager::Activator::Activator ()
     Debug::TraceContextBumper ctx{"IntervalTimer::Manager::Activator::Activator"};
     Require (Manager::sThe.fRep_ == nullptr); // only one activator object allowed
     Require (Debug::AppearsDuringMainLifetime ());
-    Manager::sThe = Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()};
+    Manager::sThe = Manager{Memory::MakeSharedPtr<IntervalTimer::Manager::DefaultRep> ()};
 }
 
 IntervalTimer::Manager::Activator::~Activator ()

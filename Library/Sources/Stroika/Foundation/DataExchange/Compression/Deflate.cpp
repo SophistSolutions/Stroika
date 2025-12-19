@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/FeatureNotSupportedException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #if qStroika_HasComponent_zlib
 #include "Private_/ZLibSupport.h"
@@ -48,7 +49,7 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
         }
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<DeflateRep_> (src, fOptions_, false);
+            fDelegate2 = Memory::MakeSharedPtr<DeflateRep_> (src, fOptions_, false);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -56,7 +57,7 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
             return nullopt;
         }
     };
-    return Compression::Ptr{make_shared<MyRep_> (o)};
+    return Compression::Ptr{Memory::MakeSharedPtr<MyRep_> (o)};
 #else
     Execution::Throw (kNotSuppExcept_);
 #endif
@@ -68,7 +69,7 @@ Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decom
         shared_ptr<Private_::InflateRep_> fDelegate2;
         virtual InputStream::Ptr<byte>    Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<Private_::InflateRep_> (src, false);
+            fDelegate2 = Memory::MakeSharedPtr<Private_::InflateRep_> (src, false);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -76,7 +77,7 @@ Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decom
             return nullopt;
         }
     };
-    return Compression::Ptr{make_shared<MyRep_> ()};
+    return Compression::Ptr{Memory::MakeSharedPtr<MyRep_> ()};
 #else
     Execution::Throw (kNotSuppExcept_);
 #endif

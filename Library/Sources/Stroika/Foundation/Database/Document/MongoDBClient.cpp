@@ -38,6 +38,7 @@ DISABLE_COMPILER_MSC_WARNING_END (4166)
 #include "Stroika/Foundation/Database/Exception.h"
 #include "Stroika/Foundation/Debug/Main.h"
 #include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "MongoDBClient.h"
 
@@ -623,7 +624,7 @@ namespace {
                     return "mongo-cxx-driver"sv; // must indirect to connection to get more info (from dns at least? not clear)
                 }
             };
-            return make_shared<const MyEngineProperties_> (); // dynamic info based on connection/dsn
+            return Memory::MakeSharedPtr<const MyEngineProperties_> (); // dynamic info based on connection/dsn
         }
         virtual Set<String> GetCollections () override
         {
@@ -675,7 +676,7 @@ namespace {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             try {
                 return Document::Collection::Ptr{
-                    make_shared<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
+                    Memory::MakeSharedPtr<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
             }
             catch (...) {
                 DoReThrow_ ();
@@ -755,7 +756,7 @@ ConnectionPool::ConnectionPool (shared_ptr<mongocxx::pool>&& poolRep)
 {
 }
 ConnectionPool::ConnectionPool (const String& connectionString)
-    : ConnectionPool{make_shared<mongocxx::pool> (ConnectionString2MongoURI_ (connectionString))}
+    : ConnectionPool{Memory::MakeSharedPtr<mongocxx::pool> (ConnectionString2MongoURI_ (connectionString))}
 {
 }
 
@@ -785,7 +786,7 @@ auto Document::MongoDBClient::AdminConnection::New (const AdminConnection::Optio
 #if qStroika_Foundation_Debug_AssertionsChecked
     Require (sActivatorLiveCnt_ > 0);
 #endif
-    return Ptr{make_shared<AdminRep_> (options)};
+    return Ptr{Memory::MakeSharedPtr<AdminRep_> (options)};
 }
 
 /*
@@ -798,7 +799,7 @@ auto Document::MongoDBClient::Connection::New (const Connection::Options& option
 #if qStroika_Foundation_Debug_AssertionsChecked
     Require (sActivatorLiveCnt_ > 0);
 #endif
-    return Ptr{make_shared<ConnectionRep_> (options)};
+    return Ptr{Memory::MakeSharedPtr<ConnectionRep_> (options)};
 }
 
 /*

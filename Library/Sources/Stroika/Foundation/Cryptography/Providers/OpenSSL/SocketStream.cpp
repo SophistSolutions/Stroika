@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/Exception.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/OperationNotSupportedException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedInputOutputStream.h"
 
 #include "SocketStream.h"
@@ -34,7 +35,7 @@ using std::byte;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
-    class Rep_ : public OpenSSL::SocketStream::IRep {
+    class Rep_ final : public OpenSSL::SocketStream::IRep {
     public:
         bool           fOpenForRead_{true};
         bool           fOpenForWrite_{true};
@@ -241,14 +242,14 @@ namespace {
  */
 auto Cryptography::Providers::OpenSSL::SocketStream::New (LibRepType&& r) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (move (r))};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (move (r))};
 }
 auto Cryptography::Providers::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (sd, o)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (sd, o)};
 }
 auto Cryptography::Providers::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ServerContext::Options& o) -> Ptr
 {
-    return Ptr{make_shared<Rep_> (sd, o)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (sd, o)};
 }
 #endif

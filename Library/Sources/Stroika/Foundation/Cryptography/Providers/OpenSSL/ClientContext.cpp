@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Cryptography/Providers/OpenSSL/PrivateKey.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "ClientContext.h"
 
@@ -53,6 +54,6 @@ namespace {
 #if qStroika_HasComponent_OpenSSL
 auto OpenSSL::ClientContext::New (const Options& o) -> Ptr
 {
-    return make_shared<Rep_> (o);
+    return Memory::MakeSharedPtr<Rep_> (o);
 }
 #endif

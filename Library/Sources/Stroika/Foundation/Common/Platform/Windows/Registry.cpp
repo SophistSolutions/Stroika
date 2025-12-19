@@ -172,7 +172,7 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
         HKEY fParentKey;
         int  fCurIndex{0};
     };
-    auto myContext        = make_shared<Context_> ();
+    auto myContext        = Memory::MakeSharedPtr<Context_> ();
     myContext->fParentKey = fKey_;
     auto getNext          = [myContext] () -> optional<shared_ptr<RegistryKey>> {
         Memory::StackBuffer<TCHAR> achKeyBuf{Memory::eUninitialized, 1024};
@@ -193,7 +193,7 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("returning next child key: {}"_f, achKeyBuf);
 #endif
-        return make_shared<RegistryKey> (myContext->fParentKey, String::FromSDKString (achKeyBuf));
+        return Memory::MakeSharedPtr<RegistryKey> (myContext->fParentKey, String::FromSDKString (achKeyBuf));
     };
     return Traversal::CreateGenerator<shared_ptr<RegistryKey>> (getNext);
 }

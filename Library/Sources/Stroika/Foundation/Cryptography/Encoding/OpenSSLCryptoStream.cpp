@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedInputStream.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
@@ -355,7 +356,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
 auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream::Ptr<byte>& realIn)
     -> Streams::InputStream::Ptr<byte>
 {
-    return Streams::InputStream::Ptr<byte>{make_shared<OpenSSLInputStreamRep_> (cryptoParams, direction, realIn)};
+    return Streams::InputStream::Ptr<byte>{Memory::MakeSharedPtr<OpenSSLInputStreamRep_> (cryptoParams, direction, realIn)};
 }
 
 auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
@@ -380,7 +381,7 @@ auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchr
 auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream::Ptr<byte>& realOut)
     -> Streams::OutputStream::Ptr<byte>
 {
-    return Streams::OutputStream::Ptr<byte>{make_shared<OpenSSLOutputStreamRep_> (cryptoParams, direction, realOut)};
+    return Streams::OutputStream::Ptr<byte>{Memory::MakeSharedPtr<OpenSSLOutputStreamRep_> (cryptoParams, direction, realOut)};
 }
 
 auto OpenSSLOutputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
