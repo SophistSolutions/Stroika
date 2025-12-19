@@ -15,7 +15,7 @@ using namespace Stroika::Foundation::Memory;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-struct Charset::Rep_ : Memory::UseBlockAllocationIfAppropriate<Charset::Rep_>{
+struct Charset::Rep_ : Memory::UseBlockAllocationIfAppropriate<Charset::Rep_> {
     Rep_ (const String& v)
         : fValue{v}
     {

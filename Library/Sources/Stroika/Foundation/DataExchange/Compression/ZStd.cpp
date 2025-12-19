@@ -34,9 +34,6 @@ namespace {
 
 #if qStroika_HasComponent_zstd
 namespace {
-
-    // EARLY DRAFT BASED ON https://github.com/facebook/zstd/blob/dev/examples/streaming_compression.c
-
     inline void ThrowIfZStdErr_ (size_t rc) // CHECK_ZSTD
     {
         if (ZSTD_isError (rc)) {

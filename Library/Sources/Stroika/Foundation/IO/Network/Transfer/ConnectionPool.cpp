@@ -153,8 +153,8 @@ public:
             }
         }
         // wrap the connection-ptr in an envelope that will restore the connection to the pool
-        return Connection::Ptr{
-            Memory::MakeSharedPtr<DelegatingConnectionRepWithDeleteHook_> (*poolEntryResult, [this] (const Ptr& p) { this->AddConnection_ (p); })};
+        return Connection::Ptr{Memory::MakeSharedPtr<DelegatingConnectionRepWithDeleteHook_> (
+            *poolEntryResult, [this] (const Ptr& p) { this->AddConnection_ (p); })};
     }
     optional<Connection::Ptr> FindAndAllocateFromAvailableByURIMatch_ (const URI& matchScemeAndAuthority)
     {

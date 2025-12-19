@@ -145,8 +145,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             auto lk = fThread_.rwget ();
             if (lk.cref () == nullptr) {
                 using namespace Execution;
-                lk.store (Memory::MakeSharedPtr<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
-                                                           Thread::New ([this] () { RunnerLoop_ (); }, Thread::eAutoStart, "Default-Interval-Timer"sv)));
+                lk.store (Memory::MakeSharedPtr<Thread::CleanupPtr> (
+                    Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { RunnerLoop_ (); }, Thread::eAutoStart, "Default-Interval-Timer"sv)));
             }
             else {
                 fDataChanged_.Set (); // if there was and still is a thread, it maybe sleeping too long, so wake it up

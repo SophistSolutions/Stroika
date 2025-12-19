@@ -37,8 +37,8 @@ DISABLE_COMPILER_MSC_WARNING_END (4166)
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Database/Exception.h"
 #include "Stroika/Foundation/Debug/Main.h"
-#include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/Common.h"
 
 #include "MongoDBClient.h"
 
