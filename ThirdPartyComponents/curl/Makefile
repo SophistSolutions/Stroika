@@ -133,6 +133,7 @@ CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
 endif
 endif
 
+
 # curl uses LDFLAGS, so provide it (needed to find other libraries, sanitizer flags - for those other libs, etc).
 LDFLAGS:=	${Platform_LDFLAGS}
 LDFLAGS:=	$(filter-out --std=%, $(LDFLAGS))
@@ -173,8 +174,10 @@ endif
 ifeq ($(qFeatureFlag_ZLib), no)
 LIBCURL_CONFIGURE += --without-zlib
 else
+ifeq (Unix,$(BuildPlatform))
 ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" z),false)
 LIBCURL_CONFIGURE += --with-zlib
+endif
 endif
 endif
 
@@ -217,6 +220,8 @@ LIBCURL_CONFIGURE += --disable-debug
 LIBCURL_CONFIGURE += --enable-optimize
 LIBCURL_CONFIGURE += --disable-curldebug
 endif
+
+
 
 
 ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
@@ -317,7 +322,7 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/curl/
+	@rm -rf $(StroikaRoot)IntermediateFiles/*/ThirdPartyComponents/curl/
 else
 	@rm -rf $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_)
 endif
