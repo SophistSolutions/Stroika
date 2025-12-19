@@ -6,6 +6,8 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <memory>
+
 #include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Memory/BlockAllocator.h"
 
