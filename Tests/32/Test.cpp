@@ -24,6 +24,7 @@
 #endif
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/Compression/GZip.h"
+#include "Stroika/Foundation/DataExchange/Compression/ZStd.h"
 #if qStroika_HasComponent_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
@@ -1153,6 +1154,12 @@ namespace {
             if constexpr (Compression::GZip::kSupported) {
                 Memory::BLOB compressed = Compression::GZip::Compress::New ().Transform (b);
                 EXPECT_EQ (b, Compression::GZip::Decompress::New ().Transform (compressed));
+            }
+            // Compression::ZStd
+            if constexpr (Compression::ZStd::kSupported) {
+                Memory::BLOB compressed = Compression::ZStd::Compress::New ().Transform (b);
+                IO::FileSystem::FileOutputStream::New ("foo-out.zst").Write (compressed);
+                EXPECT_EQ (b, Compression::ZStd::Decompress::New ().Transform (compressed));
             }
         };
         RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"));

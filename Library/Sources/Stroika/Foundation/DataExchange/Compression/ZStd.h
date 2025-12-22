@@ -40,7 +40,9 @@ namespace Stroika::Foundation::DataExchange::Compression::ZStd {
      *  \note if not kSupported, these 'New ()' functions just throw FeatureNotSupportedException{}
      */
     namespace Compress {
-        struct Options : Compression::Compress::Options {};
+        struct Options : Compression::Compress::Options {
+            optional<bool> fFlushEachWrite; // if true, flush after each write (useful for streaming), else ??? define rules for ZSTD_e_flush vs ZSTD_e_continue - NYI
+        };
         Ptr New (const Options& o = {});
     }
     namespace Decompress {
