@@ -1158,7 +1158,6 @@ namespace {
             // Compression::ZStd
             if constexpr (Compression::ZStd::kSupported) {
                 Memory::BLOB compressed = Compression::ZStd::Compress::New ().Transform (b);
-                IO::FileSystem::FileOutputStream::New ("foo-out.zst").Write (compressed);
                 EXPECT_EQ (b, Compression::ZStd::Decompress::New ().Transform (compressed));
             }
         };
