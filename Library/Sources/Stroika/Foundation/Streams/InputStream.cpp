@@ -32,13 +32,13 @@ template <>
 Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"InputStream::Ptr<byte>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
+    Debug::TraceContextBumper ctx{"InputStream::Ptr<byte>::ReadAll", L"upTo: {}"_f, static_cast<unsigned long long> (upTo)};
 #endif
     Require (upTo >= 1);
     Memory::StackBuffer<byte> r;
     for (size_t nEltsLeft = upTo; nEltsLeft != 0;) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("nEltsLeft=%llu", static_cast<unsigned long long> (nEltsLeft));
+        DbgTrace ("nEltsLeft={}"_f, static_cast<unsigned long long> (nEltsLeft));
 #endif
         byte  buf[64 * 1024]; // intentionally uninitialized
         byte* s = std::begin (buf);
