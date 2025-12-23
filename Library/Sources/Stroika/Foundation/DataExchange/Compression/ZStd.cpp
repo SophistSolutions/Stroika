@@ -124,34 +124,7 @@ namespace {
             if (fOutputBufCache_.size () != 0) {
                 return fOutputBufCache_.size ();
             }
-
-            // tricky - cuz we don't want to block
-
-            // Combine existing fInputBuf_ cached data with a bit more we try to read, so we pass as big a chunk as possible to ZStd lib
-            // Read argument windows into fInputBuf_, just after any bytes already read
-            if (optional<span<byte>> n =
-                    fInStreamReader_->Read (span{fInputBuf_}.subspan (fRawUnprocessedInputBytes_.size ()), NoDataAvailableHandling::eDontBlock)) {
-                fRawUnprocessedInputBytes_ = span{fInputBuf_}.first (fRawUnprocessedInputBytes_.size () + n->size ());
-            }
-
-            // if we have any data in fRawUnprocessedInputBytes_, translate it and copy it into fOutputBufCache_.
-            // return sizes of know available data.
-            ZSTD_inBuffer input = {fRawUnprocessedInputBytes_.data (), fRawUnprocessedInputBytes_.size (), 0};
-            Assert (fOutputBufCache_.size ()); // so overwrite whole buffer
-            ZSTD_outBuffer output = {fOutBuf_.data (), fOutBuf_.size (), 0};
-            // @todo consider checking EOF of input? and passing different endflag to compress?
-            size_t const remaining = ::ZSTD_compressStream2 (fCtx_, &output, &input, ZSTD_e_continue);
-            ThrowIfZStdErr_ (remaining);
-
-            // if anything produced cache it
-            if (output.pos > 0) {
-                // remove consumed input bytes
-                fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (input.pos);
-                // extend the fOutputBufCache_
-                Assert (fOutputBufCache_.size () == 0);
-                fOutputBufCache_ = span{fOutBuf_}.first (output.pos);
-                // but dont update seek offset, cuz we didn't actually read anything
-            }
+            FillOutputBufCache_ (NoDataAvailableHandling::eDontBlock); // pull and process what we can without blocking
             if (fOutputBufCache_.size () != 0) {
                 return fOutputBufCache_.size ();
             }
@@ -174,7 +147,7 @@ namespace {
 
             // See if request can be satisfied from cached output bytes; note we only NEED to return one byte (but can return more)
             if (not fOutputBufCache_.empty ()) {
-                Assert (fStage_ != Stage_::eDone);
+            AGAIN:
                 size_t nToCopy = min (intoBuffer.size (), fOutputBufCache_.size ());
                 auto r = Memory::CopySpanData (fOutputBufCache_.subspan (0, nToCopy), intoBuffer); // intoBuffer large enuf cuz we pinned size with nToCopy
                 fOutputBufCache_ = fOutputBufCache_.subspan (nToCopy);                             // skip returned bytes
@@ -182,6 +155,16 @@ namespace {
                 return r;
             }
 
+            FillOutputBufCache_ (blockFlag);
+            if (not fOutputBufCache_.empty ()) {
+                goto AGAIN;
+            }
+            return fStage_ == Stage_::eDone ? span<byte>{} : optional<span<byte>>{};
+        }
+
+        void FillOutputBufCache_ (NoDataAvailableHandling blockFlag)
+        {
+            Require (fOutputBufCache_.empty ());
             // first read from the input stream, and accumulate until EOF on input stream (using ZSTD_e_continue or ZSTD_e_flush) - (Process chunks)
             switch (fStage_) {
                 // TODO
@@ -204,11 +187,11 @@ namespace {
                             // If nothing available to compress, either input at EOF, or must return nullopt and wait for more
                             if (optional<bool> isAtEOF = fInStreamReader_->IsAtEOF (blockFlag); isAtEOF and *isAtEOF) {
                                 fStage_ = Stage_::eEndOutput; // if instream reader definitely at EOF, then fRawUnprocessedInputBytes_ contains all that is left
-                                goto xxx;
+                                goto EndOutput;
                             }
                             else {
                                 Assert (blockFlag == NoDataAvailableHandling::eDontBlock); // else we would have blocked getting at least one byte
-                                return nullopt;
+                                return;
                             }
                         }
                         else {
@@ -219,11 +202,8 @@ namespace {
                             // if anything produced, adjust cache(s) and return it
                             if (compressResults.fProducedOutputBytes_ > 0) {
                                 // cache excess output bytes, and return those that will fit
-                                size_t nToCopy = min (intoBuffer.size (), compressResults.fProducedOutputBytes_);
-                                auto   r       = Memory::CopySpanData (span{fOutBuf_}.subspan (0, nToCopy), intoBuffer);
-                                fOutputBufCache_ = span{fOutBuf_}.subspan (nToCopy, compressResults.fProducedOutputBytes_ - nToCopy); // skip returned bytes
-                                fSeekOffset_ += nToCopy;
-                                return r;
+                                fOutputBufCache_ = span{fOutBuf_}.subspan (0, compressResults.fProducedOutputBytes_); // skip returned bytes
+                                return;
                             }
                             else {
                                 Assert (compressResults.fConsumedInputBytes_ > 0); // keep going - making progress
@@ -233,21 +213,21 @@ namespace {
                     // There maybe more to pull from the streamreader, so we cannot assume we are done
                     // this line probably wrong!!!
                     AssertNotReached ();
-                    return nullopt;
                 } break;
                 case Stage_::eEndOutput: {
-                xxx:
+                EndOutput:
+                    Assert (fOutputBufCache_.empty ());
                     Assert (fRawUnprocessedInputBytes_.empty ());
                     // then input has already signaled EOF (this cannot change) - and we just do final fetch of remaining output (Final flush and frame end)
-                    CompressResult_ compressResults = LowLevelCompress_ (fCtx_, span<const byte>{}, ZSTD_e_end, intoBuffer);
-                    auto            r               = intoBuffer.subspan (0, compressResults.fProducedOutputBytes_);
+                    CompressResult_ compressResults = LowLevelCompress_ (fCtx_, span<const byte>{}, ZSTD_e_end, span{fOutBuf_});
+                    fOutputBufCache_                = span{fOutBuf_}.subspan (0, compressResults.fProducedOutputBytes_);
                     if (compressResults.fRemaining == 0) {
                         fStage_ = Stage_::eDone; // Frame fully flushed and finished
                     }
-                    return r;
+                    return;
                 }
                 case Stage_::eDone: {
-                    return span<byte>{}; // no more data to read
+                    return; // no more data to read
                 }
                 default:
                     AssertNotReached ();
@@ -316,6 +296,7 @@ namespace {
         }
         virtual optional<size_t> AvailableToRead () override
         {
+            // DO SAME REFACTORING WITH DID FOR COMPRESS COPDE --LGP 2025-12-22
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             if (fOutputBufCache_.size () != 0) {
                 return fOutputBufCache_.size ();
@@ -329,7 +310,6 @@ namespace {
                     fInStreamReader_->Read (span{fInputBuf_}.subspan (fRawUnprocessedInputBytes_.size ()), NoDataAvailableHandling::eDontBlock)) {
                 fRawUnprocessedInputBytes_ = span{fInputBuf_}.first (fRawUnprocessedInputBytes_.size () + n->size ());
             }
-            DbgTrace ("fRawUnprocessedInputBytes_ = {}"_f, fRawUnprocessedInputBytes_);
 
             // if we have any data in fRawUnprocessedInputBytes_, translate it and copy it into fOutputBufCache_.
             // return sizes of know available data.
@@ -375,7 +355,6 @@ namespace {
                 return r;
             }
 
-#if 1
             while (true) {
                 // Combine existing fInputBuf_ cached data with a bit more we try to read, so we pass as big a chunk as possible to ZStd lib
                 // Read argument windows into fInputBuf_, just after any bytes already read
@@ -421,63 +400,6 @@ namespace {
                     }
                 }
             }
-
-#else
-            // Combine existing fInputBuf_ cached data with a bit more we try to read, so we pass as big a chunk as possible to ZStd lib
-            // Read argument windows into fInputBuf_, just after any bytes already read
-            if (fRawUnprocessedInputBytes_.size () < fInputBuf_.size ()) {
-                if (optional<span<byte>> n = fInStreamReader_->Read (span{fInputBuf_}.subspan (fRawUnprocessedInputBytes_.size ()), blockFlag)) {
-                    fRawUnprocessedInputBytes_ = span{fInputBuf_}.first (fRawUnprocessedInputBytes_.size () + n->size ());
-                }
-            }
-
-            Assert (fOutputBufCache_.empty ());
-            // Now if we have any input bytes to decompress, run it through the library
-            if (not fRawUnprocessedInputBytes_.empty ()) {
-                {
-                    ZSTD_inBuffer  input     = {fRawUnprocessedInputBytes_.data (), fRawUnprocessedInputBytes_.size (), 0};
-                    ZSTD_outBuffer output    = {intoBuffer.data (), intoBuffer.size (), 0};
-                    size_t const   remaining = ::ZSTD_decompressStream (fCtx_, &output, &input);
-                    ThrowIfZStdErr_ (remaining);
-
-                    // if anything produced, adjust cache(s) and return it
-                    if (output.pos > 0) {
-                        fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (input.pos);
-                        fSeekOffset_ += output.pos;
-                        // Note if remaining > 0, there are more bytes to be flushed out later, retained in the context
-                        return intoBuffer.subspan (0, output.pos);
-                    }
-                    Assert (output.pos == 0);
-                }
-
-                // If we have input data, and no output data, maybe output buffer too small: try using a larger output buffer
-                if (fOutBuf_.size () > intoBuffer.size ()) {
-                    ZSTD_inBuffer  input     = {fRawUnprocessedInputBytes_.data (), fRawUnprocessedInputBytes_.size (), 0};
-                    ZSTD_outBuffer output    = {fOutBuf_.data (), fOutBuf_.size (), 0};
-                    size_t const   remaining = ::ZSTD_decompressStream (fCtx_, &output, &input);
-                    ThrowIfZStdErr_ (remaining);
-                    // if anything produced this time, return what we can, and stash the rest.
-                    if (output.pos > 0) {
-                        fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (input.pos);
-                        fSeekOffset_ += output.pos;
-                        // cache excess output bytes, and return those that will fit
-                        size_t nToCopy   = min (intoBuffer.size (), output.pos);
-                        auto   r         = Memory::CopySpanData (span{fOutBuf_}.subspan (0, nToCopy), intoBuffer);
-                        fOutputBufCache_ = span{fOutBuf_}.subspan (nToCopy); // skip returned bytes
-                        return r;
-                    }
-                }
-            }
-
-            // at this point, we have no data to return, and no more input data to process. This could be because we are at EOF,
-            // or because we did non-blocking reads, and we just didn't get any data yet.
-
-            Assert (fOutputBufCache_.empty ()); // fRawUnprocessedInputBytes_.empty () MIGHT have data, but not enuf to decompress
-            if (optional<bool> isAtEOF = fInStreamReader_->IsAtEOF (blockFlag); isAtEOF and *isAtEOF) {
-                // @todo IF there is fRawUnprocessedInputBytes_, this i think is bogus data and we should throw!
-                return span<byte>{}; // no more data to read
-            }
-#endif
 
             // There maybe more to pull from the streamreader, so we cannot assume we are done
             Assert (blockFlag == NoDataAvailableHandling::eDontBlock); // else we should have read more data to return a good answer - only return nullopt if would block
