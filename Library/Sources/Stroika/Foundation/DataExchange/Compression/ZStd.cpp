@@ -43,6 +43,8 @@ namespace {
 
     struct CompressingByteStreamRep_ final : InputStream::IRep<byte>, Memory::UseBlockAllocationIfAppropriate<CompressingByteStreamRep_> {
     public:
+        CompressingByteStreamRep_ ()                                 = delete;
+        CompressingByteStreamRep_ (const CompressingByteStreamRep_&) = delete;
         CompressingByteStreamRep_ (const Streams::InputStream::Ptr<byte>& in, Compress::Options o)
             : fInStreamReader_{make_unique<Streams::StreamReader<byte>> (in)}
         {
@@ -91,14 +93,19 @@ namespace {
         virtual optional<size_t> AvailableToRead () override
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            if (fOutputBufCache_.size () != 0) {
-                return fOutputBufCache_.size ();
+            // at most twice through loop
+            while (true) {
+                if (fOutputBufCache_.size () != 0) {
+                    return fOutputBufCache_.size ();
+                }
+                FillOutputBufCache_ (NoDataAvailableHandling::eDontBlock); // pull and process what we can without blocking
+                if (fOutputBufCache_.empty ()) {
+                    if (auto ob = fInStreamReader_->IsAtEOF (NoDataAvailableHandling::eDontBlock); ob and *ob) {
+                        return 0;
+                    }
+                    return nullopt;
+                }
             }
-            FillOutputBufCache_ (NoDataAvailableHandling::eDontBlock); // pull and process what we can without blocking
-            if (fOutputBufCache_.size () != 0) {
-                return fOutputBufCache_.size ();
-            }
-            return nullopt;
         }
         virtual optional<SeekOffsetType> RemainingLength () override
         {
@@ -111,25 +118,23 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
             /*
-             * must read enough bytes from inputStream (possible some unconverted bytes left over to re-use), to satisify the intoBuffer
-             * read request. This might produce more compressed output than fits in intoBuffer - in which case we must cache the balance
+             * First try output cache, and then fill if needed. If second time around, and still empty, must be EOF or dont know (cuz not blocking)
              */
-
-            // See if request can be satisfied from cached output bytes; note we only NEED to return one byte (but can return more)
-            if (not fOutputBufCache_.empty ()) {
-            AGAIN:
-                size_t nToCopy = min (intoBuffer.size (), fOutputBufCache_.size ());
-                auto r = Memory::CopySpanData (fOutputBufCache_.subspan (0, nToCopy), intoBuffer); // intoBuffer large enuf cuz we pinned size with nToCopy
-                fOutputBufCache_ = fOutputBufCache_.subspan (nToCopy);                             // skip returned bytes
-                fSeekOffset_ += nToCopy;
-                return r;
+            while (true) {
+                // See if request can be satisfied from cached output bytes; note we only NEED to return one byte (but can return more)
+                if (not fOutputBufCache_.empty ()) {
+                    size_t nToCopy = min (intoBuffer.size (), fOutputBufCache_.size ());
+                    auto r = Memory::CopySpanData (fOutputBufCache_.subspan (0, nToCopy), intoBuffer); // intoBuffer large enuf cuz we pinned size with nToCopy
+                    fOutputBufCache_ = fOutputBufCache_.subspan (nToCopy);                             // skip returned bytes
+                    fSeekOffset_ += nToCopy;
+                    return r;
+                }
+                FillOutputBufCache_ (blockFlag);
+                if (fOutputBufCache_.empty ()) {
+                    // if fill failed, either cuz non-blocking, or EOF
+                    return fStage_ == Stage_::eDone ? span<byte>{} : optional<span<byte>>{};
+                }
             }
-
-            FillOutputBufCache_ (blockFlag);
-            if (not fOutputBufCache_.empty ()) {
-                goto AGAIN;
-            }
-            return fStage_ == Stage_::eDone ? span<byte>{} : optional<span<byte>>{};
         }
 
     private:
@@ -154,7 +159,7 @@ namespace {
             size_t fProducedOutputBytes_{};
             size_t fRemaining;
         };
-        static CompressResult_ LowLevelCompress_ (ZSTD_CCtx* ctx, span<const byte> fromBytes, ZSTD_EndDirective endFlag, span<byte> intoCompressedBytes)
+        static CompressResult_ DoZStd_Compress_ (ZSTD_CCtx* ctx, span<const byte> fromBytes, ZSTD_EndDirective endFlag, span<byte> intoCompressedBytes)
         {
             ZSTD_inBuffer  input     = {fromBytes.data (), fromBytes.size (), 0};
             ZSTD_outBuffer output    = {intoCompressedBytes.data (), intoCompressedBytes.size (), 0};
@@ -198,7 +203,7 @@ namespace {
                         }
                         else {
                             // Now if we have any input bytes to compress (or at EOF, and may need to write more stuff at end), run it through the library
-                            CompressResult_ compressResults = LowLevelCompress_ (fCtx_, fRawUnprocessedInputBytes_, ZSTD_e_continue, span{fOutBuf_});
+                            CompressResult_ compressResults = DoZStd_Compress_ (fCtx_, fRawUnprocessedInputBytes_, ZSTD_e_continue, span{fOutBuf_});
                             fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (compressResults.fConsumedInputBytes_);
 
                             // if anything produced, adjust cache(s) and return it
@@ -221,7 +226,7 @@ namespace {
                     Assert (fOutputBufCache_.empty ());
                     Assert (fRawUnprocessedInputBytes_.empty ());
                     // then input has already signaled EOF (this cannot change) - and we just do final fetch of remaining output (Final flush and frame end)
-                    CompressResult_ compressResults = LowLevelCompress_ (fCtx_, span<const byte>{}, ZSTD_e_end, span{fOutBuf_});
+                    CompressResult_ compressResults = DoZStd_Compress_ (fCtx_, span<const byte>{}, ZSTD_e_end, span{fOutBuf_});
                     fOutputBufCache_                = span{fOutBuf_}.subspan (0, compressResults.fProducedOutputBytes_);
                     if (compressResults.fRemaining == 0) {
                         fStage_ = Stage_::eDone; // Frame fully flushed and finished
@@ -248,6 +253,8 @@ namespace {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     public:
+        DecompressingByteStreamRep_ ()                                   = delete;
+        DecompressingByteStreamRep_ (const DecompressingByteStreamRep_&) = delete;
         DecompressingByteStreamRep_ (const Streams::InputStream::Ptr<byte>& in)
             : fInStreamReader_{make_unique<Streams::StreamReader<byte>> (in)}
         {
@@ -283,40 +290,20 @@ namespace {
         }
         virtual optional<size_t> AvailableToRead () override
         {
-            // DO SAME REFACTORING WITH DID FOR COMPRESS COPDE --LGP 2025-12-22
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            if (fOutputBufCache_.size () != 0) {
-                return fOutputBufCache_.size ();
+            // at most twice through loop
+            while (true) {
+                if (fOutputBufCache_.size () != 0) {
+                    return fOutputBufCache_.size ();
+                }
+                FillOutputBufCache_ (NoDataAvailableHandling::eDontBlock); // pull and process what we can without blocking
+                if (fOutputBufCache_.empty ()) {
+                    if (auto ob = fInStreamReader_->IsAtEOF (NoDataAvailableHandling::eDontBlock); ob and *ob) {
+                        return 0;
+                    }
+                    return nullopt;
+                }
             }
-
-            // else tricky - cuz we don't want to block
-
-            // Combine existing fInputBuf_ cached data with a bit more we try to read, so we pass as big a chunk as possible to ZStd lib
-            // Read argument windows into fInputBuf_, just after any bytes already read
-            if (optional<span<byte>> n =
-                    fInStreamReader_->Read (span{fInputBuf_}.subspan (fRawUnprocessedInputBytes_.size ()), NoDataAvailableHandling::eDontBlock)) {
-                fRawUnprocessedInputBytes_ = span{fInputBuf_}.first (fRawUnprocessedInputBytes_.size () + n->size ());
-            }
-
-            // if we have any data in fRawUnprocessedInputBytes_, translate it and copy it into fOutputBufCache_.
-            // return sizes of know available data.
-            ZSTD_inBuffer  input     = {fRawUnprocessedInputBytes_.data (), fRawUnprocessedInputBytes_.size (), 0};
-            ZSTD_outBuffer output    = {fOutBuf_.data (), fOutBuf_.size () - fOutputBufCache_.size (), 0};
-            size_t const   remaining = ::ZSTD_decompressStream (fCtx_, &output, &input);
-            ThrowIfZStdErr_ (remaining);
-
-            // if anything produced cache it
-            if (output.pos > 0) {
-                // remove consumed input bytes
-                fRawUnprocessedInputBytes_ = fRawUnprocessedInputBytes_.subspan (input.pos);
-                // extend the fOutputBufCache_
-                fOutputBufCache_ = span{fOutBuf_}.first (fOutputBufCache_.size () + output.pos);
-                // but dont update seek offset, cuz we didn't actually read anything
-            }
-            if (fOutputBufCache_.size () != 0) {
-                return fOutputBufCache_.size ();
-            }
-            return nullopt;
         }
         virtual optional<SeekOffsetType> RemainingLength () override
         {
@@ -329,68 +316,23 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
             /*
-             * must read enough bytes from inputStream (possible some unconverted bytes left over to re-use), to satisify the intoBuffer
-             * read request. This might produce more compressed output than fits in intoBuffer - in which case we must cache the balance
+             * First try output cache, and then fill if needed. If second time around, and still empty, must be EOF or dont know (cuz not blocking)
              */
-
-            // See if request can be satisfied from cached output bytes; note we only NEED to return one byte (but can return more)
-            if (not fOutputBufCache_.empty ()) {
-                size_t nToCopy = min (intoBuffer.size (), fOutputBufCache_.size ());
-                auto r = Memory::CopySpanData (fOutputBufCache_.subspan (0, nToCopy), intoBuffer); // intoBuffer large enuf cuz we pinned size with nToCopy
-                fOutputBufCache_ = fOutputBufCache_.subspan (nToCopy);                             // skip returned bytes
-                fSeekOffset_ += nToCopy;
-                return r;
-            }
-
             while (true) {
-                // Combine existing fInputBuf_ cached data with a bit more we try to read, so we pass as big a chunk as possible to ZStd lib
-                // Read argument windows into fInputBuf_, just after any bytes already read
-                if (fRawUnprocessedInputBytes_.size () < fInputBuf_.size ()) {
-                    if (optional<span<byte>> n = fInStreamReader_->Read (span{fInputBuf_}.subspan (fRawUnprocessedInputBytes_.size ()), blockFlag);
-                        n and not n->empty ()) {
-                        fRawUnprocessedInputBytes_ = span{fInputBuf_}.first (fRawUnprocessedInputBytes_.size () + n->size ());
-                    }
+                // See if request can be satisfied from cached output bytes; note we only NEED to return one byte (but can return more)
+                if (not fOutputBufCache_.empty ()) {
+                    size_t nToCopy = min (intoBuffer.size (), fOutputBufCache_.size ());
+                    auto r = Memory::CopySpanData (fOutputBufCache_.subspan (0, nToCopy), intoBuffer); // intoBuffer large enuf cuz we pinned size with nToCopy
+                    fOutputBufCache_ = fOutputBufCache_.subspan (nToCopy);                             // skip returned bytes
+                    fSeekOffset_ += nToCopy;
+                    return r;
                 }
-
-                Assert (fOutputBufCache_.empty ());
-                if (fRawUnprocessedInputBytes_.empty ()) {
-                    // If nothing available to compress, either input at EOF, or must return nullopt and wait for more
-
-                    if (optional<bool> isAtEOF = fInStreamReader_->IsAtEOF (blockFlag)) {
-                        if (*isAtEOF) {
-                            // DONE
-                            Assert (fOutputBufCache_.empty ());
-                            return span<byte>{};
-                        }
-                        else {
-                            Assert (blockFlag == NoDataAvailableHandling::eDontBlock);
-                            return nullopt; // non-blocking API - need more data
-                        }
-                    }
-                }
-                else {
-                    // Now if we have any input bytes to compress (or at EOF, and may need to write more stuff at end), run it through the library
-                    DecompressResult_ decompressResults = LowLevelDecompress_ (fCtx_, fRawUnprocessedInputBytes_, span{fOutBuf_});
-                    fRawUnprocessedInputBytes_          = fRawUnprocessedInputBytes_.subspan (decompressResults.fConsumedInputBytes_);
-
-                    // if anything produced, adjust cache(s) and return it
-                    if (decompressResults.fProducedOutputBytes_ > 0) {
-                        // cache excess output bytes, and return those that will fit
-                        size_t nToCopy = min (intoBuffer.size (), decompressResults.fProducedOutputBytes_);
-                        auto   r       = Memory::CopySpanData (span{fOutBuf_}.subspan (0, nToCopy), intoBuffer);
-                        fOutputBufCache_ = span{fOutBuf_}.subspan (nToCopy, decompressResults.fProducedOutputBytes_ - nToCopy); // skip returned bytes
-                        fSeekOffset_ += nToCopy;
-                        return r;
-                    }
-                    else {
-                        Assert (decompressResults.fConsumedInputBytes_ > 0); // keep going - making progress
-                    }
+                FillOutputBufCache_ (blockFlag);
+                if (fOutputBufCache_.empty ()) {
+                    // if fill failed, either cuz non-blocking, or EOF
+                    return blockFlag == NoDataAvailableHandling::eBlockIfNoDataAvailable ? span<byte>{} : optional<span<byte>>{};
                 }
             }
-
-            // There maybe more to pull from the streamreader, so we cannot assume we are done
-            Assert (blockFlag == NoDataAvailableHandling::eDontBlock); // else we should have read more data to return a good answer - only return nullopt if would block
-            return nullopt;
         }
 
     private:
@@ -399,7 +341,7 @@ namespace {
             size_t fProducedOutputBytes_{};
             size_t fRemaining;
         };
-        static DecompressResult_ LowLevelDecompress_ (ZSTD_DCtx* ctx, span<const byte> fromBytes, span<byte> intoDecompressedBytes)
+        static DecompressResult_ DoZStd_Decompress_ (ZSTD_DCtx* ctx, span<const byte> fromBytes, span<byte> intoDecompressedBytes)
         {
             ZSTD_inBuffer  input     = {fromBytes.data (), fromBytes.size (), 0};
             ZSTD_outBuffer output    = {intoDecompressedBytes.data (), intoDecompressedBytes.size (), 0};
@@ -425,7 +367,7 @@ namespace {
                 }
                 else {
                     // Now if we have any input bytes to decompress
-                    DecompressResult_ decompressResults = LowLevelDecompress_ (fCtx_, fRawUnprocessedInputBytes_, span{fOutBuf_});
+                    DecompressResult_ decompressResults = DoZStd_Decompress_ (fCtx_, fRawUnprocessedInputBytes_, span{fOutBuf_});
                     fRawUnprocessedInputBytes_          = fRawUnprocessedInputBytes_.subspan (decompressResults.fConsumedInputBytes_);
 
                     // if anything produced, adjust cache(s) and return it

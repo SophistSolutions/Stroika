@@ -13,7 +13,7 @@
  * 
  *  https://en.wikipedia.org/wiki/Zstd
  *
- *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::DataExchange::Compression::ZStd {
@@ -40,13 +40,30 @@ namespace Stroika::Foundation::DataExchange::Compression::ZStd {
      *  \note if not kSupported, these 'New ()' functions just throw FeatureNotSupportedException{}
      */
     namespace Compress {
+        /**
+         * @brief  As of Stroika v3.0d22 - options ignored (and no api to train/generate dictionary)
+         */
         struct Options : Compression::Compress::Options {
-            optional<bool> fFlushEachWrite; // if true, flush after each write (useful for streaming), else ??? define rules for ZSTD_e_flush vs ZSTD_e_continue - NYI
+
+            // many other options to consider allowing here
+
+            optional<Memory::BLOB> fDictionary;
+
+            // how often to force FLUSH on writes (size in bytes?)
+            //     optional<bool> fFlushEachWrite; // if true, flush after each write (useful for streaming), else ??? define rules for ZSTD_e_flush vs ZSTD_e_continue - NYI
+            optional<unsigned int> fThreads;
         };
         Ptr New (const Options& o = {});
     }
     namespace Decompress {
-        struct Options : Compression::Compress::Options {};
+        /**
+         * @brief  As of Stroika v3.0d22 - options ignored
+         */
+        struct Options : Compression::Compress::Options {
+            optional<Memory::BLOB> fDictionary;
+            optional<size_t>       fMaxMemory;
+            optional<unsigned int> fThreads;
+        };
         Ptr New (const Options& o = {});
     }
 
