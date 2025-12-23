@@ -42,15 +42,36 @@ namespace Stroika::Foundation::DataExchange::Compression::ZStd {
     namespace Compress {
         /**
          * @brief  As of Stroika v3.0d22 - options ignored (and no api to train/generate dictionary)
+         *
+         *  many other options to consider allowing here
          */
         struct Options : Compression::Compress::Options {
 
-            // many other options to consider allowing here
+            /**
+             * @brief  defaults to ZSTD_CStreamInSize
+             */
+            optional<size_t> fInBufSize;
 
+            /**
+             * @brief  defaults to ZSTD_CStreamOutSize
+             */
+            optional<size_t> fOutBufSize;
+
+            /**
+             */
             optional<Memory::BLOB> fDictionary;
 
-            // how often to force FLUSH on writes (size in bytes?)
-            //     optional<bool> fFlushEachWrite; // if true, flush after each write (useful for streaming), else ??? define rules for ZSTD_e_flush vs ZSTD_e_continue - NYI
+            /**
+             */
+            optional<Memory::BLOB> fDictionary;
+
+            /**
+             * if true, flush after each write (useful for streaming), else ??? define rules for ZSTD_e_flush vs ZSTD_e_continue - NYI
+             */
+            optional<bool> fFlushEachWrite;
+
+            /**
+             */
             optional<unsigned int> fThreads;
         };
         Ptr New (const Options& o = {});
@@ -60,8 +81,26 @@ namespace Stroika::Foundation::DataExchange::Compression::ZStd {
          * @brief  As of Stroika v3.0d22 - options ignored
          */
         struct Options : Compression::Compress::Options {
+            /**
+             * @brief  defaults to ZSTD_DStreamInSize
+             */
+            optional<size_t> fInBufSize;
+
+            /**
+             * @brief  defaults to ZSTD_DStreamOutSize
+             */
+            optional<size_t> fOutBufSize;
+
+            /**
+             */
             optional<Memory::BLOB> fDictionary;
-            optional<size_t>       fMaxMemory;
+
+            /**
+             */
+            optional<size_t> fMaxMemory;
+
+            /**
+             */
             optional<unsigned int> fThreads;
         };
         Ptr New (const Options& o = {});
