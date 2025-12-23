@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/DataExchange/Compression/Deflate.h"
 #include "Stroika/Foundation/DataExchange/Compression/GZip.h"
+#include "Stroika/Foundation/DataExchange/Compression/ZStd.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Throw.h"
@@ -404,6 +405,9 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 }
                 if constexpr (DataExchange::Compression::GZip::kSupported) {
                     maybeAddIt (HTTP::ContentEncoding::kGZip);
+                }
+                if constexpr (DataExchange::Compression::ZStd::kSupported) {
+                    maybeAddIt (HTTP::ContentEncoding::kZStd);
                 }
                 // @todo add zstd, and others? zstd best probably...
             }
