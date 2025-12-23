@@ -62,10 +62,6 @@ namespace Stroika::Foundation::DataExchange::Compression::ZStd {
             optional<Memory::BLOB> fDictionary;
 
             /**
-             */
-            optional<Memory::BLOB> fDictionary;
-
-            /**
              * if true, flush after each write (useful for streaming), else ??? define rules for ZSTD_e_flush vs ZSTD_e_continue - NYI
              */
             optional<bool> fFlushEachWrite;
