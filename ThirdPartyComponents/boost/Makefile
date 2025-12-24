@@ -31,8 +31,6 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 
 VERSION:=1_90_0
 #VERSION:=1_89_0
-#VERSION:=1_88_0
-#VERSION:=1_87_0
 VERSION_WITH_DOTS:=$(shell echo $(VERSION) | sed s/_/\./g)
 ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 
