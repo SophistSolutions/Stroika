@@ -180,13 +180,15 @@ endif
 endif
 endif
 
-# Not sure why this test is needed, since this sort of check should be done by configure script itself, but doesn't appear
-# to always be working on Ubuntu 25.04 -- LGP 2025-12-15
+#### SEE IF STILL NEEDED--LGP 2025-12-24
 
-## ON MACOS NEED THIS! UNCONDITIONAL -- LGP 2025-12-15
-# ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" zstd),false)
-LIBCURL_CONFIGURE += --without-zstd
-# endif
+# # Not sure why this test is needed, since this sort of check should be done by configure script itself, but doesn't appear
+# # to always be working on Ubuntu 25.04 -- LGP 2025-12-15
+
+# ## ON MACOS NEED THIS! UNCONDITIONAL -- LGP 2025-12-15
+# # ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LDFLAGS)" zstd),false)
+# LIBCURL_CONFIGURE += --without-zstd
+# # endif
 
 
 
