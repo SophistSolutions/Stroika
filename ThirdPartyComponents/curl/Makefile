@@ -74,7 +74,6 @@ CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
 
 
-
 ifeq (Unix,$(BuildPlatform))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR_)lib/libcurl.a				\
