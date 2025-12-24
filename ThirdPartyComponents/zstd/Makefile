@@ -14,7 +14,6 @@ CPPFLAGS 	:= 	${PLATFORM_CPPFLAGS}
 CFLAGS 		:= 	${PLATFORM_CFLAGS}
 CXXFLAGS 	:= 	${PLATFORM_CXXFLAGS}
 
-
 ifneq (${CONFIGURATION},)
 include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for CMAKE_ARGS etc
 endif
@@ -70,8 +69,12 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 
 
 # Verbose output to debug cmake processing
-#CMAKE_ARGS+= --trace
-#CMAKE_BUILD_AND_INSTALL_ARGS+= --trace
+# CMAKE_ARGS+= --trace-expand --debug-output
+
+# Avoid "lto-wrapper: warning: Extra option to '-Xassembler': --noexecstack, dropping all '-Xassembler' and '-Wa' options." warnings 
+ifneq ($(findstring -flto,$(CXXFLAGS)),)
+CMAKE_ARGS+=   -DC_FLAG_WA_NOEXECSTACK=FALSE
+endif
 
 
 #In macOS and Xcode, the linker prioritizes dynamic libraries (.dylib) over static libraries (.a) when both are present in
