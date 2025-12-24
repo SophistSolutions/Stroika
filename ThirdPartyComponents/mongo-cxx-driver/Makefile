@@ -61,6 +61,11 @@ CMAKE_ARGS+= -DBUILD_VERSION=${PYTHON_VERSION_}
 
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 
+# fails to compile with no openssl
+ifeq (${qFeatureFlag_OpenSSL},no)
+CMAKE_ARGS+= -DENABLE_SSL=OFF
+endif
+
 #
 # If we have zlib, use it, instead of the one included in the mongo-cxx-driver
 # makes sense todo, but triggered linker errors for me, so diasble for now...--LGP 2025-03-19
