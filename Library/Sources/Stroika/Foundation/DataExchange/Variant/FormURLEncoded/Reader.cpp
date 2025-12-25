@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/IO/Network/UniformResourceIdentification.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
 
@@ -38,7 +39,7 @@ public:
     Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> ();
+        return Memory::MakeSharedPtr<Rep_> ();
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -89,7 +90,7 @@ public:
     }
 };
 FormURLEncoded::Reader::Reader ()
-    : inherited{make_shared<Rep_> ()}
+    : inherited{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 

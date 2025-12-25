@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Characters/UTFConvert.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
@@ -593,7 +594,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const Options& options)
-        : fRep_{make_shared<UTFConvertRep_<char8_t>> (options)} // default, is to serialize to UTF-8
+        : fRep_{Memory::MakeSharedPtr<UTFConvertRep_<char8_t>> (options)} // default, is to serialize to UTF-8
     {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
@@ -607,7 +608,7 @@ namespace Stroika::Foundation::Characters {
             *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (options, l.name ());
         }
         else if constexpr (same_as<CHAR_T, Character>) {
-            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
+            fRep_ = Memory::MakeSharedPtr<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
                 CodeCvt<char32_t>::Options::New<CHAR_T> (options), l.name ()));
         }
         else {
@@ -620,7 +621,7 @@ namespace Stroika::Foundation::Characters {
     CodeCvt<CHAR_T>::CodeCvt (const Charset& charset, const Options& options)
     {
         if (charset == WellKnownCharsets::kISO_8859_1) {
-            fRep_ = make_shared<Latin1ConvertRep_> (options);
+            fRep_ = Memory::MakeSharedPtr<Latin1ConvertRep_> (options);
         }
         else if (charset == WellKnownCharsets::kUTF8) {
             *this = CodeCvt<CHAR_T>{UnicodeExternalEncodings::eUTF8};
@@ -628,7 +629,7 @@ namespace Stroika::Foundation::Characters {
         else if (same_as<CHAR_T, Character>) {
             DISABLE_COMPILER_MSC_WARNING_START (4996)
             // best hope is to treat it as a locale name, and hope its found
-            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
+            fRep_ = Memory::MakeSharedPtr<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
                 CodeCvt<char32_t>::Options::New<CHAR_T> (options), charset.AsNarrowSDKString ()));
             DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
@@ -642,24 +643,24 @@ namespace Stroika::Foundation::Characters {
     {
         switch (e) {
             case UnicodeExternalEncodings::eUTF8:
-                fRep_ = make_shared<UTFConvertRep_<char8_t>> (options);
+                fRep_ = Memory::MakeSharedPtr<UTFConvertRep_<char8_t>> (options);
                 break;
             case UnicodeExternalEncodings::eUTF16_BE:
             case UnicodeExternalEncodings::eUTF16_LE:
                 if (e == UnicodeExternalEncodings::eUTF16) {
-                    fRep_ = make_shared<UTFConvertRep_<char16_t>> (options);
+                    fRep_ = Memory::MakeSharedPtr<UTFConvertRep_<char16_t>> (options);
                 }
                 else {
-                    fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (options);
+                    fRep_ = Memory::MakeSharedPtr<UTFConvertSwappedRep_<char16_t>> (options);
                 }
                 break;
             case UnicodeExternalEncodings::eUTF32_BE:
             case UnicodeExternalEncodings::eUTF32_LE:
                 if (e == UnicodeExternalEncodings::eUTF32) {
-                    fRep_ = make_shared<UTFConvertRep_<char32_t>> (options);
+                    fRep_ = Memory::MakeSharedPtr<UTFConvertRep_<char32_t>> (options);
                 }
                 else {
-                    fRep_ = make_shared<UTFConvertSwappedRep_<char32_t>> (options);
+                    fRep_ = Memory::MakeSharedPtr<UTFConvertSwappedRep_<char32_t>> (options);
                 }
                 break;
             default:
@@ -697,24 +698,24 @@ namespace Stroika::Foundation::Characters {
             case WellKnownCodePages::kTurkish:
             case WellKnownCodePages::kHebrew:
             case WellKnownCodePages::kArabic:
-                fRep_ = make_shared<UTF2UTFRep_<char16_t>> (
-                    CodeCvt<char16_t> (make_shared<Private_::BuiltinSingleByteTableCodePageRep_> (cp, options.fInvalidCharacterReplacement)));
+                fRep_ = Memory::MakeSharedPtr<UTF2UTFRep_<char16_t>> (
+                    CodeCvt<char16_t> (Memory::MakeSharedPtr<Private_::BuiltinSingleByteTableCodePageRep_> (cp, options.fInvalidCharacterReplacement)));
                 break;
             case WellKnownCodePages::kUTF8:
-                fRep_ = make_shared<UTFConvertRep_<char8_t>> (options);
+                fRep_ = Memory::MakeSharedPtr<UTFConvertRep_<char8_t>> (options);
                 break;
             case WellKnownCodePages::kUNICODE_WIDE:
-                fRep_ = make_shared<UTFConvertRep_<char16_t>> (options);
+                fRep_ = Memory::MakeSharedPtr<UTFConvertRep_<char16_t>> (options);
                 break;
             case WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN:
-                fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (options);
+                fRep_ = Memory::MakeSharedPtr<UTFConvertSwappedRep_<char16_t>> (options);
                 break;
             default:
 #if qStroika_Foundation_Common_Platform_Windows
                 if (options.fInvalidCharacterReplacement) {
                     Private_::ThrowCodePageNotSupportedException_ (cp); // WindowsNative_ doesn't support fInvalidCharacterReplacement
                 }
-                fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::WindowsNative_> (cp)));
+                fRep_ = Memory::MakeSharedPtr<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (Memory::MakeSharedPtr<Private_::WindowsNative_> (cp)));
                 break;
 #else
                 Private_::ThrowCodePageNotSupportedException_ (cp);
@@ -724,7 +725,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn)
-        : fRep_{make_shared<UTF2UTFRep_<INTERMEDIATE_CHAR_T>> (basedOn)}
+        : fRep_{Memory::MakeSharedPtr<UTF2UTFRep_<INTERMEDIATE_CHAR_T>> (basedOn)}
     {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
@@ -738,7 +739,7 @@ namespace Stroika::Foundation::Characters {
         requires (same_as<CHAR_T, typename STD_CODECVT::intern_type>)
     {
         auto u = make_unique<Private_::deletable_facet_<STD_CODECVT>> (forward<ARGS> (args)...);
-        return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (options, move (u))};
+        return CodeCvt<CHAR_T>{Memory::MakeSharedPtr<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (options, move (u))};
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::GetOptions () const -> Options

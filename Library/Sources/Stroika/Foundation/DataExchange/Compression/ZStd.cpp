@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/FeatureNotSupportedException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
 
 #if qStroika_HasComponent_zstd
@@ -397,7 +398,7 @@ Compression::Ptr ZStd::Compress::New (const ZStd::Compress::Options& o)
         }
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<CompressingByteStreamRep_> (src, fOptions_);
+            fDelegate2 = Memory::MakeSharedPtr<CompressingByteStreamRep_> (src, fOptions_);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -405,7 +406,7 @@ Compression::Ptr ZStd::Compress::New (const ZStd::Compress::Options& o)
             return nullopt;
         }
     };
-    return Compression::Ptr{make_shared<MyRep_> (o)};
+    return Compression::Ptr{Memory::MakeSharedPtr<MyRep_> (o)};
 #else
     Execution::Throw (kNotSuppExcept_);
 #endif
@@ -417,7 +418,7 @@ Compression::Ptr ZStd::Decompress::New ([[maybe_unused]] const ZStd::Decompress:
         shared_ptr<DecompressingByteStreamRep_> fDelegate2;
         virtual InputStream::Ptr<byte>          Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = make_shared<DecompressingByteStreamRep_> (src);
+            fDelegate2 = Memory::MakeSharedPtr<DecompressingByteStreamRep_> (src);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -425,7 +426,7 @@ Compression::Ptr ZStd::Decompress::New ([[maybe_unused]] const ZStd::Decompress:
             return nullopt;
         }
     };
-    return Compression::Ptr{make_shared<MyRep_> ()};
+    return Compression::Ptr{Memory::MakeSharedPtr<MyRep_> ()};
 #else
     Execution::Throw (kNotSuppExcept_);
 #endif

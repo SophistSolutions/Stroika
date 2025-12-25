@@ -174,6 +174,6 @@ namespace {
 Archive::Writer::Ptr Archive::Zip::Writer::New (const OutputStream::Ptr<byte>& writeTo)
 {
     Require (writeTo.IsSeekable ());
-    return Archive::Writer::Ptr{make_shared<MyRep_> (writeTo)};
+    return Archive::Writer::Ptr{MakeSharedPtr<MyRep_> (writeTo)};
 }
 #endif

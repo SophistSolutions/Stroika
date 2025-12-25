@@ -280,6 +280,6 @@ namespace {
  */
 Archive::Reader::Ptr Archive::Zip::Reader::New (const InputStream::Ptr<byte>& readFrom)
 {
-    return Archive::Reader::Ptr{make_shared<Rep_> (readFrom)};
+    return Archive::Reader::Ptr{Memory::MakeSharedPtr<Rep_> (readFrom)};
 }
 #endif
