@@ -15,11 +15,6 @@ especially those they need to be aware of when upgrading.
 
 #if 0
 
-commit 383243d2030f61006999c8c020b3322b5c0517c9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 5 19:09:40 2025 -0500
-
-    VS_17_14_19 in docker container
 
 commit d7a32f8bee568efa9343ea057b69382e8d20c4a9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -117,12 +112,6 @@ Date:   Tue Nov 18 17:43:37 2025 -0500
 
     fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
 
-commit 97f63d423db48a694646cb9325944e06f012bdf1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 18:38:50 2025 -0500
-
-    cosmetic
-
 commit 9eaa5fd6110c190aab77dfbf328d38345ab0d20f
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 18 18:43:22 2025 -0500
@@ -146,12 +135,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 19 00:07:43 2025 -0500
 
     use boost 1_89_0, and minor related cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
-
-commit f699799786a78b03ebec33891cd69ad274d53467
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 00:08:13 2025 -0500
-
-    cosmetic
 
 commit f588f617a6b477dd6dc23732e5a382578e250ad6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -194,12 +177,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 19 16:00:18 2025 -0500
 
     more cleanups of workarounds for github actions running out of space - -Os mostly enuf, but in one case still needed --boost no to have enuf space
-
-commit d9eea50674288c46a6a65bcb43a1e0d338281d11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 21:58:33 2025 -0500
-
-    cosmetic
 
 commit 7aeb7c5c0fe0faae3b67396cdbc8e7bee5a47787
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1227,18 +1204,6 @@ Date:   Wed Dec 24 15:19:57 2025 -0500
 
     zstd makefile - fix warning lto-wrapper: warning: Extra option to '-Xassembler...
 
-commit e2b7c40aad4c91f6d054340b92be3e37bd44846e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 24 15:39:27 2025 -0500
-
-    cosmetic
-
-commit 01e86ad6023dbdf2cdbf3d099b8246693440bf4e
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 24 15:39:39 2025 -0500
-
-    Cosmetic
-
 commit 28cf503b0f9905071354ac095f2ae15d2e1caefb
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Wed Dec 24 15:45:32 2025 -0500
@@ -1259,6 +1224,10 @@ Date:   Wed Dec 24 15:45:32 2025 -0500
 
 - Documentation
 - Build System
+  - Docker
+    - Windows
+      - VS_17_14_19 in docker container
+
   - Makefiles
   - Scripts
 - Library
