@@ -263,7 +263,7 @@ public:
     }
     virtual _SharedPtrIRep Clone () const override
     {
-        return Memory::MakeSharedPtr<Rep_> (fOptions_); // no instance data
+        return MakeSharedPtr<Rep_> (fOptions_); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {

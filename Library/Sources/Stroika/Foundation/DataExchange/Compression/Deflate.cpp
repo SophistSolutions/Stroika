@@ -23,6 +23,7 @@ using namespace Stroika::Foundation::DataExchange::Compression;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Streams;
 
+using Memory::MakeSharedPtr;
 #if qStroika_HasComponent_zlib
 using Compression::Private_::DeflateRep_;
 using Compression::Private_::InflateRep_;
@@ -49,7 +50,7 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
         }
         virtual InputStream::Ptr<byte> Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = Memory::MakeSharedPtr<DeflateRep_> (src, fOptions_, false);
+            fDelegate2 = MakeSharedPtr<DeflateRep_> (src, fOptions_, false);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -57,7 +58,7 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
             return nullopt;
         }
     };
-    return Compression::Ptr{Memory::MakeSharedPtr<MyRep_> (o)};
+    return Compression::Ptr{MakeSharedPtr<MyRep_> (o)};
 #else
     Execution::Throw (kNotSuppExcept_);
 #endif
@@ -69,7 +70,7 @@ Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decom
         shared_ptr<Private_::InflateRep_> fDelegate2;
         virtual InputStream::Ptr<byte>    Transform (const InputStream::Ptr<byte>& src)
         {
-            fDelegate2 = Memory::MakeSharedPtr<Private_::InflateRep_> (src, false);
+            fDelegate2 = MakeSharedPtr<Private_::InflateRep_> (src, false);
             return InputStream::Ptr<byte>{fDelegate2};
         }
         virtual optional<Compression::Stats> GetStats () const
@@ -77,7 +78,7 @@ Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decom
             return nullopt;
         }
     };
-    return Compression::Ptr{Memory::MakeSharedPtr<MyRep_> ()};
+    return Compression::Ptr{MakeSharedPtr<MyRep_> ()};
 #else
     Execution::Throw (kNotSuppExcept_);
 #endif

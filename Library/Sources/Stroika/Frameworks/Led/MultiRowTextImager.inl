@@ -60,7 +60,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline MultiRowTextImager::PartitionElementCacheInfo::PartitionElementCacheInfo ()
-        : fRep (make_shared<Rep> ())
+        : fRep{make_shared<Rep> ()}
     {
     }
     /*

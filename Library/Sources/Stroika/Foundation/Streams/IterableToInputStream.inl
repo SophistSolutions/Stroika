@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Streams::IterableToInputStream {
 
@@ -156,7 +157,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             optional<ELEMENT_TYPE>                                         fPutBack_{};
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
-        return Ptr<ELEMENT_TYPE>{make_shared<IterableAdapterStreamRep_> (it)};
+        return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<IterableAdapterStreamRep_> (it)};
     }
 
 }

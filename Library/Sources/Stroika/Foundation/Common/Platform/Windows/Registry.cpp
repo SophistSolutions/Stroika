@@ -23,6 +23,8 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
 
+using Memory::MakeSharedPtr;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -172,7 +174,7 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
         HKEY fParentKey;
         int  fCurIndex{0};
     };
-    auto myContext        = Memory::MakeSharedPtr<Context_> ();
+    auto myContext        = MakeSharedPtr<Context_> ();
     myContext->fParentKey = fKey_;
     auto getNext          = [myContext] () -> optional<shared_ptr<RegistryKey>> {
         Memory::StackBuffer<TCHAR> achKeyBuf{Memory::eUninitialized, 1024};
@@ -193,7 +195,7 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("returning next child key: {}"_f, achKeyBuf);
 #endif
-        return Memory::MakeSharedPtr<RegistryKey> (myContext->fParentKey, String::FromSDKString (achKeyBuf));
+        return MakeSharedPtr<RegistryKey> (myContext->fParentKey, String::FromSDKString (achKeyBuf));
     };
     return Traversal::CreateGenerator<shared_ptr<RegistryKey>> (getNext);
 }

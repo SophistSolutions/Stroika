@@ -34,6 +34,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Common;
 
+using Memory::MakeSharedPtr;
 using Memory::StackBuffer;
 using Traversal::Iterator;
 
@@ -529,13 +530,13 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<ASCII>& str)
 {
     RequireExpression (Character::IsASCII (span{str.data (), str.size ()}));
-    return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (span{str.data (), str.size ()});
+    return MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (span{str.data (), str.size ()});
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char8_t>& str)
 {
     if (Character::IsASCII (span{str.data (), str.size ()})) {
-        return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (Memory::SpanBytesCast<span<const ASCII>> (span{str.data (), str.size ()}));
+        return MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (Memory::SpanBytesCast<span<const ASCII>> (span{str.data (), str.size ()}));
     }
     else {
         return mk_ (span<const char8_t>{str.data (), str.size ()}); // copies data
@@ -545,7 +546,7 @@ shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_v
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char16_t>& str)
 {
     if (UTFConvert::AllFitsInTwoByteEncoding (span{str})) {
-        return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char16_t>> (span{str.data (), str.size ()});
+        return MakeSharedPtr<StringConstant_::DirectIndexRep<char16_t>> (span{str.data (), str.size ()});
     }
     else {
         return mk_ (span<const char16_t>{str.data (), str.size ()}); // copies data
@@ -554,24 +555,24 @@ shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_v
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<char32_t>& str)
 {
-    return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (span{str.data (), str.size ()});
+    return MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (span{str.data (), str.size ()});
 }
 
 shared_ptr<String::_IRep> String::CTORFromBasicStringView_ (const basic_string_view<wchar_t>& str)
 {
-    return Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{str.data (), str.size ()});
+    return MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{str.data (), str.size ()});
 }
 
 String String::FromStringConstant (span<const ASCII> s)
 {
     Require (Character::IsASCII (s));
-    return String{Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (s)};
+    return String{MakeSharedPtr<StringConstant_::DirectIndexRep<ASCII>> (s)};
 }
 
 String String::FromStringConstant (span<const char16_t> s)
 {
     if (UTFConvert::AllFitsInTwoByteEncoding (s)) {
-        return String{Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char16_t>> (s)};
+        return String{MakeSharedPtr<StringConstant_::DirectIndexRep<char16_t>> (s)};
     }
     else {
         return String{s};
@@ -580,7 +581,7 @@ String String::FromStringConstant (span<const char16_t> s)
 
 String String::FromStringConstant (span<const char32_t> s)
 {
-    return String{Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (s)};
+    return String{MakeSharedPtr<StringConstant_::DirectIndexRep<char32_t>> (s)};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
@@ -609,7 +610,7 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 shared_ptr<String::_IRep> String::mkEmpty_ ()
 {
     static constexpr wchar_t       kEmptyCStr_[] = L"";
-    static const shared_ptr<_IRep> s_ = Memory::MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
+    static const shared_ptr<_IRep> s_ = MakeSharedPtr<StringConstant_::DirectIndexRep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
     return s_;
 }
 
@@ -683,29 +684,29 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
 
     size_t sz = s.size ();
     if (sz <= kNElts1_) {
-        return Memory::MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>> (s);
+        return MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>> (s);
     }
     else if (sz <= kNElts2_) {
-        return Memory::MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>> (s);
+        return MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>> (s);
     }
     else if (sz <= kNElts3_) {
-        return Memory::MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>> (s);
+        return MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>> (s);
     }
-    return Memory::MakeSharedPtr<DynamicallyAllocatedString::Rep<CHAR_T>> (s);
+    return MakeSharedPtr<DynamicallyAllocatedString::Rep<CHAR_T>> (s);
 }
 
 template <>
 auto String::mk_ (basic_string<char>&& s) -> shared_ptr<_IRep>
 {
     Character::CheckASCII (span{s.data (), s.size ()});
-    return Memory::MakeSharedPtr<StdStringDelegator_::Rep<ASCII>> (move (s));
+    return MakeSharedPtr<StdStringDelegator_::Rep<ASCII>> (move (s));
 }
 
 template <>
 auto String::mk_ (basic_string<char16_t>&& s) -> shared_ptr<_IRep>
 {
     if (UTFConvert::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
-        return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
+        return MakeSharedPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
     }
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
@@ -715,7 +716,7 @@ auto String::mk_ (basic_string<char16_t>&& s) -> shared_ptr<_IRep>
 template <>
 auto String::mk_ (basic_string<char32_t>&& s) -> shared_ptr<_IRep>
 {
-    return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char32_t>> (move (s));
+    return MakeSharedPtr<StdStringDelegator_::Rep<char32_t>> (move (s));
 }
 
 template <>
@@ -723,7 +724,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
 {
     if constexpr (sizeof (wchar_t) == 2) {
         if (UTFConvert::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
-            return Memory::MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
+            return MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
         }
         // copy the data if any surrogates
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized,
@@ -731,7 +732,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
         return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
     }
     else {
-        return Memory::MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
+        return MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
     }
 }
 
@@ -1925,7 +1926,7 @@ const wchar_t* String::c_str ()
     _SafeReadRepAccessor accessor{this};
     const wchar_t*       result = accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        _fRep  = Memory::MakeSharedPtr<StringWithCStr_::Rep> (accessor._ConstGetRepSharedPtr ());
+        _fRep  = MakeSharedPtr<StringWithCStr_::Rep> (accessor._ConstGetRepSharedPtr ());
         result = _SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
         AssertNotNull (result);
     }

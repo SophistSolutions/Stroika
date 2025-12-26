@@ -852,7 +852,7 @@ CodePagesInstalled::CodePagesInstalled ()
 {
     Assert (fCodePages_.size () == 0);
 
-    shared_ptr<set<CodePage>> accum = Memory::MakeSharedPtr<set<CodePage>> ();
+    shared_ptr<set<CodePage>> accum = MakeSharedPtr<set<CodePage>> ();
 #if qStroika_Foundation_Common_Platform_Windows
     static mutex sCritSec_;
     {

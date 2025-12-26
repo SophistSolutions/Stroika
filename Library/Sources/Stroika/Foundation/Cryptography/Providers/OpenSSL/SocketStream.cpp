@@ -31,6 +31,8 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
+using Memory::MakeSharedPtr;
+
 using std::byte;
 
 #if qStroika_HasComponent_OpenSSL
@@ -242,14 +244,14 @@ namespace {
  */
 auto Cryptography::Providers::OpenSSL::SocketStream::New (LibRepType&& r) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (move (r))};
+    return Ptr{MakeSharedPtr<Rep_> (move (r))};
 }
 auto Cryptography::Providers::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ClientContext::Options& o) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (sd, o)};
+    return Ptr{MakeSharedPtr<Rep_> (sd, o)};
 }
 auto Cryptography::Providers::OpenSSL::SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd, const ServerContext::Options& o) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (sd, o)};
+    return Ptr{MakeSharedPtr<Rep_> (sd, o)};
 }
 #endif

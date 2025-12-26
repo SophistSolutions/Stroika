@@ -18,6 +18,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO::FileSystem;
+using namespace Stroika::Foundation::Memory;
 
 using namespace StroikaSample;
 using namespace StroikaSample::AppSettings;
@@ -31,7 +32,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     // for a test app, writing to stdout, seems a plausible default...
     Logger::sThe.AddAppender (
-        make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
+        MakeSharedPtr<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
 
     // Simple example using OpensFile, and ModuleGetterSetter
     [[maybe_unused]] uint16_t usePort = gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default);

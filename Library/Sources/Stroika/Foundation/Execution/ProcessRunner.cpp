@@ -57,6 +57,7 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Traversal;
 
 using Debug::TraceContextBumper;
+using Memory::MakeSharedPtr;
 using Memory::StackBuffer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -319,7 +320,7 @@ void ProcessRunner::ProcessResultType::ThrowIfFailed ()
  ********************************************************************************
  */
 ProcessRunner::BackgroundProcess::BackgroundProcess ()
-    : fRep_{Memory::MakeSharedPtr<Rep_> ()}
+    : fRep_{MakeSharedPtr<Rep_> ()}
 {
 }
 

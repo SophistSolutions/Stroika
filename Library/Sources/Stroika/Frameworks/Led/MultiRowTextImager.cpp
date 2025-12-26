@@ -5,13 +5,17 @@
 
 #include <climits>
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
+
 #include "Stroika/Frameworks/Led/GDI.h"
 #include "Stroika/Frameworks/Led/Support.h"
 
 #include "MultiRowTextImager.h"
 
 using namespace Stroika::Foundation;
+
+using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks::Led;
 
@@ -1242,13 +1246,13 @@ size_t MultiRowTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, s
 }
 
 /*
-        ********************************************************************************
-        ******************* MultiRowTextImager::PartitionElementCacheInfo **************
-        ********************************************************************************
-        */
+ ********************************************************************************
+ ******************* MultiRowTextImager::PartitionElementCacheInfo **************
+ ********************************************************************************
+ */
 void MultiRowTextImager::PartitionElementCacheInfo::Clear ()
 {
-    fRep = make_shared<Rep> ();
+    fRep = MakeSharedPtr<Rep> ();
 }
 
 void MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, DistanceType newRowsHeight)

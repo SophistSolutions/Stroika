@@ -12,17 +12,17 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-
-#include "Common.h"
-#include "Exceptions.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #if qStroika_Foundation_Common_Platform_POSIX
-#include "Platform/POSIX/SemWaitableEvent.h"
-#include "Platform/POSIX/SignalBlock.h"
+#include "Stroika/Foundation/Execution/Platform/POSIX/SemWaitableEvent.h"
+#include "Stroika/Foundation/Execution/Platform/POSIX/SignalBlock.h"
 #endif
-#include "Sleep.h"
-#include "Synchronized.h"
-#include "Thread.h"
-#include "WaitableEvent.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/WaitableEvent.h"
 
 #include "SignalHandlers.h"
 
@@ -268,10 +268,10 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::CTOR"};
 #if __cpp_lib_atomic_shared_ptr >= 201711
     Require (sTheRep_.load () == nullptr);
-    sTheRep_.store (make_shared<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
+    sTheRep_.store (MakeSharedPtr<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
 #else
     Require (atomic_load (&sTheRep_) == nullptr);
-    atomic_store (&sTheRep_, make_shared<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
+    atomic_store (&sTheRep_, MakeSharedPtr<SignalHandlerRegistry::SafeSignalsManager::Rep_> ());
 #endif
 }
 

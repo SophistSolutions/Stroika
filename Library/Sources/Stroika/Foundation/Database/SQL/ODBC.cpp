@@ -26,6 +26,7 @@ using namespace Stroika::Foundation::Database::SQL::ODBC;
 using namespace Debug;
 
 using Database::SQL::EngineProperties;
+using Memory::MakeSharedPtr;
 
 #if qStroika_HasComponent_ODBC
 
@@ -136,7 +137,7 @@ namespace {
                     return false;
                 }
             };
-            return Memory::MakeSharedPtr<const MyEngineProperties_> (); // dynamic info based on connection/dsn
+            return MakeSharedPtr<const MyEngineProperties_> (); // dynamic info based on connection/dsn
         }
         virtual SQL::Statement mkStatement (const String& sql) override
         {
@@ -177,7 +178,7 @@ SQL::ODBC::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto SQL::ODBC::Connection::New (const Options& options) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (options)};
+    return Ptr{MakeSharedPtr<Rep_> (options)};
 }
 
 /*
