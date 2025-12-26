@@ -27,6 +27,8 @@ using namespace Stroika::Foundation::Cryptography::Providers;
 using namespace Stroika::Foundation::Cryptography::Providers::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 
+using Memory::MakeSharedPtr;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
@@ -91,7 +93,7 @@ namespace {
  */
 auto OpenSSL::Certificate::New (LibRepType&& x509) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (move (x509));
+    return MakeSharedPtr<Rep_> (move (x509));
 }
 
 auto OpenSSL::Certificate::New (const SelfSignedCertParams& params) -> tuple<OpenSSL::PrivateKey::Ptr, Ptr>

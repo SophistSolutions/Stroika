@@ -25,6 +25,7 @@ using Characters::Character;
 using Characters::String;
 using Containers::Sequence;
 using Containers::Set;
+using Memory::MakeSharedPtr;
 using Traversal::Iterable;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -34,12 +35,12 @@ using Traversal::Iterable;
  ****************** DataExchange::::FormURLEncoded::Reader **********************
  ********************************************************************************
  */
-class FormURLEncoded::Reader::Rep_ final : public Variant::Reader::_IRep {
+class FormURLEncoded::Reader::Rep_ final : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return Memory::MakeSharedPtr<Rep_> ();
+        return MakeSharedPtr<Rep_> ();
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -90,7 +91,7 @@ public:
     }
 };
 FormURLEncoded::Reader::Reader ()
-    : inherited{Memory::MakeSharedPtr<Rep_> ()}
+    : inherited{MakeSharedPtr<Rep_> ()}
 {
 }
 

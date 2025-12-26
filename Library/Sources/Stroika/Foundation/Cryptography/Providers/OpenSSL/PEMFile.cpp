@@ -22,11 +22,12 @@ using namespace Stroika::Foundation::Cryptography::PKI::PEMFile;
 using namespace Stroika::Foundation::Streams;
 
 using Memory::BLOB;
+using Memory::MakeSharedPtr;
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
     // https://linux.die.net/man/3/bio_s_mem
-    struct BIO2BLOB_ {
+    struct BIO2BLOB_ final {
         BIO* fBIO{nullptr};
         BIO2BLOB_ ()
         {
@@ -47,7 +48,7 @@ namespace {
 }
 
 namespace {
-    struct Rep_ : Cryptography::Providers::OpenSSL::PEMFile::IRep {
+    struct Rep_ : Cryptography::Providers::OpenSSL::PEMFile::IRep, Memory::UseBlockAllocationIfAppropriate<Rep_> {
         BLOB                fData_;
         Sequence<EntryType> fEntries_;
 
@@ -110,10 +111,10 @@ namespace {
  */
 auto Cryptography::Providers::OpenSSL::PEMFile::New (const Memory::BLOB& pemData) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (pemData);
+    return MakeSharedPtr<Rep_> (pemData);
 }
 auto Cryptography::Providers::OpenSSL::PEMFile::New (const Sequence<EntryType>& entries) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (entries);
+    return MakeSharedPtr<Rep_> (entries);
 }
 #endif

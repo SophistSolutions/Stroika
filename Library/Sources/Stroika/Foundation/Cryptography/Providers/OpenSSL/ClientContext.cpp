@@ -24,6 +24,8 @@ using namespace Stroika::Foundation::Cryptography::Providers;
 using namespace Stroika::Foundation::Cryptography::Providers::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 
+using Memory::MakeSharedPtr;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
@@ -54,6 +56,6 @@ namespace {
 #if qStroika_HasComponent_OpenSSL
 auto OpenSSL::ClientContext::New (const Options& o) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (o);
+    return MakeSharedPtr<Rep_> (o);
 }
 #endif

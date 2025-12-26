@@ -19,6 +19,7 @@ using Characters::Character;
 using Traversal::Iterable;
 using Traversal::Iterator;
 using namespace DataExchange::Variant;
+using Memory::MakeSharedPtr;
 
 /*
  ********************************************************************************
@@ -30,7 +31,7 @@ public:
     Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return Memory::MakeSharedPtr<Rep_> (); // no instance data
+        return MakeSharedPtr<Rep_> (); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -68,7 +69,7 @@ public:
 };
 
 INI::Writer::Writer ()
-    : inherited{Memory::MakeSharedPtr<Rep_> ()}
+    : inherited{MakeSharedPtr<Rep_> ()}
 {
 }
 

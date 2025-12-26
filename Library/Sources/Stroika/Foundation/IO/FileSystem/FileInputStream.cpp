@@ -25,9 +25,8 @@
 #if qStroika_Foundation_Common_Platform_Windows
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include "Stroika/Foundation/IO/FileSystem/Exception.h"
 #include "Stroika/Foundation/Streams/BufferedInputStream.h"
-
-#include "Exception.h"
 
 #include "FileInputStream.h"
 
@@ -42,13 +41,14 @@ using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::IO::FileSystem::FileInputStream;
 using namespace Stroika::Foundation::Streams;
 
+using Memory::MakeSharedPtr;
 using Streams::SeekOffsetType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-    class Rep_ : public InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+    class Rep_ final : public InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;
@@ -280,12 +280,12 @@ namespace {
  */
 auto FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (fileName, seekable)};
+    return Ptr{MakeSharedPtr<Rep_> (fileName, seekable)};
 }
 
 auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekable)};
+    return Ptr{MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekable)};
 }
 
 auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable) -> Ptr

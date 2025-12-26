@@ -20,6 +20,8 @@ using namespace Stroika::Foundation::Traversal;
 
 using namespace DataExchange::Variant;
 
+using Memory::MakeSharedPtr;
+
 /*
  ********************************************************************************
  ************** DataExchange::Variant::FormURLEncoded::Writer *******************
@@ -30,7 +32,7 @@ public:
     Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return Memory::MakeSharedPtr<Rep_> (); // no instance data
+        return MakeSharedPtr<Rep_> (); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -88,7 +90,7 @@ public:
 };
 
 FormURLEncoded::Writer::Writer ()
-    : inherited{Memory::MakeSharedPtr<Rep_> ()}
+    : inherited{MakeSharedPtr<Rep_> ()}
 {
 }
 

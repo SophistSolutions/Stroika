@@ -10,13 +10,15 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 
+using Memory::MakeSharedPtr;
+
 /*
  ********************************************************************************
- **************************** ProgressMonitor ***********************************
+ ******************************* ProgressMonitor ********************************
  ********************************************************************************
  */
 ProgressMonitor::ProgressMonitor ()
-    : fRep_{Memory::MakeSharedPtr<Rep_> ()}
+    : fRep_{MakeSharedPtr<Rep_> ()}
 {
 }
 
@@ -43,7 +45,7 @@ ProgressMonitor::ProgressMonitor (Traversal::Iterable<ChangedCallbackType> callb
 void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
 {
     RequireNotNull (fRep_);
-    fRep_->fCallbacks_.rwget ().rwref ().Append (Memory::MakeSharedPtr<ChangedCallbackType> (progressChangedCallback));
+    fRep_->fCallbacks_.rwget ().rwref ().Append (MakeSharedPtr<ChangedCallbackType> (progressChangedCallback));
 }
 
 void ProgressMonitor::Cancel ()

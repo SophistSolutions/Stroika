@@ -25,13 +25,15 @@ using namespace Stroika::Foundation::Cryptography::Providers;
 using namespace Stroika::Foundation::Cryptography::Providers::OpenSSL;
 using namespace Stroika::Foundation::Debug;
 
+using Memory::MakeSharedPtr;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #if qStroika_HasComponent_OpenSSL
 namespace {
     using OpenSSL::ServerContext::Options;
-    struct Rep_ : OpenSSL::ServerContext::IRep {
+    struct Rep_ final : OpenSSL::ServerContext::IRep, Memory::UseBlockAllocationIfAppropriate<Rep_> {
         OpenSSL::ServerContext::LibRepType fCtx_;
 
         Rep_ (const Options& o)
@@ -53,6 +55,6 @@ namespace {
 
 auto OpenSSL::ServerContext::New (const Options& o) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (o);
+    return MakeSharedPtr<Rep_> (o);
 }
 #endif

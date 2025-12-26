@@ -22,6 +22,7 @@ using Characters::Character;
 using Characters::String;
 using Containers::Sequence;
 using Containers::Set;
+using Memory::MakeSharedPtr;
 using Traversal::Iterable;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -32,7 +33,7 @@ using Traversal::Iterable;
  ************** DataExchange::::CharacterDelimitedLines::Reader *****************
  ********************************************************************************
  */
-class CharacterDelimitedLines::Reader::Rep_ final : public Variant::Reader::_IRep {
+class CharacterDelimitedLines::Reader::Rep_ final : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Set<Character> fDelimiters_;
     bool           fTrimTokens_{false};
@@ -43,7 +44,7 @@ public:
     }
     virtual _SharedPtrIRep Clone () const override
     {
-        return Memory::MakeSharedPtr<Rep_> (fDelimiters_, fTrimTokens_);
+        return MakeSharedPtr<Rep_> (fDelimiters_, fTrimTokens_);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -84,7 +85,7 @@ public:
     }
 };
 CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters, bool trimTokens)
-    : inherited{Memory::MakeSharedPtr<Rep_> (columnDelimiters, trimTokens)}
+    : inherited{MakeSharedPtr<Rep_> (columnDelimiters, trimTokens)}
 {
 }
 

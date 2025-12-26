@@ -139,10 +139,10 @@ namespace {
         }
 
     private:
-        unique_ptr<Streams::StreamReader<byte>> fInStreamReader_;                               // wrapped/buffered provided input stream
-        Memory::InlineBuffer<byte> fInputBuf_{Memory::eUninitialized, ::ZSTD_CStreamInSize ()}; // used to cache extra input (uncompressed) bytes not yet proceessed
-        span<byte> fRawUnprocessedInputBytes_{};                                                // empty or subspan of fInputBuf_
-        Memory::InlineBuffer<byte> fOutBuf_{Memory::eUninitialized, ::ZSTD_CStreamOutSize ()}; // used to cache extra output (compressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
+        unique_ptr<Streams::StreamReader<byte>> fInStreamReader_;                                  // wrapped/buffered provided input stream
+        Memory::InlineBuffer<byte, 1> fInputBuf_{Memory::eUninitialized, ::ZSTD_CStreamInSize ()}; // used to cache extra input (uncompressed) bytes not yet proceessed
+        span<byte> fRawUnprocessedInputBytes_{};                                                   // empty or subspan of fInputBuf_
+        Memory::InlineBuffer<byte, 1> fOutBuf_{Memory::eUninitialized, ::ZSTD_CStreamOutSize ()}; // used to cache extra output (compressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
         span<byte> fOutputBufCache_{}; // empty or subspan of fOutBuf_
         ZSTD_CCtx* fCtx_{nullptr};
         enum class Stage_ {
@@ -244,10 +244,10 @@ namespace {
     };
 
     struct DecompressingByteStreamRep_ final : InputStream::IRep<byte>, Memory::UseBlockAllocationIfAppropriate<DecompressingByteStreamRep_> {
-        unique_ptr<Streams::StreamReader<byte>> fInStreamReader_;                               // wrapped/buffered provided input stream
-        Memory::InlineBuffer<byte> fInputBuf_{Memory::eUninitialized, ::ZSTD_DStreamInSize ()}; // used to cache extra input (compressed) bytes not yet proceessed
-        span<byte> fRawUnprocessedInputBytes_{};                                                /// empty or subspan of fInputBuf_
-        Memory::InlineBuffer<byte> fOutBuf_{Memory::eUninitialized, ::ZSTD_DStreamOutSize ()}; // used to cache extra output (uncompressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
+        unique_ptr<Streams::StreamReader<byte>> fInStreamReader_;                                  // wrapped/buffered provided input stream
+        Memory::InlineBuffer<byte, 1> fInputBuf_{Memory::eUninitialized, ::ZSTD_DStreamInSize ()}; // used to cache extra input (compressed) bytes not yet proceessed
+        span<byte> fRawUnprocessedInputBytes_{};                                                   /// empty or subspan of fInputBuf_
+        Memory::InlineBuffer<byte, 1> fOutBuf_{Memory::eUninitialized, ::ZSTD_DStreamOutSize ()}; // used to cache extra output (uncompressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
         span<byte>                                                     fOutputBufCache_{}; /// empty or subspan of fOutBuf_
         ZSTD_DCtx*                                                     fCtx_{nullptr};
         SeekOffsetType                                                 fSeekOffset_{};
