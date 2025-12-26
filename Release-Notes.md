@@ -9,7 +9,7 @@ especially those they need to be aware of when upgrading.
 
 
 
-
+- used Common::ClassNotFinal new concept in  InheritAndUseBlockAllocationIfAppropriate
 
 
 

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Memory/BlockAllocator.h"
 
@@ -147,7 +148,7 @@ namespace Stroika::Foundation::Memory {
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp(1048): note: could be the 'delete' in base 'Stroika::Foundation::Memory::BlockAllocationUseHelper<`anonymous namespace'::NodeRep_>'
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp(1048): note: or could be the 'delete' in base 'Stroika:
      */
-    template <typename DERIVED, typename BASE_REP, bool andTrueCheck = true>
+    template <typename DERIVED, Common::ClassNotFinal BASE_REP, bool andTrueCheck = true>
     struct InheritAndUseBlockAllocationIfAppropriate : BASE_REP {
         template <typename... ARGS>
         InheritAndUseBlockAllocationIfAppropriate (ARGS&&... args)
