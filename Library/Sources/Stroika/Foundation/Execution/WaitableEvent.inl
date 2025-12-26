@@ -1,11 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "Common.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
-#include "Finally.h"
-#include "Thread.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #endif
 
 namespace Stroika::Foundation::Execution {
@@ -132,7 +133,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
          */
-        shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
+        shared_ptr<WE_>         we      = Memory::MakeSharedPtr<WE_> (eAutoReset);
         [[maybe_unused]] auto&& cleanup = Finally ([we, waitableEventsStart, waitableEventsEnd] () noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterrupts;
             [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};
@@ -188,7 +189,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
          */
-        shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
+        shared_ptr<WE_>         we      = Memory::MakeSharedPtr<WE_> (eAutoReset);
         [[maybe_unused]] auto&& cleanup = Finally ([we, waitableEventsStart, waitableEventsEnd] () noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterrupts;
             [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};

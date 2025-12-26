@@ -4,6 +4,7 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 #include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_HTML.h"
@@ -18,6 +19,9 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+
+using Memory::MakeSharedPtr;
+
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
@@ -538,12 +542,12 @@ void StandardStyledTextInteractor::HookStyleDatabaseChanged ()
 
 shared_ptr<FlavorPackageInternalizer> StandardStyledTextInteractor::MakeDefaultInternalizer ()
 {
-    return make_shared<StyledTextFlavorPackageInternalizer> (GetTextStore (), GetStyleDatabase ());
+    return MakeSharedPtr<StyledTextFlavorPackageInternalizer> (GetTextStore (), GetStyleDatabase ());
 }
 
 shared_ptr<FlavorPackageExternalizer> StandardStyledTextInteractor::MakeDefaultExternalizer ()
 {
-    return make_shared<StyledTextFlavorPackageExternalizer> (GetTextStore (), GetStyleDatabase ());
+    return MakeSharedPtr<StyledTextFlavorPackageExternalizer> (GetTextStore (), GetStyleDatabase ());
 }
 
 /*

@@ -142,7 +142,7 @@ namespace Stroika::Frameworks::Service {
      *      };
      *      ...
      *      Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
-     *      Main    m (make_shared<AppRep_> ());
+     *      Main    m (MakeSharedPtr<AppRep_> ());
      *      m.Run (args);
      *      \endcode
      */

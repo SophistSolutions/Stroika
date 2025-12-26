@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Math::LinearAlgebra {
 
@@ -74,7 +75,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
     template <typename T>
     Matrix<T>::Matrix (const DimensionType& dimensions, Common::ArgByValueType<T> fillValue)
-        : fRep_{make_shared<Rep_> (dimensions)}
+        : fRep_{Memory::MakeSharedPtr<Rep_> (dimensions)}
     {
         for (size_t r = 0; r < dimensions.fRows; ++r) {
             for (size_t c = 0; c < dimensions.fColumns; ++c) {
@@ -89,7 +90,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
     template <typename T>
     Matrix<T>::Matrix (const DimensionType& dimensions, const function<T ()>& filler)
-        : fRep_{make_shared<Rep_> (dimensions)}
+        : fRep_{Memory::MakeSharedPtr<Rep_> (dimensions)}
     {
         for (size_t r = 0; r < dimensions.fRows; ++r) {
             for (size_t c = 0; c < dimensions.fColumns; ++c) {

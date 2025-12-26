@@ -11,6 +11,7 @@
 
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 #include "Stroika/Frameworks/SystemPerformance/Instrument.h"
 
@@ -49,7 +50,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         const Time::TimePointSeconds fInstrumentCreatedAt_{Time::GetTickCount ()};
 
     protected:
-        InstrumentRep_COMMON (const OPTIONS& options, const shared_ptr<CONTEXT>& context = make_shared<CONTEXT> ());
+        InstrumentRep_COMMON (const OPTIONS& options, const shared_ptr<CONTEXT>& context = Memory::MakeSharedPtr<CONTEXT> ());
 
     protected:
         /**
@@ -87,7 +88,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         }
         virtual void SetContext (const shared_ptr<Instrument::ICaptureContext>& context) override
         {
-            _fContext.store ((context == nullptr) ? make_shared<CONTEXT> () : dynamic_pointer_cast<CONTEXT> (context));
+            _fContext.store ((context == nullptr) ? Memory::MakeSharedPtr<CONTEXT> () : dynamic_pointer_cast<CONTEXT> (context));
         }
     };
 

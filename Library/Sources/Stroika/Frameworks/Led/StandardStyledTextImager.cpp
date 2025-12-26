@@ -3,9 +3,14 @@
  */
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 #include "StandardStyledTextImager.h"
 
 using namespace Stroika::Foundation;
+
+using Memory::MakeSharedPtr;
+
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
@@ -159,7 +164,7 @@ void StandardStyledTextImager::HookGainedNewTextStore ()
 void StandardStyledTextImager::HookGainedNewTextStore_ ()
 {
     if (fStyleDatabase == nullptr) {
-        fStyleDatabase    = make_shared<StyleDatabaseRep> (GetTextStore ());
+        fStyleDatabase    = MakeSharedPtr<StyleDatabaseRep> (GetTextStore ());
         fICreatedDatabase = true;
         HookStyleDatabaseChanged ();
     }
@@ -170,7 +175,7 @@ void StandardStyledTextImager::SetStyleDatabase (const shared_ptr<AbstractStyleD
     fStyleDatabase    = styleDatabase;
     fICreatedDatabase = false;
     if (fStyleDatabase == nullptr and PeekAtTextStore () != nullptr) {
-        fStyleDatabase    = make_shared<StyleDatabaseRep> (GetTextStore ());
+        fStyleDatabase    = MakeSharedPtr<StyleDatabaseRep> (GetTextStore ());
         fICreatedDatabase = true;
     }
     HookStyleDatabaseChanged ();

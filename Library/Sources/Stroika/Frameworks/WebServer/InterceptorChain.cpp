@@ -4,11 +4,14 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "InterceptorChain.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+
+using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
@@ -25,7 +28,7 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
     }
     virtual shared_ptr<_IRep> SetInterceptors (const Sequence<Interceptor>& interceptors) const override
     {
-        return make_shared<Rep_> (interceptors);
+        return MakeSharedPtr<Rep_> (interceptors);
     }
     virtual void HandleMessage (Message& m) const override
     {
@@ -56,7 +59,7 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
  ********************************************************************************
  */
 InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
-    : InterceptorChain{make_shared<Rep_> (interceptors)}
+    : InterceptorChain{MakeSharedPtr<Rep_> (interceptors)}
 {
 }
 

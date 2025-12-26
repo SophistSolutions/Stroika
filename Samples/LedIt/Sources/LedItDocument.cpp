@@ -30,6 +30,7 @@
 #include <unistd.h>
 #endif
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Frameworks/Led/SpellCheckEngine_Basic.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_PlainText.h"
@@ -55,6 +56,7 @@ using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+using Memory::MakeSharedPtr;
 using Memory::StackBuffer;
 
 #if qStroika_Foundation_Common_Platform_MacOS
@@ -278,9 +280,9 @@ LedItDocument::LedItDocument ()
     ::AfxOleLockApp ();
 #endif
     fTextStore.AddMarkerOwner (this);
-    fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
-    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (fTextStore);
-    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (fTextStore);
+    fStyleDatabase       = MakeSharedPtr<StyleDatabaseRep> (fTextStore);
+    fParagraphDatabase   = MakeSharedPtr<ParagraphDatabaseRep> (fTextStore);
+    fHidableTextDatabase = MakeSharedPtr<UniformHidableTextMarkerOwner> (fTextStore);
 }
 
 LedItDocument::~LedItDocument ()
@@ -1103,9 +1105,9 @@ BOOL LedItDocument::OnNewDocument ()
         return FALSE;
     }
     fFileFormat          = eDefaultFormat;
-    fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
-    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (fTextStore);
-    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (fTextStore);
+    fStyleDatabase       = MakeSharedPtr<StyleDatabaseRep> (fTextStore);
+    fParagraphDatabase   = MakeSharedPtr<ParagraphDatabaseRep> (fTextStore);
+    fHidableTextDatabase = MakeSharedPtr<UniformHidableTextMarkerOwner> (fTextStore);
     return TRUE;
 }
 
@@ -1362,9 +1364,9 @@ BOOL LedItDocument::OnOpenDocument (LPCTSTR lpszPathName)
     }
 
     fCommandHandler.Commit ();
-    fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
-    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (fTextStore);
-    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (fTextStore);
+    fStyleDatabase       = MakeSharedPtr<StyleDatabaseRep> (fTextStore);
+    fParagraphDatabase   = MakeSharedPtr<ParagraphDatabaseRep> (fTextStore);
+    fHidableTextDatabase = MakeSharedPtr<UniformHidableTextMarkerOwner> (fTextStore);
 
     // Slight performance hack - get rid of existing style/etc dbases for the current view
     {

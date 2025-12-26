@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Methods.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Stroika/Frameworks/Auth/Interceptor.h"
@@ -253,7 +254,7 @@ public:
              */
            , Route{RegularExpression::kAny, FileSystemRequestHandler{Execution::GetEXEDir () / "html"sv, kStaticSiteHandlerOptions_}}
           }
-        , fWSImpl_{ make_shared<WSImpl>(   [this](const WSImpl::WithWebServerCallbackType& f) { f (fConnectionMgr_);}  )}
+        , fWSImpl_{ MakeSharedPtr<WSImpl>(   [this](const WSImpl::WithWebServerCallbackType& f) { f (fConnectionMgr_);}  )}
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber.value_or (gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default)))
                          , kRoutes_
                          , ConnectionManager::Options{.fMaxConcurrentlyHandledConnections = kDefaultWSThreadPoolSize_,
@@ -363,6 +364,6 @@ const WebServiceMethodDescription WebServer::Rep_::kHeathCheck_{
 };
 
 WebServer::WebServer (optional<uint16_t> portNumber)
-    : fRep_{make_shared<Rep_> (portNumber)}
+    : fRep_{MakeSharedPtr<Rep_> (portNumber)}
 {
 }

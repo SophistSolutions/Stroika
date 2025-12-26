@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Frameworks::Led {
 
@@ -60,7 +61,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline MultiRowTextImager::PartitionElementCacheInfo::PartitionElementCacheInfo ()
-        : fRep{make_shared<Rep> ()}
+        : fRep{Memory::MakeSharedPtr<Rep> ()}
     {
     }
     /*

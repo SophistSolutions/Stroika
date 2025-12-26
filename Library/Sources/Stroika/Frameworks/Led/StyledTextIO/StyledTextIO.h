@@ -6,6 +6,8 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 /*
 @MODULE:    StyledTextIO
 @DESCRIPTION:
@@ -770,7 +772,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         RequireNotNull (srcStream);
         if (fBadInputHandler.get () == nullptr) {
-            fBadInputHandler = make_shared<BadInputHandler> ();
+            fBadInputHandler = Memory::MakeSharedPtr<BadInputHandler> ();
         }
     }
     inline StyledTextIOReader::SrcStream& StyledTextIOReader::GetSrcStream () const
@@ -802,7 +804,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         fBadInputHandler = badInputHandler;
         if (fBadInputHandler == nullptr) {
-            fBadInputHandler = make_shared<BadInputHandler> ();
+            fBadInputHandler = Memory::MakeSharedPtr<BadInputHandler> ();
         }
     }
     /*

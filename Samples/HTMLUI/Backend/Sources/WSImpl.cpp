@@ -113,12 +113,12 @@ namespace {
  ************************************* WSImpl ***********************************
  ********************************************************************************
  */
-struct WSImpl::Rep_ {
+struct WSImpl::Rep_ final {
     MyCapturer_                                       fMyCapturer;
     function<void (const WithWebServerCallbackType&)> fAccessWebServer;
 };
 WSImpl::WSImpl (function<void (const WithWebServerCallbackType&)> passWS2Callback)
-    : fRep_{make_shared<Rep_> ()}
+    : fRep_{MakeSharedPtr<Rep_> ()}
 {
     fRep_->fAccessWebServer = passWS2Callback;
 }

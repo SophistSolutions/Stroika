@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
             mutable typename OPTIONS::MutexType fCriticalSection_;
         };
         template <typename ELEMENT_TYPE, typename OPTIONS>
-        struct Rep2_ : InputStream::IRep<ELEMENT_TYPE> {
+        struct Rep2_ final : InputStream::IRep<ELEMENT_TYPE> {
             using ElementType = ELEMENT_TYPE;
             Rep2_ ([[maybe_unused]] const OPTIONS& o, const InputStream::Ptr<ELEMENT_TYPE>& stream2Wrap)
                 : fStream2Wrap{stream2Wrap}
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
     template <typename ELEMENT_TYPE, typename OPTIONS>
     inline Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const InputStream::Ptr<ELEMENT_TYPE>& stream2Wrap)
     {
-        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep2_<ELEMENT_TYPE, OPTIONS>> (o, stream2Wrap)};
+        return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::Rep2_<ELEMENT_TYPE, OPTIONS>> (o, stream2Wrap)};
     }
 
 }

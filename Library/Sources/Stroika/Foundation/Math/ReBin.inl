@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Math/Common.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
 #include "Stroika/Foundation/Traversal/Partition.h"
 
@@ -129,7 +130,7 @@ namespace Stroika::Foundation::Math::ReBin {
                 using namespace Traversal;
                 using BucketIndexType = typename DATA_DESCRIPTOR_TYPE::BucketIndexType;
                 using XType           = typename DATA_DESCRIPTOR_TYPE::XType;
-                auto myContext        = make_shared<BucketIndexType> (0);
+                auto myContext        = Memory::MakeSharedPtr<BucketIndexType> (0);
                 auto bucketCount      = d.GetBucketCount ();
                 auto getNext          = [myContext, bucketCount, d] () -> optional<Range<XType>> {
                     /*

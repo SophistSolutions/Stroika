@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Exception.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "DefaultFaultInterceptor.h"
 
@@ -93,11 +94,11 @@ struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
  ********************************************************************************
  */
 DefaultFaultInterceptor::DefaultFaultInterceptor ()
-    : inherited{make_shared<Rep_> ()}
+    : inherited{MakeSharedPtr<Rep_> ()}
 {
 }
 DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void (Message&, const exception_ptr&)>& handleFault)
-    : inherited{make_shared<Rep_Explicit_> (handleFault)}
+    : inherited{MakeSharedPtr<Rep_Explicit_> (handleFault)}
 {
 }
 DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void (Message*, const exception_ptr&)>& handleFault)

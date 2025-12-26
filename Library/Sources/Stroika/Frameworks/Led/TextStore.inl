@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 namespace Stroika::Frameworks::Led {
 
     /*
@@ -251,7 +253,7 @@ namespace Stroika::Frameworks::Led {
     inline shared_ptr<TextBreaks> TextStore::GetTextBreaker () const
     {
         if (fTextBreaker == nullptr) {
-            fTextBreaker = make_shared<TextBreaks_DefaultImpl> ();
+            fTextBreaker = Memory::MakeSharedPtr<TextBreaks_DefaultImpl> ();
         }
         return fTextBreaker;
     }

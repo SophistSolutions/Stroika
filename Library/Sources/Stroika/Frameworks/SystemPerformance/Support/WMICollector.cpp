@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 #include "WMICollector.h"
@@ -380,5 +381,5 @@ void WMICollector::AddInstance_ (const String& instance)
 #endif
     //RENEABLKE WHEN WE HAVE RECURSIVE DEBUG LOCK - AssertExternallySynchronizedMutex::WriteContext declareContext { *this };
     Require (not fInstanceData_.ContainsKey (instance));
-    fInstanceData_.Add (instance, make_shared<PerInstanceData_> (fObjectName_, instance, fCounterNames_));
+    fInstanceData_.Add (instance, MakeSharedPtr<PerInstanceData_> (fObjectName_, instance, fCounterNames_));
 }

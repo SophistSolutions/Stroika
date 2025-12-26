@@ -6,6 +6,8 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 /*
 @MODULE:    Led_MFC_WordProcessor
 @DESCRIPTION:
@@ -256,9 +258,9 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     shared_ptr<FlavorPackageInternalizer> WordProcessorCommonCommandHelper_MFC<BASECLASS>::MakeDefaultInternalizer ()
     {
-        return make_shared<ControlItemContextInternalizer> (dynamic_cast<COleDocument*> (this->GetDocument ()), this->GetTextStore (),
-                                                            this->GetStyleDatabase (), this->GetParagraphDatabase (),
-                                                            this->GetHidableTextDatabase ());
+        return Memory::MakeSharedPtr<ControlItemContextInternalizer> (dynamic_cast<COleDocument*> (this->GetDocument ()),
+                                                                      this->GetTextStore (), this->GetStyleDatabase (),
+                                                                      this->GetParagraphDatabase (), this->GetHidableTextDatabase ());
     }
 #endif
     template <typename BASECLASS>
