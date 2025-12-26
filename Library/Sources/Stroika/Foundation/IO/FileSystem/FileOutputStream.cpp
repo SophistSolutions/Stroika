@@ -48,7 +48,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 using Memory::MakeSharedPtr;
 
 namespace {
-    class Rep_  : public Streams::OutputStream::IRep<byte> {
+    class Rep_ : public Streams::OutputStream::IRep<byte> {
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;

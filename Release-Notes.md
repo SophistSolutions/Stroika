@@ -11,100 +11,42 @@ especially those they need to be aware of when upgrading.
 
 - used Common::ClassNotFinal new concept in  InheritAndUseBlockAllocationIfAppropriate
 
+- debug/workaround running out of space on linux github actions
+- capture more log data to debug failure to build on github actions macos14
 
+ - use MONGOCXXDRIVER 4.1.4 to avoid macos issue with cmake version
+
+
+-    fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
+
+- build-N-test-Matrix.json, build-N-test.yml
+  - Cleanup comments
+  - Currently no more need for so many --boost(etc) no workarounds - 
+    instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
+    - and new mechanism extra_apt_add_packages, extra_apt_remove_packages
+  - lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
+  - add xode 16.4 testing
+  - use windows-2025 for server to run containers
+  - lots of disk space and output cleanups
+
+
+- configure
+  - Print more comments (xcode versions) to config files in configure macos
+
+- Docker Containers
+  - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
+  - Windows containers now use ltsc2025 (requres runs_on: windows-2025 in github actions)
+  - VS 17.14.23
 
 #if 0
 
-
-commit d7a32f8bee568efa9343ea057b69382e8d20c4a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 7 01:06:45 2025 -0500
-
-    try to debug/workaround running out of space on linux github actions
-
-commit af57f17cb529c6918a8d02ab524e5e2df9794162
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 7 11:28:53 2025 -0500
-
-    a few minor tweaks to hopefully address running out of space on linux github actions (-Os instead of -O1, and rm a few things to save space during build
-
-commit 936162eff10af15f36ff192f2d63c280535f53c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 8 15:14:53 2025 -0500
-
-    capture more log data to debug failure to build on github actions macos14
-
-commit 80149144195eba8ba89b3f0930a412dd56b46fae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 8 15:21:55 2025 -0500
-
-    test if using -Os on ubuntu-22.04-g++-12 addresses space issue or if I really need to lose boost
-
-commit c31f2beb4e466bf3b4196485ed644afae1452068
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 8 16:28:28 2025 -0500
-
-    MacOS-14-XCode-15.3-Debug disable mongo-cxx-driver cuz doesnt build with this version of xcode (cmake issue)
-
-commit 77e8123ed3f6bdb07473e1c04975ed7cbab9e635
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 8 16:36:33 2025 -0500
-
-    fixed typo
-
-commit 2b70bc8ecc3adb74ed684bedbe395c443e9f0f9a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 8 23:18:51 2025 -0500
-
-    same fix for mac xcode 15.2
-
-commit 013ff74183e07dca838bcd9c52bda3bcd2ba97d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 17 08:08:58 2025 -0500
-
-    github actions macos: try different xcode version
-
-commit c27b6ded0b9e7f10603ac850a4b78d80e97e82e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 00:28:53 2025 -0500
-
-    use MONGOCXXDRIVER 4.1.4 to avoid macos issue with cmake version
-
-commit d67eae6f5ad76c1b74a10e63e5b76e96cac7384f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 07:36:34 2025 -0500
-
-    undo disbaling of macos build of mongocxx on macos/github - not needed anymore
-
-commit 8a30dce067949eb81e5885951464b06f3a755886
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 08:25:26 2025 -0500
-
-    fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
-
-commit d1d684fff010aaa2d56234edd184f5003c61c356
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 08:37:58 2025 -0500
-
-    Minor hopefully cosmetic cleanups to build-N-test-Matrix.json (and a few more reverts of unneeded BWA for mongocxx/macos)
-
-commit 830931b68f9ae00daa2447cfaf4d8e7f22d25049
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 08:41:54 2025 -0500
-
-    Minor hopefully cosmetic cleanups to build-N-test-Matrix.json (and a few more reverts of unneeded BWA for mongocxx/macos)
-
-commit a2cce79717e63f3c91ddc7287f7012557666f28e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 08:54:53 2025 -0500
-
-    Print more comments (xcode versions) to config files in configure macos
+    
 
 commit c26c7c27b3b009a4e570e020a20b587678822b44
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Nov 18 12:08:06 2025 -0500
 
-    lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
+    
 
 commit 01677fa2a93231bcf2ad0a3aff5813086f589834
 Author: Lewis Pringle <lewis@sophists.com>
