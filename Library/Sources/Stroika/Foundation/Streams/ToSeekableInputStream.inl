@@ -1,8 +1,9 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "InputStreamDelegationHelper.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Streams/InputStreamDelegationHelper.h"
 
 namespace Stroika::Foundation::Streams::ToSeekableInputStream {
 
@@ -139,7 +140,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             return in;
         }
         else {
-            return Ptr<ELEMENT_TYPE>{make_shared<seekableWrapper> (in)};
+            return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<seekableWrapper> (in)};
         }
         return in;
     }

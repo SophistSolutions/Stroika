@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Execution/NullMutex.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Streams::SharedMemoryStream {
 
@@ -522,13 +523,13 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
         // @todo - could do better on NullMutex stuff \see http://stroika-bugs.sophists.com/browse/STK-584
         if (options.fSeekable) {
             return options.fInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized
-                       ? Ptr<ELEMENT_TYPE>{make_shared<Private_::SeekableRep_<ELEMENT_TYPE, recursive_mutex>> ()}
-                       : Ptr<ELEMENT_TYPE>{make_shared<Private_::SeekableRep_<ELEMENT_TYPE, Execution::NullMutex>> ()};
+                       ? Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::SeekableRep_<ELEMENT_TYPE, recursive_mutex>> ()}
+                       : Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::SeekableRep_<ELEMENT_TYPE, Execution::NullMutex>> ()};
         }
         else {
             return options.fInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized
-                       ? Ptr<ELEMENT_TYPE>{make_shared<Private_::UnseekableRep_<ELEMENT_TYPE, recursive_mutex>> ()}
-                       : Ptr<ELEMENT_TYPE>{make_shared<Private_::UnseekableRep_<ELEMENT_TYPE, Execution::NullMutex>> ()};
+                       ? Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::UnseekableRep_<ELEMENT_TYPE, recursive_mutex>> ()}
+                       : Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::UnseekableRep_<ELEMENT_TYPE, Execution::NullMutex>> ()};
         }
     }
     template <typename ELEMENT_TYPE, typename COPY_FROM>

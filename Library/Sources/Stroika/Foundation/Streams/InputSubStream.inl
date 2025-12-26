@@ -3,6 +3,7 @@
  */
 #include "InternallySynchronizedInputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Streams::InputSubStream {
@@ -176,7 +177,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
     inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start,
                      const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
     {
-        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE>> (realIn, start, end)};
+        return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::Rep_<ELEMENT_TYPE>> (realIn, start, end)};
     }
     template <typename ELEMENT_TYPE>
     inline auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn,

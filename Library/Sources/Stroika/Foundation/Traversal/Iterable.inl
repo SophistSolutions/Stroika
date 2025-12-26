@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Math/Statistics.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
 
 namespace Stroika::Foundation::Traversal {
@@ -277,7 +278,7 @@ namespace Stroika::Foundation::Traversal {
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
         using USE_CONTAINER_TYPE =
             conditional_t<copy_constructible<DECAYED_CONTAINER> and not same_as<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
-        auto sharedCopyOfContainer = make_shared<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
+        auto sharedCopyOfContainer = Memory::MakeSharedPtr<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
         // shared copy so if/when getNext copied, the container itself isn't (so not invalidating any iterators)
         function<optional<T> ()> getNext = [sharedCopyOfContainer, i = sharedCopyOfContainer->begin ()] () mutable -> optional<T> {
             if (i != sharedCopyOfContainer->end ()) {
@@ -457,7 +458,7 @@ namespace Stroika::Foundation::Traversal {
         //
         if constexpr (same_as<RESULT_CONTAINER, Iterable<T>>) {
             // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-            auto sharedContext = make_shared<Iterable<T>> (*this);
+            auto sharedContext = Memory::MakeSharedPtr<Iterable<T>> (*this);
             // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
             // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
             function<optional<T> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (), includeIfTrue] () mutable -> optional<T> {
@@ -570,7 +571,7 @@ namespace Stroika::Foundation::Traversal {
             convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>;
         if constexpr (kLazyEvaluateIteration_) {
             // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-            auto sharedContext = make_shared<Iterable<T>> (*this);
+            auto sharedContext = Memory::MakeSharedPtr<Iterable<T>> (*this);
             // Both the 'sharedContext' and the 'i' get stored into the lambda closure so they get appropriately copied as you copy iterators
             function<optional<RESULT_ELEMENT> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (),
                                                              elementMapper] () mutable -> optional<RESULT_ELEMENT> {
@@ -658,7 +659,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Skip (size_t nItems) const
     {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
+        auto sharedContext = Memory::MakeSharedPtr<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance
@@ -681,7 +682,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Take (size_t nItems) const
     {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
+        auto sharedContext = Memory::MakeSharedPtr<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToTake also must be cloned per iterator instance
@@ -704,7 +705,7 @@ namespace Stroika::Foundation::Traversal {
     Iterable<T> Iterable<T>::Slice (size_t from, size_t to) const
     {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
+        auto sharedContext = Memory::MakeSharedPtr<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance

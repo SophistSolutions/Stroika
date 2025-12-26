@@ -4,11 +4,14 @@
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Interceptor.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+
+using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
@@ -44,7 +47,7 @@ public:
  ********************************************************************************
  */
 Interceptor::Interceptor (const function<void (Message&)>& handleMessage, const function<void (Message&, const exception_ptr&)>& handleFault)
-    : Interceptor{make_shared<MyRep_> (handleMessage, handleFault)}
+    : Interceptor{MakeSharedPtr<MyRep_> (handleMessage, handleFault)}
 {
 }
 

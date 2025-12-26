@@ -1,7 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "InternallySynchronizedOutputStream.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
 
 namespace Stroika::Foundation::Streams::TextToBinary {
 
@@ -150,7 +151,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
         }
         inline OutputStream::Ptr<Character> New (const OutputStream::Ptr<byte>& src, const Characters::CodeCvt<>& char2OutputConverter)
         {
-            return OutputStream::Ptr<Character>{make_shared<Private_::UnSeekable_CodeCvt_Rep_> (src, char2OutputConverter)};
+            return OutputStream::Ptr<Character>{Memory::MakeSharedPtr<Private_::UnSeekable_CodeCvt_Rep_> (src, char2OutputConverter)};
         }
         inline OutputStream::Ptr<Character> New (const OutputStream::Ptr<byte>& src, Characters::UnicodeExternalEncodings e, Characters::ByteOrderMark bom)
         {
@@ -161,11 +162,11 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             // handle a few common cases more efficiently, without vectoring through CodeCvt<> (which has an extra level of indirection)
             switch (e) {
                 case Characters::UnicodeExternalEncodings::eUTF8:
-                    return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char8_t>> (src)};
+                    return Ptr{Memory::MakeSharedPtr<Private_::UnSeekable_UTFConverter_Rep_<char8_t>> (src)};
                 case Characters::UnicodeExternalEncodings::eUTF16:
-                    return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char16_t>> (src)};
+                    return Ptr{Memory::MakeSharedPtr<Private_::UnSeekable_UTFConverter_Rep_<char16_t>> (src)};
                 case Characters::UnicodeExternalEncodings::eUTF32:
-                    return Ptr{make_shared<Private_::UnSeekable_UTFConverter_Rep_<char32_t>> (src)};
+                    return Ptr{Memory::MakeSharedPtr<Private_::UnSeekable_UTFConverter_Rep_<char32_t>> (src)};
                 default:
                     // but default to using the CodeCvt writer
                     return New (src, Characters::CodeCvt<Character> (e));

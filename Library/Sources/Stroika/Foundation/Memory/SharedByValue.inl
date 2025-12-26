@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Memory {
 
@@ -14,7 +15,7 @@ namespace Stroika::Foundation::Memory {
     inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::operator() (const T& t) const
     {
         if constexpr (same_as<SHARED_IMLP, shared_ptr<T>>) {
-            return make_shared<T> (t); // more efficient
+            return Memory::MakeSharedPtr<T> (t); // more efficient
         }
         return SHARED_IMLP{new T{t}};
     }

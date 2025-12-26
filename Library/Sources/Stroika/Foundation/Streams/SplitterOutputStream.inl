@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
 
 namespace Stroika::Foundation::Streams::SplitterOutputStream {
@@ -88,7 +89,7 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
     inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2)
         -> Ptr<ELEMENT_TYPE>
     {
-        return make_shared<Private_::Rep_> (realOut1, realOut2);
+        return Memory::MakeSharedPtr<Private_::Rep_> (realOut1, realOut2);
     }
     template <typename ELEMENT_TYPE>
     inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1,

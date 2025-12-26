@@ -920,7 +920,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx1{"Weighted disk stats"};
                 for (const auto& i : totalWeights) {
-                    DbgTrace (L"Disk '%s' weight %f", i.fKey.c_str (), i.fValue);
+                    DbgTrace ("Disk '{}' weight {}"_f, i.fKey.c_str (), i.fValue);
                 }
             }
 #endif
@@ -966,10 +966,10 @@ namespace {
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         if (computeInuse) {
-                            DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fInUsePercent));
+                            DbgTrace ("Adjusted fInUsePCT for filesystem '{}' is {}"_f, i.fKey.c_str (), NullCoalesce (cumStats.fInUsePercent));
                         }
                         if (computeQLen) {
-                            DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), NullCoalesce (cumStats.fQLength));
+                            DbgTrace ("Adjusted fQLength for filesystem '{}' is {}"_f, i.fKey.c_str (), NullCoalesce (cumStats.fQLength));
                         }
 #endif
                         mfi.fCombinedIOStats = cumStats;
