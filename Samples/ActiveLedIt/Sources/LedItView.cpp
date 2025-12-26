@@ -11,6 +11,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Stroika/Frameworks/Led/ChunkedArrayTextStore.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"
@@ -29,6 +30,8 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
+
+using Memory::MakeSharedPtr;
 
 using SearchParameters = LedItView::SearchParameters;
 
@@ -481,12 +484,9 @@ static BOOL CALLBACK _AfxAbortProc (HDC, int)
  ********************************************************************************
  */
 LedItViewController::LedItViewController ()
-    : fTextStore ()
-    , fCommandHandler (kMaxNumUndoLevels)
-    , fHidableTextDatabase ()
-
+    : fCommandHandler{kMaxNumUndoLevels}
 {
-    fHidableTextDatabase = make_shared<ColoredUniformHidableTextMarkerOwner> (fTextStore);
+    fHidableTextDatabase = MakeSharedPtr<ColoredUniformHidableTextMarkerOwner> (fTextStore);
 }
 
 /*

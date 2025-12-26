@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Stroika/Frameworks/Led/Platform/Windows_FileRegistration.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"
@@ -24,6 +25,9 @@
 #include "LedLineItApplication.h"
 
 using namespace Stroika::Foundation;
+
+using Memory::MakeSharedPtr;
+
 using namespace Stroika::Frameworks::Led;
 
 #define STD_EXCEPT_CATCHER(APP)                                                                                                            \
@@ -359,7 +363,7 @@ BOOL LedLineItApplication::InitInstance ()
     if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
         SpellCheckEngine_Basic::RegressionTest ();
     }
-    fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();
+    fSpellCheckEngine = MakeSharedPtr<SpellCheckEngine_Basic_Simple> ();
 #if qStroika_Foundation_Common_Platform_Windows
     {
         // Place the dictionary in a reasonable - but hardwired place. Later - allow for editing that location,

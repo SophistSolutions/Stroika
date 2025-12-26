@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
 #endif
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Frameworks/Service/Main.h"
 
 #include "AppVersion.h"
@@ -49,6 +50,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Frameworks::Service;
 
 using Containers::Sequence;
+using Memory::MakeSharedPtr;
 
 #if qUseLogger
 #include "Stroika/Foundation/Debug/BackTrace.h"
@@ -147,13 +149,13 @@ int main (int argc, const char* argv[])
     if (dockerContainerFlag) {
         using namespace IO::FileSystem;
         Logger::sThe.AddAppender (
-            make_shared<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
+            MakeSharedPtr<Logger::StreamAppender> (FileOutputStream::New (STDOUT_FILENO, FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
     }
     else {
 #if qStroika_HasComponent_syslog
-        Logger::sThe.SetAppenders (make_shared<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
+        Logger::sThe.SetAppenders (MakeSharedPtr<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
 #elif qStroika_Foundation_Common_Platform_Windows
-        Logger::sThe.SetAppenders (make_shared<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
+        Logger::sThe.SetAppenders (MakeSharedPtr<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
 #endif
     }
 #endif
@@ -163,13 +165,13 @@ int main (int argc, const char* argv[])
      */
     shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
 #if qUseLogger
-    serviceIntegrationRep = make_shared<Main::LoggerServiceWrapper> (serviceIntegrationRep);
+    serviceIntegrationRep = MakeSharedPtr<Main::LoggerServiceWrapper> (serviceIntegrationRep);
 #endif
 
     /*
      *  Create service handler instance.
      */
-    Main m{make_shared<Samples::Service::SampleAppServiceRep> (), serviceIntegrationRep};
+    Main m{MakeSharedPtr<Samples::Service::SampleAppServiceRep> (), serviceIntegrationRep};
 
     /*
      *  Run request.

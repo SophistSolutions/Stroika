@@ -38,6 +38,7 @@ using namespace Stroika::Frameworks::WebService::Server;
 using namespace Stroika::Frameworks::WebService::Server::VariantValue;
 
 using Memory::BLOB;
+using Memory::MakeSharedPtr;
 using Stroika::Frameworks::WebServer::Request;
 using Stroika::Frameworks::WebServer::Response;
 using Stroika::Frameworks::WebService::Server::VariantValue::ExtractArgumentsAsVariantValue;
@@ -257,6 +258,6 @@ const WebServiceMethodDescription WebServer::Rep_::kDivide{
 };
 
 WebServer::WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
-    : fRep_{make_shared<Rep_> (portNumber, wsImpl)}
+    : fRep_{MakeSharedPtr<Rep_> (portNumber, wsImpl)}
 {
 }

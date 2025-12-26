@@ -40,6 +40,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Stroika/Frameworks/Led/Config.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"
@@ -71,6 +72,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
+
+using Memory::MakeSharedPtr;
 
 #if qStroika_Foundation_Common_Platform_MacOS
 static Handle sDeepShitCheeseBuf = NULL; // so no mem alerts don't crash...
@@ -1291,7 +1294,7 @@ BOOL LedItApplication::InitInstance ()
     SpellCheckEngine_Basic::RegressionTest ();
 #endif
 
-    fSpellCheckEngine = make_shared<SpellCheckEngine_Basic_Simple> ();
+    fSpellCheckEngine = MakeSharedPtr<SpellCheckEngine_Basic_Simple> ();
 
 #if qStroika_Foundation_Common_Platform_Windows
     {

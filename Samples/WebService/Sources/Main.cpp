@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "WSImpl.h"
 #include "WebServer.h"
@@ -28,6 +29,7 @@ using namespace Stroika::Foundation::Execution;
 
 using Characters::String;
 using Containers::Sequence;
+using Memory::MakeSharedPtr;
 
 using namespace StroikaSample::WebServices;
 
@@ -55,8 +57,8 @@ int main (int argc, const char* argv[])
             quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*o)};
         }
 
-        WebServer myWebServer{portNumber, make_shared<WSImpl> ()}; // listen and dispatch while this object exists
-        WaitableEvent{}.Wait (quitAfter);                          // wait quitAfter seconds, or til user hits ctrl-c
+        WebServer myWebServer{portNumber, MakeSharedPtr<WSImpl> ()}; // listen and dispatch while this object exists
+        WaitableEvent{}.Wait (quitAfter);                            // wait quitAfter seconds, or til user hits ctrl-c
     }
     catch (const TimeOutException&) {
         cerr << "Timed out - so - exiting..." << endl;
