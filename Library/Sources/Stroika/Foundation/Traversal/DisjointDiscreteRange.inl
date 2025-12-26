@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
 
 namespace Stroika::Foundation::Traversal {
@@ -183,7 +184,7 @@ namespace Stroika::Foundation::Traversal {
             }
             context_ (const context_& from) = default;
         };
-        auto myContext = make_shared<context_> (context_{subRanges});
+        auto myContext = Memory::MakeSharedPtr<context_> (context_{subRanges});
         auto getNext   = [myContext] () -> optional<value_type> {
             if (myContext->fSubRangeIdx < myContext->fSubRanges.size ()) {
                 RangeType              curRange{myContext->fSubRanges[myContext->fSubRangeIdx]};

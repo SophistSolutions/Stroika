@@ -38,6 +38,7 @@
 #include "Stroika/Foundation/Execution/Throw.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/iostream/FStreamSupport.h"
 
 #include "Main.h"
@@ -134,11 +135,11 @@ bool Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s)
 shared_ptr<Main::IServiceIntegrationRep> Main::mkDefaultServiceIntegrationRep ()
 {
 #if qStroika_Foundation_Common_Platform_POSIX
-    return make_shared<BasicUNIXServiceImpl> ();
+    return MakeSharedPtr<BasicUNIXServiceImpl> ();
 #elif qStroika_Foundation_Common_Platform_Windows
-    return make_shared<WindowsService> ();
+    return MakeSharedPtr<WindowsService> ();
 #else
-    return make_shared<RunNoFrillsService> ();
+    return MakeSharedPtr<RunNoFrillsService> ();
 #endif
 }
 

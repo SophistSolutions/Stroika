@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Reader.h"
@@ -28,7 +29,7 @@ class Variant::INI::Reader::Rep_ final : public Variant::Reader::_IRep, public M
 public:
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (); // no instance data
+        return Memory::MakeSharedPtr<Rep_> (); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -83,6 +84,6 @@ public:
     }
 };
 Variant::INI::Reader::Reader ()
-    : inherited{make_shared<Rep_> ()}
+    : inherited{Memory::MakeSharedPtr<Rep_> ()}
 {
 }

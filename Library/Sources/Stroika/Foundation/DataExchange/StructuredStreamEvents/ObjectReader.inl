@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader {
 
@@ -231,7 +232,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             ThrowUnRecognizedStartElt (name);
         }
         else {
-            return make_shared<IgnoreNodeReader> ();
+            return Memory::MakeSharedPtr<IgnoreNodeReader> ();
         }
     }
     template <typename T>
@@ -319,13 +320,13 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         RequireNotNull (fActiveContext_);
         if (not fMemberElementName_.has_value () or name == *fMemberElementName_) {
-            return make_shared<RepeatedElementReader<CONTAINER_OF_T>> (fValuePtr_);
+            return Memory::MakeSharedPtr<RepeatedElementReader<CONTAINER_OF_T>> (fValuePtr_);
         }
         else if (fThrowOnUnrecongizedelts_) {
             ThrowUnRecognizedStartElt (name);
         }
         else {
-            return make_shared<IgnoreNodeReader> ();
+            return Memory::MakeSharedPtr<IgnoreNodeReader> ();
         }
     }
     template <typename CONTAINER_OF_T>
@@ -462,7 +463,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             ++idx;
         }
-        return make_shared<IgnoreNodeReader> ();
+        return Memory::MakeSharedPtr<IgnoreNodeReader> ();
     }
     template <typename T>
     void MixinReader<T>::HandleTextInside (const String& text)
@@ -551,7 +552,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     inline ReaderFromVoidStarFactory IgnoreNodeReader::AsFactory ()
     {
-        return [] (void*) -> shared_ptr<IElementConsumer> { return make_shared<IgnoreNodeReader> (); };
+        return [] (void*) -> shared_ptr<IElementConsumer> { return Memory::MakeSharedPtr<IgnoreNodeReader> (); };
     }
 
     /*
@@ -561,12 +562,13 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      */
     inline ReaderFromVoidStarFactory ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader)
     {
-        return [theUseReader] (void* p) -> shared_ptr<IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p)); };
+        return
+            [theUseReader] (void* p) -> shared_ptr<IElementConsumer> { return Memory::MakeSharedPtr<ReadDownToReader> (theUseReader (p)); };
     }
     inline ReaderFromVoidStarFactory ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader, const Name& tagToHandOff)
     {
         return [theUseReader, tagToHandOff] (void* p) -> shared_ptr<IElementConsumer> {
-            return make_shared<ReadDownToReader> (theUseReader (p), tagToHandOff);
+            return Memory::MakeSharedPtr<ReadDownToReader> (theUseReader (p), tagToHandOff);
         };
     }
 
@@ -621,7 +623,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         }
 #endif
         else {
-            return make_shared<IgnoreNodeReader> ();
+            return Memory::MakeSharedPtr<IgnoreNodeReader> ();
         }
     }
     template <typename T, typename TRAITS>
@@ -720,14 +722,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     auto Registry::MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions) -> ReaderFromVoidStarFactory
     {
         return [fieldDescriptions] (void* data) -> shared_ptr<IElementConsumer> {
-            return make_shared<ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data));
+            return Memory::MakeSharedPtr<ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data));
         };
     }
     template <typename T, typename READER, typename... ARGS>
     auto Registry::ConvertReaderToFactory (ARGS&&... args) -> ReaderFromVoidStarFactory
     {
         ReaderFromTStarFactory<T> tmpFactory{
-            [args...] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<READER> (o, forward<ARGS> (args)...); }};
+            [args...] (T* o) -> shared_ptr<IElementConsumer> { return Memory::MakeSharedPtr<READER> (o, forward<ARGS> (args)...); }};
         return [tmpFactory] (void* data) { return tmpFactory (reinterpret_cast<T*> (data)); };
     }
     template <typename T>
@@ -738,7 +740,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T>
     auto Registry::MakeCommonReader_SimpleReader_ () -> ReaderFromVoidStarFactory
     {
-        return cvtFactory_<T> ([] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader_<T>> (o); });
+        return cvtFactory_<T> ([] (T* o) -> shared_ptr<IElementConsumer> { return Memory::MakeSharedPtr<SimpleReader_<T>> (o); });
     }
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap) -> ReaderFromVoidStarFactory
@@ -775,7 +777,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
         };
         return cvtFactory_<ENUM_TYPE> (
-            [nameMap] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (nameMap, o); });
+            [nameMap] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return Memory::MakeSharedPtr<myReader_> (nameMap, o); });
     };
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_NamedEnumerations (const Common::EnumNames<ENUM_TYPE>& nameMap) -> ReaderFromVoidStarFactory
@@ -826,7 +828,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 }
             }
         };
-        return cvtFactory_<ENUM_TYPE> ([] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (o); });
+        return cvtFactory_<ENUM_TYPE> ([] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return Memory::MakeSharedPtr<myReader_> (o); });
     }
     template <typename ENUM_TYPE>
     inline void Registry::AddCommonReader_EnumAsInt ()
@@ -860,8 +862,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                 *fValue_ = fString2TMapper_ (fBuf_.str ()); // its up to fString2TMapper_ to throw if this conversion cannot be done
             }
         };
-        return cvtFactory_<T> (
-            [converterFromString2T] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
+        return cvtFactory_<T> ([converterFromString2T] (T* o) -> shared_ptr<IElementConsumer> {
+            return Memory::MakeSharedPtr<myReader_> (converterFromString2T, o);
+        });
     };
     template <typename T>
     inline void Registry::AddCommonReader_Simple (const function<T (String)>& converterFromString2T)

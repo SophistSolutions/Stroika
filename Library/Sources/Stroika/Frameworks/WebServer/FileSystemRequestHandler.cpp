@@ -33,7 +33,7 @@ using IO::Network::HTTP::ClientErrorException;
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
-    struct FSRouterRep_ {
+    struct FSRouterRep_ final {
         filesystem::path                              fFSRoot_;
         String                                        fURLPrefix2Strip_;
         Sequence<filesystem::path>                    fDefaultIndexFileNames;
@@ -138,8 +138,8 @@ namespace {
  ********************************************************************************
  */
 FileSystemRequestHandler::FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options)
-    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip, Memory::NullCoalesce (options.fDefaultIndexFileNames),
-                                                       options.fCacheControlSettings, options.fFallbackFile)] (
+    : RequestHandler{[rep = MakeSharedPtr<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip, Memory::NullCoalesce (options.fDefaultIndexFileNames),
+                                                         options.fCacheControlSettings, options.fFallbackFile)] (
                          Message& m, const Sequence<String>&, bool& handled) -> void { rep->HandleMessage (m, handled); }}
 {
     DbgTrace ("fDefaultIndexFileNames={}"_f, options.fDefaultIndexFileNames);

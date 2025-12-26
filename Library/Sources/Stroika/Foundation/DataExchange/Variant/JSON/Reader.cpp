@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Mapping_HashTable.h"
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/BufferedInputStream.h"
@@ -35,6 +36,7 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Traversal;
 
 using Containers::Concrete::Mapping_HashTable;
+using Memory::MakeSharedPtr;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -472,7 +474,7 @@ public:
     NativeRep_ (const NativeRep_&) = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<NativeRep_> (*this);
+        return MakeSharedPtr<NativeRep_> (*this);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -771,7 +773,7 @@ public:
     BoostRep_ (const BoostRep_&) = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<BoostRep_> (*this);
+        return MakeSharedPtr<BoostRep_> (*this);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -861,10 +863,10 @@ inline auto Variant::JSON::Reader::mk_ (const ReaderOptions& options) -> shared_
 {
     switch (options.fPreferredAlgorithm.value_or (ReaderOptions::Algorithm::eDEFAULT)) {
         case ReaderOptions::Algorithm::eStroikaNative:
-            return make_shared<NativeRep_> ();
+            return MakeSharedPtr<NativeRep_> ();
 #if __has_include("boost/json.hpp")
         case ReaderOptions::Algorithm::eBoost:
-            return make_shared<BoostRep_> ();
+            return MakeSharedPtr<BoostRep_> ();
 #endif
         default:
             AssertNotReached ();

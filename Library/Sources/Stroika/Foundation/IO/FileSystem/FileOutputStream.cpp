@@ -42,10 +42,10 @@ using namespace Stroika::Foundation::IO::FileSystem::FileOutputStream;
 using Execution::ThrowPOSIXErrNo;
 using Execution::ThrowPOSIXErrNoIfNegative;
 using Execution::ThrowSystemErrNo;
-
 #if qStroika_Foundation_Common_Platform_Windows
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
+using Memory::MakeSharedPtr;
 
 namespace {
     class Rep_ : public Streams::OutputStream::IRep<byte> /*, public Memory::UseBlockAllocationIfAppropriate<Rep_>*/ {
@@ -221,17 +221,17 @@ namespace {
  */
 auto FileOutputStream::New (const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag)};
+    return Ptr{MakeSharedPtr<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag)};
 }
 
 auto FileOutputStream::New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (fileName, appendFlag, flushFlag)};
+    return Ptr{MakeSharedPtr<Rep_> (fileName, appendFlag, flushFlag)};
 }
 
 auto FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag)};
+    return Ptr{MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag)};
 }
 
 auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr

@@ -20,6 +20,9 @@
 #include "Stroika/Foundation/IO/Network/Listener.h"
 #include "Stroika/Foundation/IO/Network/SocketAddress.h"
 #include "Stroika/Foundation/Math/Statistics.h"
+#if qCompilerAndStdLib_function_dependency_too_complex_Buggy
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#endif
 
 #include "Stroika/Frameworks/WebServer/CORS.h"
 #include "Stroika/Frameworks/WebServer/Connection.h"
@@ -438,7 +441,7 @@ namespace Stroika::Frameworks::WebServer {
         Traversal::Iterable<SocketAddress> fBindings_; // just to return bindings API
 #if qCompilerAndStdLib_function_dependency_too_complex_Buggy
         // BWA not too bad cuz ConnectionManager(const ConnectionManager&)=delete and op= as well.
-        shared_ptr<Connection::Options> fUseDefaultConnectionOptions_BWA_{make_shared<Connection::Options> ()};
+        shared_ptr<Connection::Options> fUseDefaultConnectionOptions_BWA_{Memory::MakeSharedPtr<Connection::Options> ()};
         Connection::Options&            fUseDefaultConnectionOptions_{*fUseDefaultConnectionOptions_BWA_};
 #else
         Connection::Options fUseDefaultConnectionOptions_;

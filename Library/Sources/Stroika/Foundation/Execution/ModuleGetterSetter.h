@@ -120,10 +120,7 @@ namespace Stroika::Foundation::Execution {
          *  \note this API fully threadsafe - as it returns a shared_ptr to data that is a snapshot as of when called if the wrapped data.
          *        If some thread does a write - doesn't affect the returned data here.
          */
-        shared_ptr<const T> operator->() const
-        {
-            return make_shared<const T> (Get ());
-        }
+        nonvirtual shared_ptr<const T> operator->() const;
 
     public:
         /**

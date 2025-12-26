@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 
@@ -133,7 +134,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
     template <typename ELEMENT_TYPE, Memory::ISpanBytesCastable<span<const ELEMENT_TYPE>> FROM_SPAN>
     Ptr<ELEMENT_TYPE> New (FROM_SPAN s)
     {
-        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE>> (Memory::SpanBytesCast<span<const ELEMENT_TYPE>> (s))};
+        return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::Rep_<ELEMENT_TYPE>> (Memory::SpanBytesCast<span<const ELEMENT_TYPE>> (s))};
     }
     template <typename ELEMENT_TYPE, Memory::ISpanBytesCastable<span<const ELEMENT_TYPE>> FROM_SPAN>
     inline Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, FROM_SPAN s)

@@ -14,6 +14,8 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::Resource;
 
+using Memory::MakeSharedPtr;
+
 /*
  ********************************************************************************
  ********************************* Resource::Name *******************************
@@ -46,7 +48,7 @@ String Name::ToString () const
  */
 ResolverPtr MemoryResolver::New (const Iterable<Definition>& defs)
 {
-    struct R : IResolverRep {
+    struct R final : IResolverRep {
         R (const Iterable<Definition>& defs)
             : fDefs_{defs}
         {
@@ -71,5 +73,5 @@ ResolverPtr MemoryResolver::New (const Iterable<Definition>& defs)
         }
         Iterable<Definition> fDefs_;
     };
-    return ResolverPtr{Memory::MakeSharedPtr<R> (defs)};
+    return ResolverPtr{MakeSharedPtr<R> (defs)};
 }

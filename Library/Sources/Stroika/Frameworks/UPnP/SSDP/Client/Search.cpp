@@ -29,6 +29,8 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
+using Memory::MakeSharedPtr;
+
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
@@ -37,7 +39,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Client;
 // Comment this in to turn on tracing in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-class Search::Rep_ {
+class Search::Rep_ final {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
@@ -221,7 +223,7 @@ const String Search::kSSDPAny    = "ssdp:any"sv;
 const String Search::kRootDevice = "upnp:rootdevice"sv;
 
 Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_{Memory::MakeSharedPtr<Rep_> (ipVersion)}
+    : fRep_{MakeSharedPtr<Rep_> (ipVersion)}
 {
 }
 

@@ -6,17 +6,17 @@
 #include <iterator>
 #include <memory>
 
-#include "Config.h"
-
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Traversal/Iterator.h"
 
-#include "StandardStyledTextImager.h"
+#include "Stroika/Frameworks/Led/Config.h"
+#include "Stroika/Frameworks/Led/StandardStyledTextImager.h"
 
 #include "HiddenText.h"
 
 using namespace Stroika::Foundation;
+using Memory::MakeSharedPtr;
 
-using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
@@ -339,7 +339,7 @@ void HidableTextMarkerOwner::SetInternalizer (const shared_ptr<FlavorPackageInte
 {
     fInternalizer = i;
     if (fInternalizer == nullptr) {
-        fInternalizer = make_shared<FlavorPackageInternalizer> (GetTextStore ());
+        fInternalizer = MakeSharedPtr<FlavorPackageInternalizer> (GetTextStore ());
     }
 }
 
@@ -352,7 +352,7 @@ void HidableTextMarkerOwner::SetExternalizer (const shared_ptr<FlavorPackageExte
 {
     fExternalizer = e;
     if (fExternalizer == nullptr) {
-        fExternalizer = make_shared<FlavorPackageExternalizer> (GetTextStore ());
+        fExternalizer = MakeSharedPtr<FlavorPackageExternalizer> (GetTextStore ());
     }
 }
 

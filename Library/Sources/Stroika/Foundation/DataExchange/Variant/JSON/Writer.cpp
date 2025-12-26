@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Writer.h"
@@ -17,6 +18,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
+using Memory::MakeSharedPtr;
 
 /*
  * TODO:
@@ -25,7 +27,7 @@ using Characters::Character;
 
 namespace {
     // Just like Writer::Options but without optionals... fill those in
-    struct OptionValues_ {
+    struct OptionValues_ final {
         OptionValues_ (const Variant::JSON::Writer::Options& o)
             : fFloatOptions{o.fFloatOptions.value_or (Characters::FloatConversion::ToStringOptions{})}
             , fJSONPrettyPrint{o.fJSONPrettyPrint.value_or (true)}
@@ -248,7 +250,7 @@ namespace {
  ************************** DataExchange::JSON::Writer **************************
  ********************************************************************************
  */
-class Variant::JSON::Writer::Rep_ final : public Variant::Writer::_IRep {
+class Variant::JSON::Writer::Rep_ final : public Variant::Writer::_IRep, Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     OptionValues_ fOptions_;
     Rep_ (const Options& options)
@@ -261,7 +263,7 @@ public:
     }
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (fOptions_); // no instance data
+        return Memory::MakeSharedPtr<Rep_> (fOptions_); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -282,6 +284,6 @@ public:
 };
 
 Variant::JSON::Writer::Writer (const Options& options)
-    : inherited{make_shared<Rep_> (options)}
+    : inherited{MakeSharedPtr<Rep_> (options)}
 {
 }

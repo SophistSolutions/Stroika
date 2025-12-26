@@ -3,6 +3,7 @@
  */
 
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Frameworks::Auth {
 
@@ -40,7 +41,7 @@ namespace Stroika::Frameworks::Auth {
     };
     template <IIdentityManagerCompatibleID ID_TYPE>
     CurrentIdentityAuthInterceptor<ID_TYPE>::CurrentIdentityAuthInterceptor (function<ID_TYPE (WebServer::Request&)> cb)
-        : inherited{make_shared<Rep_> (cb)}
+        : inherited{Memory::MakeSharedPtr<Rep_> (cb)}
     {
     }
 

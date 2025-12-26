@@ -22,6 +22,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader;
 
+using Memory::MakeSharedPtr;
 using Time::Date;
 using Time::DateTime;
 using Time::Duration;
@@ -261,13 +262,13 @@ ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseRe
 }
 
 ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff)
-    : ReadDownToReader (Memory::MakeSharedPtr<ReadDownToReader> (theUseReader, tagToHandOff), contextTag)
+    : ReadDownToReader (MakeSharedPtr<ReadDownToReader> (theUseReader, tagToHandOff), contextTag)
 {
     RequireNotNull (theUseReader);
 }
 
 ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag1, const Name& contextTag2, const Name& tagToHandOff)
-    : ReadDownToReader (Memory::MakeSharedPtr<ReadDownToReader> (theUseReader, contextTag2, tagToHandOff), contextTag1)
+    : ReadDownToReader (MakeSharedPtr<ReadDownToReader> (theUseReader, contextTag2, tagToHandOff), contextTag1)
 {
     RequireNotNull (theUseReader);
 }

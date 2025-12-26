@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Streams::MemoryStream {
 
@@ -234,13 +235,13 @@ namespace Stroika::Foundation::Streams::MemoryStream {
     inline auto New () -> Ptr<ELEMENT_TYPE>
     {
         using MemoryStream::Private_::Rep_;
-        return make_shared<Rep_<ELEMENT_TYPE>> ();
+        return Memory::MakeSharedPtr<Rep_<ELEMENT_TYPE>> ();
     }
     template <typename ELEMENT_TYPE, size_t EXTENT>
     inline auto New (span<const ELEMENT_TYPE, EXTENT> copyFrom) -> Ptr<ELEMENT_TYPE>
     {
         using MemoryStream::Private_::Rep_;
-        Ptr r = make_shared<Rep_<ELEMENT_TYPE>> ();
+        Ptr r = Memory::MakeSharedPtr<Rep_<ELEMENT_TYPE>> ();
         r.Write (copyFrom);
         return r;
     }
@@ -249,7 +250,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
         requires (same_as<ELEMENT_TYPE, byte>)
     {
         using MemoryStream::Private_::Rep_;
-        Ptr r = make_shared<Rep_<ELEMENT_TYPE>> ();
+        Ptr r = Memory::MakeSharedPtr<Rep_<ELEMENT_TYPE>> ();
         r.Write (copyFrom);
         return r;
     }
@@ -310,7 +311,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
     template <typename ELEMENT_TYPE>
     [[deprecated ("Since Stroika v3.0d5 use span interface")]] static Ptr<ELEMENT_TYPE> New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
     {
-        return make_shared<Private_::Rep_<ELEMENT_TYPE>> (start, end);
+        return Memory::MakeSharedPtr<Private_::Rep_<ELEMENT_TYPE>> (start, end);
     }
 
 }

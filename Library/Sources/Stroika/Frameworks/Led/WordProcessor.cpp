@@ -16,6 +16,8 @@
 #include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 #include "Stroika/Frameworks/Led/Config.h"
 #include "Stroika/Frameworks/Led/SimpleTextStore.h"
 #include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
@@ -24,6 +26,8 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
+
+using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
@@ -46,9 +50,9 @@ ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore)
 #if qStroika_Frameworks_Led_SupportGDI
     //tmphack test - see if this fixes SPR#1129
     // LGP 2002-10-19 - didnt appear to work so probably get rid of it - but test some more!!!
-    SetPartition (make_shared<WordProcessor::WPPartition> (GetTextStore (), *this));
+    SetPartition (MakeSharedPtr<WordProcessor::WPPartition> (GetTextStore (), *this));
 #else
-    SetPartition (make_shared<LineBasedPartition> (GetTextStore ()));
+    SetPartition (MakeSharedPtr<LineBasedPartition> (GetTextStore ()));
 #endif
 }
 
@@ -592,9 +596,9 @@ WordProcessorTable::CellRep::CellRep (WordProcessorTable& forTable)
 {
     fTextStore = new SimpleTextStore ();
     fTextStore->AddMarkerOwner (this);
-    fStyleDatabase       = make_shared<StyleDatabaseRep> (*fTextStore);
-    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (*fTextStore);
-    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (*fTextStore);
+    fStyleDatabase       = MakeSharedPtr<StyleDatabaseRep> (*fTextStore);
+    fParagraphDatabase   = MakeSharedPtr<ParagraphDatabaseRep> (*fTextStore);
+    fHidableTextDatabase = MakeSharedPtr<UniformHidableTextMarkerOwner> (*fTextStore);
 }
 
 WordProcessorTable::CellRep::~CellRep ()
@@ -2353,7 +2357,7 @@ void WordProcessor::HookGainedNewTextStore_ ()
         SetParagraphDatabase (nullptr); // fills in default value since we have a textstore...
     }
     if (fHidableTextDatabase.get () == nullptr) {
-        SetHidableTextDatabase (make_shared<UniformHidableTextMarkerOwner> (GetTextStore ())); // fills in default value since we have e textstore...
+        SetHidableTextDatabase (MakeSharedPtr<UniformHidableTextMarkerOwner> (GetTextStore ())); // fills in default value since we have e textstore...
         fICreatedHidableTextDB = true; // do this AFTER above call - cuz WordProcessor::SetHidableTextDatabase () sets flag FALSE (so for case when others call it)
     }
 }
@@ -2363,11 +2367,11 @@ shared_ptr<Partition> WordProcessor::MakeDefaultPartition () const
     // Probably no point in overriding this anymore - LGP 2002-10-20 -- RETHINK??? Perhaps no harm - either...
     RequireNotNull (PeekAtTextStore ());
     if (fParagraphDatabase.get () == nullptr) {
-        return make_shared<LineBasedPartition> (GetTextStore ());
+        return MakeSharedPtr<LineBasedPartition> (GetTextStore ());
     }
     else {
         const MarkerOwner* mo = fParagraphDatabase.get ();
-        return make_shared<WPPartition> (GetTextStore (), *const_cast<MarkerOwner*> (mo));
+        return MakeSharedPtr<WPPartition> (GetTextStore (), *const_cast<MarkerOwner*> (mo));
     }
 }
 
@@ -2385,7 +2389,7 @@ void WordProcessor::SetParagraphDatabase (const shared_ptr<AbstractParagraphData
     fParagraphDatabase = paragraphDatabase;
     fICreatedParaDB    = false;
     if (fParagraphDatabase.get () == nullptr and PeekAtTextStore () != nullptr) {
-        fParagraphDatabase = make_shared<ParagraphDatabaseRep> (GetTextStore ());
+        fParagraphDatabase = MakeSharedPtr<ParagraphDatabaseRep> (GetTextStore ());
         fICreatedParaDB    = true;
     }
     //Any newly assigned fParagraphDatabase better share the same Partition we do!
@@ -2478,14 +2482,14 @@ void WordProcessor::HookHidableTextDatabaseChanged_ ()
 
 shared_ptr<FlavorPackageInternalizer> WordProcessor::MakeDefaultInternalizer ()
 {
-    return make_shared<WordProcessorFlavorPackageInternalizer> (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (),
-                                                                GetHidableTextDatabase ());
+    return MakeSharedPtr<WordProcessorFlavorPackageInternalizer> (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (),
+                                                                  GetHidableTextDatabase ());
 }
 
 shared_ptr<FlavorPackageExternalizer> WordProcessor::MakeDefaultExternalizer ()
 {
-    return make_shared<WordProcessorFlavorPackageExternalizer> (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (),
-                                                                GetHidableTextDatabase ());
+    return MakeSharedPtr<WordProcessorFlavorPackageExternalizer> (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (),
+                                                                  GetHidableTextDatabase ());
 }
 
 /*

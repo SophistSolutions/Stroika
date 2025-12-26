@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/IO/Network/SocketStream.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Bits.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/BufferedInputStream.h"
 #include "Stroika/Foundation/Streams/BufferedOutputStream.h"
@@ -32,6 +33,8 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Traversal;
+
+using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Modbus;
@@ -436,7 +439,7 @@ Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>&
 {
     shared_ptr<ThreadPool> usingThreadPool = options.fThreadPool;
     if (usingThreadPool == nullptr) {
-        usingThreadPool = make_shared<ThreadPool> (ThreadPool::Options{.fThreadCount = 1});
+        usingThreadPool = MakeSharedPtr<ThreadPool> (ThreadPool::Options{.fThreadCount = 1});
     }
 
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately

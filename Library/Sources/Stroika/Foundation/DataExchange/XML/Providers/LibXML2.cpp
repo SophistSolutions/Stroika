@@ -33,6 +33,8 @@ using namespace Stroika::Foundation::Streams;
 
 using std::byte;
 
+using Memory::MakeSharedPtr;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -56,7 +58,7 @@ namespace {
     // But this has several serious defects - like VERY minimal reentrancy support. But hopefully I can do enough magic with thread_local to worakround
     // the lack --LGP 2024-03-03
     //
-    struct RegisterResolver_ {
+    struct RegisterResolver_ final {
         static inline thread_local RegisterResolver_* sCurrent_ = nullptr; // magic to workaround lack of 'context' / reentrancy support here in libxml2
         const Resource::ResolverPtr fResolver_;
 
@@ -150,7 +152,7 @@ namespace {
 }
 
 namespace {
-    struct SchemaRep_ : ILibXML2SchemaRep {
+    struct SchemaRep_ final : ILibXML2SchemaRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
@@ -211,7 +213,7 @@ namespace {
 }
 
 namespace {
-    struct SAXReader_ {
+    struct SAXReader_ final {
         using Name = StructuredStreamEvents::Name;
         xmlSAXHandler                      flibXMLSaxHndler_{};
         StructuredStreamEvents::IConsumer& fCallback_;
@@ -356,7 +358,7 @@ namespace {
                 }
                 default:
                     AssertNotReached ();
-                    return NameWithNamespace{""};
+                    return NameWithNamespace{""sv};
             }
         }
         virtual void SetName (const NameWithNamespace& name) override
@@ -387,17 +389,17 @@ namespace {
             if (mustEncode) {
                 xmlChar*                p       = xmlEncodeSpecialChars (fNode_->doc, BAD_CAST v.AsUTF8 ().c_str ());
                 [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (p); });
-                xmlNodeSetContent (fNode_, p);
+                ::xmlNodeSetContent (fNode_, p);
             }
             else {
-                xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
+                ::xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
             }
         }
         virtual void DeleteNode () override
         {
             RequireNotNull (fNode_);
-            xmlUnlinkNode (fNode_);
-            xmlFreeNode (fNode_);
+            ::xmlUnlinkNode (fNode_);
+            ::xmlFreeNode (fNode_);
             fNode_ = nullptr;
         }
         virtual Node::Ptr GetParentNode () const override
@@ -411,9 +413,9 @@ namespace {
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
             xmlBufferPtr            xmlBuf  = xmlBufferCreate ();
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
-            if (int dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
-                Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"});
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { ::xmlBufferFree (xmlBuf); });
+            if (int dumpRes = ::xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
+                Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"sv});
             }
             const xmlChar* t = xmlBufferContent (xmlBuf);
             AssertNotNull (t);
@@ -463,14 +465,14 @@ namespace {
         }
         virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const override
         {
-            auto r = attrName.fNamespace ? xmlGetNsProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
-                                                         BAD_CAST attrName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ())
-                                         : xmlGetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str ());
+            auto r = attrName.fNamespace ? ::xmlGetNsProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                                                           BAD_CAST attrName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ())
+                                         : ::xmlGetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str ());
             if (r == nullptr) {
                 return nullopt;
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
-            return libXMLString2String (r);
+            return ::libXMLString2String (r);
         }
         virtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) override
         {
@@ -483,16 +485,16 @@ namespace {
                  *
                  *      \see http://stroika-bugs.sophists.com/browse/STK-1001
                  */
-                xmlSetNsProp (fNode_, GetSharedReUsableXMLNSParentNamespace_ (fNode_), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
-                              v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+                ::xmlSetNsProp (fNode_, GetSharedReUsableXMLNSParentNamespace_ (fNode_), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                                v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
             else if (attrName.fNamespace) {
                 // Lookup the argument ns and either add it to this node or use the existing one
-                xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
-                              v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+                ::xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                                v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
             else {
-                xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+                ::xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
         }
         virtual Element::Ptr InsertElement (const NameWithNamespace& eltName, const Element::Ptr& afterNode) override
@@ -503,16 +505,16 @@ namespace {
             Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
             // when adding a child, if no NS specified, copy parents
             xmlNs*    useNS        = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
-            xmlNode*  newNode      = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
+            xmlNode*  newNode      = ::xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : dynamic_cast<NodeRep_*> (afterNode.GetRep ().get ());
             if (afterNodeRep == nullptr) {
                 // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though which amounts
                 // to same thing (unless there is no first child)
                 if (fNode_->children == nullptr) {
-                    xmlAddChild (fNode_->parent, newNode); // append=prepend
+                    ::xmlAddChild (fNode_->parent, newNode); // append=prepend
                 }
                 else {
-                    xmlAddPrevSibling (fNode_->children, newNode);
+                    ::xmlAddPrevSibling (fNode_->children, newNode);
                 }
             }
             else {
@@ -528,7 +530,7 @@ namespace {
             // when adding a child, if no NS specified, copy parents
             xmlNs*   useNS   = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
             xmlNode* newNode = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
-            xmlAddChild (fNode_, newNode);
+            ::xmlAddChild (fNode_, newNode);
             return WrapLibXML2NodeInStroikaNode_ (newNode);
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
@@ -545,7 +547,7 @@ namespace {
                 return r;
             });
         }
-        struct XPathLookupHelper_ {
+        struct XPathLookupHelper_ final {
             xmlXPathContext* fCtx{nullptr};
             xmlXPathObject*  fResultNodeList{nullptr};
             XPathLookupHelper_ ()                          = delete;
@@ -651,16 +653,16 @@ namespace {
     {
         RequireNotNull (n);
         if (n->type == XML_ELEMENT_NODE) [[likely]] {
-            return Node::Ptr{Memory::MakeSharedPtr<ElementRep_> (n)};
+            return Node::Ptr{MakeSharedPtr<ElementRep_> (n)};
         }
         else {
-            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (n)};
+            return Node::Ptr{MakeSharedPtr<NodeRep_> (n)};
         }
     }
 }
 
 namespace {
-    struct MyLibXML2StructuredErrGrabber_ {
+    struct MyLibXML2StructuredErrGrabber_ final {
         xmlParserCtxtPtr                               fCtx;
         shared_ptr<Execution::RuntimeErrorException<>> fCapturedException;
 
@@ -699,7 +701,7 @@ namespace {
                     case XML_ERR_ERROR:
                     case XML_ERR_FATAL:
                         DbgTrace ("libxml2 (xmlStructuredErrorFunc_): Capturing Error {}"_f, String::FromUTF8 (error->message));
-                        useThis->fCapturedException = make_shared<DataExchange::BadFormatException> (
+                        useThis->fCapturedException = MakeSharedPtr<DataExchange::BadFormatException> (
                             "Failure Parsing XML: {}, line {}"_f(String::FromUTF8 (error->message), error->line),
                             static_cast<unsigned int> (error->line), nullopt, nullopt);
                         break;
@@ -710,7 +712,7 @@ namespace {
 }
 
 namespace {
-    struct DocRep_ : ILibXML2DocRep {
+    struct DocRep_ final : ILibXML2DocRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
@@ -962,13 +964,13 @@ Providers::LibXML2::Provider::~Provider ()
 
 shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
+    return MakeSharedPtr<SchemaRep_> (schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                                const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    auto r = Memory::MakeSharedPtr<DocRep_> (in);
+    auto r = MakeSharedPtr<DocRep_> (in);
     if (schemaToValidateAgainstWhileReading != nullptr) {
         r->Validate (schemaToValidateAgainstWhileReading);
     }

@@ -2,6 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 namespace Stroika::Foundation::Execution {
 
     /*
@@ -33,6 +35,11 @@ namespace Stroika::Foundation::Execution {
             DoInitOutOfLine_ (&l);
         }
         l.rwref ()->Set (v);
+    }
+    template <typename T, typename IMPL>
+    inline shared_ptr<const T> ModuleGetterSetter<T, IMPL>::operator->() const
+    {
+        return Memory::MakeSharedPtr<const T> (Get ());
     }
     template <typename T, typename IMPL>
     optional<T> ModuleGetterSetter<T, IMPL>::Update (const function<optional<T> (const T&)>& updaterFunction)

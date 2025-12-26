@@ -29,6 +29,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 
+using Memory::MakeSharedPtr;
 using Memory::NullCoalesce;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -297,7 +298,7 @@ inline InternetMediaTypeRegistry::FrontendRep_ InternetMediaTypeRegistry::kDefau
  */
 auto InternetMediaTypeRegistry::Rep_Cloner_::operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
 {
-    return Memory::MakeSharedPtr<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
+    return MakeSharedPtr<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
 };
 
 /*
@@ -307,7 +308,7 @@ auto InternetMediaTypeRegistry::Rep_Cloner_::operator() (const IFrontendRep_& t)
  */
 InternetMediaTypeRegistry::InternetMediaTypeRegistry (const shared_ptr<IBackendRep>& backendRep)
     // note because can be constructed before main () - not safe to Memory::MakeSharedPtr<FrontendRep_> - so delay construction and use kDefaultFrontEndForNoBackend_ if needed
-    : fFrontEndRep_{backendRep == nullptr ? nullptr : Memory::MakeSharedPtr<FrontendRep_> (backendRep)}
+    : fFrontEndRep_{backendRep == nullptr ? nullptr : MakeSharedPtr<FrontendRep_> (backendRep)}
 {
 }
 
@@ -319,7 +320,7 @@ auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaTy
 void InternetMediaTypeRegistry::SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides)
 {
     if (fFrontEndRep_ == nullptr) {
-        fFrontEndRep_ = Memory::MakeSharedPtr<FrontendRep_> (kDefaultFrontEndForNoBackend_);
+        fFrontEndRep_ = MakeSharedPtr<FrontendRep_> (kDefaultFrontEndForNoBackend_);
     }
     AssertNotNull (fFrontEndRep_);
     fFrontEndRep_->SetOverrides (overrides);
@@ -328,7 +329,7 @@ void InternetMediaTypeRegistry::SetOverrides (const Mapping<InternetMediaType, O
 void InternetMediaTypeRegistry::AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec)
 {
     if (fFrontEndRep_ == nullptr) {
-        fFrontEndRep_ = Memory::MakeSharedPtr<FrontendRep_> (kDefaultFrontEndForNoBackend_);
+        fFrontEndRep_ = MakeSharedPtr<FrontendRep_> (kDefaultFrontEndForNoBackend_);
     }
     AssertNotNull (fFrontEndRep_);
     fFrontEndRep_->AddOverride (mediaType, overrideRec);
@@ -473,7 +474,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
             return nullopt;
         }
     };
-    return Memory::MakeSharedPtr<EtcMimeTypesRep_> ();
+    return MakeSharedPtr<EtcMimeTypesRep_> ();
 }
 
 auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBackendRep>
@@ -654,7 +655,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             return nullopt;
         }
     };
-    return Memory::MakeSharedPtr<UsrShareMIMERep_> ();
+    return MakeSharedPtr<UsrShareMIMERep_> ();
 }
 
 auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendRep>
@@ -683,7 +684,7 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
             return nullopt;
         }
     };
-    return Memory::MakeSharedPtr<DefaultEmptyBackendRep_> ();
+    return MakeSharedPtr<DefaultEmptyBackendRep_> ();
 }
 
 #if qStroika_Foundation_Common_Platform_Windows
@@ -816,7 +817,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
             });
         }
     };
-    return Memory::MakeSharedPtr<WinRep_> ();
+    return MakeSharedPtr<WinRep_> ();
 }
 #endif
 

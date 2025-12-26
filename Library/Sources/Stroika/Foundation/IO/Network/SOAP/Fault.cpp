@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Fault.h"
 
@@ -37,7 +38,8 @@ optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream::Ptr<byte>& 
     }();
     Fault result;
     try {
-        IConsumerDelegateToContext ctx{kSOAPTypeMapper_, make_shared<ReadDownToReader> (kSOAPTypeMapper_.MakeContextReader (&result), Name{"Fault"sv})};
+        IConsumerDelegateToContext ctx{kSOAPTypeMapper_,
+                                       Memory::MakeSharedPtr<ReadDownToReader> (kSOAPTypeMapper_.MakeContextReader (&result), Name{"Fault"sv})};
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing && USE_NOISY_TRACE_IN_THIS_MODULE_
         ctx.fContext.fTraceThisReader = true;
 #endif

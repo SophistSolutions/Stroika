@@ -3,17 +3,17 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/DataExchange/XML/Providers/IProvider.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
-
-#include "Providers/IProvider.h"
-#include "Schema.h"
 
 #include "DOM.h"
 
@@ -28,6 +28,8 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::DOM;
 using namespace Stroika::Foundation::DataExchange::XML::DOM::Document;
+
+using Memory::MakeSharedPtr;
 
 /*
  ********************************************************************************
@@ -64,7 +66,7 @@ String XPath::Expression::Options::ToString () const
  ********************************************************************************
  */
 namespace {
-    struct XPathExpRep_ : XPath::Expression ::IRep {
+    struct XPathExpRep_ final : XPath::Expression ::IRep {
         String                     fExpression_;
         XPath::Expression::Options fOptions_;
         XPathExpRep_ (String&& e, const XPath::Expression::Options& o)
@@ -83,7 +85,7 @@ namespace {
     };
 }
 XPath::Expression::Expression (String&& e, const Options& o)
-    : fRep_{make_shared<XPathExpRep_> (move (e), o)}
+    : fRep_{MakeSharedPtr<XPathExpRep_> (move (e), o)}
 {
 }
 

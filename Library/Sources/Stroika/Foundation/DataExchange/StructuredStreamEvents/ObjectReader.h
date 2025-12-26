@@ -207,7 +207,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *              { Name { "LastName" }, &Person_::lastName },
      *          });
      *          Person_ p;
-     *          IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ReadDownToReader> (mapper.MakeContextReader (&p)));
+     *          IConsumerDelegateToContext tmpCtx1 (mapper, MakeSharedPtr<ReadDownToReader> (mapper.MakeContextReader (&p)));
      *          XML::SAXParse (mkdata_ (), tmpCtx1);
      *      \endcode
      *
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *          .. start with the types and mapper from Example 1, and add
      *          Sequence<Person_> people;
      *          mapper.AddCommonType<Sequence<Person_>> (Name{"WithWhom"});
-     *          IConsumerDelegateToContext tmpCtx2 { mapper, make_shared<ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
+     *          IConsumerDelegateToContext tmpCtx2 { mapper, MakeSharedPtr<ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
      *          XML::SAXParse (mkdata_ (), tmp);
      *      \endcode
      */
@@ -948,7 +948,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *          { Name { "address" }, &Data_::addresses },
      *      });
      *      Data_   data;
-     *      Registry::IConsumerDelegateToContext ctx { registry, make_shared<ReadDownToReader> (registry.MakeContextReader (&data)) };
+     *      Registry::IConsumerDelegateToContext ctx { registry, MakeSharedPtr<ReadDownToReader> (registry.MakeContextReader (&data)) };
      *      XML::SAXParse (srcXMLStream, ctx);
      *      \endcode
      *

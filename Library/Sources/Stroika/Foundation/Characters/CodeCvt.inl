@@ -698,8 +698,8 @@ namespace Stroika::Foundation::Characters {
             case WellKnownCodePages::kTurkish:
             case WellKnownCodePages::kHebrew:
             case WellKnownCodePages::kArabic:
-                fRep_ = Memory::MakeSharedPtr<UTF2UTFRep_<char16_t>> (
-                    CodeCvt<char16_t> (Memory::MakeSharedPtr<Private_::BuiltinSingleByteTableCodePageRep_> (cp, options.fInvalidCharacterReplacement)));
+                fRep_ = Memory::MakeSharedPtr<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (
+                    Memory::MakeSharedPtr<Private_::BuiltinSingleByteTableCodePageRep_> (cp, options.fInvalidCharacterReplacement)));
                 break;
             case WellKnownCodePages::kUTF8:
                 fRep_ = Memory::MakeSharedPtr<UTFConvertRep_<char8_t>> (options);

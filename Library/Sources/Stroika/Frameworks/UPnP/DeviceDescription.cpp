@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
@@ -22,6 +23,8 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
+
+using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
@@ -302,7 +305,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
     {
         ObjectReader::IConsumerDelegateToContext ctx{
-            kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
+            kTypesRegistry_, MakeSharedPtr<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
         XML::SAXParse (b, &ctx);
     }
 #else

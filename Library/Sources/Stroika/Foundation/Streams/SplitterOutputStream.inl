@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "InternallySynchronizedOutputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedOutputStream.h"
 
 namespace Stroika::Foundation::Streams::SplitterOutputStream {
 

@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Writer.h"
@@ -29,7 +30,7 @@ public:
     Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (); // no instance data
+        return Memory::MakeSharedPtr<Rep_> (); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -67,7 +68,7 @@ public:
 };
 
 INI::Writer::Writer ()
-    : inherited{make_shared<Rep_> ()}
+    : inherited{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 

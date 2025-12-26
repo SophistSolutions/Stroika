@@ -23,6 +23,7 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #include "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
 #endif
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "AppConfiguration.h"
 #include "AppVersion.h"
@@ -36,6 +37,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
+
+using Memory::MakeSharedPtr;
 
 using namespace Stroika::Frameworks::Service;
 
@@ -66,7 +69,7 @@ namespace {
         MyApp_ ()
         {
             // Default - in case any logging writes happen before we setup the configured logging appenders
-            Logger::sThe.SetAppenders (make_shared<Logger::StreamAppender> (
+            Logger::sThe.SetAppenders (MakeSharedPtr<Logger::StreamAppender> (
                 IO::FileSystem::FileOutputStream::New (STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
 
             /**
@@ -104,13 +107,13 @@ namespace {
             }
             else if (cmdLine.Has (Main::CommandOptions::kStatus)) {
                 // no need to wrap in logger, and load options for this
-                Main m{make_shared<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
+                Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
                 cout << m.GetServiceStatusMessage ();
                 return EXIT_SUCCESS;
             }
             else if (cmdLine.Has (StandardCommandLineOptions::kVersion)) {
                 // no need to wrap in logger, and load options for this
-                Main m{make_shared<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
+                Main m{MakeSharedPtr<Service::SampleAppServiceRep> (nullopt), Main::mkDefaultServiceIntegrationRep ()};
                 cout << m.GetServiceDescription ().fPrettyName << ": "sv << Characters::ToString (AppVersion::kVersion) << endl;
                 return EXIT_SUCCESS;
             }
@@ -122,16 +125,16 @@ namespace {
                 Logging                                    loggingConfig = gAppConfiguration->fLogging.value_or (Logging{});
                 Sequence<shared_ptr<Logger::IAppenderRep>> appenders;
                 if (loggingConfig.ToStdOut.value_or (Logging::kToStdOut_Default)) {
-                    appenders += make_shared<Logger::StreamAppender> (IO::FileSystem::FileOutputStream::New (
+                    appenders += MakeSharedPtr<Logger::StreamAppender> (IO::FileSystem::FileOutputStream::New (
                         STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
                 }
 #if qStroika_HasComponent_syslog
                 if (loggingConfig.ToSysLog.value_or (Logging::kToSysLog_Default)) {
-                    appenders += make_shared<Logger::SysLogAppender> (kAppName_);
+                    appenders += MakeSharedPtr<Logger::SysLogAppender> (kAppName_);
                 }
 #elif qStroika_Foundation_Common_Platform_Windows
                 if (loggingConfig.ToWindowsEventLog.value_or (Logging::kToWindowsEventLog_Default)) {
-                    appenders += make_shared<Logger::WindowsEventLogAppender> (kAppName_);
+                    appenders += MakeSharedPtr<Logger::WindowsEventLogAppender> (kAppName_);
                 }
 #endif
                 return appenders;
@@ -143,8 +146,8 @@ namespace {
              *  Create the service manager objects
              */
             shared_ptr<Main::IServiceIntegrationRep> serviceIntegrationRep =
-                make_shared<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
-            Main m{make_shared<Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
+                MakeSharedPtr<Main::LoggerServiceWrapper> (Main::mkDefaultServiceIntegrationRep ());
+            Main m{MakeSharedPtr<Service::SampleAppServiceRep> (options.fPortNumberOverride), serviceIntegrationRep};
 
             /*
              * Several components use interval timers, and this allows those modules to run (but have timer service started/shutdown in a controlled

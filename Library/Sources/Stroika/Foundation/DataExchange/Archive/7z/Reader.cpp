@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 #include "Reader.h"
 
@@ -182,7 +183,7 @@ namespace {
  */
 Archive::Reader::Ptr Archive::_7z::Reader::New (const Streams::InputStream::Ptr<byte>& readFrom)
 {
-    return Archive::Reader::Ptr{make_shared<Rep_> (readFrom)};
+    return Archive::Reader::Ptr{Memory::MakeSharedPtr<Rep_> (readFrom)};
 }
 
 #endif

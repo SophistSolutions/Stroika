@@ -4,14 +4,13 @@
 #include <atomic>
 
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Execution/UserCanceledException.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InputStreamDelegationHelper.h"
-
-#include "Common.h"
-#include "Synchronized.h"
-#include "Thread.h"
-#include "UserCanceledException.h"
 
 namespace Stroika::Foundation::Execution {
 
@@ -198,7 +197,7 @@ namespace Stroika::Foundation::Execution {
             ProgressType                      fEstimatedEnd_;
             ProgressType                      fLastProgressSent_{0};
         };
-        return Streams::InputStream::Ptr<T>{make_shared<inputStreamWithProgress> (in, progress)};
+        return Streams::InputStream::Ptr<T>{Memory::MakeSharedPtr<inputStreamWithProgress> (in, progress)};
     }
 
 }

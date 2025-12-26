@@ -26,6 +26,7 @@ using namespace Time;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 using Database::SQL::EngineProperties;
+using Memory::MakeSharedPtr;
 
 #if qStroika_HasComponent_sqlite
 namespace {
@@ -298,7 +299,7 @@ namespace {
                     return false;
                 }
             };
-            static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
+            static const shared_ptr<const EngineProperties> kProps_ = MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
         }
         virtual SQL::Statement mkStatement (const String& sql) override
@@ -457,7 +458,7 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto SQL::SQLite::Connection::New (const Options& options) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<Rep_> (options)};
+    return Ptr{MakeSharedPtr<Rep_> (options)};
 }
 
 /*

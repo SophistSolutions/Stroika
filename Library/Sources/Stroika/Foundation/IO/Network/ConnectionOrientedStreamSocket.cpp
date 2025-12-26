@@ -18,6 +18,7 @@
 #include "Stroika/Foundation/IO/Network/ConnectionOrientedStreamSocket.h"
 #include "Stroika/Foundation/IO/Network/Socket-Private_.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -413,12 +414,12 @@ Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::To
  */
 ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol)
 {
-    return Ptr{make_shared<Rep_> (_Protected::mkLowLevelSocket_ (family, socketKind, protocol))};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (_Protected::mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
 ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::Attach (PlatformNativeHandle sd)
 {
-    return Ptr{make_shared<Rep_> (sd)};
+    return Ptr{Memory::MakeSharedPtr<Rep_> (sd)};
 }
 
 #include "ConnectionOrientedMasterSocket.h" //tmphack for kLowLevelSocketPairWorks_==false

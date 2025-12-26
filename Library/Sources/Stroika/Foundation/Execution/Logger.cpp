@@ -41,6 +41,7 @@ using namespace Stroika::Foundation::Traversal;
 using namespace IO::FileSystem;
 
 using Containers::Mapping;
+using Memory::MakeSharedPtr;
 using Time::Duration;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -439,12 +440,12 @@ private:
 };
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream::Ptr<byte>& out)
-    : fRep_ (Memory::MakeSharedPtr<Rep_> (out))
+    : fRep_ (MakeSharedPtr<Rep_> (out))
 {
 }
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream::Ptr<Characters::Character>& out)
-    : fRep_ (Memory::MakeSharedPtr<Rep_> (out))
+    : fRep_ (MakeSharedPtr<Rep_> (out))
 {
 }
 
@@ -474,7 +475,7 @@ private:
 };
 
 Logger::FileAppender::FileAppender (const filesystem::path& fileName, bool truncateOnOpen)
-    : fRep_ (Memory::MakeSharedPtr<Rep_> (fileName, truncateOnOpen))
+    : fRep_ (MakeSharedPtr<Rep_> (fileName, truncateOnOpen))
 {
 }
 
@@ -561,7 +562,7 @@ Logger::Activator::Activator (const Options& options)
 {
     Debug::TraceContextBumper ctx{"Logger::Activator::Activator"};
     Assert (sThe.fRep_ == nullptr); // only one activator object at a time
-    sThe.fRep_ = Memory::MakeSharedPtr<Rep_> ();
+    sThe.fRep_ = MakeSharedPtr<Rep_> ();
     sThe.SetSuppressDuplicates (options.fSuppressDuplicatesThreshold);
     if (options.fLogBufferingEnabled) {
         sThe.SetBufferingEnabled (*options.fLogBufferingEnabled);

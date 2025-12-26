@@ -25,6 +25,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 using HTTP::ClientErrorException;
+using Memory::MakeSharedPtr;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -79,7 +80,7 @@ bool Route::Matches (const String& method, const String& hostRelPath, const Requ
  ************************* WebServer::Router::Rep_ ******************************
  ********************************************************************************
  */
-struct Router::Rep_ : Interceptor::_IRep {
+struct Router::Rep_ final : Interceptor::_IRep {
     static const optional<Set<String>> MapStartToNullOpt_ (const optional<Set<String>>& o)
     {
         // internally we treat missing as wildcard but caller may not, so map
@@ -291,7 +292,7 @@ namespace {
     }
 }
 Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
-    : inherited{Memory::MakeSharedPtr<Rep_> (routes, FillIn_ (corsOptions))}
+    : inherited{MakeSharedPtr<Rep_> (routes, FillIn_ (corsOptions))}
 {
 }
 

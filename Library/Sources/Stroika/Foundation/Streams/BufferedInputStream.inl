@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/InternallySynchronizedInputStream.h"
 #include "Stroika/Foundation/Streams/StreamReader.h"
 
@@ -286,11 +287,11 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         constexpr size_t INLINE_BUF_SIZE = 4 * 1024;
         if (useSeekable == SeekableFlag::eSeekable) {
             return (srcSeekable == SeekableFlag::eSeekable)
-                       ? PTR{make_shared<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> (realIn)}
-                       : PTR{make_shared<Private_::Rep_Seekable_FromUnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
+                       ? PTR{Memory::MakeSharedPtr<Private_::Rep_Seekable_FromSeekable_<ELEMENT_TYPE>> (realIn)}
+                       : PTR{Memory::MakeSharedPtr<Private_::Rep_Seekable_FromUnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
         }
         else {
-            return PTR{make_shared<Private_::Rep_UnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
+            return PTR{Memory::MakeSharedPtr<Private_::Rep_UnSeekable_<ELEMENT_TYPE, INLINE_BUF_SIZE>> (realIn)};
         }
     }
     template <typename ELEMENT_TYPE>

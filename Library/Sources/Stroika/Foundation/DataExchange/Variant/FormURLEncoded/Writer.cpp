@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/IO/Network/UniformResourceIdentification.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
@@ -29,7 +30,7 @@ public:
     Rep_ () = default;
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (); // no instance data
+        return Memory::MakeSharedPtr<Rep_> (); // no instance data
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -87,7 +88,7 @@ public:
 };
 
 FormURLEncoded::Writer::Writer ()
-    : inherited{make_shared<Rep_> ()}
+    : inherited{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 

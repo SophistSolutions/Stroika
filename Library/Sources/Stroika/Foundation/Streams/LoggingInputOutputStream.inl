@@ -1,14 +1,15 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
  */
-#include "InternallySynchronizedInputOutputStream.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Streams/InternallySynchronizedInputOutputStream.h"
 
 namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
 
     namespace Private_ {
 
         template <typename ELEMENT_TYPE>
-        class Rep_ : public InputOutputStream::IRep<ELEMENT_TYPE> {
+        class Rep_ final : public InputOutputStream::IRep<ELEMENT_TYPE> {
         public:
             Rep_ (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream, const typename OutputStream::Ptr<ELEMENT_TYPE>& logInput,
                   const typename OutputStream::Ptr<ELEMENT_TYPE>& logOutput)
@@ -127,7 +128,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
     inline Ptr<ELEMENT_TYPE> New (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
                                   const typename OutputStream::Ptr<ELEMENT_TYPE>& logInput, const typename OutputStream::Ptr<ELEMENT_TYPE>& logOutput)
     {
-        return _mkPtr (make_shared<Private_::Rep_> (realStream, logInput, logOutput));
+        return _mkPtr (Memory::MakeSharedPtr<Private_::Rep_> (realStream, logInput, logOutput));
     }
     template <typename ELEMENT_TYPE>
     inline Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,

@@ -25,6 +25,8 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
+using Memory::MakeSharedPtr;
+
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
@@ -35,7 +37,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ******************************* BasicServer::Rep_ ******************************
 ********************************************************************************
 */
-class BasicServer::Rep_ {
+class BasicServer::Rep_ final {
 public:
     Sequence<Advertisement> fAdvertisements;
     FrequencyInfo           fFrequencyInfo;
@@ -121,6 +123,6 @@ public:
 ********************************************************************************
 */
 BasicServer::BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-    : fRep_{Memory::MakeSharedPtr<Rep_> (d, dd, fi, ipVersion)}
+    : fRep_{MakeSharedPtr<Rep_> (d, dd, fi, ipVersion)}
 {
 }

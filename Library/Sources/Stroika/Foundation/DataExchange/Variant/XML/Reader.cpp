@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 
 #include "Reader.h"
@@ -16,6 +17,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 
 using Characters::Character;
+using Memory::MakeSharedPtr;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -30,7 +32,7 @@ public:
 public:
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (fSerializationConfiguration_);
+        return MakeSharedPtr<Rep_> (fSerializationConfiguration_);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -74,7 +76,7 @@ private:
  ********************************************************************************
  */
 Variant::XML::Reader::Reader (const SerializationConfiguration& config)
-    : inherited{make_shared<Rep_> (config)}
+    : inherited{MakeSharedPtr<Rep_> (config)}
 {
 }
 

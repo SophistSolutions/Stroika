@@ -4,6 +4,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/DataExchange/XML/WriterUtils.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
 
 #include "Writer.h"
@@ -15,6 +16,8 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::Streams;
+
+using Memory::MakeSharedPtr;
 
 namespace {
     void Indent_ (const OutputStream::Ptr<Character>& out, int indentLevel)
@@ -147,7 +150,7 @@ public:
     }
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (fSerializationConfiguration_);
+        return MakeSharedPtr<Rep_> (fSerializationConfiguration_);
     }
     virtual optional<filesystem::path> GetDefaultFileSuffix () const override
     {
@@ -193,7 +196,7 @@ private:
 };
 
 Variant::XML::Writer::Writer (const SerializationConfiguration& config)
-    : inherited{make_shared<Rep_> (config)}
+    : inherited{MakeSharedPtr<Rep_> (config)}
 {
 }
 

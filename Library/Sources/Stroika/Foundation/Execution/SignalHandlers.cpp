@@ -94,7 +94,7 @@ DISABLE_COMPILER_MSC_WARNING_START (4351)
  *      Though it would be logical to use a BlockQueue<> here to implement the signal forwarding,
  *      we cannot since that code allocates memory, and could deadlock.
  */
-class SignalHandlerRegistry::SafeSignalsManager::Rep_ {
+class SignalHandlerRegistry::SafeSignalsManager::Rep_ final {
 private:
     void waitForNextSig_ ()
     {

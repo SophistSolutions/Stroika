@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 
 namespace Stroika::Foundation::Math::LinearAlgebra {
 
@@ -31,7 +32,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
     template <typename T>
     Vector<T>::Vector (size_t dimension, Common::ArgByValueType<T> fillValue)
-        : fRep_{make_shared<IRep_> ()}
+        : fRep_{Memory::MakeSharedPtr<IRep_> ()}
     {
         for (size_t i = 0; i < dimension; ++i) {
             fRep_.rwget ()->fData.Append (fillValue);
@@ -39,7 +40,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
     template <typename T>
     Vector<T>::Vector (size_t dimension, const function<T ()>& filler)
-        : fRep_{make_shared<IRep_> ()}
+        : fRep_{Memory::MakeSharedPtr<IRep_> ()}
     {
         for (size_t i = 0; i < dimension; ++i) {
             fRep_.rwget ()->fData.Append (filler ());
@@ -48,7 +49,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     template <typename T>
     template <Traversal::IIterableOfTo<T> CONTAINER_OF_T>
     Vector<T>::Vector (const CONTAINER_OF_T& c)
-        : fRep_{make_shared<IRep_> ()}
+        : fRep_{Memory::MakeSharedPtr<IRep_> ()}
     {
         fRep_->fData = Containers::Sequence<T>{c};
     }

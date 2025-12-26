@@ -19,6 +19,8 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
+using Memory::MakeSharedPtr;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
@@ -30,7 +32,7 @@ namespace {
 // http://stackoverflow.com/questions/4400678/http-header-should-use-what-character-encoding
 // but for now this seems and adequate hack
 
-class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream::IRep<Character> {
+class MessageStartTextInputStreamBinaryAdapter::Rep_ final : public InputStream::IRep<Character> {
     using inherited = InputStream::IRep<Character>;
 
 public:
@@ -281,7 +283,7 @@ private:
  */
 MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryAdapter::New (const InputStream::Ptr<byte>& src)
 {
-    return Ptr{make_shared<Rep_> (src)};
+    return Ptr{MakeSharedPtr<Rep_> (src)};
 }
 
 /*

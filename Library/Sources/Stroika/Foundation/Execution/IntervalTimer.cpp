@@ -23,6 +23,8 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Time;
 
+using Memory::MakeSharedPtr;
+
 /*
  ********************************************************************************
  *********************** IntervalTimer::RegisteredTask **************************
@@ -145,8 +147,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             auto lk = fThread_.rwget ();
             if (lk.cref () == nullptr) {
                 using namespace Execution;
-                lk.store (Memory::MakeSharedPtr<Thread::CleanupPtr> (
-                    Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { RunnerLoop_ (); }, Thread::eAutoStart, "Default-Interval-Timer"sv)));
+                lk.store (MakeSharedPtr<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
+                                                             Thread::New ([this] () { RunnerLoop_ (); }, Thread::eAutoStart, "Default-Interval-Timer"sv)));
             }
             else {
                 fDataChanged_.Set (); // if there was and still is a thread, it maybe sleeping too long, so wake it up
@@ -156,7 +158,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
 };
 
 IntervalTimer::Manager::DefaultRep::DefaultRep ()
-    : fHiddenRep_{Memory::MakeSharedPtr<Rep_> ()}
+    : fHiddenRep_{MakeSharedPtr<Rep_> ()}
 {
 }
 
@@ -195,7 +197,7 @@ IntervalTimer::Manager::Activator::Activator ()
     Debug::TraceContextBumper ctx{"IntervalTimer::Manager::Activator::Activator"};
     Require (Manager::sThe.fRep_ == nullptr); // only one activator object allowed
     Require (Debug::AppearsDuringMainLifetime ());
-    Manager::sThe = Manager{Memory::MakeSharedPtr<IntervalTimer::Manager::DefaultRep> ()};
+    Manager::sThe = Manager{MakeSharedPtr<IntervalTimer::Manager::DefaultRep> ()};
 }
 
 IntervalTimer::Manager::Activator::~Activator ()

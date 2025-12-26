@@ -34,6 +34,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
@@ -318,7 +319,7 @@ void ProcessRunner::ProcessResultType::ThrowIfFailed ()
  ********************************************************************************
  */
 ProcessRunner::BackgroundProcess::BackgroundProcess ()
-    : fRep_{make_shared<Rep_> ()}
+    : fRep_{Memory::MakeSharedPtr<Rep_> ()}
 {
 }
 

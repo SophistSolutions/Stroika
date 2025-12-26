@@ -10,6 +10,8 @@
 #include "Stroika/Foundation/Characters/Character.h"
 #include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+
 #include "Stroika/Frameworks/Led/Command.h"
 #include "Stroika/Frameworks/Led/Config.h"
 #include "Stroika/Frameworks/Led/IdleManager.h"
@@ -2972,7 +2974,7 @@ void TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPack
 */
 shared_ptr<FlavorPackageInternalizer> TextInteractor::MakeDefaultInternalizer ()
 {
-    return make_shared<FlavorPackageInternalizer> (GetTextStore ());
+    return Memory::MakeSharedPtr<FlavorPackageInternalizer> (GetTextStore ());
 }
 
 /*
@@ -3011,7 +3013,7 @@ void TextInteractor::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackage)
 */
 shared_ptr<FlavorPackageExternalizer> TextInteractor::MakeDefaultExternalizer ()
 {
-    return make_shared<FlavorPackageExternalizer> (GetTextStore ());
+    return Memory::MakeSharedPtr<FlavorPackageExternalizer> (GetTextStore ());
 }
 
 /*

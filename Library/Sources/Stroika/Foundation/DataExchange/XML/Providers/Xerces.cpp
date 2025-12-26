@@ -38,6 +38,8 @@ XERCES_CPP_NAMESPACE_USE;
 
 using std::byte;
 
+using Memory::MakeSharedPtr;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -982,7 +984,7 @@ namespace {
             START_LIB_EXCEPTION_MAPPER_
             {
                 return Traversal::CreateGenerator<Node::Ptr> (
-                    [sni = SubNodeIterator_{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
+                    [sni = SubNodeIterator_{MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
                         if (sni.IsAtEnd ()) {
                             return optional<Node::Ptr>{};
                         }
@@ -1085,9 +1087,9 @@ namespace {
                 e2o.fSnapshot                  = false;
                 return Sequence<XPath::Result>{this->Lookup (XPath::Expression{e.GetExpression (), e2o})};
             }
-            shared_ptr<XPathQueryHelper_>                     xpHelp = make_shared<XPathQueryHelper_> (fNode_, e, false);
+            shared_ptr<XPathQueryHelper_>                     xpHelp = MakeSharedPtr<XPathQueryHelper_> (fNode_, e, false);
             shared_ptr<AutoRelease_<xercesc::DOMXPathResult>> r =
-                make_shared<AutoRelease_<xercesc::DOMXPathResult>> ((*xpHelp->expr)->evaluate (fNode_, xpHelp->rt, nullptr));
+                MakeSharedPtr<AutoRelease_<xercesc::DOMXPathResult>> ((*xpHelp->expr)->evaluate (fNode_, xpHelp->rt, nullptr));
             Assert (not e.GetOptions ().fSnapshot);
             if (xpHelp->rt == DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE or xpHelp->rt == DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE) [[unlikely]] {
                 return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, firstTime = true] () mutable -> optional<XPath::Result> {
@@ -1159,7 +1161,7 @@ namespace {
         {
             shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
             if (accessSchema != nullptr) {
-                fParser = Memory::MakeSharedPtr<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ());
+                fParser = MakeSharedPtr<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ());
                 fParser->cacheGrammarFromParse (false);
                 fParser->useCachedGrammarInParse (true);
                 fParser->setDoSchema (true);
@@ -1168,7 +1170,7 @@ namespace {
                 fParser->setIdentityConstraintChecking (true);
             }
             else {
-                fParser = Memory::MakeSharedPtr<XercesDOMParser> ();
+                fParser = MakeSharedPtr<XercesDOMParser> ();
             }
             fParser->setDoNamespaces (true);
             fParser->setErrorHandler (&myErrReporter);
@@ -1265,7 +1267,7 @@ namespace {
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER_
             return Traversal::CreateGenerator<Node::Ptr> (
-                [sni = SubNodeIterator_{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fXMLDoc.get ())}] () mutable -> optional<Node::Ptr> {
+                [sni = SubNodeIterator_{MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fXMLDoc.get ())}] () mutable -> optional<Node::Ptr> {
                     if (sni.IsAtEnd ()) {
                         return optional<Node::Ptr>{};
                     }
@@ -1428,16 +1430,16 @@ namespace {
     {
         RequireNotNull (n);
         if (n->getNodeType () == DOMNode::ELEMENT_NODE) {
-            return Node::Ptr{Memory::MakeSharedPtr<ElementRep_> (n)};
+            return Node::Ptr{MakeSharedPtr<ElementRep_> (n)};
         }
         else {
-            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (n)};
+            return Node::Ptr{MakeSharedPtr<NodeRep_> (n)};
         }
     }
     Element::Ptr WrapXercesNodeInStroikaNode_ (DOMElement* n)
     {
         RequireNotNull (n);
-        return Element::Ptr{Memory::MakeSharedPtr<ElementRep_> (n)};
+        return Element::Ptr{MakeSharedPtr<ElementRep_> (n)};
     }
 }
 
@@ -1517,13 +1519,13 @@ Providers::Xerces::Provider::~Provider ()
 
 shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
+    return MakeSharedPtr<SchemaRep_> (schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                               const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    return Memory::MakeSharedPtr<DocRep_> (in, schemaToValidateAgainstWhileReading);
+    return MakeSharedPtr<DocRep_> (in, schemaToValidateAgainstWhileReading);
 }
 
 void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,

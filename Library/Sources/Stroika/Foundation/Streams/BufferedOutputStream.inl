@@ -4,6 +4,7 @@
 #include "InternallySynchronizedOutputStream.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Debug/Cast.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Memory/InlineBuffer.h"
 
 namespace Stroika::Foundation::Streams::BufferedOutputStream {
@@ -168,13 +169,13 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
     inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut, const optional<size_t>& bufferSize) -> Ptr<ELEMENT_TYPE>
     {
         if (bufferSize and *bufferSize == 0) {
-            return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE, 0>> (realOut)};
+            return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::Rep_<ELEMENT_TYPE, 0>> (realOut)};
         }
         else if (bufferSize and *bufferSize <= 4 * 1024) {
-            return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE, 4 * 1024>> (realOut)};
+            return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::Rep_<ELEMENT_TYPE, 4 * 1024>> (realOut)};
         }
         else {
-            Ptr<ELEMENT_TYPE> p{make_shared<Private_::Rep_<ELEMENT_TYPE>> (realOut)};
+            Ptr<ELEMENT_TYPE> p{Memory::MakeSharedPtr<Private_::Rep_<ELEMENT_TYPE>> (realOut)};
             if (bufferSize) {
                 p.SetBufferSize (*bufferSize);
             }
