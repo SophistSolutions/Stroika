@@ -48,7 +48,7 @@ using Streams::SeekOffsetType;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-    class Rep_ final : public InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+    class Rep_ : public InputStream::IRep<byte> {
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;

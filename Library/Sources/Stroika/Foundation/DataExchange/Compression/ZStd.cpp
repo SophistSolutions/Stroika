@@ -42,6 +42,8 @@ namespace {
         }
     }
 
+    constexpr size_t kSmallSoBlockAllocWorksWellNotInlineAnyhow_ = 1;
+
     struct CompressingByteStreamRep_ final : InputStream::IRep<byte>, Memory::UseBlockAllocationIfAppropriate<CompressingByteStreamRep_> {
     public:
         CompressingByteStreamRep_ ()                                 = delete;
@@ -140,9 +142,9 @@ namespace {
 
     private:
         unique_ptr<Streams::StreamReader<byte>> fInStreamReader_;                                  // wrapped/buffered provided input stream
-        Memory::InlineBuffer<byte, 1> fInputBuf_{Memory::eUninitialized, ::ZSTD_CStreamInSize ()}; // used to cache extra input (uncompressed) bytes not yet proceessed
+        Memory::InlineBuffer<byte, kSmallSoBlockAllocWorksWellNotInlineAnyhow_> fInputBuf_{Memory::eUninitialized, ::ZSTD_CStreamInSize ()}; // used to cache extra input (uncompressed) bytes not yet proceessed
         span<byte> fRawUnprocessedInputBytes_{};                                                   // empty or subspan of fInputBuf_
-        Memory::InlineBuffer<byte, 1> fOutBuf_{Memory::eUninitialized, ::ZSTD_CStreamOutSize ()}; // used to cache extra output (compressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
+        Memory::InlineBuffer<byte, kSmallSoBlockAllocWorksWellNotInlineAnyhow_> fOutBuf_{Memory::eUninitialized, ::ZSTD_CStreamOutSize ()}; // used to cache extra output (compressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
         span<byte> fOutputBufCache_{}; // empty or subspan of fOutBuf_
         ZSTD_CCtx* fCtx_{nullptr};
         enum class Stage_ {
@@ -245,10 +247,10 @@ namespace {
 
     struct DecompressingByteStreamRep_ final : InputStream::IRep<byte>, Memory::UseBlockAllocationIfAppropriate<DecompressingByteStreamRep_> {
         unique_ptr<Streams::StreamReader<byte>> fInStreamReader_;                                  // wrapped/buffered provided input stream
-        Memory::InlineBuffer<byte, 1> fInputBuf_{Memory::eUninitialized, ::ZSTD_DStreamInSize ()}; // used to cache extra input (compressed) bytes not yet proceessed
-        span<byte> fRawUnprocessedInputBytes_{};                                                   /// empty or subspan of fInputBuf_
-        Memory::InlineBuffer<byte, 1> fOutBuf_{Memory::eUninitialized, ::ZSTD_DStreamOutSize ()}; // used to cache extra output (uncompressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
-        span<byte>                                                     fOutputBufCache_{}; /// empty or subspan of fOutBuf_
+        Memory::InlineBuffer<byte, kSmallSoBlockAllocWorksWellNotInlineAnyhow_> fInputBuf_{Memory::eUninitialized, ::ZSTD_DStreamInSize ()}; // used to cache extra input (compressed) bytes not yet proceessed
+        span<byte> fRawUnprocessedInputBytes_{};                                                   // empty or subspan of fInputBuf_
+        Memory::InlineBuffer<byte, kSmallSoBlockAllocWorksWellNotInlineAnyhow_> fOutBuf_{Memory::eUninitialized, ::ZSTD_DStreamOutSize ()}; // used to cache extra output (uncompressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
+        span<byte>                                                     fOutputBufCache_{}; // empty or subspan of fOutBuf_
         ZSTD_DCtx*                                                     fCtx_{nullptr};
         SeekOffsetType                                                 fSeekOffset_{};
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
@@ -389,7 +391,7 @@ namespace {
 Compression::Ptr ZStd::Compress::New (const ZStd::Compress::Options& o)
 {
 #if qStroika_HasComponent_zstd
-    struct MyRep_ : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
+    struct MyRep_ final : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
         ZStd::Compress::Options               fOptions_;
         shared_ptr<CompressingByteStreamRep_> fDelegate2;
         MyRep_ (const ZStd::Compress::Options& o)
@@ -414,7 +416,7 @@ Compression::Ptr ZStd::Compress::New (const ZStd::Compress::Options& o)
 Compression::Ptr ZStd::Decompress::New ([[maybe_unused]] const ZStd::Decompress::Options& o)
 {
 #if qStroika_HasComponent_zstd
-    struct MyRep_ : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
+    struct MyRep_ final : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
         shared_ptr<DecompressingByteStreamRep_> fDelegate2;
         virtual InputStream::Ptr<byte>          Transform (const InputStream::Ptr<byte>& src)
         {

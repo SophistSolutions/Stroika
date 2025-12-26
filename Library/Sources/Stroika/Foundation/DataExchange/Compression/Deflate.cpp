@@ -41,7 +41,7 @@ namespace {
 Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
 {
 #if qStroika_HasComponent_zlib
-    struct MyRep_ : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
+    struct MyRep_ final : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
         Deflate::Compress::Options fOptions_;
         shared_ptr<DeflateRep_>    fDelegate2;
         MyRep_ (const Deflate::Compress::Options& o)
@@ -66,7 +66,7 @@ Compression::Ptr Deflate::Compress::New (const Deflate::Compress::Options& o)
 Compression::Ptr Deflate::Decompress::New ([[maybe_unused]] const Deflate::Decompress::Options& o)
 {
 #if qStroika_HasComponent_zlib
-    struct MyRep_ : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
+    struct MyRep_ final : IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
         shared_ptr<Private_::InflateRep_> fDelegate2;
         virtual InputStream::Ptr<byte>    Transform (const InputStream::Ptr<byte>& src)
         {

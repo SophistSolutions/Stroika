@@ -6,7 +6,7 @@
 namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
 
     namespace Private_ {
-        template <typename BASE_REP_TYPE, typename OPTIONS>
+        template <Common::ClassNotFinal BASE_REP_TYPE, typename OPTIONS>
         struct Rep_ final : Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE, OPTIONS>, BASE_REP_TYPE> {
             using ElementType = typename BASE_REP_TYPE::ElementType;
             using inherited   = Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE, OPTIONS>, BASE_REP_TYPE>;
@@ -135,12 +135,12 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
      ************* InternallySynchronizedInputStream<BASE_REP_TYPE>::New ************
      ********************************************************************************
      */
-    template <typename BASE_REP_TYPE, typename OPTIONS, typename... ARGS>
+    template <Common::ClassNotFinal BASE_REP_TYPE, typename OPTIONS, typename... ARGS>
     inline Ptr<typename BASE_REP_TYPE::ElementType> New (const OPTIONS& o, ARGS&&... args)
     {
         return Ptr<typename BASE_REP_TYPE::ElementType>{Memory::MakeSharedPtr<Private_::Rep_<BASE_REP_TYPE, OPTIONS>> (o, forward<ARGS> (args)...)};
     }
-    template <typename ELEMENT_TYPE, typename OPTIONS>
+    template <Common::ClassNotFinal ELEMENT_TYPE, typename OPTIONS>
     inline Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const InputStream::Ptr<ELEMENT_TYPE>& stream2Wrap)
     {
         return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<Private_::Rep2_<ELEMENT_TYPE, OPTIONS>> (o, stream2Wrap)};
