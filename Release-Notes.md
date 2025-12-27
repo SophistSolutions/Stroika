@@ -37,82 +37,28 @@ especially those they need to be aware of when upgrading.
   - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
   - Windows containers now use ltsc2025 (requres runs_on: windows-2025 in github actions)
   - VS 17.14.23
+  - debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
+
+- Compiler Bug Defines
+ - fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
+
+- ThirdPartyComponents
+  - boost
+    - use boost 1_89_0, 
+    - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
+  - curl 
+    - 8.17.0
+  - sqlite
+    - 3510000
+  - openssl
+    - 3.6.0
+  - libxml2
+   - 2.15.1
+  - StrawberryPerl
+    - 5.42.0.1
+
 
 #if 0
-
-    
-
-commit c26c7c27b3b009a4e570e020a20b587678822b44
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 12:08:06 2025 -0500
-
-    
-
-commit 01677fa2a93231bcf2ad0a3aff5813086f589834
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 17:43:37 2025 -0500
-
-    fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
-
-commit 9eaa5fd6110c190aab77dfbf328d38345ab0d20f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 18:43:22 2025 -0500
-
-    attempt to fix out of space issue with ubuntu-25.04-clang++-19-c++23-debug github action config
-
-commit 2f99483b417217be9da85a3bee98d300789d4d16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 18 20:34:40 2025 -0500
-
-    attempt to workaround run out of disk space on github actions
-
-commit 8d289b378503266f71c47bc69757f466b713af6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 00:07:11 2025 -0500
-
-    use boost 1_89_0, and minor related cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
-
-commit 742e69b3ffcc4479e9972d2b9d98fc7daf20be3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 00:07:43 2025 -0500
-
-    use boost 1_89_0, and minor related cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
-
-commit f588f617a6b477dd6dc23732e5a382578e250ad6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 00:08:35 2025 -0500
-
-    sqlite 3510000
-
-commit b527863234c070577f93f9ff41a9530011fc3c7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 00:09:01 2025 -0500
-
-    openssl 3.6.0
-
-commit 42ef5a6b612f54b3a3c5c1a55864568ae1a0f8fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 00:09:29 2025 -0500
-
-    libxml2: 2.15.1
-
-commit ebc0936fd62ea80a3d2ba22b7f55e6056fe3bfd0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 00:09:53 2025 -0500
-
-    StrawberryPerl: 5.42.0.1
-
-commit 3fc54b220bf1cb7616b645c9d83fab55772ce235
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Nov 19 07:47:41 2025 -0500
-
-    fixed makefile typo
-
-commit 4e78e9d7d8f2462c22aea37a2b6dd9fffdbcdb7b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 11:50:24 2025 -0500
-
-    lots of github action changes to use -Os instead of --boost no (see if still runs out of space)
 
 commit a9babcda7b733f2625701484f313153ace0430dc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -161,96 +107,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Nov 20 17:35:06 2025 -0500
 
     use wmic to print disk usage on docker container on github actions
-
-commit bc8943eabf3f807e9a9f568996e911aff08fc439
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 18:54:47 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 64ff8848dbc65ec88f968c4af694d838ca894074
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 19:34:27 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 1070caaadebd8c02c8fe74b226961bd13d0380c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 20:24:57 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 3ba318eb2e8ff804014e5de960e20bf3df727b89
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 20:58:36 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit ce0338ea0f6c6d9bccda692e5c26ea74d35ce692
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 22:38:17 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit ffa768ec94efc3a8a798bcb72c688f6ec797232f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 22:56:11 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 3b38c9e05f0925019b616625f0e30be74266ed51
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 21 07:44:49 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit faeee0fd048d6923054f03fe200b10c5d9bb1711
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Nov 21 17:15:36 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit d30a2c9c0b1731e2f7d545d32054d01a54aaca4b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 22 07:55:59 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 3bdc6fa760b6a571fac385f4fd86b3e5ba8036c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 22 08:00:17 2025 -0500
-
-    revert some of the DockerBuildContainers/Windows-VS2k22/Dockerfile changes cuz trying to enlarge image/data root for docker
-
-commit bdf728b3e269951ea625e407271cd050fe25478c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 22 09:39:06 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 3e3c3efebb3d82c79f88b8e0815e811714ed0e5f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Nov 22 09:57:06 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 6e2fb4b963c1a00509e2795e60614a4a6278e6bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 08:11:02 2025 -0500
-
-    more debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
-commit 35ac282c33ef24b2a45d03e2e02ab326dd0567e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 12:53:05 2025 -0500
-
-    cleanp recent github action changes for building docker containers
-
-commit dae48b2c5e14a45cbc70a42a6c53ccc39014007a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 14:39:05 2025 -0500
-
-    fixed typo
 
 commit 389a8242393e8781e3c0fadb88c007fae36b2b85
 Author: Lewis Pringle <lewis@sophists.com>
@@ -336,48 +192,6 @@ Date:   Mon Nov 24 22:54:57 2025 -0500
 
     dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container
 
-commit d5e3452f2166d2ea9b4be800b3faae6532dfe1d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 22:59:56 2025 -0500
-
-    more docker build cleanups
-
-commit 770bd4d3b7113a92b6820eb8a8897cc29202e7ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 25 07:54:05 2025 -0500
-
-    more docker build cleanups
-
-commit 8c893e53fead460ca85368e913c90dbc5fd6c904
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 25 11:19:39 2025 -0500
-
-    more attempts to debug building container on github actions
-
-commit b22a1f23621862917d25c50e71ba31f6ef141f1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 25 12:07:55 2025 -0500
-
-    more attempts to debug building container on github actions
-
-commit ee1861441c34ea4a7b7325e428a2a48340b3a82f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 25 13:21:36 2025 -0500
-
-    more attempts to debug building container on github actions
-
-commit e0dfca5e95d80d23112f42af227a5e42e2739363
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 25 15:43:23 2025 -0500
-
-    more attempts to debug building container on github actions
-
-commit 43d133448240db08157d5e61e9080f0112a0a2ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Nov 25 17:36:24 2025 -0500
-
-    more attempts to debug building container on github actions
-
 commit 763d0b320c9478d2775a792fb923d10efa245fbd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Nov 26 09:48:46 2025 -0500
@@ -414,17 +228,6 @@ Date:   Thu Dec 4 11:51:20 2025 -0500
 
     try avoidng mongocxxdriver in build sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests github action cuz running out of space
 
-commit 5443f62fc25daeb4e3fabc70abf9ff935209e054
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Dec 4 11:52:50 2025 -0500
-
-    try curl 8.17.0
-
-commit f48b741060f962172405da597f2d12999410d73b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 4 21:05:56 2025 -0500
-
-    avoid run out of disk space github actions
 
 commit 04df844b90649fa1ef43174e643b7833668a210b
 Author: Lewis Pringle <lewis@sophists.com>
