@@ -890,7 +890,9 @@ SystemConfiguration::ComputerNames Common::GetSystemConfiguration_ComputerNames 
     nameBuf[std::size (nameBuf) - 1] = '\0'; // http://linux.die.net/man/2/gethostname says not necessarily nul-terminated
     result.fHostname                 = String::FromNarrowSDKString (nameBuf);
 #elif qStroika_Foundation_Common_Platform_Windows
-    constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameNetBIOS; // total WAG -- LGP 2014-10-10
+    constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameDnsHostname;   // It matches what users see in Windows Settings > System > About (labeled as "Device name"). 
+                                                                                // It is cleaner and more readable for modern applications.
+                                                                                // --LGP 2025-12-26
     DWORD                          dwSize          = 0;
     (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
     StackBuffer<SDKChar> buf{Memory::eUninitialized, dwSize};

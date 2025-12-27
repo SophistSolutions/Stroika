@@ -58,6 +58,8 @@ especially those they need to be aware of when upgrading.
     - 5.42.0.1
 
 
+- GetSystemConfiguration_ComputerNames () now returns ComputerNameDnsHostname for windows
+
 #if 0
 
 commit a9babcda7b733f2625701484f313153ace0430dc
