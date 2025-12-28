@@ -8,16 +8,11 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-
-- used Common::ClassNotFinal new concept in  InheritAndUseBlockAllocationIfAppropriate
-
+#if 0
 - debug/workaround running out of space on linux github actions
 - capture more log data to debug failure to build on github actions macos14
 
- - use MONGOCXXDRIVER 4.1.4 to avoid macos issue with cmake version
-
-
--    fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
+-  fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
 
 - build-N-test-Matrix.json, build-N-test.yml
   - Cleanup comments
@@ -28,6 +23,9 @@ especially those they need to be aware of when upgrading.
   - add xode 16.4 testing
   - use windows-2025 for server to run containers
   - lots of disk space and output cleanups
+
+- Top Level Makefile
+  -  top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
 
 
 - configure
@@ -41,21 +39,6 @@ especially those they need to be aware of when upgrading.
 
 - Compiler Bug Defines
  - fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
-
-- ThirdPartyComponents
-  - boost
-    - use boost 1_89_0, 
-    - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
-  - curl 
-    - 8.17.0
-  - sqlite
-    - 3510000
-  - openssl
-    - 3.6.0
-  - libxml2
-   - 2.15.1
-  - StrawberryPerl
-    - 5.42.0.1
 
 
 - GetSystemConfiguration_ComputerNames () now returns ComputerNameDnsHostname for windows
@@ -85,242 +68,6 @@ VSCODE
  fixed bug in copy build sartifcats for samples in github linux action
     cleanups to log/sample capturing on linux github actions (testing)
 
-#if 0
-
-commit 5774231c0a47d8196409b77e19160cf3a99b85e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 10:15:03 2025 -0500
-
-    tweak docs and fix impl (bug bug found by g++-15) - BlockAllocator should NOT depend on qStroika_Foundation_Memory_PreferBlockAllocation define - just dont use block allocator if you dont want it. Better documented this fact
-
-commit c0903812de53d4d44d6d98c0a5916729773492a5
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 9 11:01:12 2025 -0500
-
-    top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
-
-commit fdab439fbd872ff52242d321a72867f072e88e49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 20:25:47 2025 -0500
-
-    see if re-ordering FETCHURLS for strawberry-perl generates fewer warnings
-
-commit fc0171d417b91706d5b0a0410c3cd8a7fb74befc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 12 20:04:52 2025 -0500
-
-    fix regtest to not fail just cuz missing en/us locale
-
-commit 9e880c4fa10ff5ea224d4de8076910527d673306
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 12 20:26:12 2025 -0500
-
-    github action cleanups
-
-commit b1b45af6afacee986b13ab04b4711c807f982618
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 13 08:35:08 2025 -0500
-
-    more gracefully handle bad mediatypes line in EtcMimeTypesRep_ reader (happens when no locale code installed maybe)
-
-commit 9e4eea2576aa89178b5b1d4140987f59a739dadb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 13 08:36:39 2025 -0500
-
-    only run github action ubuntu-25.04-g++-15-debug-regtest-container on v3-Release
-
-commit 0a963a46b726d8fd0a0b4b7559f1fc0b86081b6a
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sat Dec 13 09:22:54 2025 -0500
-
-    use boost 1.90
-
-commit 32dd6fe4fc128dc586704a0afcc66db73b9143ea
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Dec 15 09:59:18 2025 -0500
-
-    libcurl  --without-zstd after CheckForLibrary check (not sure why needed)
-
-commit ae7be6afbf9c1311e6efaeadf92c8fc5f2867116
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Dec 15 10:02:37 2025 -0500
-
-    first draft (incomplete) support for building third party component - zstd
-
-commit 1d8a3235cdc8ece593b61e920f20f835d98f5de7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Dec 15 10:19:06 2025 -0500
-
-    cleanup a few (no longer needed) curl Makefile BWAs
-
-commit 8d268ed44175271abdcf4a791c4197ee51bc8205
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 15 10:56:06 2025 -0500
-
-    minor fixes to recent zstd code to build on macos
-
-commit 8feb4d2cb8194c8f43534738ad7839423a9632e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 15 11:46:02 2025 -0500
-
-    progress getting zstd build working on windows too
-
-commit 7936f1497745bf8d5a843f30eafd7f90e36d7141
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 15 14:16:58 2025 -0500
-
-    zstd third party componet fixes for macos build
-
-commit 973f8dc9fd797ae41cc6048d77d3f7499feaa3e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 15 15:31:51 2025 -0500
-
-    tmphack to workaround issue with zstd from mongocxx - disabled for now
-
-commit 6080736ef9d776b8be592e4603b10bd4e27ddc3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 16 10:59:29 2025 -0500
-
-    progress on zstd third party components support
-
-commit c0f36941ae8a1ea6475d9a28c97361e86414a545
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 16 11:54:08 2025 -0500
-
-    fixed zstd .lib rename issue with windows / zstd
-
-commit e0f506607e785a5f01304da44f7fd1272599f9cb
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 16 12:08:53 2025 -0500
-
-    use zstd 1.5.7 (latest released version)
-
-commit c0c885a7b2f9dfc6071a7996d7c17c99eebf4b23
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 16 14:58:51 2025 -0500
-
-    get zstd changes working on clang++-15
-
-commit c945e83e41308d04398bd0a4c0cd62fa2d7433f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 16 17:23:34 2025 -0500
-
-    mongo-cxx-driver fixed support for zstd (still must report to mongodb folks the issue)
-
-commit 455c45cc5aed7101ff555978fb6a806168deb2b0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 16 17:50:01 2025 -0500
-
-    re-enabled -DENABLE_ZLIB=SYSTEM optimization in mongo-cxx-driver for a few more cases (still testing)
-
-commit 0cca36cd0563c6805354e7fd254d554abe5af9aa
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 16 20:36:42 2025 -0500
-
-    disable DENABLE_ZLIB=SYSTEM on mongo-cxx-driver for unix (for now)
-
-commit ebfa9bce2eceb1c15366f370b29be0d8cdf5ff56
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 16 20:47:52 2025 -0500
-
-    re-disable DENABLE_ZLIB=SYSTEM for mongo-cxx-driver - even for windows
-
-commit 7fbca11b40a17d9ca178f30131468b433995be76
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 17 11:03:49 2025 -0500
-
-    use Memory::UseBlockAllocationIfAppropriate<> in a few places more
-
-commit 2b415d3567b0ad4f51e86314c1f8062120698161
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 17 11:43:47 2025 -0500
-
-    more use Memory::UseBlockAllocationIfAppropriate
-
-commit e68b372cb7a7ad0fa9c3524651a181356809d5fd
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 17 13:03:44 2025 -0500
-
-    early draft ZStd stroika-compression integration support
-
-commit 47f902ad25320dd734f170cb8b9f9dde3b789f88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 17 17:41:07 2025 -0500
-
-    minor ZStd progress
-
-commit fd685b809989eef8ac0a9431358afee2907a41a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 17 23:20:17 2025 -0500
-
-    progress on ZSTD stream reading compression code
-
-commit 50c6235c32bed5a551369cef1b74faed6dfa74c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 18 10:14:13 2025 -0500
-
-    zstd progress (streams code)
-
-commit 46c26087957ae116b237189aa8ed0b12762fbb3d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 18 11:06:57 2025 -0500
-
-    StreamReader docs, and new IsAtEOF overload
-
-commit a2de38cc0f62a047c9a71720179bf609c5de83a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 18 18:19:49 2025 -0500
-
-    ZStd stream support - complete first draft but not reviewed carefully nor tested at all
-
-commit cea52f5d7ff4edc4dd55bdcb6544c1aace9c11f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 19 08:54:04 2025 -0500
-
-    fixed small makefile bug(s) in curl makefile
-
-commit e384e8b1fc371d63e80a5a79894f1e9a0c0752fa
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Dec 19 10:08:57 2025 -0500
-
-    use Memory::MakeSharedPtr in a bunch of places instead of std::make_shared, as possible optimization; also used final in a bunch of places it should be used
-
-commit ff766ae46d8d15ca3d43d0b5da29cb5fec5c12eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 22 21:48:59 2025 -0500
-
-    Added ContentEncoding::kZStd support to webserver
-
-commit 0404ec1f0647fcea947b83a9ae21c75412865fb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 23 19:40:50 2025 -0500
-
-    sqlite 3.51.1
-
-commit 5db6268ce45fa9d0b0f14a7c2257aa0435f90c2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 24 07:37:50 2025 -0500
-
-    VS_17_14_23 docker container
-
-commit b1770e7dcd6f2e4a3afe89cf1adb4924660c44b8
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 24 12:19:36 2025 -0500
-
-    fixed mongo-cxx-driver makefile for build with no ssl
-
-commit 4ea874a67d65aff2bf789f9e820c028cbc570261
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 24 15:19:57 2025 -0500
-
-    zstd makefile - fix warning lto-wrapper: warning: Extra option to '-Xassembler...
-
-commit 28cf503b0f9905071354ac095f2ae15d2e1caefb
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 24 15:45:32 2025 -0500
-
-    see if --without-zstd still needed with building libcurl
-
 #endif
 
 
@@ -329,7 +76,10 @@ Date:   Wed Dec 24 15:45:32 2025 -0500
 
 #### TLDR
 
-#### Upgrade Notes (3.0d20 to 3.0d21)
+- Address github action building issues (containers now running out of space, due to outside dependency changes)
+- Support ZStd (built in ThirdPartyComponents, and streams library support/integration)
+
+#### Upgrade Notes (3.0d21 to 3.0d22)
 
 #### Change Details
 
@@ -338,16 +88,62 @@ Date:   Wed Dec 24 15:45:32 2025 -0500
   - Docker
     - Windows
       - VS_17_14_19 in docker container
-
   - Makefiles
   - Scripts
 - Library
-  - Common
-  - Execution
-  - Memory
-
+  - Misc
+    - use Memory::UseBlockAllocationIfAppropriate<> in a few places more
+    - use Memory::MakeSharedPtr in a bunch of places instead of std::make_shared, as possible optimization
+    - used final in a bunch of places it should be used
+  - Foundation
+    - Common
+      - used (new concept) Common::ClassNotFinal in InheritAndUseBlockAllocationIfAppropriate
+    - DataExchange
+      - InternetMediaTypeRegistry
+        - more gracefully handle bad mediatypes line in EtcMimeTypesRep_ reader (happens when no locale code installed maybe)
+    - Memory
+      - BlockAllocator
+        - tweak docs and fix impl (bug bug found by g++-15) - BlockAllocator should NOT depend on 
+          qStroika_Foundation_Memory_PreferBlockAllocation define -
+          just dont use block allocator if you dont want it. Better documented this fact
+    - Streams
+      - Compression
+        - ZStd
+          - new support added
+      - StreamReader
+        - docs
+        - new IsAtEOF overload
+  - Frameworks
+    - WebServer
+      - Added ContentEncoding::kZStd support to webserver
 - ThirdPartyComponents
+  - boost
+    - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
+    - Version 1.90
+  - curl 
+    - 8.17.0
+    - --without-zstd no longer needed (so uses zstd)
+  - libxml2
+   - 2.15.1
+  - mongo-cxx-driver
+    - mongo-cxx-driver fixed support for zstd (still must report to mongodb folks the issue)
+        fixed mongo-cxx-driver makefile for build with no ssl
+   - use MONGOCXXDRIVER 4.1.4 to avoid macos issue with cmake version
+  - openssl
+    - 3.6.0
+  - sqlite
+    - 3.51.1
+  - StrawberryPerl
+    - 5.42.0.1
+    - re-ordering FETCHURLS for strawberry-perl generates fewer warnings
+  - ZStd
+    - newly supported building ThirdPartyComponents (static lib)
+    - fix a few issues with integrating with other libraries (like curl, mongo-cxx)
+    - version 1.5.7
+    - zstd makefile - fix warning lto-wrapper: warning: Extra option to '-Xassembler...
 - Tests
+  - Regression Tests
+    -  fix regtest to not fail just cuz missing en/us locale
 - Tools
 
 
