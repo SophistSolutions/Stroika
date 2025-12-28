@@ -8,11 +8,6 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
--- DEBUG ISSUE WITH PERFORMANCEDUMP.txt files!
-
-
-- fix regression with FromSDKString of span
-
 
 #if 0
 - debug/workaround running out of space on linux github actions
@@ -33,7 +28,6 @@ especially those they need to be aware of when upgrading.
 - Top Level Makefile
   -  top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
 
-
 - configure
   - Print more comments (xcode versions) to config files in configure macos
 
@@ -45,9 +39,6 @@ especially those they need to be aware of when upgrading.
 
 - Compiler Bug Defines
  - fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
-
-
-- GetSystemConfiguration_ComputerNames () now returns ComputerNameDnsHostname for windows
 
 -  debug why failed disk space issue installing msvc in docker (on github actions)
    - use wmic to print disk usage on docker container on github actions
@@ -78,12 +69,15 @@ VSCODE
 
 
 
+
 ### 3.0d22x {2025-12-25x} {[diff](../../compare/3.0d21...3.0d22)}
 
 #### TLDR
 
 - Address github action building issues (containers now running out of space, due to outside dependency changes)
 - Support ZStd (built in ThirdPartyComponents, and streams library support/integration)
+- Fixed PerformanceDump.txt generation/scripting regression
+- Fixed GetSystemConfiguration_ComputerNames (FromSDKString issue)
 
 #### Upgrade Notes (3.0d21 to 3.0d22)
 
@@ -103,7 +97,15 @@ VSCODE
     - used final in a bunch of places it should be used
   - Foundation
     - Common
-      - used (new concept) Common::ClassNotFinal in InheritAndUseBlockAllocationIfAppropriate
+      - used (new concept) Common::1 in InheritAndUseBlockAllocationIfAppropriate
+      - Configuration
+        - GetSystemConfiguration_ComputerNames () now returns ComputerNameDnsHostname for windows
+    - Characters
+      - String
+        - Fix regression with FromSDKString of span (nul char at end).
+          Issue is it was too easy to use buf size not 'strlen' - for number of characters captured (for example
+          GetSystemConfiguration_ComputerNames was wrong). Now more careful in calls, and added new utility Characters::AdjustNulTerminatedStringSpan()
+          to help sometimes.
     - DataExchange
       - InternetMediaTypeRegistry
         - more gracefully handle bad mediatypes line in EtcMimeTypesRep_ reader (happens when no locale code installed maybe)
@@ -150,6 +152,8 @@ VSCODE
 - Tests
   - Regression Tests
     -  fix regtest to not fail just cuz missing en/us locale
+    - Fixed issue that performance dumps logging were capturing the wrong data/file for the last couple releases
+
 - Tools
 
 
