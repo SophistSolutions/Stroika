@@ -293,7 +293,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
         do {
             //SDKString fileName = (LPCTSTR)&fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                String              fileName = String::FromSDKString (static_cast<LPCTSTR> (&fd.cFileName));
+                String              fileName = String::FromSDKString (static_cast<LPCTSTR> (fd.cFileName));
                 static const String kDOT     = "."sv;
                 static const String kDOTDOT  = ".."sv;
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
