@@ -60,380 +60,32 @@ especially those they need to be aware of when upgrading.
 
 - GetSystemConfiguration_ComputerNames () now returns ComputerNameDnsHostname for windows
 
+-  debug why failed disk space issue installing msvc in docker (on github actions)
+   - use wmic to print disk usage on docker container on github actions
+   - debug choco install issue in docker windows under github actions
+   - dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container (for github actions build)
+     - github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
+  - VS_17_14_21 in docker file
+
+- apple bug defines for clang++ 17
+
+- more cleanups to github action running out of space workarounds'
+
+VSCODE
+    added a few folders to files.exclude list C_Cpp.files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos
+
+    debug github action script to remove extra packages to address space issue
+
+    Added apt-get clean lines to most RUN DockerFile lines to hopefully save up space on unix docker container images
+
+    debug github action script to remove extra packages to address space issue
+    added extra_config_args for github actions support - but didn't help (due to how file storage with layers/dockerfiles works).
+    - so instead added new extra_apt_add_packages github action support
+
+ fixed bug in copy build sartifcats for samples in github linux action
+    cleanups to log/sample capturing on linux github actions (testing)
+
 #if 0
-
-commit a9babcda7b733f2625701484f313153ace0430dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 19 16:00:18 2025 -0500
-
-    more cleanups of workarounds for github actions running out of space - -Os mostly enuf, but in one case still needed --boost no to have enuf space
-
-commit 7aeb7c5c0fe0faae3b67396cdbc8e7bee5a47787
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 13:30:47 2025 -0500
-
-    try to debug why failed disk space issue installing msvc in docker
-
-commit db0864d342347e1f9e6aeeaa0f2a0eecd8b520ef
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 13:32:23 2025 -0500
-
-    try to debug why failed disk space issue installing msvc in docker
-
-commit 91f91a9ff516d1407be694af108ecc2c3ca6557e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 14:05:14 2025 -0500
-
-    perhaps workaround issue with failure deleting files on docker build (only seen issues on github actions)
-
-commit 5c8aa629718ac7e53e8cea448e66db8d21479b9f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 14:07:12 2025 -0500
-
-    perhaps workaround issue with failure deleting files on docker build (only seen issues on github actions)
-
-commit bd868d9c1759376069de8a20da75b12ec423594a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 15:49:53 2025 -0500
-
-    try again on BWA for windows docker container build github action
-
-commit 42f6d22daed1ba1efc8b0cf1b4bae5437f1ba796
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 17:27:10 2025 -0500
-
-    try again on BWA for windows docker container build github action
-
-commit 8b2b8c16b18084a76288dcdbf0a08528caa9edce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Nov 20 17:35:06 2025 -0500
-
-    use wmic to print disk usage on docker container on github actions
-
-commit 389a8242393e8781e3c0fadb88c007fae36b2b85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 17:05:08 2025 -0500
-
-    debug choco install issue in docker windows under github actions
-
-commit f211a1595c04a45a16e0a142777e179a80522f14
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 17:11:22 2025 -0500
-
-    experiment with CYGWIN: winsymlinks:native to address issue installing cygwin
-
-commit f6f044d46d4d690e13c7a959f3e301d6c34737a6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 18:54:50 2025 -0500
-
-    experiment with CYGWIN: winsymlinks:native to address issue installing cygwin
-
-commit b434abb336c40e96efd1b00134adc88ab1ca7fd1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 21:43:43 2025 -0500
-
-    moved CYGWIN=winsymlinks:native hack (still not working) and undid execution-timeout hack
-
-commit 48f344f3f68f47960c9f3189d199dabc99da0adb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Nov 23 21:44:22 2025 -0500
-
-    moved CYGWIN=winsymlinks:native hack (still not working) and undid execution-timeout hack
-
-commit 7199d078dc4f353801299494caf29c54e16bd70d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 08:58:22 2025 -0500
-
-    moved CYGWIN=winsymlinks:native hack (still not working) and undid execution-timeout hack
-
-commit df1ca649fb551dd3decd801d1908cdc8a5b3b637
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 09:54:03 2025 -0500
-
-    moved CYGWIN=winsymlinks:native hack (still not working) and undid execution-timeout hack
-
-commit d1a0f1097d9e4ee8a10e77a2a0f4b8031b4ca4c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 11:42:42 2025 -0500
-
-    cleanup recent dockerfile changes
-
-commit 123601d49a0e9ee59e6c391df38781bc03a070ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 11:47:52 2025 -0500
-
-    cosmetic and maybe fix changes to .github/workflows/build-Dev-Docker-Containers.yml for build cygwin image on docker
-
-commit 4b91e1ab388af710795823bbb704dba62a5e6442
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 15:02:30 2025 -0500
-
-    more debug failure on github actions docker build cygwin
-
-commit 66280276189ad7f2c919e545c058c4247589d099
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 17:48:09 2025 -0500
-
-    more debug failure on github actions docker build cygwin
-
-commit 1d5a31a401508767e56fa7e3497a97d16462c5aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 21:53:15 2025 -0500
-
-    more debug failure on github actions docker build cygwin
-
-commit 37c690a68110cbff39d859260fd463b5b465b0d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 22:43:07 2025 -0500
-
-    more debug failure on github actions docker build cygwin
-
-commit cbbad53db86a2f175a9a585c08ff8d059f8736c5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Nov 24 22:54:57 2025 -0500
-
-    dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container
-
-commit 763d0b320c9478d2775a792fb923d10efa245fbd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 26 09:48:46 2025 -0500
-
-    github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
-
-commit 323afed91bc68d2654e6b6700bf0b428e4899cd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 26 12:42:25 2025 -0500
-
-    cleanup (now working) cygwin docker BWA changes to dockerfile
-
-commit d423363bebac561449096ad5f3c0fa875bbfdf91
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 26 12:42:43 2025 -0500
-
-    VS_17_14_21 in docker file
-
-commit c88500ca282792480833eaa15f06ed063f1a4890
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Nov 26 12:53:01 2025 -0500
-
-    mostly cosmetic cleanups to dockerfiles
-
-commit 7411727ba1279e8ab5426bd781043523ee751558
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 3 09:59:51 2025 -0500
-
-    apple bug defines for clang++ 17
-
-commit f13686fc62880f3dd33769f649eb50dc10a10949
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 4 11:51:20 2025 -0500
-
-    try avoidng mongocxxdriver in build sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests github action cuz running out of space
-
-
-commit 04df844b90649fa1ef43174e643b7833668a210b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 5 09:07:58 2025 -0500
-
-    test using insightsengineering/disk-space-reclaimer@v1
-
-commit db1dc256ed976afc3f24c082878cd45c172ffe7e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 5 10:14:17 2025 -0500
-
-    maybe more disk space usage cleanups for running on github actions
-
-commit e38417e44b71f0be8d1f800c6687025aaf5302b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 5 13:14:55 2025 -0500
-
-    more cleanups to github action running out of space workarounds'
-
-commit da2b809d938b4429c475f3d5cd53cf1c030b5ae6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 5 13:15:19 2025 -0500
-
-    more cleanups to github action running out of space workarounds'
-
-commit 50948f5f8af5d4cf0647a6be0795da288e30a8fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 5 15:43:00 2025 -0500
-
-    more github space saving tricks for github actions
-
-commit 07e8811a3bfb723969e01cf143ef51ad3f0506bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 6 08:00:18 2025 -0500
-
-    fixed typo in thirdpartycompontnets boost makefile for clean
-
-commit c7a2a37fa0f22d2ffd51f9814807e1e0d4b82fce
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Dec 6 22:34:50 2025 -0500
-
-    another tweak to github actions to save disk space
-
-commit 84e186d9d840e15d5c87c045f4ceec18007f1911
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 07:32:12 2025 -0500
-
-    another tweak to github actions to save disk space
-
-commit af554c52ac38ad178d0a037ea476e27a268e80c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 09:42:35 2025 -0500
-
-    added a few folders to files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos
-
-commit 857bc63ae6a2af707ffed73c6063cdf0f3ab6924
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 09:56:18 2025 -0500
-
-    moved a few items from files.exclude to C_Cpp.files.exclude list in Stroika.code-workspace folder
-
-commit 1135712a6e705b42bbc5b7d421e0f807b7e81627
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 10:03:21 2025 -0500
-
-    another attempt to get to build on github actions - running out of space
-
-commit 1fd8fae8ad5f9d60e5a144edfc98d074448a75d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 12:49:24 2025 -0500
-
-    more attempts to fix running out of space on github actions - try new approach - list of things to apt remove in config
-
-commit 66127f3b39981fbc5e1c2ff88aeab3851fa095f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 14:47:10 2025 -0500
-
-    fixed typo
-
-commit 8ae3ef008cfa5c41be1dc63b7dbd434187129ab2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 15:34:28 2025 -0500
-
-    fixed typo
-
-commit b0c938cf4026df26c14e2364223a992df66a1140
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 20:09:18 2025 -0500
-
-    working on github action saving space on unix
-
-commit 77546b5864211026101c19011bc27617a4a8d900
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 20:52:19 2025 -0500
-
-    working on github action saving space on unix
-
-commit ea8e7f54f748aa59510d5079ec905ad222b9c9b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 21:52:42 2025 -0500
-
-    working on github action saving space on unix
-
-commit 19ad7064f90f4c4da41d9732a9b031c2be443c58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Dec 7 21:53:11 2025 -0500
-
-    working on github action saving space on unix
-
-commit 418e5e63ea7c0ddad13faa36fff89ae51b802a66
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 09:11:04 2025 -0500
-
-    debug github action script to remove extra packages to address space issue
-
-commit 254a5e38b0dc76af5b0085ef2d993539da3037b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 09:57:53 2025 -0500
-
-    debug github action script to remove extra packages to address space issue
-
-commit 81e76a2cc5b4e68cd5da73ca1469c9dc0802d122
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 10:14:54 2025 -0500
-
-    debug github action script to remove extra packages to address space issue
-
-commit 25f1ecd4d4abe3067e4d26777707169f3892f328
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 10:25:25 2025 -0500
-
-    debug github action script to remove extra packages to address space issue
-
-commit 9020b9b89b4998ec49c80492fe3eeaaa3eb32751
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 10:27:15 2025 -0500
-
-    debug github action script to remove extra packages to address space issue
-
-commit 9cf5b48f43631d5d44f843e563b2601296bc26ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 10:36:07 2025 -0500
-
-    looks like github action extra_apt_remove_packages maybe working - testing now with clang++-18 on builds with g++
-
-commit ee27eadf0fa019f4c60bf631bf4e0c351beedba4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 11:05:47 2025 -0500
-
-    github action cleanup output
-
-commit 01f1a1ccad3ad81286efbede06b561c2e9bdd13e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 11:14:18 2025 -0500
-
-    looks like github action extra_apt_remove_packages maybe working - testing now with ubuntu-25.04-g++-15-debug and removing a few more packages
-
-commit 22100326f853c345c3dd2a4f60ace8f579d6a809
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 16:58:47 2025 -0500
-
-    see if extra_apt_remove_packages allows adding back packages I removed from being built (github action space issue)
-
-commit f444a3686bd48a2ffb9f39b022767a8adbae84ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 17:44:08 2025 -0500
-
-    github action cleanups
-
-commit 4addfe870df1039616401721d787ee6d9e7c43d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 18:50:50 2025 -0500
-
-    debug github action failure
-
-commit d303737535e2237a10262c4d7fcd902f3eb516ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 18:51:09 2025 -0500
-
-    cosmetic
-
-commit 09937f5ba0260c908091c7e789593e836adf168c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 8 22:20:08 2025 -0500
-
-    retest reverting change to extra_config_args for ubuntu-25.04-g++-15-debug github action test
-
-commit 8d389f5c7e5d50cd1d02ed50b122592fbdb9941b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 07:57:17 2025 -0500
-
-    retest reverting change to extra_config_args for ubuntu-25.04-g++-15-debug github action test
-
-commit 77ef3a90a09257c1fbfdf4e6833ac45e11964cd9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 09:52:06 2025 -0500
-
-    retest reverting change to extra_config_args for ubuntu-25.04-g++-15-debug github action test
-
-commit 7c18e3abff04fc8c4f116bcf7452a79e7403c522
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 10:13:35 2025 -0500
-
-    tweak docs
 
 commit 5774231c0a47d8196409b77e19160cf3a99b85e8
 Author: Lewis Pringle <lewis@sophists.com>
@@ -441,203 +93,17 @@ Date:   Tue Dec 9 10:15:03 2025 -0500
 
     tweak docs and fix impl (bug bug found by g++-15) - BlockAllocator should NOT depend on qStroika_Foundation_Memory_PreferBlockAllocation define - just dont use block allocator if you dont want it. Better documented this fact
 
-commit 28b88321a719484ceaf0e1156f0e76fefec035eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 10:15:16 2025 -0500
-
-    cosmetic
-
-commit a956ccd1996d4ef605d77246202e81fcf67ca03d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 9 10:16:31 2025 -0500
-
-    mostly cosmetic
-
-commit a68623263754ecdd88cd9456cfa4d5b589ccf6a2
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 9 10:35:51 2025 -0500
-
-    fixed warnings
-
 commit c0903812de53d4d44d6d98c0a5916729773492a5
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Tue Dec 9 11:01:12 2025 -0500
 
     top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
 
-commit 11824cf7e25ea62dc36bd1e1ffdf8ff2ebf1b001
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 11:48:02 2025 -0500
-
-    more github action debug/tweaks
-
-commit 035ca548531c82503ea991de7ba91270a1b5ad10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 13:51:19 2025 -0500
-
-    more tweaks to extra_config_args for github actions (ubuntu-25.04-g++-15-debug) to see if still runs out of space'
-
-commit 80600ee1cfee32059cb3e793e9598a7a7fe510ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 13:51:54 2025 -0500
-
-    more tweaks to extra_config_args for github actions (ubuntu-25.04-g++-15-debug) to see if still runs out of space
-
-commit 2ce87eaddbd7c6adf515c6c06a0a4339c6869cd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 15:39:06 2025 -0500
-
-    more tweaks to extra_config_args for github actions (ubuntu-25.04-g++-15-debug) to see if still runs out of space
-
-commit 54c8c17655ed4948e8f3c5f9cd987f592474afd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 15:42:28 2025 -0500
-
-    more tweaks to extra_config_args for github actions (ubuntu-25.04-g++-15-debug) to see if still runs out of space
-
-commit b6fcfd90e0312172bfd34500dd3fdcc5acb0ee38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 16:20:59 2025 -0500
-
-    maybe fixed github action space saver issue with linux
-
-commit b5640eb464e47a4931924672929bccc89bb50327
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 19:53:00 2025 -0500
-
-    more debug github action run out of space issues
-
-commit 27f622f89e7366de197045db72f021a5a8515a0f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 20:19:45 2025 -0500
-
-    back to disabling boost - extra_apt_remove_packages trick didnt work
-
 commit fdab439fbd872ff52242d321a72867f072e88e49
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 9 20:25:47 2025 -0500
 
     see if re-ordering FETCHURLS for strawberry-perl generates fewer warnings
-
-commit cbba07f5b2b6d65300e7fb5171aaad3a47db14e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 20:28:24 2025 -0500
-
-    experiment with new extra_apt_add_packages github action support trick to avoid running out of space
-
-commit 60f78a99aeb51bfa657d7c00bf9ffb5077adb792
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 9 21:26:27 2025 -0500
-
-    git action working on debugging copy of sample artifacts
-
-commit f8039df5ba23eb531e755d36ce62be935bee2053
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 07:28:35 2025 -0500
-
-    fixed typo
-
-commit effca3f2a8a41f24f47d3d56240f261414d06560
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 08:48:49 2025 -0500
-
-    Debugging copy builds in github action (samples)
-
-commit 45a18e4c67ed24e51629a61b4755fa9f26ff0179
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 09:59:38 2025 -0500
-
-    Debugging copy builds in github action (samples)
-
-commit d56327203096b118e25d731d4eacf10602014c20
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 11:32:10 2025 -0500
-
-    maybe fixed bug in copy build sartifcats for samples in github linux action
-
-commit 66037597bcd0f899a064afa44bf5fa3031828d4b
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Dec 10 12:20:16 2025 -0500
-
-    Added apt-get clean lines to most RUN DockerFile lines to hopefully save up space on unix docker container images
-
-commit 71cb6677c91213834fad22fd785dd4000270bf32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 13:01:31 2025 -0500
-
-    maybe fixed bug in copy build sartifcats for samples in github linux action
-
-commit a95a355edd421b7947d0fffab38c7445d47ebb91
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 14:49:12 2025 -0500
-
-    maybe fixed bug in copy build sartifcats for samples in github linux action
-
-commit ed3ec3ced18e84ede5f676c142e1c6f7a6075d6c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 16:13:54 2025 -0500
-
-    debugging copy build sartifcats for samples in github linux action
-
-commit 71c4b1d847e90e190d004a18487b1b32894f621a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 20:04:45 2025 -0500
-
-    debugging copy build sartifcats for samples in github linux action
-
-commit 5add03210bf98803397e00eded46c6d07be45ba1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 10 21:14:13 2025 -0500
-
-    debugging copy build sartifcats for samples in github linux action
-
-commit c28e35cc2aecb9089736d1040a0458793276d643
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 11 07:04:10 2025 -0500
-
-    debugging copy build sartifcats for samples in github linux action
-
-commit 9ae5cc5165c1fb442c75f366b30838b4a4fe176e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 11 13:12:55 2025 -0500
-
-    debugging copy build sartifcats for samples in github linux action
-
-commit e3d9e82604bba768d528b814675cd73c62d1c139
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 11 16:00:37 2025 -0500
-
-    cleanups to log/sample capturing on linux github actions (testing)
-
-commit 16b76be14c660aad20f85c10860c66f92907dcb1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 11 18:00:55 2025 -0500
-
-    cleanups to log/sample capturing on linux github actions (testing)
-
-commit 2935fcd32d25a06d18debb41753af4c6bd0dd1ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 11 19:05:36 2025 -0500
-
-    cleanups to log/sample capturing on linux github actions (testing)
-
-commit 70cf57a5ea50ea1d77fdd24c603bbdcb67c3b3ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 12 09:57:20 2025 -0500
-
-    working on Due to insufficient github action linux cleanup
-
-commit 1bfde8fd3e72af04243f375796dddf906ed8c441
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 12 13:26:42 2025 -0500
-
-    cleanups to github actions running out of space linux issue - try break ubuntu-25.04-g++-15-debug into -regtest-container and smaller-container variants
-
-commit e1a981d1d8f15617d631e7bb3bea9800dee42bc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 12 16:06:26 2025 -0500
-
-    cleanups to github actions running out of space linux issue - try break ubuntu-25.04-g++-15-debug into -regtest-container and smaller-container variants
 
 commit fc0171d417b91706d5b0a0410c3cd8a7fb74befc
 Author: Lewis Pringle <lewis@sophists.com>
@@ -747,24 +213,6 @@ Date:   Tue Dec 16 17:50:01 2025 -0500
 
     re-enabled -DENABLE_ZLIB=SYSTEM optimization in mongo-cxx-driver for a few more cases (still testing)
 
-commit 0f97a298e1058d64e75fc08d177832a55eec010d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 16 18:02:32 2025 -0500
-
-    SB cosmetic cleanups to boost makefile
-
-commit ab228352b5c451a6a8afec03333df79e96c61387
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 16 18:02:46 2025 -0500
-
-    cosmetic
-
-commit c35bafd30c1d6da77ca7f125e267055591ab2af2
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Dec 16 18:15:01 2025 -0500
-
-    Comments
-
 commit 0cca36cd0563c6805354e7fd254d554abe5af9aa
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Tue Dec 16 20:36:42 2025 -0500
@@ -776,12 +224,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 16 20:47:52 2025 -0500
 
     re-disable DENABLE_ZLIB=SYSTEM for mongo-cxx-driver - even for windows
-
-commit 92147198e32d1b9ddcf25e36e1afd25b87c97878
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 16 21:23:10 2025 -0500
-
-    cosmetic
 
 commit 7fbca11b40a17d9ca178f30131468b433995be76
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -800,12 +242,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Wed Dec 17 13:03:44 2025 -0500
 
     early draft ZStd stroika-compression integration support
-
-commit 37f5ffbdb20298b8ec68eaac8fbb88a9c598424e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Dec 17 13:15:45 2025 -0500
-
-    cosmetic
 
 commit 47f902ad25320dd734f170cb8b9f9dde3b789f88
 Author: Lewis Pringle <lewis@sophists.com>
@@ -831,18 +267,6 @@ Date:   Thu Dec 18 11:06:57 2025 -0500
 
     StreamReader docs, and new IsAtEOF overload
 
-commit 105c77a78fa6b2c7b024037954961966dd9041d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 18 11:54:42 2025 -0500
-
-    more progress on ZStd stream code
-
-commit 1dabe6f5c2cd75236ea67b48f312342d1f476783
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 18 15:45:35 2025 -0500
-
-    completed first draft of zstd stream compression code
-
 commit a2de38cc0f62a047c9a71720179bf609c5de83a2
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 18 18:19:49 2025 -0500
@@ -861,71 +285,11 @@ Date:   Fri Dec 19 10:08:57 2025 -0500
 
     use Memory::MakeSharedPtr in a bunch of places instead of std::make_shared, as possible optimization; also used final in a bunch of places it should be used
 
-commit ed734d48d8dc73cde0e4be3f45bdef85cc26e502
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 19 10:54:30 2025 -0500
-
-    cosmetic
-
-commit 3638aba80a7af127bcf00c6272825669b4c36c38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 19 10:57:46 2025 -0500
-
-    Added missing include
-
-commit d6304fda7119879f214a83a9888567f4a0d93b49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 22 11:23:26 2025 -0500
-
-    minor fixes to dbgtraces
-
-commit 0ed96412e0919316426cb241d0d37aa0e5e043a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 22 11:24:35 2025 -0500
-
-    progress on zstd streaming code - get some simple regtests passing (just Read API - Avail2Read still broken)
-
-commit 157fdde999e7aadbd987b87987e65af78ba141b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 22 16:55:31 2025 -0500
-
-    fixed typo
-
-commit 2a9a98c1053f662166d58fb610354d15bacb4819
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 22 21:48:22 2025 -0500
-
-    factoring/cleanup of ZStd stream code (so far just compression)
-
 commit ff766ae46d8d15ca3d43d0b5da29cb5fec5c12eb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 22 21:48:59 2025 -0500
 
     Added ContentEncoding::kZStd support to webserver
-
-commit 3158f79859105d92858b2c8f75d9cd3426fde6b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Dec 22 22:49:23 2025 -0500
-
-    progress on zstd streaming code
-
-commit ea5e36202743125f500b9e8510fa43a06b601bf7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 23 10:32:18 2025 -0500
-
-    more ZStd streaming code cleanups
-
-commit d118b444563ead4921600093cd5dc105c25bb4d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Dec 23 11:17:24 2025 -0500
-
-    ZStd stream lib cleanups
-
-commit 6102f570366ba23cf2353cd8dfe013e7c622af81
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Dec 23 15:29:16 2025 -0500
-
-    fixed typo
 
 commit 0404ec1f0647fcea947b83a9ae21c75412865fb3
 Author: Lewis Pringle <lewis@sophists.com>
