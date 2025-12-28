@@ -202,9 +202,9 @@ String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath
     // SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
     AdjustSysErrorMode errorModeAdjuster (AdjustSysErrorMode::GetErrorMode () | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
 
-    DWORD   ignored = 0;
-    SDKChar volNameBuf[1024]{};
-    SDKChar igBuf[1024]{};
+    DWORD ignored = 0;
+    SDKChar volNameBuf[1024]{}; // zero init cuz docs (https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getvolumeinformationa) - not clear on behavior so assume worst
+    SDKChar igBuf[1024];        // dont zero initialize cuz ignored
     BOOL    result = ::GetVolumeInformation (driveLetterAbsPath.c_str (), volNameBuf, static_cast<DWORD> (std::size (volNameBuf)), nullptr,
                                              &ignored, &ignored, igBuf, static_cast<DWORD> (std::size (igBuf)));
     if (result) {
@@ -293,7 +293,7 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
         do {
             //SDKString fileName = (LPCTSTR)&fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                String              fileName = String::FromSDKString ((LPCTSTR)&fd.cFileName);
+                String              fileName = String::FromSDKString (static_cast<LPCTSTR> (&fd.cFileName));
                 static const String kDOT     = "."sv;
                 static const String kDOTDOT  = ".."sv;
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
