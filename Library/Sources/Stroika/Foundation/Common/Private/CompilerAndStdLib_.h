@@ -476,7 +476,7 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #if defined(__clang__) && defined(__APPLE__)
 // reproduced on clang 15
 // reproduced on clang 16
-// testing clang++17
+// fixed on clang++17
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -552,7 +552,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Me
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed broken in apply clang 15
 // first noticed broken in apply clang 16
-// testing clang++17
+// fixed on clang++17
 #define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -1617,7 +1617,7 @@ n file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Con
 #ifndef qCompilerAndStdLib_template_concept_matcher_requires_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 // still broken in clang++16
-// testing clang++17
+// fixed on clang++17
 #define qCompilerAndStdLib_template_concept_matcher_requires_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++17
@@ -1706,7 +1706,7 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 #ifndef qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
 
 #if defined(__clang__)
-// testing clang++17
+// fixed on clang++17
 #define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy                                                        \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
 #else
