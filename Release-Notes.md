@@ -136,7 +136,7 @@ VSCODE
   - mongo-cxx-driver
     - mongo-cxx-driver fixed support for zstd (still must report to mongodb folks the issue)
         fixed mongo-cxx-driver makefile for build with no ssl
-   - use MONGOCXXDRIVER 4.1.4 to avoid macos issue with cmake version
+    - use MONGOCXXDRIVER 4.1.4 to avoid macos issue with cmake version
   - openssl
     - 3.6.0
   - sqlite
