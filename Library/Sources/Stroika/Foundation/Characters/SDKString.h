@@ -57,6 +57,20 @@ namespace Stroika::Foundation::Characters {
     using AllowMissingCharacterErrorsFlag::eIgnoreErrors;
 
     /**
+     * \brief often apply this adjustment to return the non-nul string prefix from a span of characters.
+     * 
+     *  If using a buffer, which is known to be nul-terminated, automatic conversions of the buffer to a span return the SIZE
+     *  of the buffer (not the size of the 'string' part). Use this to produce a span of just the interesting characters.
+     * 
+     *  Typically just returns one less than the original span size, or span{data,strlen(data)}.
+     * 
+     *  \req span contains a NUL-terminator
+     */
+    template <typename CHAR_T, size_t EXTENT>
+        requires (same_as<remove_cv_t<CHAR_T>, char> or same_as<remove_cv_t<CHAR_T>, SDKChar>)
+    span<CHAR_T, EXTENT> AdjustNulTerminatedStringSpan (span<CHAR_T, EXTENT> s);
+
+    /**
      *  Convert string/span of 'char' - interpreting the char in the locale/active code page of the current
      *  operating systems (@see SDKChar).
      * 

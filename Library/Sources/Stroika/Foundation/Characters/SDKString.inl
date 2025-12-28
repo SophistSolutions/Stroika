@@ -13,6 +13,27 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ***************** Characters::AdjustNulTerminatedStringSpan ********************
+     ********************************************************************************
+     */
+    template <typename CHAR_T, size_t EXTENT>
+        requires (same_as<remove_cv_t<CHAR_T>, char> or same_as<remove_cv_t<CHAR_T>, SDKChar>)
+    span<CHAR_T, EXTENT> AdjustNulTerminatedStringSpan (span<CHAR_T, EXTENT> s)
+    {
+        if constexpr (same_as<CHAR_T, char>) {
+            size_t l = ::strlen (s.data ());
+            Require (s.size () > l); // typically greater by one
+            return s.subspan (0, l);
+        }
+        else if constexpr (same_as<CHAR_T, wchar_t>) {
+            size_t l = ::wcslen (s.data ());
+            Require (s.size () > l); // typically greater by one
+            return s.subspan (0, l);
+        }
+    }
+
+    /*
+     ********************************************************************************
      ***************************** Characters::Narrow2SDK ***************************
      ********************************************************************************
      */

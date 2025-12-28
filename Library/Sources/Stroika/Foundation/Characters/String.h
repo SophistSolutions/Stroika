@@ -320,6 +320,8 @@ namespace Stroika::Foundation::Characters {
          *  See @SDKString
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
+         * 
+         *  \note for span<> overload - consider using AdjustNulTerminatedStringSpan
          */
         static String FromSDKString (const SDKChar* from);
         static String FromSDKString (span<const SDKChar> s);
@@ -330,6 +332,8 @@ namespace Stroika::Foundation::Characters {
          *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
+         * 
+         *  \note for span<> overload - consider using AdjustNulTerminatedStringSpan
          */
         static String FromNarrowSDKString (const char* from);
         static String FromNarrowSDKString (span<const char> s);
@@ -341,6 +345,8 @@ namespace Stroika::Foundation::Characters {
          *  This throws an exception if there is an error performing the conversion.
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
+         * 
+         *  \note for span<> overload - consider using AdjustNulTerminatedStringSpan
          */
         static String FromNarrowString (const char* from, const locale& l);
         static String FromNarrowString (span<const char> s, const locale& l);
@@ -394,6 +400,8 @@ namespace Stroika::Foundation::Characters {
          *  \note if character code point >= 256, this will throw an exception - not defined for that range (only checked if sizeof (CHAR_T) > 1)
          *
          *  @aliases From8bitASCII () or FromExtendedASCII ()
+         * 
+         *  \note for span<> overload - consider using AdjustNulTerminatedStringSpan
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (const CHAR_T* cString);
@@ -454,6 +462,8 @@ namespace Stroika::Foundation::Characters {
          *      using StringBuilder.
          * 
          *  \note that if at == this->size (), you are appending.
+         * 
+         *  \note for span<> overload - consider using AdjustNulTerminatedStringSpan
          */
         nonvirtual String InsertAt (Character c, size_t at) const;
         nonvirtual String InsertAt (const String& s, size_t at) const;
