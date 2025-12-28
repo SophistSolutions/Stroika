@@ -176,8 +176,8 @@ TimeOfDay::TimeOfDay (uint32_t t, DataExchange::ValidationStrategy validationStr
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (),
-                                                                                 String::FromNarrowSDKString (l.name ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("TimeOfDay::Parse", "rep='{}', l='{}'"_f, rep,
+                                                                                 String::FromNarrowSDKString (l.name ()))};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe);
@@ -231,8 +231,8 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const String& formatPattern)
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& formatPattern)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (),
-                                                                                 String::FromNarrowSDKString (l.name ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("TimeOfDay::Parse", "rep='{}', l='{}'"_f, rep,
+                                                                                 String::FromNarrowSDKString (l.name ()))};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe);
