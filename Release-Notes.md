@@ -8,6 +8,12 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+-- DEBUG ISSUE WITH PERFORMANCEDUMP.txt files!
+
+
+- fix regression with FromSDKString of span
+
+
 #if 0
 - debug/workaround running out of space on linux github actions
 - capture more log data to debug failure to build on github actions macos14
