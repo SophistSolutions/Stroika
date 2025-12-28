@@ -195,7 +195,7 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("returning next child key: {}"_f, achKeyBuf);
 #endif
-        return MakeSharedPtr<RegistryKey> (myContext->fParentKey, String::FromSDKString (achKeyBuf));
+        return MakeSharedPtr<RegistryKey> (myContext->fParentKey, String::FromSDKString (span{achKeyBuf})); // note bufsize right - not NUL terminated
     };
     return Traversal::CreateGenerator<shared_ptr<RegistryKey>> (getNext);
 }
@@ -216,7 +216,7 @@ Containers::Mapping<Characters::String, DataExchange::VariantValue> RegistryKey:
             goto retry;
         }
         ThrowIfNotERROR_SUCCESS (retCode);
-        result.Add (String::FromSDKString (achKeyBuf), ExtractValue_ (fKey_, achKeyBuf.begin (), false));
+        result.Add (String::FromSDKString (AdjustNulTerminatedStringSpan (span{achKeyBuf})), ExtractValue_ (fKey_, achKeyBuf.begin (), false));
     }
     return result;
 }
