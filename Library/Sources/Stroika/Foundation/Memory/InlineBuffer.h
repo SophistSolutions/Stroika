@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Memory {
      *
      */
     template <typename T = byte, size_t BUF_SIZE = InlineBuffer_DefaultInlineSize<T> ()>
-    class InlineBuffer {
+    class InlineBuffer final {
     public:
         /**
          */
