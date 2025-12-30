@@ -8,37 +8,16 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-
 #if 0
-- debug/workaround running out of space on linux github actions
-- capture more log data to debug failure to build on github actions macos14
 
--  fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
-
-- build-N-test-Matrix.json, build-N-test.yml
-  - Cleanup comments
-  - Currently no more need for so many --boost(etc) no workarounds - 
-    instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
-    - and new mechanism extra_apt_add_packages, extra_apt_remove_packages
-  - lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
-  - add xode 16.4 testing
-  - use windows-2025 for server to run containers
-  - lots of disk space and output cleanups
-
-- Top Level Makefile
-  -  top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
 
 - configure
   - Print more comments (xcode versions) to config files in configure macos
 
-- Docker Containers
-  - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
-  - Windows containers now use ltsc2025 (requres runs_on: windows-2025 in github actions)
-  - VS 17.14.23
-  - debugging of .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
-
 - Compiler Bug Defines
  - fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
+  - fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
+  - apple bug defines for clang++ 17
 
 -  debug why failed disk space issue installing msvc in docker (on github actions)
    - use wmic to print disk usage on docker container on github actions
@@ -47,12 +26,6 @@ especially those they need to be aware of when upgrading.
      - github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
   - VS_17_14_21 in docker file
 
-- apple bug defines for clang++ 17
-
-- more cleanups to github action running out of space workarounds'
-
-VSCODE
-    added a few folders to files.exclude list C_Cpp.files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos
 
     debug github action script to remove extra packages to address space issue
 
@@ -66,8 +39,6 @@ VSCODE
     cleanups to log/sample capturing on linux github actions (testing)
 
 #endif
-
-
 
 
 ### 3.0d22x {2025-12-25x} {[diff](../../compare/3.0d21...3.0d22)}
@@ -87,9 +58,32 @@ VSCODE
 - Build System
   - Docker
     - Windows
-      - VS_17_14_19 in docker container
+      - VS 17.14.23
+      - Windows containers now use ltsc2025 (requres runs_on: windows-2025 in github actions)
+    - Ubuntu
+      - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
+
+  - Github Actions
+    - debug/workaround running out of space on linux github actions
+    - capture more log data to debug failure to build on github actions macos14
+    - Fixed .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
+    - build-N-test-Matrix.json, build-N-test.yml
+      - Cleanup comments
+      - Currently no more need for so many --boost(etc) no workarounds - 
+        instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
+        - and new mechanism extra_apt_add_packages, extra_apt_remove_packages
+      - lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
+      - add xode 16.4 testing
+      - use windows-2025 for server to run containers
+      - lots of disk space and output cleanups
   - Makefiles
+    - Top Level Makefile
+      - top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
   - Scripts
+  - Workspace files
+    - VSCode
+      - added a few folders to files.exclude list C_Cpp.files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos
+
 - Library
   - Misc
     - use Memory::UseBlockAllocationIfAppropriate<> in a few places more
@@ -153,12 +147,7 @@ VSCODE
   - Regression Tests
     -  fix regtest to not fail just cuz missing en/us locale
     - Fixed issue that performance dumps logging were capturing the wrong data/file for the last couple releases
-
 - Tools
-
-
-
-
 
 ----------------------------
 
@@ -253,7 +242,6 @@ VSCODE
     - VS_17_14_8
     - use msys 2025-06-22 release
     - allow ACTUAL_RUN_CMD arg to RunInDockerEnvironemt script, and use to add start-stroika-dev-containers to makefile, and have them auto-restart on reboot - autostarting ssh
-
   - Makefiles
     - get rid of commented out/deprecated makefile variables: StroikaFoundationSupportLibs PKG_CONFIG_STATIC_COMPONENTS, and TPP_PKG_CONFIG_PATH
     - Comment out STRIP_INCLUDE_COMPILER_FLAGS since unused and appears  obosolete (Makefile-Common.mk)
@@ -277,7 +265,6 @@ VSCODE
     - lose PKG_CONFIG_STROIKA_DEPENDS_ON - from ApplyConfiguraiton/Configuration.mk etc - largely unused(done via pkgconfig)
     - progress on new Platform_LDFLAGS define in SharedMakeVariables-Default.mk
     - Added ObjDir_ToolsSafe to SharedMakeVariables-Default.mk
-
   - Scripts
     - configure
       - revised configuration INCLUDES  handling - replaced INCLUDES_PATH in ConfigurationFiles/X.xml with PLATFORM_INCLUDES_PATH and PLATFORM_INCLUDES_PATH
@@ -312,7 +299,6 @@ VSCODE
     - fix (though not elegantly - and with comments to improve later) - Activity CTOR - uses concepts more; fixes case of initialization with array (like C-string)
   - Memory
     - deprecated Memory::NEltsOf - use std::size() or std::ssize() instead
-
 - ThirdPartyComponents
   - generate/fix pkgconfig files for sqlite, and zlib (static); lose explicit link dependencies in configure script (replacing with adding those pkgfiles to list of pkgconfig file names - using stroika-foundatipn.pc)
   - libcurl
@@ -337,9 +323,6 @@ VSCODE
 - Tools
   - HTMLViewCompiler
     - moved HTMLViewCompiler install to bin directory
-
-
-
 
 ----------------------------
 
@@ -566,7 +549,7 @@ VSCODE
     - SystemPerformance
       - Instruments
         - Filesystem
-          - fixed typo in name (rarely used so dont worry - fBytesTransfered -> fBytesTransferred
+          - fixed typo in name (rarely used so dont worry - fBytesTransfered -> fBytesTransferred)
     - Auth
       - OAuth
         - Configuration
