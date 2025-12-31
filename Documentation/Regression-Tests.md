@@ -101,9 +101,9 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2404_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
-      MACHINE=medusa \
+      MACHINE=medusa.local \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -115,7 +115,7 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
     USE_TEST_BASENAME=Ubuntu2504_x86_64 \
     BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
+    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests \
     MACHINE=medusa.local \
     ./ScriptsLib/RunRemoteRegressionTests
@@ -130,7 +130,7 @@ checkin from one spot.
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
       RASPBERRYPI_REMOTE_MACHINE=raspberrypi \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=medusa.local \
       ./ScriptsLib/RunRemoteRegressionTests

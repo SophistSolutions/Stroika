@@ -8,10 +8,6 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-#if 0
-#endif
-
-
 ### 3.0d22x {2025-12-25x} {[diff](../../compare/3.0d21...3.0d22)}
 
 #### TLDR
@@ -26,46 +22,41 @@ especially those they need to be aware of when upgrading.
 #### Change Details
 
 - Documentation
+  - Minor cleanups
+  - docs surrounding hostnames and DNS BWAs now somewhat fixed now that I have router with 1/2 decent DNS (so .local solvable)
 - Build System
   - Docker
     - Windows
       - VS 17.14.23
       - Windows containers now use ltsc2025 (requres runs_on: windows-2025 in github actions)
+      - debug choco install issue in docker windows under github actions
+      - dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container (for github actions build)
+        - github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
     - Ubuntu
       - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
       - Added apt-get clean lines to most RUN DockerFile lines to hopefully save up space on unix docker container images
-
   - Github Actions
     - build-N-test-Matrix.json, build-N-test.yml
       - Linux
         - debug/workaround running out of space on linux github actions
         - added extra_config_args for github actions support - but didn't help (due to how file storage with layers/dockerfiles works).
         - Currently no more need for so many --boost no (etc) no workarounds cuz found better space saving techniques
-        - so instead added new extra_apt_add_packages github action support
         - instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
+        - and new mechanism extra_apt_add_packages, extra_apt_remove_packages (to workaround space issues)
+        - fixed bug in copy build artifcats for samples in github linux action
       - MacOS
         - lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
-      - Windows
-      - All/Misc
-          (MORE CLEANUP THESE COMMENTS)
-        - cleanups to log/sample capturing on linux github actions (testing)
-        - Cleanup comments
-        - capture more log data to debug failures to build
-          - and new mechanism extra_apt_add_packages, extra_apt_remove_packages
         - add xode 16.4 testing
+      - Windows
         - use windows-2025 for server to run containers
+        - use wmic to print disk usage on docker container on github actions
+      - All/Misc
+        - Cleanup comments
+        - cleanups to log/sample capturing on linux github actions (testing)
         - lots of disk space and output cleanups
-        - fixed bug in copy build artifcats for samples in github linux action
-        - debug github action script to remove extra packages to address space issue
-
     - build-Dev-Docker-Containers.yml
-      -  debug why failed disk space issue installing msvc in docker (on github actions)
+      - debug why failed disk space issue installing msvc in docker (on github actions)
       - and windows docker container creator
-   - use wmic to print disk usage on docker container on github actions
-   - debug choco install issue in docker windows under github actions
-   - dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container (for github actions build)
-     - github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
-
   - Makefiles
     - Top Level Makefile
       - top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
@@ -75,7 +66,6 @@ especially those they need to be aware of when upgrading.
   - Workspace files
     - VSCode
       - added a few folders to files.exclude list C_Cpp.files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos
-
 - Library
   - Misc
     - use Memory::UseBlockAllocationIfAppropriate<> in a few places more
@@ -117,7 +107,7 @@ especially those they need to be aware of when upgrading.
 - ThirdPartyComponents
   - boost
     - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
-    - Version 1.90
+    - 1.90
   - curl 
     - 8.17.0
     - --without-zstd no longer needed (so uses zstd)
@@ -137,13 +127,44 @@ especially those they need to be aware of when upgrading.
   - ZStd
     - newly supported building ThirdPartyComponents (static lib)
     - fix a few issues with integrating with other libraries (like curl, mongo-cxx)
-    - version 1.5.7
+    - 1.5.7
     - zstd makefile - fix warning lto-wrapper: warning: Extra option to '-Xassembler...
 - Tests
   - Regression Tests
-    -  fix regtest to not fail just cuz missing en/us locale
+    - fix regtest to not fail just cuz missing en/us locale
     - Fixed issue that performance dumps logging were capturing the wrong data/file for the last couple releases
 - Tools
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14. 15 }
+  - Clang++ { unix: 15, 16, 17, 18, 19, 20; XCode: 15.2, 15.4, 16.2, 16.4 }
+  - MSVC: { 17.14.23 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 25H2
+    - mcr.microsoft.com/windows/servercore:ltsc2025 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20250622.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 26.2 - arm64/m1 chip
+    - 14.3, 14.4, 15.0 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 25.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+
 
 ----------------------------
 
