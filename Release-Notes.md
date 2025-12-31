@@ -9,35 +9,6 @@ especially those they need to be aware of when upgrading.
 
 
 #if 0
-
-
-- configure
-  - Print more comments (xcode versions) to config files in configure macos
-
-- Compiler Bug Defines
- - fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
-  - fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
-  - apple bug defines for clang++ 17
-
--  debug why failed disk space issue installing msvc in docker (on github actions)
-   - use wmic to print disk usage on docker container on github actions
-   - debug choco install issue in docker windows under github actions
-   - dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container (for github actions build)
-     - github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
-  - VS_17_14_21 in docker file
-
-
-    debug github action script to remove extra packages to address space issue
-
-    Added apt-get clean lines to most RUN DockerFile lines to hopefully save up space on unix docker container images
-
-    debug github action script to remove extra packages to address space issue
-    added extra_config_args for github actions support - but didn't help (due to how file storage with layers/dockerfiles works).
-    - so instead added new extra_apt_add_packages github action support
-
- fixed bug in copy build sartifcats for samples in github linux action
-    cleanups to log/sample capturing on linux github actions (testing)
-
 #endif
 
 
@@ -62,24 +33,45 @@ especially those they need to be aware of when upgrading.
       - Windows containers now use ltsc2025 (requres runs_on: windows-2025 in github actions)
     - Ubuntu
       - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
+      - Added apt-get clean lines to most RUN DockerFile lines to hopefully save up space on unix docker container images
 
   - Github Actions
-    - debug/workaround running out of space on linux github actions
-    - capture more log data to debug failure to build on github actions macos14
-    - Fixed .github/workflows/build-Dev-Docker-Containers.yml Windows-VS2k22/Dockerfile
     - build-N-test-Matrix.json, build-N-test.yml
-      - Cleanup comments
-      - Currently no more need for so many --boost(etc) no workarounds - 
-        instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
-        - and new mechanism extra_apt_add_packages, extra_apt_remove_packages
-      - lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
-      - add xode 16.4 testing
-      - use windows-2025 for server to run containers
-      - lots of disk space and output cleanups
+      - Linux
+        - debug/workaround running out of space on linux github actions
+        - added extra_config_args for github actions support - but didn't help (due to how file storage with layers/dockerfiles works).
+        - Currently no more need for so many --boost no (etc) no workarounds cuz found better space saving techniques
+        - so instead added new extra_apt_add_packages github action support
+        - instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
+      - MacOS
+        - lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
+      - Windows
+      - All/Misc
+          (MORE CLEANUP THESE COMMENTS)
+        - cleanups to log/sample capturing on linux github actions (testing)
+        - Cleanup comments
+        - capture more log data to debug failures to build
+          - and new mechanism extra_apt_add_packages, extra_apt_remove_packages
+        - add xode 16.4 testing
+        - use windows-2025 for server to run containers
+        - lots of disk space and output cleanups
+        - fixed bug in copy build artifcats for samples in github linux action
+        - debug github action script to remove extra packages to address space issue
+
+    - build-Dev-Docker-Containers.yml
+      -  debug why failed disk space issue installing msvc in docker (on github actions)
+      - and windows docker container creator
+   - use wmic to print disk usage on docker container on github actions
+   - debug choco install issue in docker windows under github actions
+   - dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container (for github actions build)
+     - github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
+
   - Makefiles
     - Top Level Makefile
       - top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
   - Scripts
+    - configure
+      - Print more comments (xcode versions) to config files in configure macos
   - Workspace files
     - VSCode
       - added a few folders to files.exclude list C_Cpp.files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos
@@ -91,6 +83,10 @@ especially those they need to be aware of when upgrading.
     - used final in a bunch of places it should be used
   - Foundation
     - Common
+      - Compiler Bug Defines
+        - fixed compiler bug defines for apple __clang_major__ 17 (xcode 16.4)
+        - fixed qCompilerAndStdLib_template_second_concept_Buggy define for xcode 16.4
+        - apple bug defines for clang++ 17
       - used (new concept) Common::1 in InheritAndUseBlockAllocationIfAppropriate
       - Configuration
         - GetSystemConfiguration_ComputerNames () now returns ComputerNameDnsHostname for windows
