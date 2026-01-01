@@ -32,6 +32,7 @@ especially those they need to be aware of when upgrading.
       - debug choco install issue in docker windows under github actions
       - dont insist on using old windows (in case that mattered to symbolic link issue) - on docker container (for github actions build)
         - github action use windows-2025 runner for more up to date docker container due to Windows version 10.0.26100-based image is incompatible with a 10.0.20348 host error message
+      - ENV MSYS=winsymlinks:lnk
     - Ubuntu
       - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
       - Added apt-get clean lines to most RUN DockerFile lines to hopefully save up space on unix docker container images
