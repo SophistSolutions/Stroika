@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #if !qStroika_Foundation_Common_Property_EmbedThisInProperties
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"

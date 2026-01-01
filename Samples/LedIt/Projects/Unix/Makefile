@@ -1,4 +1,4 @@
-#	Copyright(c) Sophist Solutions, Inc. 1994-2001.  All rights reserved
+#	Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
 #
 #	$Header: /cygdrive/k/CVSRoot/LedIt/Makefile,v 1.13 2003/06/24 14:09:28 lewis Exp $
 #

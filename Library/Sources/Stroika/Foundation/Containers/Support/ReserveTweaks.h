@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_Support_ReserveTweaks_h_
 #define _Stroika_Foundation_Containers_Support_ReserveTweaks_h_ 1

@@ -22,8 +22,9 @@ especially those they need to be aware of when upgrading.
 #### Change Details
 
 - Documentation
-  - Minor cleanups
   - docs surrounding hostnames and DNS BWAs now somewhat fixed now that I have router with 1/2 decent DNS (so .local solvable)
+  - Minor cleanups
+  - Updated copyright
 - Build System
   - Docker
     - Windows

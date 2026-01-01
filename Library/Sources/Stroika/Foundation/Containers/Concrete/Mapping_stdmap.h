@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2025.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 
 // Moved #includes outside #include guard to avoid deadly embrace with SortedMapping/Mapping/SortedMapping_std

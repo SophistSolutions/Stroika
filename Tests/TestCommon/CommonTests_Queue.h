@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_
 #define _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_ 1
