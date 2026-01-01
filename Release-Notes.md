@@ -39,10 +39,10 @@ especially those they need to be aware of when upgrading.
     - build-N-test-Matrix.json, build-N-test.yml
       - Linux
         - debug/workaround running out of space on linux github actions
-        - added extra_config_args for github actions support - but didn't help (due to how file storage with layers/dockerfiles works).
-        - Currently no more need for so many --boost no (etc) no workarounds cuz found better space saving techniques
-        - instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
-        - and new mechanism extra_apt_add_packages, extra_apt_remove_packages (to workaround space issues)
+          - added extra_config_args for github actions support - but didn't help (due to how file storage with layers/dockerfiles works).
+          - Currently no more need for so many --boost no (etc) no workarounds cuz found better space saving techniques
+          - instead just use -append-CXXFLAGS -Os --append-CFLAGS -Os --debug-symbols false
+          - and new mechanism extra_apt_add_packages, extra_apt_remove_packages (to workaround space issues)
         - fixed bug in copy build artifcats for samples in github linux action
       - MacOS
         - lose github action support for macos 13 since github appears to be deprecating it (brownout for now)
