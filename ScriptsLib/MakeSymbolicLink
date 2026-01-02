@@ -1,4 +1,13 @@
 #!/bin/bash
+#
+#   Maps to ln -s, but to work on Windoze - must do some environment variable magic to
+#   make it really work.
+#
+# EXAMPLES:
+#       ${StroikaRoot}ScriptsLib/MakeSymbolicLink ../../ThirdPartyComponents/Stroika/StroikaRoot/Workspaces/VisualStudio.Net/Microsoft.Cpp.stroika.user.props
+#       ${StroikaRoot}ScriptsLib/MakeSymbolicLink "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+#
+
 TARGET=$1
 ALIASPATH=$2
 
