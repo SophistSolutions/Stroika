@@ -40,9 +40,12 @@ def cmdLineRespectingSplit_(cmdLine: str, win: bool = True) -> list:
     import shlex
     r = shlex.split(cmdLine, posix=True)
     if win:
+        # Convert -LTCG to /LTCG, because that linker option gets mis-interpretted/mapped to --libpath:TCG
+        r = ["/LTCG" if arg=="-LTCG" else arg for arg in r]
+        # Main point here - is to use UNIX style -L instead of -LIBPATH:
         r = [arg.replace('-LIBPATH:', '-L') for arg in r]
-    # convert lib lines like -Lc:/program files/ convert to -L"c:/program files/"
-    r = [f'-L"{arg[2:]}"' if arg.startswith('-L') and " " in arg else arg for arg in r]
+        # convert lib lines like -Lc:/program files/ convert to -L"c:/program files/"
+        r = [f'-L"{arg[2:]}"' if arg.startswith('-L') and " " in arg else arg for arg in r]
     return r
 
 def getVersion_() -> str:
