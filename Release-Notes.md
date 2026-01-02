@@ -65,6 +65,8 @@ especially those they need to be aware of when upgrading.
   - Scripts
     - configure
       - Print more comments (xcode versions) to config files in configure macos
+    - CreatePackageConfigFiles
+      - fixed mapping of -LTCG on windows - -L lines with spaces mapping to aggressive (caused this flag to get lost sometimes)
   - Workspace files
     - VSCode
       - added a few folders to files.exclude list C_Cpp.files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos

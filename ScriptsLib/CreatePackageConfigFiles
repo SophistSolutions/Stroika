@@ -7,9 +7,10 @@
 #
 # Read Configuration.xml file and produce three .pc files (windows-sdk/lib - unixsdk?) - stroika-foundation, and stroika-frameworks
 #
-
-### EARLY DRAFT - NOT READY FOR USE
+# Example Usage:
+#       ./ScriptsLib/CreatePackageConfigFiles --configuration Release
 #
+
 
 import os
 import sys
@@ -40,7 +41,8 @@ def cmdLineRespectingSplit_(cmdLine: str, win: bool = True) -> list:
     r = shlex.split(cmdLine, posix=True)
     if win:
         r = [arg.replace('-LIBPATH:', '-L') for arg in r]
-    r = [f'-L"{arg[2:]}"' if arg.startswith('-L') else arg for arg in r]  # Convert backslashes to forward slashes for consistency
+    # convert lib lines like -Lc:/program files/ convert to -L"c:/program files/"
+    r = [f'-L"{arg[2:]}"' if arg.startswith('-L') and " " in arg else arg for arg in r]
     return r
 
 def getVersion_() -> str:
