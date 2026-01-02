@@ -1,5 +1,12 @@
 #!/bin/bash
-
+#   Print a progress line at a given indent level
+#
+#    PrintProgressLine {INDENTLEVEL} [-n]? STUFF-TO-ECHO-TO-STDOUT
+#
+# Example Usage:
+#		PrintProgressLine 2 hi mom
+#         PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
+#
 get_script_dir () {
      #https://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
      SOURCE="${BASH_SOURCE[0]}"
@@ -24,7 +31,7 @@ do
 		LEVEL=$arg
 	else
 		case "$arg" in
-		-n)    NFLAG=$arg
+		-n)    NFLAG="$arg"
 				;;
 		*)     if [ "$PRINT_STUFF_EXTRAS" = "" ] ; then PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS$arg" ; else PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS $arg"; fi
 				;;
