@@ -128,7 +128,7 @@ checkin from one spot.
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
-      RASPBERRYPI_REMOTE_MACHINE=raspberrypi \
+      RASPBERRYPI_REMOTE_MACHINE=raspberrypi.local \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
