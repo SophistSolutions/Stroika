@@ -107,7 +107,9 @@ ARG INSTALL_QUASAR=0
 SHELL ["powershell"]
 # It appears this installed nodejs 23.5 - which appears incompatible with quasar-vite 2.0 (recent)  - so
 # try installing nodejs 20 - from nodesource
-ARG MSYS_NODEJSURI='https://nodejs.org/dist/v20.9.0/node-v20.9.0-x64.msi'
+#ARG MSYS_NODEJSURI='https://nodejs.org/dist/v20.9.0/node-v20.9.0-x64.msi'
+# try more recent nodejs as node 20 not working with current build... --LGP 2026-01-02
+ARG MSYS_NODEJSURI='https://nodejs.org/dist/v24.12.0/node-v24.12.0-x64.msi'
 RUN IF ($env:INSTALL_QUASAR -eq 1) { \
         Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_NODEJSURI" -OutFile node.msi; \
         Start-Process msiexec.exe -Wait -ArgumentList '/i "node.msi" /L*V ".\node.msi.log" /quiet /norestart'; \
