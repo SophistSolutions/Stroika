@@ -431,7 +431,7 @@ jobs:
         run: |
           # TMPHACK TO TEST
           echo stroika-platform.pc
-          docker exec buildContainer cat Builds/${{ matrix.config_name }}/lib/pkgconfig/stroika-platform.pc
+          docker exec --workdir c:/Stroika buildContainer cat Builds/${{ matrix.config_name }}/lib/pkgconfig/stroika-platform.pc
           
           # Because of bind mount, no longer copy out of container, already built in outside filesystem
           # (except $TMPDIR: Just copy out from container the stuff in /tmp)
