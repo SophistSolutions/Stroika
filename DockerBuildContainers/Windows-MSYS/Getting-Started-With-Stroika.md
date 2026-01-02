@@ -20,10 +20,8 @@ make default-configurations
 make CONFIGURATION=Debug all -j8
 ~~~
 
-## Make all configurations
+## Build all configurations
 
 ~~~
 make all -j8
 ~~~
-
-for now, not enuf disk space on windows docker containers, and broken resetting size
