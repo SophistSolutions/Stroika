@@ -10,7 +10,7 @@ import { IAPIEndpoint, IWebServerStats, IComponent, IDatabase } from "src/models
 import { useMainAppStateStore } from "src/stores/MainApp-State-store";
 import { PluralizeNoun } from "src/utils/Linguistics";
 import { useConfigurationStore } from "stores/Configuration-Store";
-import { gRuntimeConfiguration } from 'boot/configuration';
+import { gRuntimeConfiguration } from "boot/configuration";
 let polling: undefined | NodeJS.Timeout;
 const $q = useQuasar();
 
@@ -27,7 +27,7 @@ const kRefreshFrequencyInSeconds_: number = 10;
 
 const store = useMainAppStateStore();
 
-const { about } = storeToRefs(store)
+const { about } = storeToRefs(store);
 const aboutData = about;
 
 const configurationStore = useConfigurationStore();
@@ -68,10 +68,18 @@ function wsAPIMsg(info: IAPIEndpoint, showShort: boolean): string {
 }
 function webServerMsg_(info: IWebServerStats): string {
   let msg = "";
-  msg += `threadPool: {size: ${info.threadPool.threads}, queued: ${info.threadPool.tasksStillQueued}, aveRunTime: ${prettyPrintMSTime(info.threadPool.averageTaskRunTime)}}\n`
-  msg += `connections: {open: ${info.connections.open}, active: ${info.connections.active}, openLifetime: ${prettyPrintMSTime(info.connections.openConnectionsLifetime.median)}, openRequestsLifetime: ${prettyPrintMSTime(info.connections.openConnectionsRequests.median)}, activeRequestsLifetime: ${prettyPrintMSTime(info.connections.activeConnectionsRequests.median)}}`
+  msg += `threadPool: {size: ${info.threadPool.threads}, queued: ${info.threadPool.tasksStillQueued
+    }, aveRunTime: ${prettyPrintMSTime(info.threadPool.averageTaskRunTime)}}\n`;
+  msg += `connections: {open: ${info.connections.open}, active: ${info.connections.active
+    }, openLifetime: ${prettyPrintMSTime(
+      info.connections.openConnectionsLifetime.median
+    )}, openRequestsLifetime: ${prettyPrintMSTime(
+      info.connections.openConnectionsRequests.median
+    )}, activeRequestsLifetime: ${prettyPrintMSTime(
+      info.connections.activeConnectionsRequests.median
+    )}}`;
   if (info.connections.piningForTheFjords != 0) {
-    msg += `piningForTheFjords: ${info.connections.piningForTheFjords},`
+    msg += `piningForTheFjords: ${info.connections.piningForTheFjords},`;
   }
   return msg;
 }
@@ -125,10 +133,15 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
       <q-card class="pageCard col-11">
         <q-card-section style="margin-left: 2em">
           <div class="row">
-            Connected to server: <b>{{gRuntimeConfiguration.API_ROOT}}</b>
+            Web Services URL: <b>{{ gRuntimeConfiguration.API_ROOT }}</b>
+          </div>
+          <div class="row" style="color: red; margin-left: 2em" v-if="!aboutData">
+            The web gui client is unable to communicate with the application web services.
           </div>
           <div class="row">
-            API Server Docs: <a :href="gRuntimeConfiguration.API_ROOT + '/api'" target="_new">{{gRuntimeConfiguration.API_ROOT}}/api</a>
+            API (Web Service) Server Docs:
+            <a :href="gRuntimeConfiguration.API_ROOT + '/api'" target="_new">{{ gRuntimeConfiguration.API_ROOT
+              }}/api</a>
           </div>
         </q-card-section>
       </q-card>
@@ -150,8 +163,8 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
                 <div class="col-3">Components</div>
                 <div class="col">
                   <div class="row" v-for="c in aboutData.serverInfo.componentVersions.concat(
-            kUIComponents
-          )" :key="c.name">
+                    kUIComponents
+                  )" :key="c.name">
                     <div class="col-9">
                       <a :href="c.URL" target="_new">{{ c.name }}</a>
                     </div>
@@ -166,23 +179,24 @@ Units 1=1 logical core">
                 </div>
                 <div class="col">
                   {{
-            aboutData.serverInfo.currentProcess.averageCPUTimeUsed?.toFixed(2) ||
-            "?"
-          }}
+                    aboutData.serverInfo.currentProcess.averageCPUTimeUsed?.toFixed(2) ||
+                    "?"
+                  }}
                   CPUs
                 </div>
               </div>
               <div class="row" v-if="aboutData" title="Combined I/O rate (network+disk)">
                 <div class="col-3 truncateWithElipsis">IO Rate (read;write)</div>
-                <div class="col-4" v-if="aboutData.serverInfo.currentProcess.combinedIOReadRate != undefined &&
-            aboutData.serverInfo.currentProcess.combinedIOWriteRate != undefined
-            ">
+                <div class="col-4" v-if="
+                  aboutData.serverInfo.currentProcess.combinedIOReadRate != undefined &&
+                  aboutData.serverInfo.currentProcess.combinedIOWriteRate != undefined
+                ">
                   {{
-            prettyBytes(aboutData.serverInfo.currentProcess.combinedIOReadRate)
-          }}/sec ;
+                    prettyBytes(aboutData.serverInfo.currentProcess.combinedIOReadRate)
+                  }}/sec ;
                   {{
-              prettyBytes(aboutData.serverInfo.currentProcess.combinedIOWriteRate)
-            }}/sec
+                    prettyBytes(aboutData.serverInfo.currentProcess.combinedIOWriteRate)
+                  }}/sec
                 </div>
               </div>
               <div class="row" v-if="aboutData">
@@ -191,10 +205,10 @@ Units 1=1 logical core">
                 </div>
                 <div class="col-4" v-if="aboutData.serverInfo.currentProcess.processUptime">
                   {{
-            moment
-              .duration(aboutData.serverInfo?.currentProcess?.processUptime)
-              .humanize()
-          }}
+                    moment
+                      .duration(aboutData.serverInfo?.currentProcess?.processUptime)
+                      .humanize()
+                  }}
                 </div>
               </div>
               <div class="row" v-if="aboutData">
@@ -203,10 +217,10 @@ Units 1=1 logical core">
                 </div>
                 <div class="col-4" v-if="aboutData.serverInfo.currentProcess.workingOrResidentSetSize">
                   {{
-            prettyBytes(
-              aboutData.serverInfo.currentProcess.workingOrResidentSetSize
-            )
-          }}
+                    prettyBytes(
+                      aboutData.serverInfo.currentProcess.workingOrResidentSetSize
+                    )
+                  }}
                 </div>
               </div>
               <div class="row" v-if="aboutData">
@@ -225,7 +239,7 @@ Units 1=1 logical core">
                   WebServer
                 </div>
                 <div class="col" v-if="aboutData.serverInfo.webServer"
-                  :title="webServerMsg_(aboutData.serverInfo.webServer, )">
+                  :title="webServerMsg_(aboutData.serverInfo.webServer)">
                   {{ webServerMsg_(aboutData.serverInfo.webServer) }}
                 </div>
               </div>
@@ -255,19 +269,19 @@ Units 1=1 logical core">
                   <div class="col-3">OS</div>
                   <div class="col">
                     {{
-            aboutData.serverInfo.currentMachine.operatingSystem
-              .fullVersionedName
-          }}
+                      aboutData.serverInfo.currentMachine.operatingSystem
+                        .fullVersionedName
+                    }}
                   </div>
                 </div>
                 <div class="row" title="How long has the machine (hosting the service) been running">
                   <div class="col-3">Uptime</div>
                   <div class="col">
                     {{
-              moment
-                .duration(aboutData.serverInfo.currentMachine.machineUptime)
-                .humanize()
-            }}
+                      moment
+                        .duration(aboutData.serverInfo.currentMachine.machineUptime)
+                        .humanize()
+                    }}
                   </div>
                 </div>
                 <div class="row"
@@ -275,8 +289,8 @@ Units 1=1 logical core">
                   <div class="col-3">Run-Q</div>
                   <div class="col" v-if="aboutData.serverInfo.currentMachine.runQLength != null">
                     {{
-            aboutData.serverInfo.currentMachine.runQLength?.toFixed(2) || "?"
-          }}
+                      aboutData.serverInfo.currentMachine.runQLength?.toFixed(2) || "?"
+                    }}
                     threads
                   </div>
                 </div>
@@ -285,7 +299,7 @@ Units 1=1 logical core">
                   <div class="col-3">CPU-Usage</div>
                   <div class="col" v-if="aboutData.serverInfo.currentMachine.totalCPUUsage != null">
                     {{
-                    aboutData.serverInfo.currentMachine.totalCPUUsage?.toFixed(2) || "?"
+                      aboutData.serverInfo.currentMachine.totalCPUUsage?.toFixed(2) || "?"
                     }}
                     CPUs
                   </div>
