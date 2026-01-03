@@ -27,6 +27,17 @@ This sample guides you to breakup your web-service application into serveral par
   - `curl  http://localhost:80/api` 
   
 
+
+## Web Services
+
+- Access webservices via (by default)
+
+~~~
+curl -v http://localhost/api
+~~~
+
+
+
 ## OAuth
 
 ### Tested With
