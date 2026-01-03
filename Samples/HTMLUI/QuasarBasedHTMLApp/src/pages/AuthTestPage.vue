@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineComponent, computed, watch, ref, Ref, onMounted, getCurrentInstance, onUnmounted } from "vue";
+import { defineComponent, computed, toRaw, watch, ref, Ref, onMounted, getCurrentInstance, onUnmounted } from "vue";
 import { QSelectOption } from 'quasar';
 
 import { useRouter, useRoute } from "vue-router";
@@ -38,7 +38,7 @@ watch(availableProviders, () => {
 let iterervalTimer: NodeJS.Timeout | undefined = undefined;
 
 onMounted(() => {
-    console.log("in /user page on-mounted auth=", auth);
+    console.log("in authtest page on-mounted auth=", toRaw(auth));
 
     recomputeExpiresIn_()
     iterervalTimer = setInterval(function () {
@@ -47,7 +47,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    console.log("in /user page on-mounted auth=", auth);
+    console.log("in authtest page on-Unmounted, iterervalTimer=", iterervalTimer);
     if (iterervalTimer) {
         clearInterval(iterervalTimer);
     }
