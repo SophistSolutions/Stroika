@@ -108,6 +108,11 @@ especially those they need to be aware of when upgrading.
   - Frameworks
     - WebServer
       - Added ContentEncoding::kZStd support to webserver
+- Samples
+  - HTMLUI
+    - Documentation improvements
+    - Makefile echo improvements
+    - ?? issue with oauth ***debugging***
 - ThirdPartyComponents
   - boost
     - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
