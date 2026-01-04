@@ -174,17 +174,17 @@ namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleStartStopServerTest)
     {
         TraceContextBumper ctx{"SimpleStartStopServerTest"};
-        const auto   portNumber = 8082;
-        const auto   quitAfter  = 1s;
-        MyWebServer_ myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
-        WaitableEvent{}.WaitQuietly (quitAfter);       // leave it running for a bit
+        const auto         portNumber = 8082;
+        const auto         quitAfter  = 1s;
+        MyWebServer_       myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
+        WaitableEvent{}.WaitQuietly (quitAfter);             // leave it running for a bit
     }
 }
 
 namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleCurlTestTalk2Server)
     {
-        TraceContextBumper ctx{"SimpleCurlTestTalk2Server"};
+        TraceContextBumper          ctx{"SimpleCurlTestTalk2Server"};
         const IO::Network::PortType portNumber = 8082;
         MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
         try {
@@ -206,7 +206,7 @@ namespace {
 namespace {
     GTEST_TEST (Frameworks_WebServer, SimpleCurlTestWithChunkedEncodingResponse)
     {
-        TraceContextBumper ctx{"SimpleCurlTestWithChunkedEncodingResponse"};
+        TraceContextBumper          ctx{"SimpleCurlTestWithChunkedEncodingResponse"};
         const IO::Network::PortType portNumber = 8082;
         MyWebServer_ myWebServer{portNumber, HTTP::TransferEncoding::kChunked}; // listen and dispatch while this object exists
         try {
@@ -230,7 +230,7 @@ namespace {
 namespace {
     GTEST_TEST (Frameworks_WebServer, TestPOST)
     {
-        TraceContextBumper ctx{"TestPOST"};
+        TraceContextBumper          ctx{"TestPOST"};
         const IO::Network::PortType portNumber = 8082;
         MyWebServer_                myWebServer{portNumber, nullopt}; // listen and dispatch while this object exists
         try {
