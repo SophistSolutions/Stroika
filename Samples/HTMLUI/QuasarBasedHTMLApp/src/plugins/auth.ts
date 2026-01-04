@@ -56,7 +56,10 @@ export interface IUserInfo {
 }
 
 const kStoreExtraStuffInSessionForSpeed_ = false;
+
+// If things are failing, consider turning this on to see better why...
 const kDebugLogging_ = false;
+
 const kSupportAuthJSBasedRevocation_ = false;
 
 // Generating refresh tokens works better with this, but I've noticed gmail becomes goofy after you

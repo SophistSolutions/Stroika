@@ -38,7 +38,7 @@ watch(availableProviders, () => {
 let iterervalTimer: NodeJS.Timeout | undefined = undefined;
 
 onMounted(() => {
-    console.log("in authtest page on-mounted auth=", toRaw(auth));
+    console.log("AuthTest page, on-mounted Event: auth=", toRaw(auth));
 
     recomputeExpiresIn_()
     iterervalTimer = setInterval(function () {
@@ -47,7 +47,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    console.log("in authtest page on-Unmounted, iterervalTimer=", iterervalTimer);
+    console.log("AuthTest page, on-unmounted Event, iterervalTimer=", iterervalTimer);
     if (iterervalTimer) {
         clearInterval(iterervalTimer);
     }

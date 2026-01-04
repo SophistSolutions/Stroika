@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, toRaw } from "vue";
 
 import { getCurrentInstance } from "vue";
 import { IAuthService } from "../plugins/auth";
@@ -7,8 +7,9 @@ import { IAuthService } from "../plugins/auth";
 let showPage = ref(false);
 
 onMounted(async () => {
-  const auth: IAuthService = getCurrentInstance()?.appContext.config.globalProperties.$auth;
-  console.log("In RedirectPage onMounted Event: auth=", auth);
+  const auth: IAuthService = getCurrentInstance()?.appContext.config.globalProperties
+    .$auth;
+  console.debug("In OAuth RedirectPage, onMounted Event: auth=", toRaw(auth));
   await auth.handleRedirectCallback();
   setTimeout(() => {
     showPage.value = true;

@@ -39,6 +39,9 @@ function throwIfError_(response: Response): Response {
 function buildDefaultFetchOptions_(args: { apiServer?: string, auth?: IAuthService }): RequestInit {
   const options = { ...kFetchOptions_, }
   if (args?.auth?.authorizationHeader?.value) {
+    if (!options.headers) {
+      options.headers={};
+    }
     options.headers['Authorization'] = args.auth.authorizationHeader.value;
   }
   return options;
