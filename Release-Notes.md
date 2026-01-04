@@ -112,7 +112,9 @@ especially those they need to be aware of when upgrading.
   - HTMLUI
     - Documentation improvements
     - Makefile echo improvements
-    - ?? issue with oauth ***debugging***
+    - Fixed a few HTML/GUI regressions (probably an old refactoring not well enuf tested) 
+      - so now HTMLUI sample AUTH stuff seems to work properly again
+      - also better reporting/docs
 - ThirdPartyComponents
   - boost
     - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
