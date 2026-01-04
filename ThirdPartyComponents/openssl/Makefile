@@ -79,6 +79,20 @@ endif
 endif
 
 
+#
+# Silence
+#			C:\Sandbox\Stroika\DevRoot\IntermediateFiles\Release-x86\ThirdPartyComponents\openssl\ssl\statem\statem_srvr.c(4437) : warning C4703: potentially uninitialized local pointer variable 'respSerial' used
+#
+# And weirdly, with link time codegen, these warnings come out at link time, not when I compile this!
+# No apparent options to silence this stuff from the linker, but adding it to the compilation step here
+# appears to be preserved with the obj file, and used in link time codegen in the linker
+#
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq (-LTCG,$(findstring -LTCG,$(Platform_LDFLAGS)))
+CFLAGS	+= -wd4703
+endif
+endif
+
 
 CONFIG_ARGS+=	-no-shared
 ifeq (purify,$(findstring purify,$(CONFIGURED_EXTRA_ARGS)))
