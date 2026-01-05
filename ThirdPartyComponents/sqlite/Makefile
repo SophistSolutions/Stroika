@@ -126,7 +126,7 @@ endif
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "sqlite ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` "... "
 	@mkdir -p $@
 	@unzip -q $(ZIPPEDFILE) -d $@
 	@#intentionally make mv/rm code version agnostic due to issue with differently formatted zip files in different mirrors/repositories

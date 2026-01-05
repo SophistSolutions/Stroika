@@ -116,7 +116,7 @@ endif
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine  $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "curl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine  $$(($(MAKE_INDENT_LEVEL)+1)) "curl ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` "... "
 	@mkdir -p ORIGS && rm -rf $@ && mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1

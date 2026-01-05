@@ -92,7 +92,7 @@ $(ZIPPEDFILE):
 	
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "boost ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "boost ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1

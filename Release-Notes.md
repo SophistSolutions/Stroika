@@ -62,6 +62,7 @@ especially those they need to be aware of when upgrading.
       - debug why failed disk space issue installing msvc in docker (on github actions)
       - and windows docker container creator
   - Makefiles
+    - Improve use of SubstituteBackVariables
     - Top Level Makefile
       - top level Stroika makefile now defaults QUICK_BUILD=1, and fixed bug with QUICK_BUILD (name change to stroika libraries)
   - Scripts

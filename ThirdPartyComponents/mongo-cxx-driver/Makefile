@@ -293,7 +293,7 @@ ${ZIPPED_SOURCES_FILE_}:
 
 
 ORIGs CURRENT:	${ZIPPED_SOURCES_FILE_}
-	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) `${StroikaRoot}ScriptsLib/SubstituteBackVariables "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to $@"` "... "
+	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "mongo-cxx-driver ${MONGOCXXDRIRVER_VERSION_} - Extracting ${ZIPPED_SOURCES_FILE_} to" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf ${ZIPPED_SOURCES_FILE_} -C $@ --strip-components 1

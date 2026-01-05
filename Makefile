@@ -456,7 +456,7 @@ IntermediateFiles/$(CONFIGURATION)/Configuration.mk:	ConfigurationFiles/$(CONFIG
 	@$(MAKE) --no-print-directory --silent $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h
 
 $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h:	 STROIKA_VERSION
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"$(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h\" ... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) -n "Writing \"$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h)\" ... "
 	@mkdir -p $(StroikaPlatformTargetBuildDir)include/Stroika/
 	@$(StroikaRoot)ScriptsLib/MakeVersionFile STROIKA_VERSION $(StroikaPlatformTargetBuildDir)include/Stroika/Current-Version.h StroikaLibVersion
 	@echo "done"

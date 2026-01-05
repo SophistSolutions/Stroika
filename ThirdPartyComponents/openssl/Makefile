@@ -456,7 +456,7 @@ endif
 
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "openssl ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "openssl ${VERSION} - Extracting $(ZIPPEDFILE) to " `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1

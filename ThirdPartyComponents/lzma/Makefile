@@ -208,7 +208,7 @@ endif
 # .NOTPARALLEL:
 
 ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "lzma ${VERSION} - Extracting $(ZIPPEDFILE) to" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@` "... "
 	@(7za x -o$@ $(ZIPPEDFILE) > /dev/null 2> /dev/null) || (echo "WARNING: FAILURE in 7z rare, and testing - try again..."; rm -rf $@ ; 7za x -o$@ $(ZIPPEDFILE) > /dev/null)
 	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_OLDMAKEBWA_)" ] ; then \
 		cp Subdir-Makefile $@/Makefile;\
