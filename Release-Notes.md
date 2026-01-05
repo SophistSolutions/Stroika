@@ -125,6 +125,7 @@ especially those they need to be aware of when upgrading.
     - Fixed a few HTML/GUI regressions (probably an old refactoring not well enuf tested) 
       - so now HTMLUI sample AUTH stuff seems to work properly again
       - also better reporting/docs
+    - tweak dependencies in QuasarBasedHTMLApp/package.json to workaround dependabot warnigns
 - ThirdPartyComponents
   - boost
     - 1.90
