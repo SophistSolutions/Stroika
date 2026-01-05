@@ -142,7 +142,7 @@ RPM_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 RPM_BUILD_OUT=$(ObjDir)RPM-Installer-Build-Output.txt
 $(TARGET_OUT_INSTALLER_RPM): $(BUILT_SERVICE_EXE) Makefile
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building RPM installer: "
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(RPM_WORKDIR)` "; log:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(RPM_BUILD_OUT)` "..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(RPM_WORKDIR)`"; log:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(RPM_BUILD_OUT)` "..."
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-rpm without a configuration argument)
 endif
