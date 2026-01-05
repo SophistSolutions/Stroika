@@ -98,7 +98,7 @@ DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build-Output.txt
 $(TARGET_OUT_INSTALLER_DEB): $(BUILT_SERVICE_EXE) Makefile
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Building DEB installer: "
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(DEB_WORKDIR)` "; log:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(DEB_BUILD_OUT)`
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "temp files:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(DEB_WORKDIR)`"; log:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(DEB_BUILD_OUT)`
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-deb without a configuration argument)
 endif
