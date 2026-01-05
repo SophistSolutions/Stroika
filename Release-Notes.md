@@ -8,7 +8,7 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d22x {2025-12-25x} {[diff](../../compare/3.0d21...3.0d22)}
+### 3.0d22 {2026-01-05} {[diff](../../compare/3.0d21...3.0d22)}
 
 #### TLDR
 
@@ -16,6 +16,8 @@ especially those they need to be aware of when upgrading.
 - Support ZStd (built in ThirdPartyComponents, and streams library support/integration)
 - Fixed PerformanceDump.txt generation/scripting regression
 - Fixed GetSystemConfiguration_ComputerNames (FromSDKString issue)
+- Fixed Samples/HTMLUI Auth gui code
+- github actions now use macos 14,15 instead of macos 13
 
 #### Upgrade Notes (3.0d21 to 3.0d22)
 
@@ -67,6 +69,8 @@ especially those they need to be aware of when upgrading.
       - Print more comments (xcode versions) to config files in configure macos
     - CreatePackageConfigFiles
       - fixed mapping of -LTCG on windows - -L lines with spaces mapping to aggressive (caused this flag to get lost sometimes)
+    - FormatCode
+      - EXCLUDES node_modules
   - Workspace files
     - VSCode
       - added a few folders to files.exclude list C_Cpp.files.exclude list in Stroika.code-workspace folder to TRY (failed) to speed up vscode on macos
@@ -117,17 +121,17 @@ especially those they need to be aware of when upgrading.
       - also better reporting/docs
 - ThirdPartyComponents
   - boost
-    - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
     - 1.90
+    - cleanups to boost.pc and PRODUCED_OUTPUT_ARTIFACTS in boost makefile
   - curl 
     - 8.17.0
     - --without-zstd no longer needed (so uses zstd)
   - libxml2
-   - 2.15.1
+    - 2.15.1
   - mongo-cxx-driver
+    - 4.1.4 (to avoid macos issue with cmake version)
     - mongo-cxx-driver fixed support for zstd (still must report to mongodb folks the issue)
         fixed mongo-cxx-driver makefile for build with no ssl
-    - use MONGOCXXDRIVER 4.1.4 to avoid macos issue with cmake version
   - openssl
     - 3.6.0
   - sqlite
@@ -136,9 +140,9 @@ especially those they need to be aware of when upgrading.
     - 5.42.0.1
     - re-ordering FETCHURLS for strawberry-perl generates fewer warnings
   - ZStd
+    - 1.5.7
     - newly supported building ThirdPartyComponents (static lib)
     - fix a few issues with integrating with other libraries (like curl, mongo-cxx)
-    - 1.5.7
     - zstd makefile - fix warning lto-wrapper: warning: Extra option to '-Xassembler...
 - Tests
   - Regression Tests
@@ -161,7 +165,7 @@ especially those they need to be aware of when upgrading.
     - WSL v2
   - MacOS
     - 26.2 - arm64/m1 chip
-    - 14.3, 14.4, 15.0 on github actions
+    - 14.8.3, 15.7.2 on github actions
   - Linux: { Ubuntu: [22.04, 24.04, 25.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
 - Hardware Tested/Supported
   - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
@@ -175,7 +179,6 @@ especially those they need to be aware of when upgrading.
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
-
 
 ----------------------------
 

@@ -49,6 +49,9 @@ fi
 
 dirPattern=$1
 
+# EXCLUDES="-prune node_modules"
+EXCLUDES="-not -path \"./node_modules/*\""
+
 FORMATTER="${FORMATTER:-clang-format}"
 hash $FORMATTER 2> /dev/null
 if [ $? -ne 0 ]; then
@@ -59,5 +62,5 @@ fi
 
 for filePattern in "${@:2}"
 do
-    $FIND $dirPattern -name $filePattern -exec sh -c "$EXPAND --tabs=4 {} | $FORMATTER --assume-filename={} > {}.tmp && if cmp -s {} {}.tmp ; then rm -f {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
+    $FIND $dirPattern -name $filePattern $EXCLUDES -exec sh -c "$EXPAND --tabs=4 {} | $FORMATTER --assume-filename={} > {}.tmp && if cmp -s {} {}.tmp ; then rm -f {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
 done
