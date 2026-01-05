@@ -41,7 +41,7 @@ RUN apt-get -qq install -y g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf
 #     rm BuildGCC
 
 # Because Ubuntu2004 node version not working with vite (requires 14.x or later, but that has version of npm that didn't seem to work with builds)
-ARG NODE_MAJOR=20
+ARG NODE_MAJOR=24
 RUN apt-get install -y curl
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
 

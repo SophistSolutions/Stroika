@@ -39,6 +39,7 @@ especially those they need to be aware of when upgrading.
     - Ubuntu
       - more apt-get -qq clean -y; etc on layers to hopefully shrink layers a bit
       - Added apt-get clean lines to most RUN DockerFile lines to hopefully save up space on unix docker container images
+      - Ubuntu 22 and 24 regtest containers now use NodeJS 24 instead of 20.
   - Github Actions
     - build-N-test-Matrix.json, build-N-test.yml
       - Linux

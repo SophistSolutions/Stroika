@@ -41,7 +41,7 @@ RUN apt-get -qq install -y g++-13-arm-linux-gnueabihf g++-14-arm-linux-gnueabihf
     apt-get -qq clean -y;
 
 ## Because whatever comes with 24.04 stopped working with quasar 2024-12-18
-ARG NODE_MAJOR=20
+ARG NODE_MAJOR=24
 RUN apt-get install -y curl; \
     apt-get -qq clean -y;
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo -E bash -
