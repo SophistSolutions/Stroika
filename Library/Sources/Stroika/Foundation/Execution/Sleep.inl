@@ -25,6 +25,8 @@ namespace Stroika::Foundation::Execution {
      */
     inline void Sleep (Time::Duration seconds2Wait, Time::DurationSeconds* remainingInSleep)
     {
+        // NB: even though this is complicated, its inlined because most of it is if constexpr, and eliminated and inlining
+        // makes it easier for optimizer to eliminate unused portions
         Require (seconds2Wait >= 0.0s);
         RequireNotNull (remainingInSleep); // else call the one-argument overload
         Thread::CheckForInterruption ();
@@ -80,23 +82,23 @@ namespace Stroika::Foundation::Execution {
 #endif
         Ensure (*remainingInSleep <= seconds2Wait);
         Ensure (*remainingInSleep >= 0s);
+        // Consider if THIS is truly needed - doing BOTH at start and end appears excessive!
+        // But we don't want to wait at all if interrupted. And if we've waited a while and had low level sleep return because
+        // of a thread interruption, we want to translate that to an exception.
+        // So - maybe both really needed.
         Thread::CheckForInterruption ();
     }
 
     /*
      ********************************************************************************
-     *************************** Execution::SleepUntil ******************************
+     ***************************** Execution::Sleep *********************************
      ********************************************************************************
      */
-    inline void SleepUntil (Time::TimePointSeconds untilTickCount)
+    inline void Sleep (Time::Duration seconds2Wait)
     {
-        Time::DurationSeconds waitMoreSeconds = untilTickCount - Time::GetTickCount ();
-        if (waitMoreSeconds <= 0s) {
-            Thread::CheckForInterruption ();
-        }
-        else {
-            Sleep (waitMoreSeconds);
-        }
+        // to avoid accumulating error on total time waited, compute the UNTIL value and keep waiting UNTIL that point
+        Require (seconds2Wait >= 0s);
+        SleepUntil (Time::GetTickCount () + seconds2Wait);
     }
 
 }

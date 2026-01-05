@@ -98,6 +98,10 @@ especially those they need to be aware of when upgrading.
     - DataExchange
       - InternetMediaTypeRegistry
         - more gracefully handle bad mediatypes line in EtcMimeTypesRep_ reader (happens when no locale code installed maybe)
+    - Execution
+      - Sleep/SleepUntil
+        - slight tweaks to Sleep/SleepUnitil implementation/docs so Sleep/1 slightly and SleepUntil slightly more accurate
+          about how long they sleep.
     - Memory
       - BlockAllocator
         - tweak docs and fix impl (bug bug found by g++-15) - BlockAllocator should NOT depend on 
