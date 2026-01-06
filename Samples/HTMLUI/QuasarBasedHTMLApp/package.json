@@ -13,9 +13,9 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "#1": "form-data dependency below to workaround: https://github.com/SophistSolutions/Stroika/security/dependabot/27",
-  "#2": "qs dependency below to workaround: https://github.com/SophistSolutions/Stroika/security/dependabot/40",
+  "#2": "glob dependency below to workaround: https://github.com/SophistSolutions/Stroika/security/dependabot/36",
   "#3": "node-forge dependency below to workaround: https://github.com/SophistSolutions/Stroika/security/dependabot/39",
-  "#4": "glob dependency below to workaround: https://github.com/SophistSolutions/Stroika/security/dependabot/36",
+  "#4": "qs dependency below to workaround: https://github.com/SophistSolutions/Stroika/security/dependabot/40",
   "dependencies": {
     "@openid/appauth": "^1.3.2",
     "@quasar/cli": "^2.5",
