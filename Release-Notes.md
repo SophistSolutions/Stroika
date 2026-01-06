@@ -21,7 +21,7 @@ especially those they need to be aware of when upgrading.
 
 #### Upgrade Notes (3.0d21 to 3.0d22)
 
-  None
+None
 
 #### Change Details
 
@@ -158,7 +158,7 @@ especially those they need to be aware of when upgrading.
     - fix regtest to not fail just cuz missing en/us locale
     - Fixed issue that performance dumps logging were capturing the wrong data/file for the last couple releases
 - Tools
-  no change
+  - no change
 
 #### Release-Validation
 
