@@ -8,23 +8,25 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d22 {2026-01-05} {[diff](../../compare/3.0d21...3.0d22)}
+### 3.0d22 {2026-01-07} {[diff](../../compare/3.0d21...3.0d22)}
 
 #### TLDR
 
-- Address github action building issues (containers now running out of space, due to outside dependency changes)
+- Address github action building issues (containers running out of space due to outside dependency changes)
 - Support ZStd (built in ThirdPartyComponents, and streams library support/integration)
 - Fixed PerformanceDump.txt generation/scripting regression
 - Fixed GetSystemConfiguration_ComputerNames (FromSDKString issue)
 - Fixed Samples/HTMLUI Auth gui code
-- github actions now use macos 14,15 instead of macos 13
+- github actions now use macos 14,15 instead of macos 13 (cuz of github action support change)
 
 #### Upgrade Notes (3.0d21 to 3.0d22)
+
+None
 
 #### Change Details
 
 - Documentation
-  - docs surrounding hostnames and DNS BWAs now somewhat fixed now that I have router with 1/2 decent DNS (so .local solvable)
+  - Docs surrounding hostnames and DNS BWAs now somewhat fixed now that I have router with 1/2 decent DNS (so .local solvable)
   - Minor cleanups
   - Updated copyright
 - Build System
@@ -61,7 +63,7 @@ especially those they need to be aware of when upgrading.
         - lots of disk space and output cleanups
     - build-Dev-Docker-Containers.yml
       - debug why failed disk space issue installing msvc in docker (on github actions)
-      - and windows docker container creator
+        and windows docker container creator
   - Makefiles
     - Improve use of SubstituteBackVariables
     - Top Level Makefile
@@ -156,6 +158,7 @@ especially those they need to be aware of when upgrading.
     - fix regtest to not fail just cuz missing en/us locale
     - Fixed issue that performance dumps logging were capturing the wrong data/file for the last couple releases
 - Tools
+  - no change
 
 #### Release-Validation
 
