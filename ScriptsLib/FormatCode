@@ -50,7 +50,7 @@ fi
 dirPattern=$1
 
 # EXCLUDES="-prune node_modules"
-EXCLUDES="-not -path \"./node_modules/*\""
+EXCLUDES="-not -path */node_modules/*"
 
 FORMATTER="${FORMATTER:-clang-format}"
 hash $FORMATTER 2> /dev/null
