@@ -38,7 +38,13 @@ clean::
 
 
 html:
-ifeq ($(shell which quasar 2>/dev/null),)
+ifeq ($(shell which node 2>/dev/null),)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool node` "***"
+	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
+else ifeq ($(shell if `test $(shell node -v | cut -d'.' -f1 | tr -d 'v') -ge 22`; then echo x; fi),)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no nodejs older than 22 installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool quasar` "***"
+	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
+else ifeq ($(shell which quasar 2>/dev/null),)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Warning: ***Skipping html cuz no quasar installed:" `$(StroikaRoot)ScriptsLib/GetMessageForMissingTool quasar` "***"
 	@rm -rf ${TARGETDIR}html; mkdir -p ${TARGETDIR}html
 else

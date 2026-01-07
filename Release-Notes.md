@@ -127,7 +127,8 @@ None
     - Fixed a few HTML/GUI regressions (probably an old refactoring not well enuf tested) 
       - so now HTMLUI sample AUTH stuff seems to work properly again
       - also better reporting/docs
-    - tweak dependencies in QuasarBasedHTMLApp/package.json to workaround dependabot warnigns
+    - tweak dependencies in QuasarBasedHTMLApp/package.json to workaround dependabot warnings
+    - also check for nodejs version in addition to quasar - and skip if needed
 - ThirdPartyComponents
   - boost
     - 1.90
