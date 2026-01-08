@@ -139,7 +139,6 @@ checkin from one spot.
 
 - Docker windows tests
 
-
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
   ```bash
@@ -161,12 +160,8 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
   [[apx 7 hrs]]
 
 On WINDOWS:
-  ```bash
-# ./ScriptsLib/ResolveIP medusa
-  ```
 
   ```bash
-  # MONGO_CONNECTION_STRING=mongodb://admin:pass@192.168.244.248:27017 ScriptsLib/RunLocalWSLRegressionTests
   MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 ScriptsLib/RunLocalWSLRegressionTests
   ```
 
