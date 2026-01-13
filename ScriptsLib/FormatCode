@@ -13,6 +13,7 @@
 ##
 
 
+# NOTE - on MacOS cannot do --tabs=4, so must do -t 4 instead (works on all platforms, I think)
 EXPAND="${EXPAND:-/usr/bin/expand}"
 hash $EXPAND 2> /dev/null
 if [ $? -ne 0 ]; then
@@ -62,5 +63,5 @@ fi
 
 for filePattern in "${@:2}"
 do
-    $FIND $dirPattern -name $filePattern $EXCLUDES -exec sh -c "$EXPAND --tabs=4 {} | $FORMATTER --assume-filename={} > {}.tmp && if cmp -s {} {}.tmp ; then rm -f {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
+    $FIND $dirPattern -name $filePattern $EXCLUDES -exec sh -c "$EXPAND -t 4 {} | $FORMATTER --assume-filename={} > {}.tmp && if cmp -s {} {}.tmp ; then rm -f {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
 done
