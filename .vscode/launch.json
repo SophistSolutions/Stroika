@@ -55,14 +55,16 @@
       "name": "(Windows) Launch VisualStudio",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test32.exe",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test38.exe",
       //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-WebServer/WebServer.exe",
       // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-HTMLUI/Backend/HTMLUI.exe",
       "args": ["--run-directly" ],
       // "args": ["--port=8084", "--run-directly" ],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
-      "environment": [],
+      "environment": [
+          {"name": "Path","value":"${env:Path};c:/tools/msys64/mingw64/bin;c:/tools/msys64/usr/bin"},
+      ],
       "console": "externalTerminal",
       "logging": {
         "moduleLoad": false,
