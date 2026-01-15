@@ -373,11 +373,15 @@ namespace Stroika::Foundation::Execution {
 
     private:
         /**
+         * @brief DOESNT run anything - but creates a function object that when run will do the work of running the process
+         * 
          *  Note that 'in' will be sent to the stdin of the subprocess, 'out' will be read from the
          *  stdout of the subprocess and error will be read from the stderr of the subprocess.
          *
          *  Each of these CAN be null, and will if so, that will be interpreted as an empty stream
          *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
+         * 
+         *  \note the lifetime of the argument processResult and runningPID must exceed that of the returned function object.
          */
         nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult,
                                                       Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);

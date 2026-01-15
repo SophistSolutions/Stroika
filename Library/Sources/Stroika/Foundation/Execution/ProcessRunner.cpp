@@ -342,16 +342,15 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
 void ProcessRunner::BackgroundProcess::WaitForStarted (Time::DurationSeconds timeout) const
 {
     // tmphack impl
-    using Time::DurationSeconds;
-    DurationSeconds remaining = timeout;
-    while (remaining > DurationSeconds{0}) {
+    Time::TimePointSeconds runUntil = Time::GetTickCount () + timeout;
+    do {
         if (auto pr = GetChildProcessID ()) {
             return;
         }
         Sleep (1);
-        remaining -= DurationSeconds{1};
-    }
+    } while (runUntil > Time::GetTickCount ());
 }
+
 void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -552,8 +551,8 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStre
     this->fStdOut_ = out;
     this->fStdErr_ = error;
     BackgroundProcess result;
-    result.fRep_->fProcessRunner =
-        Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, "ProcessRunner background thread"sv);
+    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID, progress), Thread::eAutoStart,
+                                                "ProcessRunner background thread"sv);
     return result;
 }
 
@@ -561,8 +560,8 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"}; // DEPRECATED OVERLOAD
     BackgroundProcess  result;
-    result.fRep_->fProcessRunner =
-        Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, "ProcessRunner background thread"sv);
+    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID, progress), Thread::eAutoStart,
+                                                "ProcessRunner background thread"sv);
     return result;
 }
 
