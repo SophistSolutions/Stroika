@@ -41,8 +41,6 @@
  *      @todo   Redo DWORD   waitResult  =   ::WaitForMultipleObjects()... logic to wait on thread and each read/write socket
  *              with select() AND somehow maybe eventually wait on streams (so we don't have to pre-read it all)
  *
- *      @todo   logic for THREADs and for PROGRESS support are NOT thought through, and just a rough first stab
- *
  *      @todo   Make sure it handles well without blocking
  *              (tricks I had todo in HF - forcing extra reads so writes wouldn't block).
  *              Currently structured to work off a single runnable, which implies works off a single thread. That implies
@@ -369,7 +367,23 @@ namespace Stroika::Foundation::Execution {
 
     private:
         /**
-         * @brief DOESNT run anything - but creates a function object that when run will do the work of running the process
+         * @brief like CreateDetailedRunnable_, but doesnt track pid or result - just creates runnable to execute
+         */
+        nonvirtual function<void ()> CreateSimpleRunnable_ ();
+
+    private:
+        /**
+         * Capture the process results and running PID. NOTE - this uses Syncrhonized, since its generally looked at and set from
+         * two different threads.
+         */
+        struct DetailedRunnableRep_ {
+            Synchronized<optional<ProcessResultType>> fProcessResult;
+            Synchronized<optional<pid_t>>             fRunningPID;
+        };
+
+    private:
+        /**
+         * @brief DOESNT run anything - but creates a function object that when run will do the work of running the process, and returns a shared DetailedRunnableRep_ to track the progress of the runnable when run
          * 
          *  Note that 'in' will be sent to the stdin of the subprocess, 'out' will be read from the
          *  stdout of the subprocess and error will be read from the stderr of the subprocess.
@@ -377,9 +391,23 @@ namespace Stroika::Foundation::Execution {
          *  Each of these CAN be null, and will if so, that will be interpreted as an empty stream
          *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
          * 
-         *  \note the lifetime of the argument processResult and runningPID must exceed that of the returned function object.
+         *  Note the runnable holds onto shared_ptr<DetailedRunnableRep_> so it doesn't NEED to be by the caller - just hold
+         *  onto it if you want to see the results.
          */
-        nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID);
+        nonvirtual tuple<function<void ()>, shared_ptr<DetailedRunnableRep_>> CreateDetailedRunnable_ ();
+
+    private:
+#if qStroika_Foundation_Common_Platform_POSIX
+        static void Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_>&            runneeDetails,
+                                           [[maybe_unused]] const optional<filesystem::path>& executable, const CommandLine& cmdLine,
+                                           const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,
+                                           const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err);
+#elif qStroika_Foundation_Common_Platform_Windows
+        static void Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRep_>& runneeDetails,
+                                             const optional<filesystem::path>& executable, const CommandLine& cmdLine,
+                                             const ProcessRunner::Options& options, const Streams::InputStream::Ptr<byte>& in,
+                                             const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& err);
+#endif
 
     private:
         optional<filesystem::path>                                     fExecutable_; // if omitted, derived from fArgs[0]
@@ -586,9 +614,10 @@ namespace Stroika::Foundation::Execution {
     private:
         struct Rep_ {
             virtual ~Rep_ () = default;
-            Thread::CleanupPtr                        fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
-            Synchronized<optional<pid_t>>             fPID{};
-            Synchronized<optional<ProcessResultType>> fResult{};
+            Thread::CleanupPtr fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
+            //  Synchronized<optional<pid_t>>             fPID{};
+            // Synchronized<optional<ProcessResultType>> fResult{};
+            shared_ptr<DetailedRunnableRep_> fDetailedRunnableRep_;
         };
         shared_ptr<Rep_>                                               fRep_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;

@@ -136,12 +136,16 @@ namespace Stroika::Foundation::Execution {
     inline optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return fRep_->fResult;
+        AssertNotNull (fRep_);
+        AssertNotNull (fRep_->fDetailedRunnableRep_);
+        return fRep_->fDetailedRunnableRep_->fProcessResult;
     }
     inline optional<pid_t> ProcessRunner::BackgroundProcess::GetChildProcessID () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return fRep_->fPID;
+        AssertNotNull (fRep_);
+        AssertNotNull (fRep_->fDetailedRunnableRep_);
+        return fRep_->fDetailedRunnableRep_->fRunningPID;
     }
 
     /// DEPRECATED

@@ -381,7 +381,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
     //
     // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
     //
-    if (optional<pid_t> o = fRep_->fPID) {
+    if (optional<pid_t> o = fRep_->fDetailedRunnableRep_->fRunningPID.load ()) {
 #if qStroika_Foundation_Common_Platform_POSIX
         ::kill (SIGTERM, *o);
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -448,12 +448,12 @@ void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::P
     auto               activity = LazyEvalActivity ([this] () -> String { return "running '{}'"_f(this->GetCommandLine ()); });
     DeclareActivity    currentActivity{&activity};
     if (timeout == Time::kInfinity) {
-        fStdIn_  = in;
-        fStdOut_ = out;
-        fStdErr_ = error;
-        Synchronized<optional<ProcessResultType>> pr;
-        CreateRunnable_ (&pr, nullptr) ();
-        pr->value_or (ProcessResultType{}).ThrowIfFailed ();
+        fStdIn_                 = in;
+        fStdOut_                = out;
+        fStdErr_                = error;
+        auto [runable, results] = CreateDetailedRunnable_ ();
+        runable (); // after runnable called, results should be ready
+        results->fProcessResult.load ().value_or (ProcessResultType{}).ThrowIfFailed ();
     }
     else {
         // Use 'BackgroundProcess' to get a thread we can interrupt when time is up, for timeout
@@ -471,23 +471,25 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
     TraceContextBumper ctx{"ProcessRunner::Run"}; //DEPREACTED API.... LOSE
     if (timeout == Time::kInfinity) {
         if (processResult == nullptr) {
-            CreateRunnable_ (nullptr, nullptr) ();
+            CreateSimpleRunnable_ () ();
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
-            [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
-            CreateRunnable_ (&pr, nullptr) ();
+            auto [runnable, prDetails]      = CreateDetailedRunnable_ ();
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
+            runnable ();
         }
     }
     else {
         if (processResult == nullptr) {
-            Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr), Thread::eAutoStart, "ProcessRunner thread"_k);
+            Thread::Ptr t = Thread::New (CreateSimpleRunnable_ (), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
-            [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
-            Thread::Ptr t = Thread::New (CreateRunnable_ (&pr, nullptr), Thread::eAutoStart, "ProcessRunner thread"_k);
+            auto [runnable, prDetails]      = CreateDetailedRunnable_ ();
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
+            Thread::Ptr             t       = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
     }
@@ -550,8 +552,9 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStre
     this->fStdOut_ = out;
     this->fStdErr_ = error;
     BackgroundProcess result;
-    result.fRep_->fProcessRunner =
-        Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID), Thread::eAutoStart, "ProcessRunner background thread"sv);
+    auto [runnable, prDetails]          = CreateDetailedRunnable_ ();
+    result.fRep_->fDetailedRunnableRep_ = prDetails;
+    result.fRep_->fProcessRunner        = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner background thread"sv);
     return result;
 }
 
@@ -559,8 +562,9 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"}; // DEPRECATED OVERLOAD
     BackgroundProcess  result;
-    result.fRep_->fProcessRunner =
-        Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID), Thread::eAutoStart, "ProcessRunner background thread"sv);
+    auto [runnable, prDetails]          = CreateDetailedRunnable_ ();
+    result.fRep_->fDetailedRunnableRep_ = prDetails;
+    result.fRep_->fProcessRunner        = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner background thread"sv);
     return result;
 }
 
@@ -582,399 +586,394 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const Streams::
     return Run (in, out, error, timeout);
 }
 [[deprecated ("Since Stroika v3.0d23d")]] tuple<Characters::String, Characters::String>
-ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
+ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater /*progress*/,
+                    Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"}; // DEPRECATED OVERLOAD
     return Run (cmdStdInValue, stringOpts, timeout);
 }
 
 #if qStroika_Foundation_Common_Platform_POSIX
-namespace {
-    // @todo Good Candidate for REWRITE - this is a MESS!
-    void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
-                                Synchronized<optional<pid_t>>* runningPID, [[maybe_unused]] const optional<filesystem::path>& executable,
-                                const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
-                                const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
-    {
-        optional<mode_t>   umask  = options.fChildUMask;
-        filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
-        TraceContextBumper ctx{"{}::Process_Runner_POSIX_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                                                                "...,cmdLine='{}',currentDir='{}',..."_f, cmdLine,
-                                                                String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
+// @todo Good Candidate for REWRITE - this is a MESS!
+void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_>&            runneeDetails,
+                                           [[maybe_unused]] const optional<filesystem::path>& executable, const CommandLine& cmdLine,
+                                           const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
+                                           const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
+{
+    optional<mode_t>   umask  = options.fChildUMask;
+    filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
+    TraceContextBumper ctx{"{}::Process_Runner_POSIX_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                                                            "...,cmdLine='{}',currentDir='{}',..."_f, cmdLine,
+                                                            String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
-        // track the last few bytes of stderr to include in possible exception messages
-        char   trailingStderrBuf[256];
-        char*  trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
-        size_t trailingStderrBufNWritten{};
+    // track the last few bytes of stderr to include in possible exception messages
+    char   trailingStderrBuf[256];
+    char*  trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
+    size_t trailingStderrBufNWritten{};
 
-        /*
-         *  NOTE:
-         *      From http://linux.die.net/man/2/pipe
-         *          "The array pipefd is used to return two file descriptors referring to the ends
-         *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
-         *          the write end of the pipe"
-         */
-        int                     jStdin[2]{-1, -1};
-        int                     jStdout[2]{-1, -1};
-        int                     jStderr[2]{-1, -1};
-        [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
-            ::CLOSE_ (jStdin[0]);
-            ::CLOSE_ (jStdin[1]);
-            ::CLOSE_ (jStdout[0]);
-            ::CLOSE_ (jStdout[1]);
-            ::CLOSE_ (jStderr[0]);
-            ::CLOSE_ (jStderr[1]);
-        });
-        if (in) {
-            Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
-        }
-        else {
-            jStdin[0] = ::open ("/dev/null", O_RDONLY);
-        }
-        if (out) {
-            Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
-        }
-        else {
-            jStdout[1] = ::open ("/dev/null", O_WRONLY);
-        }
-        if (err) {
-            Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
-        }
-        else {
-            jStderr[1] = ::open ("/dev/null", O_WRONLY);
-        }
-        // assert cuz code below needs to be more careful if these can overlap 0..2
-        Assert (in == nullptr or (jStdin[0] >= 3 and jStdin[1] >= 3));
-        Assert (out == nullptr or (jStdout[0] >= 3 and jStdout[1] >= 3));
-        Assert (err == nullptr or (jStderr[0] >= 3 and jStderr[1] >= 3));
-        DbgTrace ("jStdout[0-CHILD] = {} and jStdout[1-PARENT] = {}"_f, jStdout[0], jStdout[1]);
+    /*
+     *  NOTE:
+     *      From http://linux.die.net/man/2/pipe
+     *          "The array pipefd is used to return two file descriptors referring to the ends
+     *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
+     *          the write end of the pipe"
+     */
+    int                     jStdin[2]{-1, -1};
+    int                     jStdout[2]{-1, -1};
+    int                     jStderr[2]{-1, -1};
+    [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept {
+        ::CLOSE_ (jStdin[0]);
+        ::CLOSE_ (jStdin[1]);
+        ::CLOSE_ (jStdout[0]);
+        ::CLOSE_ (jStdout[1]);
+        ::CLOSE_ (jStderr[0]);
+        ::CLOSE_ (jStderr[1]);
+    });
+    if (in) {
+        Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin); });
+    }
+    else {
+        jStdin[0] = ::open ("/dev/null", O_RDONLY);
+    }
+    if (out) {
+        Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout); });
+    }
+    else {
+        jStdout[1] = ::open ("/dev/null", O_WRONLY);
+    }
+    if (err) {
+        Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr); });
+    }
+    else {
+        jStderr[1] = ::open ("/dev/null", O_WRONLY);
+    }
+    // assert cuz code below needs to be more careful if these can overlap 0..2
+    Assert (in == nullptr or (jStdin[0] >= 3 and jStdin[1] >= 3));
+    Assert (out == nullptr or (jStdout[0] >= 3 and jStdout[1] >= 3));
+    Assert (err == nullptr or (jStderr[0] >= 3 and jStderr[1] >= 3));
+    DbgTrace ("jStdout[0-CHILD] = {} and jStdout[1-PARENT] = {}"_f, jStdout[0], jStdout[1]);
 
-        /*
-         *  Note: Important to do all this code before the fork, because once we fork, we, lose other threads
-         *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
-         *  fork, we are VERY limited as to what we can safely do.
-         */
-        const char* thisEXEPath_cstr = nullptr;
-        char**      thisEXECArgv     = nullptr;
+    /*
+     *  Note: Important to do all this code before the fork, because once we fork, we, lose other threads
+     *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
+     *  fork, we are VERY limited as to what we can safely do.
+     */
+    const char* thisEXEPath_cstr = nullptr;
+    char**      thisEXECArgv     = nullptr;
 
-        String2ContigArrayCStrs_<char> execDataArgs{
-            cmdLine.GetArguments ().Map<Iterable<string>> ([] (auto si) { return si.AsNarrowSDKString (); })};
-        thisEXEPath_cstr = execDataArgs.fBytesBuffer.data ();
-        thisEXECArgv     = execDataArgs.fPtrsBuffer.data ();
+    String2ContigArrayCStrs_<char> execDataArgs{
+        cmdLine.GetArguments ().Map<Iterable<string>> ([] (auto si) { return si.AsNarrowSDKString (); })};
+    thisEXEPath_cstr = execDataArgs.fBytesBuffer.data ();
+    thisEXECArgv     = execDataArgs.fPtrsBuffer.data ();
 
-        /*
-         *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp,
-         *  and then there wont be a good way to propagate the error back to the caller.
-         *
-         *  @todo for now - this code only checks access for absolute/full path, and we should also check using
-         *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
-         */
-        if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
-            errno_t e = errno; // save in case overwritten
+    /*
+     *  If the file is not accessible, and using fork/exec, we wont find that out til the execvp,
+     *  and then there wont be a good way to propagate the error back to the caller.
+     *
+     *  @todo for now - this code only checks access for absolute/full path, and we should also check using
+     *        PATH and https://linux.die.net/man/3/execvp confstr(_CS_PATH)
+     */
+    if (not kUseSpawn_ and thisEXEPath_cstr[0] == '/' and ::access (thisEXEPath_cstr, R_OK | X_OK) < 0) {
+        errno_t e = errno; // save in case overwritten
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("failed to access exe path so throwing: exe path='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
+        DbgTrace ("failed to access exe path so throwing: exe path='{}'"_f, String::FromNarrowSDKString (thisEXEPath_cstr));
 #endif
-            ThrowPOSIXErrNo (e);
-        }
+        ThrowPOSIXErrNo (e);
+    }
 
-        pid_t childPID{};
-        if (kUseSpawn_) {
-            posix_spawn_file_actions_t file_actions{};
-            /// @see http://stackoverflow.com/questions/13893085/posix-spawnp-and-piping-child-output-to-a-string
-            // not quite right - maybe not that close
-            /*
-             *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
-             */
-            {
-                posix_spawn_file_actions_init (&file_actions);
-                posix_spawn_file_actions_addclose (&file_actions, jStdin[0]);
-                posix_spawn_file_actions_addclose (&file_actions, jStdin[0]);
-                posix_spawn_file_actions_adddup2 (&file_actions, jStdout[1], 1);
-                posix_spawn_file_actions_addclose (&file_actions, jStdout[0]);
-                posix_spawn_file_actions_adddup2 (&file_actions, jStderr[1], 2);
-                posix_spawn_file_actions_addclose (&file_actions, jStderr[1]);
-            }
-            posix_spawnattr_t* attr   = nullptr;
-            int                status = ::posix_spawnp (&childPID, thisEXEPath_cstr, &file_actions, attr, thisEXECArgv, environ);
-            if (status != 0) {
-                ThrowPOSIXErrNo (status);
-            }
-        }
-        else {
-            childPID = DoFork_ ();
-            ThrowPOSIXErrNoIfNegative (childPID);
-            if (childPID == 0) {
-                if (umask) {
-                    (void)::umask (*umask);
-                }
-                try {
-                    /*
-                     *  In child process. Don't DBGTRACE here, or do anything that could raise an exception. In the child process
-                     *  this would be bad...
-                     */
-                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
-                    (void)::chdir (useCWD.c_str ());
-                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-result\"")
-                    if (options.fDetached.value_or (false)) {
-                        /*
-                         *  See http://pubs.opengroup.org/onlinepubs/007904875/functions/setsid.html
-                         *  This is similar to setpgrp () but makes doing setpgrp unnecessary.
-                         *  This is also similar to setpgid (0, 0) - but makes doing that unneeded.
-                         *
-                         *  Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
-                         *
-                         *  @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
-                         *
-                         *  Tried using 
-                         *      #if defined _DEFAULT_SOURCE
-                         *              daemon (0, 0);
-                         *      #endif
-                         *      to workaround systemd defaulting to KillMode=control-group
-                         */
-                        (void)::setsid ();
-                    }
-                    {
-                        /*
-                         *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
-                         */
-                        int useSTDIN  = jStdin[0];
-                        int useSTDOUT = jStdout[1];
-                        int useSTDERR = jStderr[1];
-                        Assert (useSTDIN >= 0 and useSTDOUT >= 0 and useSTDERR >= 0); // parent can have -1 FDs, but child always has legit FDs
-                        ::close (0);
-                        ::close (1);
-                        ::close (2);
-                        ::dup2 (useSTDIN, 0);
-                        ::dup2 (useSTDOUT, 1);
-                        ::dup2 (useSTDERR, 2);
-                        ::close (jStdin[0]);
-                        ::close (jStdin[1]);
-                        ::close (jStdout[0]);
-                        ::close (jStdout[1]);
-                        ::close (jStderr[0]);
-                        ::close (jStderr[1]);
-                    }
-                    constexpr bool kCloseAllExtraneousFDsInChild_ = true;
-                    if (kCloseAllExtraneousFDsInChild_) {
-                        // close all but stdin, stdout, and stderr in child fork
-                        for (int i = 3; i < kMaxFD_; ++i) {
-                            ::close (i);
-                        }
-                    }
-                    [[maybe_unused]] int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    {
-                        ofstream myfile;
-                        myfile.open ("/tmp/Stroika-ProcessRunner-Exec-Failed-Debug-File.txt");
-                        myfile << "thisEXEPath_cstr = " << thisEXEPath_cstr << endl;
-                        myfile << "r = " << r << " and errno = " << errno << endl;
-                    }
-#endif
-                    ::_exit (EXIT_FAILURE);
-                }
-                catch (...) {
-                    ::_exit (EXIT_FAILURE);
-                }
-            }
-        }
-        // we got here, the spawn succeeded, or the fork succeeded, and we are the parent process
-        Assert (childPID > 0);
+    pid_t childPID{};
+    if (kUseSpawn_) {
+        posix_spawn_file_actions_t file_actions{};
+        /// @see http://stackoverflow.com/questions/13893085/posix-spawnp-and-piping-child-output-to-a-string
+        // not quite right - maybe not that close
+        /*
+         *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+         */
         {
-            constexpr size_t kStackBufReadAtATimeSize_ = 10 * 1024;
+            posix_spawn_file_actions_init (&file_actions);
+            posix_spawn_file_actions_addclose (&file_actions, jStdin[0]);
+            posix_spawn_file_actions_addclose (&file_actions, jStdin[0]);
+            posix_spawn_file_actions_adddup2 (&file_actions, jStdout[1], 1);
+            posix_spawn_file_actions_addclose (&file_actions, jStdout[0]);
+            posix_spawn_file_actions_adddup2 (&file_actions, jStderr[1], 2);
+            posix_spawn_file_actions_addclose (&file_actions, jStderr[1]);
+        }
+        posix_spawnattr_t* attr   = nullptr;
+        int                status = ::posix_spawnp (&childPID, thisEXEPath_cstr, &file_actions, attr, thisEXECArgv, environ);
+        if (status != 0) {
+            ThrowPOSIXErrNo (status);
+        }
+    }
+    else {
+        childPID = DoFork_ ();
+        ThrowPOSIXErrNoIfNegative (childPID);
+        if (childPID == 0) {
+            if (umask) {
+                (void)::umask (*umask);
+            }
+            try {
+                /*
+                 *  In child process. Don't DBGTRACE here, or do anything that could raise an exception. In the child process
+                 *  this would be bad...
+                 */
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
+                (void)::chdir (useCWD.c_str ());
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-result\"")
+                if (options.fDetached.value_or (false)) {
+                    /*
+                     *  See http://pubs.opengroup.org/onlinepubs/007904875/functions/setsid.html
+                     *  This is similar to setpgrp () but makes doing setpgrp unnecessary.
+                     *  This is also similar to setpgid (0, 0) - but makes doing that unneeded.
+                     *
+                     *  Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
+                     *
+                     *  @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
+                     *
+                     *  Tried using 
+                     *      #if defined _DEFAULT_SOURCE
+                     *              daemon (0, 0);
+                     *      #endif
+                     *      to workaround systemd defaulting to KillMode=control-group
+                     */
+                    (void)::setsid ();
+                }
+                {
+                    /*
+                     *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+                     */
+                    int useSTDIN  = jStdin[0];
+                    int useSTDOUT = jStdout[1];
+                    int useSTDERR = jStderr[1];
+                    Assert (useSTDIN >= 0 and useSTDOUT >= 0 and useSTDERR >= 0); // parent can have -1 FDs, but child always has legit FDs
+                    ::close (0);
+                    ::close (1);
+                    ::close (2);
+                    ::dup2 (useSTDIN, 0);
+                    ::dup2 (useSTDOUT, 1);
+                    ::dup2 (useSTDERR, 2);
+                    ::close (jStdin[0]);
+                    ::close (jStdin[1]);
+                    ::close (jStdout[0]);
+                    ::close (jStdout[1]);
+                    ::close (jStderr[0]);
+                    ::close (jStderr[1]);
+                }
+                constexpr bool kCloseAllExtraneousFDsInChild_ = true;
+                if (kCloseAllExtraneousFDsInChild_) {
+                    // close all but stdin, stdout, and stderr in child fork
+                    for (int i = 3; i < kMaxFD_; ++i) {
+                        ::close (i);
+                    }
+                }
+                [[maybe_unused]] int r = ::execvp (thisEXEPath_cstr, thisEXECArgv);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                {
+                    ofstream myfile;
+                    myfile.open ("/tmp/Stroika-ProcessRunner-Exec-Failed-Debug-File.txt");
+                    myfile << "thisEXEPath_cstr = " << thisEXEPath_cstr << endl;
+                    myfile << "r = " << r << " and errno = " << errno << endl;
+                }
+#endif
+                ::_exit (EXIT_FAILURE);
+            }
+            catch (...) {
+                ::_exit (EXIT_FAILURE);
+            }
+        }
+    }
+    // we got here, the spawn succeeded, or the fork succeeded, and we are the parent process
+    Assert (childPID > 0);
+    {
+        constexpr size_t kStackBufReadAtATimeSize_ = 10 * 1024;
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("In Parent Fork: child process PID={}"_f, childPID);
+        DbgTrace ("In Parent Fork: child process PID={}"_f, childPID);
 #endif
-            if (runningPID != nullptr) {
-                runningPID->store (childPID);
-            }
-            /*
+        if (runneeDetails->fRunningPID != nullptr) {
+            runneeDetails->fRunningPID.store (childPID);
+        }
+        /*
             * WE ARE PARENT
             */
-            int& useSTDIN  = jStdin[1];
-            int& useSTDOUT = jStdout[0];
-            int& useSTDERR = jStderr[0];
-            {
-                CLOSE_ (jStdin[0]);
-                CLOSE_ (jStdout[1]);
-                CLOSE_ (jStderr[1]);
-            }
+        int& useSTDIN  = jStdin[1];
+        int& useSTDOUT = jStdout[0];
+        int& useSTDERR = jStderr[0];
+        {
+            CLOSE_ (jStdin[0]);
+            CLOSE_ (jStdout[1]);
+            CLOSE_ (jStderr[1]);
+        }
 
-            // To incrementally read from stderr and stderr as we write to stdin, we must assure
-            // our pipes are non-blocking
-            if (useSTDIN != -1) {
-                ThrowPOSIXErrNoIfNegative (::fcntl (useSTDIN, F_SETFL, fcntl (useSTDIN, F_GETFL, 0) | O_NONBLOCK));
-            }
-            if (useSTDOUT != -1) {
-                ThrowPOSIXErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
-            }
-            if (useSTDERR != -1) {
-                ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
-            }
+        // To incrementally read from stderr and stderr as we write to stdin, we must assure
+        // our pipes are non-blocking
+        if (useSTDIN != -1) {
+            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDIN, F_SETFL, fcntl (useSTDIN, F_GETFL, 0) | O_NONBLOCK));
+        }
+        if (useSTDOUT != -1) {
+            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDOUT, F_SETFL, fcntl (useSTDOUT, F_GETFL, 0) | O_NONBLOCK));
+        }
+        if (useSTDERR != -1) {
+            ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
+        }
 
-            // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache, bool* eof = nullptr,
-                                               bool* maybeMoreData = nullptr) -> void {
-                if (fd == -1) {
-                    if (maybeMoreData != nullptr) {
-                        *maybeMoreData = false;
-                    }
-                    if (eof != nullptr) {
-                        *eof = true;
-                    }
-                    return;
-                }
-                uint8_t buf[kStackBufReadAtATimeSize_];
-                int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                int skipedThisMany{};
-#endif
-                while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
-                    Assert (nBytesRead <= sizeof (buf));
-                    if (stream != nullptr) {
-                        stream.Write (span{buf, static_cast<size_t> (nBytesRead)});
-                    }
-                    if (write2StdErrCache) {
-                        for (size_t i = 0; i < nBytesRead; ++i) {
-                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and
-                                    trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf));
-                            *trailingStderrBufNextByte2WriteAt = buf[i];
-                            ++trailingStderrBufNWritten;
-                            ++trailingStderrBufNextByte2WriteAt;
-                            if (trailingStderrBufNextByte2WriteAt == end (trailingStderrBuf)) {
-                                trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
-                            }
-                            Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and
-                                    trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf));
-                        }
-                    }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    if (errno == EAGAIN) {
-                        // If we get lots of EAGAINS, just skip logging them to avoid spamming the tracelog
-                        if (skipedThisMany++ < 100) {
-                            continue;
-                        }
-                        else {
-                            DbgTrace ("skipped {} spamming EAGAINs"_f, skipedThisMany);
-                            skipedThisMany = 0;
-                        }
-                    }
-                    buf[(nBytesRead == std::size (buf)) ? (std::size (buf) - 1) : nBytesRead] = '\0';
-                    DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, fd, nBytesRead,
-                              String::FromNarrowSDKString (reinterpret_cast<const char*> (buf)));
-#endif
-                }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("from (fd={}) nBytesRead = {}, errno={}"_f, fd, nBytesRead, errno);
-#endif
-                if (nBytesRead < 0) {
-                    if (errno != EINTR and errno != EAGAIN) {
-                        ThrowPOSIXErrNo (errno);
-                    }
+        // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
+        auto readALittleFromProcess = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache, bool* eof = nullptr,
+                                           bool* maybeMoreData = nullptr) -> void {
+            if (fd == -1) {
+                if (maybeMoreData != nullptr) {
+                    *maybeMoreData = false;
                 }
                 if (eof != nullptr) {
-                    *eof = (nBytesRead == 0);
+                    *eof = true;
                 }
-                if (maybeMoreData != nullptr) {
-                    *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
+                return;
+            }
+            uint8_t buf[kStackBufReadAtATimeSize_];
+            int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            int skipedThisMany{};
+#endif
+            while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
+                Assert (nBytesRead <= sizeof (buf));
+                if (stream != nullptr) {
+                    stream.Write (span{buf, static_cast<size_t> (nBytesRead)});
                 }
-            };
-            auto readSoNotBlocking = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
-                bool maybeMoreData = true;
-                while (maybeMoreData) {
-                    readALittleFromProcess (fd, stream, write2StdErrCache, nullptr, &maybeMoreData);
-                }
-            };
-            auto readTilEOF = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
-                if (fd == -1) {
-                    return;
-                }
-                WaitForIOReady waiter{fd};
-                bool           eof = false;
-                while (not eof) {
-                    (void)waiter.WaitQuietly (1s);
-                    readALittleFromProcess (fd, stream, write2StdErrCache, &eof);
-                }
-            };
-
-            if (in != nullptr) {
-                byte stdinBuf[kStackBufReadAtATimeSize_];
-                // read to 'in' til it reaches EOF (returns 0). But don't fully block, cuz we want to at least trickle in the stdout/stderr data
-                // even if no input is ready to send to child.
-                while (true) {
-                    if (optional<span<byte>> bytesReadFromStdIn = in.ReadNonBlocking (span{stdinBuf})) {
-                        Assert (bytesReadFromStdIn->size () <= std::size (stdinBuf));
-                        if (bytesReadFromStdIn->empty ()) {
-                            break;
+                if (write2StdErrCache) {
+                    for (size_t i = 0; i < nBytesRead; ++i) {
+                        Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf));
+                        *trailingStderrBufNextByte2WriteAt = buf[i];
+                        ++trailingStderrBufNWritten;
+                        ++trailingStderrBufNextByte2WriteAt;
+                        if (trailingStderrBufNextByte2WriteAt == end (trailingStderrBuf)) {
+                            trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
                         }
-                        else {
-                            const byte* e = bytesReadFromStdIn->data () + bytesReadFromStdIn->size ();
-                            for (const byte* i = bytesReadFromStdIn->data (); i != e;) {
-                                // read stuff from stdout, stderr while pushing to stdin, so that we don't get the PIPE buf too full
-                                readSoNotBlocking (useSTDOUT, out, false);
-                                readSoNotBlocking (useSTDERR, err, true);
-                                int bytesWritten = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e] () {
-                                    int tmp = ::write (useSTDIN, i, e - i);
-                                    // NOTE: https://linux.die.net/man/2/write appears to indicate on pipe full, write could return 0, or < 0 with errno = EAGAIN, or EWOULDBLOCK
-                                    if (tmp < 0 and (errno == EAGAIN or errno == EWOULDBLOCK)) {
-                                        tmp = 0;
-                                    }
-                                    return tmp;
-                                }));
-                                Assert (bytesWritten >= 0);
-                                Assert (bytesWritten <= (e - i));
-                                i += bytesWritten;
-                                if (bytesWritten == 0) {
-                                    // don't busy wait, but not clear how long to wait? Maybe should only sleep if readSoNotBlocking above returns no change
-                                    //
-                                    // OK - this is clearly wrong - @see http://stroika-bugs.sophists.com/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
-                                    //
-                                    Sleep (1ms);
+                        Assert (&trailingStderrBuf[0] <= trailingStderrBufNextByte2WriteAt and trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf));
+                    }
+                }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                if (errno == EAGAIN) {
+                    // If we get lots of EAGAINS, just skip logging them to avoid spamming the tracelog
+                    if (skipedThisMany++ < 100) {
+                        continue;
+                    }
+                    else {
+                        DbgTrace ("skipped {} spamming EAGAINs"_f, skipedThisMany);
+                        skipedThisMany = 0;
+                    }
+                }
+                buf[(nBytesRead == std::size (buf)) ? (std::size (buf) - 1) : nBytesRead] = '\0';
+                DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, fd, nBytesRead,
+                          String::FromNarrowSDKString (reinterpret_cast<const char*> (buf)));
+#endif
+            }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("from (fd={}) nBytesRead = {}, errno={}"_f, fd, nBytesRead, errno);
+#endif
+            if (nBytesRead < 0) {
+                if (errno != EINTR and errno != EAGAIN) {
+                    ThrowPOSIXErrNo (errno);
+                }
+            }
+            if (eof != nullptr) {
+                *eof = (nBytesRead == 0);
+            }
+            if (maybeMoreData != nullptr) {
+                *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
+            }
+        };
+        auto readSoNotBlocking = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
+            bool maybeMoreData = true;
+            while (maybeMoreData) {
+                readALittleFromProcess (fd, stream, write2StdErrCache, nullptr, &maybeMoreData);
+            }
+        };
+        auto readTilEOF = [&] (int fd, const OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
+            if (fd == -1) {
+                return;
+            }
+            WaitForIOReady waiter{fd};
+            bool           eof = false;
+            while (not eof) {
+                (void)waiter.WaitQuietly (1s);
+                readALittleFromProcess (fd, stream, write2StdErrCache, &eof);
+            }
+        };
+
+        if (in != nullptr) {
+            byte stdinBuf[kStackBufReadAtATimeSize_];
+            // read to 'in' til it reaches EOF (returns 0). But don't fully block, cuz we want to at least trickle in the stdout/stderr data
+            // even if no input is ready to send to child.
+            while (true) {
+                if (optional<span<byte>> bytesReadFromStdIn = in.ReadNonBlocking (span{stdinBuf})) {
+                    Assert (bytesReadFromStdIn->size () <= std::size (stdinBuf));
+                    if (bytesReadFromStdIn->empty ()) {
+                        break;
+                    }
+                    else {
+                        const byte* e = bytesReadFromStdIn->data () + bytesReadFromStdIn->size ();
+                        for (const byte* i = bytesReadFromStdIn->data (); i != e;) {
+                            // read stuff from stdout, stderr while pushing to stdin, so that we don't get the PIPE buf too full
+                            readSoNotBlocking (useSTDOUT, out, false);
+                            readSoNotBlocking (useSTDERR, err, true);
+                            int bytesWritten = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e] () {
+                                int tmp = ::write (useSTDIN, i, e - i);
+                                // NOTE: https://linux.die.net/man/2/write appears to indicate on pipe full, write could return 0, or < 0 with errno = EAGAIN, or EWOULDBLOCK
+                                if (tmp < 0 and (errno == EAGAIN or errno == EWOULDBLOCK)) {
+                                    tmp = 0;
                                 }
+                                return tmp;
+                            }));
+                            Assert (bytesWritten >= 0);
+                            Assert (bytesWritten <= (e - i));
+                            i += bytesWritten;
+                            if (bytesWritten == 0) {
+                                // don't busy wait, but not clear how long to wait? Maybe should only sleep if readSoNotBlocking above returns no change
+                                //
+                                // OK - this is clearly wrong - @see http://stroika-bugs.sophists.com/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
+                                //
+                                Sleep (1ms);
                             }
                         }
                     }
-                    else {
-                        // nothing on input stream, so pull from stdout, stderr, and wait a little to avoid busy-waiting
-                        readSoNotBlocking (useSTDOUT, out, false);
-                        readSoNotBlocking (useSTDERR, err, true);
-                        Sleep (100ms);
-                    }
+                }
+                else {
+                    // nothing on input stream, so pull from stdout, stderr, and wait a little to avoid busy-waiting
+                    readSoNotBlocking (useSTDOUT, out, false);
+                    readSoNotBlocking (useSTDERR, err, true);
+                    Sleep (100ms);
                 }
             }
-            // in case child process reads from its STDIN to EOF
-            CLOSE_ (useSTDIN);
+        }
+        // in case child process reads from its STDIN to EOF
+        CLOSE_ (useSTDIN);
 
-            readTilEOF (useSTDOUT, out, false);
-            readTilEOF (useSTDERR, err, true);
+        readTilEOF (useSTDOUT, out, false);
+        readTilEOF (useSTDERR, err, true);
 
-            // not sure we need?
-            int status = 0;
-            int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
-                            //  Wait for child
-            int result =
-                Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
-            // throw / warn if result other than child exited normally
-            if (processResult != nullptr) {
-                // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-                processResult->store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (),
-                                                                       WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
-            }
-            else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
-                // @todo fix this message
-                DbgTrace ("childPID={}, result={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, static_cast<int> (childPID),
-                          result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
-                if (processResult == nullptr) {
-                    StringBuilder stderrMsg;
-                    if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
-                        stderrMsg << "..."sv;
-                        stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
-                    }
-                    stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
-                    Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (),
-                                                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
-                                                    WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
+        // not sure we need?
+        int status = 0;
+        int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
+                        //  Wait for child
+        int result = Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
+        // throw / warn if result other than child exited normally
+        if (runneeDetails != nullptr) {
+            // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
+            runneeDetails->fProcessResult, store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (),
+                                                                                   WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
+        }
+        else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
+            // @todo fix this message
+            DbgTrace ("childPID={}, result={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, static_cast<int> (childPID),
+                      result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
+            if (processResult == nullptr) {
+                StringBuilder stderrMsg;
+                if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
+                    stderrMsg << "..."sv;
+                    stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
                 }
+                stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
+                Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (), WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
+                                                WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
             }
         }
     }
@@ -982,240 +981,238 @@ namespace {
 #endif
 
 #if qStroika_Foundation_Common_Platform_Windows
-namespace {
-    void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
-                                  const optional<filesystem::path>& executable, const CommandLine& cmdLine, const ProcessRunner::Options& options,
-                                  const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
-    {
-        filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
-        TraceContextBumper ctx{"{}::Process_Runner_Windows_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
-                                                                  "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
-                                                                  String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
+void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRep_>& runneeDetails, const optional<filesystem::path>& executable,
+                                             const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
+                                             const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
+{
+    filesystem::path   useCWD = options.fWorkingDirectory.value_or (IO::FileSystem::WellKnownLocations::GetTemporary ());
+    TraceContextBumper ctx{"{}::Process_Runner_Windows_", Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                                                              "...,cmdLine='{}',currentDir={},..."_f, cmdLine,
+                                                              String{useCWD}.LimitLength (50, StringShorteningPreference::ePreferKeepRight))};
 
-        /*
-         *  o   Build directory into which we can copy the JAR file plugin,
-         *  o   create STDIN/STDOUT file handles to send/grab results
-         *  o   Run the process, waiting for it to finish.
-         *  o   Grab results from STDOUT file.
-         *  o   Cleanup created directory.
-         */
+    /*
+     *  o   Build directory into which we can copy the JAR file plugin,
+     *  o   create STDIN/STDOUT file handles to send/grab results
+     *  o   Run the process, waiting for it to finish.
+     *  o   Grab results from STDOUT file.
+     *  o   Cleanup created directory.
+     */
 
-        // use AutoHANDLE so these are automatically closed at the end of the procedure, whether it ends normally or via
-        // exception.
-        AutoHANDLE_ jStdin[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
-        AutoHANDLE_ jStdout[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
-        AutoHANDLE_ jStderr[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+    // use AutoHANDLE so these are automatically closed at the end of the procedure, whether it ends normally or via
+    // exception.
+    AutoHANDLE_ jStdin[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+    AutoHANDLE_ jStdout[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
+    AutoHANDLE_ jStderr[2]{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 
-        PROCESS_INFORMATION processInfo{};
-        processInfo.hProcess = INVALID_HANDLE_VALUE;
-        processInfo.hThread  = INVALID_HANDLE_VALUE;
+    PROCESS_INFORMATION processInfo{};
+    processInfo.hProcess = INVALID_HANDLE_VALUE;
+    processInfo.hThread  = INVALID_HANDLE_VALUE;
 
-        try {
-            {
-                SECURITY_DESCRIPTOR sd{};
-                Verify (::InitializeSecurityDescriptor (&sd, SECURITY_DESCRIPTOR_REVISION));
-                Verify (::SetSecurityDescriptorDacl (&sd, true, 0, false));
-                SECURITY_ATTRIBUTES sa = {sizeof (SECURITY_ATTRIBUTES), &sd, true};
-                if (in) {
-                    Verify (::CreatePipe (&jStdin[1], &jStdin[0], &sa, kPipeBufSize_));
-                }
-                if (out) {
-                    Verify (::CreatePipe (&jStdout[1], &jStdout[0], &sa, kPipeBufSize_));
-                }
-                if (err) {
-                    Verify (::CreatePipe (&jStderr[1], &jStderr[0], &sa, kPipeBufSize_));
-                }
-                /*
-                 *  Make sure the ends of the pipe WE hang onto are not inheritable, because otherwise the READ
-                 *  wont return EOF (until the last one is closed).
-                 */
-                if (in) {
-                    jStdin[0].ReplaceHandleAsNonInheritable ();
-                }
-                if (out) {
-                    jStdout[1].ReplaceHandleAsNonInheritable ();
-                }
-                if (err) {
-                    jStderr[1].ReplaceHandleAsNonInheritable ();
-                }
+    try {
+        {
+            SECURITY_DESCRIPTOR sd{};
+            Verify (::InitializeSecurityDescriptor (&sd, SECURITY_DESCRIPTOR_REVISION));
+            Verify (::SetSecurityDescriptorDacl (&sd, true, 0, false));
+            SECURITY_ATTRIBUTES sa = {sizeof (SECURITY_ATTRIBUTES), &sd, true};
+            if (in) {
+                Verify (::CreatePipe (&jStdin[1], &jStdin[0], &sa, kPipeBufSize_));
             }
-
-            STARTUPINFO startInfo{};
-            startInfo.cb         = sizeof (startInfo);
-            startInfo.hStdInput  = jStdin[1];
-            startInfo.hStdOutput = jStdout[0];
-            startInfo.hStdError  = jStderr[0];
-            startInfo.dwFlags |= STARTF_USESTDHANDLES;
-
-            DWORD createProcFlags{NORMAL_PRIORITY_CLASS};
-            if (options.fCreateNoWindow) {
-                createProcFlags |= CREATE_NO_WINDOW;
+            if (out) {
+                Verify (::CreatePipe (&jStdout[1], &jStdout[0], &sa, kPipeBufSize_));
             }
-            else if (options.fDetached.value_or (false)) {
-                // DETACHED_PROCESS ignored if CREATE_NO_WINDOW
-                createProcFlags |= DETACHED_PROCESS;
+            if (err) {
+                Verify (::CreatePipe (&jStderr[1], &jStderr[0], &sa, kPipeBufSize_));
             }
+            /*
+             *  Make sure the ends of the pipe WE hang onto are not inheritable, because otherwise the READ
+             *  wont return EOF (until the last one is closed).
+             */
+            if (in) {
+                jStdin[0].ReplaceHandleAsNonInheritable ();
+            }
+            if (out) {
+                jStdout[1].ReplaceHandleAsNonInheritable ();
+            }
+            if (err) {
+                jStderr[1].ReplaceHandleAsNonInheritable ();
+            }
+        }
 
-            {
-                // UNCLEAR; visual studio system() impl uses true; docs not clear
-                // BUT - when I use false I get "unknown file: error: C++ exception with description "Spawned program 'echo hi mom' failed: error: 1" thrown in the test body." for some tests
-                bool bInheritHandles = true;
+        STARTUPINFO startInfo{};
+        startInfo.cb         = sizeof (startInfo);
+        startInfo.hStdInput  = jStdin[1];
+        startInfo.hStdOutput = jStdout[0];
+        startInfo.hStdError  = jStderr[0];
+        startInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-                TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
-                Characters::CString::Copy (cmdLineBuf, std::size (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
+        DWORD createProcFlags{NORMAL_PRIORITY_CLASS};
+        if (options.fCreateNoWindow) {
+            createProcFlags |= CREATE_NO_WINDOW;
+        }
+        else if (options.fDetached.value_or (false)) {
+            // DETACHED_PROCESS ignored if CREATE_NO_WINDOW
+            createProcFlags |= DETACHED_PROCESS;
+        }
 
-                optional<filesystem::path> useEXEPath = executable;
+        {
+            // UNCLEAR; visual studio system() impl uses true; docs not clear
+            // BUT - when I use false I get "unknown file: error: C++ exception with description "Spawned program 'echo hi mom' failed: error: 1" thrown in the test body." for some tests
+            bool bInheritHandles = true;
 
-                // WARN if EXE not in path...
+            TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
+            Characters::CString::Copy (cmdLineBuf, std::size (cmdLineBuf), cmdLine.As<String> ().AsSDKString ().c_str ());
+
+            optional<filesystem::path> useEXEPath = executable;
+
+            // WARN if EXE not in path...
 #if qStroika_Foundation_Debug_AssertionsChecked
-                if (useEXEPath) {
-                    if (!FindExecutableInPath (*useEXEPath)) {
-                        DbgTrace ("Warning: Cannot find exe '{}' in PATH ({})"_f, useEXEPath, kPath ());
+            if (useEXEPath) {
+                if (!FindExecutableInPath (*useEXEPath)) {
+                    DbgTrace ("Warning: Cannot find exe '{}' in PATH ({})"_f, useEXEPath, kPath ());
+                }
+            }
+            else {
+                // not sure we want to do this? - since first thing could be magic interpreted by shell, like set
+                auto cmdArgs = cmdLine.GetArguments ();
+                if (cmdArgs.size () >= 1) {
+                    filesystem::path exe2Find = cmdArgs[0].As<filesystem::path> ();
+                    if (!FindExecutableInPath (exe2Find)) {
+                        DbgTrace ("Warning: Cannot find exe '{}' in PATH ({})"_f, exe2Find, kPath ());
                     }
                 }
-                else {
-                    // not sure we want to do this? - since first thing could be magic interpreted by shell, like set
-                    auto cmdArgs = cmdLine.GetArguments ();
-                    if (cmdArgs.size () >= 1) {
-                        filesystem::path exe2Find = cmdArgs[0].As<filesystem::path> ();
-                        if (!FindExecutableInPath (exe2Find)) {
-                            DbgTrace ("Warning: Cannot find exe '{}' in PATH ({})"_f, exe2Find, kPath ());
-                        }
-                    }
-                }
+            }
 #endif
 
-                unique_ptr<String2ContigArrayCStrs_<SDKChar>> envBuffer;
-                LPVOID                                        lpEnvironment = nullptr;
-                if (options.fEnvironment) {
-                    if (auto oep = get_if<Sequence<filesystem::path>> (&options.fEnvironment.value ())) {
-                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*oep));
-                    }
-                    else if (auto om = get_if<Mapping<String, String>> (&options.fEnvironment.value ())) {
-                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*om));
-                    }
-                    else if (auto oms = get_if<Mapping<SDKString, SDKString>> (&options.fEnvironment.value ())) {
-                        envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*oms));
-                    }
-                    AssertNotNull (envBuffer);
-                    lpEnvironment = envBuffer->fBytesBuffer.data (); // need to adjust createProcFlags for type used...
-                    if constexpr (same_as<SDKChar, wchar_t>) {
-                        createProcFlags |= CREATE_UNICODE_ENVIRONMENT;
-                    }
+            unique_ptr<String2ContigArrayCStrs_<SDKChar>> envBuffer;
+            LPVOID                                        lpEnvironment = nullptr;
+            if (options.fEnvironment) {
+                if (auto oep = get_if<Sequence<filesystem::path>> (&options.fEnvironment.value ())) {
+                    envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*oep));
                 }
-
-                // see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa
-                // for complex rules for interpreting nullptr in appname (first) arg, and cmdLineBuf... But mostly - the idea - is
-                // it runs the search path algorithm and tries to do the right thing
-                Execution::Platform::Windows::ThrowIfZeroGetLastError (
-                    ::CreateProcess (useEXEPath == nullopt ? nullptr : useEXEPath->c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
-                                     createProcFlags, lpEnvironment, useCWD.c_str (), &startInfo, &processInfo));
+                else if (auto om = get_if<Mapping<String, String>> (&options.fEnvironment.value ())) {
+                    envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*om));
+                }
+                else if (auto oms = get_if<Mapping<SDKString, SDKString>> (&options.fEnvironment.value ())) {
+                    envBuffer = make_unique<String2ContigArrayCStrs_<SDKChar>> (getEnv_ (*oms));
+                }
+                AssertNotNull (envBuffer);
+                lpEnvironment = envBuffer->fBytesBuffer.data (); // need to adjust createProcFlags for type used...
+                if constexpr (same_as<SDKChar, wchar_t>) {
+                    createProcFlags |= CREATE_UNICODE_ENVIRONMENT;
+                }
             }
 
-            if (runningPID != nullptr) {
-                runningPID->store (processInfo.dwProcessId);
-            }
+            // see https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa
+            // for complex rules for interpreting nullptr in appname (first) arg, and cmdLineBuf... But mostly - the idea - is
+            // it runs the search path algorithm and tries to do the right thing
+            Execution::Platform::Windows::ThrowIfZeroGetLastError (
+                ::CreateProcess (useEXEPath == nullopt ? nullptr : useEXEPath->c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
+                                 createProcFlags, lpEnvironment, useCWD.c_str (), &startInfo, &processInfo));
+        }
 
-            {
-                /*
+        if (runneeDetails != nullptr) {
+            runneeDetails->fRunningPID.store (processInfo.dwProcessId);
+        }
+
+        {
+            /*
                  * Remove our copy of the stdin/stdout/stderr which belong to the child (so EOF will work properly).
                  */
-                jStdin[1].Close ();
-                jStdout[0].Close ();
-                jStderr[0].Close ();
+            jStdin[1].Close ();
+            jStdout[0].Close ();
+            jStderr[0].Close ();
+        }
+
+        AutoHANDLE_& useSTDIN = jStdin[0];
+        Assert (jStdin[1] == INVALID_HANDLE_VALUE);
+        AutoHANDLE_& useSTDOUT = jStdout[1];
+        Assert (jStdout[0] == INVALID_HANDLE_VALUE);
+        AutoHANDLE_& useSTDERR = jStderr[1];
+        Assert (jStderr[0] == INVALID_HANDLE_VALUE);
+
+        constexpr size_t kStackBufReadAtATimeSize_ = 10 * 1024;
+
+        auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const OutputStream::Ptr<byte>& o) {
+            if (p == INVALID_HANDLE_VALUE) {
+                return;
             }
-
-            AutoHANDLE_& useSTDIN = jStdin[0];
-            Assert (jStdin[1] == INVALID_HANDLE_VALUE);
-            AutoHANDLE_& useSTDOUT = jStdout[1];
-            Assert (jStdout[0] == INVALID_HANDLE_VALUE);
-            AutoHANDLE_& useSTDERR = jStderr[1];
-            Assert (jStderr[0] == INVALID_HANDLE_VALUE);
-
-            constexpr size_t kStackBufReadAtATimeSize_ = 10 * 1024;
-
-            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const OutputStream::Ptr<byte>& o) {
-                if (p == INVALID_HANDLE_VALUE) {
-                    return;
+            byte buf[kReadBufSize_];
+#if qUsePeekNamedPipe_
+            DWORD nBytesAvail{};
+#endif
+            DWORD nBytesRead{};
+            // Read normally blocks, we don't want to because we may need to write more before it can output
+            // and we may need to timeout
+            while (
+#if qUsePeekNamedPipe_
+                ::PeekNamedPipe (p, nullptr, nullptr, nullptr, &nBytesAvail, nullptr) and nBytesAvail != 0 and
+#endif
+                ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and nBytesRead > 0) {
+                if (o != nullptr) {
+                    o.Write (span{buf, nBytesRead});
                 }
-                byte buf[kReadBufSize_];
-#if qUsePeekNamedPipe_
-                DWORD nBytesAvail{};
-#endif
-                DWORD nBytesRead{};
-                // Read normally blocks, we don't want to because we may need to write more before it can output
-                // and we may need to timeout
-                while (
-#if qUsePeekNamedPipe_
-                    ::PeekNamedPipe (p, nullptr, nullptr, nullptr, &nBytesAvail, nullptr) and nBytesAvail != 0 and
-#endif
-                    ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and nBytesRead > 0) {
-                    if (o != nullptr) {
-                        o.Write (span{buf, nBytesRead});
-                    }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    buf[(nBytesRead == std::size (buf)) ? (std::size (buf) - 1) : nBytesRead] = byte{'\0'};
-                    DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, p, nBytesRead, buf);
+                buf[(nBytesRead == std::size (buf)) ? (std::size (buf) - 1) : nBytesRead] = byte{'\0'};
+                DbgTrace ("read from process (fd={}) nBytesRead = {}: {}"_f, p, nBytesRead, buf);
 #endif
-                }
-            };
+            }
+        };
 
-            if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
+        if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
+            {
                 {
-                    {
-                        /*
-                         * Set the pipe endpoints to non-blocking mode.
-                         */
-                        auto mkPipeNoWait_ = [] (HANDLE ioHandle) -> void {
-                            if (ioHandle != INVALID_HANDLE_VALUE) {
-                                DWORD mode = 0;
-                                Verify (::GetNamedPipeHandleState (ioHandle, &mode, nullptr, nullptr, nullptr, nullptr, 0));
-                                mode |= PIPE_NOWAIT;
-                                Verify (::SetNamedPipeHandleState (ioHandle, &mode, nullptr, nullptr));
-                            }
-                        };
-                        mkPipeNoWait_ (useSTDIN);
-                        mkPipeNoWait_ (useSTDOUT);
-                        mkPipeNoWait_ (useSTDERR);
-                    }
-
                     /*
-                     *  Fill child-process' stdin with the source document.
+                     * Set the pipe endpoints to non-blocking mode.
                      */
-                    if (in != nullptr) {
-                        byte stdinBuf[kStackBufReadAtATimeSize_];
-                        // blocking read to 'in' til it reaches EOF (returns 0)
-                        while (size_t nbytes = in.ReadBlocking (span{stdinBuf}).size ()) {
-                            Assert (nbytes <= std::size (stdinBuf));
-                            const byte* p = begin (stdinBuf);
-                            const byte* e = p + nbytes;
-                            while (p < e) {
-                                DWORD written = 0;
-                                if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
-                                    DWORD lastErr = ::GetLastError ();
-                                    // sometimes we fail because the target process hasn't read enough and the pipe is full.
-                                    // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
-                                    // documentation about what WriteFile () returns in this case... So there maybe other errors
-                                    // that are innocuous that may cause is to prematurely terminate our 'RunExternalProcess'.
-                                    //      -- LGP 2009-05-07
-                                    if (lastErr != ERROR_SUCCESS and lastErr != ERROR_NO_MORE_FILES and lastErr != ERROR_PIPE_BUSY and
-                                        lastErr != ERROR_NO_DATA) {
-                                        DbgTrace ("in RunExternalProcess_ - throwing {} while fill in stdin"_f, lastErr);
-                                        ThrowSystemErrNo (lastErr);
-                                    }
+                    auto mkPipeNoWait_ = [] (HANDLE ioHandle) -> void {
+                        if (ioHandle != INVALID_HANDLE_VALUE) {
+                            DWORD mode = 0;
+                            Verify (::GetNamedPipeHandleState (ioHandle, &mode, nullptr, nullptr, nullptr, nullptr, 0));
+                            mode |= PIPE_NOWAIT;
+                            Verify (::SetNamedPipeHandleState (ioHandle, &mode, nullptr, nullptr));
+                        }
+                    };
+                    mkPipeNoWait_ (useSTDIN);
+                    mkPipeNoWait_ (useSTDOUT);
+                    mkPipeNoWait_ (useSTDERR);
+                }
+
+                /*
+                 *  Fill child-process' stdin with the source document.
+                 */
+                if (in != nullptr) {
+                    byte stdinBuf[kStackBufReadAtATimeSize_];
+                    // blocking read to 'in' til it reaches EOF (returns 0)
+                    while (size_t nbytes = in.ReadBlocking (span{stdinBuf}).size ()) {
+                        Assert (nbytes <= std::size (stdinBuf));
+                        const byte* p = begin (stdinBuf);
+                        const byte* e = p + nbytes;
+                        while (p < e) {
+                            DWORD written = 0;
+                            if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
+                                DWORD lastErr = ::GetLastError ();
+                                // sometimes we fail because the target process hasn't read enough and the pipe is full.
+                                // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
+                                // documentation about what WriteFile () returns in this case... So there maybe other errors
+                                // that are innocuous that may cause is to prematurely terminate our 'RunExternalProcess'.
+                                //      -- LGP 2009-05-07
+                                if (lastErr != ERROR_SUCCESS and lastErr != ERROR_NO_MORE_FILES and lastErr != ERROR_PIPE_BUSY and lastErr != ERROR_NO_DATA) {
+                                    DbgTrace ("in RunExternalProcess_ - throwing {} while fill in stdin"_f, lastErr);
+                                    ThrowSystemErrNo (lastErr);
                                 }
-                                Assert (written <= static_cast<size_t> (e - p));
-                                p += written;
-                                // in case we are failing to write to the stdIn because of blocked output on an outgoing pipe
-                                if (p < e) {
-                                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
-                                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
-                                }
-                                if (p < e and written == 0) {
-                                    // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
-                                    // send it data - back off a little
-                                    Sleep (100ms);
-                                }
+                            }
+                            Assert (written <= static_cast<size_t> (e - p));
+                            p += written;
+                            // in case we are failing to write to the stdIn because of blocked output on an outgoing pipe
+                            if (p < e) {
+                                readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
+                                readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
+                            }
+                            if (p < e and written == 0) {
+                                // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
+                                // send it data - back off a little
+                                Sleep (100ms);
+                            }
 #if 0
                                     // Do timeout handling at a higher level
                                     if (Time::GetTickCount () > timeoutAt) {
@@ -1225,103 +1222,122 @@ namespace {
                                         Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
                                     }
 #endif
-                            }
                         }
                     }
-
-                    // in case invoked sub-process is reading, and waiting for EOF before processing...
-                    useSTDIN.Close ();
                 }
 
+                // in case invoked sub-process is reading, and waiting for EOF before processing...
+                useSTDIN.Close ();
+            }
+
+            /*
+             *  Must keep reading while waiting - in case the child emits so much information that it
+             *  fills the OS PIPE buffer.
+             */
+            int timesWaited = 0;
+            while (true) {
                 /*
-                 *  Must keep reading while waiting - in case the child emits so much information that it
-                 *  fills the OS PIPE buffer.
+                 *  It would be nice to be able to WAIT on the PIPEs - but that doesn't appear to work when they
+                 *  are in ASYNCRONOUS mode.
+                 *
+                 *  So - instead - just wait a very short period, and then retry polling the pipes for more data.
+                 *          -- LGP 2006-10-17
                  */
-                int timesWaited = 0;
-                while (true) {
-                    /*
-                     *  It would be nice to be able to WAIT on the PIPEs - but that doesn't appear to work when they
-                     *  are in ASYNCRONOUS mode.
-                     *
-                     *  So - instead - just wait a very short period, and then retry polling the pipes for more data.
-                     *          -- LGP 2006-10-17
-                     */
-                    HANDLE events[1] = {processInfo.hProcess};
+                HANDLE events[1] = {processInfo.hProcess};
 
-                    // We don't want to busy wait too much, but if its fast (with java, that's rare ;-)) don't want to wait
-                    // too long needlessly...
-                    //
-                    // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
-                    // process actually finishes, it will change state and the wait should return immediately.
-                    double remainingTimeout = (timesWaited <= 5) ? 0.1 : 0.5;
-                    DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (std::size (events)), events, false,
-                                                                        static_cast<int> (remainingTimeout * 1000));
-                    ++timesWaited;
-
-                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
-                    readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
-                    switch (waitResult) {
-                        case WAIT_OBJECT_0: {
-                            DbgTrace ("external process finished (DONE)"_f);
-                            //                              timeoutAt = -1.0f;  // force out of loop
-                            goto DoneWithProcess;
-                        } break;
-                        case WAIT_TIMEOUT: {
-                            DbgTrace ("still waiting for external process output (WAIT_TIMEOUT)"_f);
-                        }
-                    }
-                }
-
-            DoneWithProcess:
-                DWORD processExitCode{};
-                Verify (::GetExitCodeProcess (processInfo.hProcess, &processExitCode));
-
-                SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-                SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+                // We don't want to busy wait too much, but if its fast (with java, that's rare ;-)) don't want to wait
+                // too long needlessly...
+                //
+                // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
+                // process actually finishes, it will change state and the wait should return immediately.
+                double remainingTimeout = (timesWaited <= 5) ? 0.1 : 0.5;
+                DWORD  waitResult =
+                    ::WaitForMultipleObjects (static_cast<DWORD> (std::size (events)), events, false, static_cast<int> (remainingTimeout * 1000));
+                ++timesWaited;
 
                 readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
                 readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
-
-                if (processResult == nullptr) {
-                    if (processExitCode != 0) {
-                        Throw (ProcessRunner::Exception{"Child process failed"sv, nullopt, processExitCode});
+                switch (waitResult) {
+                    case WAIT_OBJECT_0: {
+                        DbgTrace ("external process finished (DONE)"_f);
+                        //                              timeoutAt = -1.0f;  // force out of loop
+                        goto DoneWithProcess;
+                    } break;
+                    case WAIT_TIMEOUT: {
+                        DbgTrace ("still waiting for external process output (WAIT_TIMEOUT)"_f);
                     }
                 }
-                else {
-                    processResult->store (ProcessRunner::ProcessResultType{static_cast<int> (processExitCode)});
+            }
+
+        DoneWithProcess:
+            DWORD processExitCode{};
+            Verify (::GetExitCodeProcess (processInfo.hProcess, &processExitCode));
+
+            SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+            SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+
+            readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
+            readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
+
+            if (runneeDetails == nullptr) {
+                if (processExitCode != 0) {
+                    Throw (ProcessRunner::Exception{"Child process failed"sv, nullopt, processExitCode});
                 }
             }
-        }
-        catch (...) {
-            // sadly and confusingly, CreateProcess() appears to set processInfo.hProcess and processInfo.hThread to nullptr - at least on some failures
-            if (processInfo.hProcess != INVALID_HANDLE_VALUE and processInfo.hProcess != nullptr) {
-                (void)::TerminateProcess (processInfo.hProcess, static_cast<UINT> (-1)); // if it exceeded the timeout - kill it
-                SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-                SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+            else {
+                DbgTrace ("storing process result {}"_f, static_cast<int> (processExitCode));
+                runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{static_cast<int> (processExitCode)});
             }
-            ReThrow ();
         }
+    }
+    catch (...) {
+        // sadly and confusingly, CreateProcess() appears to set processInfo.hProcess and processInfo.hThread to nullptr - at least on some failures
+        if (processInfo.hProcess != INVALID_HANDLE_VALUE and processInfo.hProcess != nullptr) {
+            (void)::TerminateProcess (processInfo.hProcess, static_cast<UINT> (-1)); // if it exceeded the timeout - kill it
+            SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+            SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+        }
+        ReThrow ();
     }
 }
 #endif
 
-function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID)
+tuple<function<void ()>, shared_ptr<ProcessRunner::DetailedRunnableRep_>> ProcessRunner::CreateDetailedRunnable_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{"ProcessRunner::CreateRunnable_"};
+    TraceContextBumper ctx{"ProcessRunner::CreateDetailedRunnable_"};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return [processResult, runningPID, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_,
-            err = fStdErr_] () {
+    auto                                           resultDetails = make_shared<DetailedRunnableRep_> ();
+    return make_tuple (
+        [resultDetails, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_, err = fStdErr_] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
+            TraceContextBumper ctx{"ProcessRunner::CreateDetailedRunnable_::{}::Runner..."};
+#endif
+            auto            activity = LazyEvalActivity{[&] () { return "executing '{}'"_f(cmdLine); }};
+            DeclareActivity currentActivity{&activity};
+#if qStroika_Foundation_Common_Platform_POSIX
+            Process_Runner_POSIX_ (resultDetails, exe, cmdLine, options, in, out, err);
+#elif qStroika_Foundation_Common_Platform_Windows
+            Process_Runner_Windows_ (resultDetails, exe, cmdLine, options, in, out, err);
+#endif
+        },
+        resultDetails);
+}
+function<void ()> ProcessRunner::CreateSimpleRunnable_ ()
+{
+    TraceContextBumper                             ctx{"ProcessRunner::CreateSimpleRunnable_"};
+    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    return [exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_, err = fStdErr_] () {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        TraceContextBumper ctx{"ProcessRunner::CreateSimpleRunnable_::{}::Runner..."};
 #endif
         auto            activity = LazyEvalActivity{[&] () { return "executing '{}'"_f(cmdLine); }};
         DeclareActivity currentActivity{&activity};
 #if qStroika_Foundation_Common_Platform_POSIX
-        Process_Runner_POSIX_ (processResult, runningPID, exe, cmdLine, options, in, out, err);
+        Process_Runner_POSIX_ (nullptr, exe, cmdLine, options, in, out, err);
 #elif qStroika_Foundation_Common_Platform_Windows
-        Process_Runner_Windows_ (processResult, runningPID, exe, cmdLine, options, in, out, err);
+        Process_Runner_Windows_ (nullptr, exe, cmdLine, options, in, out, err);
 #endif
     };
 }
