@@ -268,7 +268,12 @@ namespace Stroika::Foundation::Execution {
             optional<ExitStatusType> fExitStatus;
             optional<SignalID>       fTerminatedByUncaughtSignalNumber;
 
-            void ThrowIfFailed ();
+            nonvirtual void ThrowIfFailed ();
+
+            /**
+             *  Purely for debugging / diagnostic purposes. Don't count on this format.
+             */
+            nonvirtual String ToString () const;
         };
 
     public:
@@ -610,6 +615,12 @@ namespace Stroika::Foundation::Execution {
          *   If the process is still running, terminate it.
          */
         nonvirtual void Terminate ();
+
+    public:
+        /**
+         *  Purely for debugging / diagnostic purposes. Don't count on this format.
+         */
+        nonvirtual String ToString () const;
 
     private:
         struct Rep_ {

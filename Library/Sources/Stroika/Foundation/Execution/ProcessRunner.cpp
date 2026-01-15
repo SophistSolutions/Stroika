@@ -313,6 +313,23 @@ void ProcessRunner::ProcessResultType::ThrowIfFailed ()
     }
 }
 
+String ProcessRunner::ProcessResultType::ToString () const
+{
+    StringBuilder sb;
+    sb << "{";
+    if (fExitStatus) {
+        sb << "exitStatus: " << fExitStatus;
+    }
+    if (fTerminatedByUncaughtSignalNumber) {
+        if (fExitStatus) {
+            sb << ", ";
+        }
+        sb << "terminatedByUncaughtSignalNumber: " << fTerminatedByUncaughtSignalNumber;
+    }
+    sb << "}";
+    return sb;
+}
+
 /*
  ********************************************************************************
  **************** Execution::ProcessRunner::BackgroundProcess *******************
@@ -398,6 +415,17 @@ void ProcessRunner::BackgroundProcess::Terminate ()
         AssertNotImplemented ();
 #endif
     }
+}
+String ProcessRunner::BackgroundProcess::ToString () const
+{
+    StringBuilder sb;
+    sb << "{";
+    if (fRep_ and fRep_->fDetailedRunnableRep_) {
+        sb << "processID: " << fRep_->fDetailedRunnableRep_->fRunningPID.load ();
+        sb << ", processResult: " << fRep_->fDetailedRunnableRep_->fProcessResult.load ();
+    }
+    sb << "}";
+    return sb;
 }
 
 /*
@@ -1308,7 +1336,7 @@ tuple<function<void ()>, shared_ptr<ProcessRunner::DetailedRunnableRep_>> Proces
     TraceContextBumper ctx{"ProcessRunner::CreateDetailedRunnable_"};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    auto                                           resultDetails = make_shared<DetailedRunnableRep_> ();
+    auto                                           resultDetails = MakeSharedPtr<DetailedRunnableRep_> ();
     return make_tuple (
         [resultDetails, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_, err = fStdErr_] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
