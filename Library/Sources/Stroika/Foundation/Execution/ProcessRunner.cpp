@@ -23,13 +23,15 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #if qStroika_Foundation_Common_Platform_Windows
-#include "Platform/Windows/Exception.h"
+#include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Module.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Execution/WaitForIOReady.h"
 #include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include "Stroika/Foundation/IO/FileSystem/FileUtils.h"
@@ -40,9 +42,6 @@
 #include "Stroika/Foundation/Streams/BinaryToText.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
-
-#include "Sleep.h"
-#include "Thread.h"
 
 #include "ProcessRunner.h"
 
@@ -443,7 +442,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Options& o)
 }
 
 void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& error,
-                         ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
+                         Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
     auto               activity = LazyEvalActivity ([this] () -> String { return "running '{}'"_f(this->GetCommandLine ()); });
@@ -453,12 +452,12 @@ void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::P
         fStdOut_ = out;
         fStdErr_ = error;
         Synchronized<optional<ProcessResultType>> pr;
-        CreateRunnable_ (&pr, nullptr, progress) ();
+        CreateRunnable_ (&pr, nullptr) ();
         pr->value_or (ProcessResultType{}).ThrowIfFailed ();
     }
     else {
         // Use 'BackgroundProcess' to get a thread we can interrupt when time is up, for timeout
-        BackgroundProcess       bp      = RunInBackground (in, out, error, progress);
+        BackgroundProcess       bp      = RunInBackground (in, out, error);
         [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { bp.Terminate (); });
         bp.Join (timeout);
         bp.PropagateIfException ();
@@ -466,35 +465,35 @@ void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::P
         bp.GetProcessResult ().value_or (ProcessResultType{}).ThrowIfFailed ();
     }
 }
-void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
+
+void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater /*progress*/, Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"}; //DEPREACTED API.... LOSE
     if (timeout == Time::kInfinity) {
         if (processResult == nullptr) {
-            CreateRunnable_ (nullptr, nullptr, progress) ();
+            CreateRunnable_ (nullptr, nullptr) ();
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
             [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
-            CreateRunnable_ (&pr, nullptr, progress) ();
+            CreateRunnable_ (&pr, nullptr) ();
         }
     }
     else {
         if (processResult == nullptr) {
-            Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
+            Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
             [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
-            Thread::Ptr t = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
+            Thread::Ptr t = Thread::New (CreateRunnable_ (&pr, nullptr), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
     }
 }
 
-auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress,
-                         Time::DurationSeconds timeout) -> tuple<String, String>
+auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& stringOpts, Time::DurationSeconds timeout) -> tuple<String, String>
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     MemoryStream::Ptr<byte>                         useStdIn  = MemoryStream::New<byte> ();
@@ -514,7 +513,7 @@ auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& strin
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
-        Run (useStdIn, useStdOut, useStdErr, progress, timeout);
+        Run (useStdIn, useStdOut, useStdErr, timeout);
 
         // get and return results from 'useStdOut' etc
         Assert (useStdOut.GetReadOffset () == 0);
@@ -544,32 +543,56 @@ auto ProcessRunner::Run (const String& cmdStdInValue, const StringOptions& strin
 }
 
 ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out,
-                                                                 const OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress)
+                                                                 const OutputStream::Ptr<byte>& error)
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
     this->fStdIn_  = in;
     this->fStdOut_ = out;
     this->fStdErr_ = error;
     BackgroundProcess result;
-    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID, progress), Thread::eAutoStart,
-                                                "ProcessRunner background thread"sv);
+    result.fRep_->fProcessRunner =
+        Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID), Thread::eAutoStart, "ProcessRunner background thread"sv);
     return result;
 }
 
-ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor::Updater progress)
+ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor::Updater /*progress*/)
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"}; // DEPRECATED OVERLOAD
     BackgroundProcess  result;
-    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID, progress), Thread::eAutoStart,
-                                                "ProcessRunner background thread"sv);
+    result.fRep_->fProcessRunner =
+        Thread::New (CreateRunnable_ (&result.fRep_->fResult, &result.fRep_->fPID), Thread::eAutoStart, "ProcessRunner background thread"sv);
     return result;
+}
+
+ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const Streams::InputStream::Ptr<byte>&    in,
+                                                                 const Streams::OutputStream::Ptr<byte>&   out,
+                                                                 const Streams::OutputStream::Ptr<byte>&   error,
+                                                                 [[maybe_unused]] ProgressMonitor::Updater progress)
+{
+    TraceContextBumper ctx{"ProcessRunner::RunInBackground"}; // DEPRECATED OVERLOAD
+    return RunInBackground (in, out, error);
+}
+
+[[deprecated ("Since Stroika v3.0d23d")]] void ProcessRunner::Run (const Streams::InputStream::Ptr<byte>&  in,
+                                                                   const Streams::OutputStream::Ptr<byte>& out,
+                                                                   const Streams::OutputStream::Ptr<byte>& error,
+                                                                   ProgressMonitor::Updater /*progress*/, Time::DurationSeconds timeout)
+{
+    TraceContextBumper ctx{"ProcessRunner::Run"}; // DEPRECATED OVERLOAD
+    return Run (in, out, error, timeout);
+}
+[[deprecated ("Since Stroika v3.0d23d")]] tuple<Characters::String, Characters::String>
+ProcessRunner::Run (const Characters::String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
+{
+    TraceContextBumper ctx{"ProcessRunner::Run"}; // DEPRECATED OVERLOAD
+    return Run (cmdStdInValue, stringOpts, timeout);
 }
 
 #if qStroika_Foundation_Common_Platform_POSIX
 namespace {
     // @todo Good Candidate for REWRITE - this is a MESS!
-    void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
-                                ProgressMonitor::Updater progress, [[maybe_unused]] const optional<filesystem::path>& executable,
+    void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
+                                Synchronized<optional<pid_t>>* runningPID, [[maybe_unused]] const optional<filesystem::path>& executable,
                                 const CommandLine& cmdLine, const ProcessRunner::Options& options, const InputStream::Ptr<byte>& in,
                                 const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
@@ -960,8 +983,7 @@ namespace {
 
 #if qStroika_Foundation_Common_Platform_Windows
 namespace {
-    void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
-                                  Synchronized<optional<pid_t>>* runningPID, [[maybe_unused]] ProgressMonitor::Updater progress,
+    void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                   const optional<filesystem::path>& executable, const CommandLine& cmdLine, const ProcessRunner::Options& options,
                                   const InputStream::Ptr<byte>& in, const OutputStream::Ptr<byte>& out, const OutputStream::Ptr<byte>& err)
     {
@@ -1283,24 +1305,23 @@ namespace {
 }
 #endif
 
-function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult,
-                                                  Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
+function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"ProcessRunner::CreateRunnable_"};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return [processResult, runningPID, progress, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_,
-            out = fStdOut_, err = fStdErr_] () {
+    return [processResult, runningPID, exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_,
+            err = fStdErr_] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"ProcessRunner::CreateRunnable_::{}::Runner..."};
 #endif
         auto            activity = LazyEvalActivity{[&] () { return "executing '{}'"_f(cmdLine); }};
         DeclareActivity currentActivity{&activity};
 #if qStroika_Foundation_Common_Platform_POSIX
-        Process_Runner_POSIX_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
+        Process_Runner_POSIX_ (processResult, runningPID, exe, cmdLine, options, in, out, err);
 #elif qStroika_Foundation_Common_Platform_Windows
-        Process_Runner_Windows_ (processResult, runningPID, progress, exe, cmdLine, options, in, out, err);
+        Process_Runner_Windows_ (processResult, runningPID, exe, cmdLine, options, in, out, err);
 #endif
     };
 }

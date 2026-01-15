@@ -16,21 +16,19 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Process.h"
 #include "Stroika/Foundation/Execution/Signals.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
 
-#include "Process.h"
+// DEPRECATED - only while we have deprecated apis for use of progressmontior in this class
 #include "ProgressMonitor.h"
 
 /**
  *  TODO:
  *      @todo   After we lose DEPRECATED APIS (STREAM STUFF) - Run and RunInBackground can become const methods
  * 
- *      @todo   Cleanup ProcessRunner::CreateRunnable_ () to use more Finally {} based cleanup, instead
- *              of more redundant try/catch style.
- *
  *      @todo   Redo POSIX impl using vfork () or http://linux.die.net/man/3/posix_spawn
  *
  *      @todo   Fix POSIX version to use vfork() instead of fork () - but carefully! Must setup data just so.
@@ -345,11 +343,10 @@ namespace Stroika::Foundation::Execution {
          *  @see RunInBackground
          */
         nonvirtual void Run (const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out = nullptr,
-                             const Streams::OutputStream::Ptr<byte>& error = nullptr, ProgressMonitor::Updater progress = nullptr,
-                             Time::DurationSeconds timeout = Time::kInfinity);
+                             const Streams::OutputStream::Ptr<byte>& error = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
         nonvirtual tuple<Characters::String, Characters::String> Run (const Characters::String& cmdStdInValue = ""sv,
-                                                                      const StringOptions& stringOpts = {}, ProgressMonitor::Updater progress = nullptr,
-                                                                      Time::DurationSeconds timeout = Time::kInfinity);
+                                                                      const StringOptions&      stringOpts    = {},
+                                                                      Time::DurationSeconds     timeout       = Time::kInfinity);
 
     public:
         class BackgroundProcess;
@@ -366,10 +363,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see Run
          */
-        nonvirtual BackgroundProcess RunInBackground (const Streams::InputStream::Ptr<byte>&  in       = nullptr,
-                                                      const Streams::OutputStream::Ptr<byte>& out      = nullptr,
-                                                      const Streams::OutputStream::Ptr<byte>& error    = nullptr,
-                                                      ProgressMonitor::Updater                progress = nullptr);
+        nonvirtual BackgroundProcess RunInBackground (const Streams::InputStream::Ptr<byte>&  in    = nullptr,
+                                                      const Streams::OutputStream::Ptr<byte>& out   = nullptr,
+                                                      const Streams::OutputStream::Ptr<byte>& error = nullptr);
 
     private:
         /**
@@ -383,8 +379,7 @@ namespace Stroika::Foundation::Execution {
          * 
          *  \note the lifetime of the argument processResult and runningPID must exceed that of the returned function object.
          */
-        nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult,
-                                                      Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
+        nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID);
 
     private:
         optional<filesystem::path>                                     fExecutable_; // if omitted, derived from fArgs[0]
@@ -427,6 +422,20 @@ namespace Stroika::Foundation::Execution {
 
         [[deprecated ("Since Stroika v3.0d12 pass in/out/error(can be nullptr) in RunInbackground() method")]] BackgroundProcess
         RunInBackground (ProgressMonitor::Updater progress);
+
+        [[deprecated ("Since Stroika v3.0d23d")]] BackgroundProcess RunInBackground (const Streams::InputStream::Ptr<byte>&    in,
+                                                                                     const Streams::OutputStream::Ptr<byte>&   out,
+                                                                                     const Streams::OutputStream::Ptr<byte>&   error,
+                                                                                     [[maybe_unused]] ProgressMonitor::Updater progress);
+
+    public:
+        //DEPRECATED
+        [[deprecated ("Since Stroika v3.0d23d")]] void Run (const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
+                                                            const Streams::OutputStream::Ptr<byte>& error, ProgressMonitor::Updater progress,
+                                                            Time::DurationSeconds timeout = Time::kInfinity);
+        [[deprecated ("Since Stroika v3.0d23d")]] tuple<Characters::String, Characters::String>
+        Run (const Characters::String& cmdStdInValue, const StringOptions& stringOpts, ProgressMonitor::Updater progress,
+             Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
