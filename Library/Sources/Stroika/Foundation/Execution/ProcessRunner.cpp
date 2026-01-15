@@ -817,7 +817,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("In Parent Fork: child process PID={}"_f, childPID);
 #endif
-        if (runneeDetails->fRunningPID != nullptr) {
+        if (runneeDetails != nullptr) {
             runneeDetails->fRunningPID.store (childPID);
         }
         /*
