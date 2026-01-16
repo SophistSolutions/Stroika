@@ -493,8 +493,6 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
-
-
 /*
 ProcessRunner.cpp:517:91: error: reference to local binding 'prDetails' declared in enclosing function 'Stroika::Foundation::Execution::ProcessRunner::Run'
 */
@@ -502,8 +500,7 @@ ProcessRunner.cpp:517:91: error: reference to local binding 'prDetails' declared
 
 #if defined(__clang__) && !defined(__APPLE__)
 // still broken in clang++ 15
-#define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy 0
 #endif
