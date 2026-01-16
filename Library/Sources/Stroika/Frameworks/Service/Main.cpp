@@ -819,12 +819,14 @@ void Main::WindowsService::_UnInstall ()
 
     {
         SERVICE_STATUS status;
+        // clang-format off
         if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
                 Execution::ThrowSystemErrNo (e);
             }
         }
+        // clang-format on
     }
 
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::DeleteService (hService));
@@ -909,12 +911,14 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSeconds timeout
 
     {
         SERVICE_STATUS status;
+        // clang-format off
         if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
                 Execution::ThrowSystemErrNo (e);
             }
         }
+        // clang-format on
     }
 }
 
