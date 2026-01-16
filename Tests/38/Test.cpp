@@ -127,8 +127,6 @@ namespace {
     }
 }
 
-#if !qStroika_Foundation_Common_Platform_Windows
-// test not passing yet!!! on windows
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, RunInBackgroundDetached)
     {
@@ -137,15 +135,12 @@ namespace {
         Time::TimePointSeconds           startTime = Time::GetTickCount ();
         ProcessRunner::BackgroundProcess bpr =
             ProcessRunner{CommandLine{CommandLine::WrapInShell::eBash, "sleep 60"}, ProcessRunner::Options{.fDetached = true}}.RunInBackground ();
-        DbgTrace ("bpr = {}"_f, bpr);
         bpr.WaitForStarted ();
         Time::TimePointSeconds startedBy = Time::GetTickCount ();
-        DbgTrace ("after started bpr = {}"_f, bpr);
         EXPECT_TRUE (bpr.GetChildProcessID ().has_value ());
         EXPECT_TRUE ((startedBy - startTime) < Time::DurationSeconds{10}); // should be quick
     }
 }
-#endif
 
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughIntraStroikaPipe)
