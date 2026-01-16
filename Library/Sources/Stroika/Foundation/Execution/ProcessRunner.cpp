@@ -1160,8 +1160,8 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
 
         {
             /*
-                 * Remove our copy of the stdin/stdout/stderr which belong to the child (so EOF will work properly).
-                 */
+             * Remove our copy of the stdin/stdout/stderr which belong to the child (so EOF will work properly).
+             */
             jStdin[1].Close ();
             jStdout[0].Close ();
             jStderr[0].Close ();
@@ -1368,6 +1368,7 @@ tuple<function<void ()>, shared_ptr<ProcessRunner::DetailedRunnableRep_>> Proces
         },
         resultDetails);
 }
+
 function<void ()> ProcessRunner::CreateSimpleRunnable_ ()
 {
     TraceContextBumper                             ctx{"ProcessRunner::CreateSimpleRunnable_"};
