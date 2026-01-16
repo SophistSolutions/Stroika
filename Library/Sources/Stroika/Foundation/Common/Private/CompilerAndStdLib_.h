@@ -493,6 +493,22 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+
+
+/*
+ProcessRunner.cpp:517:91: error: reference to local binding 'prDetails' declared in enclosing function 'Stroika::Foundation::Execution::ProcessRunner::Run'
+*/
+#ifndef qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+// still broken in clang++ 15
+#define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#else
+#define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy 0
+#endif
+
+#endif
 /*
 /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/concepts:153:30: error: substitution into constraint expression resulted in a non-constant expression
 ..../usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/type_traits:2386:41: fatal error: recursive template instantiation exceeded maximum depth of 1024

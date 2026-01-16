@@ -502,9 +502,13 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
             CreateSimpleRunnable_ () ();
         }
         else {
-            Synchronized<optional<ProcessResultType>> pr;
             auto [runnable, prDetails]      = CreateDetailedRunnable_ ();
+#if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
+            auto pd2 = prDetails;
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->fProcessResult.load (); });
+#else
             [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
+#endif
             runnable ();
         }
     }
@@ -514,9 +518,13 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
             t.Join (timeout);
         }
         else {
-            Synchronized<optional<ProcessResultType>> pr;
             auto [runnable, prDetails]      = CreateDetailedRunnable_ ();
+#if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
+            auto pd2 = prDetails;
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->fProcessResult.load (); });
+#else
             [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
+#endif
             Thread::Ptr             t       = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
