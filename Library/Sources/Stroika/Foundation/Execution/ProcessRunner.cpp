@@ -986,23 +986,21 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
         // throw / warn if result other than child exited normally
         if (runneeDetails != nullptr) {
             // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-            runneeDetails->fProcessResult, store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (),
+            runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (),
                                                                                    WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
         }
         else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
             // @todo fix this message
             DbgTrace ("childPID={}, result={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, static_cast<int> (childPID),
                       result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
-            if (processResult == nullptr) {
-                StringBuilder stderrMsg;
-                if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
-                    stderrMsg << "..."sv;
-                    stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
-                }
-                stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
-                Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (), WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
-                                                WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
+            StringBuilder stderrMsg;
+            if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
+                stderrMsg << "..."sv;
+                stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
             }
+            stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
+            Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (), WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
+                                            WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
         }
     }
 }
