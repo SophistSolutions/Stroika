@@ -1015,7 +1015,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
             if (runneeDetails != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
                 runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{
-                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> {}, WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> {}});
+                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<int>{}, WIFSIGNALED (status) ? WTERMSIG (status) : optional<int>{}});
             }
             else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
@@ -1213,6 +1213,14 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
             }
         };
 
+        if (options.fDetached) {
+            Assert (useSTDIN == INVALID_HANDLE_VALUE and useSTDOUT == INVALID_HANDLE_VALUE and useSTDERR == INVALID_HANDLE_VALUE); // so should skip read/write
+            SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+            SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+            return;
+        }
+
+        Assert (processInfo.hProcess != INVALID_HANDLE_VALUE); // not sure why I have if test here - think throw above should prevent this from being INVALID_HANDLE_VALUE --LGP 2026-01-16
         if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
             {
                 {
@@ -1382,7 +1390,8 @@ tuple<function<void ()>, shared_ptr<ProcessRunner::DetailedRunnableRep_>> Proces
 
 function<void ()> ProcessRunner::CreateSimpleRunnable_ ()
 {
-    TraceContextBumper                             ctx{"ProcessRunner::CreateSimpleRunnable_"};
+    TraceContextBumper ctx{"ProcessRunner::CreateSimpleRunnable_"};
+    Assert (not fOptions_.fDetached); // for now at least, assume detached case handled in details create runner
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return [exe = this->fExecutable_, cmdLine = this->fArgs_, options = fOptions_, in = fStdIn_, out = fStdOut_, err = fStdErr_] () {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
