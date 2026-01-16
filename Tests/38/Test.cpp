@@ -131,7 +131,7 @@ namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, RunInBackgroundDetached)
     {
         // @todo what fixed - redo EchoHiMomThroughIntraStroikaPipe with RunInBackgroundDetached (as its comment suggests)
-        Debug::TraceContextBumper ctx{"RunInBackgroundDetached"};
+        Debug::TraceContextBumper        ctx{"RunInBackgroundDetached"};
         Time::TimePointSeconds           startTime = Time::GetTickCount ();
         ProcessRunner::BackgroundProcess bpr =
             ProcessRunner{CommandLine{CommandLine::WrapInShell::eBash, "sleep 60"}, ProcessRunner::Options{.fDetached = true}}.RunInBackground ();
