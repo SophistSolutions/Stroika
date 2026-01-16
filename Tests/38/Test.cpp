@@ -127,6 +127,26 @@ namespace {
     }
 }
 
+#if 0
+// test not passing yet!!!
+namespace {
+    GTEST_TEST (Foundation_Execution_ProcessRunner, RunInBackgroundDetached)
+    {
+        // @todo what fixed - redo EchoHiMomThroughIntraStroikaPipe with RunInBackgroundDetached (as its comment suggests)
+        Debug::TraceContextBumper ctx{"RunInBackgroundDetached"};
+        Time::TimePointSeconds           startTime = Time::GetTickCount ();
+        ProcessRunner::BackgroundProcess bpr =
+            ProcessRunner{CommandLine{CommandLine::WrapInShell::eBash, "sleep 60"}, ProcessRunner::Options{.fDetached = true}}.RunInBackground ();
+        DbgTrace ("bpr = {}"_f, bpr);
+        bpr.WaitForStarted ();
+        Time::TimePointSeconds startedBy = Time::GetTickCount ();
+        DbgTrace ("after started bpr = {}"_f, bpr);
+        EXPECT_TRUE (bpr.GetChildProcessID ().has_value ());
+        EXPECT_TRUE ((startedBy - startTime) < Time::DurationSeconds{10}); // should be quick
+    }
+}
+#endif
+
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, EchoHiMomThroughIntraStroikaPipe)
     {
