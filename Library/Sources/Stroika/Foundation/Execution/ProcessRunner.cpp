@@ -1004,19 +1004,18 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
         readTilEOF (useSTDOUT, out, false);
         readTilEOF (useSTDERR, err, true);
 
+        //  Wait for child if not detached (future versions might handle differently, we mix detached with not waiting for child to finish in this routine)
         if (not options.fDetached) {
-
             // not sure we need?
             int status = 0;
             int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
-                            //  Wait for child
             int result =
                 Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
             // throw / warn if result other than child exited normally
             if (runneeDetails != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
                 runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{
-                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
+                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> {}, WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> {}});
             }
             else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message

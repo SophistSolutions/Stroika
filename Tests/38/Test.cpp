@@ -127,8 +127,8 @@ namespace {
     }
 }
 
-#if 0
-// test not passing yet!!!
+#if !qStroika_Foundation_Common_Platform_Windows
+// test not passing yet!!! on windows
 namespace {
     GTEST_TEST (Foundation_Execution_ProcessRunner, RunInBackgroundDetached)
     {
