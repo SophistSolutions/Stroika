@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Execution {
              * 
              *  \note replaces the Stroika v2.1 DetachedProcessRunner API
              */
-            optional<bool> fDetached;
+            bool fDetached{false};
 
 #if qStroika_Foundation_Common_Platform_POSIX
             /**
@@ -625,9 +625,7 @@ namespace Stroika::Foundation::Execution {
     private:
         struct Rep_ {
             virtual ~Rep_ () = default;
-            Thread::CleanupPtr fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
-            //  Synchronized<optional<pid_t>>             fPID{};
-            // Synchronized<optional<ProcessResultType>> fResult{};
+            Thread::CleanupPtr               fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
             shared_ptr<DetailedRunnableRep_> fDetailedRunnableRep_;
         };
         shared_ptr<Rep_>                                               fRep_;

@@ -502,9 +502,9 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
             CreateSimpleRunnable_ () ();
         }
         else {
-            auto [runnable, prDetails]      = CreateDetailedRunnable_ ();
+            auto [runnable, prDetails] = CreateDetailedRunnable_ ();
 #if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
-            auto pd2 = prDetails;
+            auto                    pd2     = prDetails;
             [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->fProcessResult.load (); });
 #else
             [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
@@ -518,14 +518,14 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
             t.Join (timeout);
         }
         else {
-            auto [runnable, prDetails]      = CreateDetailedRunnable_ ();
+            auto [runnable, prDetails] = CreateDetailedRunnable_ ();
 #if qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy
-            auto pd2 = prDetails;
+            auto                    pd2     = prDetails;
             [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = pd2->fProcessResult.load (); });
 #else
             [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { *processResult = prDetails->fProcessResult.load (); });
 #endif
-            Thread::Ptr             t       = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner thread"_k);
+            Thread::Ptr t = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
     }
@@ -590,7 +590,12 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStre
     BackgroundProcess result;
     auto [runnable, prDetails]          = CreateDetailedRunnable_ ();
     result.fRep_->fDetailedRunnableRep_ = prDetails;
-    result.fRep_->fProcessRunner        = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner background thread"sv);
+    if (fOptions_.fDetached) {
+        runnable ();
+    }
+    else {
+        result.fRep_->fProcessRunner = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner background thread"sv);
+    }
     return result;
 }
 
@@ -600,7 +605,12 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
     BackgroundProcess  result;
     auto [runnable, prDetails]          = CreateDetailedRunnable_ ();
     result.fRep_->fDetailedRunnableRep_ = prDetails;
-    result.fRep_->fProcessRunner        = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner background thread"sv);
+    if (fOptions_.fDetached) {
+        runnable ();
+    }
+    else {
+        result.fRep_->fProcessRunner = Thread::New (runnable, Thread::eAutoStart, "ProcessRunner background thread"sv);
+    }
     return result;
 }
 
@@ -755,7 +765,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-result\"")
                 (void)::chdir (useCWD.c_str ());
                 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-result\"")
-                if (options.fDetached.value_or (false)) {
+                if (options.fDetached) {
                     /*
                      *  See http://pubs.opengroup.org/onlinepubs/007904875/functions/setsid.html
                      *  This is similar to setpgrp () but makes doing setpgrp unnecessary.
@@ -995,7 +1005,7 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
         if (runneeDetails != nullptr) {
             // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
             runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (),
-                                                                                   WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
+                                                                                  WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
         }
         else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
             // @todo fix this message
@@ -1083,7 +1093,7 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
         if (options.fCreateNoWindow) {
             createProcFlags |= CREATE_NO_WINDOW;
         }
-        else if (options.fDetached.value_or (false)) {
+        else if (options.fDetached) {
             // DETACHED_PROCESS ignored if CREATE_NO_WINDOW
             createProcFlags |= DETACHED_PROCESS;
         }
