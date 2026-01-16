@@ -182,6 +182,9 @@ namespace Stroika::Foundation::Execution {
              *      This flag is ignored if the application is not a console application, or if it is used with either CREATE_NEW_CONSOLE or DETACHED_PROCESS
              * 
              *  \note replaces the Stroika v2.1 DetachedProcessRunner API
+             * 
+             *  \note as of Stroika v3.0d23, Run () API is not compatible with fDetached=true - use RunInBackground () API instead.
+             *        This restriction may be lifted in a future release (if I can figure out what it means cleanly).
              */
             bool fDetached{false};
 
@@ -363,6 +366,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note it is perfectly legal to launch a subprocess, and not track it in any way, just ignoring (not saving)
          *        the BackgroundProcess object.
+         * 
+         *  \note if options.fDetached is true, as of Stroika v3.0d23, then we REQUIRE (in==nullptr, out==nullptr, and err==nullptr)
+         *        and this means no data is written to the detached process, and no data is read from it.
          *
          *  @see Run
          */

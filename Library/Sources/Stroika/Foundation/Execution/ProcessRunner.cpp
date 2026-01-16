@@ -473,8 +473,9 @@ void ProcessRunner::Run (const InputStream::Ptr<byte>& in, const OutputStream::P
                          Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
-    auto               activity = LazyEvalActivity ([this] () -> String { return "running '{}'"_f(this->GetCommandLine ()); });
-    DeclareActivity    currentActivity{&activity};
+    Require (not fOptions_.fDetached);
+    auto            activity = LazyEvalActivity ([this] () -> String { return "running '{}'"_f(this->GetCommandLine ()); });
+    DeclareActivity currentActivity{&activity};
     if (timeout == Time::kInfinity) {
         fStdIn_                 = in;
         fStdOut_                = out;
@@ -584,6 +585,9 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (const InputStre
                                                                  const OutputStream::Ptr<byte>& error)
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
+    if (fOptions_.fDetached) {
+        Require (in == nullptr and out == nullptr and error == nullptr); // may lift this restriction in future releases --LGP 2026-01-16
+    }
     this->fStdIn_  = in;
     this->fStdOut_ = out;
     this->fStdErr_ = error;
@@ -839,8 +843,8 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
             runneeDetails->fRunningPID.store (childPID);
         }
         /*
-            * WE ARE PARENT
-            */
+         * WE ARE PARENT
+         */
         int& useSTDIN  = jStdin[1];
         int& useSTDOUT = jStdout[0];
         int& useSTDERR = jStderr[0];
@@ -945,6 +949,10 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
             }
         };
 
+        if (options.fDetached) {
+            Assert (in == nullptr and useSTDOUT == -1 and useSTDERR == -1); // so should skip read/write
+        }
+
         if (in != nullptr) {
             byte stdinBuf[kStackBufReadAtATimeSize_];
             // read to 'in' til it reaches EOF (returns 0). But don't fully block, cuz we want to at least trickle in the stdout/stderr data
@@ -996,29 +1004,33 @@ void ProcessRunner::Process_Runner_POSIX_ (const shared_ptr<DetailedRunnableRep_
         readTilEOF (useSTDOUT, out, false);
         readTilEOF (useSTDERR, err, true);
 
-        // not sure we need?
-        int status = 0;
-        int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
-                        //  Wait for child
-        int result = Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
-        // throw / warn if result other than child exited normally
-        if (runneeDetails != nullptr) {
-            // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-            runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (),
-                                                                                  WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
-        }
-        else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
-            // @todo fix this message
-            DbgTrace ("childPID={}, result={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, static_cast<int> (childPID),
-                      result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
-            StringBuilder stderrMsg;
-            if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
-                stderrMsg << "..."sv;
-                stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
+        if (not options.fDetached) {
+
+            // not sure we need?
+            int status = 0;
+            int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
+                            //  Wait for child
+            int result =
+                Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
+            // throw / warn if result other than child exited normally
+            if (runneeDetails != nullptr) {
+                // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
+                runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{
+                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
             }
-            stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
-            Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (), WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
-                                            WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
+            else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
+                // @todo fix this message
+                DbgTrace ("childPID={}, result={}, status={}, WIFEXITED={}, WEXITSTATUS={}, WIFSIGNALED={}"_f, static_cast<int> (childPID),
+                          result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
+                StringBuilder stderrMsg;
+                if (trailingStderrBufNWritten > std::size (trailingStderrBuf)) {
+                    stderrMsg << "..."sv;
+                    stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
+                }
+                stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
+                Throw (ProcessRunner::Exception{"Spawned program"sv, stderrMsg.str (), WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
+                                                WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{}});
+            }
         }
     }
 }
