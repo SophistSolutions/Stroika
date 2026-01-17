@@ -33,11 +33,11 @@ namespace Stroika::Foundation::Execution {
         InvalidCommandLineArgument (const String& message, const String& argument);
 
     public:
-        String fArgument;
+        const String fArgument;
     };
 
     /**
-     *  Take in a 'command line' specification (typically from 'main', but also used as arguments to ProcessRunner), 
+     *  Take in a 'command line' specification (typically from main (argc,argv), but also used as arguments to ProcessRunner), 
      *  and define 'Option' objects and lookup if given arguments
      *  are 'present' in the commandline (and grab associated arguments).
      * 
