@@ -6,7 +6,7 @@
 
 Stroika is a C++ class library. The only fully supported build environment for Stroika is GNU Make. Once you have that setup, you can build through your favorite IDE. There are other build tools required, but make auto-detects these and warns what is missing.
 
-This build process is cross-platform. It supports cross-compiling, and builds on visual studio.net (windows), and Linux. Stroika also directly supports the IDEs Visual Studio.Net, and Visual Studio code.
+This build process is cross-platform. It supports cross-compiling, and builds on MacOS (XCode),  Linux (via gcc, or clang) and Windows (visual studio.net). Stroika also directly supports the IDEs Visual Studio.Net, and Visual Studio code.
 
 ---
 
@@ -56,14 +56,14 @@ If you are missing any components and just want a quick environment to test that
 UNIX:
 
 ```bash
-docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
+docker run -it sophistsolutionsinc/stroika-buildvm-ubuntu2404-small
 cat Getting-Started-With-Stroika.md
 ```
 
 Windows:
 
 ```bash
-docker run -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+docker run -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 cat Getting-Started-With-Stroika.md
 ```
 
@@ -122,7 +122,7 @@ Each configuration is stored in in a file named \${CONFIGNAME}.xml in the top-le
 - Examples of generating configurations
   - `./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --apply-default-debug-flags`
   - `./configure Debug --config-tag Unix --apply-default-debug-flags`
-  - `./configure clang++-6-release-libstdc++ --config-tag Unix --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++ --trace2file enable`
+  - `./configure clang++-20-release-libstdc++ --config-tag Unix --compiler-driver clang++20 --apply-default-release-flags --stdlib libstdc++ --trace2file enable`
   - `CXX=clang++ ./configure Debug-clang --config-tag Unix --apply-default-debug-flags`
   - `./configure g++-valgrind-debug-SSLPurify --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --sanitize none;`
 
@@ -138,7 +138,7 @@ The command-line used to generate the configuration is the first element of the 
 
 <Configuration>
     <!--Overall-->
-    <ConfigureCommandLine>configure Debug-x86_64 --build-platform VisualStudio.Net-2022 --all-available-third-party-components --config-tag Windows --config-tag x86_64 --build-by-default MSYS --arch x86_64 --apply-default-debug-flags</ConfigureCommandLine>
+    <ConfigureCommandLine>configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default MSYS --arch x86_64 --apply-default-debug-flags</ConfigureCommandLine>
     <BuildPlatform>VisualStudio.Net-2022</BuildPlatform>
     <BuildToolsRoot>C:/Program Files/Microsoft Visual Studio/2022/Community</BuildToolsRoot>
     <TargetPlatforms>Windows</TargetPlatforms>
@@ -147,14 +147,14 @@ The command-line used to generate the configuration is the first element of the 
     <BuildByDefault>MSYS</BuildByDefault>
 
     <!--Tools-->
-    <AS>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/ml64.exe</AS>
-    <CC>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/cl.exe</CC>
-    <CXX>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/cl.exe</CXX>
+    <AS>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/ml64.exe</AS>
+    <CC>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/cl.exe</CC>
+    <CXX>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/cl.exe</CXX>
     <CMAKE>C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe</CMAKE>
-    <LIBTOOL>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/lib.exe</LIBTOOL>
-    <LINKER>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/link.exe</LINKER>
-    <MIDL>C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/midl.exe</MIDL>
-    <RC>C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/rc.exe</RC>
+    <LIBTOOL>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/lib.exe</LIBTOOL>
+    <LINKER>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe</LINKER>
+    <MIDL>C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/midl.exe</MIDL>
+    <RC>C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/rc.exe</RC>
 
     <!--Features Enabled-->
     <qFeatureFlag_ATLMFC>use-system</qFeatureFlag_ATLMFC>
@@ -169,9 +169,10 @@ The command-line used to generate the configuration is the first element of the 
     <qFeatureFlag_StrawberryPerl>use</qFeatureFlag_StrawberryPerl>
     <qFeatureFlag_WinHTTP>use-system</qFeatureFlag_WinHTTP>
     <qFeatureFlag_WIX>use</qFeatureFlag_WIX>
-    <qFeatureFlag_Xerces>use</qFeatureFlag_Xerces>
+    <qFeatureFlag_Xerces>no</qFeatureFlag_Xerces>
     <qFeatureFlag_libxml2>use</qFeatureFlag_libxml2>
     <qFeatureFlag_ZLib>use</qFeatureFlag_ZLib>
+    <qFeatureFlag_zstd>use</qFeatureFlag_zstd>
     <AssertionsEnabled>1</AssertionsEnabled>
     <SanitizerFlags>address </SanitizerFlags>
 
@@ -179,31 +180,33 @@ The command-line used to generate the configuration is the first element of the 
     <CrossCompiling>false</CrossCompiling>
     <ExtraMakeDefines>
     </ExtraMakeDefines>
-    <PkgConfigNames>libxml-2.0 libmongocxx-static openssl gtest_main</PkgConfigNames>
+    <Foundation_PkgConfigNames>libxml-2.0 libmongocxx-static openssl lzma sqlite zlib libzstd gtest_main boost</Foundation_PkgConfigNames>
 
-    <!--SDK Settings-->
+    <!--Platform Settings-->
     <VSVARS_WindowsSdkDir>C:/Program Files (x86)/Windows Kits/10</VSVARS_WindowsSdkDir>
-    <VSVARS_WindowsSDKVersion>10.0.22621.0</VSVARS_WindowsSDKVersion>
+    <VSVARS_WindowsSDKVersion>10.0.26100.0</VSVARS_WindowsSDKVersion>
     <VSVARS_VSINSTALLDIR>C:/Program Files/Microsoft Visual Studio/2022/Community</VSVARS_VSINSTALLDIR>
-    <VSVARS_VCToolsInstallDir>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808</VSVARS_VCToolsInstallDir>
-    <TOOLS_PATH_ADDITIONS>C:/Program Files (x86)/HTML Help Workshop;C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/x64/;C:/Program Files (x86)/Microsoft Visual Studio/Shared/Common/VSPerfCollectionTools/vs2019/;C:/Program Files (x86)/Microsoft Visual Studio/Shared/Common/VSPerfCollectionTools/vs2019/x64;C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64;C:/Program Files (x86)/Windows Kits/10/bin/x64;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/FSharp/Tools;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/TeamFoundation/Team Explorer;C:/Program Files/Microsoft Visual Studio/2022/Community/Commo
-n7/IDE/CommonExtensions/Microsoft/TestWindow;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/VC/Linux/bin/ConnectionManagerExe;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/VC/VCPackages;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/Tools/;C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64;C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/bin/Roslyn;C:/Program Files/Microsoft Visual Studio/2022/Community/Team Tools/DiagnosticsHub/Collector;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg;C:/Windows/Microsoft.NET/Framework64/v4.0.30319;C:/tools/msys64/mingw64/bin)</TOOLS_PATH_ADDITIONS>
-    <VSVARS_PLATFORM_INCLUDES_PATH>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/ATLMFC/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/winrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/cppwinrt;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um</VSVARS_PLATFORM_INCLUDES_PATH>
+    <VSVARS_VCToolsInstallDir>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207</VSVARS_VCToolsInstallDir>
+    <VSVARS_MSVC_RUNTIME_LIBRARY>MultiThreadedDebug</VSVARS_MSVC_RUNTIME_LIBRARY>
+    <TOOLS_PATH_ADDITIONS>C:/Program Files (x86)/HTML Help Workshop;C:/Program Files (x86)/Microsoft SDKs/Windows/v10.0A/bin/NETFX 4.8 Tools/x64/;C:/Program Files (x86)/Microsoft Visual Studio/Shared/Common/VSPerfCollectionTools/vs2019/;C:/Program Files (x86)/Microsoft Visual Studio/Shared/Common/VSPerfCollectionTools/vs2019/x64;C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64;C:/Program Files (x86)/Windows Kits/10/bin/x64;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/FSharp/Tools;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/TeamFoundation/Team Explorer;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/TestWindow;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/VC/Linux/bin/ConnectionManagerExe;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/VC/VCPackages;C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/Tools/;C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64;C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/bin/Roslyn;C:/Program Files/Microsoft Visual Studio/2022/Community/Team Tools/DiagnosticsHub/Collector;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg;C:/Windows/Microsoft.NET/Framework64/v4.0.30319;C:/tools/msys64/mingw64/bin)</TOOLS_PATH_ADDITIONS>
+    <VSVARS_PLATFORM_INCLUDES_PATH>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/ucrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/um;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/shared;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/winrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/cppwinrt;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um</VSVARS_PLATFORM_INCLUDES_PATH>
 
     <!--Compiling-->
-    <INCLUDES_PATH>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/ATLMFC/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/winrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/cppwinrt;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um;C:/Sandbox/Stroika/DevRoot/Builds/Debug-x86_64/ThirdPartyComponents/include/;C:/Sandbox/Stroika/DevRoot/Library/Sources/;C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-x86_64/</INCLUDES_PATH>
-    <CPPFLAGS_NOTINCLUDES>-D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=1 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=0 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=1 -DqStroika_HasComponent_xerces=1 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1 -D_DISABLE_VECTOR_ANNOTATION -D_DISABLE_STRING_ANNOTATION -DXML_LIBRARY=1 -DXERCES_STATIC_LIBRARY=1</CPPFLAGS_NOTINCLUDES>
-    <CFLAGS>-EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</CFLAGS>
-    <CXXFLAGS>-std:c++latest -EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</CXXFLAGS>
+    <PLATFORM_CPPFLAGS_NOTINCLUDES>-D_UNICODE -DUNICODE -D_WINDOWS -D_DEBUG -D_DISABLE_VECTOR_ANNOTATION -D_DISABLE_STRING_ANNOTATION</PLATFORM_CPPFLAGS_NOTINCLUDES>
+    <PLATFORM_INCLUDES_PATH>C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/include;C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/VS/include;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/ucrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/um;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/shared;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/winrt;C:/Program Files (x86)/Windows Kits/10/include/10.0.26100.0/cppwinrt;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/include/um;C:/Sandbox/Stroika/DevRoot/Builds/Debug-x86_64/include/</PLATFORM_INCLUDES_PATH>
+    <PLATFORM_CFLAGS>-EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</PLATFORM_CFLAGS>
+    <PLATFORM_CXXFLAGS>-std:c++latest -EHsc -nologo -GR -Gd -W4 -Zc:inline -FC -bigobj -RTCsu -GS -Oy- -Od -MTd -Z7 -fsanitize=address</PLATFORM_CXXFLAGS>
+    <FOUNDATION_CPPFLAGS_NOTINCLUDES>-DqStroika_Foundation_Debug_AssertionsChecked=1 -DqStroika_HasComponent_ATLMFC=1 -DqStroika_HasComponent_boost=1 -DqStroika_HasComponent_libcurl=0 -DqStroika_HasComponent_fmtlib=0 -DqStroika_HasComponent_googletest=1 -DqStroika_HasComponent_LZMA=1 -DqStroika_HasComponent_OpenSSL=1 -DqStroika_HasComponent_sqlite=1 -DqStroika_HasComponent_mongocxxdriver=1 -DqStroika_HasComponent_WinHTTP=1 -DqStroika_HasComponent_xerces=0 -DqStroika_HasComponent_libxml2=1 -DqStroika_HasComponent_zlib=1 -DqStroika_HasComponent_zstd=1 -DqStroika_Foundation_Debug_TraceToFile=1 -DqStroika_Foundation_Debug_DefaultTracingOn=1</FOUNDATION_CPPFLAGS_NOTINCLUDES>
+    <FOUNDATION_INCLUDES_PATH>C:/Sandbox/Stroika/DevRoot/Library/Sources/</FOUNDATION_INCLUDES_PATH>
 
     <!--Linking-->
     <IncludeDebugSymbolsInLibraries>1</IncludeDebugSymbolsInLibraries>
     <IncludeDebugSymbolsInExecutables>1</IncludeDebugSymbolsInExecutables>
-    <LinkerArgs_LibPath>-LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/ATLMFC/lib/x64" -LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/lib/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/lib/um/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.22621.0/ucrt/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.22621.0/um/x64" -LIBPATH:"C:/Sandbox/Stroika/DevRoot/Builds/Debug-x86_64/ThirdPartyComponents/lib/" </LinkerArgs_LibPath>
-    <LinkerArgs_LibDependencies>Bcrypt.lib xerces-c_3D.lib lzma.lib sqlite.lib zlibstaticd.lib urlmon.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib </LinkerArgs_LibDependencies>
-    <LinkerArgs_ExtraPrefix>-DEBUG:FULL  -nologo -MACHINE:x64</LinkerArgs_ExtraPrefix>
-    <LinkerArgs_ExtraSuffix></LinkerArgs_ExtraSuffix>
-    <LinkTime_CopyFilesToEXEDir>"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/clang_rt.asan_dynamic-x86_64.dll" "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.43.34808/bin/HostX64/x64/clang_rt.asan_dynamic-x86_64.pdb"</LinkTime_CopyFilesToEXEDir>
+    <Platform_LinkerArgs_LibPath>-LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/ATLMFC/lib/x64" -LIBPATH:"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/lib/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/lib/um/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/ucrt/x64" -LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.26100.0/um/x64" </Platform_LinkerArgs_LibPath>
+    <Platform_LinkerArgs_LibDependencies>urlmon.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib </Platform_LinkerArgs_LibDependencies>
+    <Platform_LinkerArgs_ExtraPrefix>-DEBUG:FULL -noexp -noimplib -nologo -MACHINE:x64</Platform_LinkerArgs_ExtraPrefix>
+    <Platform_LinkerArgs_ExtraSuffix></Platform_LinkerArgs_ExtraSuffix>
+    <LinkTime_CopyFilesToEXEDir>"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/clang_rt.asan_dynamic-x86_64.dll" "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/clang_rt.asan_dynamic-x86_64.pdb"</LinkTime_CopyFilesToEXEDir>
 
     <!--Runtime/Testing-->
     <RunPrefix></RunPrefix>
@@ -211,7 +214,7 @@ n7/IDE/CommonExtensions/Microsoft/TestWindow;C:/Program Files/Microsoft Visual S
     <!--Compiler/Tool Bug Workarounds/Defines-->
 
     <!--VERSIONS-->
-        <!--MSVC++ version: 194334810-->
+        <!--MSVC++ version: 194435222-->
 </Configuration>
 ```
 
@@ -316,6 +319,26 @@ The reason this is so important, is that it allows an external build system like
   ### For Windows to use particular version of Windows SDK
   configure DefaultConfiguration --c-define '\#define WINVER 0x600' --c-define '\#define _WIN32_WINNT 0x600' --c-define '\#define _WIN32_WINDOWS 0x600'
   ~~~
+
+
+---
+
+## .pc files (pkgconfig)
+
+Stroika's build process leverages .pc (pkgconfig) files. It uses (requires) certain libraries via pkgconfig
+and it provides pkgconfig files for the foundation and frameworks libraries.
+
+ - Builds/${CONFIGURATION}/lib/pkgconfig/stroika-platform.pc
+   
+   Settings for std c++ library, sdk (e.g. windows), etc. This is used in building third-party-components to assure they reference a consistent version of std c++ etc libs
+ - Builds/${CONFIGURATION}/lib/pkgconfig/stroika-foundation.pc
+   
+   Stroika-specific pkg-config file the Stroika Foundation library. This contains defines controlling features Stroika was 
+     built with, and requires for the libraries Stroika was configured to depend upon
+ - Builds/${CONFIGURATION}/lib/pkgconfig/stroika-frameworks.pc
+   
+   Stroika-specific pkg-config file the Stroika Frameworks (UPNP, Test, WebServices, etc) library. This contains little except a requires of the stroika-foundation librar.
+
 
 ---
 
