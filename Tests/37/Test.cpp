@@ -137,49 +137,46 @@ namespace {
 }
 
 namespace {
-    namespace Test4_Activities_ {
-        namespace Private {
-            void T1_Basics_ ()
-            {
-                using Characters::String;
-                String argument;
-
-                [[maybe_unused]] static constexpr Activity kBuildingThingy_{L"Building thingy"sv};
-
-                // constexpr only works if we lose the virtual in ~AsStringObj_ ()
-                static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
-
-                static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
-
-                // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
-                auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
-
-                auto lazyEvalActivity = LazyEvalActivity{[&] () -> String { return argument.Repeat (5) + L"xxx"; }};
-
-                DeclareActivity active1{&kA1_};
-                DeclareActivity active2{&kOtherActivity};
-                DeclareActivity active3{&otherActivity};
-                DeclareActivity active4{&lazyEvalActivity};
-
-                try {
-                    // something that will throw
-                    Execution::Throw (Exception<> ("testing 123"));
-                }
-                catch (...) {
-                    String msg = Characters::ToString (current_exception ());
-                    EXPECT_TRUE (msg.Contains ("testing 123"));
-                    EXPECT_TRUE (msg.Contains ("a1"));
-                    EXPECT_TRUE (msg.Contains ("kOtherActivity"));
-                    EXPECT_TRUE (msg.Contains ("otherActivity"));
-                    EXPECT_TRUE (msg.Contains ("xxx"));
-                }
-            }
-        }
-    }
     GTEST_TEST (Foundation_Execution_Exceptions, Test4_Activities_)
     {
         Debug::TraceContextBumper ctx{"Test4_Activities_"};
-        Test4_Activities_::Private::T1_Basics_ ();
+        {
+            using Characters::String;
+            String argument;
+
+            [[maybe_unused]] static constexpr Activity kBuildingThingy1_{L"Building thingy"sv};
+            [[maybe_unused]] static constexpr Activity kBuildingThingy2{"Building thingy"sv};
+            [[maybe_unused]] static constexpr Activity kBuildingThingy3_{"Building thingy"};
+            [[maybe_unused]] static constexpr Activity kBuildingThingy4_{L"Building thingy"};
+            
+            // constexpr only works if we lose the virtual in ~AsStringObj_ ()
+            static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
+
+            static const auto kOtherActivity = Activity<String>{L"kOtherActivity"};
+
+            // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
+            auto otherActivity = Activity<String>{L"otherActivity" + argument}; // activities can be stack based, but these cost more to define
+
+            auto lazyEvalActivity = LazyEvalActivity{[&] () -> String { return argument.Repeat (5) + L"xxx"; }};
+
+            DeclareActivity active1{&kA1_};
+            DeclareActivity active2{&kOtherActivity};
+            DeclareActivity active3{&otherActivity};
+            DeclareActivity active4{&lazyEvalActivity};
+
+            try {
+                // something that will throw
+                Execution::Throw (Exception<> ("testing 123"));
+            }
+            catch (...) {
+                String msg = Characters::ToString (current_exception ());
+                EXPECT_TRUE (msg.Contains ("testing 123"));
+                EXPECT_TRUE (msg.Contains ("a1"));
+                EXPECT_TRUE (msg.Contains ("kOtherActivity"));
+                EXPECT_TRUE (msg.Contains ("otherActivity"));
+                EXPECT_TRUE (msg.Contains ("xxx"));
+            }
+        }
         {
             [[maybe_unused]] static const Activity test1{"performing sqlite document db employees sample on"sv};
             static const Activity test2{"performing sqlite document db employees sample on {}"}; // before Stroika 3.0d21 had trouble compiling this
