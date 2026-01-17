@@ -148,7 +148,7 @@ namespace {
             [[maybe_unused]] static constexpr Activity kBuildingThingy2{"Building thingy"sv};
             [[maybe_unused]] static constexpr Activity kBuildingThingy3_{"Building thingy"};
             [[maybe_unused]] static constexpr Activity kBuildingThingy4_{L"Building thingy"};
-            
+
             // constexpr only works if we lose the virtual in ~AsStringObj_ ()
             static constexpr const auto kA1_{Activity<wstring_view>{L"a1"sv}};
 
