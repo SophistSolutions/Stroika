@@ -153,6 +153,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
     public:
         /**
          *  Transaction object factory
+         * 
+         *  \note operations that happen OUTSIDE of a transaction are IMPLICITLY auto-committed immediately.
          */
         virtual Transaction mkTransaction () = 0;
     };
