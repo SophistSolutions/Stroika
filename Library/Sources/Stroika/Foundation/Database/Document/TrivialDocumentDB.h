@@ -46,12 +46,12 @@
 
 namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
 
-    using Characters::String;
-    using Containers::Mapping;
-    using Containers::Sequence;
-    using DataExchange::VariantValue;
-    using IO::Network::URI;
-    using Time::Duration;
+    // using Characters::String;
+    // using Containers::Mapping;
+    // using Containers::Sequence;
+    // using DataExchange::VariantValue;
+    // using IO::Network::URI;
+    // using Time::Duration;
 
     using namespace Database::Document::Connection;
 
@@ -73,9 +73,26 @@ namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
          * add options like caching (support external process sync/flock)
          *  \note NYI, but easy to add
          */
-        struct FilesystemStorage final {
+        struct SingleFileStorage final {
             /**
-             * 
+             * Where the file is stored.
+             */
+            filesystem::path fFile;
+
+            /**
+             *  Extension point so we can switch to writing files as BSON, msgpack, or some such...
+             */
+            tuple<DataExchange::Variant::Reader, DataExchange::Variant::Writer> fSerialization{DataExchange::Variant::JSON::Reader{},
+                                                                                               DataExchange::Variant::JSON::Writer{}};
+        };
+
+        /**
+         * add options like caching (support external process sync/flock)
+         *  \note NYI, but easy to add
+         */
+        struct DirectoryFileStorage final {
+            /**
+             * The directory where the files are stored.
              */
             filesystem::path fRoot;
 
@@ -89,29 +106,17 @@ namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
         /**
          * 
          */
-        variant<MemoryStorage, FilesystemStorage> fStorage;
+        variant<MemoryStorage, SingleFileStorage, DirectoryFileStorage> fStorage;
     };
 
     /**
-     * @brief &&&REWRITE
+     *  Connection provides an API for accessing a Document database.
      *
-     *  Connection provides an API for accessing an SQLite database.
-     *
-     *  A new Connection::Ptr is typically created SQLite::Connection::New()
+     *  A new Connection::Ptr is typically created
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes) - depending on its construction Options::ThreadSafety
-     *
-     *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
-     *          of Options::fThreadingMode when the database is constructed.
-     * 
-     *          @see https://www.sqlite.org/threadsafe.html
-     *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
-     * 
-     *          NOTE - two Connection::Ptr objects referring to the same underlying REP is NOT (probably) safe with SQLITE. But referring
-     *          to the same database is safe.
-     *
      */
     using Database::Document::Connection::Ptr;
 
