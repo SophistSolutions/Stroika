@@ -292,7 +292,7 @@ void Thread::Ptr::Rep_::Run_ ()
     }
     catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("in ad::Ptr::Rep_::Run_ () - saving caught exception to repropagate later ({})"_f, current_exception ());
+        DbgTrace ("in Thread::Ptr::Rep_::Run_ () - saving caught exception to repropagate later ({})"_f, current_exception ());
 #endif
         fSavedException_ = current_exception ();
         throw;

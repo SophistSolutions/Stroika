@@ -46,13 +46,6 @@
 
 namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
 
-    // using Characters::String;
-    // using Containers::Mapping;
-    // using Containers::Sequence;
-    // using DataExchange::VariantValue;
-    // using IO::Network::URI;
-    // using Time::Duration;
-
     using namespace Database::Document::Connection;
 
     using Database::Document::Connection::IRep;
