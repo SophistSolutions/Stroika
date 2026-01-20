@@ -10,6 +10,8 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -159,9 +161,12 @@ namespace {
             }
         };
 
+        MemoryDatabaseRep_ ()                          = delete;
+        MemoryDatabaseRep_ (const MemoryDatabaseRep_&) = delete;
         MemoryDatabaseRep_ ([[maybe_unused]] const Options& options)
         {
             TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MemoryDatabaseRep_"};
+            //Assert (shared_from_this ().get () == this); // only support allocating with make_shared - cannot check here cuz object not yet fully constructed
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
         {
@@ -205,15 +210,17 @@ namespace {
 
         using CollectionRep_ = Mapping<GUID, Document::Document>;
 
-        Synchronized<MemoryDatabaseRep_> fMemoryDB_;
+        const filesystem::path              fExternalFile_;
+        shared_ptr<MemoryDatabaseRep_>      fMemoryDB_; // already internally syncrhonized, must be shared_ptr cuz it uses shared_from_this
+        const DataExchange::Variant::Reader fReader_;
+        const DataExchange::Variant::Writer fWriter_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
-            const shared_ptr<SingleFileDatabaseRep_> fOwningCollectionRep_; // save to bump reference count (lifetime safety), and to force write
+            const shared_ptr<SingleFileDatabaseRep_>         fDBRep_; // save to bump reference count (lifetime safety), and to force write
+            shared_ptr<Database::Document::Collection::IRep> fDelegateTo_; // inside memorydb
 
-            shared_ptr<Database::Document::Collection::IRep> fDelegateTo_;
-
-            MyCollectionRep_ (const shared_ptr<SingleFileDatabaseRep_>& connectionRep, const shared_ptr<Database::Document::Collection::IRep>& delgateImplTo)
-                : fOwningCollectionRep_{connectionRep}
+            MyCollectionRep_ (const shared_ptr<SingleFileDatabaseRep_>& dbRep, const shared_ptr<Database::Document::Collection::IRep>& delgateImplTo)
+                : fDBRep_{dbRep}
                 , fDelegateTo_{delgateImplTo}
             {
             }
@@ -222,8 +229,9 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
-                auto id = fDelegateTo_->Add (v);
-                fOwningCollectionRep_->DoWriteToFS ();
+                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
+                auto                  id     = fDelegateTo_->Add (v);
+                fDBRep_->DoWriteToFS ();
                 return id;
             }
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
@@ -246,16 +254,18 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update()"};
 #endif
+                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 fDelegateTo_->Update (id, newV, onlyTheseFields);
-                fOwningCollectionRep_->DoWriteToFS ();
+                fDBRep_->DoWriteToFS ();
             }
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove()"};
 #endif
+                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 fDelegateTo_->Remove (id);
-                fOwningCollectionRep_->DoWriteToFS ();
+                fDBRep_->DoWriteToFS ();
             }
         };
 
@@ -274,10 +284,14 @@ namespace {
             }
         };
 
-        SingleFileDatabaseRep_ ([[maybe_unused]] const Options& options)
-            : fMemoryDB_{options}
+        SingleFileDatabaseRep_ ()                              = delete;
+        SingleFileDatabaseRep_ (const SingleFileDatabaseRep_&) = delete;
+        SingleFileDatabaseRep_ ([[maybe_unused]] const Options& options, const Options::SingleFileStorage& sfOptions)
+            : fMemoryDB_{make_shared<MemoryDatabaseRep_> (options)}
+            , fExternalFile_{sfOptions.fFile}
+            , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
+            , fWriter_{get<DataExchange::Variant::Writer> (sfOptions.fSerialization)}
         {
-            TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::SingleFileDatabaseRep_"};
             DoReadFromFS ();
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
@@ -293,37 +307,56 @@ namespace {
         }
         virtual Set<String> GetCollections () override
         {
-            return fMemoryDB_.rwget ()->GetCollections ();
+            return fMemoryDB_->GetCollections ();
         }
         virtual void CreateCollection (const String& name) override
         {
-            auto rwLock = fMemoryDB_.rwget ();
-            rwLock.rwref ().CreateCollection (name);
+            [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
+            fMemoryDB_->CreateCollection (name);
             DoWriteToFS ();
         }
         virtual void DropCollection (const String& name) override
         {
-            auto rwLock = fMemoryDB_.rwget ();
-            rwLock.rwref ().DropCollection (name);
+            [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
+            fMemoryDB_->DropCollection (name);
             DoWriteToFS ();
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
+            Document::Collection::Ptr memDBCollection = fMemoryDB_->GetCollection (name);
             return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
-                Debug::UncheckedDynamicPointerCast<SingleFileDatabaseRep_> (shared_from_this ()), fMemoryDB_.rwget ()->GetCollection (name))};
+                Debug::UncheckedDynamicPointerCast<SingleFileDatabaseRep_> (shared_from_this ()), memDBCollection)};
         }
         virtual Document::Transaction mkTransaction () override
         {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
         }
-
         void DoReadFromFS ()
         {
+            TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoReadFromFS", "path={}"_f, fExternalFile_};
             // @todo
+            DbgTrace ("Reading TrivialDocumentDB from file not yet implemented"_f);
         }
         void DoWriteToFS ()
         {
-            // @todo
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoWriteToFS()", "path={}"_f, fExternalFile_};
+#endif
+            using namespace IO::FileSystem;
+            ThroughTmpFileWriter                  tmpFile{fExternalFile_};
+            IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
+            Mapping<String, VariantValue>         collectionsAsVV;
+            for (const KeyValuePair<String, CollectionRep_>& collection : fMemoryDB_->fCollections_.load ()) {
+                Mapping<GUID, Document::Document> collectionValue = collection.fValue;
+                Mapping<String, VariantValue>     collWithStringKey;
+                for (const KeyValuePair<GUID, Document::Document>& kvp : collectionValue) {
+                    collWithStringKey.Add (kvp.fKey.ToString (), VariantValue{kvp.fValue});
+                }
+                collectionsAsVV.Add (collection.fKey, VariantValue{collWithStringKey});
+            }
+            this->fWriter_.Write (VariantValue{collectionsAsVV}, outStream);
+            outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
+            tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
         }
     };
 
@@ -447,6 +480,8 @@ namespace {
             }
         };
 
+        DirectoryFilesystemDatabaseRep_ ()                                       = delete;
+        DirectoryFilesystemDatabaseRep_ (const DirectoryFilesystemDatabaseRep_&) = delete;
         DirectoryFilesystemDatabaseRep_ ([[maybe_unused]] const Options& options)
         {
             TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DirectoryFilesystemDatabaseRep_"};
@@ -500,10 +535,10 @@ auto Document::TrivialDocumentDB::New (const Options& options) -> Ptr
     if (get_if<Options::MemoryStorage> (&options.fStorage)) {
         return Ptr{Memory::MakeSharedPtr<MemoryDatabaseRep_> (options)};
     }
-    else if (auto op = get_if<Options::SingleFileStorage> (&options.fStorage)) {
-        return Ptr{Memory::MakeSharedPtr<SingleFileDatabaseRep_> (options)};
+    else if (auto fop = get_if<Options::SingleFileStorage> (&options.fStorage)) {
+        return Ptr{Memory::MakeSharedPtr<SingleFileDatabaseRep_> (options, *fop)};
     }
-    else if (auto op = get_if<Options::DirectoryFileStorage> (&options.fStorage)) {
+    else if (auto dop = get_if<Options::DirectoryFileStorage> (&options.fStorage)) {
         return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_> (options)};
     }
     AssertNotImplemented ();
