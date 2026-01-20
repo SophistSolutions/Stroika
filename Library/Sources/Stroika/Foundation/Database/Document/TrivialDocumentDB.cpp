@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
@@ -206,6 +207,10 @@ namespace {
         }
     };
 
+    /*
+     *  Store collections in json file (leveraging MemoryDatabaseRep_ internally).
+     *     \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
+     */
     struct SingleFileDatabaseRep_ final : Database::Document::Connection::IRep {
 
         using CollectionRep_ = Mapping<GUID, Document::Document>;
@@ -333,9 +338,22 @@ namespace {
         }
         void DoReadFromFS ()
         {
+            using namespace IO::FileSystem;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoReadFromFS", "path={}"_f, fExternalFile_};
-            // @todo
-            DbgTrace ("Reading TrivialDocumentDB from file not yet implemented"_f);
+#endif
+            if (std::filesystem::exists (fExternalFile_)) {
+                auto rwLock = fMemoryDB_->fCollections_.rwget ();
+                rwLock.rwref ().clear ();
+                for (KeyValuePair<String, VariantValue> collectionAndDocument :
+                     fReader_.Read (FileInputStream::New (fExternalFile_)).As<Mapping<String, VariantValue>> ()) {
+                    rwLock.rwref ().Add (collectionAndDocument.fKey,
+                                         collectionAndDocument.fValue.As<Mapping<String, VariantValue>> ().Map<Mapping<GUID, Document::Document>> (
+                                             [&] (const KeyValuePair<String, VariantValue>& kvp) -> KeyValuePair<GUID, Document::Document> {
+                                                 return {GUID{kvp.fKey}, kvp.fValue.As<Document::Document> ()};
+                                             }));
+                }
+            }
         }
         void DoWriteToFS ()
         {
