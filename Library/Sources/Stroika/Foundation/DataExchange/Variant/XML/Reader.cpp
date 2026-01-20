@@ -38,12 +38,12 @@ public:
     {
         return ".xml"sv;
     }
-    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) const override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::BinaryToText::Reader::New (in));
     }
-    virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream::Ptr<Character>& in) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::XML::Reader::Rep_::Read"};

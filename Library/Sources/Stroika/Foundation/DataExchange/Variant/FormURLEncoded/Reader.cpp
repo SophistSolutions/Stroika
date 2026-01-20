@@ -46,12 +46,12 @@ public:
     {
         return nullopt;
     }
-    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) const override
     {
         return VariantValue{ReadAssociation (in).Map<Mapping<String, VariantValue>> (
             [] (auto i) { return KeyValuePair<String, VariantValue>{i.fKey, VariantValue{i.fValue}}; })};
     }
-    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) const override
     {
         // Treat a string as mapped to UTF-8 and interpret that, not sure if thats they best thing todo - maybe disallow/throw?
         return Read (Streams::TextToBinary::Reader::New (in));

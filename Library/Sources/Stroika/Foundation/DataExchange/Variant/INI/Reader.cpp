@@ -35,11 +35,11 @@ public:
     {
         return ".ini"sv;
     }
-    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) const override
     {
         return Read (BinaryToText::Reader::New (in));
     }
-    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::INI::Reader::Rep_::Read"};

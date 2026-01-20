@@ -60,11 +60,11 @@ namespace Stroika::Foundation::DataExchange::Variant {
     public:
         /**
          */
-        nonvirtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in);
-        nonvirtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in);
-        nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
-        nonvirtual VariantValue Read (istream& in);
-        nonvirtual VariantValue Read (wistream& in);
+        nonvirtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) const;
+        nonvirtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in) const;
+        nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in) const;
+        nonvirtual VariantValue Read (istream& in) const;
+        nonvirtual VariantValue Read (wistream& in) const;
 
     protected:
         nonvirtual _IRep&       _GetRep ();
@@ -102,11 +102,11 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     class Reader::_IRep {
     public:
-        virtual ~_IRep ()                                                                                    = default;
-        virtual _SharedPtrIRep             Clone () const                                                    = 0;
-        virtual optional<filesystem::path> GetDefaultFileSuffix () const                                     = 0;
-        virtual VariantValue               Read (const Streams::InputStream::Ptr<byte>& in)                  = 0;
-        virtual VariantValue               Read (const Streams::InputStream::Ptr<Characters::Character>& in) = 0;
+        virtual ~_IRep ()                                                                                          = default;
+        virtual _SharedPtrIRep             Clone () const                                                          = 0;
+        virtual optional<filesystem::path> GetDefaultFileSuffix () const                                           = 0;
+        virtual VariantValue               Read (const Streams::InputStream::Ptr<byte>& in) const                  = 0;
+        virtual VariantValue               Read (const Streams::InputStream::Ptr<Characters::Character>& in) const = 0;
     };
 
 }

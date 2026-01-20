@@ -480,11 +480,11 @@ public:
     {
         return ".json"sv;
     }
-    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) const override
     {
         return Read (BinaryToText::Reader::New (in, nullopt, SeekableFlag::eSeekable));
     }
-    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::NativeRep_::Read"};
@@ -779,7 +779,7 @@ public:
     {
         return ".json"sv;
     }
-    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
@@ -848,7 +848,7 @@ public:
             Throw (BadFormatException{Characters::ToString (current_exception ())});
         }
     }
-    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};

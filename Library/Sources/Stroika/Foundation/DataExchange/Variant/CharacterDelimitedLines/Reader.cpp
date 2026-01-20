@@ -50,11 +50,11 @@ public:
     {
         return ".txt"sv;
     }
-    virtual VariantValue Read (const InputStream::Ptr<byte>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<byte>& in) const override
     {
         return Read (Streams::BinaryToText::Reader::New (in));
     }
-    virtual VariantValue Read (const InputStream::Ptr<Character>& in) override
+    virtual VariantValue Read (const InputStream::Ptr<Character>& in) const override
     {
         // @todo consider if this functional style is more clear than a nested for-loop. Was harder for me to
         // write this way, but that could be my inexperience... --LGP 2022-12-04

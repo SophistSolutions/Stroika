@@ -30,25 +30,25 @@ namespace Stroika::Foundation::DataExchange::Variant {
         AssertNotNull (fRep_);
         return fRep_->GetDefaultFileSuffix ();
     }
-    inline VariantValue Reader::Read (const Streams::InputStream::Ptr<byte>& in)
+    inline VariantValue Reader::Read (const Streams::InputStream::Ptr<byte>& in) const
     {
         AssertNotNull (fRep_);
         return fRep_->Read (in);
     }
-    inline VariantValue Reader::Read (const Streams::InputStream::Ptr<Characters::Character>& in)
+    inline VariantValue Reader::Read (const Streams::InputStream::Ptr<Characters::Character>& in) const
     {
         AssertNotNull (fRep_);
         return fRep_->Read (in);
     }
-    inline VariantValue Variant::Reader::Read (const Traversal::Iterable<Characters::Character>& in)
+    inline VariantValue Variant::Reader::Read (const Traversal::Iterable<Characters::Character>& in) const
     {
         return Read (_ToCharacterReader (in));
     }
-    inline VariantValue Variant::Reader::Read (istream& in)
+    inline VariantValue Variant::Reader::Read (istream& in) const
     {
         return Read (_ToByteReader (in));
     }
-    inline VariantValue Variant::Reader::Read (wistream& in)
+    inline VariantValue Variant::Reader::Read (wistream& in) const
     {
         return Read (_ToCharacterReader (in));
     }
