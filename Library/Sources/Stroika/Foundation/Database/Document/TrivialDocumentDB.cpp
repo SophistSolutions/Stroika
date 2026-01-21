@@ -147,7 +147,6 @@ namespace {
         };
 
         struct MyTransactionRep_ final : Database::Document::Transaction::IRep {
-
             virtual void Commit () override
             {
                 // nothing todo
@@ -376,23 +375,21 @@ namespace {
         }
     };
 
+    // Store each collection in a folder under the root folder
     struct DirectoryFilesystemDatabaseRep_ final : Database::Document::Connection::IRep {
-
-        //tmphack duringtrnasion
-        // Store each collection in a folder under the root folder
         const filesystem::path              fRoot_;
-        const filesystem::path              fExternalFile_;
-        shared_ptr<MemoryDatabaseRep_>      fMemoryDB_; // already internally syncrhonized, must be shared_ptr cuz it uses shared_from_this
         const DataExchange::Variant::Reader fReader_;
         const DataExchange::Variant::Writer fWriter_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
-            const shared_ptr<SingleFileDatabaseRep_>         fDBRep_; // save to bump reference count (lifetime safety), and to force write
-            shared_ptr<Database::Document::Collection::IRep> fDelegateTo_; // inside memorydb
+            const shared_ptr<DirectoryFilesystemDatabaseRep_> fDBRep_; // save to bump reference count (lifetime safety)
+            const String                                      fName_;
+            const filesystem::path                            fCollectionRoot_;
 
-            MyCollectionRep_ (const shared_ptr<SingleFileDatabaseRep_>& dbRep, const shared_ptr<Database::Document::Collection::IRep>& delgateImplTo)
+            MyCollectionRep_ (const shared_ptr<DirectoryFilesystemDatabaseRep_>& dbRep, const String& name)
                 : fDBRep_{dbRep}
-                , fDelegateTo_{delgateImplTo}
+                , fName_{name}
+                , fCollectionRoot_{dbRep->GetCollectionFilePath_ (name)}
             {
             }
             virtual IDType Add (const Document::Document& v) override
@@ -400,17 +397,26 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
-                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                auto                  id     = fDelegateTo_->Add (v);
-                fDBRep_->DoWriteToFS ();
-                return id;
+                GUID id = GUID::GenerateNew ();
+                DoWriteToFS_ (id, VariantValue{v});
+                return id.As<IDType> ();
             }
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetOne()"};
 #endif
-                return fDelegateTo_->GetOne (id, projection);
+                if (auto od = DoReadFromFS_ (GUID{id})) {
+                    Document::Document d = *od;
+                    d.Add (Document::kID, id);
+                    if (projection) {
+                        d = projection->Apply (d);
+                    }
+                    return d;
+                }
+                else {
+                    return nullopt;
+                }
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -418,25 +424,70 @@ namespace {
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetAll()",
                                        "filter={}, projection={}"_f, filter, projection};
 #endif
-                return fDelegateTo_->GetAll (filter, projection);
+                Sequence<Document::Document> result;
+                for (const auto& entry : filesystem::directory_iterator{fCollectionRoot_}) {
+                    if (entry.path ().extension () == ".json") { // Check if the entry is a JSON file
+                        Document::Document d =
+                            fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).As<Document::Document> ();
+                        d.Add (Document::kID, entry.path ().stem ().string ());
+                        if (projection) {
+                            d = projection->Apply (d);
+                        }
+                        result += d;
+                    }
+                }
+                return result;
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update()"};
 #endif
-                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                fDelegateTo_->Update (id, newV, onlyTheseFields);
-                fDBRep_->DoWriteToFS ();
+                Document::Document d = Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"});
+                if (onlyTheseFields) {
+                    Document::Document uploadDoc = newV;
+                    if (onlyTheseFields) {
+                        uploadDoc.RetainAll (*onlyTheseFields);
+                    }
+                    d.AddAll (uploadDoc);
+                }
+                DoWriteToFS_ (GUID{id}, VariantValue{d});
             }
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove()"};
 #endif
-                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                fDelegateTo_->Remove (id);
-                fDBRep_->DoWriteToFS ();
+                (void)filesystem::remove (GetDocumentFilePath_ (GUID{id}));
+            }
+            filesystem::path GetDocumentFilePath_ (const GUID& id) const
+            {
+                return fCollectionRoot_ / (id.As<String> () + ".json"sv).As<filesystem::path> ();
+            }
+            optional<Document::Document> DoReadFromFS_ (const GUID& id)
+            {
+                using namespace IO::FileSystem;
+                filesystem::path docFilePath = GetDocumentFilePath_ (id);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DoReadFromFS", "path={}"_f, docFilePath};
+#endif
+                if (std::filesystem::exists (docFilePath)) {
+                    return fDBRep_->fReader_.Read (FileInputStream::New (docFilePath)).As<Document::Document> ();
+                }
+                return nullopt;
+            }
+            void DoWriteToFS_ (const GUID& id, const VariantValue& vv)
+            {
+                filesystem::path docFilePath = GetDocumentFilePath_ (id);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DoWriteToFS()", "path={}"_f, docFilePath};
+#endif
+                using namespace IO::FileSystem;
+                ThroughTmpFileWriter                  tmpFile{docFilePath};
+                IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
+                fDBRep_->fWriter_.Write (vv, outStream);
+                outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
+                tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
             }
         };
 
@@ -455,15 +506,20 @@ namespace {
             }
         };
 
-        DirectoryFilesystemDatabaseRep_ ()                              = delete;
+        filesystem::path GetCollectionFilePath_ (const String& collectionName) const
+        {
+            // @todo - in future - consider mapping name to URL-safe name
+            // @todo use PCTEncode2String
+            return fRoot_ / (collectionName.As<filesystem::path> ());
+        }
+
+        DirectoryFilesystemDatabaseRep_ ()                                       = delete;
         DirectoryFilesystemDatabaseRep_ (const DirectoryFilesystemDatabaseRep_&) = delete;
-        DirectoryFilesystemDatabaseRep_ ([[maybe_unused]] const Options& options, const Options::DirectoryFileStorage& dfOptions)
-            : fMemoryDB_{make_shared<MemoryDatabaseRep_> (options)}
-            , fExternalFile_{dfOptions.fRoot}
+        DirectoryFilesystemDatabaseRep_ (const Options::DirectoryFileStorage& dfOptions)
+            : fRoot_{dfOptions.fRoot}
             , fReader_{get<DataExchange::Variant::Reader> (dfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (dfOptions.fSerialization)}
         {
-            DoReadFromFS ();
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
         {
@@ -478,69 +534,30 @@ namespace {
         }
         virtual Set<String> GetCollections () override
         {
-            return fMemoryDB_->GetCollections ();
+            Set<String> result;
+            for (const auto& entry : filesystem::directory_iterator{fRoot_}) {
+                if (filesystem::is_directory (entry.path ())) { // Check if the entry is a directory
+                    result += String{entry.path ().filename ()};
+                }
+            }
+            return result;
         }
         virtual void CreateCollection (const String& name) override
         {
-            [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
-            fMemoryDB_->CreateCollection (name);
-            DoWriteToFS ();
+            filesystem::create_directories (GetCollectionFilePath_ (name));
         }
         virtual void DropCollection (const String& name) override
         {
-            [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
-            fMemoryDB_->DropCollection (name);
-            DoWriteToFS ();
+            filesystem::remove_all (GetCollectionFilePath_ (name));
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
-            Document::Collection::Ptr memDBCollection = fMemoryDB_->GetCollection (name);
             return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
-                Debug::UncheckedDynamicPointerCast<SingleFileDatabaseRep_> (shared_from_this ()), memDBCollection)};
+                Debug::UncheckedDynamicPointerCast<DirectoryFilesystemDatabaseRep_> (shared_from_this ()), name)};
         }
         virtual Document::Transaction mkTransaction () override
         {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
-        }
-        void DoReadFromFS ()
-        {
-            using namespace IO::FileSystem;
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DoReadFromFS", "path={}"_f, fExternalFile_};
-#endif
-            if (std::filesystem::exists (fExternalFile_)) {
-                auto rwLock = fMemoryDB_->fCollections_.rwget ();
-                rwLock.rwref ().clear ();
-                for (KeyValuePair<String, VariantValue> collectionAndDocument :
-                     fReader_.Read (FileInputStream::New (fExternalFile_)).As<Mapping<String, VariantValue>> ()) {
-                    rwLock.rwref ().Add (collectionAndDocument.fKey,
-                                         collectionAndDocument.fValue.As<Mapping<String, VariantValue>> ().Map<Mapping<GUID, Document::Document>> (
-                                             [&] (const KeyValuePair<String, VariantValue>& kvp) -> KeyValuePair<GUID, Document::Document> {
-                                                 return {GUID{kvp.fKey}, kvp.fValue.As<Document::Document> ()};
-                                             }));
-                }
-            }
-        }
-        void DoWriteToFS ()
-        {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DoWriteToFS()", "path={}"_f, fExternalFile_};
-#endif
-            using namespace IO::FileSystem;
-            ThroughTmpFileWriter                  tmpFile{fExternalFile_};
-            IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
-            Mapping<String, VariantValue>         collectionsAsVV;
-            for (const KeyValuePair<String, Mapping<GUID, Document::Document>>& collection : fMemoryDB_->fCollections_.load ()) {
-                Mapping<GUID, Document::Document> collectionValue = collection.fValue;
-                Mapping<String, VariantValue>     collWithStringKey;
-                for (const KeyValuePair<GUID, Document::Document>& kvp : collectionValue) {
-                    collWithStringKey.Add (kvp.fKey.ToString (), VariantValue{kvp.fValue});
-                }
-                collectionsAsVV.Add (collection.fKey, VariantValue{collWithStringKey});
-            }
-            this->fWriter_.Write (VariantValue{collectionsAsVV}, outStream);
-            outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
-            tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
         }
     };
 }
@@ -559,7 +576,7 @@ auto Document::TrivialDocumentDB::New (const Options& options) -> Ptr
         return Ptr{Memory::MakeSharedPtr<SingleFileDatabaseRep_> (options, *fop)};
     }
     else if (auto dop = get_if<Options::DirectoryFileStorage> (&options.fStorage)) {
-        return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_> (options, *dop)};
+        return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_> (*dop)};
     }
     AssertNotImplemented ();
     return nullptr;
