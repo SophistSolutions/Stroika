@@ -430,10 +430,12 @@ namespace {
                         Document::Document d =
                             fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).As<Document::Document> ();
                         d.Add (Document::kID, entry.path ().stem ().string ());
-                        if (projection) {
-                            d = projection->Apply (d);
+                        if (not filter or not filter->Matches (d)) {
+                            if (projection) {
+                                d = projection->Apply (d);
+                            }
+                            result += d;
                         }
-                        result += d;
                     }
                 }
                 return result;
