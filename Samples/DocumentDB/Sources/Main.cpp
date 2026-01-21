@@ -230,6 +230,22 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     catch (...) {
         cerr << "\t{}"_f(current_exception ()) << endl;
     }
+    try {
+        static constexpr Activity kMongoCXXActivity_{"performing trivial document db employees sample"sv};
+        DeclareActivity           da{&kMongoCXXActivity_};
+        cerr << "Starting trivial document db employees sample:" << endl;
+        filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-dir-test";
+        auto             internallySynchronizedDBConnection =
+            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::DirectoryFileStorage{.fRoot = p}});
+        EmployeesDB ([=] () {
+            cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
+            return internallySynchronizedDBConnection;
+        });
+        cerr << "done." << endl;
+    }
+    catch (...) {
+        cerr << "\t{}"_f(current_exception ()) << endl;
+    }
 
     return EXIT_SUCCESS;
 }
