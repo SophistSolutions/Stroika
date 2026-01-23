@@ -82,7 +82,7 @@ namespace {
                 if (r) {
                     r->Add (Document::kID, id);
                 }
-                if (projection && r) {
+                if (projection and r) {
                     r = projection->Apply (*r);
                 }
                 return r;
@@ -117,8 +117,8 @@ namespace {
                 if (onlyTheseFields) {
                     uploadDoc.RetainAll (*onlyTheseFields);
                 }
-                static const auto  kExcept1_  = RuntimeErrorException{"no such table"};
-                static const auto  kExcept_   = RuntimeErrorException{"no such id"};
+                static const auto  kExcept1_  = RuntimeErrorException{"no such table"sv};
+                static const auto  kExcept_   = RuntimeErrorException{"no such id"sv};
                 auto               rwLock     = fConnectionRep_->fCollections_.rwget ();
                 CollectionRep_     collection = rwLock.cref ().LookupChecked (fTableName_, kExcept1_);
                 Document::Document d2Update   = onlyTheseFields ? collection.LookupChecked (id, kExcept_) : uploadDoc;
@@ -219,11 +219,11 @@ namespace {
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<SingleFileDatabaseRep_>         fDBRep_; // save to bump reference count (lifetime safety), and to force write
-            shared_ptr<Database::Document::Collection::IRep> fDelegateTo_; // inside memorydb
+            shared_ptr<Database::Document::Collection::IRep> fDelegateToInMemoryDB_; // inside memorydb
 
             MyCollectionRep_ (const shared_ptr<SingleFileDatabaseRep_>& dbRep, const shared_ptr<Database::Document::Collection::IRep>& delgateImplTo)
                 : fDBRep_{dbRep}
-                , fDelegateTo_{delgateImplTo}
+                , fDelegateToInMemoryDB_{delgateImplTo}
             {
             }
             virtual IDType Add (const Document::Document& v) override
@@ -232,7 +232,7 @@ namespace {
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                auto                  id     = fDelegateTo_->Add (v);
+                auto                  id     = fDelegateToInMemoryDB_->Add (v);
                 fDBRep_->DoWriteToFS ();
                 return id;
             }
@@ -241,7 +241,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetOne()"};
 #endif
-                return fDelegateTo_->GetOne (id, projection);
+                return fDelegateToInMemoryDB_->GetOne (id, projection);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -249,7 +249,7 @@ namespace {
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll()",
                                        "filter={}, projection={}"_f, filter, projection};
 #endif
-                return fDelegateTo_->GetAll (filter, projection);
+                return fDelegateToInMemoryDB_->GetAll (filter, projection);
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
@@ -257,7 +257,7 @@ namespace {
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update()"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                fDelegateTo_->Update (id, newV, onlyTheseFields);
+                fDelegateToInMemoryDB_->Update (id, newV, onlyTheseFields);
                 fDBRep_->DoWriteToFS ();
             }
             virtual void Remove (const IDType& id) override
@@ -266,7 +266,7 @@ namespace {
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove()"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                fDelegateTo_->Remove (id);
+                fDelegateToInMemoryDB_->Remove (id);
                 fDBRep_->DoWriteToFS ();
             }
         };
@@ -339,7 +339,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoReadFromFS", "path={}"_f, fExternalFile_};
 #endif
-            if (std::filesystem::exists (fExternalFile_)) {
+            if (filesystem::exists (fExternalFile_)) {
                 auto rwLock = fMemoryDB_->fCollections_.rwget ();
                 rwLock.rwref ().clear ();
                 for (KeyValuePair<String, VariantValue> collectionAndDocument :
@@ -426,7 +426,7 @@ namespace {
 #endif
                 Sequence<Document::Document> result;
                 for (const auto& entry : filesystem::directory_iterator{fCollectionRoot_}) {
-                    if (entry.path ().extension () == ".json") { // Check if the entry is a JSON file
+                    if (entry.path ().extension () == ".json"sv) { // Check if the entry is a JSON file
                         Document::Document d =
                             fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).As<Document::Document> ();
                         d.Add (Document::kID, entry.path ().stem ().string ());
@@ -445,7 +445,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update()"};
 #endif
-                Document::Document d = Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"});
+                Document::Document d = Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv});
                 if (onlyTheseFields) {
                     Document::Document uploadDoc = newV;
                     if (onlyTheseFields) {
@@ -473,7 +473,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DoReadFromFS", "path={}"_f, docFilePath};
 #endif
-                if (std::filesystem::exists (docFilePath)) {
+                if (filesystem::exists (docFilePath)) {
                     return fDBRep_->fReader_.Read (FileInputStream::New (docFilePath)).As<Document::Document> ();
                 }
                 return nullopt;

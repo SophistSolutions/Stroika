@@ -113,6 +113,8 @@ namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
 
     /**
      *  \brief create an TrivialDocumentDB database (and connection) object, guided by argument Options.
+     * 
+     *  \note  \em Thread-Safety   Resulting object: <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
     Ptr New (const Options& options);
 
