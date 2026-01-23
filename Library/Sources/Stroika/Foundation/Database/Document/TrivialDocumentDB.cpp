@@ -430,7 +430,7 @@ namespace {
                         Document::Document d =
                             fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).As<Document::Document> ();
                         d.Add (Document::kID, entry.path ().stem ().string ());
-                        if (not filter or not filter->Matches (d)) {
+                        if (not filter or filter->Matches (d)) {
                             if (projection) {
                                 d = projection->Apply (d);
                             }
@@ -443,22 +443,25 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update(id={},newV={}, onlyTheseFields={})"_f, id, newV, onlyTheseFields};
 #endif
-                Document::Document d = Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv});
+                Document::Document updatedDoc    = onlyTheseFields? Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv}) : newV;
+                Document::Document updateWithDoc = newV;
                 if (onlyTheseFields) {
-                    Document::Document uploadDoc = newV;
-                    if (onlyTheseFields) {
-                        uploadDoc.RetainAll (*onlyTheseFields);
-                    }
-                    d.AddAll (uploadDoc);
+                    updateWithDoc.RetainAll (*onlyTheseFields);
                 }
-                DoWriteToFS_ (GUID{id}, VariantValue{d});
+                updatedDoc.AddAll (updateWithDoc);
+                if (onlyTheseFields) {
+                    // any fields listed in onlyTheseFields, but not present in newV need to be removed
+                    Set<String> removeMe = *onlyTheseFields - newV.Keys ();
+                    updatedDoc.RemoveAll (removeMe);
+                }
+                DoWriteToFS_ (GUID{id}, VariantValue{updatedDoc});
             }
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove(id={})"_f, id};
 #endif
                 (void)filesystem::remove (GetDocumentFilePath_ (GUID{id}));
             }
@@ -522,6 +525,7 @@ namespace {
             , fReader_{get<DataExchange::Variant::Reader> (dfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (dfOptions.fSerialization)}
         {
+            filesystem::create_directories (fRoot_);
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
         {
