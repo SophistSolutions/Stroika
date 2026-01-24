@@ -74,7 +74,10 @@ namespace Stroika::Foundation::Database::Document::Collection {
         /**
          * returns ID
          * 
-         *      @todo think out/document if v MAY contain ID (typically doesnt - but do we allow specifying? - probably NO)
+         *  \req v does not contain an ID field (it will be auto-added).
+         * 
+         *  \note - MongoDB, and all our various DBS do allow for this, so maybe we will lift that restriction later.
+         *        but better to start strict, and loosen later if useful.
          */
         nonvirtual IDType Add (const Document& v);
 
@@ -164,6 +167,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
     public:
         /**
          * returns ID
+         *  \req v does not contain an ID field (it will be auto-added).
          */
         virtual String Add (const Document& v) = 0;
 

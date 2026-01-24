@@ -81,11 +81,14 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
+         * \note not an error and ignored if the named collection does not exist.
+         * \note but this can create errors if the underlying database has problems (e.g. file system errors, permission errors, etc).
          */
         nonvirtual void DropCollection (const String& name);
 
     public:
         /**
+         *  Returns a (shared) pointer to the named collection. If the named collection does not exist, it is an error.
          */
         nonvirtual Collection::Ptr GetCollection (const String& name);
 

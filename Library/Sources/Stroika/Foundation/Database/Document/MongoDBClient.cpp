@@ -452,6 +452,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Add()"};
 #endif
+                Require (not v.ContainsKey (Database::Document::kID));
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 try {
                     // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
@@ -674,6 +675,8 @@ namespace {
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            Require (GetCollections ().Contains (name));
+            Require (GetCollections ().Contains (name));
             try {
                 return Document::Collection::Ptr{
                     Memory::MakeSharedPtr<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};

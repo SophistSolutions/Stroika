@@ -66,6 +66,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
+                Require (not v.ContainsKey (Database::Document::kID));
                 auto           rwLock     = fConnectionRep_->fCollections_.rwget ();
                 CollectionRep_ collection = rwLock.cref ().LookupValue (fTableName_);
                 GUID           id         = GUID::GenerateNew ();
@@ -197,6 +198,7 @@ namespace {
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
+            Require (fCollections_.load ().ContainsKey (name));
             return Document::Collection::Ptr{
                 Memory::MakeSharedPtr<MyCollectionRep_> (Debug::UncheckedDynamicPointerCast<MemoryDatabaseRep_> (shared_from_this ()), name)};
         }
@@ -231,6 +233,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
+                Require (not v.ContainsKey (Database::Document::kID));
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 auto                  id     = fDelegateToInMemoryDB_->Add (v);
                 fDBRep_->DoWriteToFS ();
@@ -397,6 +400,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
+                Require (not v.ContainsKey (Database::Document::kID));
                 GUID id = GUID::GenerateNew ();
                 DoWriteToFS_ (id, VariantValue{v});
                 return id.As<IDType> ();
@@ -443,9 +447,11 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update(id={},newV={}, onlyTheseFields={})"_f, id, newV, onlyTheseFields};
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update(id={},newV={}, onlyTheseFields={})"_f,
+                                       id, newV, onlyTheseFields};
 #endif
-                Document::Document updatedDoc    = onlyTheseFields? Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv}) : newV;
+                Document::Document updatedDoc =
+                    onlyTheseFields ? Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv}) : newV;
                 Document::Document updateWithDoc = newV;
                 if (onlyTheseFields) {
                     updateWithDoc.RetainAll (*onlyTheseFields);
@@ -558,6 +564,7 @@ namespace {
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
+            Require (GetCollections ().Contains (name));
             return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
                 Debug::UncheckedDynamicPointerCast<DirectoryFilesystemDatabaseRep_> (shared_from_this ()), name)};
         }

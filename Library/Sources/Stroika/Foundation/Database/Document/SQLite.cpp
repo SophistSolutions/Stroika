@@ -378,6 +378,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Add()"};
 #endif
+                Require (not v.ContainsKey (Database::Document::kID));
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 /**
                  *  UNCLEAR if this way of capturing row_id is threadsafe or not.
@@ -708,6 +709,7 @@ namespace {
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            Require (GetCollections ().Contains (name));
             return Document::Collection::Ptr{
                 Memory::MakeSharedPtr<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
         }
