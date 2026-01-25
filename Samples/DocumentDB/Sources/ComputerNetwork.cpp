@@ -79,8 +79,7 @@ void Stroika::Samples::Document::ComputerNetworksModel (const function<Connectio
      */
     using Model::Device;
     auto dbConnection = connectionFactory ();
-    dbConnection.CreateCollection ("Networks");
-    ObjectCollection::Ptr<Device> deviceConnection = ObjectCollection::New<Device> (dbConnection.GetCollection ("Networks"), Device::kMapper);
+    ObjectCollection::Ptr<Device> deviceConnection = ObjectCollection::New<Device> (dbConnection.CreateCollection ("Networks"), Device::kMapper);
 
     if (not deviceConnection.GetAll ().empty ()) {
         Throw (RuntimeErrorException{"database should start empty"});

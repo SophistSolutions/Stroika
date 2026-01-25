@@ -106,8 +106,7 @@ namespace {
     {
         TraceContextBumper ctx{"{}::PeriodicallyUpdateEmployeesTable_"};
 
-        conn.CreateCollection ("Employees");
-        ObjectCollection::Ptr<Employee> employeeCollection = ObjectCollection::New<Employee> (conn.GetCollection ("Employees"), kDBObjectMapper_);
+        ObjectCollection::Ptr<Employee> employeeCollection = ObjectCollection::New<Employee> (conn.CreateCollection ("Employees"), kDBObjectMapper_);
 
         // Add Initial Employees
         try {
@@ -176,10 +175,8 @@ namespace {
     void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
     {
         TraceContextBumper ctx{"{}::PeriodicallyWriteChecksForEmployeesTable_"};
-        conn.CreateCollection ("Employees");
-        ObjectCollection::Ptr<Employee> employeeCollection = ObjectCollection::New<Employee> (conn.GetCollection ("Employees"), kDBObjectMapper_);
-        conn.CreateCollection ("Paychecks");
-        ObjectCollection::Ptr<Paycheck> paycheckCollection = ObjectCollection::New<Paycheck> (conn.GetCollection ("Paychecks"), kDBObjectMapper_);
+        ObjectCollection::Ptr<Employee> employeeCollection = ObjectCollection::New<Employee> (conn.CreateCollection ("Employees"), kDBObjectMapper_);
+        ObjectCollection::Ptr<Paycheck> paycheckCollection = ObjectCollection::New<Paycheck> (conn.CreateCollection ("Paychecks"), kDBObjectMapper_);
 
         while (true) {
             try {

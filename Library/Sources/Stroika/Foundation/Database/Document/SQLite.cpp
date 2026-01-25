@@ -698,9 +698,10 @@ namespace {
                                       fDB_);
             return results;
         }
-        virtual void CreateCollection (const String& name) override
+        virtual Collection::Ptr CreateCollection (const String& name) override
         {
             Exec ("create table if not exists {} (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
+            return GetCollection (name);
         }
         virtual void DropCollection (const String& name) override
         {

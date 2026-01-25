@@ -184,12 +184,13 @@ namespace {
         {
             return Set<String>{fCollections_.load ().Keys ()};
         }
-        virtual void CreateCollection (const String& name) override
+        virtual Collection::Ptr CreateCollection (const String& name) override
         {
             auto rwLock = fCollections_.rwget ();
             if (not rwLock.cref ().Lookup (name)) {
                 rwLock.rwref ().Add (name, {});
             }
+            return GetCollection (name);
         }
         virtual void DropCollection (const String& name) override
         {
@@ -314,11 +315,12 @@ namespace {
         {
             return fMemoryDB_->GetCollections ();
         }
-        virtual void CreateCollection (const String& name) override
+        virtual Collection::Ptr CreateCollection (const String& name) override
         {
             [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
             fMemoryDB_->CreateCollection (name);
             DoWriteToFS ();
+            return GetCollection (name);
         }
         virtual void DropCollection (const String& name) override
         {
@@ -554,9 +556,10 @@ namespace {
             }
             return result;
         }
-        virtual void CreateCollection (const String& name) override
+        virtual Collection::Ptr CreateCollection (const String& name) override
         {
             filesystem::create_directories (GetCollectionFilePath_ (name));
+            return GetCollection (name);
         }
         virtual void DropCollection (const String& name) override
         {

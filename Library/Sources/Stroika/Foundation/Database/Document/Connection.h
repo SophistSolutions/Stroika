@@ -70,14 +70,20 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
+         * @brief return the names of all collections
          */
         nonvirtual Set<String> GetCollections ();
 
     public:
         /**
          *  Creates the (named) collection (aka table), and does nothing if the table/collection already exists.
+         *
+         *   \see also GetCollection
+         *  
+         *   \note This returns the same thing as GetCollection (name) after creating it, and its result can be safely
+         *         ignored and fetched later.
          */
-        nonvirtual void CreateCollection (const String& name);
+        nonvirtual Collection::Ptr CreateCollection (const String& name);
 
     public:
         /**
@@ -89,6 +95,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
     public:
         /**
          *  Returns a (shared) pointer to the named collection. If the named collection does not exist, it is an error.
+         * 
+         *  \see also CreateCollection
          */
         nonvirtual Collection::Ptr GetCollection (const String& name);
 
@@ -141,7 +149,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
         /**
          *  Creates the (named) collection (aka table), and does nothing if the table/collection already exists.
          */
-        virtual void CreateCollection (const String& name) = 0;
+        virtual Collection::Ptr CreateCollection (const String& name) = 0;
 
     public:
         /**

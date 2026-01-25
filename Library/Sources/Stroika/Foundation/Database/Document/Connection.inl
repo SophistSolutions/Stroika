@@ -22,9 +22,9 @@ namespace Stroika::Foundation::Database::Document::Connection {
     {
         return this->get ()->GetCollections ();
     }
-    inline void Ptr::CreateCollection (const String& name)
+    inline Collection::Ptr Ptr::CreateCollection (const String& name)
     {
-        this->get ()->CreateCollection (name);
+        return this->get ()->CreateCollection (name);
     }
     inline void Ptr::DropCollection (const String& name)
     {

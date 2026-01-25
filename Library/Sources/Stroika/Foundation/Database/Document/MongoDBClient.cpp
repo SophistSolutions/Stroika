@@ -646,18 +646,14 @@ namespace {
                 DoReThrow_ ();
             }
         }
-        virtual void CreateCollection (const String& name) override
+        virtual Collection::Ptr CreateCollection (const String& name) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"mongocxx::CreateCollection()"};
 #endif
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            try {
-                fDatabase_.create_collection (name.AsUTF8<string> ());
-            }
-            catch (...) {
-                DoReThrow_ ();
-            }
+            fDatabase_.create_collection (name.AsUTF8<string> ());
+            return GetCollection (name);
         }
         virtual void DropCollection (const String& name) override
         {
@@ -675,7 +671,6 @@ namespace {
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            Require (GetCollections ().Contains (name));
             Require (GetCollections ().Contains (name));
             try {
                 return Document::Collection::Ptr{
