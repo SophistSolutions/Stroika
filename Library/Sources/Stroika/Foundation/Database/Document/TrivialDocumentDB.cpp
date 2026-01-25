@@ -184,7 +184,7 @@ namespace {
         {
             return Set<String>{fCollections_.load ().Keys ()};
         }
-        virtual Collection::Ptr CreateCollection (const String& name) override
+        virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
             auto rwLock = fCollections_.rwget ();
             if (not rwLock.cref ().Lookup (name)) {
@@ -315,7 +315,7 @@ namespace {
         {
             return fMemoryDB_->GetCollections ();
         }
-        virtual Collection::Ptr CreateCollection (const String& name) override
+        virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
             [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
             fMemoryDB_->CreateCollection (name);
@@ -556,10 +556,11 @@ namespace {
             }
             return result;
         }
-        virtual Collection::Ptr CreateCollection (const String& name) override
+        virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
             filesystem::create_directories (GetCollectionFilePath_ (name));
-            return GetCollection (name);
+            return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
+                Debug::UncheckedDynamicPointerCast<DirectoryFilesystemDatabaseRep_> (shared_from_this ()), name)};
         }
         virtual void DropCollection (const String& name) override
         {

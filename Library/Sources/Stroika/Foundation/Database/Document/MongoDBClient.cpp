@@ -646,7 +646,7 @@ namespace {
                 DoReThrow_ ();
             }
         }
-        virtual Collection::Ptr CreateCollection (const String& name) override
+        virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"mongocxx::CreateCollection()"};
