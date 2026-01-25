@@ -78,6 +78,8 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * 
          *  \note - MongoDB, and all our various DBS do allow for this, so maybe we will lift that restriction later.
          *        but better to start strict, and loosen later if useful.
+         *  \note - the way we use SQLite, we use internal 'rowid' as ID, which cannot be externally specified.
+         *        we would need to change that (not a big deal) - to allow externally specified IDs.
          */
         nonvirtual IDType Add (const Document& v);
 
