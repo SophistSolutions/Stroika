@@ -599,6 +599,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
     // and https://github.com/SophistSolutions/Stroika/actions/runs/11230328605/job/31217486475 MACOS ONLY - 2024-10-08
     // and https://github.com/SophistSolutions/Stroika/actions/runs/12872068258/job/35888537430 MACOS ONLY - 2025-01-20
     // and https://github.com/SophistSolutions/Stroika/actions/runs/15288729158/job/43004184991 MACOS ONLY - 2025-05-28
+    // and https://github.com/SophistSolutions/Stroika/actions/runs/21410430792/job/61645759448 MACOS ONLY - 2026-01-27
     Require (not IsDone_ ());
 
     Require (fAbortRequested_);
