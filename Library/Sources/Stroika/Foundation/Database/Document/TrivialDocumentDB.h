@@ -41,7 +41,6 @@
  *  Disadvantages
  *      -   Performance on larger scale
  *      -   Transactions NYI
- *      -   Filesystem storage NYI (as of 3.0d18) - BUT when needed - easy
  */
 
 namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
@@ -55,7 +54,7 @@ namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
      *
      *  Since this is also how you create a database, in a sense, its those options too.
      */
-    struct Options final {
+    struct Options final : Database::Document::Connection::Options {
 
         /**
          *  @todo add options like max ram, max # objects?

@@ -17,7 +17,7 @@ using namespace Database::Document;
  ************************* Document::Connection::Ptr ****************************
  ********************************************************************************
  */
-Transaction Connection::Ptr::mkTransaction ()
+Transaction Connection::Ptr::mkTransaction () const
 {
     return get ()->mkTransaction ();
 }

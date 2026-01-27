@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *
          *  Since this is also how you create a database, in a sense, its those options too.
          */
-        struct Options final {
+        struct Options final : Database::Document::Connection::Options {
             /**
              *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
              *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or

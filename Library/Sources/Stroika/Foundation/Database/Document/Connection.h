@@ -37,6 +37,21 @@ namespace Stroika::Foundation::Database::Document::Connection {
     class IRep;
 
     /**
+     * 
+     */
+    struct Options {
+        /**
+         * @brief  If specified for a Connection object, then the Add () API allows externally specified IDs (optionally)
+         * 
+         * This defaults to true, the easiest to use and most permissive setting. Setting to false is more efficient.
+         * 
+         * \note - for some database backends, this affects the layout, so it it is critical it agrees on all database connections
+         *         if you have multiple connections to the same database file/object.
+         */
+        bool fAddAllowsExternallySpecifiedIDs{false};
+    };
+
+    /**
      *  Connection::Ptr provides an API for accessing a document database.
      * 
      *  A new Connection::Ptr is typically created with SOME_SERVICE::Connection::New () (e.g. SQLite::Connection::New() or MongoDBClient::Connection::New ())
@@ -70,27 +85,37 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
+         */
+        nonvirtual shared_ptr<const EngineProperties> GetEngineProperties () const;
+
+    public:
+        /**
+         */
+        nonvirtual Options GetOptions () const;
+
+    public:
+        /**
          * @brief return the names of all collections
          */
-        nonvirtual Set<String> GetCollections ();
+        nonvirtual Set<String> GetCollections () const;
 
     public:
         /**
          *  Creates the (named) collection (aka table), and does nothing if the table/collection already exists.
          *
-         *   \see also GetCollection
+         *   \see also GetCollection - much the same but creates first if doesnt exist
          *  
          *   \note This returns the same thing as GetCollection (name) after creating it, and its result can be safely
          *         ignored and fetched later.
          */
-        nonvirtual Collection::Ptr CreateCollection (const String& name);
+        nonvirtual Collection::Ptr CreateCollection (const String& name) const;
 
     public:
         /**
          * \note not an error and ignored if the named collection does not exist.
          * \note but this can create errors if the underlying database has problems (e.g. file system errors, permission errors, etc).
          */
-        nonvirtual void DropCollection (const String& name);
+        nonvirtual void DropCollection (const String& name) const;
 
     public:
         /**
@@ -98,7 +123,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
          * 
          *  \see also CreateCollection
          */
-        nonvirtual Collection::Ptr GetCollection (const String& name);
+        nonvirtual Collection::Ptr GetCollection (const String& name) const;
 
     public:
         /**
@@ -108,7 +133,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
           *  that doesn't depend on the particular kind of SQL database you are connected to (e.g. that
           *  might be used for ODBC or SQLite).
           */
-        nonvirtual Transaction mkTransaction ();
+        nonvirtual Transaction mkTransaction () const;
 
     public:
         /**
@@ -139,6 +164,11 @@ namespace Stroika::Foundation::Database::Document::Connection {
         /**
          */
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const = 0;
+
+    public:
+        /**
+         */
+        virtual Options GetOptions () const = 0;
 
     public:
         /**

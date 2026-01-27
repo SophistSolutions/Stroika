@@ -72,16 +72,16 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-         * returns ID
+         * returns ID of object added.
          * 
-         *  \req v does not contain an ID field (it will be auto-added).
+         *  If connection.GetOptions ().fAddAllowsExternallySpecifiedIDs and v contains a key with kID, that id will
+         *  be used, and otherwise a new ID will be automatically generated. If an object with that ID already exists
+         *  the Add() will fail (error). Use Update () or Replace () to update a record.
          * 
-         *  \note - MongoDB, and all our various DBS do allow for this, so maybe we will lift that restriction later.
-         *        but better to start strict, and loosen later if useful.
-         *  \note - the way we use SQLite, we use internal 'rowid' as ID, which cannot be externally specified.
-         *        we would need to change that (not a big deal) - to allow externally specified IDs.
+         *  if not connection.GetOptions ().fAddAllowsExternallySpecifiedIDs, then
+         *      \req v does not contain an ID field (it will be auto-added).
          */
-        nonvirtual IDType Add (const Document& v);
+        nonvirtual IDType Add (const Document& v) const;
 
     public:
         /**
@@ -90,12 +90,12 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
          *       of the argument projection
          */
-        nonvirtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection = {});
+        nonvirtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection = {}) const;
 
     public:
         /**
          */
-        nonvirtual Document GetOneOrThrow (const IDType& id, const optional<Projection>& projection = {});
+        nonvirtual Document GetOneOrThrow (const IDType& id, const optional<Projection>& projection = {}) const;
 
     public:
         /**
@@ -103,13 +103,13 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
          *       of the argument projection
          */
-        nonvirtual Sequence<Document> GetAll (const optional<Filter>& filter = {}, const optional<Projection>& projection = {});
+        nonvirtual Sequence<Document> GetAll (const optional<Filter>& filter = {}, const optional<Projection>& projection = {}) const;
 
     public:
         /**
          *  Same as GetAll (filter, projection=kOnlyIDs) - except for mapping the return type to pick out the id and move it out of a variant object into just a string value
          */
-        nonvirtual Sequence<IDType> GetAllIDs (const optional<Filter>& filter = {});
+        nonvirtual Sequence<IDType> GetAllIDs (const optional<Filter>& filter = {}) const;
 
     public:
         /**
@@ -118,8 +118,8 @@ namespace Stroika::Foundation::Database::Document::Collection {
          *  \pre for /1 overload, newV.ContainsKey (kID)
          *  \see also Update
          */
-        nonvirtual void Replace (const Document& newV);
-        nonvirtual void Replace (const IDType& id, const Document& newV);
+        nonvirtual void Replace (const Document& newV) const;
+        nonvirtual void Replace (const IDType& id, const Document& newV) const;
 
     public:
         /**
@@ -130,16 +130,22 @@ namespace Stroika::Foundation::Database::Document::Collection {
          *  \pre for overloads without 'id' argument, newV.ContainsKey (kID)
          *  \see also Replace to replace the entire object
          */
-        nonvirtual void Update (const Document& newV);
-        nonvirtual void Update (const Document& newV, const Set<String>& onlyTheseFields);
-        nonvirtual void Update (const IDType& id, const Document& newV);
-        nonvirtual void Update (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields);
+        nonvirtual void Update (const Document& newV) const;
+        nonvirtual void Update (const Document& newV, const Set<String>& onlyTheseFields) const;
+        nonvirtual void Update (const IDType& id, const Document& newV) const;
+        nonvirtual void Update (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields) const;
 
     public:
         /**
          * @todo consider if this should return an indicator if found (removeif)
          */
-        nonvirtual void Remove (const IDType& id);
+        nonvirtual void Remove (const IDType& id) const;
+
+    public:
+        /**
+         * @brief if v contains and ID, look it up, and if found, Replace. If not found, then synonym for Add ()
+         */
+        nonvirtual IDType AddOrUpdate (const Document& v) const;
 
     public:
         /**
@@ -168,8 +174,14 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-         * returns ID
-         *  \req v does not contain an ID field (it will be auto-added).
+         * returns ID of object added.
+         * 
+         *  If connection.GetOptions ().fAddAllowsExternallySpecifiedIDs and v contains a key with kID, that id will
+         *  be used, and otherwise a new ID will be automatically generated. If an object with that ID already exists
+         *  the Add() will fail (error). Use Update to update a record.
+         * 
+         *  if not connection.GetOptions ().fAddAllowsExternallySpecifiedIDs, then
+         *      \req v does not contain an ID field (it will be auto-added).
          */
         virtual String Add (const Document& v) = 0;
 

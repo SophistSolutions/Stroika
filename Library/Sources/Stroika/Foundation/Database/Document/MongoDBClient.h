@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          *
          *  Since this is also how you create a database, in a sense, its those options too.
          */
-        struct Options final {
+        struct Options final : Database::Document::Connection::Options {
             /**
              * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          *
          *  Since this is also how you create a database, in a sense, its those options too.
          */
-        struct Options final {
+        struct Options final : Database::Document::Connection::Options {
             /**
              * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */

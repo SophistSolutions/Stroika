@@ -352,6 +352,7 @@ namespace {
     struct ConnectionRep_ final : Database::Document::SQLite::Connection::IRep {
 
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
+        const Options                                                  fOptions_;
 
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsynchronized connection, share its context
@@ -378,7 +379,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Add()"};
 #endif
-                Require (not v.ContainsKey (Database::Document::kID));
+                Require (not v.ContainsKey (Database::Document::kID)); // fAddAllowsExternallySpecifiedIDs support NYI
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 /**
                  *  UNCLEAR if this way of capturing row_id is threadsafe or not.
@@ -565,6 +566,7 @@ namespace {
         };
 
         ConnectionRep_ (const Options& options)
+            : fOptions_{options}
         {
             TraceContextBumper ctx{"SQLite::Connection::ConnectionRep_::ConnectionRep_"};
 
@@ -683,6 +685,10 @@ namespace {
             };
             static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
+        }
+        virtual Database::Document::Connection::Options GetOptions () const override
+        {
+            return fOptions_;
         }
         virtual Set<String> GetCollections () override
         {

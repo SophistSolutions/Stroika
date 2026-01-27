@@ -452,7 +452,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Add()"};
 #endif
-                Require (not v.ContainsKey (Database::Document::kID));
+                Require (not v.ContainsKey (Database::Document::kID)); // fAddAllowsExternallySpecifiedIDs support NYI - but should be easy cuz done by MONGO - but need to review carefully and test
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 try {
                     // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
@@ -593,9 +593,11 @@ namespace {
 
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
         variant<mongocxx::client, mongocxx::pool::entry> fClientStorage_; // not directly used, but needed to free the resource when this connection obj goes away - and implicitly stored in database
-        mongocxx::database fDatabase_;
+        mongocxx::database        fDatabase_;
+        const Connection::Options fOptions_;
 
         ConnectionRep_ (const Connection::Options& options)
+            : fOptions_{options}
         {
             TraceContextBumper ctx{"MongoDBClient::ConnectionRep_::CTOR"};
             try {
@@ -627,12 +629,16 @@ namespace {
             };
             return Memory::MakeSharedPtr<const MyEngineProperties_> (); // dynamic info based on connection/dsn
         }
+        virtual Document::Connection::Options GetOptions () const override
+        {
+            return fOptions_;
+        }
         virtual Set<String> GetCollections () override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             try {
                 vector<string> n = fDatabase_.list_collection_names ();
-                return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; });
+                return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; }); // @todo fix wrong codepage map (not sure right one)
             }
             catch (const mongocxx::v_noabi::operation_exception& e) {
                 DbgTrace ("e={}"_f, e);

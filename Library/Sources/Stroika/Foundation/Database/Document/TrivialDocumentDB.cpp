@@ -50,6 +50,7 @@ namespace {
 
         using CollectionRep_ = Mapping<GUID, Document::Document>;
 
+        const Document::TrivialDocumentDB::Options    fOptions_;
         Synchronized<Mapping<String, CollectionRep_>> fCollections_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
@@ -66,11 +67,17 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
-                Require (not v.ContainsKey (Database::Document::kID));
-                auto           rwLock     = fConnectionRep_->fCollections_.rwget ();
-                CollectionRep_ collection = rwLock.cref ().LookupValue (fTableName_);
-                GUID           id         = GUID::GenerateNew ();
-                collection.Add (id, v);
+                optional<VariantValue> vID = v.Lookup (Document::kID);
+                Require (not vID.has_value () or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
+                auto               rwLock     = fConnectionRep_->fCollections_.rwget ();
+                CollectionRep_     collection = rwLock.cref ().LookupValue (fTableName_);
+                GUID               id         = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
+                Document::Document doc2Add    = v;
+                if (vID) {
+                    // already in parent KEY so don't store redundantly
+                    doc2Add.Remove (vID->As<String> ());
+                }
+                collection.Add (id, doc2Add);
                 rwLock.rwref ().Add (fTableName_, collection);
                 return id.ToString ();
             }
@@ -119,16 +126,17 @@ namespace {
                     uploadDoc.RetainAll (*onlyTheseFields);
                 }
                 static const auto  kExcept1_  = RuntimeErrorException{"no such table"sv};
-                static const auto  kExcept_   = RuntimeErrorException{"no such id"sv};
+                static const auto  kNoSuchIDException_   = RuntimeErrorException{"no such id"sv};
                 auto               rwLock     = fConnectionRep_->fCollections_.rwget ();
                 CollectionRep_     collection = rwLock.cref ().LookupChecked (fTableName_, kExcept1_);
-                Document::Document d2Update   = onlyTheseFields ? collection.LookupChecked (id, kExcept_) : uploadDoc;
+                Document::Document d2Update   = onlyTheseFields ? collection.LookupChecked (id, kNoSuchIDException_) : uploadDoc;
                 // any fields listed in onlyTheseFields, but not present in newV need to be removed
                 if (onlyTheseFields) {
                     d2Update.AddAll (uploadDoc);
                     Set<String> removeMe = *onlyTheseFields - newV.Keys ();
                     d2Update.RemoveAll (removeMe);
                 }
+                d2Update.RemoveIf (Document::kID);
                 collection.Add (id, d2Update);
                 rwLock.rwref ().Add (fTableName_, collection); // replace the actual collection in our master database of collections
             }
@@ -164,7 +172,8 @@ namespace {
 
         MemoryDatabaseRep_ ()                          = delete;
         MemoryDatabaseRep_ (const MemoryDatabaseRep_&) = delete;
-        MemoryDatabaseRep_ ([[maybe_unused]] const Options& options)
+        MemoryDatabaseRep_ ([[maybe_unused]] const Document::TrivialDocumentDB::Options& options)
+            : fOptions_{options}
         {
             TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MemoryDatabaseRep_"};
             //Assert (shared_from_this ().get () == this); // only support allocating with make_shared - cannot check here cuz object not yet fully constructed
@@ -179,6 +188,10 @@ namespace {
             };
             static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
+        }
+        virtual Database::Document::Connection::Options GetOptions () const override
+        {
+            return fOptions_;
         }
         virtual Set<String> GetCollections () override
         {
@@ -234,7 +247,6 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
-                Require (not v.ContainsKey (Database::Document::kID));
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 auto                  id     = fDelegateToInMemoryDB_->Add (v);
                 fDBRep_->DoWriteToFS ();
@@ -292,7 +304,8 @@ namespace {
 
         SingleFileDatabaseRep_ ()                              = delete;
         SingleFileDatabaseRep_ (const SingleFileDatabaseRep_&) = delete;
-        SingleFileDatabaseRep_ ([[maybe_unused]] const Options& options, const Options::SingleFileStorage& sfOptions)
+        SingleFileDatabaseRep_ ([[maybe_unused]] const Document::TrivialDocumentDB::Options&   options,
+                                const Document::TrivialDocumentDB::Options::SingleFileStorage& sfOptions)
             : fMemoryDB_{make_shared<MemoryDatabaseRep_> (options)}
             , fExternalFile_{sfOptions.fFile}
             , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
@@ -310,6 +323,10 @@ namespace {
             };
             static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
+        }
+        virtual Database::Document::Connection::Options GetOptions () const override
+        {
+            return fMemoryDB_->GetOptions ();
         }
         virtual Set<String> GetCollections () override
         {
@@ -382,9 +399,10 @@ namespace {
 
     // Store each collection in a folder under the root folder
     struct DirectoryFilesystemDatabaseRep_ final : Database::Document::Connection::IRep {
-        const filesystem::path              fRoot_;
-        const DataExchange::Variant::Reader fReader_;
-        const DataExchange::Variant::Writer fWriter_;
+        const Document::TrivialDocumentDB::Options fOptions_;
+        const filesystem::path                     fRoot_;
+        const DataExchange::Variant::Reader        fReader_;
+        const DataExchange::Variant::Writer        fWriter_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<DirectoryFilesystemDatabaseRep_> fDBRep_; // save to bump reference count (lifetime safety)
@@ -402,9 +420,15 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Add()"};
 #endif
-                Require (not v.ContainsKey (Database::Document::kID));
-                GUID id = GUID::GenerateNew ();
-                DoWriteToFS_ (id, VariantValue{v});
+                optional<VariantValue> vID = v.Lookup (Database::Document::kID);
+                Require (not vID.has_value () or fDBRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
+                GUID               id      = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
+                Document::Document doc2Add = v;
+                if (vID) {
+                    // already in parent KEY so don't store redundantly
+                    doc2Add.Remove (vID->As<String> ());
+                }
+                DoWriteToFS_ (id, VariantValue{doc2Add});
                 return id.As<IDType> ();
             }
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
@@ -528,8 +552,10 @@ namespace {
 
         DirectoryFilesystemDatabaseRep_ ()                                       = delete;
         DirectoryFilesystemDatabaseRep_ (const DirectoryFilesystemDatabaseRep_&) = delete;
-        DirectoryFilesystemDatabaseRep_ (const Options::DirectoryFileStorage& dfOptions)
-            : fRoot_{dfOptions.fRoot}
+        DirectoryFilesystemDatabaseRep_ (const Document::TrivialDocumentDB::Options&                       options,
+                                         const Document::TrivialDocumentDB::Options::DirectoryFileStorage& dfOptions)
+            : fOptions_{options}
+            , fRoot_{dfOptions.fRoot}
             , fReader_{get<DataExchange::Variant::Reader> (dfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (dfOptions.fSerialization)}
         {
@@ -545,6 +571,10 @@ namespace {
             };
             static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
             return kProps_;
+        }
+        virtual Database::Document::Connection::Options GetOptions () const override
+        {
+            return fOptions_;
         }
         virtual Set<String> GetCollections () override
         {
@@ -593,7 +623,7 @@ auto Document::TrivialDocumentDB::New (const Options& options) -> Ptr
         return Ptr{Memory::MakeSharedPtr<SingleFileDatabaseRep_> (options, *fop)};
     }
     else if (auto dop = get_if<Options::DirectoryFileStorage> (&options.fStorage)) {
-        return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_> (*dop)};
+        return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_> (options, *dop)};
     }
     AssertNotImplemented ();
     return nullptr;

@@ -18,19 +18,27 @@ namespace Stroika::Foundation::Database::Document::Connection {
     {
         return this->get () == nullptr;
     }
-    inline Set<String> Ptr::GetCollections ()
+    inline auto Ptr::GetEngineProperties () const -> shared_ptr<const EngineProperties>
+    {
+        return this->get ()->GetEngineProperties ();
+    }
+    inline auto Ptr::GetOptions () const -> Options
+    {
+        return this->get ()->GetOptions ();
+    }
+    inline Set<String> Ptr::GetCollections () const
     {
         return this->get ()->GetCollections ();
     }
-    inline Collection::Ptr Ptr::CreateCollection (const String& name)
+    inline Collection::Ptr Ptr::CreateCollection (const String& name) const
     {
         return this->get ()->CreateCollection (name);
     }
-    inline void Ptr::DropCollection (const String& name)
+    inline void Ptr::DropCollection (const String& name) const
     {
         this->get ()->DropCollection (name);
     }
-    inline Collection::Ptr Ptr::GetCollection (const String& name)
+    inline Collection::Ptr Ptr::GetCollection (const String& name) const
     {
         return this->get ()->GetCollection (name);
     }
