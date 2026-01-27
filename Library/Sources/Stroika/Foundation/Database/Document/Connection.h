@@ -47,8 +47,11 @@ namespace Stroika::Foundation::Database::Document::Connection {
          * 
          * \note - for some database backends, this affects the layout, so it it is critical it agrees on all database connections
          *         if you have multiple connections to the same database file/object.
+         * 
+         * \note some backends may impose special requirements on the format of externally provided IDs (e.g.
+         *       the Stroika wrappers for mongo-db assume they will be in the form of a guid).
          */
-        bool fAddAllowsExternallySpecifiedIDs{false};
+        bool fAddAllowsExternallySpecifiedIDs{true};
     };
 
     /**
