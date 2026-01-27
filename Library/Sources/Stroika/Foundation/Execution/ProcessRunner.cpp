@@ -306,27 +306,27 @@ String ProcessRunner::Exception::mkMsg_ (const String& errorMessage, const optio
 void ProcessRunner::ProcessResultType::ThrowIfFailed ()
 {
     if (fExitStatus and *fExitStatus != 0) {
-        Throw (Exception{"Child process failed", nullopt, *fExitStatus});
+        Throw (Exception{"Child process failed"sv, nullopt, *fExitStatus});
     }
     if (fTerminatedByUncaughtSignalNumber and *fTerminatedByUncaughtSignalNumber != 0) {
-        Throw (Exception{"Child process failed", nullopt, nullopt, *fTerminatedByUncaughtSignalNumber});
+        Throw (Exception{"Child process failed"sv, nullopt, nullopt, *fTerminatedByUncaughtSignalNumber});
     }
 }
 
 String ProcessRunner::ProcessResultType::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fExitStatus) {
-        sb << "exitStatus: " << fExitStatus;
+        sb << "exitStatus: "sv << fExitStatus;
     }
     if (fTerminatedByUncaughtSignalNumber) {
         if (fExitStatus) {
-            sb << ", ";
+            sb << ", "sv;
         }
-        sb << "terminatedByUncaughtSignalNumber: " << fTerminatedByUncaughtSignalNumber;
+        sb << "terminatedByUncaughtSignalNumber: "sv << fTerminatedByUncaughtSignalNumber;
     }
-    sb << "}";
+    sb << "}"sv;
     return sb;
 }
 
@@ -419,12 +419,12 @@ void ProcessRunner::BackgroundProcess::Terminate ()
 String ProcessRunner::BackgroundProcess::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fRep_ and fRep_->fDetailedRunnableRep_) {
-        sb << "processID: " << fRep_->fDetailedRunnableRep_->fRunningPID.load ();
-        sb << ", processResult: " << fRep_->fDetailedRunnableRep_->fProcessResult.load ();
+        sb << "processID: "sv << fRep_->fDetailedRunnableRep_->fRunningPID.load ();
+        sb << ", processResult: "sv << fRep_->fDetailedRunnableRep_->fProcessResult.load ();
     }
-    sb << "}";
+    sb << "}"sv;
     return sb;
 }
 
@@ -1093,12 +1093,8 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
             }
         }
 
-        STARTUPINFO startInfo{};
-        startInfo.cb         = sizeof (startInfo);
-        startInfo.hStdInput  = jStdin[1];
-        startInfo.hStdOutput = jStdout[0];
-        startInfo.hStdError  = jStderr[0];
-        startInfo.dwFlags |= STARTF_USESTDHANDLES;
+        STARTUPINFO startInfo{
+            .cb = sizeof (startInfo), .dwFlags = STARTF_USESTDHANDLES, .hStdInput = jStdin[1], .hStdOutput = jStdout[0], .hStdError = jStderr[0]};
 
         DWORD createProcFlags{NORMAL_PRIORITY_CLASS};
         if (options.fCreateNoWindow) {
