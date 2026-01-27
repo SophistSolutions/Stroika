@@ -424,8 +424,7 @@ namespace {
                 GUID               id      = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
                 Document::Document doc2Add = v;
                 if (vID) {
-                    // already in parent KEY so don't store redundantly
-                    doc2Add.Remove (vID->As<String> ());
+                    doc2Add.Remove (Document::kID);     // already in parent KEY so don't store redundantly
                 }
                 DoWriteToFS_ (id, VariantValue{doc2Add});
                 return id.As<IDType> ();
