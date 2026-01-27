@@ -125,11 +125,11 @@ namespace {
                 if (onlyTheseFields) {
                     uploadDoc.RetainAll (*onlyTheseFields);
                 }
-                static const auto  kExcept1_  = RuntimeErrorException{"no such table"sv};
-                static const auto  kNoSuchIDException_   = RuntimeErrorException{"no such id"sv};
-                auto               rwLock     = fConnectionRep_->fCollections_.rwget ();
-                CollectionRep_     collection = rwLock.cref ().LookupChecked (fTableName_, kExcept1_);
-                Document::Document d2Update   = onlyTheseFields ? collection.LookupChecked (id, kNoSuchIDException_) : uploadDoc;
+                static const auto  kExcept1_           = RuntimeErrorException{"no such table"sv};
+                static const auto  kNoSuchIDException_ = RuntimeErrorException{"no such id"sv};
+                auto               rwLock              = fConnectionRep_->fCollections_.rwget ();
+                CollectionRep_     collection          = rwLock.cref ().LookupChecked (fTableName_, kExcept1_);
+                Document::Document d2Update            = onlyTheseFields ? collection.LookupChecked (id, kNoSuchIDException_) : uploadDoc;
                 // any fields listed in onlyTheseFields, but not present in newV need to be removed
                 if (onlyTheseFields) {
                     d2Update.AddAll (uploadDoc);
