@@ -97,8 +97,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f,
-                                       filter, projection};
+                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
                 return fConnectionRep_->fCollections_->LookupValue (fTableName_)
                     .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
@@ -261,8 +260,8 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll",
-                                       "filter={}, projection={}"_f, filter, projection};
+                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f,
+                                       filter, projection};
 #endif
                 return fDelegateToInMemoryDB_->GetAll (filter, projection);
             }
@@ -424,7 +423,7 @@ namespace {
                 GUID               id      = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
                 Document::Document doc2Add = v;
                 if (vID) {
-                    doc2Add.Remove (Document::kID);     // already in parent KEY so don't store redundantly
+                    doc2Add.Remove (Document::kID); // already in parent KEY so don't store redundantly
                 }
                 DoWriteToFS_ (id, VariantValue{doc2Add});
                 return id.As<IDType> ();
@@ -471,8 +470,8 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update", "id={},newV={}, onlyTheseFields={}"_f,
-                                       id, newV, onlyTheseFields};
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update",
+                                       "id={},newV={}, onlyTheseFields={}"_f, id, newV, onlyTheseFields};
 #endif
                 Document::Document updatedDoc =
                     onlyTheseFields ? Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv}) : newV;
