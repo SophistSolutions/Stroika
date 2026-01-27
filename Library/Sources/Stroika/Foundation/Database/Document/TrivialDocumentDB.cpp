@@ -65,7 +65,7 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add"};
 #endif
                 optional<VariantValue> vID = v.Lookup (Document::kID);
                 Require (not vID.has_value () or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
@@ -74,8 +74,7 @@ namespace {
                 GUID               id         = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
                 Document::Document doc2Add    = v;
                 if (vID) {
-                    // already in parent KEY so don't store redundantly
-                    doc2Add.Remove (vID->As<String> ());
+                    doc2Add.Remove (Document::kID); // already in parent KEY so don't store redundantly
                 }
                 collection.Add (id, doc2Add);
                 rwLock.rwref ().Add (fTableName_, collection);
@@ -84,7 +83,7 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetOne()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetOne"};
 #endif
                 auto r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
                 if (r) {
@@ -98,7 +97,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll()", "filter={}, projection={}"_f,
+                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f,
                                        filter, projection};
 #endif
                 return fConnectionRep_->fCollections_->LookupValue (fTableName_)
@@ -119,7 +118,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Update()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Update"};
 #endif
                 Document::Document uploadDoc = newV;
                 if (onlyTheseFields) {
@@ -143,7 +142,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Remove()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
                 auto rwLock = fConnectionRep_->fCollections_.rwget ();
                 if (optional<CollectionRep_> oc = rwLock.cref ().Lookup (fTableName_)) {
@@ -245,7 +244,7 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 auto                  id     = fDelegateToInMemoryDB_->Add (v);
@@ -255,14 +254,14 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetOne()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetOne"};
 #endif
                 return fDelegateToInMemoryDB_->GetOne (id, projection);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll()",
+                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll",
                                        "filter={}, projection={}"_f, filter, projection};
 #endif
                 return fDelegateToInMemoryDB_->GetAll (filter, projection);
@@ -270,7 +269,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 fDelegateToInMemoryDB_->Update (id, newV, onlyTheseFields);
@@ -279,7 +278,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 fDelegateToInMemoryDB_->Remove (id);
@@ -377,7 +376,7 @@ namespace {
         void DoWriteToFS ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoWriteToFS()", "path={}"_f, fExternalFile_};
+            TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoWriteToFS", "path={}"_f, fExternalFile_};
 #endif
             using namespace IO::FileSystem;
             ThroughTmpFileWriter                  tmpFile{fExternalFile_};
@@ -418,9 +417,9 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Add()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Add"};
 #endif
-                optional<VariantValue> vID = v.Lookup (Database::Document::kID);
+                optional<VariantValue> vID = v.Lookup (Document::kID);
                 Require (not vID.has_value () or fDBRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
                 GUID               id      = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
                 Document::Document doc2Add = v;
@@ -434,7 +433,7 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetOne()"};
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetOne"};
 #endif
                 if (auto od = DoReadFromFS_ (GUID{id})) {
                     Document::Document d = *od;
@@ -451,7 +450,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetAll()",
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetAll",
                                        "filter={}, projection={}"_f, filter, projection};
 #endif
                 Sequence<Document::Document> result;
@@ -473,7 +472,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update(id={},newV={}, onlyTheseFields={})"_f,
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update", "id={},newV={}, onlyTheseFields={}"_f,
                                        id, newV, onlyTheseFields};
 #endif
                 Document::Document updatedDoc =
@@ -493,7 +492,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove(id={})"_f, id};
+                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove", "id={}"_f, id};
 #endif
                 (void)filesystem::remove (GetDocumentFilePath_ (GUID{id}));
             }
