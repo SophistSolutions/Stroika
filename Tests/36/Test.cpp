@@ -835,7 +835,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
 namespace {
     namespace DocumentDBTestBasics_ {
         using namespace Database::Document;
-        void Test1_ (Database::Document::Connection::Ptr p)
+        void TestBasics1_ (Database::Document::Connection::Ptr p)
         {
             EXPECT_EQ (p.GetCollections ().size (), 0u);
             const String kCollectionName_ = "blah"sv;
@@ -920,6 +920,32 @@ namespace {
             }
         };
 
+        void TestAddNewWithExternalKeysProvided_ (Database::Document::Connection::Ptr p)
+        {
+            Assert (p.GetOptions ().fAddAllowsExternallySpecifiedIDs); // caller must set this to test it!
+
+            const String                        kCollectionName_ = "testy"sv;
+            Database::Document::Collection::Ptr conn             = p->CreateCollection (kCollectionName_);
+
+            EXPECT_TRUE (conn.GetAll ().empty ());
+
+            using DOC_ = Database::Document::Document;
+            {
+                const DOC_ kOneTestDocWithNoID_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
+                auto       id                   = conn.Add (kOneTestDocWithNoID_);
+                DOC_       roundTripped         = conn.GetOrThrow (id);
+                DOC_       expected             = Mapping<String, VariantValue>{{"x", 8}, {kID, id}, {"z", "z"}};
+                EXPECT_EQ (roundTripped, expected);
+            }
+            {
+                auto       id                 = Common::GUID::GenerateNew ().As<String> ();
+                const DOC_ kOneTestDocWithID_ = Mapping<String, VariantValue>{{"x", 8}, {kID, id}, {"z", "z"}};
+                EXPECT_EQ (conn.Add (kOneTestDocWithID_), id);
+                DOC_ roundTripped = conn.GetOrThrow (id);
+                EXPECT_EQ (roundTripped, kOneTestDocWithID_);
+            }
+        }
+
 #if qStroika_HasComponent_mongocxxdriver
         GTEST_TEST (Foundation_Database, DocumentDBTestBasics_mongocxxdriver)
         {
@@ -940,13 +966,24 @@ namespace {
                     catch (...) {
                         Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()));
                     }
-                    const String kTestDBName_ = "MyTestDB"sv;
-                    auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
-                    IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
-                    adminDB.CreateDatabase (kTestDBName_);
-                    Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
-                        MongoDBClient::Connection::Options{.fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
-                    Test1_ (p);
+                    {
+                        const String kTestDBName_ = "MyTestDB"sv;
+                        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
+                        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+                        adminDB.CreateDatabase (kTestDBName_);
+                        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (MongoDBClient::Connection::Options{
+                            .fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
+                        TestBasics1_ (p);
+                    }
+                    {
+                        const String kTestDBName_ = "MyTestDB2"sv;
+                        auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
+                        IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
+                        adminDB.CreateDatabase (kTestDBName_);
+                        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (MongoDBClient::Connection::Options{
+                            /*.fAddAllowsExternallySpecifiedIDs = true, */ .fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
+                        // TestAddNewWithExternalKeysProvided_ (p);  NYI
+                    }
                 }
             }
         }
@@ -957,17 +994,35 @@ namespace {
         {
             TraceContextBumper ctx{"DocumentDBTestBasics_sqlite"};
             EXPECT_NO_THROW ({
-                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
-                Test1_ (p);
+                Database::Document::Connection::Ptr p =
+                    SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
+                TestBasics1_ (p);
             });
             EXPECT_NO_THROW ({
-                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
-                Test1_ (p);
+                Database::Document::Connection::Ptr p =
+                    SQLite::Connection::New (SQLite::Connection::Options{/*.fAddAllowsExternallySpecifiedIDs = true, */ .fTemporaryDB = "phred2"sv});
+                // TestAddNewWithExternalKeysProvided_ (p);     NYI
+            });
+            EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p =
+                    SQLite::Connection::New (SQLite::Connection::Options{ .fInMemoryDB = ""sv});
+                TestBasics1_ (p);
+            }); EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p =
+                    SQLite::Connection::New (SQLite::Connection::Options{/*.fAddAllowsExternallySpecifiedIDs = true, */ .fInMemoryDB = ""sv});
+                // TestAddNewWithExternalKeysProvided_ (p);  NYI
             });
             EXPECT_NO_THROW ({
                 IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
-                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
-                Test1_ (p);
+                Database::Document::Connection::Ptr p =
+                    SQLite::Connection::New (SQLite::Connection::Options{ .fDBPath = dbFileName});
+                TestBasics1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
+                Database::Document::Connection::Ptr p =
+                    SQLite::Connection::New (SQLite::Connection::Options{/*.fAddAllowsExternallySpecifiedIDs = true, */ .fDBPath = dbFileName});
+                // TestAddNewWithExternalKeysProvided_ (p);  NYI
             });
         }
 #endif
@@ -978,7 +1033,12 @@ namespace {
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p =
                     LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
-                Test1_ (p);
+                TestBasics1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                Database::Document::Connection::Ptr p = LocalDocumentDB::New (LocalDocumentDB::Options{
+                    .fStorage = LocalDocumentDB::Options::MemoryStorage{/*.fAddAllowsExternallySpecifiedIDs = true, */}});
+                TestAddNewWithExternalKeysProvided_ (p);
             });
         }
         GTEST_TEST (Foundation_Database, DocumentDBTestBasics_LocalDocumentDB_SingleFileStorage)
@@ -989,7 +1049,14 @@ namespace {
                 filesystem::remove (f); // try with no file existing so consistent test results
                 Database::Document::Connection::Ptr p =
                     LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = f}});
-                Test1_ (p);
+                TestBasics1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                filesystem::path f = IO::FileSystem::WellKnownLocations::GetTemporary () / "trivialdb-test2.json";
+                filesystem::remove (f); // try with no file existing so consistent test results
+                Database::Document::Connection::Ptr p = LocalDocumentDB::New (LocalDocumentDB::Options{
+                    /*.fAddAllowsExternallySpecifiedIDs = true, */ .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = f}});
+                TestAddNewWithExternalKeysProvided_ (p);
             });
         }
         GTEST_TEST (Foundation_Database, DocumentDBTestBasics_LocalDocumentDB_DirectoryFileStorage)
@@ -1000,7 +1067,14 @@ namespace {
                 filesystem::remove_all (f); // try with no dir existing so consistent test results
                 Database::Document::Connection::Ptr p =
                     LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = f}});
-                Test1_ (p);
+                TestBasics1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                filesystem::path f = IO::FileSystem::WellKnownLocations::GetTemporary () / "trivialdb-dir-test";
+                filesystem::remove_all (f); // try with no dir existing so consistent test results
+                Database::Document::Connection::Ptr p = LocalDocumentDB::New (LocalDocumentDB::Options{
+                    /*.fAddAllowsExternallySpecifiedIDs = true, */ .fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = f}});
+                TestAddNewWithExternalKeysProvided_ (p);
             });
         }
     }
@@ -1046,7 +1120,7 @@ namespace {
 
         using namespace Database::Document;
 
-        void Test1_ (Database::Document::Connection::Ptr p)
+        void TestBasics1_ (Database::Document::Connection::Ptr p)
         {
             EXPECT_EQ (p.GetCollections ().size (), 0u);
             p->CreateCollection ("Users");
@@ -1100,7 +1174,7 @@ namespace {
                         adminDB.CreateDatabase (kTestDBName_);
                         Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
                             MongoDBClient::Connection::Options{.fConnectionTarget = connectionString, .fDatabase = kTestDBName_});
-                        Test1_ (p);
+                        TestBasics1_ (p);
                     });
                 }
             }
@@ -1113,16 +1187,16 @@ namespace {
             TraceContextBumper ctx{"DocumentDB_ObjectCollection_sqlite"};
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
-                Test1_ (p);
+                TestBasics1_ (p);
             });
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
-                Test1_ (p);
+                TestBasics1_ (p);
             });
             EXPECT_NO_THROW ({
                 IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
                 Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
-                Test1_ (p);
+                TestBasics1_ (p);
             });
         }
 #endif
@@ -1133,7 +1207,7 @@ namespace {
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p =
                     LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
-                Test1_ (p);
+                TestBasics1_ (p);
             });
         }
         GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_LocalDocumentDB_SingleFileStorage)
@@ -1144,7 +1218,7 @@ namespace {
                 filesystem::remove (f); // try with no file existing so consistent test results
                 Database::Document::Connection::Ptr p =
                     LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = f}});
-                Test1_ (p);
+                TestBasics1_ (p);
             });
         }
         GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_LocalDocumentDB_DirectoryFileStorage)
@@ -1155,7 +1229,7 @@ namespace {
                 filesystem::remove_all (f); // try with no dir existing so consistent test results
                 Database::Document::Connection::Ptr p =
                     LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = f}});
-                Test1_ (p);
+                TestBasics1_ (p);
             });
         }
     }
