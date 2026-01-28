@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     template <typename T>
     inline auto Ptr<T>::AddOrUpdate (const T& newV) const -> IDType
     {
-        inherited::AddOrUpdate (fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> ());
+        return inherited::AddOrUpdate (fMapper_.FromObject (newV).template As<Mapping<String, VariantValue>> ());
     }
 
     /*
