@@ -89,8 +89,12 @@ namespace Stroika::Foundation::Database::Document::Collection {
          * overload with id returns exactly that one, or nullopt if missing.
          * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
          *       of the argument projection
+         * 
+         *  \note GetOne(Filter) - is a short-hand for GetAll(filter) - and throw if result.size () > 1
+         *        and just return the one found (or nullopt for none)
          */
         nonvirtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual optional<Document> GetOne (const Filter& filter, const optional<Projection>& projection = {}) const;
 
     public:
         /**

@@ -21,6 +21,7 @@
 #include "Stroika/Foundation/Database/Document/EngineProperties.h"
 #include "Stroika/Foundation/Database/Document/Transaction.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
@@ -29,7 +30,7 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
- *  LocalDocumentDB is a (typically filesystem, but can be RAM based) trivial implementation of the DocumentDB
+ *  LocalDocumentDB is a (typically filesystem, but can be RAM based) simple implementation of the DocumentDB
  *  API. You can use this to debug/test, and possibly for limited, or embedded, small scale uses.
  * 
  *  Advantages:
@@ -55,6 +56,17 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
      *  Since this is also how you create a database, in a sense, its those options too.
      */
     struct Options final : Database::Document::Connection::Options {
+
+        /**
+         * \brief use eInternallySynchronized to make envelope internally synchronized
+         * 
+         *      \note - as of 2026-01-28, all the implementations are actually eInternallySynchronized, but
+         *              easy to fix so they are not (so they will be more performant in that case).
+         * 
+         *      \note this refers to in-process syncrhonization. Future flags/fields/options will be needed
+         *            in other impls to assure cross-process syncrhonization (not sure if even appropriate for this impl but maybe something simple with flock).
+         */
+        Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};
 
         /**
          *  @todo add options like max ram, max # objects?

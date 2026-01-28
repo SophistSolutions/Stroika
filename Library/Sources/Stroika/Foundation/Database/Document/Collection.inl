@@ -46,6 +46,18 @@ namespace Stroika::Foundation::Database::Document::Collection {
     {
         return this->get ()->GetOne (id, projection);
     }
+    inline optional<Document> Ptr::GetOne (const Filter& filter, const optional<Projection>& projection) const
+    {
+        auto r = this->GetAll (filter, projection);
+        if (r.size () > 1) {
+            static auto kTooManyResultsException_ = Execution::RuntimeErrorException{"too many results from DocumentDB GetOne() call"sv};
+            Execution::Throw (kTooManyResultsException_);
+        }
+        if (r.size () == 0) {
+            return nullopt;
+        }
+        return r[0];
+    }
     inline Document Ptr::GetOneOrThrow (const IDType& id, const optional<Projection>& projection) const
     {
         static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"sv};
