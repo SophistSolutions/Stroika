@@ -465,10 +465,10 @@ namespace {
                 }
                 Throw (RuntimeErrorException{"failed to add doc"});
             }
-            virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
+            virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetOne()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Get()"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 try {

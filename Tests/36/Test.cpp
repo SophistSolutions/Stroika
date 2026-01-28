@@ -819,7 +819,7 @@ GTEST_TEST (Foundation_Database, SimpleMongoDBClientTest_)
             const Database::Document::Document  kTestObj1_ = Mapping<String, VariantValue>{{"x", 7}};
             auto                                id         = blah.Add (kTestObj1_);
             DbgTrace ("Added doc {}"_f, id);
-            Database::Document::Document roundTripped = blah.GetOne (id).value_or (Database::Document::Document{});
+            Database::Document::Document roundTripped = blah.Get (id).value_or (Database::Document::Document{});
             DbgTrace ("roundTripped  get value={}"_f, roundTripped);
             //EXPECT_EQ (kTestObj1_, roundTripped);
             auto rrs = blah.GetAll ();
@@ -844,7 +844,7 @@ namespace {
             Database::Document::Collection::Ptr blah         = p.GetCollection (kCollectionName_);
             const Database::Document::Document  kTestObj1_   = Mapping<String, VariantValue>{{"x", 7}, {"y", 7}};
             Database::Document::IDType          id           = blah.Add (kTestObj1_);
-            Database::Document::Document        roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+            Database::Document::Document        roundTripped = blah.GetOrThrow (id, kOmitIDs);
             EXPECT_EQ (kTestObj1_, roundTripped);
             using DOC_ = Database::Document::Document;
             {
@@ -852,10 +852,10 @@ namespace {
                 EXPECT_EQ (rrs, (Sequence<DOC_>{DOC_{{kID, id}}}));
                 const Database::Document::Document kTestObj1_Updated_ = Mapping<String, VariantValue>{{"x", 8}, {"z", "z"}};
                 blah.Update (id, kTestObj1_Updated_); // only modify provided fields
-                roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+                roundTripped = blah.GetOrThrow (id, kOmitIDs);
                 EXPECT_EQ (roundTripped, (Mapping<String, VariantValue>{{"x", 8}, {"y", 7}, {"z", "z"}}));
                 blah.Replace (id, kTestObj1_Updated_);
-                roundTripped = blah.GetOneOrThrow (id, kOmitIDs);
+                roundTripped = blah.GetOrThrow (id, kOmitIDs);
                 EXPECT_EQ (kTestObj1_Updated_, roundTripped);
             }
             {
@@ -1055,21 +1055,21 @@ namespace {
             EXPECT_EQ (userCollection.GetAll ().size (), 0u);
             String userIDAdded = userCollection.Add (User{.fName = "lewis", .fEmail = "lewis@sophists.com"});
             EXPECT_EQ (userCollection.GetAll ().size (), 1u);
-            EXPECT_EQ (userCollection.GetOne (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
+            EXPECT_EQ (userCollection.Get (userIDAdded), (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com"}));
             userCollection.Update (userIDAdded, User{.fPhoneNumber = "123-4567"}, Set<String>{"phoneNumber"});
-            EXPECT_EQ (userCollection.GetOne (userIDAdded),
+            EXPECT_EQ (userCollection.Get (userIDAdded),
                        (User{.fID = userIDAdded, .fName = "lewis", .fEmail = "lewis@sophists.com", .fPhoneNumber = "123-4567"}));
             {
-                User emptyU = userCollection.GetOneOrThrow (userIDAdded, kOnlyIDs);
+                User emptyU = userCollection.GetOrThrow (userIDAdded, kOnlyIDs);
                 EXPECT_EQ (emptyU.fID, userIDAdded);
                 emptyU.fID = nullopt;
                 EXPECT_EQ (emptyU, User{});
             }
-            User u   = userCollection.GetOneOrThrow (userIDAdded);
+            User u   = userCollection.GetOrThrow (userIDAdded);
             u.fImage = TypedBLOB{.fData = Memory::BLOB{0x1, 0x2, 0x3, 0x4}, .fType = InternetMediaTypes::kAudioMP3};
             u.fDateTime = Time::DateTime::NowUTC (); // since we write to database and read back, and DB stores in UTC, to make compare work reliably, start with UTC
             userCollection.Replace (userIDAdded, u);
-            EXPECT_EQ (userCollection.GetOne (userIDAdded), u);
+            EXPECT_EQ (userCollection.Get (userIDAdded), u);
             EXPECT_EQ (userCollection.GetAll ().size (), 1u);
             userCollection.Remove (userIDAdded);
             EXPECT_EQ (userCollection.GetAll ().size (), 0u);

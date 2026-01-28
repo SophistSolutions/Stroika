@@ -80,10 +80,10 @@ namespace {
                 rwLock.rwref ().Add (fTableName_, collection);
                 return id.ToString ();
             }
-            virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
+            virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetOne"};
+                TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Get"};
 #endif
                 auto r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
                 if (r) {
@@ -250,12 +250,12 @@ namespace {
                 fDBRep_->DoWriteToFS ();
                 return id;
             }
-            virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
+            virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetOne"};
+                TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Get"};
 #endif
-                return fDelegateToInMemoryDB_->GetOne (id, projection);
+                return fDelegateToInMemoryDB_->Get (id, projection);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -428,10 +428,10 @@ namespace {
                 DoWriteToFS_ (id, VariantValue{doc2Add});
                 return id.As<IDType> ();
             }
-            virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
+            virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetOne"};
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Get"};
 #endif
                 if (auto od = DoReadFromFS_ (GUID{id})) {
                     Document::Document d = *od;

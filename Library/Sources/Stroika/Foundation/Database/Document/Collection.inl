@@ -42,15 +42,15 @@ namespace Stroika::Foundation::Database::Document::Collection {
     {
         return this->get ()->Add (v);
     }
-    inline optional<Document> Ptr::GetOne (const IDType& id, const optional<Projection>& projection) const
+    inline optional<Document> Ptr::Get (const IDType& id, const optional<Projection>& projection) const
     {
-        return this->get ()->GetOne (id, projection);
+        return this->get ()->Get (id, projection);
     }
-    inline optional<Document> Ptr::GetOne (const Filter& filter, const optional<Projection>& projection) const
+    inline optional<Document> Ptr::Get (const Filter& filter, const optional<Projection>& projection) const
     {
         auto r = this->GetAll (filter, projection);
         if (r.size () > 1) {
-            static auto kTooManyResultsException_ = Execution::RuntimeErrorException{"too many results from DocumentDB GetOne() call"sv};
+            static auto kTooManyResultsException_ = Execution::RuntimeErrorException{"too many results from DocumentDB Get() call"sv};
             Execution::Throw (kTooManyResultsException_);
         }
         if (r.size () == 0) {
@@ -58,10 +58,15 @@ namespace Stroika::Foundation::Database::Document::Collection {
         }
         return r[0];
     }
-    inline Document Ptr::GetOneOrThrow (const IDType& id, const optional<Projection>& projection) const
+    inline Document Ptr::GetOrThrow (const IDType& id, const optional<Projection>& projection) const
     {
         static const auto kExcept_ = Execution::RuntimeErrorException{"no such id"sv};
-        return Memory::ValueOfOrThrow (GetOne (id, projection), kExcept_);
+        return Memory::ValueOfOrThrow (Get (id, projection), kExcept_);
+    }
+    inline Document Ptr::GetOrThrow (const Filter& filter, const optional<Projection>& projection) const
+    {
+        static const auto kExcept_ = Execution::RuntimeErrorException{"no such document"sv};
+        return Memory::ValueOfOrThrow (Get (filter, projection), kExcept_);
     }
     inline Sequence<Document> Ptr::GetAll (const optional<Filter>& filter, const optional<Projection>& projection) const
     {
@@ -105,7 +110,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
     inline IDType Ptr::AddOrUpdate (const Document& v) const
     {
         if (auto oid = v.Lookup (kID)) {
-            if (GetOne (oid->As<String> ())) {
+            if (Get (oid->As<String> ())) {
                 Replace (v);
                 return oid->As<String> ();
             }

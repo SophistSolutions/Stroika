@@ -10,7 +10,6 @@
 #include <optional>
 
 #include "Stroika/Foundation/Characters/String.h"
-#include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
@@ -22,8 +21,6 @@
 #include "Stroika/Foundation/Database/Document/Transaction.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
-#include "Stroika/Foundation/IO/Network/URI.h"
-#include "Stroika/Foundation/Time/Duration.h"
 
 /**
  *  \file
@@ -112,20 +109,17 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
     };
 
     /**
-     *  Connection provides an API for accessing a Document database.
-     *
-     *  A new Connection::Ptr is typically created
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
-     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-     *          threadsafe (even if accessed across processes) - depending on its construction Options::ThreadSafety
      */
     using Database::Document::Connection::Ptr;
 
     /**
      *  \brief create an LocalDocumentDB database (and connection) object, guided by argument Options.
      * 
-     *  \note  \em Thread-Safety   Resulting object: <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
+     *  \note 
+     * 
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+     *          the internal synchronization of the resulting letter object is controlled by Options::fInternallySynchronizedLetter
+     *
      */
     Ptr New (const Options& options);
 

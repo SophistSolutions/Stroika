@@ -85,21 +85,24 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-         * @todo add options to only get parts of the document (say provide optional arg list of only-these fields) or omit these fields.
-         * overload with id returns exactly that one, or nullopt if missing.
-         * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
+         *  \brief Read the unique document given by id (or filter) or return nullopt if no such
+         *
+         *  \alias GetOne
+         * 
+         *  \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
          *       of the argument projection
          * 
-         *  \note GetOne(Filter) - is a short-hand for GetAll(filter) - and throw if result.size () > 1
+         *  \note Get (Filter) - is a short-hand for GetAll(filter) - and throw if result.size () > 1
          *        and just return the one found (or nullopt for none)
          */
-        nonvirtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection = {}) const;
-        nonvirtual optional<Document> GetOne (const Filter& filter, const optional<Projection>& projection = {}) const;
+        nonvirtual optional<Document> Get (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual optional<Document> Get (const Filter& filter, const optional<Projection>& projection = {}) const;
 
     public:
         /**
          */
-        nonvirtual Document GetOneOrThrow (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual Document GetOrThrow (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual Document GetOrThrow (const Filter& filter, const optional<Projection>& projection = {}) const;
 
     public:
         /**
@@ -111,7 +114,10 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
-         *  Same as GetAll (filter, projection=kOnlyIDs) - except for mapping the return type to pick out the id and move it out of a variant object into just a string value
+         * @brief Return all document IDs matching the argument filter.
+         * 
+         *  Same as GetAll (filter, projection=kOnlyIDs) - except for mapping the return type
+         *  to pick out the id and move it out of a variant object into just a string value
          */
         nonvirtual Sequence<IDType> GetAllIDs (const optional<Filter>& filter = {}) const;
 
@@ -180,6 +186,8 @@ namespace Stroika::Foundation::Database::Document::Collection {
         /**
          * returns ID of object added.
          * 
+         *  \alias AddNew
+         * 
          *  If connection.GetOptions ().fAddAllowsExternallySpecifiedIDs and v contains a key with kID, that id will
          *  be used, and otherwise a new ID will be automatically generated. If an object with that ID already exists
          *  the Add() will fail (error). Use Update to update a record.
@@ -193,10 +201,10 @@ namespace Stroika::Foundation::Database::Document::Collection {
         /**
          * overload with id returns exactly that one, or nullopt if missing.
          * 
-         *        * \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
-         *       of the argument projection
+         *      \note each document always contains an ID (kID) field (even if not supplied with Add) - though it may not be returned because
+         *            of the argument projection
          */
-        virtual optional<Document> GetOne (const IDType& id, const optional<Projection>& projection) = 0;
+        virtual optional<Document> Get (const IDType& id, const optional<Projection>& projection) = 0;
 
     public:
         /**

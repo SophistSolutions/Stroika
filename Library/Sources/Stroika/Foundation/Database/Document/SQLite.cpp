@@ -402,10 +402,10 @@ namespace {
                 }
                 return "{}"_f(sqlite3_last_insert_rowid (fConnectionRep_->fDB_));
             }
-            virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
+            virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"SQLite::CollectionRep_::GetOne()", "id={}, projection={}"_f, id, projection};
+                TraceContextBumper ctx{"SQLite::CollectionRep_::Get", "id={}, projection={}"_f, id, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
@@ -522,7 +522,7 @@ namespace {
                 }
                 // POOR IMPLEMENTATION - should use sql update - but tricky for this case, so KISS, and get functionally working so
                 // I can integrate this code in regtests
-                Document::Document d2Update = onlyTheseFields ? Memory::ValueOfOrThrow (this->GetOne (id, nullopt)) : uploadDoc;
+                Document::Document d2Update = onlyTheseFields ? Memory::ValueOfOrThrow (this->Get (id, nullopt)) : uploadDoc;
                 // any fields listed in onlyTheseFields, but not present in newV need to be removed
                 if (onlyTheseFields) {
                     d2Update.AddAll (uploadDoc);

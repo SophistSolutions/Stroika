@@ -57,12 +57,12 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
     public:
         /**
          */
-        nonvirtual optional<T> GetOne (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual optional<T> Get (const IDType& id, const optional<Projection>& projection = {}) const;
 
     public:
         /**
          */
-        nonvirtual T GetOneOrThrow (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual T GetOrThrow (const IDType& id, const optional<Projection>& projection = {}) const;
 
     public:
         /**

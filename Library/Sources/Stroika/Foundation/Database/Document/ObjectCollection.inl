@@ -21,9 +21,9 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         return inherited::Add (fMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
     }
     template <typename T>
-    inline optional<T> Ptr<T>::GetOne (const IDType& id, const optional<Projection>& projection) const
+    inline optional<T> Ptr<T>::Get (const IDType& id, const optional<Projection>& projection) const
     {
-        if (optional<Document> o = inherited::GetOne (id, projection)) {
+        if (optional<Document> o = inherited::Get (id, projection)) {
             return fMapper_.ToObject<T> (VariantValue{*o});
         }
         else {
@@ -31,9 +31,9 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         }
     }
     template <typename T>
-    inline T Ptr<T>::GetOneOrThrow (const IDType& id, const optional<Projection>& projection) const
+    inline T Ptr<T>::GetOrThrow (const IDType& id, const optional<Projection>& projection) const
     {
-        return fMapper_.ToObject<T> (VariantValue{inherited::GetOneOrThrow (id, projection)});
+        return fMapper_.ToObject<T> (VariantValue{inherited::GetOrThrow (id, projection)});
     }
     template <typename T>
     Sequence<T> Ptr<T>::GetAll (const optional<Filter>& filter, const optional<Projection>& projection) const
