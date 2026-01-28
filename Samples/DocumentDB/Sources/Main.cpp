@@ -6,9 +6,9 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "Stroika/Foundation/Database/Document/LocalDocumentDB.h"
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
 #include "Stroika/Foundation/Database/Document/SQLite.h"
-#include "Stroika/Foundation/Database/Document/TrivialDocumentDB.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Module.h"
@@ -183,13 +183,13 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "\t{}"_f(current_exception ()) << endl;
     }
 #endif
-    // Try TrivialDocumentDB
+    // Try LocalDocumentDB
     try {
         static constexpr Activity kActivity_{"performing trivial document db networks sample"sv};
         DeclareActivity           da{&kActivity_};
         cerr << "Starting trivial document db networks sample:" << endl;
         auto internallySynchronizedDBConnection =
-            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
         ComputerNetworksModel ([=] () {
             cerr << "\tConnecting to trivial document db: memory" << endl;
             return internallySynchronizedDBConnection;
@@ -204,7 +204,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         DeclareActivity           da{&kActivity_};
         cerr << "Starting trivial document db employees sample:" << endl;
         auto internallySynchronizedDBConnection =
-            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: memory" << endl;
             return internallySynchronizedDBConnection;
@@ -220,7 +220,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "Starting trivial document db employees sample:" << endl;
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-test.json";
         auto             internallySynchronizedDBConnection =
-            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::SingleFileStorage{.fFile = p}});
+            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
             return internallySynchronizedDBConnection;
@@ -236,7 +236,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "Starting trivial document db employees sample:" << endl;
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-dir-test";
         auto             internallySynchronizedDBConnection =
-            TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::DirectoryFileStorage{.fRoot = p}});
+            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
             return internallySynchronizedDBConnection;

@@ -930,7 +930,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\Filter.cpp">
       <Filter>Sources\Database\Document</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\LocalDocumentDB.cpp">
       <Filter>Sources\Database\Document</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.cpp">
@@ -2391,7 +2391,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\ObjectCollection.h">
       <Filter>Sources\Database\Document</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\LocalDocumentDB.h">
       <Filter>Sources\Database\Document</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.h">
@@ -3964,7 +3964,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\ObjectCollection.inl">
       <Filter>Sources\Database\Document</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\LocalDocumentDB.inl">
       <Filter>Sources\Database\Document</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\HashTable.inl">

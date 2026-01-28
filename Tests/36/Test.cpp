@@ -16,10 +16,10 @@
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
 #include "Stroika/Foundation/Database/Document/Connection.h"
+#include "Stroika/Foundation/Database/Document/LocalDocumentDB.h"
 #include "Stroika/Foundation/Database/Document/MongoDBClient.h"
 #include "Stroika/Foundation/Database/Document/ObjectCollection.h"
 #include "Stroika/Foundation/Database/Document/SQLite.h"
-#include "Stroika/Foundation/Database/Document/TrivialDocumentDB.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Schema.h"
 #include "Stroika/Foundation/Database/SQL/ORM/TableConnection.h"
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
@@ -972,34 +972,34 @@ namespace {
         }
 #endif
 
-        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_TrivialDocumentDB_MemDB)
+        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_LocalDocumentDB_MemDB)
         {
-            TraceContextBumper ctx{"DocumentDBTestBasics_TrivialDocumentDB_MemDB"};
+            TraceContextBumper ctx{"DocumentDBTestBasics_LocalDocumentDB_MemDB"};
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p =
-                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+                    LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
                 Test1_ (p);
             });
         }
-        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_TrivialDocumentDB_SingleFileStorage)
+        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_LocalDocumentDB_SingleFileStorage)
         {
-            TraceContextBumper ctx{"DocumentDBTestBasics_TrivialDocumentDB_SingleFileStorage"};
+            TraceContextBumper ctx{"DocumentDBTestBasics_LocalDocumentDB_SingleFileStorage"};
             EXPECT_NO_THROW ({
                 filesystem::path f = IO::FileSystem::WellKnownLocations::GetTemporary () / "trivialdb-test.json";
                 filesystem::remove (f); // try with no file existing so consistent test results
                 Database::Document::Connection::Ptr p =
-                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::SingleFileStorage{.fFile = f}});
+                    LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = f}});
                 Test1_ (p);
             });
         }
-        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_TrivialDocumentDB_DirectoryFileStorage)
+        GTEST_TEST (Foundation_Database, DocumentDBTestBasics_LocalDocumentDB_DirectoryFileStorage)
         {
-            TraceContextBumper ctx{"DocumentDBTestBasics_TrivialDocumentDB_DirectoryFileStorage"};
+            TraceContextBumper ctx{"DocumentDBTestBasics_LocalDocumentDB_DirectoryFileStorage"};
             EXPECT_NO_THROW ({
                 filesystem::path f = IO::FileSystem::WellKnownLocations::GetTemporary () / "trivialdb-dir-test";
                 filesystem::remove_all (f); // try with no dir existing so consistent test results
                 Database::Document::Connection::Ptr p =
-                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::DirectoryFileStorage{.fRoot = f}});
+                    LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = f}});
                 Test1_ (p);
             });
         }
@@ -1127,34 +1127,34 @@ namespace {
         }
 #endif
 
-        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_TrivialDocumentDB_MemoryStorage)
+        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_LocalDocumentDB_MemoryStorage)
         {
-            TraceContextBumper ctx{"DocumentDB_ObjectCollection_TrivialDocumentDB_MemoryStorage"};
+            TraceContextBumper ctx{"DocumentDB_ObjectCollection_LocalDocumentDB_MemoryStorage"};
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p =
-                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::MemoryStorage{}});
+                    LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
                 Test1_ (p);
             });
         }
-        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_TrivialDocumentDB_SingleFileStorage)
+        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_LocalDocumentDB_SingleFileStorage)
         {
-            TraceContextBumper ctx{"DocumentDB_ObjectCollection_TrivialDocumentDB_SingleFileStorage"};
+            TraceContextBumper ctx{"DocumentDB_ObjectCollection_LocalDocumentDB_SingleFileStorage"};
             EXPECT_NO_THROW ({
                 filesystem::path f = IO::FileSystem::WellKnownLocations::GetTemporary () / "trivialdb-obj-test.json";
                 filesystem::remove (f); // try with no file existing so consistent test results
                 Database::Document::Connection::Ptr p =
-                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::SingleFileStorage{.fFile = f}});
+                    LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = f}});
                 Test1_ (p);
             });
         }
-        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_TrivialDocumentDB_DirectoryFileStorage)
+        GTEST_TEST (Foundation_Database, DocumentDB_ObjectCollection_LocalDocumentDB_DirectoryFileStorage)
         {
-            TraceContextBumper ctx{"DocumentDB_ObjectCollection_TrivialDocumentDB_DirectoryFileStorage"};
+            TraceContextBumper ctx{"DocumentDB_ObjectCollection_LocalDocumentDB_DirectoryFileStorage"};
             EXPECT_NO_THROW ({
                 filesystem::path f = IO::FileSystem::WellKnownLocations::GetTemporary () / "trivialdb-obj-dir-test";
                 filesystem::remove_all (f); // try with no dir existing so consistent test results
                 Database::Document::Connection::Ptr p =
-                    TrivialDocumentDB::New (TrivialDocumentDB::Options{.fStorage = TrivialDocumentDB::Options::DirectoryFileStorage{.fRoot = f}});
+                    LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = f}});
                 Test1_ (p);
             });
         }

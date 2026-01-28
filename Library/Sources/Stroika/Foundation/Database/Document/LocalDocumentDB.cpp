@@ -16,7 +16,7 @@
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-#include "TrivialDocumentDB.h"
+#include "LocalDocumentDB.h"
 
 using namespace Stroika::Foundation;
 
@@ -25,7 +25,7 @@ using namespace Containers;
 using namespace Debug;
 using namespace DataExchange;
 using namespace Database;
-using namespace Database::Document::TrivialDocumentDB;
+using namespace Database::Document::LocalDocumentDB;
 using namespace Execution;
 using namespace Time;
 
@@ -50,7 +50,7 @@ namespace {
 
         using CollectionRep_ = Mapping<GUID, Document::Document>;
 
-        const Document::TrivialDocumentDB::Options    fOptions_;
+        const Document::LocalDocumentDB::Options      fOptions_;
         Synchronized<Mapping<String, CollectionRep_>> fCollections_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
@@ -65,7 +65,7 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add"};
+                TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add"};
 #endif
                 optional<VariantValue> vID = v.Lookup (Document::kID);
                 Require (not vID.has_value () or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
@@ -83,7 +83,7 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetOne"};
+                TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetOne"};
 #endif
                 auto r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
                 if (r) {
@@ -97,7 +97,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
+                TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
                 return fConnectionRep_->fCollections_->LookupValue (fTableName_)
                     .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
@@ -117,7 +117,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Update"};
+                TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Update"};
 #endif
                 Document::Document uploadDoc = newV;
                 if (onlyTheseFields) {
@@ -141,7 +141,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Remove"};
+                TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
                 auto rwLock = fConnectionRep_->fCollections_.rwget ();
                 if (optional<CollectionRep_> oc = rwLock.cref ().Lookup (fTableName_)) {
@@ -170,10 +170,10 @@ namespace {
 
         MemoryDatabaseRep_ ()                          = delete;
         MemoryDatabaseRep_ (const MemoryDatabaseRep_&) = delete;
-        MemoryDatabaseRep_ ([[maybe_unused]] const Document::TrivialDocumentDB::Options& options)
+        MemoryDatabaseRep_ ([[maybe_unused]] const Document::LocalDocumentDB::Options& options)
             : fOptions_{options}
         {
-            TraceContextBumper ctx{"TrivialDocumentDB::MemoryDatabaseRep_::MemoryDatabaseRep_"};
+            TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MemoryDatabaseRep_"};
             //Assert (shared_from_this ().get () == this); // only support allocating with make_shared - cannot check here cuz object not yet fully constructed
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
@@ -181,7 +181,7 @@ namespace {
             struct MyEngineProperties_ final : EngineProperties {
                 virtual String GetEngineName () const override
                 {
-                    return "TrivialDocumentDB.MemoryDB"sv;
+                    return "LocalDocumentDB.MemoryDB"sv;
                 }
             };
             static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
@@ -243,7 +243,7 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add"};
+                TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 auto                  id     = fDelegateToInMemoryDB_->Add (v);
@@ -253,14 +253,14 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetOne"};
+                TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetOne"};
 #endif
                 return fDelegateToInMemoryDB_->GetOne (id, projection);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f,
+                TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f,
                                        filter, projection};
 #endif
                 return fDelegateToInMemoryDB_->GetAll (filter, projection);
@@ -268,7 +268,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update"};
+                TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 fDelegateToInMemoryDB_->Update (id, newV, onlyTheseFields);
@@ -277,7 +277,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove"};
+                TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
                 [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                 fDelegateToInMemoryDB_->Remove (id);
@@ -302,8 +302,8 @@ namespace {
 
         SingleFileDatabaseRep_ ()                              = delete;
         SingleFileDatabaseRep_ (const SingleFileDatabaseRep_&) = delete;
-        SingleFileDatabaseRep_ ([[maybe_unused]] const Document::TrivialDocumentDB::Options&   options,
-                                const Document::TrivialDocumentDB::Options::SingleFileStorage& sfOptions)
+        SingleFileDatabaseRep_ ([[maybe_unused]] const Document::LocalDocumentDB::Options&   options,
+                                const Document::LocalDocumentDB::Options::SingleFileStorage& sfOptions)
             : fMemoryDB_{make_shared<MemoryDatabaseRep_> (options)}
             , fExternalFile_{sfOptions.fFile}
             , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
@@ -316,7 +316,7 @@ namespace {
             struct MyEngineProperties_ final : EngineProperties {
                 virtual String GetEngineName () const override
                 {
-                    return "TrivialDocumentDB.SingleFile"sv;
+                    return "LocalDocumentDB.SingleFile"sv;
                 }
             };
             static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
@@ -357,7 +357,7 @@ namespace {
         {
             using namespace IO::FileSystem;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoReadFromFS", "path={}"_f, fExternalFile_};
+            TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::DoReadFromFS", "path={}"_f, fExternalFile_};
 #endif
             if (filesystem::exists (fExternalFile_)) {
                 auto rwLock = fMemoryDB_->fCollections_.rwget ();
@@ -375,7 +375,7 @@ namespace {
         void DoWriteToFS ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            TraceContextBumper ctx{"TrivialDocumentDB::SingleFileDatabaseRep_::DoWriteToFS", "path={}"_f, fExternalFile_};
+            TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::DoWriteToFS", "path={}"_f, fExternalFile_};
 #endif
             using namespace IO::FileSystem;
             ThroughTmpFileWriter                  tmpFile{fExternalFile_};
@@ -397,10 +397,10 @@ namespace {
 
     // Store each collection in a folder under the root folder
     struct DirectoryFilesystemDatabaseRep_ final : Database::Document::Connection::IRep {
-        const Document::TrivialDocumentDB::Options fOptions_;
-        const filesystem::path                     fRoot_;
-        const DataExchange::Variant::Reader        fReader_;
-        const DataExchange::Variant::Writer        fWriter_;
+        const Document::LocalDocumentDB::Options fOptions_;
+        const filesystem::path                   fRoot_;
+        const DataExchange::Variant::Reader      fReader_;
+        const DataExchange::Variant::Writer      fWriter_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<DirectoryFilesystemDatabaseRep_> fDBRep_; // save to bump reference count (lifetime safety)
@@ -416,7 +416,7 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Add"};
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Add"};
 #endif
                 optional<VariantValue> vID = v.Lookup (Document::kID);
                 Require (not vID.has_value () or fDBRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
@@ -431,7 +431,7 @@ namespace {
             virtual optional<Document::Document> GetOne (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetOne"};
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetOne"};
 #endif
                 if (auto od = DoReadFromFS_ (GUID{id})) {
                     Document::Document d = *od;
@@ -448,7 +448,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetAll",
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetAll",
                                        "filter={}, projection={}"_f, filter, projection};
 #endif
                 Sequence<Document::Document> result;
@@ -470,7 +470,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update",
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update",
                                        "id={},newV={}, onlyTheseFields={}"_f, id, newV, onlyTheseFields};
 #endif
                 Document::Document updatedDoc =
@@ -490,7 +490,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove", "id={}"_f, id};
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove", "id={}"_f, id};
 #endif
                 (void)filesystem::remove (GetDocumentFilePath_ (GUID{id}));
             }
@@ -503,7 +503,7 @@ namespace {
                 using namespace IO::FileSystem;
                 filesystem::path docFilePath = GetDocumentFilePath_ (id);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DoReadFromFS", "path={}"_f, docFilePath};
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::DoReadFromFS", "path={}"_f, docFilePath};
 #endif
                 if (filesystem::exists (docFilePath)) {
                     return fDBRep_->fReader_.Read (FileInputStream::New (docFilePath)).As<Document::Document> ();
@@ -514,7 +514,7 @@ namespace {
             {
                 filesystem::path docFilePath = GetDocumentFilePath_ (id);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"TrivialDocumentDB::DirectoryFilesystemDatabaseRep_::DoWriteToFS()", "path={}"_f, docFilePath};
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::DoWriteToFS()", "path={}"_f, docFilePath};
 #endif
                 using namespace IO::FileSystem;
                 ThroughTmpFileWriter                  tmpFile{docFilePath};
@@ -549,8 +549,8 @@ namespace {
 
         DirectoryFilesystemDatabaseRep_ ()                                       = delete;
         DirectoryFilesystemDatabaseRep_ (const DirectoryFilesystemDatabaseRep_&) = delete;
-        DirectoryFilesystemDatabaseRep_ (const Document::TrivialDocumentDB::Options&                       options,
-                                         const Document::TrivialDocumentDB::Options::DirectoryFileStorage& dfOptions)
+        DirectoryFilesystemDatabaseRep_ (const Document::LocalDocumentDB::Options&                       options,
+                                         const Document::LocalDocumentDB::Options::DirectoryFileStorage& dfOptions)
             : fOptions_{options}
             , fRoot_{dfOptions.fRoot}
             , fReader_{get<DataExchange::Variant::Reader> (dfOptions.fSerialization)}
@@ -563,7 +563,7 @@ namespace {
             struct MyEngineProperties_ final : EngineProperties {
                 virtual String GetEngineName () const override
                 {
-                    return "TrivialDocumentDB.Folder"sv;
+                    return "LocalDocumentDB.Folder"sv;
                 }
             };
             static const shared_ptr<const EngineProperties> kProps_ = Memory::MakeSharedPtr<const MyEngineProperties_> ();
@@ -608,10 +608,10 @@ namespace {
 
 /*
  ********************************************************************************
- *********************** SQL::TrivialDocumentDB::New ****************************
+ *********************** SQL::LocalDocumentDB::New ******************************
  ********************************************************************************
  */
-auto Document::TrivialDocumentDB::New (const Options& options) -> Ptr
+auto Document::LocalDocumentDB::New (const Options& options) -> Ptr
 {
     if (get_if<Options::MemoryStorage> (&options.fStorage)) {
         return Ptr{Memory::MakeSharedPtr<MemoryDatabaseRep_> (options)};

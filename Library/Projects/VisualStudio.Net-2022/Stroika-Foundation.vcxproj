@@ -119,7 +119,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\MongoDBClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\Projection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Document\LocalDocumentDB.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\Exception.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQL\ODBC.cpp" />
@@ -506,7 +506,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Projection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Document\LocalDocumentDB.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQL\EngineProperties.h" />
@@ -1010,7 +1010,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\SQLite.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Document\Transaction.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\TrivialDocumentDB.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\Document\LocalDocumentDB.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQL\Connection.inl" />

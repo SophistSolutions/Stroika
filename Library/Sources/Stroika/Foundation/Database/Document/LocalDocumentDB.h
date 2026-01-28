@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Database_Document_TrivialDocumentDB_h_
-#define _Stroika_Foundation_Database_Document_TrivialDocumentDB_h_ 1
+#ifndef _Stroika_Foundation_Database_Document_LocalDocumentDB_h_
+#define _Stroika_Foundation_Database_Document_LocalDocumentDB_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
@@ -29,7 +29,7 @@
  *
  *  \note Code-Status:  <a href="Code-Status.md#Alpha">Alpha</a>
  *
- *  TrivialDocumentDB is a (typically filesystem, but can be RAM based) trivial implementation of the DocumentDB
+ *  LocalDocumentDB is a (typically filesystem, but can be RAM based) trivial implementation of the DocumentDB
  *  API. You can use this to debug/test, and possibly for limited, or embedded, small scale uses.
  * 
  *  Advantages:
@@ -43,7 +43,7 @@
  *      -   Transactions NYI
  */
 
-namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
+namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
 
     using namespace Database::Document::Connection;
 
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
     using Database::Document::Connection::Ptr;
 
     /**
-     *  \brief create an TrivialDocumentDB database (and connection) object, guided by argument Options.
+     *  \brief create an LocalDocumentDB database (and connection) object, guided by argument Options.
      * 
      *  \note  \em Thread-Safety   Resulting object: <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
@@ -124,6 +124,6 @@ namespace Stroika::Foundation::Database::Document::TrivialDocumentDB {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "TrivialDocumentDB.inl"
+#include "LocalDocumentDB.inl"
 
-#endif /*_Stroika_Foundation_Database_Document_TrivialDocumentDB_h_*/
+#endif /*_Stroika_Foundation_Database_Document_LocalDocumentDB_h_*/

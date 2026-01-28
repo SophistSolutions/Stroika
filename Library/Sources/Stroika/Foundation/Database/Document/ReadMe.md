@@ -18,7 +18,7 @@ by ID (see https://en.wikipedia.org/wiki/Document-oriented_database).
 
   - [MongoDBClient.h](MongoDBClient.h) - Concrete MongoDB client (implements abstract Connection etc interfaces)
   - [SQLite.h](SQLite.h)- Concrete SQLite client (implements abstract Connection etc interfaces)
-  - [TrivialDocumentDB.h](TrivialDocumentDB.h)- store data in RAM, or filesystem - modest performance/capabilities, but simple, and flexible for small cases (fewer dependencies)
+  - [LocalDocumentDB.h](LocalDocumentDB.h)- store data in RAM, or filesystem - modest performance/capabilities, but simple, and flexible for small cases (fewer dependencies)
 
 ## Sample
 
