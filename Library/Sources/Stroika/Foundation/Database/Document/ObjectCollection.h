@@ -58,11 +58,13 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         /**
          */
         nonvirtual optional<T> Get (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual optional<T> Get (const Filter& filter, const optional<Projection>& projection = {}) const;
 
     public:
         /**
          */
         nonvirtual T GetOrThrow (const IDType& id, const optional<Projection>& projection = {}) const;
+        nonvirtual T GetOrThrow (const Filter& filter, const optional<Projection>& projection = {}) const;
 
     public:
         /**

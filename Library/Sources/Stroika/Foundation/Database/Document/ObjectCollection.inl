@@ -31,9 +31,24 @@ namespace Stroika::Foundation::Database::Document::ObjectCollection {
         }
     }
     template <typename T>
+    inline optional<T> Ptr<T>::Get (const Filter& filter, const optional<Projection>& projection) const
+    {
+        if (optional<Document> o = inherited::Get (filter, projection)) {
+            return fMapper_.ToObject<T> (VariantValue{*o});
+        }
+        else {
+            return nullopt;
+        }
+    }
+    template <typename T>
     inline T Ptr<T>::GetOrThrow (const IDType& id, const optional<Projection>& projection) const
     {
         return fMapper_.ToObject<T> (VariantValue{inherited::GetOrThrow (id, projection)});
+    }
+    template <typename T>
+    inline T Ptr<T>::GetOrThrow (const Filter& filter, const optional<Projection>& projection) const
+    {
+        return fMapper_.ToObject<T> (VariantValue{inherited::GetOrThrow (filter, projection)});
     }
     template <typename T>
     Sequence<T> Ptr<T>::GetAll (const optional<Filter>& filter, const optional<Projection>& projection) const
