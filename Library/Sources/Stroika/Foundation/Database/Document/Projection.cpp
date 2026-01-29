@@ -21,10 +21,10 @@ using namespace Database::Document;
 Database::Document::Document Projection::Apply (const Database::Document::Document& d) const
 {
     Mapping<String, VariantValue> vv = d;
-    if (const Set<String>* i0 = get_if<static_cast<int> (eOmit)> (&this->fFields_)) {
+    if (const Set<String>* i0 = get_if<static_cast<int> (eOmit)> (&fFields_)) {
         vv.RemoveAll (*i0);
     }
-    else if (const Set<String>* i1 = get_if<static_cast<int> (eInclude)> (&this->fFields_)) {
+    else if (const Set<String>* i1 = get_if<static_cast<int> (eInclude)> (&fFields_)) {
         vv.RetainAll (*i1);
     }
     else {
@@ -35,10 +35,10 @@ Database::Document::Document Projection::Apply (const Database::Document::Docume
 
 bool Projection::Includes (const String& fieldName) const
 {
-    if (const Set<String>* i0 = get_if<static_cast<int> (eOmit)> (&this->fFields_)) {
+    if (const Set<String>* i0 = get_if<static_cast<int> (eOmit)> (&fFields_)) {
         return not i0->Contains (fieldName);
     }
-    else if (const Set<String>* i1 = get_if<static_cast<int> (eInclude)> (&this->fFields_)) {
+    else if (const Set<String>* i1 = get_if<static_cast<int> (eInclude)> (&fFields_)) {
         return i1->Contains (fieldName);
     }
     else {
@@ -51,10 +51,10 @@ String Projection::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    if (const Set<String>* i0 = get_if<static_cast<int> (eOmit)> (&this->fFields_)) {
+    if (const Set<String>* i0 = get_if<static_cast<int> (eOmit)> (&fFields_)) {
         sb << "omit: "sv << *i0;
     }
-    else if (const Set<String>* i1 = get_if<static_cast<int> (eInclude)> (&this->fFields_)) {
+    else if (const Set<String>* i1 = get_if<static_cast<int> (eInclude)> (&fFields_)) {
         sb << "include: "sv << *i1;
     }
     sb << "}"sv;
