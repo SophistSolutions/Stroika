@@ -49,6 +49,8 @@ namespace Stroika::Foundation::Common {
          *                           or 61e4d49d-8c26-3480-f5c8-564e155c67a6
          *  no argument CTOR, creates an all-zero GUID.
          * 
+         *  \see GUID::GenerateNew () to create a new random GUID.
+         * 
          *  @todo maybe support more input formats, such as https://stackoverflow.com/questions/7775439/is-the-format-of-guid-always-the-same
          *  @todo - should allow input format of raw bytes (though unclear of endian interpretation that would be best
          *        in that case)
@@ -62,6 +64,19 @@ namespace Stroika::Foundation::Common {
         GUID (const Memory::BLOB& src);
         GUID (const array<byte, 16>& src) noexcept;
         GUID (const array<uint8_t, 16>& src) noexcept;
+
+    public:
+        /**
+         *  Like Windows UuidCreate, or CoCreateGuid - create a random GUID (but portably).
+         * 
+         *  \alias CreateNew(), CTOR
+         * 
+         *  \par Example Usage
+         *      \code
+         *          String newUUIDAsString = GUID::GenerateNew ().As<String> ();
+         *      \endcode
+         */
+        static GUID GenerateNew () noexcept;
 
     public:
         uint32_t Data1{};
@@ -93,12 +108,6 @@ namespace Stroika::Foundation::Common {
         /**
          */
         nonvirtual explicit operator Memory::BLOB () const;
-
-    public:
-        /**
-         *  Like Windows UuidCreate, or CoCreateGuid - create a random GUID (but portably).
-         */
-        static GUID GenerateNew () noexcept;
 
     public:
         /**
