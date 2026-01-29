@@ -93,6 +93,19 @@ namespace {
 }
 
 namespace {
+    bsoncxx::types::bson_value::value ToBSONId_ (const string_view& s)
+    {
+        if (s.length () == 24) {
+            // check just hex digits too?
+            return bsoncxx::types::b_oid{bsoncxx::oid{s}};
+        }
+        else {
+            return bsoncxx::types::bson_value::value{s};
+        }
+    }
+}
+
+namespace {
     [[noreturn]] void DoReThrow_ ()
     {
         // @todo ALSO - should check if current_exception() already a Stroika exception - and only bother wrapping native mongo ones, but this caputres
@@ -110,6 +123,8 @@ namespace {
         switch (value.type ()) {
             case bsoncxx::type::k_oid:
                 return String{value.get_oid ().value.to_string ()};
+            case bsoncxx::type::k_string:
+                return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{value.get_string ().value}));
             default:
                 AssertNotReached ();
                 return String{};
@@ -260,15 +275,18 @@ namespace {
         // more complex, but more performant version of
         //      bsoncxx::from_json (Variant::JSON::Writer{}.WriteAsString (VariantValue{vvv}).AsUTF8<string> ());
         Document::Document newDoc = vv;
+        optional<string>   id; // patch 'id':string => '_id':oid
         if (vv.ContainsKey (Database::Document::kID)) {
-            // patch 'id':string => '_id':oid
             auto idValue = vv[Database::Document::kID];
             newDoc.Remove (Database::Document::kID);
-            newDoc.Add (kMongoID_, VariantValue{Mapping<String, VariantValue>{{"$oid"sv, idValue}}});
+            id = idValue.As<String> ().AsUTF8<string> ();
         }
         bsoncxx::builder::basic::document bsonDoc;
         for (const KeyValuePair<String, VariantValue>& ai : newDoc) {
             bsonDoc.append (kvp (ai.fKey.AsUTF8<string> (), VV2BSONV_ (ai.fValue)));
+        }
+        if (id) {
+            bsonDoc.append (kvp ("_id", ToBSONId_ (*id)));
         }
         return bsonDoc.extract ();
     }
@@ -301,7 +319,7 @@ namespace {
                         // move to server side
                         if (useFieldName == kMongoID_) {
                             // @todo find cleaner way todo this cuz other thinks could be of this type?
-                            filterDoc.append (kvp ("_id", bsoncxx::oid{rhsValue->As<String> ().AsUTF8<string> ()})); //kMongoID
+                            filterDoc.append (kvp ("_id", ToBSONId_ (rhsValue->As<String> ().AsUTF8<string> ()))); //kMongoID
                         }
                         else {
                             filterDoc.append (kvp (useFieldName.AsUTF8<string> (), VV2BSONV_ (*rhsValue)));
@@ -450,9 +468,9 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Add()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Add"};
 #endif
-                Require (not v.ContainsKey (Database::Document::kID)); // fAddAllowsExternallySpecifiedIDs support NYI - but should be easy cuz done by MONGO - but need to review carefully and test
+                Require (not v.ContainsKey (Database::Document::kID) or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 try {
                     // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
@@ -463,17 +481,17 @@ namespace {
                 catch (...) {
                     DoReThrow_ ();
                 }
-                Throw (RuntimeErrorException{"failed to add doc"});
+                Throw (RuntimeErrorException{"failed to add document"sv});
             }
             virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Get()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Get"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 try {
                     bsoncxx::builder::basic::document filterDoc;
-                    filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); //kMongoID
+                    filterDoc.append (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))); //kMongoID
                     auto [mongoProjection, myProjection] = Partition_ (projection);
                     mongocxx::options::find o;
                     if (mongoProjection) {
@@ -496,7 +514,7 @@ namespace {
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll()", "filter={}, projection={}"_f, filter, projection};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 auto [mongoFilter, myFilter] = Partition_ (filter);
@@ -534,7 +552,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Update()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Update"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
@@ -542,11 +560,11 @@ namespace {
                 if (onlyTheseFields) {
                     uploadDoc.RetainAll (*onlyTheseFields);
                 }
-                uploadDoc.RemoveIf ("id");
+                uploadDoc.RemoveIf (Database::Document::kID);
                 try {
                     bsoncxx::document::value bsonDoc = ToBSON_ (uploadDoc);
                     if (onlyTheseFields) {
-                        if (auto o = fCollection_.update_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})),
+                        if (auto o = fCollection_.update_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
                                                               make_document (kvp ("$set", bsonDoc.view ())))) {
                             if (o->modified_count () == 0) {
                                 Throw (RuntimeErrorException{"failed to update doc - not modified"});
@@ -557,7 +575,7 @@ namespace {
                         }
                     }
                     else {
-                        if (auto o = fCollection_.replace_one (make_document (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})), bsonDoc.view ())) {
+                        if (auto o = fCollection_.replace_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))), bsonDoc.view ())) {
                             if (o->modified_count () == 0) {
                                 Throw (RuntimeErrorException{"failed to replace doc - not modified"sv});
                             }
@@ -574,12 +592,12 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Remove()"};
+                TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Remove"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 try {
                     bsoncxx::builder::basic::document filterDoc;
-                    filterDoc.append (kvp ("_id", bsoncxx::oid{id.AsUTF8<string> ()})); // kMongoID_
+                    filterDoc.append (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))); // kMongoID_
                     auto result = fCollection_.delete_one (filterDoc.view ());
                     if (result && result->deleted_count () == 0) {
                         Throw (RuntimeErrorException{"failed to delete doc"sv});
@@ -655,7 +673,7 @@ namespace {
         virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            TraceContextBumper ctx{"mongocxx::CreateCollection()"};
+            TraceContextBumper ctx{"mongocxx::CreateCollection", "name={}"_f, name};
 #endif
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             fDatabase_.create_collection (name.AsUTF8<string> ());
@@ -664,7 +682,7 @@ namespace {
         virtual void DropCollection (const String& name) override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            TraceContextBumper ctx{"mongocxx::DropCollection()"};
+            TraceContextBumper ctx{"mongocxx::DropCollection", "name={}"_f, name};
 #endif
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
             try {
