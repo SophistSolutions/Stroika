@@ -285,6 +285,21 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	fi
 endif
 endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+	@# Avoid warnings:
+	@#		mongoc2.lib(mongoc-find-and-modify.obj) : warning LNK4099: PDB 'mongoc2.pdb' was not found with 'mongoc2.lib(mongoc-find-and-modify.obj)' or at 'C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\mongoc2.pdb'; linking object as if no debug info
+	@#		...
+	@#		bson2.lib(common-b64.obj) : warning LNK4099: PDB 'bson2.pdb' was not found with 'bson2.lib(common-b64.obj)' or at 'C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\bson2.pdb'; linking object as if no debug info
+	@#Copy PDB files - https://jira.mongodb.org/browse/CXX-3291 - to avoid warnings - bson2.lib(common-json.obj) : warning LNK4099: PDB 'bson2.pdb' was not found with 'bson2.lib(common-json.obj)'
+	@#	(which occur after a make clean on ThirdPartyComponents)
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libbson/${CMAKE_BUILD_TYPE_}/bson2.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/${CMAKE_BUILD_TYPE_}/*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/utf8proc_obj.dir/Debug/utf8proc_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}_deps/mongo-c-driver-build/src/libmongoc/zlib_obj.dir/${CMAKE_BUILD_TYPE_}/zlib_obj.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/bsoncxx/${CMAKE_BUILD_TYPE_}/bsoncxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}src/mongocxx/${CMAKE_BUILD_TYPE_}/mongocxx-*.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+
+endif
 
 
 
