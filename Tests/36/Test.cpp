@@ -971,8 +971,8 @@ namespace {
                         auto         adminDB      = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = connectionPool});
                         IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
                         adminDB.CreateDatabase (kTestDBName_);
-                        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (MongoDBClient::Connection::Options{
-                            .fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
+                        Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
+                            MongoDBClient::Connection::Options{.fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
                         TestBasics1_ (p);
                     }
                     {
@@ -982,7 +982,7 @@ namespace {
                         adminDB.CreateDatabase (kTestDBName_);
                         Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (MongoDBClient::Connection::Options{
                             /*.fAddAllowsExternallySpecifiedIDs = true, */ .fConnectionTarget = connectionPool, .fDatabase = kTestDBName_});
-                        // TestAddNewWithExternalKeysProvided_ (p);  NYI
+                        TestAddNewWithExternalKeysProvided_ (p);
                     }
                 }
             }
@@ -994,8 +994,7 @@ namespace {
         {
             TraceContextBumper ctx{"DocumentDBTestBasics_sqlite"};
             EXPECT_NO_THROW ({
-                Database::Document::Connection::Ptr p =
-                    SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
                 TestBasics1_ (p);
             });
             EXPECT_NO_THROW ({
@@ -1004,18 +1003,17 @@ namespace {
                 // TestAddNewWithExternalKeysProvided_ (p);     NYI
             });
             EXPECT_NO_THROW ({
-                Database::Document::Connection::Ptr p =
-                    SQLite::Connection::New (SQLite::Connection::Options{ .fInMemoryDB = ""sv});
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
                 TestBasics1_ (p);
-            }); EXPECT_NO_THROW ({
+            });
+            EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p =
                     SQLite::Connection::New (SQLite::Connection::Options{/*.fAddAllowsExternallySpecifiedIDs = true, */ .fInMemoryDB = ""sv});
                 // TestAddNewWithExternalKeysProvided_ (p);  NYI
             });
             EXPECT_NO_THROW ({
                 IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
-                Database::Document::Connection::Ptr p =
-                    SQLite::Connection::New (SQLite::Connection::Options{ .fDBPath = dbFileName});
+                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
                 TestBasics1_ (p);
             });
             EXPECT_NO_THROW ({
