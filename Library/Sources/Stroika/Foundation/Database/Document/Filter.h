@@ -81,6 +81,12 @@ namespace Stroika::Foundation::Database::Document {
      *  And KEY ones - are ones that can be identified at query time and MAPPED to mongodb query operators, like equal {fieldname, value} - that
      *  would be mapped to a mongo filter, and the remainder computed client side if needed.
      * 
+     *  \par Example Usage
+     *      \code
+     *          auto filter = Filter{{FilterElements::Equals{.fLHS = FilterElements::FieldName{kID}, .fRHS = FilterElements::Value{id}}}};
+     *          auto allWithID = db.GetAll (filter);
+     *      \endcode
+     *
      */
     class Filter {
     public:
