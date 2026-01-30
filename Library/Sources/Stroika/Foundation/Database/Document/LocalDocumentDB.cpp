@@ -304,8 +304,8 @@ namespace {
         SingleFileDatabaseRep_ (const SingleFileDatabaseRep_&) = delete;
         SingleFileDatabaseRep_ ([[maybe_unused]] const Document::LocalDocumentDB::Options&   options,
                                 const Document::LocalDocumentDB::Options::SingleFileStorage& sfOptions)
-            : fMemoryDB_{make_shared<MemoryDatabaseRep_> (options)}
-            , fExternalFile_{sfOptions.fFile}
+            : fExternalFile_{sfOptions.fFile}
+            , fMemoryDB_{make_shared<MemoryDatabaseRep_> (options)}
             , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (sfOptions.fSerialization)}
         {
