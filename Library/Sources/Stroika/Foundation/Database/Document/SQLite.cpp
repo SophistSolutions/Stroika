@@ -7,6 +7,7 @@
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -19,6 +20,7 @@ using namespace Stroika::Foundation;
 
 using namespace Characters;
 using namespace Containers;
+using namespace Common;
 using namespace Debug;
 using namespace DataExchange;
 using namespace Database;
@@ -280,14 +282,15 @@ namespace {
              *  json_extract appears to only support 'include' and not 'omit' operations
              */
             tuple<Document::Projection::Flag, Set<String>> fields = p->GetFields ();
-            Require (get<1> (fields).size () >= 1); // cannot (usefully) project to null-space
+            // Require (get<1> (fields).size () >= 1); // cannot (usefully) project to null-space (can cuz id handled elsewhere now)
             if (get<Document::Projection::Flag> (fields) == Document::Projection::Flag::eInclude) {
                 StringBuilder    projectionQuery;
                 Sequence<String> fieldNames;
                 for (String f : get<1> (fields)) {
                     String mongoFieldName = f;
+                    Require (f != Document::kID); // prevented before calling here - handled in caller
                     if (fieldNames.empty ()) {
-                        projectionQuery << "json_extract(json,'";
+                        projectionQuery << "json_extract(json,'"sv;
                     }
                     else {
                         projectionQuery << ","sv;
@@ -316,8 +319,11 @@ namespace {
          *      https://www.sqlite.org/json1.html
          *          "There is a subtle incompatibility between the json_extract() function in SQLite and the json_extract() function in MySQL. The MySQL version of json_extract() always returns JSON. The SQLite version of json_extract() only returns JSON if there are two or more PATH arguments"
          */
-        VariantValue valueReadBackFromDB =
-            Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, dataCol))));
+        DbgTrace ("sqlite3_column_count()={}"_f, sqlite3_column_count (statement));
+        DbgTrace ("reading back value from DB: {}"_f, String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, dataCol))));
+        static const auto kJSONReader_ = Variant::JSON::Reader{};
+        VariantValue      valueReadBackFromDB =
+            kJSONReader_.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, dataCol))));
         Document::Document dr;
         if (sqliteProjection == nullopt) {
             dr = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
@@ -353,6 +359,7 @@ namespace {
 
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
         const Options                                                  fOptions_;
+        const bool                                                     fAllowUserDefinedRowID_{false};
 
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsynchronized connection, share its context
@@ -377,10 +384,24 @@ namespace {
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"SQLite::CollectionRep_::Add()"};
+                TraceContextBumper ctx{"SQLite::CollectionRep_::Add"};
 #endif
-                Require (not v.ContainsKey (Database::Document::kID)); // fAddAllowsExternallySpecifiedIDs support NYI
+                Require (not v.ContainsKey (Database::Document::kID) or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+
+                optional<IDType> id;
+                if (fConnectionRep_->fAllowUserDefinedRowID_) {
+                    if (auto o = v.Lookup (Database::Document::kID)) {
+                        id = o->As<String> ();
+                    }
+                    else {
+                        id = Common::GUID::GenerateNew ().As<String> ();
+                    }
+                }
+                else {
+                    Assert (not v.ContainsKey (Database::Document::kID));
+                }
+
                 /**
                  *  UNCLEAR if this way of capturing row_id is threadsafe or not.
                  *  MAYBE OK if not using 'full mutex' mode on database connection? @todo FIGURE OUT!!!!
@@ -390,31 +411,72 @@ namespace {
                  *      none that efficient and clean and simple. I guess this is clean and simple and efficient, just probably a race
                  */
                 if (fAddStatement_ == nullptr) [[unlikely]] {
-                    fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into {} (json) values(?);"_f(fTableName_)};
+                    if (fConnectionRep_->fAllowUserDefinedRowID_) {
+                        fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into {} (id, json) values(?,?);"_f(fTableName_)};
+                    }
+                    else {
+                        fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into {} (json) values(?);"_f(fTableName_)};
+                    }
                 }
-                string jsonText = Variant::JSON::Writer{}.WriteAsString (VariantValue{v}).AsUTF8<string> ();
+                Document::Document cleanedV = v;
+                cleanedV.RemoveIf (Database::Document::kID); // don't write ID to JSON
+                static const auto kJSONWriter_ = Variant::JSON::Writer{};
+                string            jsonText     = kJSONWriter_.WriteAsString (VariantValue{cleanedV}).AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fAddStatement_), fConnectionRep_->fDB_);
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fAddStatement_, 1, jsonText.c_str (), static_cast<int> (jsonText.length ()), SQLITE_TRANSIENT),
+                if (fConnectionRep_->fAllowUserDefinedRowID_) {
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fAddStatement_, 1, id->AsUTF8<string> ().c_str (),
+                                                                   static_cast<int> (id->AsUTF8 ().length ()), SQLITE_TRANSIENT),
+                                              fConnectionRep_->fDB_);
+                }
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fAddStatement_, fConnectionRep_->fAllowUserDefinedRowID_ ? 2 : 1,
+                                                               jsonText.c_str (), static_cast<int> (jsonText.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
                 int rc = ::sqlite3_step (fAddStatement_);
                 if (rc != SQLITE_DONE) {
                     ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
                 }
-                return "{}"_f(sqlite3_last_insert_rowid (fConnectionRep_->fDB_));
+                return fConnectionRep_->fAllowUserDefinedRowID_ ? *id : "{}"_f(::sqlite3_last_insert_rowid (fConnectionRep_->fDB_));
             }
             virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Get", "id={}, projection={}"_f, id, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
                 // locally construct MyPreparedStatement_ for case with projection, and/or cache statement for grabbing whole thing
-                auto [sqliteProjection, remainingAfterProjection] = Partition_ (projection);
+                optional<Projection> projectionWithoutID   = projection;
+                bool                 includeIDInProjection = true;
+                if (projectionWithoutID) {
+                    auto [flags, fieldNames] = projectionWithoutID->GetFields ();
+                    switch (flags) {
+                        case Document::Projection::Flag::eInclude: {
+                            if (fieldNames.Contains (Document::kID)) {
+                                fieldNames.Remove (Document::kID);
+                                projectionWithoutID = Projection{flags, fieldNames};
+                            }
+                            else {
+                                includeIDInProjection = false;
+                            }
+                        } break;
+                        case Document::Projection::Flag::eOmit: {
+                            includeIDInProjection = false;
+                        } break;
+                    }
+                }
+                auto [sqliteProjection, remainingAfterProjection] = Partition_ (projectionWithoutID);
                 optional<MyPreparedStatement_> sqliteProjectionStatement;
+                bool                           ignoreResult = false;
                 if (sqliteProjection) {
-                    sqliteProjectionStatement.emplace (fConnectionRep_->fDB_,
-                                                       "select {} from {} where id=?;"_f(get<String> (*sqliteProjection), fTableName_));
+                    DbgTrace ("sqliteProjectionStatement:=  select {} from {} where id=?;"_f, get<String> (*sqliteProjection), fTableName_);
+                    if (get<String> (*sqliteProjection).empty ()) {
+                        sqliteProjectionStatement.emplace (fConnectionRep_->fDB_, "select NULL from {} where id=?;"_f(fTableName_));
+                        ignoreResult = true;
+                    }
+                    else {
+                        sqliteProjectionStatement.emplace (fConnectionRep_->fDB_,
+                                                           "select {} from {} where id=?;"_f(get<String> (*sqliteProjection), fTableName_));
+                    }
                 }
                 else if (fGetOneStatement_ == nullptr) [[unlikely]] {
                     fGetOneStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_)};
@@ -424,24 +486,33 @@ namespace {
 
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (useStatment), fConnectionRep_->fDB_);
                 string idAsUTFSTR = id.AsUTF8<string> ();
+                DbgTrace ("idAsUTFStr={}"_f, id);
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (useStatment, 1, idAsUTFSTR.c_str (), static_cast<int> (idAsUTFSTR.length ()), SQLITE_TRANSIENT),
                                           fConnectionRep_->fDB_);
 
                 int                          rc = ::sqlite3_step (useStatment);
                 optional<Document::Document> result;
                 if (rc == SQLITE_ROW) [[likely]] {
-                    result = ExtractRowValueAfterStep_ (useStatment, 0, id, sqliteProjection, remainingAfterProjection);
-                    rc     = ::sqlite3_step (useStatment);
+                    if (ignoreResult) {
+                        result = Document::Document{};
+                    }
+                    else {
+                        result = ExtractRowValueAfterStep_ (useStatment, 0, id, sqliteProjection, remainingAfterProjection);
+                    }
+                    rc = ::sqlite3_step (useStatment);
                 }
                 if (rc != SQLITE_DONE) [[unlikely]] {
                     ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
+                }
+                if (includeIDInProjection) {
+                    result->Add (Document::kID, id);
                 }
                 return result;
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll()", "filter={}, projection={}"_f, filter, projection};
+                TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
 
@@ -452,9 +523,10 @@ namespace {
                     ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                     int rc;
                     while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
-                        String       id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
-                        VariantValue valueReadBackFromDB =
-                            Variant::JSON::Reader{}.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 1))));
+                        static const auto kJSONReader_ = Variant::JSON::Reader{};
+                        String            id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
+                        VariantValue      valueReadBackFromDB =
+                            kJSONReader_.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 1))));
                         Document::Document vDoc = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
                         vDoc.Add (Document::kID, id);
                         result += vDoc;
@@ -513,7 +585,7 @@ namespace {
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"SQLite::CollectionRep_::Update()"};
+                TraceContextBumper ctx{"SQLite::CollectionRep_::Update"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 Document::Document                                     uploadDoc = newV;
@@ -522,18 +594,20 @@ namespace {
                 }
                 // POOR IMPLEMENTATION - should use sql update - but tricky for this case, so KISS, and get functionally working so
                 // I can integrate this code in regtests
-                Document::Document d2Update = onlyTheseFields ? Memory::ValueOfOrThrow (this->Get (id, nullopt)) : uploadDoc;
+                Document::Document d2Update = onlyTheseFields ? Memory::ValueOfOrThrow (Get (id, nullopt)) : uploadDoc;
                 // any fields listed in onlyTheseFields, but not present in newV need to be removed
                 if (onlyTheseFields) {
                     d2Update.AddAll (uploadDoc);
                     Set<String> removeMe = *onlyTheseFields - newV.Keys ();
                     d2Update.RemoveAll (removeMe);
                 }
+                d2Update.RemoveIf (Document::kID); // never write this to the JSON
 
                 if (fUpdateStatement_ == nullptr) [[unlikely]] {
                     fUpdateStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "update {} SET json=? where id=?;"_f(fTableName_)};
                 }
-                string r = Variant::JSON::Writer{}.WriteAsString (VariantValue{d2Update}).AsUTF8<string> ();
+                static const auto kJSONWriter_ = Variant::JSON::Writer{};
+                string            r            = kJSONWriter_.WriteAsString (VariantValue{d2Update}).AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fUpdateStatement_), fConnectionRep_->fDB_);
                 string idText = id.AsUTF8<string> ();
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fUpdateStatement_, 1, r.c_str (), static_cast<int> (r.length ()), SQLITE_TRANSIENT),
@@ -548,7 +622,7 @@ namespace {
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"SQLite::CollectionRep_::Remove()"};
+                TraceContextBumper ctx{"SQLite::CollectionRep_::Remove"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 if (fRemoveStatement_ == nullptr) [[unlikely]] {
@@ -567,6 +641,7 @@ namespace {
 
         ConnectionRep_ (const Options& options)
             : fOptions_{options}
+            , fAllowUserDefinedRowID_{options.fAddAllowsExternallySpecifiedIDs}
         {
             TraceContextBumper ctx{"SQLite::Connection::ConnectionRep_::ConnectionRep_"};
 
@@ -706,7 +781,13 @@ namespace {
         }
         virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
-            Exec ("create table if not exists {} (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
+            // NOTE - the ID is stored OUTSIDE of the json, and never INSIDE the json object
+            if (fAllowUserDefinedRowID_) {
+                Exec ("create table if not exists {} (id TEXT PRIMARY KEY, json NOT NULL) WITHOUT ROWID;"_f(name));
+            }
+            else {
+                Exec ("create table if not exists {} (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
+            }
             return Document::Collection::Ptr{
                 Memory::MakeSharedPtr<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
         }
