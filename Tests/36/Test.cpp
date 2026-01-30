@@ -1000,7 +1000,7 @@ namespace {
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p =
                     SQLite::Connection::New (SQLite::Connection::Options{/*.fAddAllowsExternallySpecifiedIDs = true, */ .fTemporaryDB = "phred2"sv});
-                // TestAddNewWithExternalKeysProvided_ (p);     NYI
+                TestAddNewWithExternalKeysProvided_ (p);
             });
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
@@ -1009,7 +1009,7 @@ namespace {
             EXPECT_NO_THROW ({
                 Database::Document::Connection::Ptr p =
                     SQLite::Connection::New (SQLite::Connection::Options{/*.fAddAllowsExternallySpecifiedIDs = true, */ .fInMemoryDB = ""sv});
-                // TestAddNewWithExternalKeysProvided_ (p);  NYI
+                TestAddNewWithExternalKeysProvided_ (p);
             });
             EXPECT_NO_THROW ({
                 IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
@@ -1020,7 +1020,7 @@ namespace {
                 IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestBasics-TEST-sqlite.db"};
                 Database::Document::Connection::Ptr p =
                     SQLite::Connection::New (SQLite::Connection::Options{/*.fAddAllowsExternallySpecifiedIDs = true, */ .fDBPath = dbFileName});
-                // TestAddNewWithExternalKeysProvided_ (p);  NYI
+                TestAddNewWithExternalKeysProvided_ (p);
             });
         }
 #endif
@@ -1184,16 +1184,35 @@ namespace {
         {
             TraceContextBumper ctx{"DocumentDB_ObjectCollection_sqlite"};
             EXPECT_NO_THROW ({
-                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fTemporaryDB = "phred"sv});
+                SQLite::Connection::Options options = SQLite::Connection::Options{.fTemporaryDB = "phred"sv}; // need c++26 todo designated initializers of base classes!
+                options.fAddAllowsExternallySpecifiedIDs = false;
+                Database::Document::Connection::Ptr p    = SQLite::Connection::New (options);
+                TestBasics1_ (p);
+                options.fAddAllowsExternallySpecifiedIDs = true;
+                p                                        = SQLite::Connection::New (options);
                 TestBasics1_ (p);
             });
             EXPECT_NO_THROW ({
-                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fInMemoryDB = ""sv});
+                SQLite::Connection::Options options      = SQLite::Connection::Options{.fInMemoryDB = ""sv};
+                options.fAddAllowsExternallySpecifiedIDs = true;
+                Database::Document::Connection::Ptr p    = SQLite::Connection::New (options);
+                TestBasics1_ (p);
+                options.fAddAllowsExternallySpecifiedIDs = false;
+                p                                        = SQLite::Connection::New (options);
                 TestBasics1_ (p);
             });
             EXPECT_NO_THROW ({
-                IO::FileSystem::ScopedTmpFile       dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
-                Database::Document::Connection::Ptr p = SQLite::Connection::New (SQLite::Connection::Options{.fDBPath = dbFileName});
+                IO::FileSystem::ScopedTmpFile dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite.db"};
+                SQLite::Connection::Options   options    = SQLite::Connection::Options{.fDBPath = dbFileName};
+                options.fAddAllowsExternallySpecifiedIDs = false;
+                Database::Document::Connection::Ptr p    = SQLite::Connection::New (options);
+                TestBasics1_ (p);
+            });
+            EXPECT_NO_THROW ({
+                IO::FileSystem::ScopedTmpFile dbFileName{"DocumentDBTestObjectCollection-TEST-sqlite-ext.db"};
+                SQLite::Connection::Options   options    = SQLite::Connection::Options{.fDBPath = dbFileName};
+                options.fAddAllowsExternallySpecifiedIDs = true;
+                Database::Document::Connection::Ptr p    = SQLite::Connection::New (options);
                 TestBasics1_ (p);
             });
         }
