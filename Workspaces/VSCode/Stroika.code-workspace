@@ -7,8 +7,7 @@
 	"settings": {
 		"C_Cpp.files.exclude": {
 			"Archive/**": true,
-			"IntermediateFiles/**": true,
-			"ThirdPartyComponents/*/CURRENT/**": true
+			"IntermediateFiles/**": true
 		},
 		"files.exclude": {
 			"**/.o": true,
