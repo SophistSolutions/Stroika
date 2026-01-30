@@ -75,9 +75,9 @@
       }
     },
     {
-      "label": "make rebuild",
+      "label": "make rebuild (all but third-party clobbered)",
       "type": "shell",
-      "command": "make CONFIGURATION=${command:cpptools.activeConfigName} clean all ${input:CURRENT-JOBSFLAG}",
+      "command": "make CONFIGURATION=${command:cpptools.activeConfigName} stroika-clobber all ${input:CURRENT-JOBSFLAG}",
       "problemMatcher": ["$msCompile", "$gcc"],
       "group": {
         "kind": "build",

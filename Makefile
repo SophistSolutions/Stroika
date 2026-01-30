@@ -12,7 +12,7 @@ endif
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
-.PHONY:	tests documentation all check distclean clobber libraries apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
+.PHONY:	tests documentation all check distclean clobber clobber-stroika libraries apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
 
 
 SHELL=/bin/bash
@@ -56,6 +56,7 @@ help:
 	@$(ECHO) "    check:                       -    Checks everything was built properly"
 	@$(ECHO) "    clean:"
 	@$(ECHO) "    clobber:"
+	@$(ECHO) "    clobber-stroika:			   -   	clean + destroy Stroika targets (libs etc) - so all of stroika will be rebuilt next make (but doesnt destroy third-party-components)"
 	@$(ECHO) "    distclean:"
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
@@ -145,6 +146,19 @@ endif
 	@rm -rf Builds ConfigurationFiles IntermediateFiles
 	@$(MAKE) --no-print-directory --directory=ThirdPartyComponents distclean
 	@$(MAKE) --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+
+stroika-clobber:
+ifeq ($(CONFIGURATION),)
+	echo NYI
+else
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
+	@#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
+	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clean MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory Library --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory Tools --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory Tests --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory Samples --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
