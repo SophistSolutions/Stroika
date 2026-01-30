@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed } from "vue";
+import { onMounted, onUnmounted, computed, Ref, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
 import moment from "moment";
 import prettyBytes from "pretty-bytes";
+import { formatDistance, differenceInSeconds } from 'date-fns';
 
 import { kCompileTimeConfiguration } from "src/config/config";
 import { IAPIEndpoint, IWebServerStats, IComponent, IDatabase } from "src/models/IAbout";
@@ -28,9 +29,36 @@ const kRefreshFrequencyInSeconds_: number = 10;
 const store = useMainAppStateStore();
 
 const { about } = storeToRefs(store);
+const { lastSuccessfulAPICall } = storeToRefs(store);
 const aboutData = about;
 
+// Data / functions to show 'last successful communications'
+const pageLoadedAt = new Date();
+const now = ref(new Date());  // reactive now
+const lastSuccessfulAPICallMessageStyle = computed(() => {
+  // show in red if we've gotten some data, but not recently
+  if (lastSuccessfulAPICall.value) {
+    return differenceInSeconds(now.value, lastSuccessfulAPICall.value) < 30 ? "" : "color: red";
+  }
+  else {
+    // show in red if we've never gotten data, and the page loaded a while ago
+    return differenceInSeconds(now.value, pageLoadedAt) < 5 ? "" : "color: red";
+  }
+})
+function mySince_(agoDate: Date, nowDate: Date) {
+  if (Math.abs(differenceInSeconds(nowDate, agoDate)) < kRefreshFrequencyInSeconds_) {
+    return "now";
+  }
+  return formatDistance(agoDate, nowDate, { addSuffix: true, includeSeconds: true });
+}
+const lastSuccessfulAPICallMessage = computed(() => {
+  return lastSuccessfulAPICall.value ?
+    mySince_(lastSuccessfulAPICall.value, now.value) : "no data received yet";
+})
+
+
 const configurationStore = useConfigurationStore();
+
 
 onMounted(() => {
   // first time check quickly, then more gradually
@@ -39,6 +67,8 @@ onMounted(() => {
     clearInterval(polling);
   }
   polling = setInterval(() => {
+    now.value = new Date(); // keep updating reactive now date, so lastSuccessfulAPICallMessage changes
+    lastSuccessfulAPICall.value = lastSuccessfulAPICall.value;  // hack to force refresh (not working)
     store.fetchAboutInfo();
   }, kRefreshFrequencyInSeconds_ * 1000);
 });
@@ -135,13 +165,14 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
           <div class="row">
             Web Services URL: <b>{{ gRuntimeConfiguration.API_ROOT }}</b>
           </div>
-          <div class="row" style="color: red; margin-left: 2em" v-if="!aboutData">
-            The web gui client is unable to communicate with the application web services.
+          <div class="row" style="margin-left: 2em;">
+            Last succesful communication:&nbsp; <span :style="lastSuccessfulAPICallMessageStyle">{{
+              lastSuccessfulAPICallMessage }}</span>
           </div>
-          <div class="row">
+          <div class="row" style="margin-left: 2em">
             API (Web Service) Server Docs:
             <a :href="gRuntimeConfiguration.API_ROOT + '/api'" target="_new">{{ gRuntimeConfiguration.API_ROOT
-              }}/api</a>
+            }}/api</a>
           </div>
         </q-card-section>
       </q-card>

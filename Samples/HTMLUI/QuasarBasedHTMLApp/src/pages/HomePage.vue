@@ -6,7 +6,6 @@ import {
   computed,
   ComputedRef,
 } from 'vue';
-import moment from 'moment';
 
 defineComponent({
   components: {

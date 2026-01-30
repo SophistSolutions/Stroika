@@ -21,6 +21,7 @@
     "@quasar/cli": "^2.5",
     "@quasar/extras": "^1.0.0",
     "@vueuse/core": "^10.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.0.1",
     "form-data": ">=4.0.4",
     "glob": ">=10.5.0",
