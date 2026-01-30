@@ -24,9 +24,8 @@
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Execution/Thread.h"
-
-#include "FileInputStream.h"
-#include "FileSystem.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 
 #include "MountedFilesystem.h"
 
@@ -141,7 +140,7 @@ namespace {
                 }
                 filesystem::path    mountedAt = line[1].As<filesystem::path> ();
                 String              fstype    = line[2];
-                static const String kNone_{L"none"sv};
+                static const String kNone_{"none"sv};
                 results.Add (MountedFilesystemType{
                     mountedAt, devName == kNone_ ? Set<filesystem::path>{} : Set<filesystem::path>{devName.As<filesystem::path> ()}, fstype}); // special name none often used when there is no name
             }
