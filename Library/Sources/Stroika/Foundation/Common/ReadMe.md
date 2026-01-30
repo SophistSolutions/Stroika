@@ -2,36 +2,29 @@
 
 This folder contains all the Stroika Library [Foundation](../)::Common source code.
 
-Main:
+Important:
 
-- Compare - [Compare.h](Compare.h)
-- CountedValue - [CountedValue.h](CountedValue.h)
-- GUID - [GUID.h](GUID.h)
-- KeyValuePair - [KeyValuePair.h](KeyValuePair.h)
+- [Compare.h](Compare.h) - IComparer, IEqualsComparer, ThreeWayComparerAdapter etc
+- [Concepts.h](Concepts.h) - IDuration, ITimePoint, etc...
+- [Enumeration.h](Enumeration.h) - DefaultNames (will be deprecated after c++26)
+- [GUID.h](GUID.h) - A very common 16-byte opaque ID structure
+- [KeyValuePair.h](KeyValuePair.h) - like pair<T,V>, but with better names indicating use
+- [Locale.h](Locale.h) - GetAvailableLocales, etc...
+- [SystemConfiguration.h](SystemConfiguration.h) - GetSystemConfiguration, like boot time, os, etc
 
 Other:
 
-- EmptyObjectForConstructorSideEffect - [EmptyObjectForConstructorSideEffect.h](EmptyObjectForConstructorSideEffect.h)
-- Immortalize - [Immortalize.h](Immortalize.h)
-
-
-
-
-
 - [Common.h](Common.h)
-
-- [Concepts.h](Concepts.h)
-
+- [CountedValue.h](CountedValue.h) - like pair<T,unsigned int> - for multiset
+- [Immortalize.h](Immortalize.h)
 - [Empty.h](Empty.h)
-
 - [Endian.h](Endian.h)
-
-- [Enumeration.h](Enumeration.h)
-- [Locale.h](Locale.h)
+- [ObjectForSideEffects.h](ObjectForSideEffects.h) - minor helper
 - [Platform/](Platform/)
 - [StroikaConfig.h](StroikaConfig.h) [ReadMe](StroikaConfig-ReadMe)
 - [StroikaVersion.h](StroikaVersion.h)
-- [SystemConfiguration.h](SystemConfiguration.h)
+- [TemplateUtilities.h](TemplateUtilities.h)
 - [TypeHints.h](TypeHints.h)
+- [Version.h](Version.h)
 - [Version.h](Version.h)
 - [VersionDefs.h](VersionDefs.h)
