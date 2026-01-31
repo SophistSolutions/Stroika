@@ -99,18 +99,16 @@ function wsAPIMsg(info: IAPIEndpoint, showShort: boolean): string {
 }
 function webServerMsg_(info: IWebServerStats): string {
   let msg = "";
-  msg += `threadPool: {size: ${info.threadPool.threads}, queued: ${
-    info.threadPool.tasksStillQueued
-  }, aveRunTime: ${prettyPrintMSDuration(info.threadPool.averageTaskRunTime)}}\n`;
-  msg += `connections: {open: ${info.connections.open}, active: ${
-    info.connections.active
-  }, openLifetime: ${prettyPrintMSDuration(
-    info.connections.openConnectionsLifetime.median
-  )}, openRequestsLifetime: ${prettyPrintMSDuration(
-    info.connections.openConnectionsRequests.median
-  )}, activeRequestsLifetime: ${prettyPrintMSDuration(
-    info.connections.activeConnectionsRequests.median
-  )}}`;
+  msg += `threadPool: {size: ${info.threadPool.threads}, queued: ${info.threadPool.tasksStillQueued
+    }, aveRunTime: ${prettyPrintMSDuration(info.threadPool.averageTaskRunTime)}}\n`;
+  msg += `connections: {open: ${info.connections.open}, active: ${info.connections.active
+    }, openLifetime: ${prettyPrintMSDuration(
+      info.connections.openConnectionsLifetime.median
+    )}, openRequestsLifetime: ${prettyPrintMSDuration(
+      info.connections.openConnectionsRequests.median
+    )}, activeRequestsLifetime: ${prettyPrintMSDuration(
+      info.connections.activeConnectionsRequests.median
+    )}}`;
   if (info.connections.piningForTheFjords != 0) {
     msg += `piningForTheFjords: ${info.connections.piningForTheFjords},`;
   }
@@ -178,9 +176,8 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
           </div>
           <div class="row" style="margin-left: 2em">
             API (Web Service) Server Docs:
-            <a :href="gRuntimeConfiguration.API_ROOT + '/api'" target="_new"
-              >{{ gRuntimeConfiguration.API_ROOT }}/api</a
-            >
+            <a :href="gRuntimeConfiguration.API_ROOT + '/api'" target="_new">{{ gRuntimeConfiguration.API_ROOT
+              }}/api</a>
           </div>
         </q-card-section>
       </q-card>
@@ -201,13 +198,9 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
               <div class="row" v-if="aboutData">
                 <div class="col-3">Components</div>
                 <div class="col">
-                  <div
-                    class="row"
-                    v-for="c in aboutData.serverInfo.componentVersions.concat(
-                      kUIComponents
-                    )"
-                    :key="c.name"
-                  >
+                  <div class="row" v-for="c in aboutData.serverInfo.componentVersions.concat(
+                    kUIComponents
+                  )" :key="c.name">
                     <div class="col-9">
                       <a :href="c.URL" target="_new">{{ c.name }}</a>
                     </div>
@@ -216,11 +209,8 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
                 </div>
               </div>
               <div class="row" v-if="aboutData">
-                <div
-                  class="col-3"
-                  title="Average CPU usage of the Backend (server app process) over the last 30 seconds;
-Units 1=1 logical core"
-                >
+                <div class="col-3" title="Average CPU usage of the Backend (server app process) over the last 30 seconds;
+Units 1=1 logical core">
                   CPU-Usage
                 </div>
                 <div class="col">
@@ -233,13 +223,10 @@ Units 1=1 logical core"
               </div>
               <div class="row" v-if="aboutData" title="Combined I/O rate (network+disk)">
                 <div class="col-3 truncateWithElipsis">IO Rate (read;write)</div>
-                <div
-                  class="col-4"
-                  v-if="
-                    aboutData.serverInfo.currentProcess.combinedIOReadRate != undefined &&
-                    aboutData.serverInfo.currentProcess.combinedIOWriteRate != undefined
-                  "
-                >
+                <div class="col-4" v-if="
+                  aboutData.serverInfo.currentProcess.combinedIOReadRate != undefined &&
+                  aboutData.serverInfo.currentProcess.combinedIOWriteRate != undefined
+                ">
                   {{
                     prettyBytes(aboutData.serverInfo.currentProcess.combinedIOReadRate)
                   }}/sec ;
@@ -252,10 +239,7 @@ Units 1=1 logical core"
                 <div class="col-3" title="How long has the service been running">
                   Uptime
                 </div>
-                <div
-                  class="col-4"
-                  v-if="aboutData.serverInfo.currentProcess.processUptime"
-                >
+                <div class="col-4" v-if="aboutData.serverInfo.currentProcess.processUptime">
                   {{
                     Duration.fromISO(
                       aboutData.serverInfo?.currentProcess?.processUptime
@@ -264,16 +248,10 @@ Units 1=1 logical core"
                 </div>
               </div>
               <div class="row" v-if="aboutData">
-                <div
-                  class="col-3"
-                  title="Working set size, or RSS resident set size (how much RAM is an active use)"
-                >
+                <div class="col-3" title="Working set size, or RSS resident set size (how much RAM is an active use)">
                   Memory
                 </div>
-                <div
-                  class="col-4"
-                  v-if="aboutData.serverInfo.currentProcess.workingOrResidentSetSize"
-                >
+                <div class="col-4" v-if="aboutData.serverInfo.currentProcess.workingOrResidentSetSize">
                   {{
                     prettyBytes(
                       aboutData.serverInfo.currentProcess.workingOrResidentSetSize
@@ -282,47 +260,32 @@ Units 1=1 logical core"
                 </div>
               </div>
               <div class="row" v-if="aboutData">
-                <div
-                  class="col-3"
-                  title="Information about app WebService endpoint (median #connections, timing, Q-lengths) over the last 5 minutes"
-                >
+                <div class="col-3"
+                  title="Information about app WebService endpoint (median #connections, timing, Q-lengths) over the last 5 minutes">
                   WSAPI
                 </div>
-                <div
-                  class="col"
-                  v-if="aboutData.serverInfo.apiEndpoint"
-                  :title="wsAPIMsg(aboutData.serverInfo.apiEndpoint, false)"
-                >
+                <div class="col" v-if="aboutData.serverInfo.apiEndpoint"
+                  :title="wsAPIMsg(aboutData.serverInfo.apiEndpoint, false)">
                   {{ wsAPIMsg(aboutData.serverInfo.apiEndpoint, true) }}
                 </div>
               </div>
               <div class="row" v-if="aboutData">
-                <div
-                  class="col-3"
-                  title="Information about app WebServer Stats (median #connections, timing, Q-lengths) over the last 5 minutes"
-                >
+                <div class="col-3"
+                  title="Information about app WebServer Stats (median #connections, timing, Q-lengths) over the last 5 minutes">
                   WebServer
                 </div>
-                <div
-                  class="col"
-                  v-if="aboutData.serverInfo.webServer"
-                  :title="webServerMsg_(aboutData.serverInfo.webServer)"
-                >
+                <div class="col" v-if="aboutData.serverInfo.webServer"
+                  :title="webServerMsg_(aboutData.serverInfo.webServer)">
                   {{ webServerMsg_(aboutData.serverInfo.webServer) }}
                 </div>
               </div>
               <div class="row" v-if="aboutData">
-                <div
-                  class="col-3"
-                  title="Information about database: size on disk, median read/write times over the last 5 minutes; hover for more details"
-                >
+                <div class="col-3"
+                  title="Information about database: size on disk, median read/write times over the last 5 minutes; hover for more details">
                   DB
                 </div>
-                <div
-                  class="col"
-                  v-if="aboutData.serverInfo.database"
-                  :title="dbStatsMsg(aboutData.serverInfo.database, false)"
-                >
+                <div class="col" v-if="aboutData.serverInfo.database"
+                  :title="dbStatsMsg(aboutData.serverInfo.database, false)">
                   {{ dbStatsMsg(aboutData.serverInfo.database, true) }}
                 </div>
               </div>
@@ -347,10 +310,7 @@ Units 1=1 logical core"
                     }}
                   </div>
                 </div>
-                <div
-                  class="row"
-                  title="How long has the machine (hosting the service) been running"
-                >
+                <div class="row" title="How long has the machine (hosting the service) been running">
                   <div class="col-3">Uptime</div>
                   <div class="col">
                     {{
@@ -360,31 +320,20 @@ Units 1=1 logical core"
                     }}
                   </div>
                 </div>
-                <div
-                  class="row"
-                  title="How many threads in each (logical) processors Run-Q on average. 0 means no use, 1 means ALL cores fully used with no Q, and 2 means all cores fully utilized and each core with a Q length of 1"
-                >
+                <div class="row"
+                  title="How many threads in each (logical) processors Run-Q on average. 0 means no use, 1 means ALL cores fully used with no Q, and 2 means all cores fully utilized and each core with a Q length of 1">
                   <div class="col-3">Run-Q</div>
-                  <div
-                    class="col"
-                    v-if="aboutData.serverInfo.currentMachine.runQLength != null"
-                  >
+                  <div class="col" v-if="aboutData.serverInfo.currentMachine.runQLength != null">
                     {{
                       aboutData.serverInfo.currentMachine.runQLength?.toFixed(2) || "?"
                     }}
                     threads
                   </div>
                 </div>
-                <div
-                  class="row"
-                  title="Average CPU usage for the last 30 seconds for the entire machine hosting the service.
-Units 1=1 logical core"
-                >
+                <div class="row" title="Average CPU usage for the last 30 seconds for the entire machine hosting the service.
+Units 1=1 logical core">
                   <div class="col-3">CPU-Usage</div>
-                  <div
-                    class="col"
-                    v-if="aboutData.serverInfo.currentMachine.totalCPUUsage != null"
-                  >
+                  <div class="col" v-if="aboutData.serverInfo.currentMachine.totalCPUUsage != null">
                     {{
                       aboutData.serverInfo.currentMachine.totalCPUUsage?.toFixed(2) || "?"
                     }}
@@ -406,9 +355,7 @@ Units 1=1 logical core"
               <div class="row">
                 <div class="col-4">Lewis G. Pringle, Jr.</div>
                 <div class="col">
-                  <a href="https://www.linkedin.com/in/lewispringle/" target="_new"
-                    >LinkedIn</a
-                  >
+                  <a href="https://www.linkedin.com/in/lewispringle/" target="_new">LinkedIn</a>
                   |
                   <a href="https://github.com/LewisPringle" target="_new">GitHub</a>
                 </div>
@@ -424,11 +371,8 @@ Units 1=1 logical core"
           <div class="row">
             <div class="col-3 text-h6">Report issues at</div>
             <div class="col-9">
-              <a
-                href="https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues"
-                target="_new"
-                >github issues</a
-              >
+              <a href="https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues" target="_new">github
+                issues</a>
             </div>
           </div>
         </q-card-section>
