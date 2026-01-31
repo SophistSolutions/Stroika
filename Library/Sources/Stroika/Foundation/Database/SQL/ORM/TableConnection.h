@@ -163,6 +163,11 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         /**
+         * \brief remove the given record from this table
+         * 
+         * \alias Remove ()
+         * 
+         * \note we use the name Delete here cuz that's more standard with SQL, but Delete and Remove are generally synonyms.
          */
         nonvirtual void Delete (const VariantValue& id);
         nonvirtual void Delete (const typename TRAITS::IDType& id);
