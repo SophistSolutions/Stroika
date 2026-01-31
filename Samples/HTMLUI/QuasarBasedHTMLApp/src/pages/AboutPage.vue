@@ -2,9 +2,8 @@
 import { onMounted, onUnmounted, computed, Ref, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useQuasar } from "quasar";
-import moment from "moment";
 import prettyBytes from "pretty-bytes";
-import { formatDistance, differenceInSeconds } from 'date-fns';
+import { Duration, DateTime } from 'luxon';
 
 import { kCompileTimeConfiguration } from "src/config/config";
 import { IAPIEndpoint, IWebServerStats, IComponent, IDatabase } from "src/models/IAbout";
@@ -35,21 +34,26 @@ const aboutData = about;
 // Data / functions to show 'last successful communications'
 const pageLoadedAt = new Date();
 const now = ref(new Date());  // reactive now
+function timeDiffInSeconds_(start: Date, end: Date) {
+  return DateTime.fromJSDate(start)
+    .diff(DateTime.fromJSDate(end), 'seconds')
+    .seconds;
+}
 const lastSuccessfulAPICallMessageStyle = computed(() => {
   // show in red if we've gotten some data, but not recently
   if (lastSuccessfulAPICall.value) {
-    return differenceInSeconds(now.value, lastSuccessfulAPICall.value) < 30 ? "" : "color: red";
+    return timeDiffInSeconds_(now.value, lastSuccessfulAPICall.value) < 30 ? "" : "color: red";
   }
   else {
     // show in red if we've never gotten data, and the page loaded a while ago
-    return differenceInSeconds(now.value, pageLoadedAt) < 5 ? "" : "color: red";
+    return timeDiffInSeconds_(now.value, pageLoadedAt) < 5 ? "" : "color: red";
   }
 })
 function mySince_(agoDate: Date, nowDate: Date) {
-  if (Math.abs(differenceInSeconds(nowDate, agoDate)) < kRefreshFrequencyInSeconds_) {
+  if (Math.abs(timeDiffInSeconds_(nowDate, agoDate)) < kRefreshFrequencyInSeconds_) {
     return "now";
   }
-  return formatDistance(agoDate, nowDate, { addSuffix: true, includeSeconds: true });
+  return DateTime.fromJSDate(agoDate).toRelative({ base: DateTime.fromJSDate(nowDate), round: true });
 }
 const lastSuccessfulAPICallMessage = computed(() => {
   return lastSuccessfulAPICall.value ?
@@ -76,22 +80,18 @@ onUnmounted(() => {
   clearInterval(polling);
 });
 
-function prettyPrintMSTime(time?: string) {
+function prettyPrintMSDuration(time?: string) {
   if (time == undefined) {
     return "?";
   }
-  var m = moment.duration(time);
-  if (m.asMilliseconds() < 1.0) {
-    return (m.milliseconds() * 1000).toFixed(1) + "μs";
-  }
-  return m.milliseconds().toFixed(1) + "ms";
+  return Duration.fromISO(time).toHuman({ unitDisplay: 'narrow', showZeros: false });
 }
 function wsAPIMsg(info: IAPIEndpoint, showShort: boolean): string {
   let msg = "";
   msg += `${info.callsCompleted} calls completed; `;
   msg += `${info.medianRunningAPITasks} running tasks; `;
   msg += `${info.errors} ${PluralizeNoun("error", info.errors)}; `;
-  msg += `times: ${prettyPrintMSTime(info.callTimes.median)}, max ${prettyPrintMSTime(
+  msg += `times: ${prettyPrintMSDuration(info.callTimes.median)}, max ${prettyPrintMSDuration(
     info.callTimes.max
   )}`;
   return msg;
@@ -99,13 +99,13 @@ function wsAPIMsg(info: IAPIEndpoint, showShort: boolean): string {
 function webServerMsg_(info: IWebServerStats): string {
   let msg = "";
   msg += `threadPool: {size: ${info.threadPool.threads}, queued: ${info.threadPool.tasksStillQueued
-    }, aveRunTime: ${prettyPrintMSTime(info.threadPool.averageTaskRunTime)}}\n`;
+    }, aveRunTime: ${prettyPrintMSDuration(info.threadPool.averageTaskRunTime)}}\n`;
   msg += `connections: {open: ${info.connections.open}, active: ${info.connections.active
-    }, openLifetime: ${prettyPrintMSTime(
+    }, openLifetime: ${prettyPrintMSDuration(
       info.connections.openConnectionsLifetime.median
-    )}, openRequestsLifetime: ${prettyPrintMSTime(
+    )}, openRequestsLifetime: ${prettyPrintMSDuration(
       info.connections.openConnectionsRequests.median
-    )}, activeRequestsLifetime: ${prettyPrintMSTime(
+    )}, activeRequestsLifetime: ${prettyPrintMSDuration(
       info.connections.activeConnectionsRequests.median
     )}}`;
   if (info.connections.piningForTheFjords != 0) {
@@ -125,21 +125,21 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
     msg += `${info.reads} reads, ${info.writes} writes; `;
   }
   if (showShort) {
-    msg += `${prettyPrintMSTime(info.medianReadDuration)} reads, ${prettyPrintMSTime(
+    msg += `${prettyPrintMSDuration(info.medianReadDuration)} reads, ${prettyPrintMSDuration(
       info.medianWriteDuration
     )} writes`;
   } else {
-    msg += `Med ${prettyPrintMSTime(
+    msg += `Med ${prettyPrintMSDuration(
       info.medianReadDuration
-    )} read duration, Med ${prettyPrintMSTime(info.medianWriteDuration)} write duration`;
+    )} read duration, Med ${prettyPrintMSDuration(info.medianWriteDuration)} write duration`;
   }
   if (showShort) {
     if (info.maxDuration != undefined) {
-      msg += `; max ${prettyPrintMSTime(info.maxDuration)}`;
+      msg += `; max ${prettyPrintMSDuration(info.maxDuration)}`;
     }
   } else {
     if (info.maxDuration != undefined) {
-      msg += `; max ${prettyPrintMSTime(info.maxDuration)} I/O duration`;
+      msg += `; max ${prettyPrintMSDuration(info.maxDuration)} I/O duration`;
     }
   }
   return msg;
@@ -236,9 +236,8 @@ Units 1=1 logical core">
                 </div>
                 <div class="col-4" v-if="aboutData.serverInfo.currentProcess.processUptime">
                   {{
-                    moment
-                      .duration(aboutData.serverInfo?.currentProcess?.processUptime)
-                      .humanize()
+                    Duration.fromISO(aboutData.serverInfo?.currentProcess?.processUptime)
+                      .toHuman()
                   }}
                 </div>
               </div>
@@ -309,9 +308,8 @@ Units 1=1 logical core">
                   <div class="col-3">Uptime</div>
                   <div class="col">
                     {{
-                      moment
-                        .duration(aboutData.serverInfo.currentMachine.machineUptime)
-                        .humanize()
+                      Duration.fromISO(aboutData.serverInfo.currentMachine.machineUptime)
+                        .toHuman()
                     }}
                   </div>
                 </div>
