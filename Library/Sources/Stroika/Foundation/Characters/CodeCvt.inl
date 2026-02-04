@@ -759,8 +759,8 @@ namespace Stroika::Foundation::Characters {
         AssertNotNull (fRep_);
         Require (to.size () >= ComputeTargetCharacterBufferSize (*from) or to.size () >= Bytes2Characters (*from)); // ComputeTargetCharacterBufferSize cheaper to compute
         auto r = fRep_->Bytes2Characters (from, to);
-        Ensure (from->size () < 10); // can only contain bytes for a partial character so must be small, typically one or two or zero
-        WeakAssert (from->size () <= 2);
+        Ensure (from->size () < 10);        // can only contain bytes for a partial character so must be small, typically one or two or zero
+        WeakAssert (from->size () <= 3);    // UTF-8: The maximum is 4 bytes per character, but could be other code sequence even worse
         return r;
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
