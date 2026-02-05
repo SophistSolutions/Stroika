@@ -28,13 +28,6 @@
  *              Existing windows code uses deprecated APIs.
  */
 
-#if 0
-namespace Stroika::Foundation::IO::FileSystem {
-    using Characters::SDKString;
-    using Characters::String;
-}
-#endif
-
 /**
  *  These WellKnownLocations routines always return a valid directory (if createIfNotPresent)
  *  or empty string (if not valid???).
@@ -96,6 +89,8 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
      *      This directory may or may not be current-user-specific.
      * 
      *      Typically this is /tmp, or the value of %TEMP%, or $TMPDIR, or something like that.
+     * 
+     *      \note same as std::filesystem::temp_directory_path ();
      */
     filesystem::path GetTemporary ();
 
@@ -114,5 +109,6 @@ namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "WellKnownLocations.inl"
 
 #endif /*_Stroika_Foundation_IO_FileSystem_WellKnownLocations_h_*/
