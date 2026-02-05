@@ -60,6 +60,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      * 
      *  \note - despite the similaries, this does not use AppTempFile module, because that writes in a specific place,
      *          and for 'rename' to work, it must be in the same filesystem (disk/os dependent), so write in same folder (is what this does).
+     * 
+     *  \note to assure no conflicts in multithreading/multiprocessing scenarios, the file is actually created by this function (empty), but
+     *        not kept open.
      */
     class ThroughTmpFileWriter {
     public:

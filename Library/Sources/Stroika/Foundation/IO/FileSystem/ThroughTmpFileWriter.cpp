@@ -4,6 +4,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdio>
+#include <fstream>
+#include <random>
 
 #if qStroika_Foundation_Common_Platform_Windows
 #include <windows.h>
@@ -21,8 +23,7 @@
 #include "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include "Stroika/Foundation/Debug/Trace.h"
-
-#include "Exception.h"
+#include "Stroika/Foundation/IO/FileSystem/Exception.h"
 
 #include "ThroughTmpFileWriter.h"
 
@@ -37,6 +38,34 @@ using namespace Stroika::Foundation::IO::FileSystem;
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
+namespace {
+    // @todo - redo using open (O_CREAT, but as portably as possible - at least do windows/POSIX impl, and maybe fallback on fstream approach)
+    bool tryCreateFile_ (const filesystem::path& p)
+    {
+        error_code ec;
+        // Check if file already exists
+        if (filesystem::exists (p, ec)) {
+            if (!ec) {
+                return false; // File already exists
+            }
+            else {
+                DbgTrace ("Error checking file existence: {}"_f, String::FromNarrowSDKString (ec.message ()));
+                return false;
+            }
+        }
+
+        // Try creating the file - NOTE THIS IS STILL A RACE - TWO PROCESSES COULD DO SAME THING AT ONCE!
+        ofstream ofs{p};
+        if (ofs.is_open ()) {
+            ofs.close ();
+            return true; // File successfully created
+        }
+        else {
+            return false; // Creation failed (e.g., permission denied, invalid path)
+        }
+    }
+}
+
 /*
  ********************************************************************************
  ************************ FileSystem::ThroughTmpFileWriter **********************
@@ -44,10 +73,28 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  */
 ThroughTmpFileWriter::ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix)
     : fRealFilePath_{realFileName}
-    , fTmpFilePath_{filesystem::path{realFileName}.operator+= (tmpSuffix.As<wstring> ())}
 {
     Require (not realFileName.empty ());
     Require (not tmpSuffix.empty ());
+    // keep generating random names, and trying to create til we succeed
+    filesystem::path useTmpPath = realFileName;
+    useTmpPath.replace_extension ();
+    String           baseStem{useTmpPath.stem ()};
+    filesystem::path newExtension = tmpSuffix.As<filesystem::path> ();
+    create_directories (useTmpPath.parent_path ());
+    default_random_engine         gen{random_device{}()}; //Standard mersenne_twister_engine seeded with rd()
+    uniform_int_distribution<int> distribution{1, 99999};
+    while (true) {
+        filesystem::path newFN = "{}-{}"_f(baseStem, distribution (gen)).As<filesystem::path> ();
+        useTmpPath.replace_filename (newFN);
+        useTmpPath.replace_extension (newExtension);
+        if (tryCreateFile_ (useTmpPath)) {
+            fTmpFilePath_ = useTmpPath;
+            return;
+        }
+        DbgTrace ("randomfile name conflict, so trying again (should be rare): f={}"_f, useTmpPath);
+        WeakAssertNotReached ();
+    }
 }
 
 ThroughTmpFileWriter::~ThroughTmpFileWriter ()
