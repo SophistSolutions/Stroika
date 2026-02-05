@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto                                                   i = fData_.Find (item);
             Require (i != fData_.end ());
             if (i != fData_.end ()) {
-                size_t result; // intentionally uninitialized
+                size_t result qStroika_Foundation_INDETERMINATE;
                 if (i->fValue > count) {
                     i.UpdateValue (i->fValue - count);
                     result = count;

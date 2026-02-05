@@ -26,7 +26,7 @@
  *              structure might eliminate that problem too.. SkipList?
  *
  *              One other thing HARDER about this comapred with the old LED code - was tha twe have to handle correclty
- *              manual item construction/destruciton (in Led we used chars and so could leave uninitiualized and not be
+ *              manual item construction/destruciton (in Led we used chars and so could leave uninitialized and not be
  *              careful about move etc).
  */
 
