@@ -329,6 +329,16 @@ namespace Stroika::Foundation::Common::StdCompat {
     };
 #endif
 
+    /**
+     * [[indeterminate]]
+     * https://en.cppreference.com/w/cpp/language/attributes/indeterminate.html
+     */
+#if __has_cpp_attribute(indeterminate)
+     #define qStroika_Foundation_INDETERMINATE [[indeterminate]]
+#else
+     #define qStroika_Foundation_INDETERMINATE
+#endif
+
 }
 
 /*
