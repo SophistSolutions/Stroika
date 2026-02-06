@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
-         * @brief return the names of all collections
+         * @brief return the names of all collections in the referenced database
          */
         nonvirtual Set<String> GetCollections () const;
 
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
-         *  Returns a (shared) pointer to the named collection. If the named collection does not exist, it is an error.
+         *  Returns a (shared) pointer to the named collection. If the named collection does not exist, it is an error (exception thrown).
          * 
          *  \see also CreateCollection
          */
