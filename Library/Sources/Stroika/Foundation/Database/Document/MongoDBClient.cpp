@@ -106,6 +106,13 @@ namespace {
 }
 
 namespace {
+    String cvt2String_ (const bsoncxx::stdx::string_view& bs)
+    {
+        return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{bs}));
+    }
+}
+
+namespace {
     [[noreturn]] void DoReThrow_ ()
     {
         // @todo ALSO - should check if current_exception() already a Stroika exception - and only bother wrapping native mongo ones, but this caputres
@@ -471,16 +478,20 @@ namespace {
 #endif
                 Require (not v.ContainsKey (Database::Document::kID) or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                try {
-                    // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
-                    if (auto insert_one_result = fCollection_.insert_one (ToBSON_ (v))) {
-                        return ID_2_string_ (insert_one_result->inserted_id ());
-                    }
-                }
-                catch (...) {
-                    DoReThrow_ ();
-                }
-                Throw (RuntimeErrorException{"failed to add document"sv});
+                return fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        try {
+                            // auto insert_one_result = fCollection_.insert_one(make_document(kvp("i", 0)));
+                            if (auto insert_one_result = fCollection_.insert_one (ToBSON_ (v))) {
+                                return ID_2_string_ (insert_one_result->inserted_id ());
+                            }
+                        }
+                        catch (...) {
+                            DoReThrow_ ();
+                        }
+                        Throw (RuntimeErrorException{"failed to add document"sv});
+                    },
+                    cvt2String_ (fCollection_.name ()), true);
             }
             virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
@@ -488,27 +499,31 @@ namespace {
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Get"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                try {
-                    bsoncxx::builder::basic::document filterDoc;
-                    filterDoc.append (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))); //kMongoID
-                    auto [mongoProjection, myProjection] = Partition_ (projection);
-                    mongocxx::options::find o;
-                    if (mongoProjection) {
-                        o.projection (mongoProjection->view ());
-                    }
-                    auto result = fCollection_.find_one (filterDoc.view (), o);
-                    if (result) {
-                        auto rr = FromBSON_ (bsoncxx::document::view_or_value{*result});
-                        if (myProjection) {
-                            rr = myProjection->Apply (rr);
+                return fConnectionRep_->WrapExecute_ (
+                    [&] () -> optional<Document::Document> {
+                        try {
+                            bsoncxx::builder::basic::document filterDoc;
+                            filterDoc.append (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))); //kMongoID
+                            auto [mongoProjection, myProjection] = Partition_ (projection);
+                            mongocxx::options::find o;
+                            if (mongoProjection) {
+                                o.projection (mongoProjection->view ());
+                            }
+                            auto result = fCollection_.find_one (filterDoc.view (), o);
+                            if (result) {
+                                auto rr = FromBSON_ (bsoncxx::document::view_or_value{*result});
+                                if (myProjection) {
+                                    rr = myProjection->Apply (rr);
+                                }
+                                return rr;
+                            }
+                            return nullopt;
                         }
-                        return rr;
-                    }
-                    return nullopt;
-                }
-                catch (...) {
-                    DoReThrow_ ();
-                }
+                        catch (...) {
+                            DoReThrow_ ();
+                        }
+                    },
+                    cvt2String_ (fCollection_.name ()), false);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -516,37 +531,41 @@ namespace {
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                auto [mongoFilter, myFilter] = Partition_ (filter);
-                // must be careful if myFilter != nullptr, may not be able to do projection server-side!
-                // cuz data needed client side to do the filtering...
-                auto [mongoProjection, myProjection] = myFilter == nullopt ? Partition_ (projection) : make_tuple (nullopt, projection);
+                return fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        auto [mongoFilter, myFilter] = Partition_ (filter);
+                        // must be careful if myFilter != nullptr, may not be able to do projection server-side!
+                        // cuz data needed client side to do the filtering...
+                        auto [mongoProjection, myProjection] = myFilter == nullopt ? Partition_ (projection) : make_tuple (nullopt, projection);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("myFilter={}"_f, myFilter);
-                if (mongoFilter) {
-                    //    DbgTrace ("mongoFilter={}"_f, BSON2VV_ (*mongoFilter));
-                }
+                        DbgTrace ("myFilter={}"_f, myFilter);
+                        if (mongoFilter) {
+                            //    DbgTrace ("mongoFilter={}"_f, BSON2VV_ (*mongoFilter));
+                        }
 #endif
-                Sequence<Document::Document> result;
-                mongocxx::options::find      o;
-                if (mongoProjection) {
-                    o.projection (mongoProjection->view ());
-                }
-                try {
-                    auto cursor = fCollection_.find (mongoFilter ? mongoFilter->view () : bsoncxx::builder::basic::document{}.view (), o);
-                    for (auto&& doc : cursor) {
-                        auto rr = FromBSON_ (doc);
-                        if (myProjection) {
-                            rr = myProjection->Apply (rr);
+                        Sequence<Document::Document> result;
+                        mongocxx::options::find      o;
+                        if (mongoProjection) {
+                            o.projection (mongoProjection->view ());
                         }
-                        if (not myFilter or myFilter->Matches (rr)) {
-                            result += rr;
+                        try {
+                            auto cursor = fCollection_.find (mongoFilter ? mongoFilter->view () : bsoncxx::builder::basic::document{}.view (), o);
+                            for (auto&& doc : cursor) {
+                                auto rr = FromBSON_ (doc);
+                                if (myProjection) {
+                                    rr = myProjection->Apply (rr);
+                                }
+                                if (not myFilter or myFilter->Matches (rr)) {
+                                    result += rr;
+                                }
+                            }
+                            return result;
                         }
-                    }
-                    return result;
-                }
-                catch (...) {
-                    DoReThrow_ ();
-                }
+                        catch (...) {
+                            DoReThrow_ ();
+                        }
+                    },
+                    cvt2String_ (fCollection_.name ()), false);
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
@@ -554,39 +573,44 @@ namespace {
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Update"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
-                Document::Document uploadDoc = newV;
-                if (onlyTheseFields) {
-                    uploadDoc.RetainAll (*onlyTheseFields);
-                }
-                uploadDoc.RemoveIf (Database::Document::kID);
-                try {
-                    bsoncxx::document::value bsonDoc = ToBSON_ (uploadDoc);
-                    if (onlyTheseFields) {
-                        if (auto o = fCollection_.update_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
-                                                              make_document (kvp ("$set", bsonDoc.view ())))) {
-                            if (o->modified_count () == 0) {
-                                Throw (RuntimeErrorException{"failed to update doc - not modified"});
+                fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
+                        Document::Document uploadDoc = newV;
+                        if (onlyTheseFields) {
+                            uploadDoc.RetainAll (*onlyTheseFields);
+                        }
+                        uploadDoc.RemoveIf (Database::Document::kID);
+                        try {
+                            bsoncxx::document::value bsonDoc = ToBSON_ (uploadDoc);
+                            if (onlyTheseFields) {
+                                if (auto o = fCollection_.update_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
+                                                                      make_document (kvp ("$set", bsonDoc.view ())))) {
+                                    if (o->modified_count () == 0) {
+                                        Throw (RuntimeErrorException{"failed to update doc - not modified"});
+                                    }
+                                }
+                                else {
+                                    Throw (RuntimeErrorException{"failed to update doc"});
+                                }
+                            }
+                            else {
+                                if (auto o = fCollection_.replace_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
+                                                                       bsonDoc.view ())) {
+                                    if (o->modified_count () == 0) {
+                                        Throw (RuntimeErrorException{"failed to replace doc - not modified"sv});
+                                    }
+                                }
+                                else {
+                                    Throw (RuntimeErrorException{"failed to replace doc"sv});
+                                }
                             }
                         }
-                        else {
-                            Throw (RuntimeErrorException{"failed to update doc"});
+                        catch (...) {
+                            DoReThrow_ ();
                         }
-                    }
-                    else {
-                        if (auto o = fCollection_.replace_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))), bsonDoc.view ())) {
-                            if (o->modified_count () == 0) {
-                                Throw (RuntimeErrorException{"failed to replace doc - not modified"sv});
-                            }
-                        }
-                        else {
-                            Throw (RuntimeErrorException{"failed to replace doc"sv});
-                        }
-                    }
-                }
-                catch (...) {
-                    DoReThrow_ ();
-                }
+                    },
+                    cvt2String_ (fCollection_.name ()), true);
             }
             virtual void Remove (const IDType& id) override
             {
@@ -594,17 +618,21 @@ namespace {
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Remove"};
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-                try {
-                    bsoncxx::builder::basic::document filterDoc;
-                    filterDoc.append (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))); // kMongoID_
-                    auto result = fCollection_.delete_one (filterDoc.view ());
-                    if (result && result->deleted_count () == 0) {
-                        Throw (RuntimeErrorException{"failed to delete doc"sv});
-                    }
-                }
-                catch (...) {
-                    DoReThrow_ ();
-                }
+                fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        try {
+                            bsoncxx::builder::basic::document filterDoc;
+                            filterDoc.append (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))); // kMongoID_
+                            auto result = fCollection_.delete_one (filterDoc.view ());
+                            if (result && result->deleted_count () == 0) {
+                                Throw (RuntimeErrorException{"failed to delete doc"sv});
+                            }
+                        }
+                        catch (...) {
+                            DoReThrow_ ();
+                        }
+                    },
+                    cvt2String_ (fCollection_.name ()), true);
             }
         };
 
@@ -665,21 +693,25 @@ namespace {
         virtual Set<String> GetCollections () override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            try {
-                vector<string> n = fDatabase_.list_collection_names ();
-                return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; }); // @todo fix wrong codepage map (not sure right one)
-            }
-            catch (const mongocxx::v_noabi::operation_exception& e) {
-                DbgTrace ("e={}"_f, e);
-                if (e.raw_server_error ()) {
-                    DbgTrace ("e.raw={}"_f, FromBSON_ (e.raw_server_error ()->view ()));
-                }
-                // a specific error here - check for that - and throw others... no such database gets mapped to empty collection list
-                return {};
-            }
-            catch (...) {
-                DoReThrow_ ();
-            }
+            return WrapExecute_ (
+                [&] () -> Set<String> {
+                    try {
+                        vector<string> n = fDatabase_.list_collection_names ();
+                        return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String{i}; }); // @todo fix wrong codepage map (not sure right one)
+                    }
+                    catch (const mongocxx::v_noabi::operation_exception& e) {
+                        DbgTrace ("e={}"_f, e);
+                        if (e.raw_server_error ()) {
+                            DbgTrace ("e.raw={}"_f, FromBSON_ (e.raw_server_error ()->view ()));
+                        }
+                        // a specific error here - check for that - and throw others... no such database gets mapped to empty collection list
+                        return {};
+                    }
+                    catch (...) {
+                        DoReThrow_ ();
+                    }
+                },
+                nullopt, false);
         }
         virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
@@ -687,8 +719,12 @@ namespace {
             TraceContextBumper ctx{"mongocxx::CreateCollection", "name={}"_f, name};
 #endif
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            fDatabase_.create_collection (name.AsUTF8<string> ());
-            return GetCollection (name);
+            return WrapExecute_ (
+                [&] () {
+                    fDatabase_.create_collection (name.AsUTF8<string> ());
+                    return GetCollection (name);
+                },
+                name, true);
         }
         virtual void DropCollection (const String& name) override
         {
@@ -696,12 +732,16 @@ namespace {
             TraceContextBumper ctx{"mongocxx::DropCollection", "name={}"_f, name};
 #endif
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
-            try {
-                fDatabase_.collection (name.AsUTF8<string> ()).drop ();
-            }
-            catch (...) {
-                DoReThrow_ ();
-            }
+            WrapExecute_ (
+                [&] () {
+                    try {
+                        fDatabase_.collection (name.AsUTF8<string> ()).drop ();
+                    }
+                    catch (...) {
+                        DoReThrow_ ();
+                    }
+                },
+                name, true);
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
@@ -746,9 +786,9 @@ namespace {
 
     public:
         template <typename FUN>
-        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write) -> invoke_result_t<FUN>
         {
-            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
+            return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
         }
     };
 }
