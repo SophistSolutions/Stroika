@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
     }
     inline uintmax_t Ptr::GetSpaceConsumed () const
     {
-        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Getting database size"sv; }};
+        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Getting database size"sv; }};
         Execution::DeclareActivity da{&activity};
         return this->get ()->GetSpaceConsumed ();
     }
