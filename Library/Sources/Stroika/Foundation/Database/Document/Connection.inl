@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 
 namespace Stroika::Foundation::Database::Document::Connection {
@@ -29,18 +30,26 @@ namespace Stroika::Foundation::Database::Document::Connection {
     }
     inline Set<String> Ptr::GetCollections () const
     {
+        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Getting collections from document database"sv; }};
+        Execution::DeclareActivity da{&activity};
         return this->get ()->GetCollections ();
     }
     inline Collection::Ptr Ptr::CreateCollection (const String& name) const
     {
+        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Creating collection in document database"sv; }};
+        Execution::DeclareActivity da{&activity};
         return this->get ()->CreateCollection (name);
     }
     inline void Ptr::DropCollection (const String& name) const
     {
+        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Dropping collection from document database"sv; }};
+        Execution::DeclareActivity da{&activity};
         this->get ()->DropCollection (name);
     }
     inline Collection::Ptr Ptr::GetCollection (const String& name) const
     {
+        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Gett collection from document database"sv; }};
+        Execution::DeclareActivity da{&activity};
         return this->get ()->GetCollection (name);
     }
     inline String Ptr::ToString () const
