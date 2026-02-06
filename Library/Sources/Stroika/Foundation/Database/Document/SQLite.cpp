@@ -766,7 +766,7 @@ namespace {
         {
             return fOptions_;
         }
-        virtual uintmax_t GetDiskSize () const override
+        virtual uintmax_t GetSpaceConsumed () const override
         {
             uintmax_t szTotal{};
             auto      incSize = [&] (const filesystem::path& p) {

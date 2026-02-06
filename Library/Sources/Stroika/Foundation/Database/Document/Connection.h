@@ -128,8 +128,9 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     public:
         /**
+         * returns roughly the disk (or RAM if not stored on disk) space consumed by the database referenced in the Connection.
          */
-        nonvirtual uintmax_t GetDiskSize () const;
+        nonvirtual uintmax_t GetSpaceConsumed () const;
 
     public:
         /**
@@ -212,7 +213,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
         /**
          * Note only provides an estimate of size used.
          */
-        virtual uintmax_t GetDiskSize () const = 0;
+        virtual uintmax_t GetSpaceConsumed () const = 0;
 
     public:
         /**

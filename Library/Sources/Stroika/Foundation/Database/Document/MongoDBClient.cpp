@@ -650,7 +650,7 @@ namespace {
         {
             return fOptions_;
         }
-        virtual uintmax_t GetDiskSize () const override
+        virtual uintmax_t GetSpaceConsumed () const override
         {
             bsoncxx::builder::basic::document db_stats_cmd_builder;
             db_stats_cmd_builder.append (bsoncxx::builder::basic::kvp ("dbStats", 1));

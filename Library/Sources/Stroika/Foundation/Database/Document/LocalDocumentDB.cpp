@@ -206,7 +206,7 @@ namespace {
             }
             return 0;
         }
-        virtual uintmax_t GetDiskSize () const override
+        virtual uintmax_t GetSpaceConsumed () const override
         {
             uintmax_t totalSize{};
             // WAG/Weak but adequate Estimate
@@ -357,7 +357,7 @@ namespace {
         {
             return fMemoryDB_->GetOptions ();
         }
-        virtual uintmax_t GetDiskSize () const override
+        virtual uintmax_t GetSpaceConsumed () const override
         {
             error_code ignoredEC;
             return filesystem::file_size (fExternalFile_, ignoredEC);
@@ -609,7 +609,7 @@ namespace {
         {
             return fOptions_;
         }
-        virtual uintmax_t GetDiskSize () const override
+        virtual uintmax_t GetSpaceConsumed () const override
         {
             uintmax_t totalSize{};
             try {
@@ -623,7 +623,7 @@ namespace {
                 }
             }
             catch (const filesystem::filesystem_error& e) {
-                DbgTrace ("suppressing error in GetDiskSize () = returning zero: {}"_f, e);
+                DbgTrace ("suppressing error in GetSpaceConsumed () = returning zero: {}"_f, e);
                 return 0;
             }
             return totalSize;
