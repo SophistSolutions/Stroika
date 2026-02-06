@@ -86,8 +86,6 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline void Ptr::Replace (const Document& newV) const
     {
-        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Updating document in database"sv; }};
-        Execution::DeclareActivity da{&activity};
         Replace (Memory::ValueOf (newV.Lookup (kID)).As<String> (), newV);
     }
     inline void Ptr::Replace (const IDType& id, const Document& newV) const
@@ -98,8 +96,6 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline void Ptr::Update (const Document& newV) const
     {
-        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Updating document in database"sv; }};
-        Execution::DeclareActivity da{&activity};
         Update (Memory::ValueOf (newV.Lookup (kID)).As<String> (), newV, Set<String>{newV.Keys ()});
     }
     inline void Ptr::Update (const Document& newV, const Set<String>& onlyTheseFields) const
