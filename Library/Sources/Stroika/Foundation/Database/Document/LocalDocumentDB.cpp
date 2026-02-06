@@ -270,7 +270,7 @@ namespace {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
         }
         template <typename FUN>
-        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)-> invoke_result_t<FUN>
         {
             return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
         }
@@ -488,7 +488,7 @@ namespace {
             tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
         }
         template <typename FUN>
-        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write) -> invoke_result_t<FUN>
         {
             if (fOperationLoggingCallback_) {
                 Database::Document::Connection::Options o = fMemoryDB_->GetOptions ();
@@ -747,7 +747,7 @@ namespace {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
         }
         template <typename FUN>
-        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)-> invoke_result_t<FUN>
         {
             return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
         }
