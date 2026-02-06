@@ -28,6 +28,12 @@ namespace Stroika::Foundation::Database::Document::Connection {
     {
         return this->get ()->GetOptions ();
     }
+    inline uintmax_t Ptr::GetSpaceConsumed () const
+    {
+        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Getting database size"sv; }};
+        Execution::DeclareActivity da{&activity};
+        return this->get ()->GetSpaceConsumed ();
+    }
     inline Set<String> Ptr::GetCollections () const
     {
         auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Getting collections from document database"sv; }};
