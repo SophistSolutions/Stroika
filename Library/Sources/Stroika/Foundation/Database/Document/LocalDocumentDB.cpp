@@ -91,8 +91,7 @@ namespace {
 #endif
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
-                        optional<Document::Document> r;
-                        r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
+                        optional<Document::Document> r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
                         if (r) {
                             r->Add (Document::kID, id);
                         }
@@ -290,10 +289,13 @@ namespace {
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<SingleFileDatabaseRep_>         fDBRep_; // save to bump reference count (lifetime safety), and to force write
+            const String                                     fName_;
             shared_ptr<Database::Document::Collection::IRep> fDelegateToInMemoryDB_; // inside memorydb
 
-            MyCollectionRep_ (const shared_ptr<SingleFileDatabaseRep_>& dbRep, const shared_ptr<Database::Document::Collection::IRep>& delgateImplTo)
+            MyCollectionRep_ (const shared_ptr<SingleFileDatabaseRep_>& dbRep, const String& name,
+                              const shared_ptr<Database::Document::Collection::IRep>& delgateImplTo)
                 : fDBRep_{dbRep}
+                , fName_{name}
                 , fDelegateToInMemoryDB_{delgateImplTo}
             {
             }
@@ -302,17 +304,21 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add"};
 #endif
-                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                auto                  id     = fDelegateToInMemoryDB_->Add (v);
-                fDBRep_->DoWriteToFS ();
-                return id;
+                return fDBRep_->WrapExecute_ (
+                    [&] () {
+                        [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
+                        auto                  id     = fDelegateToInMemoryDB_->Add (v);
+                        fDBRep_->DoWriteToFS ();
+                        return id;
+                    },
+                    fName_, true);
             }
             virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Get"};
 #endif
-                return fDelegateToInMemoryDB_->Get (id, projection);
+                return fDBRep_->WrapExecute_ ([&] () { return fDelegateToInMemoryDB_->Get (id, projection); }, fName_, false);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -320,25 +326,33 @@ namespace {
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f,
                                        filter, projection};
 #endif
-                return fDelegateToInMemoryDB_->GetAll (filter, projection);
+                return fDBRep_->WrapExecute_ ([&] () { return fDelegateToInMemoryDB_->GetAll (filter, projection); }, fName_, false);
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update"};
 #endif
-                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                fDelegateToInMemoryDB_->Update (id, newV, onlyTheseFields);
-                fDBRep_->DoWriteToFS ();
+                fDBRep_->WrapExecute_ (
+                    [&] () {
+                        [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
+                        fDelegateToInMemoryDB_->Update (id, newV, onlyTheseFields);
+                        fDBRep_->DoWriteToFS ();
+                    },
+                    fName_, true);
             }
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
-                [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                fDelegateToInMemoryDB_->Remove (id);
-                fDBRep_->DoWriteToFS ();
+                fDBRep_->WrapExecute_ (
+                    [&] () {
+                        [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
+                        fDelegateToInMemoryDB_->Remove (id);
+                        fDBRep_->DoWriteToFS ();
+                    },
+                    fName_, true);
             }
         };
 
@@ -357,14 +371,22 @@ namespace {
             }
         };
 
+        static Document::LocalDocumentDB::Options stripOptionsForMemDB_ (Document::LocalDocumentDB::Options o)
+        {
+            o.fOperationLoggingCallback = nullptr;
+            return o;
+        }
+        const OpertionCallbackPtr fOperationLoggingCallback_{nullptr};
+
         SingleFileDatabaseRep_ ()                              = delete;
         SingleFileDatabaseRep_ (const SingleFileDatabaseRep_&) = delete;
         SingleFileDatabaseRep_ ([[maybe_unused]] const Document::LocalDocumentDB::Options&   options,
                                 const Document::LocalDocumentDB::Options::SingleFileStorage& sfOptions)
             : fExternalFile_{sfOptions.fFile}
-            , fMemoryDB_{make_shared<MemoryDatabaseRep_> (options)}
+            , fMemoryDB_{make_shared<MemoryDatabaseRep_> (stripOptionsForMemDB_ (options))}
             , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (sfOptions.fSerialization)}
+            , fOperationLoggingCallback_{options.fOperationLoggingCallback}
         {
             DoReadFromFS ();
         }
@@ -381,7 +403,9 @@ namespace {
         }
         virtual Database::Document::Connection::Options GetOptions () const override
         {
-            return fMemoryDB_->GetOptions ();
+            Database::Document::Connection::Options o = fMemoryDB_->GetOptions ();
+            o.fOperationLoggingCallback               = fOperationLoggingCallback_;
+            return o;
         }
         virtual uintmax_t GetSpaceConsumed () const override
         {
@@ -394,22 +418,30 @@ namespace {
         }
         virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
-            [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
-            fMemoryDB_->CreateCollection (name);
-            DoWriteToFS ();
-            return GetCollection (name);
+            return WrapExecute_ (
+                [&] () {
+                    [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
+                    fMemoryDB_->CreateCollection (name);
+                    DoWriteToFS ();
+                    return GetCollection (name);
+                },
+                name, true);
         }
         virtual void DropCollection (const String& name) override
         {
-            [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
-            fMemoryDB_->DropCollection (name);
-            DoWriteToFS ();
+            WrapExecute_ (
+                [&] () {
+                    [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
+                    fMemoryDB_->DropCollection (name);
+                    DoWriteToFS ();
+                },
+                name, true);
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             Document::Collection::Ptr memDBCollection = fMemoryDB_->GetCollection (name);
             return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
-                Debug::UncheckedDynamicPointerCast<SingleFileDatabaseRep_> (shared_from_this ()), memDBCollection)};
+                Debug::UncheckedDynamicPointerCast<SingleFileDatabaseRep_> (shared_from_this ()), name, memDBCollection)};
         }
         virtual Document::Transaction mkTransaction () override
         {
@@ -458,7 +490,14 @@ namespace {
         template <typename FUN>
         inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
         {
-            return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fMemoryDB_->fOptions_, collectionName, write);
+            if (fOperationLoggingCallback_) {
+                Database::Document::Connection::Options o = fMemoryDB_->GetOptions ();
+                o.fOperationLoggingCallback               = fOperationLoggingCallback_;
+                return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, o, collectionName, write);
+            }
+            else {
+                return f ();
+            }
         }
     };
 
@@ -504,20 +543,19 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Get"};
 #endif
-                optional<Document::Document> result;
-                fDBRep_->WrapExecute_ (
-                    [&] () {
+                return fDBRep_->WrapExecute_ (
+                    [&] () -> optional<Document::Document> {
                         if (auto od = DoReadFromFS_ (GUID{id})) {
                             Document::Document d = *od;
                             d.Add (Document::kID, id);
                             if (projection) {
                                 d = projection->Apply (d);
                             }
-                            result = d;
+                            return d;
                         }
+                        return nullopt;
                     },
                     fName_, false);
-                return result;
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -525,9 +563,9 @@ namespace {
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::GetAll",
                                        "filter={}, projection={}"_f, filter, projection};
 #endif
-                Sequence<Document::Document> result;
-                fDBRep_->WrapExecute_ (
+                return fDBRep_->WrapExecute_ (
                     [&] () {
+                        Sequence<Document::Document> result;
                         for (const auto& entry : filesystem::directory_iterator{fCollectionRoot_}) {
                             if (entry.path ().extension () == ".json"sv) { // Check if the entry is a JSON file
                                 Document::Document d =
@@ -541,9 +579,9 @@ namespace {
                                 }
                             }
                         }
+                        return result;
                     },
                     fName_, false);
-                return result;
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
@@ -686,13 +724,17 @@ namespace {
         }
         virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
-            filesystem::create_directories (GetCollectionFilePath_ (name));
-            return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
-                Debug::UncheckedDynamicPointerCast<DirectoryFilesystemDatabaseRep_> (shared_from_this ()), name)};
+            return WrapExecute_ (
+                [&] () {
+                    filesystem::create_directories (GetCollectionFilePath_ (name));
+                    return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
+                        Debug::UncheckedDynamicPointerCast<DirectoryFilesystemDatabaseRep_> (shared_from_this ()), name)};
+                },
+                name, true);
         }
         virtual void DropCollection (const String& name) override
         {
-            filesystem::remove_all (GetCollectionFilePath_ (name));
+            WrapExecute_ ([&] () { filesystem::remove_all (GetCollectionFilePath_ (name)); }, name, true);
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
