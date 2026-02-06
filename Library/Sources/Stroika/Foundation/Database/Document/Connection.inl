@@ -2,6 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 
 namespace Stroika::Foundation::Database::Document::Connection {
 
@@ -47,5 +48,36 @@ namespace Stroika::Foundation::Database::Document::Connection {
         using namespace Characters;
         return Format ("{}"_f, static_cast<const void*> (this->get ()));
     }
+}
 
+namespace Stroika::Foundation::Database::Document::Connection::Private_ {
+    /**
+     * Private utility to faciliate logging and tracking of database reads/writes times
+     */
+    template <typename FUN>
+    void WrapLoggingExecuteHelper_ (FUN&& f, Database::Document::Connection::IRep* documentDBConnection,
+                                    const Database::Document::Connection::Options& options, const optional<String>& collectionName, bool write)
+    {
+        using Database::Document::Connection::Operation;
+        if (options.fOperationLoggingCallback == nullptr) {
+            f ();
+        }
+        else {
+            auto                                callback = options.fOperationLoggingCallback;
+            Database::Document::Connection::Ptr connPtr  = nullptr;
+            [[maybe_unused]] auto               x        = documentDBConnection->shared_from_this ();
+            //             Database::Document::Connection::Ptr connPtr2 = documentDBConnection->shared_from_this ();
+            callback (write ? Operation::eStartingWrite : Operation::eStartingRead, connPtr, collectionName, nullptr);
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept {
+                callback (write ? Operation::eCompletedWrite : Operation::eCompletedRead, connPtr, collectionName, nullptr);
+            });
+            try {
+                f ();
+            }
+            catch (...) {
+                callback (Operation::eNotifyError, connPtr, collectionName, current_exception ());
+                Execution::ReThrow ();
+            }
+        }
+    }
 }

@@ -56,7 +56,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
      * 
      * Note - OpertionCallbackPtr must be no-throw (sadly not capturable with std::function).
      */
-    using OpertionCallbackPtr = function<void (Operation op, const Ptr& documentDBConnection, const String& collection, const exception_ptr& e)>;
+    using OpertionCallbackPtr =
+        function<void (Operation op, const Ptr& documentDBConnection, const optional<String>& collectionName, const exception_ptr& e)>;
 
     /**
      * 

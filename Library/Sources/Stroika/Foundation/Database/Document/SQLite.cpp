@@ -929,6 +929,12 @@ namespace {
             }
         }
 
+        template <typename FUN>
+        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        {
+            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
+        }
+
         ::sqlite3* fDB_{};
     };
 }

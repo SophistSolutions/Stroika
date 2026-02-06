@@ -249,6 +249,11 @@ namespace {
         {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
         }
+        template <typename FUN>
+        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        {
+            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
+        }
     };
 
     /*
@@ -429,6 +434,11 @@ namespace {
             outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
             tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
         }
+        template <typename FUN>
+        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        {
+            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fMemoryDB_->fOptions_, collectionName, write);
+        }
     };
 
     // Store each collection in a folder under the root folder
@@ -456,12 +466,16 @@ namespace {
 #endif
                 optional<VariantValue> vID = v.Lookup (Document::kID);
                 Require (not vID.has_value () or fDBRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
-                GUID               id      = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
-                Document::Document doc2Add = v;
-                if (vID) {
-                    doc2Add.Remove (Document::kID); // already in parent KEY so don't store redundantly
-                }
-                DoWriteToFS_ (id, VariantValue{doc2Add});
+                GUID id = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
+                fDBRep_->WrapExecute_ (
+                    [&] () {
+                        Document::Document doc2Add = v;
+                        if (vID) {
+                            doc2Add.Remove (Document::kID); // already in parent KEY so don't store redundantly
+                        }
+                        DoWriteToFS_ (id, VariantValue{doc2Add});
+                    },
+                    fName_, true);
                 return id.As<IDType> ();
             }
             virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
@@ -469,17 +483,20 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Get"};
 #endif
-                if (auto od = DoReadFromFS_ (GUID{id})) {
-                    Document::Document d = *od;
-                    d.Add (Document::kID, id);
-                    if (projection) {
-                        d = projection->Apply (d);
-                    }
-                    return d;
-                }
-                else {
-                    return nullopt;
-                }
+                optional<Document::Document> result;
+                fDBRep_->WrapExecute_ (
+                    [&] () {
+                        if (auto od = DoReadFromFS_ (GUID{id})) {
+                            Document::Document d = *od;
+                            d.Add (Document::kID, id);
+                            if (projection) {
+                                d = projection->Apply (d);
+                            }
+                            result = d;
+                        }
+                    },
+                    fName_, false);
+                return result;
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
@@ -488,19 +505,23 @@ namespace {
                                        "filter={}, projection={}"_f, filter, projection};
 #endif
                 Sequence<Document::Document> result;
-                for (const auto& entry : filesystem::directory_iterator{fCollectionRoot_}) {
-                    if (entry.path ().extension () == ".json"sv) { // Check if the entry is a JSON file
-                        Document::Document d =
-                            fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).As<Document::Document> ();
-                        d.Add (Document::kID, entry.path ().stem ().string ());
-                        if (not filter or filter->Matches (d)) {
-                            if (projection) {
-                                d = projection->Apply (d);
+                fDBRep_->WrapExecute_ (
+                    [&] () {
+                        for (const auto& entry : filesystem::directory_iterator{fCollectionRoot_}) {
+                            if (entry.path ().extension () == ".json"sv) { // Check if the entry is a JSON file
+                                Document::Document d =
+                                    fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).As<Document::Document> ();
+                                d.Add (Document::kID, entry.path ().stem ().string ());
+                                if (not filter or filter->Matches (d)) {
+                                    if (projection) {
+                                        d = projection->Apply (d);
+                                    }
+                                    result += d;
+                                }
                             }
-                            result += d;
                         }
-                    }
-                }
+                    },
+                    fName_, false);
                 return result;
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
@@ -509,26 +530,30 @@ namespace {
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update",
                                        "id={},newV={}, onlyTheseFields={}"_f, id, newV, onlyTheseFields};
 #endif
-                Document::Document updatedDoc =
-                    onlyTheseFields ? Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv}) : newV;
-                Document::Document updateWithDoc = newV;
-                if (onlyTheseFields) {
-                    updateWithDoc.RetainAll (*onlyTheseFields);
-                }
-                updatedDoc.AddAll (updateWithDoc);
-                if (onlyTheseFields) {
-                    // any fields listed in onlyTheseFields, but not present in newV need to be removed
-                    Set<String> removeMe = *onlyTheseFields - newV.Keys ();
-                    updatedDoc.RemoveAll (removeMe);
-                }
-                DoWriteToFS_ (GUID{id}, VariantValue{updatedDoc});
+                fDBRep_->WrapExecute_ (
+                    [&] () {
+                        Document::Document updatedDoc =
+                            onlyTheseFields ? Memory::ValueOfOrThrow (DoReadFromFS_ (id), RuntimeErrorException{"no such id"sv}) : newV;
+                        Document::Document updateWithDoc = newV;
+                        if (onlyTheseFields) {
+                            updateWithDoc.RetainAll (*onlyTheseFields);
+                        }
+                        updatedDoc.AddAll (updateWithDoc);
+                        if (onlyTheseFields) {
+                            // any fields listed in onlyTheseFields, but not present in newV need to be removed
+                            Set<String> removeMe = *onlyTheseFields - newV.Keys ();
+                            updatedDoc.RemoveAll (removeMe);
+                        }
+                        DoWriteToFS_ (GUID{id}, VariantValue{updatedDoc});
+                    },
+                    fName_, true);
             }
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Remove", "id={}"_f, id};
 #endif
-                (void)filesystem::remove (GetDocumentFilePath_ (GUID{id}));
+                fDBRep_->WrapExecute_ ([&] () { (void)filesystem::remove (GetDocumentFilePath_ (GUID{id})); }, fName_, true);
             }
             filesystem::path GetDocumentFilePath_ (const GUID& id) const
             {
@@ -657,6 +682,11 @@ namespace {
         virtual Document::Transaction mkTransaction () override
         {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
+        }
+        template <typename FUN>
+        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        {
+            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
         }
     };
 }

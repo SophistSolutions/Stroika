@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             }
             catch (...) {
                 fTableOpertionCallback_ (Operation::eNotifyError, this, &s, current_exception ());
-                fTableOpertionCallback_ (write ? Operation::eCompletedWrite : Operation::eCompletedRead, this, &fUpdate_Statement_, nullptr);
+                fTableOpertionCallback_ (write ? Operation::eCompletedWrite : Operation::eCompletedRead, this, &s, nullptr);
                 Execution::ReThrow ();
             }
         }
