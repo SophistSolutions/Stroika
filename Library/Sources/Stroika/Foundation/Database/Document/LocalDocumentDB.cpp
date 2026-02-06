@@ -67,89 +67,110 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add"};
 #endif
-                optional<VariantValue> vID = v.Lookup (Document::kID);
-                Require (not vID.has_value () or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
-                auto               rwLock     = fConnectionRep_->fCollections_.rwget ();
-                CollectionRep_     collection = rwLock.cref ().LookupValue (fTableName_);
-                GUID               id         = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
-                Document::Document doc2Add    = v;
-                if (vID) {
-                    doc2Add.Remove (Document::kID); // already in parent KEY so don't store redundantly
-                }
-                collection.Add (id, doc2Add);
-                rwLock.rwref ().Add (fTableName_, collection);
-                return id.ToString ();
+                return fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        optional<VariantValue> vID = v.Lookup (Document::kID);
+                        Require (not vID.has_value () or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
+                        GUID               id         = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
+                        auto               rwLock     = fConnectionRep_->fCollections_.rwget ();
+                        CollectionRep_     collection = rwLock.cref ().LookupValue (fTableName_);
+                        Document::Document doc2Add    = v;
+                        if (vID) {
+                            doc2Add.Remove (Document::kID); // already in parent KEY so don't store redundantly
+                        }
+                        collection.Add (id, doc2Add);
+                        rwLock.rwref ().Add (fTableName_, collection);
+                        return id.ToString ();
+                    },
+                    fTableName_, true);
             }
             virtual optional<Document::Document> Get (const IDType& id, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Get"};
 #endif
-                auto r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
-                if (r) {
-                    r->Add (Document::kID, id);
-                }
-                if (projection and r) {
-                    r = projection->Apply (*r);
-                }
-                return r;
+                return fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        optional<Document::Document> r;
+                        r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
+                        if (r) {
+                            r->Add (Document::kID, id);
+                        }
+                        if (projection and r) {
+                            r = projection->Apply (*r);
+                        }
+                        return r;
+                    },
+                    fTableName_, false);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
-                return fConnectionRep_->fCollections_->LookupValue (fTableName_)
-                    .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
-                        Document::Document d = kvp.fValue;
-                        d.Add (Document::kID, kvp.fKey.ToString ());
-                        if (filter and not filter->Matches (d)) {
-                            return nullopt; // skip cuz didn't match filter
-                        }
-                        else {
-                            if (projection) {
-                                d = projection->Apply (d);
-                            }
-                            return d;
-                        }
-                    });
+                return fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        return fConnectionRep_->fCollections_->LookupValue (fTableName_)
+                            .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
+                                Document::Document d = kvp.fValue;
+                                d.Add (Document::kID, kvp.fKey.ToString ());
+                                if (filter and not filter->Matches (d)) {
+                                    return nullopt; // skip cuz didn't match filter
+                                }
+                                else {
+                                    if (projection) {
+                                        d = projection->Apply (d);
+                                    }
+                                    return d;
+                                }
+                            });
+                    },
+                    fTableName_, false);
             }
             virtual void Update (const IDType& id, const Document::Document& newV, const optional<Set<String>>& onlyTheseFields) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Update"};
 #endif
-                Document::Document uploadDoc = newV;
-                if (onlyTheseFields) {
-                    uploadDoc.RetainAll (*onlyTheseFields);
-                }
-                static const auto  kExcept1_           = RuntimeErrorException{"no such table"sv};
-                static const auto  kNoSuchIDException_ = RuntimeErrorException{"no such id"sv};
-                auto               rwLock              = fConnectionRep_->fCollections_.rwget ();
-                CollectionRep_     collection          = rwLock.cref ().LookupChecked (fTableName_, kExcept1_);
-                Document::Document d2Update            = onlyTheseFields ? collection.LookupChecked (id, kNoSuchIDException_) : uploadDoc;
-                // any fields listed in onlyTheseFields, but not present in newV need to be removed
-                if (onlyTheseFields) {
-                    d2Update.AddAll (uploadDoc);
-                    Set<String> removeMe = *onlyTheseFields - newV.Keys ();
-                    d2Update.RemoveAll (removeMe);
-                }
-                d2Update.RemoveIf (Document::kID);
-                collection.Add (id, d2Update);
-                rwLock.rwref ().Add (fTableName_, collection); // replace the actual collection in our master database of collections
+                fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        Document::Document uploadDoc = newV;
+                        if (onlyTheseFields) {
+                            uploadDoc.RetainAll (*onlyTheseFields);
+                        }
+                        static const auto  kExcept1_           = RuntimeErrorException{"no such table"sv};
+                        static const auto  kNoSuchIDException_ = RuntimeErrorException{"no such id"sv};
+                        auto               rwLock              = fConnectionRep_->fCollections_.rwget ();
+                        CollectionRep_     collection          = rwLock.cref ().LookupChecked (fTableName_, kExcept1_);
+                        Document::Document d2Update = onlyTheseFields ? collection.LookupChecked (id, kNoSuchIDException_) : uploadDoc;
+                        // any fields listed in onlyTheseFields, but not present in newV need to be removed
+                        if (onlyTheseFields) {
+                            d2Update.AddAll (uploadDoc);
+                            Set<String> removeMe = *onlyTheseFields - newV.Keys ();
+                            d2Update.RemoveAll (removeMe);
+                        }
+                        d2Update.RemoveIf (Document::kID);
+                        collection.Add (id, d2Update);
+                        rwLock.rwref ().Add (fTableName_, collection); // replace the actual collection in our master database of collections
+                    },
+                    fTableName_, true);
             }
             virtual void Remove (const IDType& id) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
-                auto rwLock = fConnectionRep_->fCollections_.rwget ();
-                if (optional<CollectionRep_> oc = rwLock.cref ().Lookup (fTableName_)) {
-                    CollectionRep_ c = *oc;
-                    if (c.RemoveIf (id)) {
-                        rwLock.rwref ().Add (fTableName_, c); // replace the actual collection in our master database of collections
-                    }
-                }
+                fConnectionRep_->WrapExecute_ (
+                    [&] () {
+                        auto rwLock = fConnectionRep_->fCollections_.rwget ();
+                        if (optional<CollectionRep_> oc = rwLock.cref ().Lookup (fTableName_)) {
+                            CollectionRep_ c = *oc;
+                            if (c.RemoveIf (id)) {
+                                rwLock.rwref ().Add (fTableName_, c); // replace the actual collection in our master database of collections
+                            }
+                        }
+                    },
+                    fTableName_, true);
             }
         };
 
@@ -250,9 +271,9 @@ namespace {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
         }
         template <typename FUN>
-        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
         {
-            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
+            return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
         }
     };
 
@@ -435,9 +456,9 @@ namespace {
             tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
         }
         template <typename FUN>
-        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
         {
-            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fMemoryDB_->fOptions_, collectionName, write);
+            return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fMemoryDB_->fOptions_, collectionName, write);
         }
     };
 
@@ -684,9 +705,9 @@ namespace {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
         }
         template <typename FUN>
-        inline void WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
+        inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write)
         {
-            Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
+            return Document::Connection::Private_::WrapLoggingExecuteHelper_ (forward<FUN> (f), this, fOptions_, collectionName, write);
         }
     };
 }
