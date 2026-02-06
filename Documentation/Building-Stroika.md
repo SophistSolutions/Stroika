@@ -715,3 +715,22 @@ But - even with just plain make, you need some sort of configure script to estab
   - See also
     [../ScriptsLib/RunInDockerEnvironment](../ScriptsLib/RunInDockerEnvironment)
     for more hints on developing flags with docker containers.
+
+- VSCode
+  - command 'extension.commandvariable.file.content' not found
+
+    Caused by missing VSCode extension
+
+    - Install the "Command Variable" Extension 
+      - shortcut Ctrl+Shift+X
+      - Search for "Command Variable"
+      - click install
+
+  - when building in vscode, error message from vscode:
+    "Unexpected token 'U', "Unknown" is not valid JSON"
+
+    - fix with
+
+      ~~~bash
+      make project-files
+      ~~~
