@@ -766,6 +766,27 @@ namespace {
         {
             return fOptions_;
         }
+        virtual uintmax_t GetDiskSize () const override
+        {
+            uintmax_t szTotal{};
+            auto      incSize = [&] (const filesystem::path& p) {
+                error_code ec{};
+                uintmax_t  sz = filesystem::file_size (p, ec);
+                if (!ec) {
+                    szTotal += sz;
+                }
+            };
+            if (fOptions_.fDBPath) {
+                incSize (*fOptions_.fDBPath);
+                incSize (filesystem::path{*fOptions_.fDBPath}.concat ("-journal"));
+                incSize (filesystem::path{*fOptions_.fDBPath}.concat ("-shm"));
+                incSize (filesystem::path{*fOptions_.fDBPath}.concat ("-wal"));
+            }
+            else {
+                WeakAssertNotImplemented ();
+            }
+            return szTotal;
+        }
         virtual Set<String> GetCollections () override
         {
             // treat named all tables as collections (maybe just count those with two columns id/json?).

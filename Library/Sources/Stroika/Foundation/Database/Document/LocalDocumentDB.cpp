@@ -191,6 +191,37 @@ namespace {
         {
             return fOptions_;
         }
+        static uintmax_t EstimateSize_ (const VariantValue& vv)
+        {
+            switch (vv.GetType ()) {
+                case VariantValue::Type::eBLOB:
+                    return vv.As<Memory::BLOB> ().size ();
+                case VariantValue::Type::eString:
+                    return vv.As<String> ().size ();
+                case VariantValue::Type::eFloat:
+                    return sizeof (long double);
+                default:
+                    AssertNotImplemented ();
+                    return 1000; //tmphack
+            }
+            return 0;
+        }
+        virtual uintmax_t GetDiskSize () const override
+        {
+            uintmax_t totalSize{};
+            // WAG/Weak but adequate Estimate
+            for (const KeyValuePair<String, CollectionRep_>& ci : fCollections_.load ()) {
+                totalSize += ci.fKey.size () + 3;
+                for (const KeyValuePair<GUID, Document::Document>& di : ci.fValue) {
+                    totalSize += 20; // for GUID
+                    for (const KeyValuePair<String, VariantValue>& xi : di.fValue) {
+                        totalSize += xi.fKey.size () + 3;
+                        totalSize += EstimateSize_ (xi.fValue) + 4;
+                    }
+                }
+            }
+            return totalSize;
+        }
         virtual Set<String> GetCollections () override
         {
             return Set<String>{fCollections_.load ().Keys ()};
@@ -325,6 +356,11 @@ namespace {
         virtual Database::Document::Connection::Options GetOptions () const override
         {
             return fMemoryDB_->GetOptions ();
+        }
+        virtual uintmax_t GetDiskSize () const override
+        {
+            error_code ignoredEC;
+            return filesystem::file_size (fExternalFile_, ignoredEC);
         }
         virtual Set<String> GetCollections () override
         {
@@ -572,6 +608,25 @@ namespace {
         virtual Database::Document::Connection::Options GetOptions () const override
         {
             return fOptions_;
+        }
+        virtual uintmax_t GetDiskSize () const override
+        {
+            uintmax_t totalSize{};
+            try {
+                for (const auto& entry : filesystem::recursive_directory_iterator (fRoot_, filesystem::directory_options::skip_permission_denied)) {
+                    // Check if the current entry is a regular file before getting its size
+                    if (filesystem::is_regular_file (entry.status ())) {
+                        // file_size() throws an exception or returns (uintmax_t)-1 on error
+                        std::uintmax_t file_size = entry.file_size ();
+                        totalSize += file_size;
+                    }
+                }
+            }
+            catch (const filesystem::filesystem_error& e) {
+                DbgTrace ("suppressing error in GetDiskSize () = returning zero: {}"_f, e);
+                return 0;
+            }
+            return totalSize;
         }
         virtual Set<String> GetCollections () override
         {

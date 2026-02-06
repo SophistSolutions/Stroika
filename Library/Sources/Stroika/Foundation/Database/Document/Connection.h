@@ -35,6 +35,28 @@ namespace Stroika::Foundation::Database::Document {
 namespace Stroika::Foundation::Database::Document::Connection {
 
     class IRep;
+    class Ptr;
+
+    /**
+     * Optionally passed to OpertionCallbackPtr for the purpose of logging
+     */
+    enum Operation {
+        eStartingRead,
+        eCompletedRead,
+        eStartingWrite,
+        eCompletedWrite,
+        eNotifyError
+    };
+
+    /**
+     * Optionally passed to Connection::New (its Options argument) for the purpose of logging; 
+     * note exception_ptr is only provided for eNotifyError, and is typically current_exception () but can be nullptr
+     * 
+     * Note - callback must be internally synchonized, and maybe called in nested fasion.
+     * 
+     * Note - OpertionCallbackPtr must be no-throw (sadly not capturable with std::function).
+     */
+    using OpertionCallbackPtr = function<void (Operation op, const Ptr& documentDBConnection, const String& collection, const exception_ptr& e)>;
 
     /**
      * 
@@ -49,9 +71,17 @@ namespace Stroika::Foundation::Database::Document::Connection {
          *         if you have multiple connections to the same database file/object.
          * 
          * \note some backends may impose special requirements on the format of externally provided IDs (e.g.
-         *       the Stroika wrappers for mongo-db assume they will be in the form of a guid).
+         *       assume they will be in the form of a guid, but such requirements will be documented/enforced on a
+         *       backend-by-backend 'new' factory basis).
          */
         bool fAddAllowsExternallySpecifiedIDs{true};
+
+        /**
+         * Note - callback must be internally synchonized, and maybe called in nested fasion.
+         * Callback can be used to calculate usage statistics, and note database errors. Presence of
+         * the operation callback doesn't affect normal operation of the 
+         */
+        OpertionCallbackPtr fOperationLoggingCallback{nullptr};
     };
 
     /**
@@ -95,6 +125,11 @@ namespace Stroika::Foundation::Database::Document::Connection {
         /**
          */
         nonvirtual Options GetOptions () const;
+
+    public:
+        /**
+         */
+        nonvirtual uintmax_t GetDiskSize () const;
 
     public:
         /**
@@ -172,6 +207,12 @@ namespace Stroika::Foundation::Database::Document::Connection {
         /**
          */
         virtual Options GetOptions () const = 0;
+
+    public:
+        /**
+         * Note only provides an estimate of size used.
+         */
+        virtual uintmax_t GetDiskSize () const = 0;
 
     public:
         /**

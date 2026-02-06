@@ -408,7 +408,6 @@ namespace {
             TraceContextBumper ctx{"MongoDBClient::AdminRep_::run_command"};
 #endif
             try {
-                mongocxx::database adminDB_;
                 return FromBSON_ (fClientPtr_->database ("admin").run_command (ToBSON_ (v)));
             }
             catch (...) {
@@ -650,6 +649,18 @@ namespace {
         virtual Document::Connection::Options GetOptions () const override
         {
             return fOptions_;
+        }
+        virtual uintmax_t GetDiskSize () const override
+        {
+            bsoncxx::builder::basic::document db_stats_cmd_builder;
+            db_stats_cmd_builder.append (bsoncxx::builder::basic::kvp ("dbStats", 1));
+            bsoncxx::document::value command_result = mongocxx::database{fDatabase_}.run_command (db_stats_cmd_builder.view ());
+            bsoncxx::document::view  result_view    = command_result.view ();
+            if (result_view["storageSize"] && result_view["storageSize"].type () == bsoncxx::types::b_int64::type_id) {
+                return result_view["storageSize"].get_int64 ();
+            }
+            WeakAssertNotReached ();
+            return 0;
         }
         virtual Set<String> GetCollections () override
         {
