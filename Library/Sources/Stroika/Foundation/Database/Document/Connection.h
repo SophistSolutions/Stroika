@@ -49,12 +49,11 @@ namespace Stroika::Foundation::Database::Document::Connection {
     };
 
     /**
-     * Optionally passed to Connection::New (its Options argument) for the purpose of logging; 
-     * note exception_ptr is only provided for eNotifyError, and is typically current_exception () but can be nullptr
+     * Optionally passed to SomeKindOfDocDB::Connection::New (its Options argument) for the purpose of logging; 
      * 
-     * Note - callback must be internally synchonized, and maybe called in nested fasion.
-     * 
-     * Note - OpertionCallbackPtr must be no-throw (sadly not capturable with std::function).
+     *  \note exception_ptr is only provided for eNotifyError, and is typically current_exception () but can be nullptr
+     *  \note callback must be internally synchonized, and maybe called in nested fasion.
+     *  \note OpertionCallbackPtr must be no-throw (sadly not capturable with std::function).
      */
     using OpertionCallbackPtr =
         function<void (Operation op, const Ptr& documentDBConnection, const optional<String>& collectionName, const exception_ptr& e)>;
@@ -107,6 +106,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
         Ptr (const Ptr& src)     = default;
         Ptr (Ptr&& src) noexcept = default;
         using inherited::inherited;
+        Ptr (const inherited& i) noexcept; // not sure why this isn't captured by the using inherited::inherited
 
     public:
         ~Ptr () = default;

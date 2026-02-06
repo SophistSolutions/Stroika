@@ -12,6 +12,10 @@ namespace Stroika::Foundation::Database::Document::Connection {
      ************************* Document::Connection::Ptr ****************************
      ********************************************************************************
      */
+    inline Ptr::Ptr (const inherited& i) noexcept
+        : inherited{i}
+    {
+    }
     inline bool Ptr::operator== (const Ptr& rhs) const noexcept
     {
         return this->get () == rhs.get ();
@@ -70,24 +74,21 @@ namespace Stroika::Foundation::Database::Document::Connection::Private_ {
      * Private utility to faciliate logging and tracking of database reads/writes times
      */
     template <typename FUN>
-    void WrapLoggingExecuteHelper_ (FUN&& f, Database::Document::Connection::IRep* documentDBConnection,
-                                    const Database::Document::Connection::Options& options, const optional<String>& collectionName, bool write)
+    auto WrapLoggingExecuteHelper_ (FUN&& f, Connection::IRep* documentDBConnection, const Connection::Options& options,
+                                    const optional<String>& collectionName, bool write)
     {
-        using Database::Document::Connection::Operation;
         if (options.fOperationLoggingCallback == nullptr) {
-            f ();
+            return f ();
         }
         else {
-            auto                                callback = options.fOperationLoggingCallback;
-            Database::Document::Connection::Ptr connPtr  = nullptr;
-            [[maybe_unused]] auto               x        = documentDBConnection->shared_from_this ();
-            //             Database::Document::Connection::Ptr connPtr2 = documentDBConnection->shared_from_this ();
+            auto            callback = options.fOperationLoggingCallback;
+            Connection::Ptr connPtr  = documentDBConnection->shared_from_this ();
             callback (write ? Operation::eStartingWrite : Operation::eStartingRead, connPtr, collectionName, nullptr);
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept {
                 callback (write ? Operation::eCompletedWrite : Operation::eCompletedRead, connPtr, collectionName, nullptr);
             });
             try {
-                f ();
+                return f ();
             }
             catch (...) {
                 callback (Operation::eNotifyError, connPtr, collectionName, current_exception ());
