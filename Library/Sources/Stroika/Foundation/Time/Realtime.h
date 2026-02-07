@@ -85,6 +85,8 @@ namespace Stroika::Foundation::Time {
     /**
      *  \brief get the current (monotonically increasing) time - from RealtimeClock
      * 
+     *  \note ***Not Cancelation Point*** - and uses  noexcept
+     * 
      *  \note no longer true, but in Stroika v2.1:
      *      this always started at offset zero for start of app.
      *      this always used steady_clock (now see TimePointSeconds).

@@ -58,7 +58,6 @@ namespace Stroika::Foundation::Execution {
      *  \note   ***Cancelation Point***
      *
      *  \note   Very similar to std::this_thread::sleep_for () - except for the overload returning remaining amount, and cancelation support
-     *
      */
     void Sleep (Time::Duration seconds2Wait);
     void Sleep (Time::Duration seconds2Wait, Time::DurationSeconds* remainingInSleep);
