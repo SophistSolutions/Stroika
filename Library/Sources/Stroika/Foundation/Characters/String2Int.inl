@@ -63,9 +63,9 @@ namespace Stroika::Foundation::Characters {
              */
             Memory::StackBuffer<char> asciiS;
             if (Character::AsASCIIQuietly (s, &asciiS)) {
-                T r  qStroika_Foundation_ATTRIBUTE_INDETERMINATE;
-                auto b = asciiS.begin ();
-                auto e = asciiS.end ();
+                qStroika_Foundation_ATTRIBUTE_INDETERMINATE T r;
+                auto                                          b = asciiS.begin ();
+                auto                                          e = asciiS.end ();
                 if (b != e and *b == '+') {
                     ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }

@@ -728,7 +728,7 @@ namespace {
                 Execution::ThrowIfNull (ctxt);
                 [[maybe_unused]] auto&&        cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
                 MyLibXML2StructuredErrGrabber_ errCatcher{ctxt};
-                byte                           buf[1024] qStroika_Foundation_ATTRIBUTE_INDETERMINATE;
+                qStroika_Foundation_ATTRIBUTE_INDETERMINATE byte buf[1024];
                 while (auto n = in.ReadBlocking (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                         AssertNotNull (errCatcher.fCapturedException); // double check I understood API properly - and error handler getting called

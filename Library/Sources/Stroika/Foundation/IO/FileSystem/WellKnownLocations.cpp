@@ -52,7 +52,7 @@ filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNo
 #elif qStroika_Foundation_Common_Platform_Windows
     // @todo DO overlaod with no args, so we can CACHE - like we do for POSIX!
 
-    wchar_t fileBuf[MAX_PATH] qStroika_Foundation_ATTRIBUTE_INDETERMINATE; // SHGetSpecialFolderPathW fills in with OUT parameter
+    qStroika_Foundation_ATTRIBUTE_INDETERMINATE wchar_t fileBuf[MAX_PATH]; // SHGetSpecialFolderPathW fills in with OUT parameter
     // note - https://docs.microsoft.com/en-us/windows/desktop/api/shlobj_core/nf-shlobj_core-shgetspecialfolderpathw not clear this properly sets GetLastError ()
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
     filesystem::path result = fileBuf;
@@ -80,7 +80,7 @@ filesystem::path FileSystem::WellKnownLocations::GetSpoolDirectory ()
     return kVarSpool_;
 #elif qStroika_Foundation_Common_Platform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
-    wchar_t fileBuf[MAX_PATH] qStroika_Foundation_ATTRIBUTE_INDETERMINATE; // SHGetSpecialFolderPathW fills in with OUT parameter
+    qStroika_Foundation_ATTRIBUTE_INDETERMINATE wchar_t fileBuf[MAX_PATH]; // SHGetSpecialFolderPathW fills in with OUT parameter
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, false));
     filesystem::path result = fileBuf;
     // Assure non-empty result
@@ -111,7 +111,7 @@ filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool create
     static const filesystem::path kVarLib_{"/var/opt/"sv};
     return kVarLib_;
 #elif qStroika_Foundation_Common_Platform_Windows
-    wchar_t fileBuf[MAX_PATH] qStroika_Foundation_ATTRIBUTE_INDETERMINATE; // SHGetSpecialFolderPathW fills in with OUT parameter
+    qStroika_Foundation_ATTRIBUTE_INDETERMINATE wchar_t fileBuf[MAX_PATH]; // SHGetSpecialFolderPathW fills in with OUT parameter
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
     filesystem::path result = fileBuf;
     // Assure non-empty result
@@ -152,7 +152,7 @@ filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
  */
 filesystem::path FileSystem::WellKnownLocations::GetWinSxS ()
 {
-    wchar_t fileBuf[MAX_PATH] qStroika_Foundation_ATTRIBUTE_INDETERMINATE; // SHGetSpecialFolderPathW fills in with OUT parameter
+    qStroika_Foundation_ATTRIBUTE_INDETERMINATE wchar_t fileBuf[MAX_PATH]; // SHGetSpecialFolderPathW fills in with OUT parameter
     Verify (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_WINDOWS, false));
     filesystem::path result = fileBuf;
     // Assure non-empty result

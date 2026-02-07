@@ -40,9 +40,9 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("nEltsLeft={}"_f, static_cast<unsigned long long> (nEltsLeft));
 #endif
-        byte  buf[64 * 1024] qStroika_Foundation_ATTRIBUTE_INDETERMINATE;
-        byte* s = std::begin (buf);
-        byte* e = std::end (buf);
+        qStroika_Foundation_ATTRIBUTE_INDETERMINATE byte buf[64 * 1024];
+        byte*                                            s = std::begin (buf);
+        byte*                                            e = std::end (buf);
         if (nEltsLeft < std::size (buf)) {
             e = s + nEltsLeft;
         }
