@@ -165,9 +165,8 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
             } break;
         }
         if (echoedID and echoedID != pingRequest.id) {
-            DbgTrace ("echoedID ({} != pingRequest.id (0x{:x}) so ignoring this reply"_f, echoedID, static_cast<int> (pingRequest.id));
-            // Must be a reply for another pinger running locally, so just
-            // ignore it.
+            DbgTrace ("echoedID ({} != pingRequest.id (0x{:x})) so ignoring this reply"_f, echoedID, static_cast<int> (pingRequest.id));
+            // Must be a reply for another pinger running locally, so just ignore it (this will likely be quite rare).
             continue;
         }
 
@@ -190,7 +189,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
                     nHops = 65 - replyIPHeader->ttl;
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"reply->ttl = {}, nHops = {}"_f, replyIPHeader->ttl, nHops);
+                DbgTrace ("reply->ttl = {}, nHops = {}"_f, replyIPHeader->ttl, nHops);
 #endif
                 return ResultType{Duration{Time::GetTickCount ().time_since_epoch ().count () - replyICMPHeader->timestamp / 1000.0}, nHops};
             }
