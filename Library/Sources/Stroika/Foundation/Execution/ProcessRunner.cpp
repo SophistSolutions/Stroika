@@ -1318,7 +1318,9 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
                 readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDERR, err);
                 switch (waitResult) {
                     case WAIT_OBJECT_0: {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace ("external process finished (DONE)"_f);
+#endif
                         //                              timeoutAt = -1.0f;  // force out of loop
                         goto DoneWithProcess;
                     } break;
@@ -1344,7 +1346,13 @@ void ProcessRunner::Process_Runner_Windows_ (const shared_ptr<DetailedRunnableRe
                 }
             }
             else {
-                DbgTrace ("storing process result {}"_f, static_cast<int> (processExitCode));
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("storing process status (ExitCode): {}"_f, static_cast<int> (processExitCode));
+#else
+                if (processExitCode != 0) {
+                    DbgTrace ("storing process status (ExitCode): {}"_f, static_cast<int> (processExitCode));
+                }
+#endif
                 runneeDetails->fProcessResult.store (ProcessRunner::ProcessResultType{static_cast<int> (processExitCode)});
             }
         }
