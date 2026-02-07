@@ -79,6 +79,13 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
              */
             filesystem::path fFile;
 
+#if qStroika_Foundation_Common_Platform_Windows
+            /**
+             * \see IO::FileSystem::ThroughTmpFileWriter::fRetryOnSharingViolationFor
+             */
+            optional<Time::DurationSeconds> fRetryOnSharingViolationFor;
+#endif
+
             /**
              *  Extension point so we can switch to writing files as BSON, msgpack, or some such...
              */
@@ -94,6 +101,13 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
              * The directory where the files are stored.
              */
             filesystem::path fRoot;
+
+#if qStroika_Foundation_Common_Platform_Windows
+            /**
+             * \see IO::FileSystem::ThroughTmpFileWriter::fRetryOnSharingViolationFor
+             */
+            optional<Time::DurationSeconds> fRetryOnSharingViolationFor;
+#endif
 
             /**
              *  Extension point so we can switch to writing files as BSON, msgpack, or some such...

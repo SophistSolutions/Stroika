@@ -385,6 +385,9 @@ namespace {
             return o;
         }
         const OpertionCallbackPtr fOperationLoggingCallback_{nullptr};
+#if qStroika_Foundation_Common_Platform_Windows
+        optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
+#endif
 
         SingleFileDatabaseRep_ ()                              = delete;
         SingleFileDatabaseRep_ (const SingleFileDatabaseRep_&) = delete;
@@ -395,6 +398,9 @@ namespace {
             , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (sfOptions.fSerialization)}
             , fOperationLoggingCallback_{options.fOperationLoggingCallback}
+#if qStroika_Foundation_Common_Platform_Windows
+            , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
+#endif
         {
             DoReadFromFS ();
         }
@@ -493,7 +499,10 @@ namespace {
             }
             this->fWriter_.Write (VariantValue{collectionsAsVV}, outStream);
             outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
-            tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+#if qStroika_Foundation_Common_Platform_Windows
+            tmpFile.fRetryOnSharingViolationFor = fRetryOnSharingViolationFor_;
+#endif
+            tmpFile.Commit (); // any exceptions cause the tmp file to be automatically cleaned up
         }
         template <typename FUN>
         inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write) -> invoke_result_t<FUN>
@@ -515,6 +524,9 @@ namespace {
         const filesystem::path                   fRoot_;
         const DataExchange::Variant::Reader      fReader_;
         const DataExchange::Variant::Writer      fWriter_;
+#if qStroika_Foundation_Common_Platform_Windows
+        optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
+#endif
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<DirectoryFilesystemDatabaseRep_> fDBRep_; // save to bump reference count (lifetime safety)
@@ -646,14 +658,17 @@ namespace {
             {
                 filesystem::path docFilePath = GetDocumentFilePath_ (id);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::DoWriteToFS()", "path={}"_f, docFilePath};
+                TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::DoWriteToFS", "path={}"_f, docFilePath};
 #endif
                 using namespace IO::FileSystem;
                 ThroughTmpFileWriter                  tmpFile{docFilePath};
                 IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
                 fDBRep_->fWriter_.Write (vv, outStream);
                 outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
-                tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+#if qStroika_Foundation_Common_Platform_Windows
+                tmpFile.fRetryOnSharingViolationFor = fDBRep_->fRetryOnSharingViolationFor_;
+#endif
+                tmpFile.Commit (); // any exceptions cause the tmp file to be automatically cleaned up
             }
         };
 
@@ -687,6 +702,9 @@ namespace {
             , fRoot_{dfOptions.fRoot}
             , fReader_{get<DataExchange::Variant::Reader> (dfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (dfOptions.fSerialization)}
+#if qStroika_Foundation_Common_Platform_Windows
+            , fRetryOnSharingViolationFor_{dfOptions.fRetryOnSharingViolationFor}
+#endif
         {
             filesystem::create_directories (fRoot_);
         }
