@@ -45,7 +45,7 @@ namespace Stroika::Samples::HTMLUI {
         struct Logging {
             optional<bool>        ToStdOut;
             static constexpr bool kToStdOut_Default = false;
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_HasComponent_syslog
             optional<bool>        ToSysLog;
             static constexpr bool kToSysLog_Default = true;
 #endif

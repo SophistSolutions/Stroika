@@ -68,7 +68,9 @@ namespace {
 
         MyApp_ ()
         {
-            // Default - in case any logging writes happen before we setup the configured logging appenders
+            /**
+             * Default - in case any logging writes happen before we setup the configured logging appenders (e.g. OptionsFile)
+             */
             Logger::sThe.SetAppenders (MakeSharedPtr<Logger::StreamAppender> (
                 IO::FileSystem::FileOutputStream::New (STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction)));
 
@@ -120,20 +122,20 @@ namespace {
 
             // replace preliminary logging appenders, after we've read the configuration (gAppConfiguration)
             Logger::sThe.SetAppenders ([] () {
-                static const String kAppName_                            = "Stroika-Sample-HTMLUI"sv;
-                using Logging                                            = AppConfigurationType::Logging;
-                Logging                                    loggingConfig = gAppConfiguration->fLogging.value_or (Logging{});
+                static const String kAppName_          = "Stroika-Sample-HTMLUI"sv;
+                using LoggingConfigurationType         = AppConfigurationType::Logging;
+                LoggingConfigurationType loggingConfig = gAppConfiguration->fLogging.value_or (LoggingConfigurationType{});
                 Sequence<shared_ptr<Logger::IAppenderRep>> appenders;
-                if (loggingConfig.ToStdOut.value_or (Logging::kToStdOut_Default)) {
+                if (loggingConfig.ToStdOut.value_or (LoggingConfigurationType::kToStdOut_Default)) {
                     appenders += MakeSharedPtr<Logger::StreamAppender> (IO::FileSystem::FileOutputStream::New (
                         STDOUT_FILENO, IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction));
                 }
 #if qStroika_HasComponent_syslog
-                if (loggingConfig.ToSysLog.value_or (Logging::kToSysLog_Default)) {
+                if (loggingConfig.ToSysLog.value_or (LoggingConfigurationType::kToSysLog_Default)) {
                     appenders += MakeSharedPtr<Logger::SysLogAppender> (kAppName_);
                 }
 #elif qStroika_Foundation_Common_Platform_Windows
-                if (loggingConfig.ToWindowsEventLog.value_or (Logging::kToWindowsEventLog_Default)) {
+                if (loggingConfig.ToWindowsEventLog.value_or (LoggingConfigurationType::kToWindowsEventLog_Default)) {
                     appenders += MakeSharedPtr<Logger::WindowsEventLogAppender> (kAppName_);
                 }
 #endif

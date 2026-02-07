@@ -31,7 +31,7 @@ const ObjectVariantMapper AppConfigurationType::kMapper = [] () {
     mapper.AddClass<AppConfigurationType::Logging> (
         {
             {"ToStdOut"sv, &AppConfigurationType::Logging::ToStdOut},
-#if qStroika_Foundation_Common_Platform_POSIX
+#if qStroika_HasComponent_syslog
             {"ToSysLog"sv, &AppConfigurationType::Logging::ToSysLog},
 #endif
 #if qStroika_Foundation_Common_Platform_Windows
