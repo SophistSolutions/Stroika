@@ -110,6 +110,10 @@ namespace {
     {
         return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{bs}));
     }
+    String cvt2String_ (const bsoncxx::types::b_string& bs)
+    {
+        return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{bs.value}));
+    }
 }
 
 namespace {
@@ -131,7 +135,7 @@ namespace {
             case bsoncxx::type::k_oid:
                 return String{value.get_oid ().value.to_string ()};
             case bsoncxx::type::k_string:
-                return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{value.get_string ().value}));
+                return cvt2String_ (value.get_string ());
             default:
                 AssertNotReached ();
                 return String{};
@@ -144,7 +148,7 @@ namespace {
             case bsoncxx::type::k_double:
                 return value.get_double ().value;
             case bsoncxx::type::k_string:
-                return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{value.get_string ().value}));
+                return cvt2String_ (value.get_string ());
             case bsoncxx::type::k_document: {
                 Mapping_HashTable<String, VariantValue>::DEFAULT_HASHTABLE<> vvResult; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
                 const bsoncxx::types::b_document& thisDoc = value.get_document ();
@@ -176,7 +180,7 @@ namespace {
             case bsoncxx::type::k_null:
                 return VariantValue{nullptr};
             case bsoncxx::type::k_regex:
-                return String::FromUTF8 (SpanBytesCast<span<const char8_t>> (span{value.get_string ().value}));
+                return cvt2String_ (value.get_string ());
             case bsoncxx::type::k_dbpointer:
                 WeakAssertNotReached (); ///< DBPointer. @deprecated
                 return VariantValue{};
