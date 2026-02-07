@@ -110,7 +110,12 @@ namespace Stroika::Foundation::IO::Network {
             eWiredEthernet,
             eWIFI,
             eTunnel,
+
+            /**
+             * Virtual adapter, like virtualbox, etc
+             */
             eDeviceVirtualInternalNetwork,
+
             eOther,
 
             Stroika_Define_Enum_Bounds (eLoopback, eOther)

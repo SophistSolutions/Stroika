@@ -816,6 +816,9 @@ namespace {
                     case IF_TYPE_SOFTWARE_LOOPBACK:
                         newInterface.fType = Interface::Type::eLoopback;
                         break;
+                    case IF_TYPE_PROP_VIRTUAL:
+                        newInterface.fType = Interface::Type::eDeviceVirtualInternalNetwork;
+                        break;
                     case IF_TYPE_IEEE80211:
                         newInterface.fType = Interface::Type::eWIFI;
                         break;
