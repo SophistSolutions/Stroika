@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Characters {
              */
             Memory::StackBuffer<char> asciiS;
             if (Character::AsASCIIQuietly (s, &asciiS)) {
-                T r  qStroika_Foundation_INDETERMINATE;
+                T r  qStroika_Foundation_ATTRIBUTE_INDETERMINATE;
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
                 if (b != e and *b == '+') {

@@ -58,7 +58,7 @@ namespace {
     public:
         Streams::InputStream::Ptr<byte> fInStream_; // consider wrapping in StreamReader for efficiency sake - maybe unhelpful due to CHUNK logic below
         z_stream       fZStream_{};
-        byte           fInBuf_[CHUNK_] qStroika_Foundation_INDETERMINATE; // uninitialized cuz written before read
+        byte           fInBuf_[CHUNK_] qStroika_Foundation_ATTRIBUTE_INDETERMINATE; // uninitialized cuz written before read
         SeekOffsetType _fSeekOffset{};
         optional<byte> _fNextOutputByte_; // 'cached' next output byte - if not nullopt - magic needed to make AvailableToRead
 

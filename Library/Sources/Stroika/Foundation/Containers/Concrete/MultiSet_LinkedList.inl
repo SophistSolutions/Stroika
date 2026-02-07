@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             for (typename DataStructureImplType_::ForwardIterator it{&fData_}; not it.Done (); ++it) {
                 auto current = *it;
                 if (fEqualsComparer_ (current.fValue, item)) {
-                    size_t result qStroika_Foundation_INDETERMINATE;
+                    size_t result qStroika_Foundation_ATTRIBUTE_INDETERMINATE;
                     if (current.fCount > count) {
                         current.fCount -= count;
                         fData_.SetAt (it, current);

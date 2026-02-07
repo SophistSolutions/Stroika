@@ -278,7 +278,7 @@ namespace {
         virtual void Flush () override
         {
             Require (IsOpenWrite ());
-            byte   outBuf[EVP_MAX_BLOCK_LENGTH] qStroika_Foundation_INDETERMINATE;
+            byte   outBuf[EVP_MAX_BLOCK_LENGTH] qStroika_Foundation_ATTRIBUTE_INDETERMINATE;
             size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
             Assert (nBytesInOutBuf < sizeof (outBuf));
             fRealOut_.Write (span{outBuf, nBytesInOutBuf});

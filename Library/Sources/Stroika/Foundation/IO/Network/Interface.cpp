@@ -84,7 +84,7 @@ namespace {
     auto PrintMacAddr_ (const uint8_t* macaddrBytes, [[maybe_unused]] const uint8_t* macaddrBytesEnd) -> String
     {
         Require (macaddrBytesEnd - macaddrBytes == 6);
-        char buf[100] qStroika_Foundation_INDETERMINATE;
+        char buf[100] qStroika_Foundation_ATTRIBUTE_INDETERMINATE;
         (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x", macaddrBytes[0], macaddrBytes[1], macaddrBytes[2],
                         macaddrBytes[3], macaddrBytes[4], macaddrBytes[5]);
         Assert (::strlen (buf) < std::size (buf)); // else we must patch in '\0' but I think snprintf always works here
