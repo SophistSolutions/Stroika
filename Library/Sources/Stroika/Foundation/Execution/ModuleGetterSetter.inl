@@ -11,7 +11,15 @@ namespace Stroika::Foundation::Execution {
      ************************ ModuleGetterSetter<T, IMPL> ***************************
      ********************************************************************************
      */
-    template <typename T, typename IMPL>
+    template <typename T, IModuleGetterSetterImpl<T> IMPL>
+    inline void ModuleGetterSetter<T, IMPL>::AssureLoaded () const
+    {
+        typename RWSynchronized<optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
+        if (not l->has_value ()) {
+            DoInitOutOfLine_ (&l);
+        }
+    }
+    template <typename T, IModuleGetterSetterImpl<T> IMPL>
     inline T ModuleGetterSetter<T, IMPL>::Get () const
     {
         {
@@ -21,13 +29,10 @@ namespace Stroika::Foundation::Execution {
                 return l.cref ()->Get (); // IMPL::Get () must be const method
             }
         }
-        typename RWSynchronized<optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
-        if (not l->has_value ()) {
-            DoInitOutOfLine_ (&l);
-        }
-        return l.cref ()->Get (); // IMPL::Get () must be const method
+        AssureLoaded ();
+        return fIndirect_.load ()->Get ();
     }
-    template <typename T, typename IMPL>
+    template <typename T, IModuleGetterSetterImpl<T> IMPL>
     inline void ModuleGetterSetter<T, IMPL>::Set (const T& v)
     {
         typename RWSynchronized<optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
@@ -36,12 +41,12 @@ namespace Stroika::Foundation::Execution {
         }
         l.rwref ()->Set (v);
     }
-    template <typename T, typename IMPL>
+    template <typename T, IModuleGetterSetterImpl<T> IMPL>
     inline shared_ptr<const T> ModuleGetterSetter<T, IMPL>::operator->() const
     {
         return Memory::MakeSharedPtr<const T> (Get ());
     }
-    template <typename T, typename IMPL>
+    template <typename T, IModuleGetterSetterImpl<T> IMPL>
     optional<T> ModuleGetterSetter<T, IMPL>::Update (const function<optional<T> (const T&)>& updaterFunction)
     {
         /*
@@ -59,13 +64,13 @@ namespace Stroika::Foundation::Execution {
         }
         return {};
     }
-    template <typename T, typename IMPL>
+    template <typename T, IModuleGetterSetterImpl<T> IMPL>
     dont_inline void ModuleGetterSetter<T, IMPL>::DoInitOutOfLine_ (typename RWSynchronized<optional<IMPL>>::WritableReference* ref)
     {
         RequireNotNull (ref);
-        Require (not ref->load ().has_value ());
-        *ref = IMPL{};
-        Ensure (ref->load ().has_value ());
+        Require (not ref->cref ().has_value ());
+        *ref = IMPL{}; // @todo redo with emplace()
+        Ensure (ref->cref ().has_value ());
     }
 
 }

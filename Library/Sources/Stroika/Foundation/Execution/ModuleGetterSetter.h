@@ -20,6 +20,21 @@
 namespace Stroika::Foundation::Execution {
 
     /**
+     * Argument IMPL type appears to be a valid ModuleGetterSetter set of functions to go with return type T.
+     * 
+     * @tparam T 
+     * @tparam IMPL 
+     * 
+     *      \note - we might want to remove the requirement that IMPL be copyable, but thats true of our current
+     *              implementation.
+     */
+    template <typename IMPL, typename T>
+    concept IModuleGetterSetterImpl = copyable<IMPL> and requires (IMPL impl) {
+        { impl.Get () } -> same_as<T>;
+        { impl.Set (declval<T> ()) } -> same_as<void>;
+    };
+
+    /**
      *  \brief  Helper to define synchronized, lazy constructed, module initialization (intended to work with DataExchange::OptionFile)
      *
      * Features:
@@ -93,8 +108,17 @@ namespace Stroika::Foundation::Execution {
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
-    template <typename T, typename IMPL>
+    template <typename T, IModuleGetterSetterImpl<T> IMPL>
     struct ModuleGetterSetter {
+    public:
+        /**
+         *  Assures the getter/setter initial load is done. Same as 'Get', but doesn't return a value.
+         *  The function exists mostly for usage clarity sake.
+         * 
+         *  \note this method may fail (exception).
+         */
+        nonvirtual void AssureLoaded () const;
+
     public:
         /**
          *  Grab the global value, performing any necessary read-locks automatically.
