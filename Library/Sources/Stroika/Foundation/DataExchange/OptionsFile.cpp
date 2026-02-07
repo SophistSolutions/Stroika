@@ -4,6 +4,11 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
+#include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
+#include "Stroika/Foundation/DataExchange/VariantValue.h"
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
@@ -11,12 +16,6 @@
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Linguistics/MessageUtilities.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
-
-#include "Variant/JSON/Reader.h"
-#include "Variant/JSON/Writer.h"
-#include "Variant/XML/Reader.h"
-#include "Variant/XML/Writer.h"
-#include "VariantValue.h"
 
 #include "OptionsFile.h"
 
