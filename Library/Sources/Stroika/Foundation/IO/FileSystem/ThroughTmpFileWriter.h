@@ -9,6 +9,7 @@
 #include <filesystem>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Time/RealTime.h"
 
 /**
  *  \file
@@ -95,6 +96,21 @@ namespace Stroika::Foundation::IO::FileSystem {
          *  to the target name. This CAN fail (in which case cleanup is handled automatically)
          */
         nonvirtual void Commit ();
+
+#if qStroika_Foundation_Common_Platform_Windows
+    public:
+        /**
+         * Sadly windows has issues with antivirus scanners. They often OPEN a file (frequently when just created like
+         * this scenario) and still have it open when we are ready to rename it. Because of flaws in windows filesystem,
+         * this then fails. OFTEN the best approach is to just wait and retry.
+         * 
+         * Do that by default, but allow for different behaviors. If fRetryOnSharingViolationFor == 0, this won't be
+         * retried.
+         */
+        optional<Time::DurationSeconds> fRetryOnSharingViolationFor;
+        static constexpr auto           kRetryOnSharingViolationFor_Default = 1s;
+        static constexpr auto           kRetryOnSharingViolationFor_Disable = 0s;
+#endif
 
     private:
         filesystem::path fRealFilePath_;
