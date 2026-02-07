@@ -475,6 +475,10 @@ namespace {
                     connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
 #endif
             }
+            virtual String GetName () const override
+            {
+                return cvt2String_ (fCollection_.name ());
+            }
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

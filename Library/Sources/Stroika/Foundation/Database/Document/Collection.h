@@ -72,6 +72,12 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
+         * returns the name of the collection
+         */
+        nonvirtual String GetName () const;
+
+    public:
+        /**
          * returns ID of object added.
          * 
          *  If connection.GetOptions ().fAddAllowsExternallySpecifiedIDs and v contains a key with kID, that id will
@@ -184,6 +190,12 @@ namespace Stroika::Foundation::Database::Document::Collection {
 
     public:
         /**
+         * returns the name of the collection
+         */
+        virtual String GetName () const = 0;
+
+    public:
+        /**
          * returns ID of object added.
          * 
          *  \alias AddNew
@@ -195,7 +207,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
          *  if not connection.GetOptions ().fAddAllowsExternallySpecifiedIDs, then
          *      \req v does not contain an ID field (it will be auto-added).
          */
-        virtual String Add (const Document& v) = 0;
+        virtual IDType Add (const Document& v) = 0;
 
     public:
         /**

@@ -379,6 +379,10 @@ namespace {
 #endif
             }
             virtual ~CollectionRep_ () = default;
+            virtual String GetName () const override
+            {
+                return fTableName_;
+            }
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

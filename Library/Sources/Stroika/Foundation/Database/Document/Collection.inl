@@ -34,6 +34,11 @@ namespace Stroika::Foundation::Database::Document::Collection {
     {
         return this->get () == nullptr;
     }
+    inline String Ptr::GetName () const
+    {
+        using namespace Characters;
+        return this->get ()->GetName ();
+    }
     inline String Ptr::ToString () const
     {
         using namespace Characters;
@@ -45,7 +50,9 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline optional<Document> Ptr::Get (const IDType& id, const optional<Projection>& projection) const
     {
-        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Getting document from atabase"sv; }};
+        using namespace Characters::Literals;
+        auto activity =
+            Execution::LazyEvalActivity{[&] () -> String { return "getting document from database collection '{}'"_f(GetName ()); }};
         Execution::DeclareActivity da{&activity};
         return this->get ()->Get (id, projection);
     }
@@ -73,7 +80,9 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline Sequence<Document> Ptr::GetAll (const optional<Filter>& filter, const optional<Projection>& projection) const
     {
-        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "Getting all matching documents from atabase"sv; }};
+        using namespace Characters::Literals;
+        auto activity = Execution::LazyEvalActivity{
+            [&] () -> String { return "getting all matching documents from database collection '{}'"_f(GetName ()); }};
         Execution::DeclareActivity da{&activity};
         return this->get ()->GetAll (filter, projection);
     }
@@ -90,7 +99,9 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline void Ptr::Replace (const IDType& id, const Document& newV) const
     {
-        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Updating document in database"sv; }};
+        using namespace Characters::Literals;
+        auto activity =
+            Execution::LazyEvalActivity{[&] () -> String { return "updating document in database collection '{}'"_f(GetName ()); }};
         Execution::DeclareActivity da{&activity};
         this->get ()->Update (id, newV, nullopt);
     }
@@ -104,19 +115,24 @@ namespace Stroika::Foundation::Database::Document::Collection {
     }
     inline void Ptr::Update (const IDType& id, const Document& newV) const
     {
-        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Updating document in database"sv; }};
+        using namespace Characters::Literals;
+        auto activity =
+            Execution::LazyEvalActivity{[&] () -> String { return "updating document in database collection '{}'"_f(GetName ()); }};
         Execution::DeclareActivity da{&activity};
         this->get ()->Update (id, newV, Set<String>{newV.Keys ()});
     }
     inline void Ptr::Update (const IDType& id, const Document& newV, const Set<String>& onlyTheseFields) const
     {
-        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Updating document in database"sv; }};
+        using namespace Characters::Literals;
+        auto activity = Execution::LazyEvalActivity{[&] () -> String { return "updating document in database collection {}"_f(GetName ()); }};
         Execution::DeclareActivity da{&activity};
         this->get ()->Update (id, newV, onlyTheseFields);
     }
     inline void Ptr::Remove (const IDType& id) const
     {
-        auto                       activity = Execution::LazyEvalActivity{[&] () -> String { return "Removing document from database"sv; }};
+        using namespace Characters::Literals;
+        auto activity =
+            Execution::LazyEvalActivity{[&] () -> String { return "removing document from database collection {}"_f(GetName ()); }};
         Execution::DeclareActivity da{&activity};
         this->get ()->Remove (id);
     }

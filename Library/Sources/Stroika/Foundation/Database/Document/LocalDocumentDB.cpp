@@ -62,6 +62,10 @@ namespace {
                 , fTableName_{collectionName}
             {
             }
+            virtual String GetName () const override
+            {
+                return fTableName_;
+            }
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -299,6 +303,10 @@ namespace {
                 , fDelegateToInMemoryDB_{delgateImplTo}
             {
             }
+            virtual String GetName () const override
+            {
+                return fName_;
+            }
             virtual IDType Add (const Document::Document& v) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -518,6 +526,10 @@ namespace {
                 , fName_{name}
                 , fCollectionRoot_{dbRep->GetCollectionFilePath_ (name)}
             {
+            }
+            virtual String GetName () const override
+            {
+                return fName_;
             }
             virtual IDType Add (const Document::Document& v) override
             {
