@@ -134,10 +134,12 @@ void ThroughTmpFileWriter::Commit ()
         }
         // Sadly this happens pretty often on Windoze, due to virus scanners. But when that is the cause, retrying
         // a little later should do the trick --LGP 2026-02-07
-        else if (we.code () == error_code{ERROR_SHARING_VIOLATION, system_category ()}) {
+        else if (we.code () == error_code{ERROR_SHARING_VIOLATION, system_category ()} or
+                 we.code () == error_code{ERROR_ACCESS_DENIED, system_category ()}) {
             auto retryLoop = [&] () {
                 if (fRetryOnSharingViolationFor != kRetryOnSharingViolationFor_Disable) {
-                    DbgTrace ("ThroughTmpFileWriter::Commit: ERROR_SHARING_VIOLATION, so retrying for {}"_f,
+                    DbgTrace ("ThroughTmpFileWriter::Commit: {}, so retrying for {}"_f,
+                              we.code ().value () == ERROR_SHARING_VIOLATION ? "ERROR_SHARING_VIOLATION"_k : "ERROR_ACCESS_DENIED"_k,
                               fRetryOnSharingViolationFor.value_or (kRetryOnSharingViolationFor_Default));
                     Time::TimePointSeconds until = Time::GetTickCount () + fRetryOnSharingViolationFor.value_or (kRetryOnSharingViolationFor_Default);
                     unsigned int nRetries = 0;

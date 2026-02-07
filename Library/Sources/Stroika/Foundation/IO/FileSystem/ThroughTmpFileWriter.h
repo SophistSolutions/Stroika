@@ -64,6 +64,10 @@ namespace Stroika::Foundation::IO::FileSystem {
      * 
      *  \note to assure no conflicts in multithreading/multiprocessing scenarios, the file is actually created by this function (empty), but
      *        not kept open.
+     * 
+     *  \todo for qStroika_Foundation_Common_Platform_Windows/fRetryOnSharingViolationFor issue/feature, maybe check ACCESS
+     *        on eventual target file on CTOR, so any real issues with access caught immediately, before we write through
+     *        tmp file
      */
     class ThroughTmpFileWriter {
     public:
@@ -106,6 +110,8 @@ namespace Stroika::Foundation::IO::FileSystem {
          * 
          * Do that by default, but allow for different behaviors. If fRetryOnSharingViolationFor == 0, this won't be
          * retried.
+         * 
+         * \note ERROR_SHARING_VIOLATION (32) and ERROR_ACCESS_DENIED (5) retried.
          */
         optional<Time::DurationSeconds> fRetryOnSharingViolationFor;
         static constexpr auto           kRetryOnSharingViolationFor_Default = 1s;
