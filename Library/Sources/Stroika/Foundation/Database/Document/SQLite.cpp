@@ -419,7 +419,8 @@ namespace {
                          */
                         if (fAddStatement_ == nullptr) [[unlikely]] {
                             if (fConnectionRep_->fAllowUserDefinedRowID_) {
-                                fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into \"{}\" (id, json) values(?,?);"_f(fTableName_)};
+                                fAddStatement_ =
+                                    MyPreparedStatement_{fConnectionRep_->fDB_, "insert into \"{}\" (id, json) values(?,?);"_f(fTableName_)};
                             }
                             else {
                                 fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into \"{}\" (json) values(?);"_f(fTableName_)};
@@ -515,7 +516,7 @@ namespace {
                         if (rc != SQLITE_DONE) [[unlikely]] {
                             ThrowSQLiteErrorIfNotOK_ (rc, fConnectionRep_->fDB_);
                         }
-                        if (includeIDInProjection) {
+                        if (includeIDInProjection and result.has_value ()) {
                             result->Add (Document::kID, id);
                         }
                         return result;
@@ -577,7 +578,7 @@ namespace {
                             MyPreparedStatement_ statement{
                                 fConnectionRep_->fDB_,
                                 "select id,{} from \"{}\" {};"_f(sqliteProjection == nullopt ? "json"_k : get<String> (*sqliteProjection), fTableName_,
-                                                             sqliteWhereClause == nullopt ? "" : ("where "_k + *sqliteWhereClause))};
+                                                                 sqliteWhereClause == nullopt ? "" : ("where "_k + *sqliteWhereClause))};
 
                             ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                             int rc;
