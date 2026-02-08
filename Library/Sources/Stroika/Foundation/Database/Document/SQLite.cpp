@@ -419,10 +419,10 @@ namespace {
                          */
                         if (fAddStatement_ == nullptr) [[unlikely]] {
                             if (fConnectionRep_->fAllowUserDefinedRowID_) {
-                                fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into {} (id, json) values(?,?);"_f(fTableName_)};
+                                fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into \"{}\" (id, json) values(?,?);"_f(fTableName_)};
                             }
                             else {
-                                fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into {} (json) values(?);"_f(fTableName_)};
+                                fAddStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "insert into \"{}\" (json) values(?);"_f(fTableName_)};
                             }
                         }
                         static const auto kJSONWriter_ = Variant::JSON::Writer{};
@@ -481,16 +481,16 @@ namespace {
                         if (sqliteProjection) {
                             // DbgTrace ("sqliteProjectionStatement:=  select {} from {} where id=?;"_f, get<String> (*sqliteProjection), fTableName_);
                             if (get<String> (*sqliteProjection).empty ()) {
-                                sqliteProjectionStatement.emplace (fConnectionRep_->fDB_, "select NULL from {} where id=?;"_f(fTableName_));
+                                sqliteProjectionStatement.emplace (fConnectionRep_->fDB_, "select NULL from \"{}\" where id=?;"_f(fTableName_));
                                 ignoreResult = true;
                             }
                             else {
                                 sqliteProjectionStatement.emplace (
-                                    fConnectionRep_->fDB_, "select {} from {} where id=?;"_f(get<String> (*sqliteProjection), fTableName_));
+                                    fConnectionRep_->fDB_, "select {} from \"{}\" where id=?;"_f(get<String> (*sqliteProjection), fTableName_));
                             }
                         }
                         else if (fGetOneStatement_ == nullptr) [[unlikely]] {
-                            fGetOneStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "select json from {} where id=?;"_f(fTableName_)};
+                            fGetOneStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "select json from \"{}\" where id=?;"_f(fTableName_)};
                         }
                         ::sqlite3_stmt* useStatment = sqliteProjectionStatement.has_value () ? *sqliteProjectionStatement : fGetOneStatement_;
                         AssertNotNull (useStatment);
@@ -533,7 +533,7 @@ namespace {
                         // Optimize some important special cases
                         Sequence<Document::Document> result;
                         if (filter == nullopt and projection == nullopt) {
-                            MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id,json from {};"_f(fTableName_)};
+                            MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id,json from \"{}\";"_f(fTableName_)};
                             ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                             int rc;
                             while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
@@ -550,7 +550,7 @@ namespace {
                             }
                         }
                         else if (filter == nullopt and projection == kOnlyIDs) {
-                            MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id from {};"_f(fTableName_)};
+                            MyPreparedStatement_ statement{fConnectionRep_->fDB_, "select id from \"{}\";"_f(fTableName_)};
                             ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                             int rc;
                             while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
@@ -576,7 +576,7 @@ namespace {
 
                             MyPreparedStatement_ statement{
                                 fConnectionRep_->fDB_,
-                                "select id,{} from {} {};"_f(sqliteProjection == nullopt ? "json"_k : get<String> (*sqliteProjection), fTableName_,
+                                "select id,{} from \"{}\" {};"_f(sqliteProjection == nullopt ? "json"_k : get<String> (*sqliteProjection), fTableName_,
                                                              sqliteWhereClause == nullopt ? "" : ("where "_k + *sqliteWhereClause))};
 
                             ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
@@ -623,7 +623,7 @@ namespace {
                         d2Update.RemoveIf (Document::kID); // never write this to the JSON
 
                         if (fUpdateStatement_ == nullptr) [[unlikely]] {
-                            fUpdateStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "update {} SET json=? where id=?;"_f(fTableName_)};
+                            fUpdateStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "update \"{}\" SET json=? where id=?;"_f(fTableName_)};
                         }
                         static const auto kJSONWriter_ = Variant::JSON::Writer{};
                         string            r            = kJSONWriter_.WriteAsString (VariantValue{d2Update}).AsUTF8<string> ();
@@ -648,7 +648,7 @@ namespace {
 #endif
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
                 if (fRemoveStatement_ == nullptr) [[unlikely]] {
-                    fRemoveStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "delete from {} where id=?;"_f(fTableName_)};
+                    fRemoveStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "delete from \"{}\" where id=?;"_f(fTableName_)};
                 }
                 fConnectionRep_->WrapExecute_ (
                     [&] () {
@@ -837,10 +837,10 @@ namespace {
                 [&] () {
                     // NOTE - the ID is stored OUTSIDE of the json, and never INSIDE the json object
                     if (fAllowUserDefinedRowID_) {
-                        Exec ("create table if not exists {} (id TEXT PRIMARY KEY, json NOT NULL) WITHOUT ROWID;"_f(name));
+                        Exec ("create table if not exists \"{}\" (id TEXT PRIMARY KEY, json NOT NULL) WITHOUT ROWID;"_f(name));
                     }
                     else {
-                        Exec ("create table if not exists {} (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
+                        Exec ("create table if not exists \"{}\" (id INTEGER PRIMARY KEY, json NOT NULL);"_f(name));
                     }
                     return Document::Collection::Ptr{
                         Memory::MakeSharedPtr<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
@@ -849,7 +849,7 @@ namespace {
         }
         virtual void DropCollection (const String& name) override
         {
-            WrapExecute_ ([&] () { Exec ("drop table {};"_f(name)); }, name, true);
+            WrapExecute_ ([&] () { Exec ("drop table \"{}\";"_f(name)); }, name, true);
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
