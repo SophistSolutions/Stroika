@@ -32,7 +32,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         return fPrecision_.value_or (numeric_limits<T>::max_digits10);
     }
-    constexpr unsigned int Precision::CalculatePrecision (span<const char> number)
+    template <IStdBasicStringCompatibleCharacter CHAR>
+    constexpr unsigned int Precision::CalculatePrecision (span<const CHAR> number)
     {
         bool         leading = true;
         unsigned int n{};
