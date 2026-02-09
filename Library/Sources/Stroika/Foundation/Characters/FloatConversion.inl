@@ -43,7 +43,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (leadingZeros and c == '0') {
                 continue; // leading zeros don't contribute to precision
             }
-            leadingZeros = false;
             if (c == '.') {
                 seenDot                 = true;
                 nTrailingZerosBeforeDot = 0;
@@ -52,6 +51,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (c == '+' or c == '-') {
                 continue;
             }
+            leadingZeros = false;
             if (not seenDot and c == '0') {
                 n++;
                 nTrailingZerosBeforeDot++;
@@ -461,7 +461,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
 
             // For some conversions, builtin API produces too much precision and we must check and downgrade precision
-            [[maybe_unused]] bool adjustPrecisionDown = true;
+            [[maybe_unused]] bool adjustPrecisionDown = false;
             FloatFormatType       usingFormat         = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
             {
                 switch (usingFormat) {
@@ -479,9 +479,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         s.precision (usePrecision); // I think wrong but test -
                         break;
                     case FloatFormatType::eStandard:
-                        // wrong but for now treat as eDefaultFloat
-                        s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
-                        s.precision (usePrecision);
+                        // not sure how to disable 'exp' notation EXCEPT to use fixed. But it does a terrible job with precision.
+                        // So patch the precision
+                        s.setf (ios_base::fixed, ios_base::floatfield);
+                        s.precision (usePrecision + 10);    // WAG how much to increase by
+                        adjustPrecisionDown = true;
                         break;
                     case FloatFormatType::eAutomaticScientific: {
                         s.precision (usePrecision);
@@ -504,9 +506,24 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             s << f;
             string ss = s.str ();
+
             if (adjustPrecisionDown) {
                 [[maybe_unused]] unsigned int actualPrecision = Precision::CalculatePrecision (span<const char>{ss});
                 if (actualPrecision > usePrecision) {
+                    size_t expStartsAt = ss.find ('e');
+                    if (expStartsAt == string::npos) {
+                        expStartsAt = ss.find ('E');
+                    }
+                    if (expStartsAt == string::npos) {
+                        // the easy case
+                        size_t n2Remove = actualPrecision-usePrecision;
+                        ss.erase (ss.begin () + n2Remove);
+                        Assert (usePrecision == Precision::CalculatePrecision (span<const char>{ss}));
+                    }
+                    else {
+                        AssertNotImplemented ();
+                    }
+
                 }
             }
 

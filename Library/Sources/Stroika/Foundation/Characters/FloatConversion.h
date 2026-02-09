@@ -143,14 +143,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *  zeros. So basically string length, minus 1 for '.', minus 1 for any leading +-, minus any characters in exponential
          *  specifier:
          * 
-         *      "3.01"      =>      3
-         *      "03.01"     =>      3
-         *      "-44.21"    =>      4
-         *      "+44.21"    =>      4
-         *      "-44.21e2"  =>      4
-         *      "400"       =>      1
-         *      "400."      =>      3
-         *      "400.0"     =>      4
+         *      "3.01"              =>      3
+         *      "03.01"             =>      3
+         *      "-44.21"            =>      4
+         *      "+44.21"            =>      4
+         *      "-44.21e2"          =>      4
+         *      "400"               =>      1
+         *      "400."              =>      3
+         *      "400.0"             =>      4
+         *      "0.0000001234567"   =>      7
          */
         template <IStdBasicStringCompatibleCharacter CHAR>
         static constexpr unsigned int CalculatePrecision (span<const CHAR> number);
@@ -175,7 +176,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      */
     enum class FloatFormatType {
         eScientific,
+
+        /**
+         *  not scientific (no e+nn), but otherwise like fixed point or default.
+         * 
+         *  For example:
+         *      o   3.12
+         *      o   212312345
+         *      o   -44.2
+         *      o   0.0000001234567
+         */
         eStandard,
+
         eDefaultFloat,
         eFixedPoint,
         eAutomaticScientific,
