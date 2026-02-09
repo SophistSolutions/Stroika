@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
             leadingZeros = false;
             if (c == '.') {
-                seenDot = true;
+                seenDot                 = true;
                 nTrailingZerosBeforeDot = 0;
                 continue;
             }
