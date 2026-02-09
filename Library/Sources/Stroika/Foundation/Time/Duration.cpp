@@ -479,9 +479,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
             using namespace FloatConversion;
-            // unclear which todo? -- REVIEW
-            // result += FloatConversion::ToString (timeLeft, ToStringOptions{p, eFixedPoint, eTrimZeros});
-            result += FloatConversion::ToString (timeLeft, ToStringOptions{p, eTrimZeros});
+            result += FloatConversion::ToString (timeLeft, ToStringOptions{p, eStandard, eTrimZeros});
             result += "S"sv;
         }
     }
