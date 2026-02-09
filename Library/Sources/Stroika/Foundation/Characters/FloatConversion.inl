@@ -422,37 +422,44 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             //  must set explicitly (even if defaulted)  because of the thread_local thing
             s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
-            // todo must set default precision because of the thread_local thing
+            // todo must set default precision because of the thread_local stream
             unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
-            s.precision (usePrecision);
 
             {
-                optional<ios_base::fmtflags> useFloatField;
                 switch (options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT)) {
                     case FloatFormatType::eScientific:
-                        useFloatField = ios_base::scientific;
+                        s.setf (ios_base::scientific, ios_base::floatfield);
+                        s.precision (usePrecision); // @todo fix - I think off by one?
                         break;
                     case FloatFormatType::eDefaultFloat:
+                        s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
+                        s.precision (usePrecision);
                         break;
                     case FloatFormatType::eFixedPoint:
-                        useFloatField = ios_base::fixed;
+                        s.setf (ios_base::fixed, ios_base::floatfield);
+                        s.precision (usePrecision); // I think wrong but test -
+                        break;
+                    case FloatFormatType::eStandard:
+                        // wrong but for now treat as eDefaultFloat
+                        s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
+                        s.precision (usePrecision);
                         break;
                     case FloatFormatType::eAutomaticScientific: {
+                        s.precision (usePrecision);
                         bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
                                                      (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                         if (useScientificNotation) {
-                            useFloatField = ios_base::scientific;
+                            s.setf (ios_base::scientific, ios_base::floatfield);
+                        }
+                        else {
+                            //FloatFormatType::eDefaultFloat
+                            s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
+                            s.precision (usePrecision);
                         }
                     } break;
                     default:
                         RequireNotReached ();
                         break;
-                }
-                if (useFloatField) {
-                    s.setf (*useFloatField, ios_base::floatfield);
-                }
-                else {
-                    s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
                 }
             }
 

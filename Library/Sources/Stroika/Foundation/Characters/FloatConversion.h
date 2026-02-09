@@ -149,6 +149,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * will show as '1e-7', but 4 will show as '4'
      *
      *      eScientific corresponds to ios_base::scientific
+     *      eStandard - not scientific (no e+nn), but otherwise like scientific.
      *      eFixedPoint corresponds to ios_base::fixed (numbers are displayed without an exponent part, not actually fixed with display)
      *      eDefaultFloat corresponds to unsetf (floatfield) - which may be different than scientific or fixed point
      *      eAutomaticScientific - auto-select eScientific/eFixedPoint based on how big the number is, and the argument precision (could do with
@@ -156,6 +157,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      */
     enum class FloatFormatType {
         eScientific,
+        eStandard,
         eDefaultFloat,
         eFixedPoint,
         eAutomaticScientific,
@@ -168,6 +170,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     using FloatFormatType::eDefaultFloat;
     using FloatFormatType::eFixedPoint;
     using FloatFormatType::eScientific;
+    using FloatFormatType::eStandard;
 
     /**
      *  These are options for the FloatConversion::ToString () function
