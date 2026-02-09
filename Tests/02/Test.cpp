@@ -947,11 +947,14 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"CalculatePrecision_"};
         using namespace FloatConversion;
-        EXPECT_EQ (Precision::CalculatePrecision ("3.01"sv), 3);
-        EXPECT_EQ (Precision::CalculatePrecision ("03.01"sv), 3);
-        EXPECT_EQ (Precision::CalculatePrecision ("-44.21"sv), 4);
-        EXPECT_EQ (Precision::CalculatePrecision ("+44.21"sv), 4);
-        EXPECT_EQ (Precision::CalculatePrecision ("-44.21e2"sv), 4);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"3.01"sv}), 3);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"03.01"sv}), 3);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"-44.21"sv}), 4);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"+44.21"sv}), 4);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"-44.21e2"sv}), 4);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"400"sv}), 1);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"400."sv}), 3);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"400.0"sv}), 4);
     }
 }
 
