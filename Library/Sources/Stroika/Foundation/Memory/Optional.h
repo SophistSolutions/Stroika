@@ -125,9 +125,9 @@ namespace Stroika::Foundation::Memory {
      *  @todo CONSIDER overload where first arg is not ptr (by value) and result is written to return value
      */
     template <typename T, typename CONVERTABLE_TO_TYPE>
-    void CopyToIf (CONVERTABLE_TO_TYPE* to, const optional<T>& copyFromIfHasValue);
+    constexpr void CopyToIf (CONVERTABLE_TO_TYPE* to, const optional<T>& copyFromIfHasValue);
     template <typename T, typename CONVERTABLE_TO_OPTIONAL_OF_TYPE>
-    void CopyToIf (optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to, const optional<T>& copyFromIfHasValue);
+    constexpr void CopyToIf (optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to, const optional<T>& copyFromIfHasValue);
 
     namespace Private_ {
         template <typename T>

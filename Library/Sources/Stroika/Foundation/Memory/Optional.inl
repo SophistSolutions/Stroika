@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, typename CONVERTABLE_TO_TYPE>
-    inline void CopyToIf (CONVERTABLE_TO_TYPE* to, const optional<T>& copyFromIfHasValue)
+    constexpr void CopyToIf (CONVERTABLE_TO_TYPE* to, const optional<T>& copyFromIfHasValue)
     {
         if (copyFromIfHasValue) {
             // explicit cast to silence compiler warnings - use of CopyToIf() is fairly explicit about doing the needed conversions and
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, typename CONVERTABLE_TO_OPTIONAL_OF_TYPE>
-    inline void CopyToIf (optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to, const optional<T>& copyFromIfHasValue)
+    constexpr void CopyToIf (optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to, const optional<T>& copyFromIfHasValue)
     {
         if (copyFromIfHasValue) {
             // explicit cast to silence compiler warnings - use of CopyToIf() is fairly explicit about doing the needed conversions and
