@@ -1146,6 +1146,22 @@ namespace {
         {
             EXPECT_EQ (String2Int ("0587:c413:5500:0000:0000:0000:0001]:60000"), 0);
         }
+
+        {
+            using namespace FloatConversion;
+            static const ToStringOptions kFixedPt3_ = ToStringOptions{Precision{3}, eFixedPoint, eDontTrimZeros};
+            EXPECT_EQ (FloatConversion::ToString (3.0, kFixedPt3_), "3.000");
+            EXPECT_EQ (FloatConversion::ToString (3.1, kFixedPt3_), "3.100");
+            EXPECT_EQ (FloatConversion::ToString (3.1241, kFixedPt3_), "3.124");
+            EXPECT_EQ (FloatConversion::ToString (.00331241, kFixedPt3_), "0.003");
+            EXPECT_EQ (FloatConversion::ToString (.000331241, kFixedPt3_), "0.000");
+            static const ToStringOptions kFixedPt3WithTrim_ = ToStringOptions{kFixedPt3_, eTrimZeros};
+            EXPECT_EQ (FloatConversion::ToString (3.0, kFixedPt3WithTrim_), "3");
+            EXPECT_EQ (FloatConversion::ToString (3.1, kFixedPt3WithTrim_), "3.1");
+            EXPECT_EQ (FloatConversion::ToString (3.1241, kFixedPt3WithTrim_), "3.124");
+            EXPECT_EQ (FloatConversion::ToString (.00331241, kFixedPt3WithTrim_), "0.003");
+            EXPECT_EQ (FloatConversion::ToString (.000331241, kFixedPt3WithTrim_), "0");
+        }
     }
 }
 
@@ -1210,13 +1226,11 @@ namespace {
 #if __cpp_lib_to_chars >= 201611
             EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3.72409e+06");
             EXPECT_EQ (FloatConversion::ToString (44905.3, FloatConversion::Precision{6}), "44905.3");
-
 #else
             String t = FloatConversion::ToString (3724089.418996166);
             EXPECT_EQ (t.length (), 11); // 6 digits of precision, plus '.' and 'e+06'
             EXPECT_TRUE (t.StartsWith ("3.724"));
             EXPECT_TRUE (t.EndsWith ("e+06"));
-
             t = FloatConversion::ToString (44905.3);
             DbgTrace ("t={}"_f, t);
 #endif

@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         {
             // @todo THIS could be more efficient. We should KNOW case of the 'e' and maybe able to tell/avoid looking based on args to String2Float
             RequireNotNull (strResult);
-            // strip trailing zeros - except for the last first one after the decimal point.
+            // strip trailing zeros - except for the first one after the decimal point.
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
             bool hasE = strResult->Find ('e', eCaseInsensitive).has_value ();
             //Assert (hasE == (strResult->find ('e') != String::npos or strResult->find ('E') != String::npos));
@@ -141,6 +141,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         if ((*strResult)[pPastLastZero - 1] != '0') {
                             break;
                         }
+                    }
+                    if (pPastLastZero == pastDot + 1 and (*strResult)[pPastLastZero - 1] == '0') {
+                        pPastLastZero -= 2; // dont map 3.000 to 3.0, map it to 3
                     }
                     if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
                         *strResult = strResult->SubString (0, pPastLastZero);
