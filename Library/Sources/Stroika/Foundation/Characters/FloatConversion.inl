@@ -429,7 +429,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 switch (options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT)) {
                     case FloatFormatType::eScientific:
                         s.setf (ios_base::scientific, ios_base::floatfield);
-                        s.precision (usePrecision); // @todo fix - I think off by one?
+                        Assert (usePrecision >= 2);
+                        s.precision (usePrecision - 1);
                         break;
                     case FloatFormatType::eDefaultFloat:
                         s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed

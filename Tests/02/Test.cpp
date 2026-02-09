@@ -949,25 +949,26 @@ namespace {
         using namespace FloatConversion;
         {
             // From https://en.cppreference.com/w/cpp/io/manip/fixed.html
-            //    │ 0.0      │ fixed      │ 0.000000                 │
             //    │ 0.0      │ scientific │ 0.000000e+00             │
-            //    │ 0.0      │ default    │ 0
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.000000");
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eScientific}), "0.000000e+00");
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "0");
-            // From https://en.cppreference.com/w/cpp/io/manip/fixed.html
-            //      0.01     │ fixed      │ 0.010000                 │
             //    │ 0.01     │ scientific │ 1.000000e-02             │
-            //    │ 0.01     │ default    │ 0.01                  
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.010000");
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eScientific}), "1.000000e-02");
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "0.01");
-            // From https://en.cppreference.com/w/cpp/io/manip/fixed.html
-            //      0.00001  │ fixed      │ 0.000010                 │
             //    │ 0.00001  │ scientific │ 1.000000e-05             │
-            //    │ 0.00001  │ default    │ 1e-05                 
+            // Note - using default Precision (6), but interpretting it as number of significant figures so we emit different strings
+            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eScientific}), "0.00000e+00");
+            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-02");
+            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-05");
+            // From https://en.cppreference.com/w/cpp/io/manip/fixed.html
+            //    │ 0.0      │ fixed      │ 0.000000                 │
+            //      0.01     │ fixed      │ 0.010000                 │
+            //      0.00001  │ fixed      │ 0.000010                 │
+            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.000000");
+            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.010000");
             EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.000010");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eScientific}), "1.000000e-05");
+            // From https://en.cppreference.com/w/cpp/io/manip/fixed.html
+            //    │ 0.0      │ default    │ 0
+            //    │ 0.01     │ default    │ 0.01                  
+            //    │ 0.00001  │ default    │ 1e-05                 
+            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "0.01");
+            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "0");
             EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "1e-05");
         }
         // more tests...
