@@ -448,7 +448,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
     if (timeLeft >= kSecondsPerDay_) {
         unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay_);
         if (nDays != 0) {
-            qStroika_Foundation_ATTRIBUTE_INDETERMINATE  char buf[1024];
+            qStroika_Foundation_ATTRIBUTE_INDETERMINATE char buf[1024];
             (void)::snprintf (buf, sizeof (buf), "%dD", nDays);
             result += buf;
             timeLeft -= nDays * kSecondsPerDay_;
