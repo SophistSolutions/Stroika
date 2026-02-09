@@ -177,6 +177,9 @@ namespace Stroika::Foundation::Time {
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 
          *      \note Stroika v2.1 also supported wstring, which was (tentatively) de-supported in Stroika v3.0d5
+         * 
+         *  \note No exponential numerical format is generated (though it is read). This IS supported in ISO 8601 in Part 2,
+         *        but not the original ISO 8601, and the luxon JS library (probably among others) doesn't support it.
          */
         template <typename T>
         nonvirtual T As () const
