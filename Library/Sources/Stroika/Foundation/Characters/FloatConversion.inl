@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrimZeros}
     {
     }
-    inline ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
+    constexpr ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
         : ToStringOptions{b1}
     {
         Memory::CopyToIf (&fPrecision_, b2.fPrecision_);
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         Memory::CopyToIf (&fFloatFormat_, b2.fFloatFormat_);
     }
     template <typename... ARGS>
-    inline ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args)
+    constexpr ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args)
         : ToStringOptions{ToStringOptions{b1, b2}, forward<ARGS> (args)...}
     {
     }

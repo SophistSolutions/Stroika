@@ -192,9 +192,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr ToStringOptions (Precision precision);
         constexpr ToStringOptions (FloatFormatType floatFormat);
         constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
-        ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
+        constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
         template <typename... ARGS>
-        ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
+        constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
 
     public:
         nonvirtual optional<Precision> GetPrecision () const;
