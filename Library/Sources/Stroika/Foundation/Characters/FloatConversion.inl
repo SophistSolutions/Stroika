@@ -35,6 +35,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     /**
+     *      From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
+     *      init (basic_streambuf...) initializes precision to 6
+     *      Stroika need not maintain that default here, but it seems a sensible one...
+     * 
+     *  \note defined here instead of header cuz needs to be after Precision::CTOR.
+     */
+    constexpr inline Precision Precision::kDefault{6};
+
+    /**
      *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
      *         you get the exact same answer.
      * 
@@ -89,11 +98,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : ToStringOptions{ToStringOptions{b1, b2}, forward<ARGS> (args)...}
     {
     }
-    inline optional<Precision> ToStringOptions::GetPrecision () const
+    constexpr optional<Precision> ToStringOptions::GetPrecision () const
     {
         return fPrecision_;
     }
-    inline optional<bool> ToStringOptions::GetTrimTrailingZeros () const
+    constexpr optional<bool> ToStringOptions::GetTrimTrailingZeros () const
     {
         return fTrimTrailingZeros_;
     }
@@ -115,11 +124,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return GetUseLocale () == locale::classic ();
     }
-    inline optional<FloatFormatType> ToStringOptions::GetFloatFormat () const
+    constexpr optional<FloatFormatType> ToStringOptions::GetFloatFormat () const
     {
         return fFloatFormat_;
     }
-    inline optional<ios_base::fmtflags> ToStringOptions::GetIOSFmtFlags () const
+    constexpr optional<ios_base::fmtflags> ToStringOptions::GetIOSFmtFlags () const
     {
         return fFmtFlags_;
     }
@@ -129,10 +138,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         {
             // @todo THIS could be more efficient. We should KNOW case of the 'e' and maybe able to tell/avoid looking based on args to String2Float
             RequireNotNull (strResult);
-            // strip trailing zeros - except for the first one after the decimal point.
+            // strip trailing zeros (after decimal point - before they may indicate magnatude)
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
             bool hasE = strResult->Find ('e', eCaseInsensitive).has_value ();
-            //Assert (hasE == (strResult->find ('e') != String::npos or strResult->find ('E') != String::npos));
             if (not hasE) {
                 size_t pastDot = strResult->find ('.');
                 if (pastDot != String::npos) {
@@ -583,62 +591,22 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ************************** FloatConversion::ToString ***************************
      ********************************************************************************
      */
-    template <>
-    inline String ToString (float f, const ToStringOptions& options)
+    template <Common::IAnyOf<String, string, wstring> STRING_TYPE , floating_point FLOAT_TYPE>
+    inline STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options )
     {
-        return Private_::ToString_String_Implementation_ (f, options);
-    }
-    template <>
-    inline String ToString (double f, const ToStringOptions& options)
-    {
-        return Private_::ToString_String_Implementation_ (f, options);
-    }
-    template <>
-    inline String ToString (long double f, const ToStringOptions& options)
-    {
-        return Private_::ToString_String_Implementation_ (f, options);
-    }
-    template <>
-    inline string ToString (float f, const ToStringOptions& options)
-    {
-        // @todo improve performance for this case
-        Require (options.GetUsingLocaleClassic ());
-        return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
-    }
-    template <>
-    inline string ToString (double f, const ToStringOptions& options)
-    {
-        // @todo improve performance for this case
-        Require (options.GetUsingLocaleClassic ());
-        return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
-    }
-    template <>
-    inline string ToString (long double f, const ToStringOptions& options)
-    {
-        // @todo improve performance for this case
-        Require (options.GetUsingLocaleClassic ());
-        return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
-    }
-    template <>
-    inline wstring ToString (float f, const ToStringOptions& options)
-    {
-        // @todo improve performance for this case
-        Require (options.GetUsingLocaleClassic ());
-        return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
-    }
-    template <>
-    inline wstring ToString (double f, const ToStringOptions& options)
-    {
-        // @todo improve performance for this case
-        Require (options.GetUsingLocaleClassic ());
-        return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
-    }
-    template <>
-    inline wstring ToString (long double f, const ToStringOptions& options)
-    {
-        // @todo improve performance for this case
-        Require (options.GetUsingLocaleClassic ());
-        return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
+        if constexpr (same_as<STRING_TYPE,String>) {
+            return Private_::ToString_String_Implementation_ (f, options);
+        }
+        else if constexpr (same_as<STRING_TYPE,string>) {
+            // @todo improve performance for this case
+            Require (options.GetUsingLocaleClassic ());
+            return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
+        }
+        else if constexpr (same_as<STRING_TYPE,wstring>) {
+            // @todo improve performance for this case
+            Require (options.GetUsingLocaleClassic ());
+            return Private_::ToString_String_Implementation_ (f, options).template As<wstring> ();
+        }
     }
 
     /*

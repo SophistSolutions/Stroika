@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *      3) ...string representation consists of ... and parsing the representation using the corresponding std::from_chars function recovers value exactly ...
      * 
-     * TODO
+     * TODO:
      *      @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
      *              correct.
      *
@@ -82,9 +82,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     public:
         /**
          *  Precision ()/0
-         *      From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,
-         *      init (basic_streambuf...) initializes precision to 6
-         *      Stroika need not maintain that default here, but it seems a sensible one...
+         *      Same as kDefault: 6
          *  Precision(FullFlag): 
          *      special magic value, so depending on type 'T' in call to GetEffectivePrecision () - gets full precision for that type
          */
@@ -93,7 +91,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr Precision (FullFlag);
 
     public:
-        bool operator== (const Precision&) const = default;
+        constexpr bool operator== (const Precision&) const = default;
 
     public:
         /**
@@ -125,6 +123,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         nonvirtual String ToString () const;
 
     public:
+        static const Precision kDefault;
+
+    public:
         static const Precision kFull;
 
     private:
@@ -139,8 +140,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * will show as '1e-7', but 4 will show as '4'
      *
      *      eScientific corresponds to ios_base::scientific
-     *      eFixedPoint corresponds to ios_base::fixed
+     *      eFixedPoint corresponds to ios_base::fixed (numbers are displayed without an exponent part, not actually fixed with display)
      *      eDefaultFloat corresponds to unsetf (floatfield) - which may be different than scientific or fixed point
+     *      eAutomaticScientific - auto-select eScientific/eFixedPoint based on how big the number is, and the argument precision (could do with
+     *                             better clarification here)
      */
     enum class FloatFormatType {
         eScientific,
@@ -189,10 +192,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
 
     public:
-        nonvirtual optional<Precision> GetPrecision () const;
+        constexpr optional<Precision> GetPrecision () const;
 
     public:
-        nonvirtual optional<bool> GetTrimTrailingZeros () const;
+        constexpr optional<bool> GetTrimTrailingZeros () const;
 
     public:
         /**
@@ -209,10 +212,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         nonvirtual bool GetUsingLocaleClassic () const;
 
     public:
-        nonvirtual optional<FloatFormatType> GetFloatFormat () const;
+        constexpr optional<FloatFormatType> GetFloatFormat () const;
 
     public:
-        nonvirtual optional<ios_base::fmtflags> GetIOSFmtFlags () const;
+        constexpr optional<ios_base::fmtflags> GetIOSFmtFlags () const;
 
     public:
         static constexpr bool kDefaultTrimTrailingZeros{true};
@@ -252,27 +255,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      o   wstring
      *      o           ... but this could sensibly be extended in the future
      */
-    template <typename STRING_TYPE = String, floating_point FLOAT_TYPE = float>
+    template <Common::IAnyOf<String, string, wstring> STRING_TYPE = String, floating_point FLOAT_TYPE = float>
     STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options = {});
-
-    template <>
-    String ToString (float f, const ToStringOptions& options);
-    template <>
-    String ToString (double f, const ToStringOptions& options);
-    template <>
-    String ToString (long double f, const ToStringOptions& options);
-    template <>
-    string ToString (float f, const ToStringOptions& options);
-    template <>
-    string ToString (double f, const ToStringOptions& options);
-    template <>
-    string ToString (long double f, const ToStringOptions& options);
-    template <>
-    wstring ToString (float f, const ToStringOptions& options);
-    template <>
-    wstring ToString (double f, const ToStringOptions& options);
-    template <>
-    wstring ToString (long double f, const ToStringOptions& options);
 
     /**
      *  ToFloat all overloads:
