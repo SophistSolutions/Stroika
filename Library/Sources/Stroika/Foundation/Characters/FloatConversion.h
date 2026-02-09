@@ -137,6 +137,20 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     public:
         static const Precision kFull;
 
+    public:
+        /**
+         *  Calculate the precision - number of significant digits - in the given number. For this purpose, count trailing
+         *  zeros. So basically string length, minus 1 for '.', minus 1 for any leading +-, minus any characters in exponential
+         *  specifier:
+         * 
+         *      "3.01"      =>      3
+         *      "03.01"     =>      3
+         *      "-44.21"    =>      4
+         *      "+44.21"    =>      4
+         *      "-44.21e2"  =>      4
+         */
+        static constexpr unsigned int CalculatePrecision (span<const char> number);
+
     private:
         /**
          *  Internally treat fPrecision_ as meaning kFull

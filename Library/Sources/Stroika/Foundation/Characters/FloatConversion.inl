@@ -32,6 +32,28 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         return fPrecision_.value_or (numeric_limits<T>::max_digits10);
     }
+    constexpr unsigned int Precision::CalculatePrecision (span<const char> number)
+    {
+        bool         leading = true;
+        unsigned int n{};
+        for (const char c : number) {
+            if (c == '.') {
+                continue;
+            }
+            if (c == '+' or c == '-') {
+                continue;
+            }
+            if (leading and c == '0') {
+                continue; // leading zeros don't contribute to precision
+            }
+            leading = false;
+            if (c == 'e' or c == 'E') {
+                break; // ignore anything after the start of the exponent part
+            }
+            ++n;
+        }
+        return n;
+    }
 
     /**
      *      From http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf,

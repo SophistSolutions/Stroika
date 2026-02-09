@@ -943,6 +943,19 @@ namespace {
 }
 
 namespace {
+    GTEST_TEST (Foundation_Characters, CalculatePrecision_)
+    {
+        Debug::TraceContextBumper ctx{"CalculatePrecision_"};
+        using namespace FloatConversion;
+        EXPECT_EQ (Precision::CalculatePrecision ("3.01"sv), 3);
+        EXPECT_EQ (Precision::CalculatePrecision ("03.01"sv), 3);
+        EXPECT_EQ (Precision::CalculatePrecision ("-44.21"sv), 4);
+        EXPECT_EQ (Precision::CalculatePrecision ("+44.21"sv), 4);
+        EXPECT_EQ (Precision::CalculatePrecision ("-44.21e2"sv), 4);
+    }
+}
+
+namespace {
     GTEST_TEST (Foundation_Characters, Basic_FloatConversion_ToString_)
     {
         Debug::TraceContextBumper ctx{"Basic_FloatConversion_ToString_"};
