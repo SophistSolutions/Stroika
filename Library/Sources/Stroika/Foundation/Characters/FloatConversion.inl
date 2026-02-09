@@ -591,18 +591,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ************************** FloatConversion::ToString ***************************
      ********************************************************************************
      */
-    template <Common::IAnyOf<String, string, wstring> STRING_TYPE , floating_point FLOAT_TYPE>
-    inline STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options )
+    template <Common::IAnyOf<String, string, wstring> STRING_TYPE, floating_point FLOAT_TYPE>
+    inline STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options)
     {
-        if constexpr (same_as<STRING_TYPE,String>) {
+        if constexpr (same_as<STRING_TYPE, String>) {
             return Private_::ToString_String_Implementation_ (f, options);
         }
-        else if constexpr (same_as<STRING_TYPE,string>) {
+        else if constexpr (same_as<STRING_TYPE, string>) {
             // @todo improve performance for this case
             Require (options.GetUsingLocaleClassic ());
             return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
         }
-        else if constexpr (same_as<STRING_TYPE,wstring>) {
+        else if constexpr (same_as<STRING_TYPE, wstring>) {
             // @todo improve performance for this case
             Require (options.GetUsingLocaleClassic ());
             return Private_::ToString_String_Implementation_ (f, options).template As<wstring> ();
