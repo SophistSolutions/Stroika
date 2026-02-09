@@ -24,22 +24,24 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
     }
     constexpr Precision::Precision (FullFlag)
-        : fPrecision_{}
+        : fPrecision_{} // kFull
     {
     }
     template <floating_point T>
     constexpr unsigned int Precision::GetEffectivePrecision () const
     {
-        // note missing implies eFull
         // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
         return fPrecision_.value_or (numeric_limits<T>::max_digits10);
     }
+
     /**
      *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
      *         you get the exact same answer.
      * 
      *  \see  // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
      *        numeric_limits<T>::max_digits10
+     * 
+     *  \note defined here instead of header cuz needs to be after Precision::CTOR.
      */
     constexpr inline Precision Precision::kFull{Precision::FullFlag::eFull};
 

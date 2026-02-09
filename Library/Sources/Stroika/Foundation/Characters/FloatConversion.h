@@ -15,18 +15,8 @@
 
 /**
  * TODO:
- *      @todo   REDO the FromFloat code with span/modern C++ the way I did the ToFloat code
- * 
  *      @todo   ToFloat code needs OPTIONS optional argument, to support locales etc.
  * 
- *      @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
- *              correct.
- *
- *              using PrecisionType = uint16_t;
- *
- *      @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
- *              which is the number of decimals after the decimal point.
- *
  *      @todo   Then maybe we can lose ios::format_flags option (maybe keep as ARG, but just grab these fields). Maybe name OK as is, but
  *              just add option for "FIXEDWIDTH", and keep idea of changeing backended arg for ios_flags...
  */
@@ -34,8 +24,9 @@
 namespace Stroika::Foundation::Characters::FloatConversion {
 
     /**
-     * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. Sometimes desirable (to show precision).
-     * But often not.
+     * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. 
+     * 
+     * Sometimes eDontTrimZeros desirable (to show precision): but often not.
      */
     enum class TrimTrailingZerosType {
         eTrimZeros,
@@ -70,15 +61,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *      3) ...string representation consists of ... and parsing the representation using the corresponding std::from_chars function recovers value exactly ...
      * 
-     * &&& docs below obsolete - CLEANUP but review first: right answer I think in https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
-     * 
-     *  Somehow, using digits10, or digits10-1, doesn't appear to really work. Sometimes on some systems for some values. But doesn't appear clearly
-     *  documented to work as above on the to_chars function description --LGP 2024-07-12
-            // From https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
-            //  The value of std::numeric_limits<T>::digits10 is the number of base-10 digits that can be represented by the type T without change,
-            //  that is, any number with this many significant decimal digits can be converted to a value of type T and back to decimal form,
-            //  without change due to rounding or overflow. For base-radix types, it is the value of digits() (digits - 1 for floating-point types)
-            //  multiplied by log 10 radix and rounded down.
+     * TODO
+     *      @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
+     *              correct.
+     *
+     *              using PrecisionType = uint16_t;
+     *
+     *      @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
+     *              which is the number of decimals after the decimal point.
      */
     struct Precision {
     public:
@@ -138,7 +128,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         static const Precision kFull;
 
     private:
-        // if missing, implies == kFull
+        /**
+         *  Internally treat fPrecision_ as meaning kFull
+         */
         optional<unsigned int> fPrecision_{6};
     };
 
