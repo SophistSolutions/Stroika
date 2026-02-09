@@ -53,15 +53,23 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *  This is used for specifying how to format floating point numbers.
      * 
+     *  \note - This DIFFERS from the iostream library where :
+     *      Its exact meaning depends on whether the stream is using the default floating-point notation or the std::fixed or std::scientific
+     *          Default Notation (defaultfloat): The precision value specifies the total number of significant digits to display.
+     *          Fixed or Scientific Notation (fixed, scientific): The precision value specifies the exact number of digits to appear after the decimal point
+     * 
      *  The special value Precision::kFull refers to when you wish the full precision that allows the exact value to be read back
      *  after being written:
      *
-     *      https://en.cppreference.com/w/cpp/utility/to_chars
-     *      https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
-     * 
-     *      3) ...string representation consists of ... and parsing the representation using the corresponding std::from_chars function recovers value exactly ...
-     * 
+     *  \note
+     *      \see https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
+     *          Roughly:
+     *              o   digits10 is the number of decimal digits guaranteed to survive text → float → text round-trip.
+     *              o   max_digits10 is the number of decimal digits needed to guarantee correct float → text → float round-trip.
+     *
      * TODO:
+     *      @todo   rewrite with  https://en.cppreference.com/w/cpp/utility/to_chars
+
      *      @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
      *              correct.
      *
@@ -111,7 +119,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *  Docs like https://en.cppreference.com/w/cpp/utility/to_chars - (3) - suggest none of the above - you must call
          *      to_chars() without specifying a precision.
          * 
-         * \see https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
+         *  https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
+         *  Selected numeric_limits<T>::max_digits10 cuz used to map float -> text, and then hopefully someday back to float value preserving
          */
         template <floating_point T>
         constexpr unsigned int GetEffectivePrecision () const;

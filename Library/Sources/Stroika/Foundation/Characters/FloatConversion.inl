@@ -30,7 +30,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <floating_point T>
     constexpr unsigned int Precision::GetEffectivePrecision () const
     {
-        // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
         return fPrecision_.value_or (numeric_limits<T>::max_digits10);
     }
 
