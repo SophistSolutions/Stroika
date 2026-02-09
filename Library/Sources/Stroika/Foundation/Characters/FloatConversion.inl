@@ -460,8 +460,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             // todo must set default precision because of the thread_local stream
             unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
 
-            // For some conversions, builtin API produces too much precision and we must check and downgrade precision
-            [[maybe_unused]] bool adjustPrecisionDown = false;
+            // For some conversions, delegated-to API produces too much precision and we must check and downgrade precision
+            bool adjustPrecisionDown = false;
             FloatFormatType       usingFormat         = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
             {
                 switch (usingFormat) {
@@ -517,13 +517,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     if (expStartsAt == string::npos) {
                         // the easy case
                         size_t n2Remove = actualPrecision-usePrecision;
-                        ss.erase (ss.begin () + n2Remove);
+                        ss.erase (ss.end () - n2Remove, ss.end ());
                         Assert (usePrecision == Precision::CalculatePrecision (span<const char>{ss}));
                     }
                     else {
                         AssertNotImplemented ();
                     }
-
                 }
             }
 
