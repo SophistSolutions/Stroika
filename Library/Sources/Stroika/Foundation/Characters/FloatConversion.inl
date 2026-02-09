@@ -35,25 +35,37 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <IStdBasicStringCompatibleCharacter CHAR>
     constexpr unsigned int Precision::CalculatePrecision (span<const CHAR> number)
     {
-        bool         leading = true;
-        unsigned int n{};
+        bool         leadingZeros = true;
+        bool         seenDot      = false;
+        unsigned int n{0};
+        unsigned int nTrailingZerosBeforeDot{0}; // e.g. 400, not 400.1
         for (const char c : number) {
+            if (leadingZeros and c == '0') {
+                continue; // leading zeros don't contribute to precision
+            }
+            leadingZeros = false;
             if (c == '.') {
+                seenDot = true;
+                nTrailingZerosBeforeDot = 0;
                 continue;
             }
             if (c == '+' or c == '-') {
                 continue;
             }
-            if (leading and c == '0') {
-                continue; // leading zeros don't contribute to precision
+            if (not seenDot and c == '0') {
+                n++;
+                nTrailingZerosBeforeDot++;
+                continue;
             }
-            leading = false;
+            if (nTrailingZerosBeforeDot and c != '0') {
+                nTrailingZerosBeforeDot = 0;
+            }
             if (c == 'e' or c == 'E') {
                 break; // ignore anything after the start of the exponent part
             }
             ++n;
         }
-        return n;
+        return n - nTrailingZerosBeforeDot;
     }
 
     /**
@@ -448,8 +460,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             // todo must set default precision because of the thread_local stream
             unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
 
+            // For some conversions, builtin API produces too much precision and we must check and downgrade precision
+            [[maybe_unused]] bool adjustPrecisionDown = true;
+            FloatFormatType       usingFormat         = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
             {
-                switch (options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT)) {
+                switch (usingFormat) {
                     case FloatFormatType::eScientific:
                         s.setf (ios_base::scientific, ios_base::floatfield);
                         Assert (usePrecision >= 2);
@@ -488,8 +503,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
 
             s << f;
+            string ss = s.str ();
+            if (adjustPrecisionDown) {
+                [[maybe_unused]] unsigned int actualPrecision = Precision::CalculatePrecision (span<const char>{ss});
+                if (actualPrecision > usePrecision) {
+                }
+            }
 
-            return options.GetUsingLocaleClassic () ? String{s.str ()} : String::FromNarrowString (s.str (), options.GetUseLocale ());
+            return options.GetUsingLocaleClassic () ? String{ss} : String::FromNarrowString (ss, options.GetUseLocale ());
         }
     }
 

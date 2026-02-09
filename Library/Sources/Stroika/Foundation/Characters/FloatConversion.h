@@ -148,6 +148,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *      "-44.21"    =>      4
          *      "+44.21"    =>      4
          *      "-44.21e2"  =>      4
+         *      "400"       =>      1
+         *      "400."      =>      3
+         *      "400.0"     =>      4
          */
         template <IStdBasicStringCompatibleCharacter CHAR>
         static constexpr unsigned int CalculatePrecision (span<const CHAR> number);
