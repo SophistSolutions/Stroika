@@ -422,7 +422,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         InternalNumericFormatType_ nYears = trunc (timeLeft / kSecondsPerYear_);
         Assert (nYears > 0.0);
         if (nYears > 0.0) {
-            char buf[10 * 1024];
+            qStroika_Foundation_ATTRIBUTE_INDETERMINATE char buf[10 * 1024];
             (void)::snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
             result += buf;
             timeLeft -= nYears * kSecondsPerYear_;
@@ -438,7 +438,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
     if (timeLeft >= kSecondsPerMonth_) {
         unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth_);
         if (nMonths != 0) {
-            char buf[1024];
+            qStroika_Foundation_ATTRIBUTE_INDETERMINATE char buf[1024];
             (void)::snprintf (buf, sizeof (buf), "%dM", nMonths);
             result += buf;
             timeLeft -= nMonths * kSecondsPerMonth_;
@@ -448,7 +448,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
     if (timeLeft >= kSecondsPerDay_) {
         unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay_);
         if (nDays != 0) {
-            char buf[1024];
+            qStroika_Foundation_ATTRIBUTE_INDETERMINATE  char buf[1024];
             (void)::snprintf (buf, sizeof (buf), "%dD", nDays);
             result += buf;
             timeLeft -= nDays * kSecondsPerDay_;
@@ -460,7 +460,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         if (timeLeft >= kSecondsPerHour_) {
             unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour_);
             if (nHours != 0) {
-                char buf[1024];
+                qStroika_Foundation_ATTRIBUTE_INDETERMINATE char buf[1024];
                 (void)::snprintf (buf, sizeof (buf), "%dH", nHours);
                 result += buf;
                 timeLeft -= nHours * kSecondsPerHour_;
@@ -470,7 +470,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Pr
         if (timeLeft >= kSecondsPerMinute_) {
             unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute_);
             if (nMinutes != 0) {
-                char buf[1024];
+                qStroika_Foundation_ATTRIBUTE_INDETERMINATE char buf[1024];
                 (void)::snprintf (buf, sizeof (buf), "%dM", nMinutes);
                 result += buf;
                 timeLeft -= nMinutes * kSecondsPerMinute_;
