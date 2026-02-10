@@ -441,6 +441,31 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
+        /*
+         *  treat the span of characters as an ASCII number (might have '.' in the middle, but no 'exponent' part)
+         *  so examples: "3.0", "44", "-9999.3".
+         * 
+         *  Reduce the span<> (modifying in place) and return a new subspan<> of the same memory
+         */
+        inline span<char> Round_ (span<char> number, size_t nSignificantFigures)
+        {
+            Require (nSignificantFigures < number.size ());
+            using I       = span<char>::iterator;
+            I start       = number.begin ();
+            I end         = number.end ();
+            I digitsStart = start;
+            if (*digitsStart == '+' or *digitsStart == '-') {
+                ++digitsStart;
+            }
+            I                  dotI        = find (digitsStart, end, '.'); // can be missing
+            [[maybe_unused]] I lastSigFigI = digitsStart + nSignificantFigures + (dotI == end ? 0 : 1);
+
+            AssertNotImplemented();
+            return span<char>{};
+        }
+    }
+
+    namespace Private_ {
         template <typename FLOAT_TYPE>
         String ToString_GeneralCase_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
@@ -461,8 +486,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
 
             // For some conversions, delegated-to API produces too much precision and we must check and downgrade precision
-            bool adjustPrecisionDown = false;
-            FloatFormatType       usingFormat         = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
+            bool            adjustPrecisionDown = false;
+            FloatFormatType usingFormat         = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
             {
                 switch (usingFormat) {
                     case FloatFormatType::eScientific:
@@ -482,7 +507,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         // not sure how to disable 'exp' notation EXCEPT to use fixed. But it does a terrible job with precision.
                         // So patch the precision
                         s.setf (ios_base::fixed, ios_base::floatfield);
-                        s.precision (usePrecision + 10);    // WAG how much to increase by
+                        s.precision (usePrecision + 10); // WAG how much to increase by
                         adjustPrecisionDown = true;
                         break;
                     case FloatFormatType::eAutomaticScientific: {
@@ -514,10 +539,32 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     if (expStartsAt == string::npos) {
                         expStartsAt = ss.find ('E');
                     }
+                    // This code is a mess, and only covers a small fraction of corner cases - must be
+                    // rewritten. @todo - but maybe good enuf to get started
+                    // --LGP 2026-02-09
                     if (expStartsAt == string::npos) {
                         // the easy case
-                        size_t n2Remove = actualPrecision-usePrecision;
+                        size_t n2Remove = actualPrecision - usePrecision;
+                        Assert (n2Remove >= 1);
+                        char lastDigitRemoved = ss[ss.length () - n2Remove];
+
+                        // this logic works for some cases, but not NEARLY all - much more complex
+                        size_t newLastDigitI = ss.length () - n2Remove - 1;
+                        if (ss[newLastDigitI] == '.') {
+                            --newLastDigitI;
+                        }
+                        if (lastDigitRemoved == '5') {
+                            if (n2Remove >= 2) {     // NO TOO SIMPLE - could be 'e', could be '.', must examine more carefully
+                                ++ss[newLastDigitI]; // if this new value is zero, have to keep going and roll up higher order digits
+                            }
+                        }
+                        else if (lastDigitRemoved >= '6') {
+                            ++ss[newLastDigitI]; // if this new value is zero, have to keep going and roll up higher order digits
+                        }
                         ss.erase (ss.end () - n2Remove, ss.end ());
+                        if (ss.back () == '.') {
+                            ss.erase (ss.end () - 1, ss.end ());
+                        }
                         Assert (usePrecision == Precision::CalculatePrecision (span<const char>{ss}));
                     }
                     else {
