@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/UTFConvert.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/Common.h"
@@ -487,7 +488,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         {
             if (val == 0.0) {
                 // special case for zero cuz cannot compute log10(0)
-                string r = format ("{:.{}f}", 0.0, sig_figs);
+                string r = Common::StdCompat::format ("{:.{}f}", 0.0, sig_figs);
                 Ensure (Precision::CalculatePrecision (span<const char>{r}) == sig_figs);
                 return r;
             }
@@ -496,7 +497,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
 
             // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-            int precision = std::max (0, sig_figs - digits_before);
+            int precision = max (0, sig_figs - digits_before);
 
             // if the first digit is going to be a zero before decimal place, as in 0.000, don't count
             // it as a significant figure (matching CalculatePrecision).
@@ -506,7 +507,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             // Use dynamic precision syntax: {:.{}f}
             // The first {} refers to the value, the second .{} refers to precision
-            string r = format ("{:.{}f}", val, precision);
+            string r = Common::StdCompat::format ("{:.{}f}", val, precision);
 
             Ensure (Precision::CalculatePrecision (span<const char>{r}) == sig_figs);
             return r;
