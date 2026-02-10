@@ -15,6 +15,8 @@
 
 /**
  * TODO:
+ *      @todo   REWRITE much of the backend impl, once 3.0 alpha or beta starts. I think API here OK, but impl is weak (and probably slow).
+ * 
  *      @todo   ToFloat code needs OPTIONS optional argument, to support locales etc.
  * 
  *      @todo   Then maybe we can lose ios::format_flags option (maybe keep as ARG, but just grab these fields). Maybe name OK as is, but

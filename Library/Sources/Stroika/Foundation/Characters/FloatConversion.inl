@@ -40,7 +40,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         bool scientific = false;
         for (const char c : number) {
             switch (c) {
+                // Some locales use . (most), but europe uses , for same purpose (and used in ISO-8601)
                 case '.':
+                case ',':
                     dotPresent = true;
                     break;
                 case 'e':
@@ -57,7 +59,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 case '-':
                 case '+':
                     break;
-
                 case '0':
                     if (eatLeadingZeros) {
                         // munch
@@ -81,6 +82,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     ++n;
                     break;
                 case '.':
+                case ',':
                     trailingZeros = 0;
                     break;
                 case 'e':
@@ -94,7 +96,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         n -= trailingZeros;
                     }
                     return n;
-                    // goto Done;
+                    // goto Done;   // FIX to use this when c++23
             }
         }
         //    Done:
@@ -507,6 +509,30 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             Ensure (Precision::CalculatePrecision (span<const char>{r}) == nSignificantFigures);
             return r;
         }
+        template <floating_point T>
+        inline String formatNonScientific_ (const locale& l, T val, int nSignificantFigures)
+        {
+            auto compute = [&] () {
+                if (val == 0.0) {
+                    // special case for zero cuz cannot compute log10(0)
+                    return Common::StdCompat::format (L"{:.{}f}", 0.0, nSignificantFigures);
+                }
+                else {
+                    // Calculate digits before the decimal point
+                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
+
+                    // Precision for 'f' (fixed) is the number of digits AFTER the decimal
+                    int precision = max (0, nSignificantFigures - digits_before);
+
+                    // Use dynamic precision syntax: {:.{}f}
+                    // The first {} refers to the value, the second .{} refers to precision
+                    return Common::StdCompat::format (L"{:.{}f}", val, precision);
+                }
+            };
+            String r = compute ();
+            Ensure (Precision::CalculatePrecision (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
+            return r;
+        }
     }
 
     namespace Private_ {
@@ -518,8 +544,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             // if no locale, can use this...
             // (see if I can use formatNonScientific_) logic for other cases...
-            if (options.GetUsingLocaleClassic () and options.GetIOSFmtFlags () == nullopt and usingFormat == FloatFormatType::eStandard) {
-                return String{formatNonScientific_ (f, usePrecision)};
+            if (usingFormat == FloatFormatType::eStandard) {
+                Assert (options.GetIOSFmtFlags () == nullopt); // doable in principle, looking/mapping each feature, but not trivial, and probably not needed anytime soon
+                                                               // --LGP 2026-02-10
+                if (options.GetUsingLocaleClassic ()) {
+                    return String{formatNonScientific_ (f, usePrecision)};
+                }
+                else {
+                    return formatNonScientific_ (options.GetUseLocale (), f, usePrecision);
+                }
             }
 
             // expensive to construct, and slightly cheaper to just use thread_local version of
@@ -535,8 +568,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             //  must set explicitly (even if defaulted)  because of the thread_local thing
             s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
-            // For some conversions, delegated-to API produces too much precision and we must check and downgrade precision
-            bool adjustPrecisionDown = false;
             {
                 switch (usingFormat) {
                     case FloatFormatType::eScientific:
@@ -553,11 +584,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         s.precision (usePrecision); // I think wrong but test -
                         break;
                     case FloatFormatType::eStandard:
-                        // not sure how to disable 'exp' notation EXCEPT to use fixed. But it does a terrible job with precision.
-                        // So patch the precision
-                        s.setf (ios_base::fixed, ios_base::floatfield);
-                        s.precision (usePrecision + 10); // WAG how much to increase by
-                        adjustPrecisionDown = true;
+                        AssertNotReached (); // handled above
                         break;
                     case FloatFormatType::eAutomaticScientific: {
                         s.precision (usePrecision);
@@ -579,48 +606,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             s << f;
             string ss = s.str ();
-
-            // Get rid of this by getting rid of other cases we do eStardard... --LGP 2026-02-10
-            if (adjustPrecisionDown) {
-                [[maybe_unused]] unsigned int actualPrecision = Precision::CalculatePrecision (span<const char>{ss});
-                if (actualPrecision > usePrecision) {
-                    size_t expStartsAt = ss.find ('e');
-                    if (expStartsAt == string::npos) {
-                        expStartsAt = ss.find ('E');
-                    }
-                    // This code is a mess, and only covers a small fraction of corner cases - must be
-                    // rewritten. @todo - but maybe good enuf to get started
-                    // --LGP 2026-02-09
-                    if (expStartsAt == string::npos) {
-                        // the easy case
-                        size_t n2Remove = actualPrecision - usePrecision;
-                        Assert (n2Remove >= 1);
-                        char lastDigitRemoved = ss[ss.length () - n2Remove];
-
-                        // this logic works for some cases, but not NEARLY all - much more complex
-                        size_t newLastDigitI = ss.length () - n2Remove - 1;
-                        if (ss[newLastDigitI] == '.') {
-                            --newLastDigitI;
-                        }
-                        if (lastDigitRemoved == '5') {
-                            if (n2Remove >= 2) {     // NO TOO SIMPLE - could be 'e', could be '.', must examine more carefully
-                                ++ss[newLastDigitI]; // if this new value is zero, have to keep going and roll up higher order digits
-                            }
-                        }
-                        else if (lastDigitRemoved >= '6') {
-                            ++ss[newLastDigitI]; // if this new value is zero, have to keep going and roll up higher order digits
-                        }
-                        ss.erase (ss.end () - n2Remove, ss.end ());
-                        if (ss.back () == '.') {
-                            ss.erase (ss.end () - 1, ss.end ());
-                        }
-                        Assert (usePrecision == Precision::CalculatePrecision (span<const char>{ss}));
-                    }
-                    else {
-                        AssertNotImplemented ();
-                    }
-                }
-            }
 
             return options.GetUsingLocaleClassic () ? String{ss} : String::FromNarrowString (ss, options.GetUseLocale ());
         }
