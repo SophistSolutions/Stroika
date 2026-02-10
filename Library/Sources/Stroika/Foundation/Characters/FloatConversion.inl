@@ -35,37 +35,78 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <IStdBasicStringCompatibleCharacter CHAR>
     constexpr unsigned int Precision::CalculatePrecision (span<const CHAR> number)
     {
-        bool         leadingZeros = true;
-        bool         seenDot      = false;
-        unsigned int n{0};
-        unsigned int nTrailingZerosBeforeDot{0}; // e.g. 400, not 400.1
+        bool dotPresent = false;
+        bool scientific = false;
         for (const char c : number) {
-            if (leadingZeros and c == '0') {
-                continue; // leading zeros don't contribute to precision
+            switch (c) {
+                case '.':
+                    dotPresent = true;
+                    break;
+                case 'e':
+                case 'E':
+                    scientific = true;
+                    break;
             }
-            if (c == '.') {
-                seenDot                 = true;
-                nTrailingZerosBeforeDot = 0;
-                continue;
-            }
-            if (c == '+' or c == '-') {
-                continue;
-            }
-            leadingZeros = false;
-            if (not seenDot and c == '0') {
-                n++;
-                nTrailingZerosBeforeDot++;
-                continue;
-            }
-            if (nTrailingZerosBeforeDot and c != '0') {
-                nTrailingZerosBeforeDot = 0;
-            }
-            if (c == 'e' or c == 'E') {
-                break; // ignore anything after the start of the exponent part
-            }
-            ++n;
         }
-        return n - nTrailingZerosBeforeDot;
+        unsigned int n{0};
+        unsigned int trailingZeros{0};
+        bool         eatLeadingZeros = not scientific;
+        for (const char c : number) {
+            switch (c) {
+                case '-':
+                case '+':
+                    break;
+
+                case '0':
+                    if (eatLeadingZeros) {
+                        // munch
+                    }
+                    else {
+                        ++n;
+                    }
+                    ++trailingZeros;
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    eatLeadingZeros = false;
+                    trailingZeros   = 0;
+                    ++n;
+                    break;
+                case '.':
+                    trailingZeros = 0;
+                    break;
+                case 'e':
+                case 'E':
+                    if (dotPresent) {
+                        if (eatLeadingZeros) {
+                            n += trailingZeros;
+                        }
+                    }
+                    else {
+                        n -= trailingZeros;
+                    }
+                    return n;
+                    // goto Done;
+            }
+        }
+        //    Done:
+        if (dotPresent) {
+            if (eatLeadingZeros) {
+                // then the trailing zeros we counted were also leading 0, but wern't added to n so do so now
+                n += trailingZeros;
+            }
+        }
+        else {
+            n -= trailingZeros;
+        }
+        return n;
     }
 
     /**
@@ -441,6 +482,36 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
+
+        inline string format_sig_figs_ (double val, int sig_figs)
+        {
+            if (val == 0.0) {
+                // special case for zero cuz cannot compute log10(0)
+                string r = format ("{:.{}f}", 0.0, sig_figs);
+                Ensure (Precision::CalculatePrecision (span<const char>{r}) == sig_figs);
+                return r;
+            }
+
+            // Calculate digits before the decimal point
+            int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
+
+            // Precision for 'f' (fixed) is the number of digits AFTER the decimal
+            int precision = std::max (0, sig_figs - digits_before);
+
+            // if the first digit is going to be a zero before decimal place, as in 0.000, don't count
+            // it as a significant figure (matching CalculatePrecision).
+            // if (digits_before == 1 and 0 <= fabs (val)  and fabs (val)  < 1.0) {
+            //     precision--;
+            // }
+
+            // Use dynamic precision syntax: {:.{}f}
+            // The first {} refers to the value, the second .{} refers to precision
+            string r = format ("{:.{}f}", val, precision);
+
+            Ensure (Precision::CalculatePrecision (span<const char>{r}) == sig_figs);
+            return r;
+        }
+
         /*
          *  treat the span of characters as an ASCII number (might have '.' in the middle, but no 'exponent' part)
          *  so examples: "3.0", "44", "-9999.3".
@@ -449,18 +520,55 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          */
         inline span<char> Round_ (span<char> number, size_t nSignificantFigures)
         {
+            Require (number.size () >= 2); // must have at least two sigfigs to be able to reduce to 1
             Require (nSignificantFigures < number.size ());
-            using I       = span<char>::iterator;
-            I start       = number.begin ();
-            I end         = number.end ();
-            I digitsStart = start;
+            using I                           = span<char>::iterator;
+            I                     start       = number.begin ();
+            I                     end         = number.end ();
+            [[maybe_unused]] bool isNegNumber = *start == '-'; // @todo to fix round up or down!!!!
+            I                     digitsStart = start;
             if (*digitsStart == '+' or *digitsStart == '-') {
                 ++digitsStart;
             }
-            I                  dotI        = find (digitsStart, end, '.'); // can be missing
+            I dotI = find (digitsStart, end, '.'); // can be missing
+
+            // point to last SigFig we will keep (but possibly modify). This could be before or after the '.' - if there is one
+            // it could be well before the end of the number we keep (e.g reduce 1001 to 1 sigfig = 1000).
             [[maybe_unused]] I lastSigFigI = digitsStart + nSignificantFigures + (dotI == end ? 0 : 1);
 
-            AssertNotImplemented();
+            // we must look PAST lastSigFigI in the case where it points at '5' to see if we round up. If it points at
+            // 6 or more, round up, and 4 or less - just truncate.
+            bool doRoundUpOnLastSigFigI = (*lastSigFigI) >= '6' or (*lastSigFigI == '5' and lastSigFigI < end);
+
+            // Implement round-up (which modifies from lastSigFigI backwards, possibly all the way to start, rounding up)
+            if (doRoundUpOnLastSigFigI) {
+                auto addOneAndCarryLeftAsNeededAndReturnTrueIfNeedOneMoreDigit = [] (span<char> numberChars) -> bool {
+                    Require (not numberChars.empty ());
+                    for (auto ri = numberChars.rbegin (); ri != numberChars.rend (); ++ri) {
+                        if (*ri == '.') {
+                            continue; // ignored
+                        }
+                        if (*ri == '9') {
+                            *ri = '0';
+                            // keep going
+                        }
+                        else {
+                            ++*ri;
+                            return false;
+                        }
+                    }
+                    return true; // number was 9999....999
+                };
+                bool mustAddADigit = addOneAndCarryLeftAsNeededAndReturnTrueIfNeedOneMoreDigit (span{digitsStart, lastSigFigI + 1});
+                if (mustAddADigit) {
+                    // we HAVE room cuz about to delete at least one character at the end
+                    AssertNotImplemented ();
+                }
+                else {
+                }
+            }
+
+            AssertNotImplemented ();
             return span<char>{};
         }
     }
@@ -484,6 +592,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             // todo must set default precision because of the thread_local stream
             unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
+
+            // if no locale, can use this...
+            string testFormatSigFigs = format_sig_figs_ (f, usePrecision);
+            if (options.GetUsingLocaleClassic ()) {
+                // and a few otehr issues - and return a...
+            }
 
             // For some conversions, delegated-to API produces too much precision and we must check and downgrade precision
             bool            adjustPrecisionDown = false;
@@ -571,6 +685,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         AssertNotImplemented ();
                     }
                 }
+            }
+
+            if (options.GetUsingLocaleClassic () and usingFormat == FloatFormatType::eStandard) {
+                Assert (ss == testFormatSigFigs);
             }
 
             return options.GetUsingLocaleClassic () ? String{ss} : String::FromNarrowString (ss, options.GetUseLocale ());

@@ -141,17 +141,30 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         /**
          *  Calculate the precision - number of significant digits - in the given number. For this purpose, count trailing
          *  zeros. So basically string length, minus 1 for '.', minus 1 for any leading +-, minus any characters in exponential
-         *  specifier:
+         *  specifier.
+         * 
+         *  @aliases CalculateSignificantFigures
+         * 
+         * Rules:
+         *      o   Non-zero Digits: All digits from 1-9 are always significant (e.g., \(45.2\) has 3).
+         *      o   Interior Zeros: Zeros between non-zero digits are always significant (e.g., \(1002\) has 4).
+         *      o   Leading Zeros: Zeros to the left of the first non-zero digit are never significant; they are placeholders (e.g., \(0.0032\) has 2).
+         *      o   Trailing Zeros (Decimal Present): Zeros at the end of a number that contains a decimal point are significant (e.g., \(92.00\) has 4).
+         *      o   Trailing Zeros (No Decimal): Zeros at the end of a number without a decimal point are ambiguous and usually not significant (e.g., \(140\) has 2), unless indicated by a decimal point (e.g., \(140.\) has 3).
+         *      o   Exact Numbers: Numbers from counting or definitions (e.g., \(12\) inches in a foot) have an infinite number of significant figures.
+         *      o   Scientific Notation: In \(A\times 10^{b}\), all digits in the coefficient (\(A\)) are significant (e.g., \(1.020\times 10^{3}\) has 4).          * 
          * 
          *      "3.01"              =>      3
          *      "03.01"             =>      3
          *      "-44.21"            =>      4
          *      "+44.21"            =>      4
          *      "-44.21e2"          =>      4
+         *      "-44.210e2"         =>      5
          *      "400"               =>      1
          *      "400."              =>      3
          *      "400.0"             =>      4
          *      "0.0000001234567"   =>      7
+         *      "0.000000000"       =>      9       ; a bit ambiguous given the rules - leading zeros vs trailing zeros (decimal present)
          */
         template <IStdBasicStringCompatibleCharacter CHAR>
         static constexpr unsigned int CalculatePrecision (span<const CHAR> number);

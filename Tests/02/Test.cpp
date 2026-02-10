@@ -952,10 +952,12 @@ namespace {
         EXPECT_EQ (Precision::CalculatePrecision (span{"-44.21"sv}), 4);
         EXPECT_EQ (Precision::CalculatePrecision (span{"+44.21"sv}), 4);
         EXPECT_EQ (Precision::CalculatePrecision (span{"-44.21e2"sv}), 4);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"-44.210e2"sv}), 5);
         EXPECT_EQ (Precision::CalculatePrecision (span{"400"sv}), 1);
         EXPECT_EQ (Precision::CalculatePrecision (span{"400."sv}), 3);
         EXPECT_EQ (Precision::CalculatePrecision (span{"400.0"sv}), 4);
         EXPECT_EQ (Precision::CalculatePrecision (span{"0.0000001234567"sv}), 7);
+        EXPECT_EQ (Precision::CalculatePrecision (span{"0.000000000"sv}), 9);
     }
 }
 
@@ -973,27 +975,36 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eScientific}), "0.00000e+00");
             EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-02");
             EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-05");
+        }
+        {
             // From https://en.cppreference.com/w/cpp/io/manip/fixed.html
             //    │ 0.0      │ fixed      │ 0.000000                 │
             //      0.01     │ fixed      │ 0.010000                 │
             //      0.00001  │ fixed      │ 0.000010                 │
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.000000");
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.010000");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eFixedPoint}), "0.000010");
+            static const auto kOptions_ = ToStringOptions{eDontTrimZeros, eFixedPoint};
+            EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0.000000");
+            EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.010000");
+            EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "0.000010");
+        }
+        {
             // From https://en.cppreference.com/w/cpp/io/manip/fixed.html
             //    │ 0.0      │ default    │ 0
             //    │ 0.01     │ default    │ 0.01
             //    │ 0.00001  │ default    │ 1e-05
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "0.01");
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "0");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "1e-05");
+            static const auto kOptions_ = ToStringOptions{eDontTrimZeros, eDefaultFloat};
+            EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
+            EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
+            EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "1e-05");
+            EXPECT_EQ (FloatConversion::ToString (1.4, kOptions_), "1.4");
+            EXPECT_EQ (FloatConversion::ToString (1.6, kOptions_), "1.6");
         }
         {
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eStandard}), "0");
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eStandard}), "0.01");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eStandard}), "0.00001");
-            EXPECT_EQ (FloatConversion::ToString (1.4, ToStringOptions{Precision{1}, eStandard}), "1");
-            EXPECT_EQ (FloatConversion::ToString (1.6, ToStringOptions{Precision{1}, eStandard}), "2");
+            static const auto kOptions_ = ToStringOptions{eStandard};
+            EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
+            EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
+            EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "0.00001");
+            EXPECT_EQ (FloatConversion::ToString (1.4, ToStringOptions{Precision{1}, kOptions_}), "1");
+            EXPECT_EQ (FloatConversion::ToString (1.6, ToStringOptions{Precision{1}, kOptions_}), "2");
         }
         // more tests...
         {
