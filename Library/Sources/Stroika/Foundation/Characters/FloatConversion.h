@@ -38,7 +38,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     using TrimTrailingZerosType::eTrimZeros;
 
     enum class PredefinedLocale {
+        /**
+         *  Use the hardwired 'C' locale (not exactly a real locale in the sense of localization. But a good choice
+         *  for the 'locale' to use for non-localized code (e.g. much serverside code).
+         */
         eUseCLocale,
+
         /**
          *  \note - this selects the current locale at the time the preference is used, whereas
          *          in Stroika v2.1, it used the current locale at the time the preference object was created.
@@ -152,8 +157,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *      o   Trailing Zeros (Decimal Present): Zeros at the end of a number that contains a decimal point are significant (e.g., \(92.00\) has 4).
          *      o   Trailing Zeros (No Decimal): Zeros at the end of a number without a decimal point are ambiguous and usually not significant (e.g., \(140\) has 2), unless indicated by a decimal point (e.g., \(140.\) has 3).
          *      o   Exact Numbers: Numbers from counting or definitions (e.g., \(12\) inches in a foot) have an infinite number of significant figures.
-         *      o   Scientific Notation: In \(A\times 10^{b}\), all digits in the coefficient (\(A\)) are significant (e.g., \(1.020\times 10^{3}\) has 4).          * 
+         *      o   Scientific Notation: In \(A\times 10^{b}\), all digits in the coefficient (\(A\)) are significant (e.g., \(1.020\times 10^{3}\) has 4).
          * 
+         * Examples:
          *      "3.01"              =>      3
          *      "03.01"             =>      3
          *      "-44.21"            =>      4

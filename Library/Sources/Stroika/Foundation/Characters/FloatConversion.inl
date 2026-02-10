@@ -414,7 +414,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             return countZerosAtEndAfterDecPoint ? n : n - nTrailingZeros;
         }
 #endif
-        template <typename FLOAT_TYPE>
+        template <floating_point FLOAT_TYPE>
         String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Precision precision)
         {
             using namespace Memory;
@@ -483,101 +483,45 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
-
-        inline string format_sig_figs_ (double val, int sig_figs)
+        template <floating_point T>
+        inline string formatNonScientific_ (T val, int nSignificantFigures)
         {
-            if (val == 0.0) {
-                // special case for zero cuz cannot compute log10(0)
-                string r = Common::StdCompat::format ("{:.{}f}", 0.0, sig_figs);
-                Ensure (Precision::CalculatePrecision (span<const char>{r}) == sig_figs);
-                return r;
-            }
-
-            // Calculate digits before the decimal point
-            int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
-
-            // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-            int precision = max (0, sig_figs - digits_before);
-
-            // if the first digit is going to be a zero before decimal place, as in 0.000, don't count
-            // it as a significant figure (matching CalculatePrecision).
-            // if (digits_before == 1 and 0 <= fabs (val)  and fabs (val)  < 1.0) {
-            //     precision--;
-            // }
-
-            // Use dynamic precision syntax: {:.{}f}
-            // The first {} refers to the value, the second .{} refers to precision
-            string r = Common::StdCompat::format ("{:.{}f}", val, precision);
-
-            Ensure (Precision::CalculatePrecision (span<const char>{r}) == sig_figs);
-            return r;
-        }
-
-        /*
-         *  treat the span of characters as an ASCII number (might have '.' in the middle, but no 'exponent' part)
-         *  so examples: "3.0", "44", "-9999.3".
-         * 
-         *  Reduce the span<> (modifying in place) and return a new subspan<> of the same memory
-         */
-        inline span<char> Round_ (span<char> number, size_t nSignificantFigures)
-        {
-            Require (number.size () >= 2); // must have at least two sigfigs to be able to reduce to 1
-            Require (nSignificantFigures < number.size ());
-            using I                           = span<char>::iterator;
-            I                     start       = number.begin ();
-            I                     end         = number.end ();
-            [[maybe_unused]] bool isNegNumber = *start == '-'; // @todo to fix round up or down!!!!
-            I                     digitsStart = start;
-            if (*digitsStart == '+' or *digitsStart == '-') {
-                ++digitsStart;
-            }
-            I dotI = find (digitsStart, end, '.'); // can be missing
-
-            // point to last SigFig we will keep (but possibly modify). This could be before or after the '.' - if there is one
-            // it could be well before the end of the number we keep (e.g reduce 1001 to 1 sigfig = 1000).
-            [[maybe_unused]] I lastSigFigI = digitsStart + nSignificantFigures + (dotI == end ? 0 : 1);
-
-            // we must look PAST lastSigFigI in the case where it points at '5' to see if we round up. If it points at
-            // 6 or more, round up, and 4 or less - just truncate.
-            bool doRoundUpOnLastSigFigI = (*lastSigFigI) >= '6' or (*lastSigFigI == '5' and lastSigFigI < end);
-
-            // Implement round-up (which modifies from lastSigFigI backwards, possibly all the way to start, rounding up)
-            if (doRoundUpOnLastSigFigI) {
-                auto addOneAndCarryLeftAsNeededAndReturnTrueIfNeedOneMoreDigit = [] (span<char> numberChars) -> bool {
-                    Require (not numberChars.empty ());
-                    for (auto ri = numberChars.rbegin (); ri != numberChars.rend (); ++ri) {
-                        if (*ri == '.') {
-                            continue; // ignored
-                        }
-                        if (*ri == '9') {
-                            *ri = '0';
-                            // keep going
-                        }
-                        else {
-                            ++*ri;
-                            return false;
-                        }
-                    }
-                    return true; // number was 9999....999
-                };
-                bool mustAddADigit = addOneAndCarryLeftAsNeededAndReturnTrueIfNeedOneMoreDigit (span{digitsStart, lastSigFigI + 1});
-                if (mustAddADigit) {
-                    // we HAVE room cuz about to delete at least one character at the end
-                    AssertNotImplemented ();
+            auto compute = [&] () {
+                if (val == 0.0) {
+                    // special case for zero cuz cannot compute log10(0)
+                    return Common::StdCompat::format ("{:.{}f}", 0.0, nSignificantFigures);
                 }
                 else {
-                }
-            }
+                    // Calculate digits before the decimal point
+                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
 
-            AssertNotImplemented ();
-            return span<char>{};
+                    // Precision for 'f' (fixed) is the number of digits AFTER the decimal
+                    int precision = max (0, nSignificantFigures - digits_before);
+
+                    // Use dynamic precision syntax: {:.{}f}
+                    // The first {} refers to the value, the second .{} refers to precision
+                    return Common::StdCompat::format ("{:.{}f}", val, precision);
+                }
+            };
+            string r = compute ();
+            Ensure (Precision::CalculatePrecision (span<const char>{r}) == nSignificantFigures);
+            return r;
         }
     }
 
     namespace Private_ {
-        template <typename FLOAT_TYPE>
+        template <floating_point FLOAT_TYPE>
         String ToString_GeneralCase_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
+            unsigned int    usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
+            FloatFormatType usingFormat  = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
+
+            // if no locale, can use this...
+            // (see if I can use formatNonScientific_) logic for other cases...
+            if (options.GetUsingLocaleClassic () and options.GetIOSFmtFlags () == nullopt and usingFormat == FloatFormatType::eStandard) {
+                return String{formatNonScientific_ (f, usePrecision)};
+            }
+
             // expensive to construct, and slightly cheaper to just use thread_local version of
             // the same stringstream each time (only one per thread can be in use)
             static thread_local stringstream s;
@@ -591,18 +535,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             //  must set explicitly (even if defaulted)  because of the thread_local thing
             s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
 
-            // todo must set default precision because of the thread_local stream
-            unsigned int usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
-
-            // if no locale, can use this...
-            string testFormatSigFigs = format_sig_figs_ (f, usePrecision);
-            if (options.GetUsingLocaleClassic ()) {
-                // and a few otehr issues - and return a...
-            }
-
             // For some conversions, delegated-to API produces too much precision and we must check and downgrade precision
-            bool            adjustPrecisionDown = false;
-            FloatFormatType usingFormat         = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
+            bool adjustPrecisionDown = false;
             {
                 switch (usingFormat) {
                     case FloatFormatType::eScientific:
@@ -633,7 +567,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                             s.setf (ios_base::scientific, ios_base::floatfield);
                         }
                         else {
-                            //FloatFormatType::eDefaultFloat
                             s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
                             s.precision (usePrecision);
                         }
@@ -647,6 +580,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             s << f;
             string ss = s.str ();
 
+            // Get rid of this by getting rid of other cases we do eStardard... --LGP 2026-02-10
             if (adjustPrecisionDown) {
                 [[maybe_unused]] unsigned int actualPrecision = Precision::CalculatePrecision (span<const char>{ss});
                 if (actualPrecision > usePrecision) {
@@ -688,16 +622,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             }
 
-            if (options.GetUsingLocaleClassic () and usingFormat == FloatFormatType::eStandard) {
-                Assert (ss == testFormatSigFigs);
-            }
-
             return options.GetUsingLocaleClassic () ? String{ss} : String::FromNarrowString (ss, options.GetUseLocale ());
         }
     }
 
     namespace Private_ {
-        template <typename FLOAT_TYPE>
+        template <floating_point FLOAT_TYPE>
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
             auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
