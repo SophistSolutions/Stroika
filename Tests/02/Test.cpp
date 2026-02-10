@@ -988,6 +988,13 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "0");
             EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eDefaultFloat}), "1e-05");
         }
+        {
+            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eStandard}), "0");
+            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eStandard}), "0.01");
+            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eStandard}), "0.00001");
+            EXPECT_EQ (FloatConversion::ToString (1.4, ToStringOptions{Precision{1}, eStandard}), "1");
+            EXPECT_EQ (FloatConversion::ToString (1.6, ToStringOptions{Precision{1}, eStandard}), "2");
+        }
         // more tests...
         {
             static const ToStringOptions kFixedPt3_ = ToStringOptions{Precision{3}, eFixedPoint, eDontTrimZeros};

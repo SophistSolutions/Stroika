@@ -963,8 +963,11 @@ namespace {
                 EXPECT_EQ (d1.As<String> (Precision{6}), "PT3.14159S");
                 EXPECT_EQ (d1.As<String> (Precision{7}), "PT3.141593S");
                 EXPECT_EQ (d1.As<String> (Precision{8}), "PT3.1415927S");
-                String def = d1.As<String> ();
-                DbgTrace ("d1={}, d1.As<String>()={}"_f, d1, def);
+            }
+            {
+                const Duration d1 = Duration{0.000001};
+                EXPECT_EQ (d1.As<String> (Precision{1}), "PT0.000001S");
+                EXPECT_EQ (d1.As<String> (Precision{3}), "PT0.000001S");
             }
         }
     }
