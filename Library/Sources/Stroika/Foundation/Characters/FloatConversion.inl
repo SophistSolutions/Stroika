@@ -495,10 +495,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
                 else {
                     // Calculate digits before the decimal point
-                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
+                    unsigned int digits_before = static_cast<unsigned int> (floor (log10 (abs (val)))) + 1;
 
                     // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    int precision = max (0, nSignificantFigures - digits_before);
+                    unsigned int precision = max (0u, nSignificantFigures - digits_before);
 
                     // Use dynamic precision syntax: {:.{}f}
                     // The first {} refers to the value, the second .{} refers to precision
@@ -519,10 +519,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
                 else {
                     // Calculate digits before the decimal point
-                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
+                    unsigned int digits_before = static_cast<unsigned int> (floor (log10 (abs (val)))) + 1;
 
                     // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    int precision = max (0, nSignificantFigures - digits_before);
+                    unsigned int precision = max (0u, nSignificantFigures - digits_before);
 
                     // Use dynamic precision syntax: {:.{}f}
                     // The first {} refers to the value, the second .{} refers to precision
