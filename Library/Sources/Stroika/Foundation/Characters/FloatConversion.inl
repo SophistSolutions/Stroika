@@ -515,7 +515,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             auto compute = [&] () {
                 if (val == 0.0) {
                     // special case for zero cuz cannot compute log10(0)
-                    return Common::StdCompat::format (L"{:.{}f}", 0.0, nSignificantFigures);
+                    return Common::StdCompat::format (l, L"{:.{}f}", 0.0, nSignificantFigures);
                 }
                 else {
                     // Calculate digits before the decimal point
@@ -526,7 +526,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
                     // Use dynamic precision syntax: {:.{}f}
                     // The first {} refers to the value, the second .{} refers to precision
-                    return Common::StdCompat::format (L"{:.{}f}", val, precision);
+                    return Common::StdCompat::format (l, L"{:.{}f}", val, precision);
                 }
             };
             String r = compute ();
