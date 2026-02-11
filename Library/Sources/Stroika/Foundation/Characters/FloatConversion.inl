@@ -36,6 +36,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <IStdBasicStringCompatibleCharacter CHAR>
     constexpr unsigned int Precision::CalculatePrecision (span<const CHAR> number)
     {
+        // two passes cuz eatLeadingZero depends on scientific, which we find at the end of the text
         bool dotPresent = false;
         bool scientific = false;
         for (const CHAR c : number) {
