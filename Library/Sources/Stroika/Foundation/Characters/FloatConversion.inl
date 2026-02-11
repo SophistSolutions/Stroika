@@ -486,7 +486,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     namespace Private_ {
         template <floating_point T>
-        inline string formatNonScientific_ (T val, int nSignificantFigures)
+        inline string formatNonScientific_ (T val, unsigned int nSignificantFigures)
         {
             auto compute = [&] () {
                 if (val == 0.0) {
