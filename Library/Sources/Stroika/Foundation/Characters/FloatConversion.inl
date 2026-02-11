@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             return r;
         }
         template <floating_point T>
-        inline String formatNonScientific_ (const locale& l, T val, int nSignificantFigures)
+        inline String formatNonScientific_ (const locale& l, T val, unsigned int nSignificantFigures)
         {
             auto compute = [&] () {
                 if (val == 0.0) {
