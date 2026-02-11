@@ -487,27 +487,27 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     namespace Private_ {
         template <floating_point T>
-        inline string formatNonScientific_ (T val, unsigned int nSignificantFigures)
+        inline String formatNonScientific_ (T val, unsigned int nSignificantFigures)
         {
             auto compute = [&] () {
                 if (val == 0.0) {
                     // special case for zero cuz cannot compute log10(0)
-                    return Common::StdCompat::format ("{:.{}f}", 0.0, nSignificantFigures);
+                    return String{Common::StdCompat::format ("{:.{}f}", 0.0, nSignificantFigures)};
                 }
                 else {
                     // Calculate digits before the decimal point
-                    unsigned int digits_before = static_cast<unsigned int> (floor (log10 (abs (val)))) + 1;
+                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
 
                     // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    unsigned int precision = max (0u, nSignificantFigures - digits_before);
+                    unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
 
                     // Use dynamic precision syntax: {:.{}f}
                     // The first {} refers to the value, the second .{} refers to precision
-                    return Common::StdCompat::format ("{:.{}f}", val, precision);
+                    return String{Common::StdCompat::format ("{:.{}f}", val, precision)};
                 }
             };
-            string r = compute ();
-            Ensure (Precision::CalculatePrecision (span<const char>{r}) == nSignificantFigures);
+            String r = compute ();
+            Ensure (Precision::CalculatePrecision (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
             return r;
         }
         template <floating_point T>
@@ -520,10 +520,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
                 else {
                     // Calculate digits before the decimal point
-                    unsigned int digits_before = static_cast<unsigned int> (floor (log10 (abs (val)))) + 1;
+                    int digits_before = static_cast<int> (floor (log10 (abs (val)))) + 1;
 
                     // Precision for 'f' (fixed) is the number of digits AFTER the decimal
-                    unsigned int precision = max (0u, nSignificantFigures - digits_before);
+                    unsigned int precision = static_cast<unsigned int> (max (0, static_cast<int> (nSignificantFigures) - digits_before));
 
                     // Use dynamic precision syntax: {:.{}f}
                     // The first {} refers to the value, the second .{} refers to precision
@@ -549,7 +549,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 Assert (options.GetIOSFmtFlags () == nullopt); // doable in principle, looking/mapping each feature, but not trivial, and probably not needed anytime soon
                                                                // --LGP 2026-02-10
                 if (options.GetUsingLocaleClassic ()) {
-                    return String{formatNonScientific_ (f, usePrecision)};
+                    return formatNonScientific_ (f, usePrecision);
                 }
                 else {
                     return formatNonScientific_ (options.GetUseLocale (), f, usePrecision);
