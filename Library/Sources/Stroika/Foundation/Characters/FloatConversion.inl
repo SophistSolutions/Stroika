@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         bool dotPresent = false;
         bool scientific = false;
-        for (const char c : number) {
+        for (const CHAR c : number) {
             switch (c) {
                 // Some locales use . (most), but europe uses , for same purpose (and used in ISO-8601)
                 case '.':
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         unsigned int n{0};
         unsigned int trailingZeros{0};
         bool         eatLeadingZeros = not scientific;
-        for (const char c : number) {
+        for (const CHAR c : number) {
             switch (c) {
                 case '-':
                 case '+':
