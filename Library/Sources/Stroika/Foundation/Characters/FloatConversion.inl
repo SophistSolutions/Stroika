@@ -54,8 +54,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         RepType n{0};
         RepType trailingZeros{0};
-        bool         eatLeadingZeros = not scientific;
-        bool         gotoDone         = false;
+        bool    eatLeadingZeros = not scientific;
+        bool    gotoDone        = false;
         for (const CHAR c : number) {
             switch (c) {
                 case '-':
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     break;
                 case 'e':
                 case 'E':
-                    gotoDone = true;    // goto Done;   // FIX to use this when c++23
+                    gotoDone = true; // goto Done;   // FIX to use this when c++23
                     break;
             }
             if (gotoDone) {
@@ -476,7 +476,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             // [[maybe_unused]] auto ooo = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
 #if qStroika_Foundation_Debug_AssertionsChecked
-            Assert (precision == SignificantFigures::kFullPrecision or CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
+            Assert (precision == SignificantFigures::kFullPrecision or
+                    CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
 #endif
             return String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
         }
@@ -537,8 +538,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         template <floating_point FLOAT_TYPE>
         String ToString_GeneralCase_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
-            unsigned int    usePrecision = options.GetSignificantFigures ().value_or (SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
-            FloatFormatType usingFormat  = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
+            unsigned int usePrecision =
+                options.GetSignificantFigures ().value_or (SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
+            FloatFormatType usingFormat = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
 
             // if no locale, can use this...
             // (see if I can use formatNonScientific_) logic for other cases...
@@ -613,9 +615,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         template <floating_point FLOAT_TYPE>
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
-            auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
-                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
-                              : Private_::ToString_GeneralCase_ (f, options);
+            auto result =
+                (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
+                    ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
+                    : Private_::ToString_GeneralCase_ (f, options);
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);
             }

@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      */
     struct SignificantFigures {
     public:
-        using RepType = unsigned int;   // maybe use uint16_t?
+        using RepType = unsigned int; // maybe use uint16_t?
 
     public:
         /**
