@@ -1043,7 +1043,8 @@ namespace {
                     }
                 }
             }
-            EXPECT_TRUE (Math::NearlyEquals (l, FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::SignificantFigures::kFullPrecision))));
+            EXPECT_TRUE (Math::NearlyEquals (
+                l, FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::SignificantFigures::kFullPrecision))));
         }
     }
     GTEST_TEST (Foundation_Characters, StringNumericConversions_)

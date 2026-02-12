@@ -151,7 +151,8 @@ namespace {
         double         performanceScore = (baselineTime == 0s) ? 1000000 : compareWithTime.count () / baselineTime.count ();
         constexpr char kOneTab_[]       = "\t";
         {
-            FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::eDontTrimZeros, FloatConversion::SignificantFigures{2}};
+            FloatConversion::ToStringOptions fo =
+                FloatConversion::ToStringOptions{FloatConversion::eDontTrimZeros, FloatConversion::SignificantFigures{2}};
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo) << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
