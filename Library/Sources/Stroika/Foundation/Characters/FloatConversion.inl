@@ -55,6 +55,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         unsigned int n{0};
         unsigned int trailingZeros{0};
         bool         eatLeadingZeros = not scientific;
+        bool         gotoDone         = false;
         for (const CHAR c : number) {
             switch (c) {
                 case '-':
