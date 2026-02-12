@@ -88,16 +88,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     break;
                 case 'e':
                 case 'E':
-                    if (dotPresent) {
-                        if (eatLeadingZeros) {
-                            n += trailingZeros;
-                        }
-                    }
-                    else {
-                        n -= trailingZeros;
-                    }
-                    return n;
+                    gotoDone = true;
+                    break;
                     // goto Done;   // FIX to use this when c++23
+            }
+            if (gotoDone) {
+                break;
             }
         }
         //    Done:
@@ -216,6 +212,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         inline void TrimTrailingZeros_ (String* strResult)
         {
             // @todo THIS could be more efficient. We should KNOW case of the 'e' and maybe able to tell/avoid looking based on args to String2Float
+            // also use StringBuilder and Peek()/Character::AsASCIIQuietly
             RequireNotNull (strResult);
             // strip trailing zeros (after decimal point - before they may indicate magnatude)
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
