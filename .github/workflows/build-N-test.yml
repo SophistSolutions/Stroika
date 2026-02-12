@@ -383,6 +383,42 @@ jobs:
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
           echo C:/ProgramData/Docker/config/daemon.json
           cat C:/ProgramData/Docker/config/daemon.json
+      - name: Set Docker Data Root to D:\Docker
+        shell: powershell
+        run: |
+          $path = "C:\ProgramData\docker\config\daemon.json"
+          
+          # 1. Ensure the destination directory on D: exists
+          if (!(Test-Path "D:\Docker")) {
+              New-Item -ItemType Directory -Force -Path "D:\Docker"
+          }
+
+          # 2. Ensure the config directory exists
+          if (!(Test-Path "C:\ProgramData\docker\config")) {
+              New-Item -ItemType Directory -Force -Path "C:\ProgramData\docker\config"
+          }
+
+          # 3. Load existing config or create new
+          if (Test-Path $path) {
+              $config = Get-Content $path | ConvertFrom-Json
+          } else {
+              $config = @{}
+          }
+
+          # 4. Set the data-root (PowerShell handles the backslash escaping)
+          $config."data-root" = "D:\Docker"
+
+          # 5. Save back to file
+          $config | ConvertTo-Json | Set-Content $path
+          
+          # 6. Restart Docker to apply changes
+          Restart-Service docker
+      - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
+        shell: "bash"
+        run: |
+          echo C:/ProgramData/Docker/config/daemon.json
+          cat C:/ProgramData/Docker/config/daemon.json
+          
       # No actual need todo this step (would be done implicitly/automatically) - but do to track how long the step takes (13min)
       - name: docker pull ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
         run: docker pull ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
