@@ -371,6 +371,7 @@ jobs:
       # see docker run for --cpus and --memory, and adjust --jobs accodingly (last done 2025-02-07), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
+      USE_DOCKER_ROOT: "D:/docker"
     steps:
       - uses: actions/checkout@v4
       - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
@@ -381,44 +382,35 @@ jobs:
           df -h
           systeminfo
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
-          echo C:/ProgramData/Docker/config/daemon.json
-          cat C:/ProgramData/Docker/config/daemon.json
-      - name: Set Docker Data Root to D:\Docker
+          echo "C:/ProgramData/Docker/config/daemon.json:" -n ; cat "C:/ProgramData/Docker/config/daemon.json"
+      - name: Setup Docker to use ${{env.USE_DOCKER_ROOT}} as data-root
         shell: powershell
         run: |
-          $path = "C:\ProgramData\docker\config\daemon.json"
-          
-          # 1. Ensure the destination directory on D: exists
-          if (!(Test-Path "D:\Docker")) {
-              New-Item -ItemType Directory -Force -Path "D:\Docker"
-          }
-
-          # 2. Ensure the config directory exists
-          if (!(Test-Path "C:\ProgramData\docker\config")) {
-              New-Item -ItemType Directory -Force -Path "C:\ProgramData\docker\config"
-          }
-
-          # 3. Load existing config or create new
-          if (Test-Path $path) {
-              $config = Get-Content $path | ConvertFrom-Json
+          mkdir ${{env.USE_DOCKER_ROOT}}
+          $configFile = "C:\ProgramData\Docker\config\daemon.json"
+          # Ensure the config file exists
+          if (-not (Test-Path $configFile)) {
+            New-Item $configFile -ItemType File
+            $config = @{}
           } else {
-              $config = @{}
+            $config = Get-Content $configFile | ConvertFrom-Json
           }
-
-          # 4. Set the data-root (PowerShell handles the backslash escaping)
-          # $config."data-root" = "D:\Docker"
-          $config | Add-Member -MemberType NoteProperty -Name "data-root" -Value "D:\DockerData"
-
-          # 5. Save back to file
-          $config | ConvertTo-Json | Set-Content $path
-          
-          # 6. Restart Docker to apply changes
-          Restart-Service docker
-      - name: Build System Info (container version ${{github.event.inputs.container_version || 'v3'}})
-        shell: "bash"
-        run: |
-          echo C:/ProgramData/Docker/config/daemon.json
-          cat C:/ProgramData/Docker/config/daemon.json
+          # Add or update the 'data-root' property using Add-Member
+          # -Force allows updating the property if it already exists
+          $config | Add-Member -MemberType NoteProperty -Name "data-root" -Value "${{env.USE_DOCKER_ROOT}}" -Force
+          # Write the updated config back to the file
+          $config | ConvertTo-Json -Depth 4 | Set-Content $configFile
+          # Print to verify updated properly
+          Get-Content -Path $configFile
+          # Restart Docker to apply changes
+          echo "Restarting Docker Service..."
+          Stop-Service Docker
+          Start-Service Docker
+          # Verify the new Docker Root Dir
+          echo "docker info:"
+          # docker info | Select-String "Docker Root Dir"
+          echo "docker info:"
+          docker info
           
       # No actual need todo this step (would be done implicitly/automatically) - but do to track how long the step takes (13min)
       - name: docker pull ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
