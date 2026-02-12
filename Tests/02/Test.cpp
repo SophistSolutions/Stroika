@@ -968,7 +968,7 @@ namespace {
         using namespace FloatConversion;
         {
             // From FloatConversion.h docs
-            static const auto kOptions_ = ToStringOptions{eDontTrimZeros, eDefaultFloat};
+            static const auto kOptions_ = ToStringOptions{eDefaultFloat};
             EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "1e-05");
@@ -983,7 +983,7 @@ namespace {
         }
         {
             // From FloatConversion.h docs
-            static const auto kOptions_ = ToStringOptions{eDontTrimZeros, eFixedPoint};
+            static const auto kOptions_ = ToStringOptions{eFixedPoint};
             EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0.000000");
             EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.010000");
             EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "0.000010");
@@ -1001,14 +1001,14 @@ namespace {
         }
         {
             // From FloatConversion.h docs
-            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eScientific}), "0.00000e+00");
-            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-02");
-            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-05");
-            EXPECT_EQ (FloatConversion::ToString (3.12e12, ToStringOptions{eDontTrimZeros, eScientific}), "3.12000e+12");
-            EXPECT_EQ (FloatConversion::ToString (3.12, ToStringOptions{eDontTrimZeros, eScientific}), "3.12000e+00");
-            EXPECT_EQ (FloatConversion::ToString (212312345.0, ToStringOptions{eDontTrimZeros, eScientific}), "2.12312e+08");
-            EXPECT_EQ (FloatConversion::ToString (-44.2, ToStringOptions{eDontTrimZeros, eScientific}), "-4.42000e+01");
-            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, ToStringOptions{eDontTrimZeros, eScientific}), "1.23457e-07");
+            EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eScientific}), "0.00000e+00");
+            EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eScientific}), "1.00000e-02");
+            EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eScientific}), "1.00000e-05");
+            EXPECT_EQ (FloatConversion::ToString (3.12e12, ToStringOptions{eScientific}), "3.12000e+12");
+            EXPECT_EQ (FloatConversion::ToString (3.12, ToStringOptions{eScientific}), "3.12000e+00");
+            EXPECT_EQ (FloatConversion::ToString (212312345.0, ToStringOptions{eScientific}), "2.12312e+08");
+            EXPECT_EQ (FloatConversion::ToString (-44.2, ToStringOptions{eScientific}), "-4.42000e+01");
+            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, ToStringOptions{eScientific}), "1.23457e-07");
         }
         {
             // From FloatConversion.h docs
@@ -1028,13 +1028,13 @@ namespace {
         }
         // more tests...
         {
-            static const ToStringOptions kFixedPt3_ = ToStringOptions{SignificantFigures{3}, eFixedPoint, eDontTrimZeros};
+            static const ToStringOptions kFixedPt3_ = ToStringOptions{SignificantFigures{3}, eFixedPoint};
             EXPECT_EQ (FloatConversion::ToString (3.0, kFixedPt3_), "3.000");
             EXPECT_EQ (FloatConversion::ToString (3.1, kFixedPt3_), "3.100");
             EXPECT_EQ (FloatConversion::ToString (3.1241, kFixedPt3_), "3.124");
             EXPECT_EQ (FloatConversion::ToString (.00331241, kFixedPt3_), "0.003");
             EXPECT_EQ (FloatConversion::ToString (.000331241, kFixedPt3_), "0.000");
-            static const ToStringOptions kFixedPt3WithTrim_ = ToStringOptions{kFixedPt3_, eTrimZeros};
+            static const ToStringOptions kFixedPt3WithTrim_ = ToStringOptions{SignificantFigures{3}, eFixedPointWithWhitespaceTrimmed};
             EXPECT_EQ (FloatConversion::ToString (3.0, kFixedPt3WithTrim_), "3");
             EXPECT_EQ (FloatConversion::ToString (3.1, kFixedPt3WithTrim_), "3.1");
             EXPECT_EQ (FloatConversion::ToString (3.1241, kFixedPt3WithTrim_), "3.124");

@@ -154,10 +154,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : fFloatFormat_{scientificNotation}
     {
     }
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
     constexpr ToStringOptions::ToStringOptions (TrimTrailingZerosType trimTrailingZeros)
         : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrimZeros}
     {
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+
     constexpr ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
         : ToStringOptions{b1}
     {
@@ -575,9 +578,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             {
                 switch (usingFormat) {
                     case FloatFormatType::eScientific:
+                    case FloatFormatType::eScientificWithWhitespaceTrimmed:
                         s.setf (ios_base::scientific, ios_base::floatfield);
                         Assert (usePrecision >= 2);
-                        s.precision (usePrecision - 1);
+                        s.precision (usePrecision - 1); // scientific format is n.mmm with m digits of 'precision' - so 1 + m is # of significat digits
                         break;
                     case FloatFormatType::eDefaultFloat:
                         s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
@@ -589,6 +593,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         s.precision (usePrecision);
                         break;
                     case FloatFormatType::eFixedPoint:
+                    case FloatFormatType::eFixedPointWithWhitespaceTrimmed:
                         s.setf (ios_base::fixed, ios_base::floatfield);
                         s.precision (usePrecision); // I think wrong but test -
                         break;
@@ -626,11 +631,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         template <floating_point FLOAT_TYPE>
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
+            auto floatFormat = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
             auto result =
-                (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
+                (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and floatFormat == FloatFormatType::eDefaultFloat)
                     ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
                     : Private_::ToString_GeneralCase_ (f, options);
-            if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
+            if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed or
+                floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
                 TrimTrailingZeros_ (&result);
             }
             return result;

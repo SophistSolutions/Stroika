@@ -198,7 +198,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
 
-            static const FloatConversion::ToStringOptions kFinalFloatOptions_{FloatConversion::eTrimZeros};
+            static const FloatConversion::ToStringOptions kFinalFloatOptions_{FloatConversion::eDefaultFloat};
 
             static constexpr bool kFirstSubSecondUnitDoDecimalPlaceImmediately_{true};
 
@@ -479,7 +479,7 @@ String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Si
         Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
             using namespace FloatConversion;
-            result += FloatConversion::ToString (timeLeft, ToStringOptions{p, eStandard, eTrimZeros});
+            result += FloatConversion::ToString (timeLeft, ToStringOptions{p, eStandard});
             result += "S"sv;
         }
     }

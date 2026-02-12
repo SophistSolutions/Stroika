@@ -30,14 +30,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      * Sometimes eDontTrimZeros desirable (to show precision): but often not.
      */
-    enum class TrimTrailingZerosType {
+    enum class [[deprecated ("Since Stroika v3.0d23 use FloatFormatType 'trim' variant instead")]] TrimTrailingZerosType {
         eTrimZeros,
         eDontTrimZeros,
 
         Stroika_Define_Enum_Bounds (eTrimZeros, eDontTrimZeros)
     };
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
     using TrimTrailingZerosType::eDontTrimZeros;
     using TrimTrailingZerosType::eTrimZeros;
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
 
     enum class PredefinedLocale {
         /**
@@ -196,8 +198,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     enum class FloatFormatType {
 
         /**
-         *  (WHITESPACE TRIM FLAG HERE PROBABLY NO SENSE)
-         * 
          *  corresponds to unsetf (floatfield) - which may be different than scientific or fixed point.
          *  This is basically what the 'C' standard decided would be the default way to format floating point numbers.
          * 
@@ -242,9 +242,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *       -44.2              │   -44.2
          *       0.0000001234567    │   0.000000
          */
-        eFixedPoint,
-        // TODO
-        //eFixedPointWithWhitespaceTrimmed,,
+        eFixedPointWithoutWhitespaceTrimmed,
+
+        /**
+         * @brief 
+         */
+        eFixedPoint = eFixedPointWithoutWhitespaceTrimmed,
+
+        /**
+         * @todo specify!!!  
+         */
+        eFixedPointWithWhitespaceTrimmed,
 
         /**
          * ((MAKES SENSE TO USE THIS WITH TRIM TRAILING ZEROS) = but not default)
@@ -262,14 +270,20 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *       -44.2              │  -4.42000e+01
          *       0.0000001234567    │   1.23457e-07
          */
-        eScientific,
+        eScientificWithoutWhitespaceTrimmed,
 
-        //eScientificWithWhitespaceTrimmed,,
+        /**
+         */
+        eScientific = eScientificWithoutWhitespaceTrimmed,
+
+        /**
+         * @todo specify!!!  and test
+         * 
+         */
+        eScientificWithWhitespaceTrimmed,
 
         /**
          *  \brief Somewhat like defaultfloat, but never uses scientific notation.
-         * 
-         *   (PROBABLY JUST DEFINE THIS TO ALWAYS TRIM WHITESPACE)
          * 
          *  not scientific (no e+nn), but otherwise somewhat like fixed point or defaultfloat.
          * 
@@ -305,7 +319,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     DISABLE_COMPILER_MSC_WARNING_END (4996)
     using FloatFormatType::eDefaultFloat;
     using FloatFormatType::eFixedPoint;
+    using FloatFormatType::eFixedPointWithWhitespaceTrimmed;
     using FloatFormatType::eScientific;
+    using FloatFormatType::eScientificWithWhitespaceTrimmed;
     using FloatFormatType::eStandard;
 
     /**
@@ -334,7 +350,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr ToStringOptions (ios_base::fmtflags fmtFlags);
         constexpr ToStringOptions (SignificantFigures precision);
         constexpr ToStringOptions (FloatFormatType floatFormat);
-        constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        [[deprecated ("Since Stroika v3.0d23 use appropriate FloatFormatType 'trim' variant instead")]] constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
+        DISABLE_COMPILER_MSC_WARNING_END (4996)
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
         template <typename... ARGS>
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
@@ -343,6 +361,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr optional<SignificantFigures> GetSignificantFigures () const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d23 use FloatFormatType 'trim' variant instead")]]
         constexpr optional<bool> GetTrimTrailingZeros () const;
 
     public:
@@ -366,6 +385,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr optional<ios_base::fmtflags> GetIOSFmtFlags () const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d23 use FloatFormatType 'trim' variant instead")]]
         static constexpr bool kDefaultTrimTrailingZeros{true};
 
     public:
@@ -379,7 +399,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         optional<ios_base::fmtflags> fFmtFlags_;
         bool                         fUseCurrentLocale_{false}; // dynamically calculated current locale
         optional<locale>             fUseLocale_;               // if missing, use locale::classic (unless fUseCurrentLocale_)
-        optional<bool>               fTrimTrailingZeros_;
+        optional<bool>               fTrimTrailingZeros_;       // keep while deprecated
         optional<FloatFormatType>    fFloatFormat_;
     };
 
