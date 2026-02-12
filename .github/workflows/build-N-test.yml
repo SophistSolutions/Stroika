@@ -381,6 +381,8 @@ jobs:
           df -h
           systeminfo
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+          echo C:/ProgramData/Docker/config/daemon.json
+          cat C:/ProgramData/Docker/config/daemon.json
       # No actual need todo this step (would be done implicitly/automatically) - but do to track how long the step takes (13min)
       - name: docker pull ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
         run: docker pull ${{ matrix.container_image }}:${{github.event.inputs.container_version || 'v3'}}
