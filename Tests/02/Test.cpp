@@ -943,21 +943,21 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Characters, CalculatePrecision_)
+    GTEST_TEST (Foundation_Characters, CalculateSignificantFigures_)
     {
-        Debug::TraceContextBumper ctx{"CalculatePrecision_"};
+        Debug::TraceContextBumper ctx{"CalculateSignificantFigures_"};
         using namespace FloatConversion;
-        EXPECT_EQ (Precision::CalculatePrecision (span{"3.01"sv}), 3);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"03.01"sv}), 3);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"-44.21"sv}), 4);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"+44.21"sv}), 4);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"-44.21e2"sv}), 4);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"-44.210e2"sv}), 5);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"400"sv}), 1);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"400."sv}), 3);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"400.0"sv}), 4);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"0.0000001234567"sv}), 7);
-        EXPECT_EQ (Precision::CalculatePrecision (span{"0.000000000"sv}), 9);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"3.01"sv}), 3);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"03.01"sv}), 3);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"-44.21"sv}), 4);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"+44.21"sv}), 4);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"-44.21e2"sv}), 4);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"-44.210e2"sv}), 5);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"400"sv}), 1);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"400."sv}), 3);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"400.0"sv}), 4);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"0.0000001234567"sv}), 7);
+        EXPECT_EQ (SignificantFigures::Calculate (span{"0.000000000"sv}), 9);
     }
 }
 
@@ -971,7 +971,7 @@ namespace {
             //    │ 0.0      │ scientific │ 0.000000e+00             │
             //    │ 0.01     │ scientific │ 1.000000e-02             │
             //    │ 0.00001  │ scientific │ 1.000000e-05             │
-            // Note - using default Precision (6), but interpretting it as number of significant figures so we emit different strings
+            // Note - using default SignificantFigures (6), but interpretting it as number of significant figures so we emit different strings
             EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eDontTrimZeros, eScientific}), "0.00000e+00");
             EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-02");
             EXPECT_EQ (FloatConversion::ToString (0.00001, ToStringOptions{eDontTrimZeros, eScientific}), "1.00000e-05");
@@ -1003,12 +1003,12 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (0.0, kOptions_), "0");
             EXPECT_EQ (FloatConversion::ToString (0.01, kOptions_), "0.01");
             EXPECT_EQ (FloatConversion::ToString (0.00001, kOptions_), "0.00001");
-            EXPECT_EQ (FloatConversion::ToString (1.4, ToStringOptions{Precision{1}, kOptions_}), "1");
-            EXPECT_EQ (FloatConversion::ToString (1.6, ToStringOptions{Precision{1}, kOptions_}), "2");
+            EXPECT_EQ (FloatConversion::ToString (1.4, ToStringOptions{SignificantFigures{1}, kOptions_}), "1");
+            EXPECT_EQ (FloatConversion::ToString (1.6, ToStringOptions{SignificantFigures{1}, kOptions_}), "2");
         }
         // more tests...
         {
-            static const ToStringOptions kFixedPt3_ = ToStringOptions{Precision{3}, eFixedPoint, eDontTrimZeros};
+            static const ToStringOptions kFixedPt3_ = ToStringOptions{SignificantFigures{3}, eFixedPoint, eDontTrimZeros};
             EXPECT_EQ (FloatConversion::ToString (3.0, kFixedPt3_), "3.000");
             EXPECT_EQ (FloatConversion::ToString (3.1, kFixedPt3_), "3.100");
             EXPECT_EQ (FloatConversion::ToString (3.1241, kFixedPt3_), "3.124");
@@ -1030,7 +1030,7 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy || qCompilerAndStdLib_isinf_Valgrind_Buggy) {
-                auto f = FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull));
+                auto f = FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::SignificantFigures::kFullPrecision));
                 if (not Math::NearlyEquals (l, f)) {
                     if (Debug::IsRunningUnderValgrind () and qCompilerAndStdLib_isinf_Valgrind_Buggy) {
                         Stroika::Frameworks::Test::WarnTestIssue ("ToFloat(ToString({})) not properly roundtripping under valgrind: {}; note isinf({})={}, and isinf(f)={}"_f(
@@ -1043,7 +1043,7 @@ namespace {
                     }
                 }
             }
-            EXPECT_TRUE (Math::NearlyEquals (l, FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision::kFull))));
+            EXPECT_TRUE (Math::NearlyEquals (l, FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::SignificantFigures::kFullPrecision))));
         }
     }
     GTEST_TEST (Foundation_Characters, StringNumericConversions_)
@@ -1279,19 +1279,19 @@ namespace {
         EXPECT_EQ (FloatConversion::ToString (0.0), "0");
         EXPECT_EQ (FloatConversion::ToString (3000.5), "3000.5");
         EXPECT_EQ (FloatConversion::ToString (3000.500), "3000.5");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::Precision{2}), "3.1");
-        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::Precision{3}), "3.12");
-        EXPECT_EQ (FloatConversion::ToString (31.234, FloatConversion::Precision{3}), "31.2");
+        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::SignificantFigures{2}), "3.1");
+        EXPECT_EQ (FloatConversion::ToString (3.1234, FloatConversion::SignificantFigures{3}), "3.12");
+        EXPECT_EQ (FloatConversion::ToString (31.234, FloatConversion::SignificantFigures{3}), "31.2");
 
-        // And note Characters::ToString also supports Precision arg
-        EXPECT_EQ (Characters::ToString (3.1234, FloatConversion::Precision{2}), "3.1");
+        // And note Characters::ToString also supports SignificantFigures arg
+        EXPECT_EQ (Characters::ToString (3.1234, FloatConversion::SignificantFigures{2}), "3.1");
 
         {
             // if exceeds precision, (is that the rule, or smallest rep?) then scientific notation
             EXPECT_EQ (FloatConversion::ToString (30707548160.0), "3.07075e+10");
 #if __cpp_lib_to_chars >= 201611
             EXPECT_EQ (FloatConversion::ToString (3724089.418996166), "3.72409e+06");
-            EXPECT_EQ (FloatConversion::ToString (44905.3, FloatConversion::Precision{6}), "44905.3");
+            EXPECT_EQ (FloatConversion::ToString (44905.3, FloatConversion::SignificantFigures{6}), "44905.3");
 #else
             String t = FloatConversion::ToString (3724089.418996166);
             EXPECT_EQ (t.length (), 11); // 6 digits of precision, plus '.' and 'e+06'
@@ -1304,15 +1304,15 @@ namespace {
 
         {
             // 3.141592653589793  (but really about rounding policy on FloatConversion::ToString)
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{2}), "3.1");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{3}), "3.14");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{4}), "3.142");  // 15... rounded up to 2
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{5}), "3.1416"); // 5 rounded to 6!
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{6}), "3.14159");
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{7}), "3.141593");     // rounded != trunc
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{8}), "3.1415927");    // rounded != trunc
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{9}), "3.14159265");   // trunc fine
-            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::Precision{10}), "3.141592654"); // 3 rounded up to 4
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{2}), "3.1");
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{3}), "3.14");
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{4}), "3.142");  // 15... rounded up to 2
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{5}), "3.1416"); // 5 rounded to 6!
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{6}), "3.14159");
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{7}), "3.141593");     // rounded != trunc
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{8}), "3.1415927");    // rounded != trunc
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{9}), "3.14159265");   // trunc fine
+            EXPECT_EQ (FloatConversion::ToString (numbers::pi, FloatConversion::SignificantFigures{10}), "3.141592654"); // 3 rounded up to 4
         }
     }
 }

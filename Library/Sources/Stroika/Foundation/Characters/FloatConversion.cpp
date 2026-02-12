@@ -26,15 +26,15 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ************************ FloatConversion::Precision ****************************
+ ********************* FloatConversion::SignificantFigures **********************
  ********************************************************************************
  */
-String FloatConversion::Precision::ToString () const
+String FloatConversion::SignificantFigures::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    if (fPrecision_) {
-        sb << "Precision:"sv << *fPrecision_;
+    if (fSignificantFigures_) {
+        sb << "SignificantFigures:"sv << *fSignificantFigures_;
     }
     else {
         sb << "FULL"sv;
@@ -52,8 +52,8 @@ String FloatConversion::ToStringOptions::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    if (fPrecision_) {
-        sb << "Precision:"sv << *fPrecision_ << ","sv;
+    if (fSignificantFigures_) {
+        sb << "SignificantFigures:"sv << *fSignificantFigures_ << ","sv;
     }
     if (fFmtFlags_) {
         sb << "Fmt-Flags:"sv << Characters::ToString ((int)*fFmtFlags_, ios_base::hex) << ","sv;

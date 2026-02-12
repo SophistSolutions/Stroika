@@ -17,24 +17,24 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     /*
      ********************************************************************************
-     ************************ FloatConversion::Precision ****************************
+     ******************** FloatConversion::SignificantFigures ***********************
      ********************************************************************************
      */
-    constexpr Precision::Precision (unsigned int p)
-        : fPrecision_{p}
+    constexpr SignificantFigures::SignificantFigures (unsigned int p)
+        : fSignificantFigures_{p}
     {
     }
-    constexpr Precision::Precision (FullFlag)
-        : fPrecision_{} // kFull
+    constexpr SignificantFigures::SignificantFigures (FullFlag)
+        : fSignificantFigures_{} // kFullPrecision
     {
     }
     template <floating_point T>
-    constexpr unsigned int Precision::GetEffectivePrecision () const
+    constexpr auto SignificantFigures::GetEffectiveSignificantFigures () const -> RepType
     {
-        return fPrecision_.value_or (numeric_limits<T>::max_digits10);
+        return fSignificantFigures_.value_or (numeric_limits<T>::max_digits10);
     }
     template <IStdBasicStringCompatibleCharacter CHAR>
-    constexpr unsigned int Precision::CalculatePrecision (span<const CHAR> number)
+    constexpr auto SignificantFigures::Calculate (span<const CHAR> number) -> RepType
     {
         // two passes cuz eatLeadingZero depends on scientific, which we find at the end of the text
         bool dotPresent = false;
@@ -52,8 +52,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     break;
             }
         }
-        unsigned int n{0};
-        unsigned int trailingZeros{0};
+        RepType n{0};
+        RepType trailingZeros{0};
         bool         eatLeadingZeros = not scientific;
         bool         gotoDone         = false;
         for (const CHAR c : number) {
@@ -114,9 +114,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      init (basic_streambuf...) initializes precision to 6
      *      Stroika need not maintain that default here, but it seems a sensible one...
      * 
-     *  \note defined here instead of header cuz needs to be after Precision::CTOR.
+     *  \note defined here instead of header cuz needs to be after SignificantFigures::CTOR.
      */
-    constexpr inline Precision Precision::kDefault{6};
+    constexpr inline SignificantFigures SignificantFigures::kDefault{6};
 
     /**
      *  \brief Full precision here means enough digits so that when written out (serialized) - and read back in (deserialized)
@@ -125,9 +125,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *  \see  // https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
      *        numeric_limits<T>::max_digits10
      * 
-     *  \note defined here instead of header cuz needs to be after Precision::CTOR.
+     *  \note defined here instead of header cuz needs to be after SignificantFigures::CTOR.
      */
-    constexpr inline Precision Precision::kFull{Precision::FullFlag::eFull};
+    constexpr inline SignificantFigures SignificantFigures::kFullPrecision{SignificantFigures::FullFlag::eFull};
 
     /*
      ********************************************************************************
@@ -146,8 +146,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : fFmtFlags_{fmtFlags}
     {
     }
-    constexpr ToStringOptions::ToStringOptions (Precision precision)
-        : fPrecision_{precision}
+    constexpr ToStringOptions::ToStringOptions (SignificantFigures precision)
+        : fSignificantFigures_{precision}
     {
     }
     constexpr ToStringOptions::ToStringOptions (FloatFormatType scientificNotation)
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     constexpr ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
         : ToStringOptions{b1}
     {
-        Memory::CopyToIf (&fPrecision_, b2.fPrecision_);
+        Memory::CopyToIf (&fSignificantFigures_, b2.fSignificantFigures_);
         Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
         fUseCurrentLocale_ = b2.fUseCurrentLocale_;
         Memory::CopyToIf (&fUseLocale_, b2.fUseLocale_);
@@ -173,9 +173,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : ToStringOptions{ToStringOptions{b1, b2}, forward<ARGS> (args)...}
     {
     }
-    constexpr optional<Precision> ToStringOptions::GetPrecision () const
+    constexpr optional<SignificantFigures> ToStringOptions::GetSignificantFigures () const
     {
-        return fPrecision_;
+        return fSignificantFigures_;
     }
     constexpr optional<bool> ToStringOptions::GetTrimTrailingZeros () const
     {
@@ -376,7 +376,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     namespace Private_ {
 #if qStroika_Foundation_Debug_AssertionsChecked || !(__cpp_lib_to_chars >= 201611)
-        inline size_t CalcPrecision_ (const String& numStr, bool countZerosAtEndAfterDecPoint = false)
+        inline size_t CalcSignificantFigures_ (const String& numStr, bool countZerosAtEndAfterDecPoint = false)
         {
             bool   leading    = true;
             bool   ignoreRest = false;
@@ -415,18 +415,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
 #endif
         template <floating_point FLOAT_TYPE>
-        String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, Precision precision)
+        String ToString_OptimizedForCLocaleAndNoStreamFlags_ (FLOAT_TYPE f, SignificantFigures precision)
         {
             using namespace Memory;
             size_t sz = numeric_limits<FLOAT_TYPE>::max_digits10 + numeric_limits<FLOAT_TYPE>::max_exponent10 + 5; // source? "-1.##e+##\0"
             StackBuffer<char> buf{Memory::eUninitialized, sz};
             ptrdiff_t         resultStrLen;
-            unsigned int      effectivePrecision = precision.GetEffectivePrecision<FLOAT_TYPE> ();
+            unsigned int      effectivePrecision = precision.GetEffectiveSignificantFigures<FLOAT_TYPE> ();
 
             // XCode 15 still doesn't define __cpp_lib_to_chars, as well as _LIBCPP_VERSION < 190000, I believe --LGP 2024-07-13
 #if __cpp_lib_to_chars >= 201611
             // empirically, on MSVC, to_chars() is much faster than snprintf (appears 3x apx faster) -- LGP 2021-11-04
-            if (precision == Precision::kFull) {
+            if (precision == SignificantFigures::kFullPrecision) {
                 resultStrLen = to_chars (buf.begin (), buf.end (), f, chars_format::general).ptr - buf.begin ();
             }
             else {
@@ -449,7 +449,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             };
 
             FLOAT_TYPE useRoundedFloat = Math::Round<FLOAT_TYPE> (f, effectivePrecision);
-            if (precision != Precision::kFull) {
+            if (precision != SignificantFigures::kFullPrecision) {
                 f = useRoundedFloat;
             }
 
@@ -459,7 +459,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                                                   mkFmtWithPrecisionArg_ (std::begin (format), std::end (format),
                                                                same_as<FLOAT_TYPE, long double> ? 'L' : '\0', forceScientific),
                                                   (int)effectivePrecision + 1, f);
-            auto actualPrecIncZeros = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}, true);
+            auto actualPrecIncZeros = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}, true);
             if (actualPrecIncZeros > effectivePrecision) {
                 ptrdiff_t nBytes    = static_cast<ptrdiff_t> (actualPrecIncZeros) - static_cast<ptrdiff_t> (effectivePrecision);
                 auto      numberEnd = buf.data () + resultStrLen;
@@ -473,10 +473,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 #endif
 
             // [[maybe_unused]] auto oo1 = String{span{buf.data (), static_cast<size_t> (resultStrLen)}}.As<wstring> ();
-            // [[maybe_unused]] auto ooo = CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
+            // [[maybe_unused]] auto ooo = CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}});
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
 #if qStroika_Foundation_Debug_AssertionsChecked
-            Assert (precision == Precision::kFull or CalcPrecision_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
+            Assert (precision == SignificantFigures::kFullPrecision or CalcSignificantFigures_ (String{span{buf.data (), static_cast<size_t> (resultStrLen)}}) <= effectivePrecision);
 #endif
             return String{span{buf.data (), static_cast<size_t> (resultStrLen)}};
         }
@@ -504,7 +504,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             };
             String r = compute ();
-            Ensure (Precision::CalculatePrecision (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
+            Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
             return r;
         }
         template <floating_point T>
@@ -528,7 +528,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             };
             String r = compute ();
-            Ensure (Precision::CalculatePrecision (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
+            Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
             return r;
         }
     }
@@ -537,7 +537,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         template <floating_point FLOAT_TYPE>
         String ToString_GeneralCase_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
-            unsigned int    usePrecision = options.GetPrecision ().value_or (Precision{}).GetEffectivePrecision<FLOAT_TYPE> ();
+            unsigned int    usePrecision = options.GetSignificantFigures ().value_or (SignificantFigures{}).GetEffectiveSignificantFigures<FLOAT_TYPE> ();
             FloatFormatType usingFormat  = options.GetFloatFormat ().value_or (FloatFormatType::eDEFAULT);
 
             // if no locale, can use this...
@@ -614,7 +614,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
             auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
-                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (Precision{}))
+                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
                               : Private_::ToString_GeneralCase_ (f, options);
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);

@@ -39,7 +39,7 @@
  *
  *      @todo   Consider using long double for InternalNumericFormatType_;
  *
- *      @todo   Consider adding 'precision' property to PrettyPrintInfo. Think about precision support/design of
+ *      @todo   Consider adding 'significantFigures' property to PrettyPrintInfo. Think about significantFigures support/design of
  *              boost (maybe use  bignum or rational?). Probably no - but document clearly why or why not.
  *
  *      @todo   Add PRECISION support to PrettyPrintInfo argument to PrettyPrint () function.
@@ -169,10 +169,10 @@ namespace Stroika::Foundation::Time {
          *
          *  Note - if 'empty' - As<> for numeric types returns 0.
          * 
-         *  \note Precision - if given - refers to the precision of the seconds part of the ISO-8601 duration string.
+         *  \note SignificantFigures - if given - refers to the precision of the seconds part of the ISO-8601 duration string.
          * 
          *  \note Change since before 3.0d12 - with Duration::As<String> () - used
-         *        to default to full precision, and now defaults to default precision (FloatConversions::Precision{} == 6).
+         *        to default to full precision, and now defaults to default precision (FloatConversions::SignificantFigures{} == 6).
          *
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Time {
             requires (Common::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or Common::IDuration<T> or
                       Common::ITimePoint<T>);
         template <typename T>
-        nonvirtual T As (Characters::FloatConversion::Precision p) const
+        nonvirtual T As (Characters::FloatConversion::SignificantFigures p) const
             requires (Common::IAnyOf<T, Characters::String>);
 
     public:
@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Time {
 
     private:
         static InternalNumericFormatType_ ParseTime_ (const string& s);
-        static Characters::String         UnParseTime_ (InternalNumericFormatType_ t, Characters::FloatConversion::Precision p);
+        static Characters::String         UnParseTime_ (InternalNumericFormatType_ t, Characters::FloatConversion::SignificantFigures p);
 
     private:
         /**

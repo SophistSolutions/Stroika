@@ -405,7 +405,7 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
     return isNeg ? -curVal : curVal;
 }
 
-String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::Precision p)
+String Duration::UnParseTime_ (InternalNumericFormatType_ t, FloatConversion::SignificantFigures p)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Duration::UnParseTime_", "t = {:e}, p={}"_f, t, p};

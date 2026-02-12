@@ -210,7 +210,7 @@ namespace {
         }
         {
             ObjectVariantMapper m;
-            m.AddCommonType<Duration> (FloatConversion::Precision{2});
+            m.AddCommonType<Duration> (FloatConversion::SignificantFigures{2});
             VariantValue vv = m.FromObject (Duration{numbers::pi});
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
         }

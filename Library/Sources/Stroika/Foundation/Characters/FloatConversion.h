@@ -29,6 +29,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. 
      * 
      * Sometimes eDontTrimZeros desirable (to show precision): but often not.
+     * 
+     *      \@todo MAYBE DEPRECTE this and add variant of eStandard  - eStandardNoTrailingZeros, maybe also eScientificNoTrailingZeros
      */
     enum class TrimTrailingZerosType {
         eTrimZeros,
@@ -56,16 +58,42 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     using PredefinedLocale::eUseCurrentLocale;
 
     /**
-     *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
+     *  Significant figures are the digits in a measured or calculated value that carry reliable information
+     *  regarding its precision and accuracy, typically including all non-zero digits, zeros between non-zero digits, and trailing zeros in a decimal.
+     *  They define the limit of a measurement's certainty.
      * 
      *  This is used for specifying how to format floating point numbers.
      * 
-     *  \note - This DIFFERS from the iostream library where :
+     *  @alias Precision (this was called 'Precision' before Stroika v3.0d23)
+     * 
+     *  Rules:
+     *      o   Non-zero Digits: All digits from 1-9 are always significant (e.g., \(45.2\) has 3).
+     *      o   Interior Zeros: Zeros between non-zero digits are always significant (e.g., \(1002\) has 4).
+     *      o   Leading Zeros: Zeros to the left of the first non-zero digit are never significant; they are placeholders (e.g., \(0.0032\) has 2).
+     *      o   Trailing Zeros (Decimal Present): Zeros at the end of a number that contains a decimal point are significant (e.g., \(92.00\) has 4).
+     *      o   Trailing Zeros (No Decimal): Zeros at the end of a number without a decimal point are ambiguous and usually not significant (e.g., \(140\) has 2), unless indicated by a decimal point (e.g., \(140.\) has 3).
+     *      o   Exact Numbers: Numbers from counting or definitions (e.g., \(12\) inches in a foot) have an infinite number of significant figures.
+     *      o   Scientific Notation: In \(A\times 10^{b}\), all digits in the coefficient (\(A\)) are significant (e.g., \(1.020\times 10^{3}\) has 4).
+     * 
+     * Examples:
+     *      "3.01"              =>      3
+     *      "03.01"             =>      3
+     *      "-44.21"            =>      4
+     *      "+44.21"            =>      4
+     *      "-44.21e2"          =>      4
+     *      "-44.210e2"         =>      5
+     *      "400"               =>      1
+     *      "400."              =>      3
+     *      "400.0"             =>      4
+     *      "0.0000001234567"   =>      7
+     *      "0.000000000"       =>      9       ; a bit ambiguous given the rules - leading zeros vs trailing zeros (decimal present)
+     * 
+     *  \note - This differs from the iostream library 'precision' where:
      *      Its exact meaning depends on whether the stream is using the default floating-point notation or the std::fixed or std::scientific
      *          Default Notation (defaultfloat): The precision value specifies the total number of significant digits to display.
      *          Fixed or Scientific Notation (fixed, scientific): The precision value specifies the exact number of digits to appear after the decimal point
      * 
-     *  The special value Precision::kFull refers to when you wish the full precision that allows the exact value to be read back
+     *  The special value SignificantFigures::kFullPrecision refers to when you wish the full precision that allows the exact value to be read back
      *  after being written:
      *
      *  \note
@@ -77,15 +105,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * TODO:
      *      @todo   rewrite with  https://en.cppreference.com/w/cpp/utility/to_chars
 
-     *      @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
-     *              correct.
-     *
-     *              using PrecisionType = uint16_t;
-     *
-     *      @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
-     *              which is the number of decimals after the decimal point.
      */
-    struct Precision {
+    struct SignificantFigures {
+    public:
+        using RepType = unsigned int;   // maybe use uint16_t?
+
     public:
         /**
          *  Flag indicating full precision (see Precision class docs for explanation) - max_digits10
@@ -96,17 +120,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     public:
         /**
-         *  Precision ()/0
+         *  SignificantFigures ()/0
          *      Same as kDefault: 6
-         *  Precision(FullFlag): 
-         *      special magic value, so depending on type 'T' in call to GetEffectivePrecision () - gets full precision for that type
+         *  SignificantFigures(FullFlag): 
+         *      special magic value, so depending on type 'T' in call to GetEffectiveSignificantFigures () - gets full precision for that type
          */
-        constexpr Precision () = default;
-        constexpr Precision (unsigned int p);
-        constexpr Precision (FullFlag);
+        constexpr SignificantFigures () = default;
+        constexpr SignificantFigures (RepType p);
+        constexpr SignificantFigures (FullFlag);
 
     public:
-        constexpr bool operator== (const Precision&) const = default;
+        constexpr bool operator== (const SignificantFigures&) const = default;
 
     public:
         /**
@@ -130,7 +154,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *  Selected numeric_limits<T>::max_digits10 cuz used to map float -> text, and then hopefully someday back to float value preserving
          */
         template <floating_point T>
-        constexpr unsigned int GetEffectivePrecision () const;
+        constexpr RepType GetEffectiveSignificantFigures () const;
 
     public:
         /**
@@ -139,50 +163,30 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         nonvirtual String ToString () const;
 
     public:
-        static const Precision kDefault;
+        static const SignificantFigures kDefault;
 
     public:
-        static const Precision kFull;
+        static const SignificantFigures kFullPrecision;
 
     public:
         /**
          *  Calculate the precision - number of significant digits - in the given number. For this purpose, count trailing
          *  zeros. So basically string length, minus 1 for '.', minus 1 for any leading +-, minus any characters in exponential
          *  specifier.
-         * 
-         *  @aliases CalculateSignificantFigures
-         * 
-         * Rules:
-         *      o   Non-zero Digits: All digits from 1-9 are always significant (e.g., \(45.2\) has 3).
-         *      o   Interior Zeros: Zeros between non-zero digits are always significant (e.g., \(1002\) has 4).
-         *      o   Leading Zeros: Zeros to the left of the first non-zero digit are never significant; they are placeholders (e.g., \(0.0032\) has 2).
-         *      o   Trailing Zeros (Decimal Present): Zeros at the end of a number that contains a decimal point are significant (e.g., \(92.00\) has 4).
-         *      o   Trailing Zeros (No Decimal): Zeros at the end of a number without a decimal point are ambiguous and usually not significant (e.g., \(140\) has 2), unless indicated by a decimal point (e.g., \(140.\) has 3).
-         *      o   Exact Numbers: Numbers from counting or definitions (e.g., \(12\) inches in a foot) have an infinite number of significant figures.
-         *      o   Scientific Notation: In \(A\times 10^{b}\), all digits in the coefficient (\(A\)) are significant (e.g., \(1.020\times 10^{3}\) has 4).
-         * 
-         * Examples:
-         *      "3.01"              =>      3
-         *      "03.01"             =>      3
-         *      "-44.21"            =>      4
-         *      "+44.21"            =>      4
-         *      "-44.21e2"          =>      4
-         *      "-44.210e2"         =>      5
-         *      "400"               =>      1
-         *      "400."              =>      3
-         *      "400.0"             =>      4
-         *      "0.0000001234567"   =>      7
-         *      "0.000000000"       =>      9       ; a bit ambiguous given the rules - leading zeros vs trailing zeros (decimal present)
          */
         template <IStdBasicStringCompatibleCharacter CHAR>
-        static constexpr unsigned int CalculatePrecision (span<const CHAR> number);
+        static constexpr auto Calculate (span<const CHAR> number) -> RepType;
 
     private:
         /**
-         *  Internally treat fPrecision_ as meaning kFull
+         *  Internally treat fSignificantFigures_ as meaning kFullPrecision
          */
-        optional<unsigned int> fPrecision_{6};
+        optional<RepType> fSignificantFigures_{6};
     };
+
+    using Precision [[deprecated ("Since Stroika v3.0d23 use SignificantFigures instead")]] =
+        SignificantFigures; // for backward compatibility - but maybe should be removed in future
+    // @todo DEPRECATE
 
     /**
      */
@@ -198,6 +202,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
         /**
          *  not scientific (no e+nn), but otherwise like fixed point or default.
+         * 
+         *  Really no good name for this (unscientific, defaultfloat means something differnt in C++).
          * 
          *  For example:
          *      o   3.12
@@ -260,7 +266,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr ToStringOptions (PredefinedLocale p);
         ToStringOptions (const locale& l);
         constexpr ToStringOptions (ios_base::fmtflags fmtFlags);
-        constexpr ToStringOptions (Precision precision);
+        constexpr ToStringOptions (SignificantFigures precision);
         constexpr ToStringOptions (FloatFormatType floatFormat);
         constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
@@ -268,7 +274,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
 
     public:
-        constexpr optional<Precision> GetPrecision () const;
+        constexpr optional<SignificantFigures> GetSignificantFigures () const;
 
     public:
         constexpr optional<bool> GetTrimTrailingZeros () const;
@@ -303,7 +309,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         nonvirtual String ToString () const;
 
     private:
-        optional<Precision>          fPrecision_;
+        optional<SignificantFigures> fSignificantFigures_;
         optional<ios_base::fmtflags> fFmtFlags_;
         bool                         fUseCurrentLocale_{false}; // dynamically calculated current locale
         optional<locale>             fUseLocale_;               // if missing, use locale::classic (unless fUseCurrentLocale_)

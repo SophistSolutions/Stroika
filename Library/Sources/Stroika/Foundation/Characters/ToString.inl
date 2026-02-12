@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Characters {
         {
             return Characters::ToString (t.count ()) + " seconds"sv;
         }
-        String ToString (const Time::Duration& t, FloatConversion::Precision p);
+        String ToString (const Time::Duration& t, FloatConversion::SignificantFigures p);
         template <typename CLOCK_T>
         inline String ToString (const chrono::time_point<CLOCK_T, chrono::duration<double>>& t)
         {

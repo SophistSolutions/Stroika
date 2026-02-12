@@ -154,7 +154,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *      @todo   XPath / JPath / JSONPath feature in DataExchange::VariantValue - https://github.com/SophistSolutions/Stroika/issues/110
      *
-     *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has cleaned up
+     *      @todo   POSSIBLY add support for SignificantFigures (see Characters::Float2String) - once that module has cleaned up
      *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
      *              Maybe Float2StringOptions is optional param to As<String> ()???
      *

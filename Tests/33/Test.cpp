@@ -865,9 +865,9 @@ namespace {
             ObjectVariantMapper m;
             m.AddCommonType<Duration> ();
             VariantValue vv = m.FromObject (Duration{numbers::pi});
-            EXPECT_EQ (vv, "PT3.14159S"); // Precision{} default - used by ObjectVariantMapper - is 6 digits precision
+            EXPECT_EQ (vv, "PT3.14159S"); // SignificantFigures{} default - used by ObjectVariantMapper - is 6 digits SignificantFigures
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.14159S\""); // ''
-            m.AddCommonType<Duration> (FloatConversion::Precision{2});                // replaces converter
+            m.AddCommonType<Duration> (FloatConversion::SignificantFigures{2});                // replaces converter
             vv = m.FromObject (Duration{numbers::pi});
             EXPECT_EQ (Variant::JSON::Writer{}.WriteAsString (vv), "\"PT3.1S\"");
         }
