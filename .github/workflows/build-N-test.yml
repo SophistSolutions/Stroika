@@ -406,7 +406,8 @@ jobs:
           }
 
           # 4. Set the data-root (PowerShell handles the backslash escaping)
-          $config."data-root" = "D:\Docker"
+          # $config."data-root" = "D:\Docker"
+          $config | Add-Member -MemberType NoteProperty -Name "data-root" -Value "D:\DockerData"
 
           # 5. Save back to file
           $config | ConvertTo-Json | Set-Content $path
