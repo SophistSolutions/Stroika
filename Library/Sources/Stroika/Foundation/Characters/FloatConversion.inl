@@ -88,9 +88,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     break;
                 case 'e':
                 case 'E':
-                    gotoDone = true;
+                    gotoDone = true;    // goto Done;   // FIX to use this when c++23
                     break;
-                    // goto Done;   // FIX to use this when c++23
             }
             if (gotoDone) {
                 break;
