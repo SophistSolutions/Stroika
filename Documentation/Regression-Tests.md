@@ -36,10 +36,10 @@ MONGO_CONNECTION_STRING=mongodb://admin:pass@localhost:27017
 or 
 
 ~~~bash
-MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017
+MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017
 ~~~
 
-For my home regression tests, I run that on 'medusa', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017
+For my home regression tests, I run that on 'medusa', and use MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017
 
 ### Dev Docker Containers
 
@@ -65,7 +65,7 @@ checkin from one spot.
 
   ```bash
   MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode16_m1 PARALELLMAKEFLAG=-j5 \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -75,7 +75,7 @@ checkin from one spot.
 
   ```bash
   USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k22 PLATFORM=VisualStudio.Net-2022 \
-    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       ./ScriptsLib/RegressionTests
   ```
 
@@ -87,9 +87,9 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
-      MACHINE=medusa.local \
+      MACHINE=medusa.lan \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -101,9 +101,9 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2404_x86_64 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2404-regression-tests \
-      MACHINE=medusa.local \
+      MACHINE=medusa.lan \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -115,9 +115,9 @@ checkin from one spot.
   RUN_IN_DOCKER=1 \
     USE_TEST_BASENAME=Ubuntu2504_x86_64 \
     BUILD_CONFIGURATIONS_MAKEFILE_TARGET=basic-unix-test-configurations \
-    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+    MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2504-regression-tests \
-    MACHINE=medusa.local \
+    MACHINE=medusa.lan \
     ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -128,11 +128,11 @@ checkin from one spot.
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
-      RASPBERRYPI_REMOTE_MACHINE=raspberrypi.local \
+      RASPBERRYPI_REMOTE_MACHINE=raspberrypi.lan \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
-      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+      MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
-      MACHINE=medusa.local \
+      MACHINE=medusa.lan \
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
@@ -142,15 +142,15 @@ checkin from one spot.
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
   ```bash
-  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows-${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
+  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows-${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
   ```
 
   OR alternatively
 
   ```sh
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows-Cygwin-VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 \
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 \
     CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows-MSYS-VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 
@@ -162,7 +162,7 @@ Must be done on Windows machine (currently doesnt work on - even windows - vm)
 On WINDOWS:
 
   ```bash
-  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.local:27017 ScriptsLib/RunLocalWSLRegressionTests
+  MONGO_CONNECTION_STRING=mongodb://admin:pass@medusa.lan:27017 ScriptsLib/RunLocalWSLRegressionTests
   ```
 
 
@@ -171,4 +171,4 @@ On WINDOWS:
 - if you have trouble resolving names inside docker you can use
 
   EXTRA_DOCKER_ARGS=" --add-host medusa:`./ScriptsLib/ResolveIP medusa` "
-  EXTRA_DOCKER_ARGS=" --add-host medusa:`./ScriptsLib/ResolveIP medusa`  --add-host raspberrypi:`./ScriptsLib/ResolveIP raspberrypi.local` "
+  EXTRA_DOCKER_ARGS=" --add-host medusa:`./ScriptsLib/ResolveIP medusa`  --add-host raspberrypi:`./ScriptsLib/ResolveIP raspberrypi.lan` "
