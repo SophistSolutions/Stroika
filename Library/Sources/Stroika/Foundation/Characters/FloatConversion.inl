@@ -505,7 +505,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
             };
             String r = compute ();
-            Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) == nSignificantFigures);
+            // @todo RECONSIDER
+            // for example, there is no way for 31200000 to be represented with 6 significant digits (in standard form, you can with scientific)
+            // 212312345.0 with 6 significant digits is 212312000, but we need the extra digits for magnatitude, so not
+            // sure worth losing the action digits we have? CONSIDER!!!!
+            // but for now no ensures --Ensure (SignificantFigures::Calculate (span<const wchar_t>{r.As<wstring> ()}) <= nSignificantFigures);
             return r;
         }
         template <floating_point T>
@@ -577,6 +581,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         break;
                     case FloatFormatType::eDefaultFloat:
                         s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
+                        /*
+                         * Precision Field: The stream's precision setting (managed by std::setprecision or std::ios_base::precision()) 
+                         * specifies the maximum number of meaningful digits to display in total (both before and after the decimal point),
+                         * not a fixed number of digits after the decimal point (so same as SignificantFigures)
+                         */
                         s.precision (usePrecision);
                         break;
                     case FloatFormatType::eFixedPoint:
@@ -586,6 +595,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     case FloatFormatType::eStandard:
                         AssertNotReached (); // handled above
                         break;
+                        DISABLE_COMPILER_MSC_WARNING_START (4996)
                     case FloatFormatType::eAutomaticScientific: {
                         s.precision (usePrecision);
                         bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
@@ -598,6 +608,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                             s.precision (usePrecision);
                         }
                     } break;
+                        DISABLE_COMPILER_MSC_WARNING_END (4996)
                     default:
                         RequireNotReached ();
                         break;

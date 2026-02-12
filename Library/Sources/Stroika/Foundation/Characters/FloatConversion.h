@@ -29,8 +29,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * Control needless trailing zeros. For example, 3.000 instead of 3, or 4.2000 versus 4.2. 
      * 
      * Sometimes eDontTrimZeros desirable (to show precision): but often not.
-     * 
-     *      \@todo MAYBE DEPRECTE this and add variant of eStandard  - eStandardNoTrailingZeros, maybe also eScientificNoTrailingZeros
      */
     enum class TrimTrailingZerosType {
         eTrimZeros,
@@ -163,9 +161,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         nonvirtual String ToString () const;
 
     public:
+        /**
+         *      kDefault is 6
+         */
         static const SignificantFigures kDefault;
 
     public:
+        /**
+         * @brief Sentinal value that is interpretted differently depending on the type passed to GetEffectiveSignificantFigures()
+         */
         static const SignificantFigures kFullPrecision;
 
     public:
@@ -186,57 +190,119 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     using Precision [[deprecated ("Since Stroika v3.0d23 use SignificantFigures instead")]] =
         SignificantFigures; // for backward compatibility - but maybe should be removed in future
-    // @todo DEPRECATE
 
     /**
      */
     enum class FloatFormatType {
 
         /**
-         *  corresponds to ios_base::scientific
+         *  (WHITESPACE TRIM FLAG HERE PROBABLY NO SENSE)
          * 
-         *  For example:
-         *      o   3.12e12
-         */
-        eScientific,
-
-        /**
-         *  not scientific (no e+nn), but otherwise like fixed point or default.
+         *  corresponds to unsetf (floatfield) - which may be different than scientific or fixed point.
+         *  This is basically what the 'C' standard decided would be the default way to format floating point numbers.
          * 
-         *  Really no good name for this (unscientific, defaultfloat means something differnt in C++).
+         *  Precision Field: The stream's precision setting (managed by std::setprecision or std::ios_base::precision()) 
+         *  specifies the maximum number of meaningful digits to display in total (both before and after the decimal point),
+         *  not a fixed number of digits after the decimal point.
          * 
-         *  For example:
-         *      o   3.12
-         *      o   212312345
-         *      o   -44.2
-         *      o   0.0000001234567
-         */
-        eStandard,
-
-        /**
-         *  corresponds to unsetf (floatfield) - which may be different than scientific or fixed point
+         *  Trailing Zeros: It does not pad the output with trailing zeros if the number can be displayed with 
+         *  fewer digits than the precision.
+         * 
+         *  Notation: It automatically switches between fixed-point and scientific notation as needed to best 
+         *  represent the value within the given precision. For example, a large number or a number very close 
+         * to zero might be shown in scientific notation, while others will be in fixed-point notation. 
+         * 
+         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
+         *      number              │   output
+         *       -------------------│----------------------
+         *       0.0                │   0
+         *       0.01               │   0.01
+         *       0.00001            │   1e-05           (probably could be 0.00001)
+         *       3.12e12            │   3.12e+12
+         *       3.12               │   3.12
+         *       212312345.0        │   2.12312e+08
+         *       -44.2              │  -44.2
+         *       0.0000001234567    │   1.23457e-07
          */
         eDefaultFloat,
 
         /**
          *  corresponds to ios_base::fixed (numbers are displayed without an exponent part, not actually fixed with display)
+         * 
+         * WAG - TEST THESE VALUES
+         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
+         *      number              │   output
+         *       -------------------│----------------------
+         *       0.0                │   0.000000
+         *       0.01               │   0.010000
+         *       0.00001            │   0.000010
+         *       3.12e12            │   3120000000000
+         *       3.12               │   3.12
+         *       212312345.0        │   212312345
+         *       -44.2              │   -44.2
+         *       0.0000001234567    │   0.000000
          */
         eFixedPoint,
+        // TODO
+        //eFixedPointWithWhitespaceTrimmed,,
 
         /**
-         *  auto-select eScientific/eFixedPoint based on how big the number is, and the argument precision (could do with
-         *  better clarification here)
+         * ((MAKES SENSE TO USE THIS WITH TRIM TRAILING ZEROS) = but not default)
+         *  corresponds to ios_base::scientific
          * 
-         *  Automatic picks based on the precision and the number used, so for example, 0.0000001
-         * will show as '1e-7', but 4 will show as '4'
+         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
+         *      number              │   output
+         *       -------------------│----------------------
+         *       0.0                │   0.000000e+00
+         *       0.01               │   1.000000e-02
+         *       0.00001            │   1.000000e-05
+         *       3.12e12            │   3.12000e+12
+         *       3.12               │   3.12000e+00
+         *       212312345.0        │   2.12312e+08
+         *       -44.2              │  -4.42000e+01
+         *       0.0000001234567    │   1.23457e-07
          */
-        eAutomaticScientific,
+        eScientific,
 
+        //eScientificWithWhitespaceTrimmed,,
+
+        /**
+         *  \brief Somewhat like defaultfloat, but never uses scientific notation.
+         * 
+         *   (PROBABLY JUST DEFINE THIS TO ALWAYS TRIM WHITESPACE)
+         * 
+         *  not scientific (no e+nn), but otherwise somewhat like fixed point or defaultfloat.
+         * 
+         *  Really no good name for this (unscientific, defaultfloat means something differnt in C++).
+         *  Sort of like defaultfloat but NEVER deciding to use scientific notation.
+         * 
+         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
+         *      number              │   output
+         *       -------------------│----------------------
+         *       0.0                │   0
+         *       0.01               │   0.01
+         *       0.00001            │   0.00001
+         *       3.12e12            │   3120000000000
+         *       3.12               │   3.12
+         *       212312345.0        │   212312345
+         *       -44.2              │   -44.2
+         *       0.0000001234567    │   0.000000123457
+         */
+        eStandard,
+
+        eAutomaticScientific [[deprecated ("Since Stroika v3.0d23 use eDefaultFloat instead")]],
+
+        /**
+         * If its good enuf for C, its good enuf for me ;-). Seriously - sensible default.
+         */
         eDEFAULT = eDefaultFloat,
 
-        Stroika_Define_Enum_Bounds (eScientific, eAutomaticScientific)
+        DISABLE_COMPILER_MSC_WARNING_START (4996)
+        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific) DISABLE_COMPILER_MSC_WARNING_END (4996)
     };
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
     using FloatFormatType::eAutomaticScientific;
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
     using FloatFormatType::eDefaultFloat;
     using FloatFormatType::eFixedPoint;
     using FloatFormatType::eScientific;
