@@ -152,7 +152,7 @@ namespace {
         constexpr char kOneTab_[]       = "\t";
         {
             FloatConversion::ToStringOptions fo =
-                FloatConversion::ToStringOptions{FloatConversion::eDontTrimZeros, FloatConversion::SignificantFigures{2}};
+                FloatConversion::ToStringOptions{FloatConversion::SignificantFigures{2}};
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo) << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
