@@ -726,6 +726,15 @@ But - even with just plain make, you need some sort of configure script to estab
       - Search for "Command Variable"
       - click install
 
+  - command 'cpptools.activeConfigName' not found
+
+    Caused by missing VSCode extension
+
+    - Install the "C/C++ for Visual Studio Code" Extension 
+      - shortcut Ctrl+Shift+X
+      - Search for "C/C++ for Visual Studio Code"
+      - click install
+
   - when building in vscode, error message from vscode:
     "Unexpected token 'U', "Unknown" is not valid JSON"
 
