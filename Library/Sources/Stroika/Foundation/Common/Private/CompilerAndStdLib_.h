@@ -1281,8 +1281,9 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 
 #ifndef qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
 
+// reproduced problem on 200100 on MACOS
 #if defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy (_LIBCPP_VERSION < 180000)
+#define qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy (_LIBCPP_VERSION < 210000)
 #else
 #define qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy 0
 #endif

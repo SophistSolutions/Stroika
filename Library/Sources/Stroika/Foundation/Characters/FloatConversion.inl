@@ -214,15 +214,55 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
-        inline void TrimTrailingZeros_ (String* strResult)
+        inline void TrimTrailingZeros_NotSci_ (String* strResult)
         {
-            // @todo THIS could be more efficient. We should KNOW case of the 'e' and maybe able to tell/avoid looking based on args to String2Float
-            // also use StringBuilder and Peek()/Character::AsASCIIQuietly
+            // @todo THIS could be more efficient: use StringBuilder and Peek()/Character::AsASCIIQuietly
             RequireNotNull (strResult);
             // strip trailing zeros (after decimal point - before they may indicate magnatude)
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            bool hasE = strResult->Find ('e', eCaseInsensitive).has_value ();
-            if (not hasE) {
+            Require (not strResult->Find ('e', eCaseInsensitive).has_value ());
+            size_t pastDot = strResult->find ('.');
+            if (pastDot != String::npos) {
+                ++pastDot;
+                size_t len           = strResult->length ();
+                size_t pPastLastZero = len;
+                for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
+                    if ((*strResult)[pPastLastZero - 1] != '0') {
+                        break;
+                    }
+                }
+                if (pPastLastZero == pastDot + 1 and (*strResult)[pPastLastZero - 1] == '0') {
+                    pPastLastZero -= 2; // dont map 3.000 to 3.0, map it to 3
+                }
+                if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
+                    *strResult = strResult->SubString (0, pPastLastZero);
+                }
+            }
+        }
+        inline void TrimTrailingZeros_MaybeSci_ (String* strResult)
+        {
+            // @todo THIS could be more efficient: use StringBuilder and Peek()/Character::AsASCIIQuietly
+            RequireNotNull (strResult);
+            // strip trailing zeros (after decimal point - before they may indicate magnatude)
+            // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
+            optional<size_t> whereIsE = strResult->Find ('e', eCaseInsensitive).has_value ();
+            if ( whereIsE) {
+                size_t pastDot = strResult->find ('.');
+                if (pastDot != String::npos) {
+                    ++pastDot;
+                    size_t len           = strResult->length ();
+                    size_t pPastLastZero = len;
+                    for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
+                        if ((*strResult)[pPastLastZero - 1] != '0') {
+                            break;
+                        }
+                    }
+                    if (len != pPastLastZero) [[unlikely]] { // check common case of no change, but this substring and assign already pretty optimized (not sure helps performance)
+                        *strResult = strResult->SubString (0, pPastLastZero) + strResult->SubString (*whereIsE);
+                    }
+                }
+            }
+            else {
                 size_t pastDot = strResult->find ('.');
                 if (pastDot != String::npos) {
                     ++pastDot;
@@ -640,13 +680,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and floatFormat == FloatFormatType::eDefaultFloat)
                     ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
                     : Private_::ToString_GeneralCase_ (f, options);
-            if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed or
-                floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
-                TrimTrailingZeros_ (&result);
+            if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed) {
+                TrimTrailingZeros_NotSci_ (&result);
+            }
+            if (floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
+                TrimTrailingZeros_MaybeSci_ (&result);
             }
 #if qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
             if (floatFormat == FloatFormatType::eDefaultFloat) {
-                TrimTrailingZeros_ (&result);
+                TrimTrailingZeros_MaybeSci_ (&result);
             }
 #endif
             return result;
