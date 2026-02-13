@@ -680,10 +680,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and floatFormat == FloatFormatType::eDefaultFloat)
                     ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetSignificantFigures ().value_or (SignificantFigures{}))
                     : Private_::ToString_GeneralCase_ (f, options);
-            if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed) {
+            if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
                 TrimTrailingZeros_NotSci_ (&result);
             }
-            if (floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
+            if (floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed ) {
                 TrimTrailingZeros_MaybeSci_ (&result);
             }
 #if qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
