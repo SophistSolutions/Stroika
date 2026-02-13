@@ -644,6 +644,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
                 TrimTrailingZeros_ (&result);
             }
+#if qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
+            if (floatFormat == FloatFormatType::eDefaultFloat) {
+                TrimTrailingZeros_ (&result);
+            }
+#endif
             return result;
         }
     }

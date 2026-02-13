@@ -1276,6 +1276,20 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 
 #endif
 
+
+
+
+#ifndef qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
+
+#if defined(_LIBCPP_VERSION)
+#define qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy (_LIBCPP_VERSION < 180000)
+#else
+#define qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy 0
+#endif
+
+#endif
+
+
 /**
          [==========] 6 tests from 1 test suite ran. (9 ms total)         [  PASSED  ] 6 tests.
     [36] Foundation::Database - ../Builds/Release/Tests/Test36  --gtest_brief
