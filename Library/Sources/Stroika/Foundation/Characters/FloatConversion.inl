@@ -154,12 +154,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : fFloatFormat_{scientificNotation}
     {
     }
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     constexpr ToStringOptions::ToStringOptions (TrimTrailingZerosType trimTrailingZeros)
         : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrimZeros}
     {
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     constexpr ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
         : ToStringOptions{b1}
@@ -600,6 +602,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     case FloatFormatType::eStandard:
                         AssertNotReached (); // handled above
                         break;
+                        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
                         DISABLE_COMPILER_MSC_WARNING_START (4996)
                     case FloatFormatType::eAutomaticScientific: {
                         s.precision (usePrecision);
@@ -614,6 +617,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         }
                     } break;
                         DISABLE_COMPILER_MSC_WARNING_END (4996)
+                        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
                     default:
                         RequireNotReached ();
                         break;

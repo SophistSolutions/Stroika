@@ -36,10 +36,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
         Stroika_Define_Enum_Bounds (eTrimZeros, eDontTrimZeros)
     };
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     using TrimTrailingZerosType::eDontTrimZeros;
     using TrimTrailingZerosType::eTrimZeros;
     DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     enum class PredefinedLocale {
         /**
@@ -193,6 +195,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     using Precision [[deprecated ("Since Stroika v3.0d23 use SignificantFigures instead")]] =
         SignificantFigures; // for backward compatibility - but maybe should be removed in future
 
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     /**
      */
     enum class FloatFormatType {
@@ -311,12 +315,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          */
         eDEFAULT = eDefaultFloat,
 
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific) DISABLE_COMPILER_MSC_WARNING_END (4996)
+        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific)
     };
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
     using FloatFormatType::eAutomaticScientific;
     DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using FloatFormatType::eDefaultFloat;
     using FloatFormatType::eFixedPoint;
     using FloatFormatType::eFixedPointWithWhitespaceTrimmed;
@@ -350,9 +353,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr ToStringOptions (ios_base::fmtflags fmtFlags);
         constexpr ToStringOptions (SignificantFigures precision);
         constexpr ToStringOptions (FloatFormatType floatFormat);
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_MSC_WARNING_START (4996)
         [[deprecated ("Since Stroika v3.0d23 use appropriate FloatFormatType 'trim' variant instead")]] constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
         DISABLE_COMPILER_MSC_WARNING_END (4996)
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
         template <typename... ARGS>
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
