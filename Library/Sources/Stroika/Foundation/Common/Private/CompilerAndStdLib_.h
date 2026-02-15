@@ -1276,9 +1276,6 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 
 #endif
 
-
-
-
 #ifndef qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy
 
 // reproduced problem on 200100 on MACOS
@@ -1289,7 +1286,6 @@ In file included from /Users/lewis/Sandbox/StroikaDev/Library/Sources/Stroika/Fo
 #endif
 
 #endif
-
 
 /**
          [==========] 6 tests from 1 test suite ran. (9 ms total)         [  PASSED  ] 6 tests.

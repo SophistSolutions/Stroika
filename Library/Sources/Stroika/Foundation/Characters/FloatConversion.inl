@@ -245,12 +245,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             RequireNotNull (strResult);
             // strip trailing zeros (after decimal point - before they may indicate magnatude)
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            optional<size_t> whereIsE = strResult->Find ('e', eCaseInsensitive).has_value ();
-            if ( whereIsE) {
+            if (optional<size_t> whereIsE = strResult->Find ('e', eCaseInsensitive)) {
                 size_t pastDot = strResult->find ('.');
                 if (pastDot != String::npos) {
                     ++pastDot;
-                    size_t len           = strResult->length ();
+                    size_t len           = *whereIsE - 1;
                     size_t pPastLastZero = len;
                     for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
                         if ((*strResult)[pPastLastZero - 1] != '0') {
@@ -683,7 +682,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (floatFormat == FloatFormatType::eFixedPointWithWhitespaceTrimmed or floatFormat == FloatFormatType::eStandard) {
                 TrimTrailingZeros_NotSci_ (&result);
             }
-            if (floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed ) {
+            if (floatFormat == FloatFormatType::eScientificWithWhitespaceTrimmed) {
                 TrimTrailingZeros_MaybeSci_ (&result);
             }
 #if qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy

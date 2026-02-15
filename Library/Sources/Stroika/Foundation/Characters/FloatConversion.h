@@ -37,9 +37,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         Stroika_Define_Enum_Bounds (eTrimZeros, eDontTrimZeros)
     };
     DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using TrimTrailingZerosType::eDontTrimZeros;
     using TrimTrailingZerosType::eTrimZeros;
     DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     enum class PredefinedLocale {
         /**
@@ -210,7 +214,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          * 
          *  Notation: It automatically switches between fixed-point and scientific notation as needed to best 
          *  represent the value within the given precision. For example, a large number or a number very close 
-         * to zero might be shown in scientific notation, while others will be in fixed-point notation. 
+         *  to zero might be shown in scientific notation, while others will be in fixed-point notation. 
          * 
          *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
          *      number              │   output
@@ -264,10 +268,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         eFixedPointWithWhitespaceTrimmed,
 
         /**
-         * ((MAKES SENSE TO USE THIS WITH TRIM TRAILING ZEROS) = but not default)
          *  corresponds to ios_base::scientific
          * 
-         *  For example (first 3 from https://en.cppreference.com/w/cpp/io/manip/fixed.html)
+         *  For example (first 3 from https ://en.cppreference.com/w/cpp/io/manip/fixed.html)
          *      number              │   output
          *       -------------------│----------------------
          *       0.0                │   0.000000e+00
@@ -287,7 +290,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         eScientific = eScientificWithoutWhitespaceTrimmed,
 
         /**
-         * @todo specify!!!  and test
+         *  For example (first 3 from https ://en.cppreference.com/w/cpp/io/manip/fixed.html)
+         *      number              │   output
+         *       -------------------│----------------------
+         *       0.0                │   0.0e+00
+         *       0.01               │   1.0e-02
+         *       0.00001            │   1.0e-05
+         *       3.12e12            │   3.12e+12
+         *       3.12               │   3.12e+00
+         *       212312345.0        │   2.12312e+08
+         *       -44.2              │  -4.42e+01
+         *       0.0000001234567    │   1.23457e-07
          */
         eScientificWithWhitespaceTrimmed,
 
@@ -321,11 +334,19 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         eDEFAULT = eDefaultFloat,
 
         DISABLE_COMPILER_MSC_WARNING_START (4996)
-        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific) DISABLE_COMPILER_MSC_WARNING_END (4996)
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+                Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific) DISABLE_COMPILER_MSC_WARNING_END (4996)
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+                        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
     };
     DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using FloatFormatType::eAutomaticScientific;
     DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using FloatFormatType::eDefaultFloat;
     using FloatFormatType::eFixedPoint;
     using FloatFormatType::eFixedPointWithWhitespaceTrimmed;
@@ -360,8 +381,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         constexpr ToStringOptions (SignificantFigures precision);
         constexpr ToStringOptions (FloatFormatType floatFormat);
         DISABLE_COMPILER_MSC_WARNING_START (4996)
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         [[deprecated ("Since Stroika v3.0d23 use appropriate FloatFormatType 'trim' variant instead")]] constexpr ToStringOptions (TrimTrailingZerosType trimTrailingZeros);
         DISABLE_COMPILER_MSC_WARNING_END (4996)
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2);
         template <typename... ARGS>
         constexpr ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2, ARGS&&... args);
