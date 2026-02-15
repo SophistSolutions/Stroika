@@ -70,6 +70,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *  @alias Precision (this was called 'Precision' before Stroika v3.0d23)
      * 
+     *  The c++ float 'precision' is always 1 less than the number of significant figures (since format is always N.xxxxeWW).
+     *  Only possible slight exception would be for the number zero, where I'm not quite sure, but I think this is roughly right then too.
+     * 
      *  Rules:
      *      o   Non-zero Digits: All digits from 1-9 are always significant (e.g., \(45.2\) has 3).
      *      o   Interior Zeros: Zeros between non-zero digits are always significant (e.g., \(1002\) has 4).
@@ -196,6 +199,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
     using Precision [[deprecated ("Since Stroika v3.0d23 use SignificantFigures instead")]] =
         SignificantFigures; // for backward compatibility - but maybe should be removed in future
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
 
     /**
      */
@@ -333,16 +340,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          */
         eDEFAULT = eDefaultFloat,
 
-        DISABLE_COMPILER_MSC_WARNING_START (4996)
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-                Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific) DISABLE_COMPILER_MSC_WARNING_END (4996)
-                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-                        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+        Stroika_Define_Enum_Bounds (eDefaultFloat, eAutomaticScientific)
     };
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     using FloatFormatType::eAutomaticScientific;
     DISABLE_COMPILER_MSC_WARNING_END (4996)
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
