@@ -70,9 +70,6 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *  @alias Precision (this was called 'Precision' before Stroika v3.0d23)
      * 
-     *  The c++ float 'precision' is always 1 less than the number of significant figures (since format is always N.xxxxeWW).
-     *  Only possible slight exception would be for the number zero, where I'm not quite sure, but I think this is roughly right then too.
-     * 
      *  Rules:
      *      o   Non-zero Digits: All digits from 1-9 are always significant (e.g., \(45.2\) has 3).
      *      o   Interior Zeros: Zeros between non-zero digits are always significant (e.g., \(1002\) has 4).
@@ -103,6 +100,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *  The special value SignificantFigures::kFullPrecision refers to when you wish the full precision that allows the exact value to be read back
      *  after being written:
      *
+     *  \note - The c++ float 'precision' is always 1 less than the number of significant figures (since format is always N.xxxxeWW).
+     *          Only possible slight exception would be for the number zero, where I'm not quite sure, but I think this is roughly right then too.
+     * 
      *  \note
      *      \see https://stackoverflow.com/questions/22458355/what-is-the-purpose-of-max-digits10-and-how-is-it-different-from-digits10
      *          Roughly:
