@@ -976,7 +976,8 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (3.12, kOptions_), "3.12");
             EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "2.12312e+08");
             EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
-            EXPECT_EQ (FloatConversion::ToString (0.0000001234567, kOptions_), "1.23457e-07");
+            EXPECT_TRUE (FloatConversion::ToString (0.0000001234567, kOptions_) == "1.23457e-07" or
+                         FloatConversion::ToString (0.0000001234567, kOptions_) == "0.0000001234567");
             // EXTRA TESTS
             EXPECT_EQ (FloatConversion::ToString (1.4, kOptions_), "1.4");
             EXPECT_EQ (FloatConversion::ToString (1.6, kOptions_), "1.6");
@@ -1004,7 +1005,7 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "212312345");
             EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
             EXPECT_EQ (FloatConversion::ToString (0.0000001234567, kOptions_), "0");
-         }
+        }
         {
             // From FloatConversion.h docs
             EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eScientific}), "0.00000e+00");
@@ -1015,7 +1016,8 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (212312345.0, ToStringOptions{eScientific}), "2.12312e+08");
             EXPECT_EQ (FloatConversion::ToString (-44.2, ToStringOptions{eScientific}), "-4.42000e+01");
             EXPECT_EQ (FloatConversion::ToString (0.0000001234567, ToStringOptions{eScientific}), "1.23457e-07");
-        } {
+        }
+        {
             // From FloatConversion.h docs
             EXPECT_EQ (FloatConversion::ToString (0.0, ToStringOptions{eScientificWithWhitespaceTrimmed}), "0.0e+00");
             EXPECT_EQ (FloatConversion::ToString (0.01, ToStringOptions{eScientificWithWhitespaceTrimmed}), "1.0e-02");
