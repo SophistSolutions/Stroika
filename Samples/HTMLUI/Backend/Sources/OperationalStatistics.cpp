@@ -47,6 +47,26 @@ void OperationalStatisticsMgr::ProcessAPICmd::NoteError ()
     sThe.Add_ (Rec_{.fKind = Rec_::Kind::eAPIError, .fAt = now, .fDuration = 0s});
 }
 
+
+
+/*
+ ********************************************************************************
+ ****************** OperationalStatisticsMgr::ProcessDBCmd **********************
+ ********************************************************************************
+ */
+OperationalStatisticsMgr::ProcessDBCmd::~ProcessDBCmd ()
+{
+    Time::TimePointSeconds now{Time::GetTickCount ()};
+    sThe.Add_ (Rec_{.fKind = fKind_, .fAt = now, .fDuration = now - fStart_});
+}
+
+void OperationalStatisticsMgr::ProcessDBCmd::NoteError ()
+{
+    Time::TimePointSeconds now{Time::GetTickCount ()};
+    sThe.Add_ (Rec_{.fKind = Rec_::Kind::eDBError, .fAt = now, .fDuration = 0s});
+}
+
+
 /*
  ********************************************************************************
  ***************************** OperationalStatisticsMgr *************************
@@ -109,5 +129,30 @@ auto OperationalStatisticsMgr::GetStatistics () const -> Statistics
             result.fRecentAPI.fMedianRunningAPITasks = Math::Median (activeRunningWSAPITasks);
         }
     }
+    {
+        Iterable<DurationSeconds> dbReadTimes = allApplicable.Map<Iterable<DurationSeconds>> ([] (const Rec_& r) -> optional<DurationSeconds> {
+            if (r.fKind == Rec_::Kind::eDBRead)
+                return r.fDuration;
+            return nullopt;
+        });
+        if (not dbReadTimes.empty ()) {
+            result.fRecentDB.fReadDurationStats =
+                Math::CommonStatistics<Duration>{.fMax = Duration{dbReadTimes.MaxValue ()}, .fMedian = Duration{dbReadTimes.MedianValue ()}};
+        }
+        result.fRecentDB.fReads = static_cast<unsigned int> (dbReadTimes.length ());
+    }
+    {
+        Iterable<DurationSeconds> dbWriteTimes = allApplicable.Map<Iterable<DurationSeconds>> ([] (const Rec_& r) -> optional<DurationSeconds> {
+            if (r.fKind == Rec_::Kind::eDBWrite)
+                return r.fDuration;
+            return nullopt;
+        });
+        if (not dbWriteTimes.empty ()) {
+            result.fRecentDB.fWriteDurationStats =
+                Math::CommonStatistics<Duration>{.fMax = Duration{dbWriteTimes.MaxValue ()}, .fMedian = Duration{dbWriteTimes.MedianValue ()}};
+        }
+        result.fRecentDB.fWrites = static_cast<unsigned int> (dbWriteTimes.length ());
+    }
+    result.fRecentDB.fErrors = static_cast<unsigned int> (allApplicable.Count ([] (const Rec_& r) { return r.fKind == Rec_::Kind::eDBError; }));
     return result;
 }

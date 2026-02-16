@@ -273,15 +273,12 @@ namespace Stroika::Samples::HTMLUI::Model {
              * Database related stats - for now - averaged over the last 5 minutes.
              */
             struct Database {
-                unsigned int        fReads{};
-                unsigned int        fWrites{};
-                unsigned int        fErrors{};
-                optional<Duration>  fMeanReadDuration;
-                optional<Duration>  fMedianReadDuration;
-                optional<Duration>  fMeanWriteDuration;
-                optional<Duration>  fMedianWriteDuration;
-                optional<Duration>  fMaxDuration;
-                optional<uintmax_t> fFileSize;
+                unsigned int               fReads{};
+                unsigned int               fWrites{};
+                unsigned int               fErrors{};
+                CommonStatistics<Duration> fReadDurationStats;
+                CommonStatistics<Duration> fWriteDurationStats;
+                optional<uintmax_t>        fFileSize;
 
                 nonvirtual String ToString () const;
             };

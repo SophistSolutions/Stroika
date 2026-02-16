@@ -16,6 +16,26 @@ namespace Stroika::Samples::HTMLUI {
 
     /*
      ********************************************************************************
+     ****************** OperationalStatisticsMgr::ProcessDBCmd **********************
+     ********************************************************************************
+     */
+    inline OperationalStatisticsMgr::ProcessDBCmd::ProcessDBCmd (DBCommandType cmdType)
+        : fStart_{Time::GetTickCount ()}
+    {
+        switch (cmdType) {
+            case DBCommandType::eRead:
+                fKind_ = Rec_::Kind::eDBRead;
+                break;
+            case DBCommandType::eWrite:
+                fKind_ = Rec_::Kind::eDBWrite;
+                break;
+            default:
+                RequireNotReached ();
+        }
+    }
+
+    /*
+     ********************************************************************************
      ************************** OperationalStatisticsMgr ****************************
      ********************************************************************************
      */

@@ -33,9 +33,20 @@ namespace Stroika::Samples::HTMLUI {
         static inline const Time::Duration kLookbackInterval{5min};
 
     public:
+        enum DBCommandType {
+            eRead,
+            eWrite
+        };
+
+    public:
         /**
          */
         class ProcessAPICmd;
+
+    public:
+        /**
+         */
+        class ProcessDBCmd;
 
     public:
         nonvirtual void RecordActiveRunningTasksCount (size_t length);
@@ -64,6 +75,9 @@ namespace Stroika::Samples::HTMLUI {
                 eAPIActiveRunningTasks,
                 eAPIOpenConnectionCount,
                 eAPIProcessingConnectionCount,
+                eDBRead,
+                eDBWrite,
+                eDBError,
             };
             Kind                   fKind;
             Time::TimePointSeconds fAt;
@@ -93,6 +107,21 @@ namespace Stroika::Samples::HTMLUI {
 
     /**
      */
+    class OperationalStatisticsMgr::ProcessDBCmd {
+    public:
+        ProcessDBCmd (DBCommandType cmdType);
+        ~ProcessDBCmd ();
+
+    public:
+        static void NoteError ();
+
+    private:
+        Rec_::Kind             fKind_;
+        Time::TimePointSeconds fStart_;
+    };
+
+    /**
+     */
     struct OperationalStatisticsMgr::Statistics {
         struct WSAPI {
             unsigned int       fCallsCompleted{};
@@ -102,8 +131,17 @@ namespace Stroika::Samples::HTMLUI {
             optional<float>    fMedianRunningAPITasks;
             unsigned int       fErrors{};
         };
-
         WSAPI fRecentAPI;
+
+        // Sample doesn't have a database, but often apps like this will, so include some sample stats about it.
+        struct DB {
+            unsigned int                     fReads{};
+            unsigned int                     fWrites{};
+            unsigned int                     fErrors{};
+            Math::CommonStatistics<Duration> fReadDurationStats;
+            Math::CommonStatistics<Duration> fWriteDurationStats;
+        };
+        DB fRecentDB;
     };
 
 }

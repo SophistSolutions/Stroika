@@ -307,11 +307,8 @@ String About::APIServerInfo::Database::ToString () const
     sb << "reads: "sv << fReads;
     sb << ", writes: "sv << fWrites;
     sb << ", errors: "sv << fErrors;
-    sb << ", meanReadDuration: "sv << fMeanReadDuration;
-    sb << ", medianReadDuration: "sv << fMedianReadDuration;
-    sb << ", meanWriteDuration: "sv << fMeanWriteDuration;
-    sb << ", medianWriteDuration: "sv << fMedianWriteDuration;
-    sb << ", maxDuration: "sv << fMaxDuration;
+    sb << ", readDurationStats: "sv << fReadDurationStats;
+    sb << ", writeDurationStats: "sv << fWriteDurationStats;
     sb << ", fileSize: "sv << fFileSize;
     sb << "}"sv;
     return sb;
@@ -431,11 +428,8 @@ const ObjectVariantMapper About::kMapper = [] () {
         {"reads"sv, &About::APIServerInfo::Database::fReads},
         {"writes"sv, &About::APIServerInfo::Database::fWrites},
         {"errors"sv, &About::APIServerInfo::Database::fErrors},
-        {"meanReadDuration"sv, &About::APIServerInfo::Database::fMeanReadDuration},
-        {"medianReadDuration"sv, &About::APIServerInfo::Database::fMedianReadDuration},
-        {"meanWriteDuration"sv, &About::APIServerInfo::Database::fMeanWriteDuration},
-        {"medianWriteDuration"sv, &About::APIServerInfo::Database::fMedianWriteDuration},
-        {"maxDuration"sv, &About::APIServerInfo::Database::fMaxDuration},
+        {"readDurationStats"sv, &About::APIServerInfo::Database::fReadDurationStats},
+        {"writeDurationStats"sv, &About::APIServerInfo::Database::fWriteDurationStats},
         {"fileSize"sv, &About::APIServerInfo::Database::fFileSize},
     });
     mapper.AddCommonType<optional<About::APIServerInfo::Database>> ();

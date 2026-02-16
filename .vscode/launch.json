@@ -55,7 +55,7 @@
       "name": "(Windows) Launch VisualStudio",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test36.exe",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test50.exe",
       //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-WebServer/WebServer.exe",
       // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-DocumentDB/DocumentDB.exe",
       // "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-HTMLUI/Backend/HTMLUI.exe",

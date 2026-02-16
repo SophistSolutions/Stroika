@@ -121,27 +121,12 @@ function dbStatsMsg(info: IDatabase, showShort: boolean): string {
     msg += `${prettyBytes(info.fileSize)}; `;
   }
   if (!showShort) {
-    msg += `${info.reads} reads, ${info.writes} writes; `;
+    msg += `N calls: ${info.reads} reads, ${info.writes} writes; `;
   }
   if (showShort) {
-    msg += `${prettyPrintMSDuration(
-      info.medianReadDuration
-    )} reads, ${prettyPrintMSDuration(info.medianWriteDuration)} writes`;
+    msg += `reads: ${prettyPrintMSDuration(info.readDurationStats?.median)}, writes: ${prettyPrintMSDuration(info.writeDurationStats?.median)}`;
   } else {
-    msg += `Med ${prettyPrintMSDuration(
-      info.medianReadDuration
-    )} read duration, Med ${prettyPrintMSDuration(
-      info.medianWriteDuration
-    )} write duration`;
-  }
-  if (showShort) {
-    if (info.maxDuration != undefined) {
-      msg += `; max ${prettyPrintMSDuration(info.maxDuration)}`;
-    }
-  } else {
-    if (info.maxDuration != undefined) {
-      msg += `; max ${prettyPrintMSDuration(info.maxDuration)} I/O duration`;
-    }
+    msg += `read duration: ${prettyPrintMSDuration(info.readDurationStats?.median)} median, ${prettyPrintMSDuration(info.readDurationStats?.max)} max; write duration: ${prettyPrintMSDuration(info.writeDurationStats?.median)} median, ${prettyPrintMSDuration(info.writeDurationStats?.max)} max`;
   }
   return msg;
 }

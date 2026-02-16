@@ -68,7 +68,7 @@ namespace {
 }
 
 namespace {
-    const Duration     kCaptureFrequency_ = 30s;
+    const Duration kCaptureFrequency_ = 30s;
     struct MyCapturer_ final : Capturer {
     public:
         Instruments::CPU::Instrument     fCPUInstrument{};
@@ -192,6 +192,7 @@ void WSImpl::auth_oauth_tokens_revoke_POST (const Auth::TokenRevocationRequest& 
 
 Auth::UserInfo WSImpl::auth_oauth_user_info_GET () const
 {
+    OperationalStatisticsMgr::ProcessDBCmd statsGatherDBFAKE{OperationalStatisticsMgr::eRead}; // not a real DB command but need to accumulate stats someplace
     if (optional<WebServiceIdentity> c = CurrentAuthManager::Get ()) {
         if (optional<Auth::UserInfo> ui = GetUserInfo_ (*c)) {
             return *ui;
@@ -202,6 +203,7 @@ Auth::UserInfo WSImpl::auth_oauth_user_info_GET () const
 
 About WSImpl::about_GET () const
 {
+    OperationalStatisticsMgr::ProcessDBCmd statsGatherDBFAKE{OperationalStatisticsMgr::eWrite}; // not a real DB command but need to accumulate stats someplace
     OperationalStatisticsMgr::ProcessAPICmd statsGather;
     using APIServerInfo   = About::APIServerInfo;
     using ComponentInfo   = APIServerInfo::ComponentInfo;
@@ -285,8 +287,17 @@ About WSImpl::about_GET () const
         });
         return r;
     }();
-    optional<Database> dbStats; // no DB in this demo
-    auto               healthcheck = healthcheck_GET ();
+    Database dbStats = [&] () {
+        Database r;
+        r.fReads              = stats.fRecentDB.fReads;
+        r.fWrites             = stats.fRecentDB.fWrites;
+        r.fErrors             = stats.fRecentDB.fErrors;
+        r.fReadDurationStats  = stats.fRecentDB.fReadDurationStats;
+        r.fWriteDurationStats = stats.fRecentDB.fWriteDurationStats;
+        r.fFileSize           = 4 * 1024; // fake data
+        return r;
+    }();
+    auto healthcheck = healthcheck_GET ();
 
     return About{AppVersion::kVersion,
                  APIServerInfo{AppVersion::kVersion, kAPIServerComponents_, machineInfo, processInfo, apiStats, webServerStats, dbStats}, healthcheck};

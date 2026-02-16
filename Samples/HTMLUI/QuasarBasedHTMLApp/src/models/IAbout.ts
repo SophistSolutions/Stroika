@@ -33,11 +33,8 @@ export interface IWebServerStats {
 export interface IDatabase {
   errors?: number;
   fileSize?: number;
-  maxDuration?: string;
-  meanReadDuration?: string;
-  meanWriteDuration?: string;
-  medianReadDuration?: string;
-  medianWriteDuration?: string;
+  readDurationStats?: ICommonStatistics;
+  writeDurationStats?: ICommonStatistics;
   reads?: number;
   writes?: number;
 }
