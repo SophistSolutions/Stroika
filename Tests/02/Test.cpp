@@ -976,11 +976,9 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (3.12, kOptions_), "3.12");
             EXPECT_EQ (FloatConversion::ToString (212312345.0, kOptions_), "2.12312e+08");
             EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
-            if (FloatConversion::ToString (0.0000001234567, kOptions_) != "1.23457e-07") {
-                cout << "WARNING: FloatConversion::ToString (0.0000001234567, kOptions_) == " << FloatConversion::ToString (0.0000001234567, kOptions_) << endl;
-            }
-            // EXPECT_TRUE (FloatConversion::ToString (0.0000001234567, kOptions_) == "1.23457e-07" or
-            //              FloatConversion::ToString (0.0000001234567, kOptions_) == "0.0000001234567");
+            // XCode 13/14 return 0 here? --LGP 2026-02-15
+            EXPECT_TRUE (FloatConversion::ToString (0.0000001234567, kOptions_) == "1.23457e-07" or
+                         FloatConversion::ToString (0.0000001234567, kOptions_) == "0);
             // EXTRA TESTS
             EXPECT_EQ (FloatConversion::ToString (1.4, kOptions_), "1.4");
             EXPECT_EQ (FloatConversion::ToString (1.6, kOptions_), "1.6");
