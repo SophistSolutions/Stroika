@@ -978,7 +978,7 @@ namespace {
             EXPECT_EQ (FloatConversion::ToString (-44.2, kOptions_), "-44.2");
             // XCode 13/14 return 0 here? --LGP 2026-02-15
             EXPECT_TRUE (FloatConversion::ToString (0.0000001234567, kOptions_) == "1.23457e-07" or
-                         FloatConversion::ToString (0.0000001234567, kOptions_) == "0);
+                         FloatConversion::ToString (0.0000001234567, kOptions_) == "0");
             // EXTRA TESTS
             EXPECT_EQ (FloatConversion::ToString (1.4, kOptions_), "1.4");
             EXPECT_EQ (FloatConversion::ToString (1.6, kOptions_), "1.6");
