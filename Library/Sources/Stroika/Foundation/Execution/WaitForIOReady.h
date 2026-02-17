@@ -115,7 +115,8 @@ namespace Stroika::Foundation::Execution {
             /**
              * default is to watch for read, error, and HUP (close) events (all but write).
              */
-            static inline const TypeOfMonitorSet kDefaultTypeOfMonitor{TypeOfMonitor::eRead, TypeOfMonitor::eError, TypeOfMonitor::eHUP};
+            // static inline const TypeOfMonitorSet kDefaultTypeOfMonitor{TypeOfMonitor::eRead, TypeOfMonitor::eError, TypeOfMonitor::eHUP};
+            static inline const TypeOfMonitorSet kDefaultTypeOfMonitor{TypeOfMonitor::eRead};
 
         protected:
             /**

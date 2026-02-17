@@ -66,8 +66,10 @@ namespace {
 namespace {
     using TypeOfMonitor = WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor;
     // Wake up on read, obviously, but also HUP. Not sure about error, but seems reasonable to wake up then too.
+    // const WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitorSet kInactiveSocketMonitorEvents2Watch4_{
+    //     TypeOfMonitor::eRead, TypeOfMonitor::eError, TypeOfMonitor::eHUP};
     const WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitorSet kInactiveSocketMonitorEvents2Watch4_{
-        TypeOfMonitor::eRead, TypeOfMonitor::eError, TypeOfMonitor::eHUP};
+        TypeOfMonitor::eRead};
 }
 
 /*
