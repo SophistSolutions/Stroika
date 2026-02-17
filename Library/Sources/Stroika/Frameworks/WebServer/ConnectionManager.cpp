@@ -63,6 +63,13 @@ namespace {
     }
 }
 
+namespace {
+    using TypeOfMonitor = WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor;
+    // Wake up on read, obviously, but also HUP. Not sure about error, but seems reasonable to wake up then too.
+    const WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitorSet kInactiveSocketMonitorEvents2Watch4_{
+        TypeOfMonitor::eRead, TypeOfMonitor::eError, TypeOfMonitor::eHUP};
+}
+
 /*
  ********************************************************************************
  ************ WebServer::ConnectionManager::Statistics::ThreadPool **************
@@ -328,7 +335,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = MakeSharedPtr<Connection> (s, fUseDefaultConnectionOptions_);
-    fInactiveSockSetPoller_.Add (conn);
+    fInactiveSockSetPoller_.Add (conn, kInactiveSocketMonitorEvents2Watch4_);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {
         scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
@@ -376,7 +383,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                         scoped_lock critSec{fActiveConnections_}; // lock not strictly needed here, but used to assure consistency between the active/inactive lists
                         fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connections
                         if (keepAlive) {
-                            fInactiveSockSetPoller_.Add (readyConnection);
+                            fInactiveSockSetPoller_.Add (readyConnection, kInactiveSocketMonitorEvents2Watch4_);
                         }
                     }
                     catch (...) {
