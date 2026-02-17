@@ -47,8 +47,6 @@ void OperationalStatisticsMgr::ProcessAPICmd::NoteError ()
     sThe.Add_ (Rec_{.fKind = Rec_::Kind::eAPIError, .fAt = now, .fDuration = 0s});
 }
 
-
-
 /*
  ********************************************************************************
  ****************** OperationalStatisticsMgr::ProcessDBCmd **********************
@@ -65,7 +63,6 @@ void OperationalStatisticsMgr::ProcessDBCmd::NoteError ()
     Time::TimePointSeconds now{Time::GetTickCount ()};
     sThe.Add_ (Rec_{.fKind = Rec_::Kind::eDBError, .fAt = now, .fDuration = 0s});
 }
-
 
 /*
  ********************************************************************************
