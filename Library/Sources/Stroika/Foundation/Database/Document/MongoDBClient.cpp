@@ -692,8 +692,17 @@ namespace {
             db_stats_cmd_builder.append (bsoncxx::builder::basic::kvp ("dbStats", 1));
             bsoncxx::document::value command_result = mongocxx::database{fDatabase_}.run_command (db_stats_cmd_builder.view ());
             bsoncxx::document::view  result_view    = command_result.view ();
-            if (result_view["storageSize"] && result_view["storageSize"].type () == bsoncxx::types::b_int64::type_id) {
-                return result_view["storageSize"].get_int64 ();
+            // DbgTrace ("dbStats result={}"_f, FromBSON_ (result_view));
+            if (auto oStorageSize = result_view["storageSize"] ) {
+                if (oStorageSize.type () == bsoncxx::types::b_int64::type_id) {
+                    return oStorageSize.get_int64 ();
+                }
+                else if (oStorageSize.type () == bsoncxx::types::b_double::type_id) {
+                    return static_cast<uintmax_t> (oStorageSize.get_double ());
+                }
+                else {
+                    DbgTrace ("dbStats result_view[storageSize].type ()={}"_f, oStorageSize.type ());
+                }
             }
             WeakAssertNotReached ();
             return 0;
