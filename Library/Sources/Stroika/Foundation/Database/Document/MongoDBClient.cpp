@@ -693,7 +693,7 @@ namespace {
             bsoncxx::document::value command_result = mongocxx::database{fDatabase_}.run_command (db_stats_cmd_builder.view ());
             bsoncxx::document::view  result_view    = command_result.view ();
             // DbgTrace ("dbStats result={}"_f, FromBSON_ (result_view));
-            if (auto oStorageSize = result_view["storageSize"] ) {
+            if (auto oStorageSize = result_view["storageSize"]) {
                 if (oStorageSize.type () == bsoncxx::types::b_int64::type_id) {
                     return oStorageSize.get_int64 ();
                 }
