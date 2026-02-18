@@ -98,7 +98,6 @@ namespace {
  ******************************* Debug::Private_::Emitter ***********************
  ********************************************************************************
  */
-
 template <typename CHARTYPE>
 inline void Debug::Private_::Emitter::EmitUnadornedText (const CHARTYPE* p)
 {
@@ -299,31 +298,6 @@ void Debug::Private_::Emitter::EmitTraceMessage (const wchar_t* format, ...) noe
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
     }
 }
-
-#if 0
-auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, const wchar_t* format, ...) noexcept -> TraceLastBufferedWriteTokenType
-{
-    if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
-        return 0;
-    }
-    Thread::SuppressInterruptionInContext suppressAborts;
-    try {
-        va_list argsList;
-        va_start (argsList, format);
-        wstring tmp = Characters::CString::FormatV (format, argsList);
-        va_end (argsList);
-        SquishBadCharacters_ (&tmp);
-        AssureHasLineTermination (&tmp);
-        return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
-    }
-    catch (...) {
-        WeakAssert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
-        // Most likely indicates invalid format string for varargs parameters
-        DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
-        return 0;
-    }
-}
-#endif
 
 auto Debug::Private_::Emitter::EmitTraceMessage_ (size_t bufferLastNChars, wstring_view format, Common::StdCompat::wformat_args&& args) noexcept
     -> TraceLastBufferedWriteTokenType
