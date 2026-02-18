@@ -1169,8 +1169,9 @@ void Thread::CheckForInterruption ()
         else if (thisRunningThreadRep->fAbortRequested_) {
             static atomic<unsigned int> sSuperSuppress_{};
             if (++sSuperSuppress_ <= 1) {
-                IgnoreExceptionsForCall (DbgTrace ("Suppressed interrupt throw: t_InterruptionSuppressDepth_={}, t_Interrupting_={}, backtrace: {}"_f,
-                                                   t_InterruptionSuppressDepth_, thisRunningThreadRep->fAbortRequested_.load (), Debug::BackTrace::Capture ()));
+                IgnoreExceptionsForCall (
+                    DbgTrace ("Suppressed interrupt throw: t_InterruptionSuppressDepth_={}, t_Interrupting_={}, backtrace: {}"_f,
+                              t_InterruptionSuppressDepth_, thisRunningThreadRep->fAbortRequested_.load (), Debug::BackTrace::Capture ()));
                 sSuperSuppress_--;
             }
         }
