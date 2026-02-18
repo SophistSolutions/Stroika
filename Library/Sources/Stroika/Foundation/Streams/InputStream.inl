@@ -237,12 +237,25 @@ namespace Stroika::Foundation::Streams::InputStream {
         if (blockFlag == eBlockIfNoDataAvailable) {
             return IsAtEOF ();
         }
-        ELEMENT_TYPE ignored{};
-        Require (this->IsSeekable ());
-        SeekOffsetType saved = GetOffset ();
-        auto           o     = this->ReadNonBlocking (span{&ignored, 1});
-        this->Seek (saved);
-        return not o.has_value ();
+        else {
+            ELEMENT_TYPE ignored{};
+            Require (this->IsSeekable ());
+            SeekOffsetType saved = GetOffset ();
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&, this] () noexcept { this->Seek (saved); }); // @todo Seek() could throw/terminate
+            optional<span<ELEMENT_TYPE>> o = this->ReadNonBlocking (span{&ignored, 1});
+#if 0
+            // before Stroika 3.0d23, we had this WRONG code.
+            return not o.has_value ();
+#endif
+            if (o) {
+                // ReadNonBlocking returns nullopt ONLY if blockFlag = eNonBlocking AND there is NO data available without blocking.
+                // a return of NOT missing, but an empty span implies EOF.
+                return o->empty ();
+            }
+            else {
+                return nullopt; // we don't know if at EOF or just would block
+            }
+        }
     }
     template <typename ELEMENT_TYPE>
     inline optional<size_t> InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking () const
