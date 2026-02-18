@@ -43,7 +43,7 @@ using namespace Stroika::Frameworks::WebServer;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // As name suggests, DANGEROUS because called from threads BESIDES the threadpool ones, and so can easily cause assert failures cuz Connection
 // objects CHECK they are not used un-externally-syncrhonized!
-// issue is the DbgTrace functions DEREFERENCE the shared_ptrs (in print function) and they do so to OTHER connections 
+// issue is the DbgTrace functions DEREFERENCE the shared_ptrs (in print function) and they do so to OTHER connections
 // than their own (GetActiveConnections/GetInactiveConnections).
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_ 1
 
@@ -373,7 +373,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
             for (shared_ptr<Connection> readyConnection : fInactiveSockSetPoller_.WaitQuietly ()) {
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
-                    /*
+                /*
                      *  This ENTIRE lambda runs in a single threadpool task, and is the only thing that reads/writes
                      *  the readyConnection object, so no locking needed for that object.
                      */
