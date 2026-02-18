@@ -40,6 +40,13 @@ using namespace Stroika::Frameworks::WebServer;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+// As name suggests, DANGEROUS because called from threads BESIDES the threadpool ones, and so can easily cause assert failures cuz Connection
+// objects CHECK they are not used un-externally-syncrhonized!
+// issue is the DbgTrace functions DEREFERENCE the shared_ptrs (in print function) and they do so to OTHER connections 
+// than their own (GetActiveConnections/GetInactiveConnections).
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_ 1
+
 using Options = ConnectionManager::Options;
 
 namespace {
@@ -334,7 +341,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
     shared_ptr<Connection> conn = MakeSharedPtr<Connection> (s, fUseDefaultConnectionOptions_);
     fInactiveSockSetPoller_.Add (conn, kInactiveSocketMonitorEvents2Watch4_);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
     {
         scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
         DbgTrace ("In onConnect_ (after adding connection {}): fActiveConnections_={}, inactiveOpenConnections_={}"_f, conn,
@@ -354,19 +361,25 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
         try {
             Thread::CheckForInterruption ();
 
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
             {
+                // DANGEROUS - OK to print out POINTERS, but Connection is NOT re-entrant and could be in use in threadpool or other thread.
+                // So CAREFUL not to call even CONST methods of those Connection objects here!!!
                 scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-                DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_={}, inactiveOpenConnections_={}"_f,
+                DbgTrace ("At top of WaitForReadyConnectionLoop_: fActiveConnections_={}, inactiveOpenConnections_={}"_f,
                           fActiveConnections_.cget ().cref (), GetInactiveConnections_ ());
             }
 #endif
             for (shared_ptr<Connection> readyConnection : fInactiveSockSetPoller_.WaitQuietly ()) {
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
+                    /*
+                     *  This ENTIRE lambda runs in a single threadpool task, and is the only thing that reads/writes
+                     *  the readyConnection object, so no locking needed for that object.
+                     */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    Debug::TraceContextBumper ctx{
-                        Stroika_Foundation_Debug_OptionalizeTraceArgs ("ConnectionManager::...processConnectionLoop")};
+                    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                        "ConnectionManager::...handleActivatedConnection", "readyConnection={}"_f, readyConnection)};
 #endif
 
                     /*
@@ -383,6 +396,11 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                         if (keepAlive) {
                             fInactiveSockSetPoller_.Add (readyConnection, kInactiveSocketMonitorEvents2Watch4_);
                         }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                        else {
+                            DbgTrace ("Closing connection {}"_f, readyConnection); // cuz it goes out of scope, and is no longer referenced in either list
+                        }
+#endif
                     }
                     catch (...) {
                         AssertNotReached (); // these two lists need to be kept in sync, so really assume updating them cannot fail/break
@@ -401,7 +419,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     }
 #endif
 
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
                     {
                         scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
                         DbgTrace ("at end of read&process task (keepAlive={}) for connection {}: fActiveConnections_={}, inactiveOpenConnections_={}"_f,
@@ -481,7 +499,7 @@ auto ConnectionManager::ComputeStatistics_ () const -> Statistics
             s.fActive = true;
             conns += s;
             if constexpr (kExtraDebugging_) {
-                DbgTrace ("Conn={}"_f, s);
+                DbgTrace ("Active Conn={}"_f, s);
             }
         }
         for (auto i : GetInactiveConnections_ ()) {
@@ -489,7 +507,7 @@ auto ConnectionManager::ComputeStatistics_ () const -> Statistics
             s.fActive = false;
             conns += s;
             if constexpr (kExtraDebugging_) {
-                DbgTrace ("Conn={}"_f, s);
+                DbgTrace ("Inactive Conn={}"_f, s);
             }
         }
     }
