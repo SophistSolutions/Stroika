@@ -46,7 +46,7 @@ using namespace Stroika::Foundation::Debug;
  */
 wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& options)
 {
-    Thread::SuppressInterruptionInContext suppressAborts;
+    Execution::Thread::SuppressInterruptionInContext suppressAborts;
     [[maybe_unused]] unsigned int useSkipFrames = options.fSkipFrames.value_or (BackTrace::Options::sDefault_SkipFrames);
 
     useSkipFrames += 1; // always skip this frame, because anyone calling BackTrace() doens't care to see its implementation in the trace
