@@ -264,8 +264,9 @@ public:
                                    // capture stats at regular time intervals
                                    Debug::TraceContextBumper ctx{"webserver status gather TIMER HANDLER"}; // to debug https://github.com/SophistSolutions/WhyTheFuckIsMyNetworkSoSlow/issues/78
                                    OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fActiveCallCnt_);
-                                   OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (fConnectionMgr_.statistics ().fConnections.fNumberOfOpenConnections);
-                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (fConnectionMgr_.statistics ().fConnections.fNumberOfActiveConnections);
+                                   auto statistics = fConnectionMgr_.statistics ();
+                                   OperationalStatisticsMgr::sThe.RecordOpenConnectionCount (statistics.fConnections.fNumberOfOpenConnections);
+                                   OperationalStatisticsMgr::sThe.RecordActiveRunningTasksCount (statistics.fConnections.fNumberOfActiveConnections);
                                },
                                15s, IntervalTimer::Adder::eRunImmediately}
     {
