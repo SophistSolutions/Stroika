@@ -37,13 +37,10 @@ namespace Stroika::Foundation::IO::Network::HTTP::MessageStartTextInputStreamBin
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    // class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
-    // public:
     class Ptr;
 
-    //   public:
     /**
-        */
+     */
     enum ToStringFormat {
         eAsBytes,
         eAsString,
@@ -51,14 +48,9 @@ namespace Stroika::Foundation::IO::Network::HTTP::MessageStartTextInputStreamBin
         eDEFAULT = eAsString
     };
 
-    //  public:
     /**
-         */
+     */
     Ptr New (const Streams::InputStream::Ptr<byte>& src);
-
-    // private:
-    class Rep_;
-    //  };
 
     /**
      *  Ptr is a copyable smart pointer to a MessageStartTextInputStreamBinaryAdapter.
