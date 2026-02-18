@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Execution/Activity.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Logger.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -45,6 +46,9 @@ SampleAppServiceRep::SampleAppServiceRep (optional<uint16_t> portNumberOverride)
 void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
 {
     /*
+     *  This mainloop function is SUBTLE. READ CAREFULLY. It's slightly difficult to understand, but once you do,
+     *  you will see its designed to avoid pitfalls with incomplete startup, and shutdown.
+     *
      *  The lifetime of the service roughly matches the lifetime of this MainLoop. Terminating the service (myService --stop)
      *  will cause a Thread::AbortException to be sent to this MainLoop, so that it unwinds.
      *
@@ -52,7 +56,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
      *  'modules' which start and stop any needed threads and do whatever setup/shutdown is needed.
      */
 
-    // Just so you get a clear message in the log that the service didn't startup. The things that actually caused the problem should
+    // Just so you get a clear message in the log that the service didn't startup.
     bool                    successfullyStarted{false};
     [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () {
         if (not successfullyStarted) {
@@ -60,16 +64,38 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
         }
     });
 
-    startedCB (); // Notify service control mgr that the service has started
+    /*
+     *  optional declareActivity object, so can just 'activate' it when we start to shutdown
+     *  when the DeclareActivity is constructed/alive, then any exceptions thrown will report that as the current
+     *  activity.
+     */
+    constexpr Activity                                           kShuttingDownServices_{"shutting down modules"sv};
+    optional<DeclareActivity<decltype (kShuttingDownServices_)>> oDeclareActivity{};
 
+    /*
+     * define all your activators here, for modules activated by the service. For now, we just have the one (webserver).
+     */
+    WebServer myWebServer{fPortNumberOverride_}; // listen and dispatch while this object exists
+
+    /*
+     * At this point, all our components have been successfully initialized/started. So acknowledge that fact in the log,
+     *and with the service control manager.
+     */
+    startedCB ();
     Logger::sThe.Log (Logger::eInfo, "{} (version {}) service started successfully"_f, kServiceDescription_.fPrettyName, AppVersion::kVersion);
     successfullyStarted = true;
 
-    // the final object declared on the stack before we wait, so its the first run when we are handling the
-    // thread abort exception, and unwinding this call.
-    [[maybe_unused]] auto&& cleanup2 = Finally ([&] () { Logger::sThe.Log (Logger::eInfo, "Beginning service shutdown"_f); });
-
-    WebServer myWebServer{fPortNumberOverride_}; // listen and dispatch while this object exists
+    /*
+     * the final object declared on the stack before we wait, so its the first run when we are handling the
+     * thread abort exception, and unwinding this call. This prints a user message (to the log) and
+     * sets the 'activity' to 'shutting down' so any exceptions cleaning up will more clearly report what was going on during the
+     * failure (timeout exception).
+     */
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () {
+        Execution::Thread::SuppressInterruptionInContext suppressSoWeActuallyShutDownOtherTaskWhenWereBeingShutDown;
+        Logger::sThe.Log (Logger::eInfo, "Beginning service shutdown"_f);
+        oDeclareActivity.emplace (&kShuttingDownServices_);
+    });
 
     /*
      *  This thread will block here, and never go any further. When the service is terminated, WaitableEvent will
