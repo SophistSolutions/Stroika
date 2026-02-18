@@ -204,12 +204,21 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
     pollResult = Handle_ErrNoResultInterruption ([&] () { return ::poll (pollData.begin (), pollData.GetSize (), timeoutMilliseconds); });
 #endif
     Set<size_t> result;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Sequence<SDKPollableType> dbgResult;
+#endif
     if (pollResult != 0) {
         for (size_t i = 0; i < pollData.GetSize (); ++i) {
             if (pollData[i].revents != 0) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                dbgResult += start[i].first;
+#endif
                 result.Add (i);
             }
         }
     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("returning {}"_f, dbgResult);
+#endif
     return result;
 }
