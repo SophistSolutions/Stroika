@@ -81,6 +81,9 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         logMsg ("got fMsgHeaderInTextStream.AssureHeaderSectionAvailable INCOMPLETE"sv);
 #endif
+        if (fMsgHeaderInTextStream.IsAtEOF (Streams::eDontBlock) == true) {
+            return ReadHeadersResult::eIncompleteDeadEnd;
+        }
         return ReadHeadersResult::eIncompleteButMoreMayBeAvailable;
     }
 
@@ -330,8 +333,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
                 )) {
                 case MyMessage_::eIncompleteDeadEnd: {
-                    DbgTrace ("ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. "
-                              "in web browser hitting refresh button fast)."_f);
+                    DbgTrace ("ReadHeaders failed (socket {}) - incomplete data read from client."_f,
+                              fSocket_); // sometimes because the client closed the connection before we could handle: e.g. user in web browser hitting refresh button fast
                     return eClose; // don't keep-alive - so this closes connection
                 } break;
                 case MyMessage_::eIncompleteButMoreMayBeAvailable: {
