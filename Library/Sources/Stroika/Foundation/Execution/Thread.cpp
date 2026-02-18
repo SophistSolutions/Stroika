@@ -1162,6 +1162,8 @@ void Thread::CheckForInterruption ()
     ) {
         if (t_InterruptionSuppressDepth_ == 0) [[likely]] {
             if (thisRunningThreadRep->fAbortRequested_) [[unlikely]] {
+                // helpful to see threadAbort caused by Thread::CheckForInterruption in log
+                Debug::TraceContextBumper ctx{"Thread::CheckForInterruption", "insideAbortLogic=true, thisThreadID={}"_f, GetCurrentThreadID ()};
                 Throw (Thread::AbortException::kThe);
             }
         }
