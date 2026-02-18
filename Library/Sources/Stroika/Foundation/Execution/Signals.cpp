@@ -89,7 +89,7 @@ errno_t Execution::SendSignal ([[maybe_unused]] std::thread::native_handle_type 
 #if qStroika_Foundation_Common_Platform_POSIX
     Debug::TraceContextBumper ctx{
         Stroika_Foundation_Debug_OptionalizeTraceArgs ("Stroika::Foundation::Execution::Signals::Execution::SendSignal",
-                                                       "target = {:x} signal = {}"_f, (unsigned long long)(target), SignalToName (signal))};
+                                                       "target = {:x}, signal = {}"_f, (unsigned long long)(target), SignalToName (signal))};
 #else
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
         "Stroika::Foundation::Execution::Signals::Execution::SendSignal", "signal = {}"_f, SignalToName (signal))};
