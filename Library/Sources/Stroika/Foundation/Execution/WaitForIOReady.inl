@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
-#include "TimeOutException.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 
 namespace Stroika::Foundation::Execution {
 
@@ -105,7 +105,6 @@ namespace Stroika::Foundation::Common {
         DefaultNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::k{{{
             {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eRead, L"Read"},
             {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eWrite, L"Write"},
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eError, L"Error"},
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eHUP, L"HUP"},
+            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::ePriority, L"Priority"},
         }}};
 }

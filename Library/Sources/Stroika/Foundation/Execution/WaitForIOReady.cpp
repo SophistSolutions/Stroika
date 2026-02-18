@@ -14,6 +14,7 @@
 #include <ws2tcpip.h>
 #endif
 
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -30,6 +31,7 @@
 #include "WaitForIOReady.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
@@ -41,6 +43,9 @@ using Memory::BLOB;
 using Memory::StackBuffer;
 using Time::DurationSeconds;
 using Time::TimePointSeconds;
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
 
@@ -140,6 +145,9 @@ unique_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
 auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start,
                                              const pair<SDKPollableType, TypeOfMonitorSet>* end, TimePointSeconds timeoutAt) -> Containers::Set<size_t>
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"WaitForIOReady_Base::_WaitQuietlyUntil", "args={}"_f, vector<pair<SDKPollableType, TypeOfMonitorSet>>{start, end}};
+#endif
     DurationSeconds time2Wait = Math::AtLeast<DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s);
     Thread::CheckForInterruption ();
     StackBuffer<pollfd> pollData;
@@ -156,11 +164,8 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
                     case TypeOfMonitor::eWrite:
                         events |= POLLOUT;
                         break;
-                    case TypeOfMonitor::eError:
-                        events |= POLLERR;
-                        break;
-                    case TypeOfMonitor::eHUP:
-                        events |= POLLHUP;
+                    case TypeOfMonitor::ePriority:
+                        events |= POLLPRI;
                         break;
                 }
             }

@@ -92,20 +92,13 @@ namespace Stroika::Foundation::Execution {
                 eWrite,
 
                 /**
-                 *  Error condition.
+                 *  Poll Priority/Poll Urgent data (out-of-band data) is available for read.
                  *
-                 *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLERR
+                 *  @see https://man7.org/linux/man-pages/man2/poll.2.html - It is used to detect "out-of-band" (OOB) data on sockets or high-priority, non-zero priority band data in STREAMS.
                  */
-                eError,
+                ePriority,
 
-                /**
-                 *  stream-oriented connection was either disconnected or aborted.
-                 *
-                 *  @see http://man7.org/linux/man-pages/man2/poll.2.html - POLLHUP
-                 */
-                eHUP,
-
-                Stroika_Define_Enum_Bounds (eRead, eHUP)
+                Stroika_Define_Enum_Bounds (eRead, ePriority)
             };
 
         public:
