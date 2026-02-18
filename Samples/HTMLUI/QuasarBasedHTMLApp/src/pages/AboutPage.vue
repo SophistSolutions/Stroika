@@ -85,48 +85,63 @@ function prettyPrintMSDuration(time?: string) {
   }
   return Duration.fromISO(time).toHuman({ unitDisplay: "narrow", showZeros: false });
 }
-function wsAPIMsg(info: IAPIEndpoint, showShort: boolean): string {
+function wsAPIMsg_(info: IAPIEndpoint, showShort: boolean): string {
   let msg = "";
   msg += `${info.callsCompleted} calls completed; `;
+  msg += "\n";
   msg += `${info.medianRunningAPITasks} running tasks; `;
+  if (!showShort) {
+    msg += "\n";
+  }
   msg += `${info.errors} ${PluralizeNoun("error", info.errors)}; `;
+  msg += "\n";
+  if (!showShort) {
+    msg += "call ";
+  }
   msg += `times: ${prettyPrintMSDuration(
     info.callTimes.median
   )}, max ${prettyPrintMSDuration(info.callTimes.max)}`;
   return msg;
 }
-function webServerMsg_(info: IWebServerStats): string {
+function webServerMsg_(info: IWebServerStats, showShort: boolean): string {
   let msg = "";
   msg += `threadPool: {size: ${info.threadPool.threads}, queued: ${info.threadPool.tasksStillQueued
-    }, aveRunTime: ${prettyPrintMSDuration(info.threadPool.averageTaskRunTime)}}\n`;
-  msg += `connections: {open: ${info.connections.open}, active: ${info.connections.active
-    }, openLifetime: ${prettyPrintMSDuration(
+    }, aveRunTime: ${prettyPrintMSDuration(info.threadPool.averageTaskRunTime)}}`;
+  msg += `\nconnections: {${info.connections.open} open, ${info.connections.active} active`;
+  if (!showShort) {
+    msg += `, \n openLifetime: ${prettyPrintMSDuration(
       info.connections.openConnectionsLifetime.median
     )}, openRequestsLifetime: ${prettyPrintMSDuration(
       info.connections.openConnectionsRequests.median
     )}, activeRequestsLifetime: ${prettyPrintMSDuration(
       info.connections.activeConnectionsRequests.median
-    )}}`;
+    )}`;
+  }
+  msg += "}";
   if (info.connections.piningForTheFjords != 0) {
     msg += `piningForTheFjords: ${info.connections.piningForTheFjords},`;
   }
   return msg;
 }
-function dbStatsMsg(info: IDatabase, showShort: boolean): string {
+function dbStatsMsg_(info: IDatabase, showShort: boolean): string {
   let msg = "";
   if (!showShort || info.errors != 0) {
     msg += `${info.errors} ${PluralizeNoun("error", info.errors)}; `;
   }
   if (info.fileSize) {
+    if (!showShort) {
+      msg += "\n";
+    }
     msg += `${prettyBytes(info.fileSize)}; `;
   }
   if (!showShort) {
-    msg += `N calls: ${info.reads} reads, ${info.writes} writes; `;
+    msg += `\nN calls: ${info.reads} reads, ${info.writes} writes; `;
   }
   if (showShort) {
     msg += `reads: ${prettyPrintMSDuration(info.readDurationStats?.median)}, writes: ${prettyPrintMSDuration(info.writeDurationStats?.median)}`;
   } else {
-    msg += `read duration: ${prettyPrintMSDuration(info.readDurationStats?.median)} median, ${prettyPrintMSDuration(info.readDurationStats?.max)} max; write duration: ${prettyPrintMSDuration(info.writeDurationStats?.median)} median, ${prettyPrintMSDuration(info.writeDurationStats?.max)} max`;
+    msg += `\nread duration: ${prettyPrintMSDuration(info.readDurationStats?.median)} median, ${prettyPrintMSDuration(info.readDurationStats?.max)} max;`;
+    msg += `\nwrite duration: ${prettyPrintMSDuration(info.writeDurationStats?.median)} median, ${prettyPrintMSDuration(info.writeDurationStats?.max)} max`;
   }
   return msg;
 }
@@ -239,21 +254,22 @@ Units 1=1 logical core">
               </div>
               <div class="row" v-if="about">
                 <div class="col-3"
-                  title="Information about app WebService endpoint (median #connections, timing, Q-lengths) over the last 5 minutes">
+                  title="Information about app WebService endpoint (median #connections, timing, Q-lengths) over the last 5 minutes; hover for more details">
                   WSAPI
                 </div>
                 <div class="col" v-if="about.serverInfo.apiEndpoint"
-                  :title="wsAPIMsg(about.serverInfo.apiEndpoint, false)">
-                  {{ wsAPIMsg(about.serverInfo.apiEndpoint, true) }}
+                  :title="wsAPIMsg_(about.serverInfo.apiEndpoint, false)">
+                  {{ wsAPIMsg_(about.serverInfo.apiEndpoint, true) }}
                 </div>
               </div>
               <div class="row" v-if="about">
                 <div class="col-3"
-                  title="Information about app WebServer Stats (median #connections, timing, Q-lengths) over the last 5 minutes">
+                  title="Information about app WebServer Stats (median #connections, timing, Q-lengths) over the last 5 minutes; hover for more details">
                   WebServer
                 </div>
-                <div class="col" v-if="about.serverInfo.webServer" :title="webServerMsg_(about.serverInfo.webServer)">
-                  {{ webServerMsg_(about.serverInfo.webServer) }}
+                <div class="col" v-if="about.serverInfo.webServer"
+                  :title="webServerMsg_(about.serverInfo.webServer, false)">
+                  {{ webServerMsg_(about.serverInfo.webServer, true) }}
                 </div>
               </div>
               <div class="row" v-if="about">
@@ -261,8 +277,9 @@ Units 1=1 logical core">
                   title="Information about database: size on disk, median read/write times over the last 5 minutes; hover for more details">
                   DB
                 </div>
-                <div class="col" v-if="about.serverInfo.database" :title="dbStatsMsg(about.serverInfo.database, false)">
-                  {{ dbStatsMsg(about.serverInfo.database, true) }}
+                <div class="col" v-if="about.serverInfo.database"
+                  :title="dbStatsMsg_(about.serverInfo.database, false)">
+                  {{ dbStatsMsg_(about.serverInfo.database, true) }}
                 </div>
               </div>
             </div>
