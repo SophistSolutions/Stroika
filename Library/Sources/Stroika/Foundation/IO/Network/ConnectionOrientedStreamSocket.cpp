@@ -60,7 +60,7 @@ namespace {
                 try {
                 again:
                     (void)ioReady.WaitUntil (timeOutAt);
-                    char data[1024];
+                    qStroika_Foundation_ATTRIBUTE_INDETERMINATE char data[1024];
 #if qStroika_Foundation_Common_Platform_POSIX
                     int nb = ::read (fSD_, data, std::size (data));
 #elif qStroika_Foundation_Common_Platform_Windows
@@ -75,7 +75,7 @@ namespace {
                 }
                 catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"timeout closing down socket - not serious - just means client didn't send close ACK quickly enough");
+                    DbgTrace ("timeout closing down socket - not serious - just means client didn't send close ACK quickly enough"_f);
 #endif
                 }
             }
@@ -114,7 +114,7 @@ namespace {
                     case EINTR:
                         break; // ignore - try again
                     case EINPROGRESS: {
-                        fd_set myset;
+                        qStroika_Foundation_ATTRIBUTE_INDETERMINATE fd_set myset;
                         FD_ZERO (&myset);
                         FD_SET (fSD_, &myset);
                         timeval time_out = timeout.As<timeval> ();
@@ -157,10 +157,10 @@ namespace {
                     Execution::ThrowSystemErrNo (::WSAGetLastError ()); // connection failed
                 }
                 // connection pending
-                fd_set setW;
+                qStroika_Foundation_ATTRIBUTE_INDETERMINATE fd_set setW;
                 FD_ZERO (&setW);
                 FD_SET (fSD_, &setW);
-                fd_set setE;
+                qStroika_Foundation_ATTRIBUTE_INDETERMINATE fd_set setE;
                 FD_ZERO (&setE);
                 FD_SET (fSD_, &setE);
                 timeval time_out = timeout.As<timeval> ();
@@ -200,23 +200,31 @@ namespace {
             Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
+            if (fReadEOF_) {
+                return span<byte>{}; // EOF
+            }
 
 #if qStroika_Foundation_Common_Platform_POSIX
-            return into.subspan (
+            auto result = into.subspan (
                 0, Handle_ErrNoResultInterruption ([this, &into] () -> int { return ::read (fSD_, into.data (), into.size ()); }));
 #elif qStroika_Foundation_Common_Platform_Windows
-            int flags        = 0;
-            int nBytesToRead = static_cast<int> (min<size_t> (into.size (), numeric_limits<int>::max ()));
-            return into.subspan (0, static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (
-                                        ::recv (fSD_, reinterpret_cast<char*> (into.data ()), nBytesToRead, flags))));
+            int  flags        = 0;
+            int  nBytesToRead = static_cast<int> (min<size_t> (into.size (), numeric_limits<int>::max ()));
+            auto result       = into.subspan (0, static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (
+                                               ::recv (fSD_, reinterpret_cast<char*> (into.data ()), nBytesToRead, flags))));
 #else
             AssertNotImplemented ();
+            span<byte> result{};
 #endif
+            if (result.empty ()) {
+                fReadEOF_ = true;
+            }
+            return result;
         }
         virtual optional<span<byte>> ReadNonBlocking (span<byte> into) const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
-            if (AvailableToRead ()) {
+            if (AvailableToRead ().has_value ()) {
                 return Read (into);
             }
             return nullopt;
@@ -228,9 +236,12 @@ namespace {
             Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
+            if (fReadEOF_) {
+                return 0;
+            }
 #if qStroika_Foundation_Common_Platform_POSIX or qStroika_Foundation_Common_Platform_Windows
             {
-                fd_set input;
+                qStroika_Foundation_ATTRIBUTE_INDETERMINATE fd_set input;
                 FD_ZERO (&input);
                 FD_SET (fSD_, &input);
                 struct timeval timeout{};
@@ -376,6 +387,7 @@ namespace {
             setsockopt<int> (IPPROTO_TCP, TCP_NODELAY, noDelay);
         }
         optional<Time::DurationSeconds> fAutomaticTCPDisconnectOnClose_;
+        mutable bool                    fReadEOF_{false};
 #if qStroika_Foundation_Debug_AssertionsChecked
         mutable atomic<int> fCurrentPendingReadsCount{};
 #endif
