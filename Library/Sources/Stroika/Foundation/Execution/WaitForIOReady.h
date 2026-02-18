@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Execution {
                 eWrite,
 
                 /**
-                 *  Poll Priority/Poll Urgent data (out-of-band data) is available for read.
+                 *  Poll Priority/Poll Urgent data (out-of-band data) is available for read - POLLPRI
                  *
                  *  @see https://man7.org/linux/man-pages/man2/poll.2.html - It is used to detect "out-of-band" (OOB) data on sockets or high-priority, non-zero priority band data in STREAMS.
                  */
