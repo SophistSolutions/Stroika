@@ -895,6 +895,16 @@ namespace Stroika::Foundation::Execution {
          *  Any blocked Interrupt Exceptions will wait til the next cancelation point to be invoked (so call
          *  CheckForInterruption to force that). The destructor of this suppress (even when count hits zero)
          *  will not throw.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          foo::~foo () 
+         *          {
+         *              // critical to prohibit this thread from interruption until it completes its cleanup
+         *              Thread::SuppressInterruptionInContext suppressAborts;
+         *          }
+         *      \endcode
+         * 
          */
         class SuppressInterruptionInContext {
         public:
