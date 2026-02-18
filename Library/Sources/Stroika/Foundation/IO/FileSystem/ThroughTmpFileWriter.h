@@ -106,7 +106,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         /**
          * Sadly windows has issues with antivirus scanners. They often OPEN a file (frequently when just created like
          * this scenario) and still have it open when we are ready to rename it. Because of flaws in windows filesystem,
-         * this then fails. OFTEN the best approach is to just wait and retry.
+         * this then fails (due to rename failure). OFTEN the best approach is to just wait and retry.
          * 
          * Do that by default, but allow for different behaviors. If fRetryOnSharingViolationFor == 0, this won't be
          * retried.
