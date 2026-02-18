@@ -286,9 +286,8 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
     Containers::Set<String> resultSet;
 #if qStroika_Foundation_Common_Platform_Windows
     String          usePath = AssureDirectoryPathSlashTerminated (String{path});
-    WIN32_FIND_DATA fd;
-    memset (&fd, 0, sizeof (fd));
-    HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsSDKString ().c_str (), &fd);
+    WIN32_FIND_DATA fd{};
+    HANDLE          hFind = ::FindFirstFile ((usePath + "*"sv).AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
             //SDKString fileName = (LPCTSTR)&fd.cFileName;
@@ -322,7 +321,7 @@ IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const filesystem
     , fWatchEvent{::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter)}
     , fQuitting{false}
 {
-    fThread = Execution::Thread::New ([this] () { ThreadProc (this); }, Execution::Thread::eAutoStart, L"DirectoryChangeWatcher");
+    fThread = Execution::Thread::New ([this] () { ThreadProc (this); }, Execution::Thread::eAutoStart, "DirectoryChangeWatcher"sv);
 }
 
 IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
@@ -376,7 +375,7 @@ UINT AdjustSysErrorMode::GetErrorMode ()
 }
 
 AdjustSysErrorMode::AdjustSysErrorMode (UINT newErrorMode)
-    : fSavedErrorMode (::SetErrorMode (newErrorMode))
+    : fSavedErrorMode{::SetErrorMode (newErrorMode)}
 {
 }
 
