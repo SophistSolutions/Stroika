@@ -80,9 +80,10 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
             filesystem::path fFile;
 
             /**
-             * If true (the default), then the initial data in fFile - if found - is read. If false, any existing data in the file (if it exists at all) - is ignored.
+             * If true, the database connection will ignore any existing file (not read it). Either way
+             * a new file will be created (whether one was there before or not).
              */
-            bool fReadInitialData{true};
+            bool fForceCreateNew{false};
 
 #if qStroika_Foundation_Common_Platform_Windows
             /**

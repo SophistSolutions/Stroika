@@ -402,7 +402,7 @@ namespace {
             , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
 #endif
         {
-            if (sfOptions.fReadInitialData) {
+            if (not sfOptions.fForceCreateNew) {
                 DoReadFromFS ();
             }
         }
