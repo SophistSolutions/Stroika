@@ -79,6 +79,11 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
              */
             filesystem::path fFile;
 
+            /**
+             * If true (the default), then the initial data in fFile - if found - is read. If false, any existing data in the file (if it exists at all) - is ignored.
+             */
+            bool fReadInitialData{true}
+
 #if qStroika_Foundation_Common_Platform_Windows
             /**
              * \see IO::FileSystem::ThroughTmpFileWriter::fRetryOnSharingViolationFor

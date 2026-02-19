@@ -402,7 +402,9 @@ namespace {
             , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
 #endif
         {
-            DoReadFromFS ();
+            if (sfOptions.fReadInitialData) {
+                DoReadFromFS ();
+            }
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
         {
