@@ -106,7 +106,10 @@ ThroughTmpFileWriter::~ThroughTmpFileWriter ()
 #if qStroika_Foundation_Common_Platform_POSIX
         (void)::unlink (fTmpFilePath_.c_str ());
 #elif qStroika_Foundation_Common_Platform_Windows
-        (void)::DeleteFileW (fTmpFilePath_.c_str ());
+        // if antivirus scanning prevents a delete, use this to eventually delete the file
+        if (::DeleteFileW (fTmpFilePath_.c_str ()) == 0) {
+            (void)::MoveFileExW(fTmpFilePath_.c_str (), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+        }
 #else
         AssertNotImplemented ();
 #endif
