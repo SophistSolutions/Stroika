@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
 
     using namespace Database::Document::Connection;
 
-    using Database::Document::Connection::IRep;
+    class IRep;
 
     /**
      *  These are options used to create a database Connection::Ptr object (with Connection::New).
@@ -85,12 +85,17 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
              */
             bool fForceCreateNew{false};
 
+            /**
+            * If true, each modification causes a write. If false, the implmentation MAY buffer writes (or may write thruough).
+            * The caller can always trigger a write by calling Flush(), or destorying the connection.
+            */
+            bool fFlushOnEachWrite{false};
+
 #if qStroika_Foundation_Common_Platform_Windows
             /**
              * \see IO::FileSystem::ThroughTmpFileWriter::fRetryOnSharingViolationFor
              */
-            optional<Time::DurationSeconds>
-                fRetryOnSharingViolationFor;
+            optional<Time::DurationSeconds> fRetryOnSharingViolationFor;
 #endif
 
             /**
@@ -130,8 +135,40 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
     };
 
     /**
+     *
      */
-    using Database::Document::Connection::Ptr;
+    class Ptr : public Database::Document::Connection::Ptr {
+    private:
+        using inherited = Database::Document::Connection::Ptr;
+
+    public:
+        /**
+         */
+        Ptr (const Ptr& src);
+        Ptr (const shared_ptr<IRep>& src);
+        Ptr (nullptr_t = nullptr) noexcept;
+
+    public:
+        ~Ptr () = default;
+
+    public:
+        /**
+        */
+        nonvirtual Ptr& operator= (const Ptr& src);
+        nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+
+    public:
+        /**
+         */
+        nonvirtual IRep* operator->() const noexcept;
+
+    public:
+        /**
+         * If the database is configured to buffer writes, this forces a flush of all buffered writes to the underlying storage (e.g. disk).
+         * It may do nothing.
+         */
+        nonvirtual void Flush () const;
+    };
 
     /**
      *  \brief create an LocalDocumentDB database (and connection) object, guided by argument Options.
@@ -143,6 +180,20 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
      *
      */
     Ptr New (const Options& options);
+
+    /**
+         */
+    class IRep : public Database::Document::Connection::IRep {
+    public:
+        /**
+         * If the database is configured to buffer writes, this forces a flush of all buffered writes to the underlying storage (e.g. disk).
+         * It may do nothing.
+         */
+        virtual void Flush () = 0;
+
+    private:
+        friend class Ptr;
+    };
 
 }
 

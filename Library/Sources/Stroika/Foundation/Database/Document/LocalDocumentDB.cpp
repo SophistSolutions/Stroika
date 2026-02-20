@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.h"
@@ -46,7 +47,7 @@ namespace {
      *  Store collections entirely in RAM.
      *     \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
      */
-    struct MemoryDatabaseRep_ final : Database::Document::Connection::IRep {
+    struct MemoryDatabaseRep_ final : Database::Document::LocalDocumentDB::IRep {
 
         using CollectionRep_ = Mapping<GUID, Document::Document>;
 
@@ -273,6 +274,10 @@ namespace {
         {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
         }
+        virtual void Flush () override
+        {
+            // nothing todo - all in memory
+        }
         template <typename FUN>
         inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write) -> invoke_result_t<FUN>
         {
@@ -284,12 +289,14 @@ namespace {
      *  Store collections in json file (leveraging MemoryDatabaseRep_ internally).
      *     \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
      */
-    struct SingleFileDatabaseRep_ final : Database::Document::Connection::IRep {
+    struct SingleFileDatabaseRep_ final : Database::Document::LocalDocumentDB::IRep {
 
         const filesystem::path              fExternalFile_;
         shared_ptr<MemoryDatabaseRep_>      fMemoryDB_; // already internally syncrhonized, must be shared_ptr cuz it uses shared_from_this
         const DataExchange::Variant::Reader fReader_;
         const DataExchange::Variant::Writer fWriter_;
+        const bool                          fFlushOnEachWrite_;
+        bool                                fDirty_{true}; // if true, we have changes that haven't yet been flushed to disk
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<SingleFileDatabaseRep_>         fDBRep_; // save to bump reference count (lifetime safety), and to force write
@@ -316,7 +323,7 @@ namespace {
                     [&] () {
                         [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                         auto                  id     = fDelegateToInMemoryDB_->Add (v);
-                        fDBRep_->DoWriteToFS ();
+                        fDBRep_->DataChangedSoMaybeWrite2Disk ();
                         return id;
                     },
                     fName_, true);
@@ -345,7 +352,7 @@ namespace {
                     [&] () {
                         [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                         fDelegateToInMemoryDB_->Update (id, newV, onlyTheseFields);
-                        fDBRep_->DoWriteToFS ();
+                        fDBRep_->DataChangedSoMaybeWrite2Disk ();
                     },
                     fName_, true);
             }
@@ -358,7 +365,7 @@ namespace {
                     [&] () {
                         [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                         fDelegateToInMemoryDB_->Remove (id);
-                        fDBRep_->DoWriteToFS ();
+                        fDBRep_->DataChangedSoMaybeWrite2Disk ();
                     },
                     fName_, true);
             }
@@ -401,9 +408,17 @@ namespace {
 #if qStroika_Foundation_Common_Platform_Windows
             , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
 #endif
+            , fFlushOnEachWrite_{sfOptions.fFlushOnEachWrite}
+            , fDirty_{not fFlushOnEachWrite_}
         {
             if (not sfOptions.fForceCreateNew) {
                 DoReadFromFS ();
+            }
+        }
+        virtual ~SingleFileDatabaseRep_ () override
+        {
+            if (fDirty_) {
+                DoWriteToFS ();
             }
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
@@ -425,6 +440,9 @@ namespace {
         }
         virtual uintmax_t GetSpaceConsumed () const override
         {
+            if (fDirty_) {
+                IgnoreExceptionsExceptThreadAbortForCall (const_cast<SingleFileDatabaseRep_*> (this)->DoWriteToFS ()); // cannot get size otherwise
+            }
             error_code ignoredEC;
             return filesystem::file_size (fExternalFile_, ignoredEC);
         }
@@ -438,7 +456,7 @@ namespace {
                 [&] () {
                     [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
                     fMemoryDB_->CreateCollection (name);
-                    DoWriteToFS ();
+                    DataChangedSoMaybeWrite2Disk ();
                     return GetCollection (name);
                 },
                 name, true);
@@ -449,7 +467,7 @@ namespace {
                 [&] () {
                     [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
                     fMemoryDB_->DropCollection (name);
-                    DoWriteToFS ();
+                    DataChangedSoMaybeWrite2Disk ();
                 },
                 name, true);
         }
@@ -462,6 +480,10 @@ namespace {
         virtual Document::Transaction mkTransaction () override
         {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
+        }
+        virtual void Flush () override
+        {
+            DoWriteToFS ();
         }
         void DoReadFromFS ()
         {
@@ -480,6 +502,15 @@ namespace {
                                                  return {GUID{kvp.fKey}, kvp.fValue.As<Document::Document> ()};
                                              }));
                 }
+            }
+        }
+        void DataChangedSoMaybeWrite2Disk ()
+        {
+            if (fFlushOnEachWrite_) {
+                DoWriteToFS ();
+            }
+            else {
+                fDirty_ = true;
             }
         }
         void DoWriteToFS ()
@@ -505,6 +536,7 @@ namespace {
             tmpFile.fRetryOnSharingViolationFor = fRetryOnSharingViolationFor_;
 #endif
             tmpFile.Commit (); // any exceptions cause the tmp file to be automatically cleaned up
+            fDirty_ = false;
         }
         template <typename FUN>
         inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write) -> invoke_result_t<FUN>
@@ -521,7 +553,7 @@ namespace {
     };
 
     // Store each collection in a folder under the root folder
-    struct DirectoryFilesystemDatabaseRep_ final : Database::Document::Connection::IRep {
+    struct DirectoryFilesystemDatabaseRep_ final : Database::Document::LocalDocumentDB::IRep {
         const Document::LocalDocumentDB::Options fOptions_;
         const filesystem::path                   fRoot_;
         const DataExchange::Variant::Reader      fReader_;
@@ -777,6 +809,10 @@ namespace {
         virtual Document::Transaction mkTransaction () override
         {
             return Document::Transaction{make_unique<MyTransactionRep_> ()};
+        }
+        virtual void Flush () override
+        {
+            // nothing todo - already flushed to FS on each operation
         }
         template <typename FUN>
         inline auto WrapExecute_ (FUN&& f, const optional<String>& collectionName, bool write) -> invoke_result_t<FUN>
