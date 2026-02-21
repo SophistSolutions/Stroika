@@ -297,7 +297,7 @@ namespace {
         const DataExchange::Variant::Writer fWriter_;
         const bool                          fFlushOnEachWrite_;
         bool                                fDirty_{true}; // if true, we have changes that haven't yet been flushed to disk
-        const OpertionCallbackPtr fOperationLoggingCallback_{nullptr};
+        const OpertionCallbackPtr           fOperationLoggingCallback_{nullptr};
 #if qStroika_Foundation_Common_Platform_Windows
         optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
 #endif
