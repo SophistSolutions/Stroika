@@ -297,6 +297,10 @@ namespace {
         const DataExchange::Variant::Writer fWriter_;
         const bool                          fFlushOnEachWrite_;
         bool                                fDirty_{true}; // if true, we have changes that haven't yet been flushed to disk
+        const OpertionCallbackPtr fOperationLoggingCallback_{nullptr};
+#if qStroika_Foundation_Common_Platform_Windows
+        optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
+#endif
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<SingleFileDatabaseRep_>         fDBRep_; // save to bump reference count (lifetime safety), and to force write
@@ -391,10 +395,6 @@ namespace {
             o.fOperationLoggingCallback = nullptr;
             return o;
         }
-        const OpertionCallbackPtr fOperationLoggingCallback_{nullptr};
-#if qStroika_Foundation_Common_Platform_Windows
-        optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
-#endif
 
         SingleFileDatabaseRep_ ()                              = delete;
         SingleFileDatabaseRep_ (const SingleFileDatabaseRep_&) = delete;
@@ -404,12 +404,12 @@ namespace {
             , fMemoryDB_{make_shared<MemoryDatabaseRep_> (stripOptionsForMemDB_ (options))}
             , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (sfOptions.fSerialization)}
+            , fFlushOnEachWrite_{sfOptions.fFlushOnEachWrite}
+            , fDirty_{not fFlushOnEachWrite_}
             , fOperationLoggingCallback_{options.fOperationLoggingCallback}
 #if qStroika_Foundation_Common_Platform_Windows
             , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
 #endif
-            , fFlushOnEachWrite_{sfOptions.fFlushOnEachWrite}
-            , fDirty_{not fFlushOnEachWrite_}
         {
             if (not sfOptions.fForceCreateNew) {
                 DoReadFromFS ();
