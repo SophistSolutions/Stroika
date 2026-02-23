@@ -126,19 +126,20 @@ namespace {
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
                         return fConnectionRep_->fCollections_.LookupValue (fTableName_)
-                            .template Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
-                                Document::Document d = kvp.fValue;
-                                d.Add (Document::kID, kvp.fKey.ToString ());
-                                if (filter and not filter->Matches (d)) {
-                                    return nullopt; // skip cuz didn't match filter
-                                }
-                                else {
-                                    if (projection) {
-                                        d = projection->Apply (d);
+                            .template Map<Sequence<Document::Document>> (
+                                [&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
+                                    Document::Document d = kvp.fValue;
+                                    d.Add (Document::kID, kvp.fKey.ToString ());
+                                    if (filter and not filter->Matches (d)) {
+                                        return nullopt; // skip cuz didn't match filter
                                     }
-                                    return d;
-                                }
-                            });
+                                    else {
+                                        if (projection) {
+                                            d = projection->Apply (d);
+                                        }
+                                        return d;
+                                    }
+                                });
                     },
                     fTableName_, false);
             }
