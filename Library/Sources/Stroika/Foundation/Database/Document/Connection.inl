@@ -16,6 +16,10 @@ namespace Stroika::Foundation::Database::Document::Connection {
         : inherited{i}
     {
     }
+    inline Ptr::Ptr (nullptr_t) noexcept
+        : inherited{nullptr}
+    {
+    }
     inline bool Ptr::operator== (const Ptr& rhs) const noexcept
     {
         return this->get () == rhs.get ();

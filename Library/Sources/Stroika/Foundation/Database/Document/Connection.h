@@ -105,8 +105,8 @@ namespace Stroika::Foundation::Database::Document::Connection {
          */
         Ptr (const Ptr& src)     = default;
         Ptr (Ptr&& src) noexcept = default;
-        using inherited::inherited;
-        Ptr (const inherited& i) noexcept; // not sure why this isn't captured by the using inherited::inherited
+        Ptr (nullptr_t) noexcept;
+        Ptr (const inherited& i) noexcept;
 
     public:
         ~Ptr () = default;
