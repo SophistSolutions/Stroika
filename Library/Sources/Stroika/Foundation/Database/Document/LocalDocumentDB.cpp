@@ -311,7 +311,7 @@ namespace {
         bool                                fDirty_{true}; // if true, we have changes that haven't yet been flushed to disk
         const OpertionCallbackPtr           fOperationLoggingCallback_{nullptr};
 #if qStroika_Foundation_Common_Platform_Windows
-       const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
+        const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
 #endif
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
@@ -580,7 +580,7 @@ namespace {
         const DataExchange::Variant::Reader      fReader_;
         const DataExchange::Variant::Writer      fWriter_;
 #if qStroika_Foundation_Common_Platform_Windows
-       const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
+        const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
 #endif
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
@@ -668,7 +668,6 @@ namespace {
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update",
                                        "id={},newV={}, onlyTheseFields={}"_f, id, newV, onlyTheseFields};
 #endif
-                scoped_lock critSec{fMaybeLock_};
                 fDBRep_->WrapExecute_ (
                     [&] () {
                         Document::Document updatedDoc =
@@ -825,7 +824,6 @@ namespace {
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             Require (GetCollections ().Contains (name));
-                scoped_lock critSec{fMaybeLock_};
             return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
                 Debug::UncheckedDynamicPointerCast<DirectoryFilesystemDatabaseRep_> (shared_from_this ()), name)};
         }
