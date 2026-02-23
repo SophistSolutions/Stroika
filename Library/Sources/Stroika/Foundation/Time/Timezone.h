@@ -138,18 +138,9 @@ namespace Stroika::Foundation::Time {
         nonvirtual Timezone& operator= (const Timezone& rhs)     = default;
 
     public:
-        /**
-         *  Returns Timezone object in UTC timezone.
-         */
         static const Timezone kUTC; // defined constexpr
 
     public:
-        /**
-         *  Returns Timezone object in localtime timezone.
-         *
-         *  \note - LocalTime is a STICKY property. This does NOT return the FIXED OFFSET for the current local-time, but rather a special
-         *          Timezone which always references that global current timezone.
-         */
         static const Timezone kLocalTime; // defined constexpr
 
     public:
