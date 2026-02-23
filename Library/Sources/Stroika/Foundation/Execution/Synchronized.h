@@ -45,6 +45,10 @@ namespace Stroika::Foundation::Execution {
     /**
      *  The type InternallySynchronized is intended to be used as a flag to mark whether or not a given class/type/object
      *  is internally synchronized, or not.
+     * 
+     *  Internally synchronized means that an object can be safely accessed from multiple threads at the same time. If an object
+     *  is 'not known internally synchronized' - you must use mutexes or some similar means to assure the object in question
+     *  is not accessed by multiple threads simultaneously.
      *
      *  It is typically provided as an optional argument to static New () methods, such as 
      *  MemoryStream<>::New ()
