@@ -38,6 +38,15 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
+     * \brief requirements for 'T' to use Range<T>.
+     * 
+     *      \todo - should this require GetNext/GetPrevious? - API CURRENTLY DOES --LGP 2026-02-23, which doesnt always make sense. COULD move that to
+     *                                      DISCRETE TRAITS/DISCRETE Range???
+     */
+    template <typename T>
+    concept IRangeable = copyable<T> and totally_ordered<T>;
+
+    /**
      *  \note - ALL these RangeTraits helper classes use template <> struct instead of template<> using because
      *          as of C++17, you cannot do template specialization of using templates (otherwise using would be better)
      */
@@ -225,7 +234,7 @@ namespace Stroika::Foundation::Traversal {
 
     }
 
-    template <typename T, typename RANGE_TYPE>
+    template <IRangeable T, typename RANGE_TYPE>
     class DisjointRange;
 
     /**
@@ -271,7 +280,7 @@ namespace Stroika::Foundation::Traversal {
      *  @see DisjointRange
      *  @see DisjointDiscreteRange
      */
-    template <typename T, typename TRAITS = RangeTraits::Default<T>>
+    template <IRangeable T, typename TRAITS = RangeTraits::Default<T>>
     class Range {
     public:
         /**
@@ -589,20 +598,20 @@ namespace Stroika::Foundation::Traversal {
      *  Alias: T + RANGE => RANGE.Offset(T)
      *  Alias: RANGE + RANGE => RANGE.Union (RANGE)
      */
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs);
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
     /**
      *  Alias: T * RANGE => RANGE.Times(T)
      *  \pre T has operator* (T,T) -> T defined
      */
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs);
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs);
 
     /**
@@ -617,7 +626,7 @@ namespace Stroika::Foundation::Traversal {
      *          Assert (((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}) == RT{2,2,eClosed,eClosed}));
      *      \endcode
      */
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
 }

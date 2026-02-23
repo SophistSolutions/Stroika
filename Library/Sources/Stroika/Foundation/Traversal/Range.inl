@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Traversal {
      ***************************** Range<T, TRAITS> *********************************
      ********************************************************************************
      */
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range ()
         : fBegin_{TRAITS::kUpperBound}
         , fEnd_{TRAITS::kLowerBound}
@@ -74,24 +74,24 @@ namespace Stroika::Foundation::Traversal {
     {
         Ensure (empty ());
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     template <typename T2, typename TRAITS2>
     constexpr Range<T, TRAITS>::Range (const Range<T2, TRAITS>& src)
         : Range{src.GetLowerBound (), src.GetUpperBound (), src.GetLowerBoundOpenness (), src.GetUpperBoundOpenness ()}
     {
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end)
         : Range{begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
     {
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end)
         : Range{begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound,
                 TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
     {
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
         : fBegin_{begin}
         , fEnd_{end}
@@ -105,41 +105,41 @@ namespace Stroika::Foundation::Traversal {
         Require (begin < end or (lhsOpen == Openness::eClosed and rhsOpen == Openness::eClosed));
         Ensure (not empty ());
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen)
         : Range{begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, lhsOpen, rhsOpen}
     {
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr auto Range<T, TRAITS>::ReplaceStart (Common::ArgByValueType<T> start) const -> Range
     {
         Require (start <= GetUpperBound ());
         return Range{start, GetUpperBound (), GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr auto Range<T, TRAITS>::ReplaceEnd (Common::ArgByValueType<T> end) const -> Range
     {
         Require (GetLowerBound () <= end);
         return Range{GetLowerBound (), end, GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Ball (Common::ArgByValueType<T> center, Common::ArgByValueType<UnsignedDifferenceType> radius,
                                                        Openness lhsOpen, Openness rhsOpen)
     {
         return Range{center - radius, center + radius, lhsOpen, rhsOpen};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::ContainedRange (Common::ArgByValueType<T> begin, Common::ArgByValueType<T> end)
     {
         // note the case of begin==end is depends on openness, and already handled in normal CTOR - just avoid assert for having begin/end reversed
         return begin > end ? Range{} : Range{begin, end};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::FullRange ()
     {
         return Range{TraitsType::kLowerBound, TraitsType::kUpperBound, TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::empty () const
     {
         if (fBegin_ > fEnd_) {
@@ -151,12 +151,12 @@ namespace Stroika::Foundation::Traversal {
         }
         return false;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS>::operator bool () const
     {
         return not empty ();
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr typename Range<T, TRAITS>::UnsignedDifferenceType Range<T, TRAITS>::GetDistanceSpanned () const
     {
         if (empty ()) [[unlikely]] {
@@ -164,13 +164,13 @@ namespace Stroika::Foundation::Traversal {
         }
         return static_cast<UnsignedDifferenceType> (TraitsType::Difference (fBegin_, fEnd_));
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr T Range<T, TRAITS>::GetMidpoint () const
     {
         Require (not empty ());
         return GetLowerBound () + GetDistanceSpanned () / 2;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr T Range<T, TRAITS>::Pin (T v) const
     {
         Require (not empty ());
@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return v;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::Contains (Common::ArgByValueType<T> r) const
     {
         if (empty ()) {
@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return false;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::Contains (const Range& containee) const
     {
         /*
@@ -248,13 +248,13 @@ namespace Stroika::Foundation::Traversal {
         }
         return true;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Closure () const
     {
         Require (not empty ());
         return Range{GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     template <typename T2, typename TRAITS2>
     constexpr bool Range<T, TRAITS>::Intersects (const Range<T2, TRAITS2>& rhs) const
     {
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Traversal {
         Assert (oldCode (rhs) == true);
         return true; // see cases B, C, D, and F - they all intersect
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range& rhs) const
     {
         if (empty () or rhs.empty ()) {
@@ -343,12 +343,12 @@ namespace Stroika::Foundation::Traversal {
         }
         return Range{};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     inline DisjointRange<T, Range<T, TRAITS>> Range<T, TRAITS>::Union (const Range& rhs) const
     {
         return DisjointRange<T, Range>{{*this, rhs}};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range& rhs) const
     {
         if (empty ()) {
@@ -376,7 +376,7 @@ namespace Stroika::Foundation::Traversal {
         Ensure (result.GetUpperBound () >= rhs.GetUpperBound ());
         return result;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr auto Range<T, TRAITS>::Extend (Common::ArgByValueType<T> value) const -> Range
     {
         if (empty ()) {
@@ -390,41 +390,41 @@ namespace Stroika::Foundation::Traversal {
         }
         return *this;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr T Range<T, TRAITS>::GetLowerBound () const
     {
         Require (not empty ());
         return fBegin_;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Openness Range<T, TRAITS>::GetLowerBoundOpenness () const
     {
         return fBeginOpenness_;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr T Range<T, TRAITS>::GetUpperBound () const
     {
         Require (not empty ());
         return fEnd_;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Openness Range<T, TRAITS>::GetUpperBoundOpenness () const
     {
         return fEndOpenness_;
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr auto Range<T, TRAITS>::Offset (SignedDifferenceType o) const -> Range
     {
         Require (not empty ());
         return Range{static_cast<T> (GetLowerBound () + o), static_cast<T> (GetUpperBound () + o), GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr auto Range<T, TRAITS>::Times (T o) const -> Range
     {
         Require (not empty ());
         return Range{static_cast<T> (GetLowerBound () * o), static_cast<T> (GetUpperBound () * o), GetLowerBoundOpenness (), GetUpperBoundOpenness ()};
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     Characters::String Range<T, TRAITS>::ToString (const function<Characters::String (const T&)>& eltToString) const
     {
         Characters::StringBuilder out;
@@ -448,7 +448,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return out.str ();
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::operator== (const Range& rhs) const
     {
         if (empty ()) {
@@ -457,7 +457,7 @@ namespace Stroika::Foundation::Traversal {
         return GetLowerBound () == rhs.GetLowerBound () and GetUpperBound () == rhs.GetUpperBound () and
                GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr partial_ordering Range<T, TRAITS>::operator<=> (const Range& rhs) const
     {
         /*
@@ -507,34 +507,34 @@ namespace Stroika::Foundation::Traversal {
      *************************** Range<T,TRAITS> Operators **************************
      ********************************************************************************
      */
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs)
     {
         return rhs.Offset (lhs);
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs)
     {
         return lhs.Offset (rhs);
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Union (rhs);
     }
 
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs)
     {
         return rhs.Times (lhs);
     }
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs)
     {
         return lhs.Times (rhs);
     }
 
-    template <typename T, typename TRAITS>
+    template <IRangeable T, typename TRAITS>
     constexpr Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Intersection (rhs);

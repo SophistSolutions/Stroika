@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Traversal {
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
      *          to traverse them.
      *
-     *  The Stroika iterators can be used either directly (similar to std::range), or in the STL begin/end style -
+     *  The Stroika iterables can be used either directly (similar to std::range), or in the STL begin/end style -
      *  and this class supports both styles of usage.
      * 
      *  Iterable<T> also supports read-only applicative operations on the contained data.

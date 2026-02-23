@@ -41,6 +41,17 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
+     * \brief requirements for 'T' to use DiscreteRange<T>: roughly to be IRangeable (copyable and well ordered), and adding the requirement of being somewhat integral
+     * 
+     *      \todo - should this require GetNext/GetPrevious? - API CURRENTLY DOES --LGP 2026-02-23, which doesnt always make sense. COULD move that to
+     *                                      DISCRETE TRAITS/DISCRETE Range???
+     * 
+     * and INTEGRAL doesnt work for all cases - DEBUG WHY!!!
+     */
+    template <typename T>
+    concept IDiscreteRangeable = IRangeable<T> /*and integral<T>*/;
+
+    /**
      *  \brief A DiscreteRange is a Range where the underlying endpoints are integral (discrete, not continuous); 
      *         this implies you can iterate over the members of the range, and its endpoints are closed.
      *
@@ -71,7 +82,7 @@ namespace Stroika::Foundation::Traversal {
      *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
      *          iterable with all possible legal values of the enum.
      */
-    template <typename T, typename TRAITS = RangeTraits::Default<T>>
+    template <IDiscreteRangeable T, typename TRAITS = RangeTraits::Default<T>>
     class DiscreteRange : public Range<T, TRAITS> {
     public:
         static_assert (TRAITS::kLowerBoundOpenness == Openness::eClosed);
@@ -186,7 +197,7 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  Intersection ()
      */
-    template <typename T, typename TRAITS>
+    template <IDiscreteRangeable T, typename TRAITS>
     DiscreteRange<T, TRAITS> operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
 
 }
