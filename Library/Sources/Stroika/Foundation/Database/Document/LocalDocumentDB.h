@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
     struct Options final : Database::Document::Connection::Options {
 
         /**
-         * \brief use eInternallySynchronized to make envelope internally synchronized
+         * \brief use eInternallySynchronized to make letter internally synchronized
          * 
          *      \note - as of 2026-01-28, all the implementations are actually eInternallySynchronized, but
          *              easy to fix so they are not (so they will be more performant in that case).
