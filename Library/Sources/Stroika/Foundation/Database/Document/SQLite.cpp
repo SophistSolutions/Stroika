@@ -876,11 +876,6 @@ namespace {
                 },
                 nullopt, true);
         }
-        virtual ::sqlite3* Peek () override
-        {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
-            return fDB_;
-        }
         virtual Duration GetBusyTimeout () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronizedMutex_};

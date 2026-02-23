@@ -289,12 +289,6 @@ namespace Stroika::Foundation::Database::Document::SQLite {
 
         public:
             /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the SQLite API.
-             */
-            nonvirtual ::sqlite3* Peek () const;
-
-        public:
-            /**
              *  When doing a query that would have failed due to SQL_BUSY timeout, SQLite will wait
              *  and retry up to this long, to avoid the timeout.
              */
@@ -337,12 +331,6 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
         class IRep : public Database::Document::Connection::IRep {
-        public:
-            /**
-             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the SQLite API.
-             */
-            virtual ::sqlite3* Peek () = 0;
-
         public:
             /**
              *  Fetched dynamically with pragma busy_timeout;
