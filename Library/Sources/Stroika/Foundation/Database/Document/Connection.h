@@ -186,6 +186,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
         nonvirtual bool operator== (nullptr_t) const noexcept;
 
     protected:
+        // note this protects the LETTER (smart_ptr) not the envelope
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
     };
 
