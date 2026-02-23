@@ -56,16 +56,14 @@ namespace {
         }
         return result.AsNarrowSDKString ();
     }
-#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy or qCompilerAndStdLib_template_template_auto_deduced_Buggy
     template <typename X>
     using RANGE_TEMPLATE_BWA = Range<X>;
 #endif
     Range<DisplayedRealtimeClock::time_point> toDisp_ (Range<TimePointSeconds> tpRange)
     {
-#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy or qCompilerAndStdLib_template_template_auto_deduced_Buggy
         return Time::clock_cast<DisplayedRealtimeClock, RANGE_TEMPLATE_BWA> (tpRange);
-#elif qCompilerAndStdLib_template_template_auto_deduced_Buggy
-        return Time::clock_cast<DisplayedRealtimeClock, Range> (tpRange);
 #else
         return Time::clock_cast<DisplayedRealtimeClock> (tpRange);
 #endif
