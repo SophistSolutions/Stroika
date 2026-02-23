@@ -224,7 +224,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     }}
     , stats{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Stats {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
-        // NO - INTERNALLY SYNCRHONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        // NO - INTERNALLY SYNCHRONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without synchronization
         TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats

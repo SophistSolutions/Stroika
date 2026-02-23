@@ -156,7 +156,7 @@ namespace {
          */
         using namespace Demo_Using_Capturer_GetMostRecentMeasurements__Private_;
 
-        MyCapturer_ capturer; // initialized threadsafe, but internally syncrhonized class
+        MyCapturer_ capturer; // initialized threadsafe, but internally synrchonized class
 
         Time::TimePointSeconds doneAt = Time::GetTickCount () + runFor;
         unsigned int           pass{};

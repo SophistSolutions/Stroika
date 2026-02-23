@@ -462,7 +462,7 @@ namespace {
 namespace {
     struct ConnectionRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::Connection::IRep {
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsyncrhonized connection, share its context
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsynrchonized connection, share its context
             shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
             mongocxx::collection       fCollection_;
 

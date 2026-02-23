@@ -452,7 +452,7 @@ namespace Stroika::Foundation::Execution {
              *  This call is (generally) non-blocking (may block briefly for critical section to update status,
              *  but does NOT block until Stop successful). See AbortAndWaitUntilDone() to abort and wait for completion.
              *
-             *  This can be called on a thread object at any time (reps are internally syncrhonized), and in any state (except nullptr, which can only happen in the thread
+             *  This can be called on a thread object at any time (reps are internally synrchonized), and in any state (except nullptr, which can only happen in the thread
              *  was created with nullptr/default CTOR and never assigned from Thread::New).
              *
              *  \note   This counts on Stroika's semi-cooperative multitasking (to be safe). This means if you call libraries that don't

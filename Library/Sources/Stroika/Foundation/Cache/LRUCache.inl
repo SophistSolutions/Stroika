@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Cache {
         requires (same_as<KEY_HASH_FUNCTION, nullptr_t>)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction ()}
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareFromReadContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareFromReadContext{fAssertExternallySynchronized_};
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {
                 Add ((*i)->fKey, (*i)->fValue);
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Cache {
         requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ()}
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareFromReadContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareFromReadContext{fAssertExternallySynchronized_};
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {
                 Add ((*i)->fKey, (*i)->fValue);
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (const LRUCache& rhs) -> LRUCache&
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         if (this != &rhs) {
             SetMaxCacheSize (rhs.GetMaxCacheSize ());
             ClearCache_ ();
@@ -169,14 +169,14 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline size_t LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetMaxCacheSize () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronized_};
         return fHashtableSize_ * fCachedElts_BUF_[0].size ();
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::SetMaxCacheSize (size_t maxCacheSize)
     {
         Require (maxCacheSize >= 1);
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         maxCacheSize = ((maxCacheSize + fHashtableSize_ - 1) / fHashtableSize_); // divide size over number of hash chains
         maxCacheSize = max (maxCacheSize, static_cast<size_t> (1));              // must be at least one per chain
         for (size_t hi = 0; hi < fHashtableSize_; ++hi) {
@@ -197,19 +197,19 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetKeyEqualsCompareFunction () const -> KeyEqualsCompareFunctionType
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronized_};
         return fKeyEqualsComparer_;
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetStats () const -> StatsType
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronized_};
         return fStats_;
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetHashTableSize () const -> size_t
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronized_};
         if constexpr (same_as<KEY_HASH_FUNCTION, nullptr_t>) {
             return 1;
         }
@@ -220,19 +220,19 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetKeyHashFunction () const -> KEY_HASH_FUNCTION
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronized_};
         return fHashFunction_;
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear ()
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         ClearCache_ ();
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (typename Common::ArgByValueType<KEY> key)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         optional<KeyValuePair_>*                               v = LookupElement_ (key);
         if (v != nullptr) {
             v->clear ();
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::clear (function<bool (typename Common::ArgByValueType<KEY>)> clearPredicate)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         for (auto i = begin_ (); i != end_ (); ++i) {
             if (i->has_value () and clearPredicate ((*i)->fKey)) {
                 *i = nullopt;
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Cache {
     auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Lookup (typename Common::ArgByValueType<KEY> key)
         -> optional<VALUE>
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_}; // subtle - WRITE cuz updates LRU
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_}; // subtle - WRITE cuz updates LRU
         optional<KeyValuePair_>* v = LookupElement_ (key);
         if (v == nullptr) {
             return optional<VALUE>{};
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Cache {
     void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Common::ArgByValueType<KEY>   key,
                                                                                         typename Common::ArgByValueType<VALUE> value)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         optional<KeyValuePair_>*                               v = AddNew_ (key);
         *v                                                       = KeyValuePair_{key, value};
     }
@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Elements () const -> Containers::Mapping<KEY, VALUE>
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronized_};
         Containers::Mapping<KEY, VALUE>                       result;
         for (CacheIterator_ i = begin_ (); i != end_ (); ++i) {
             if (*i) {

@@ -305,7 +305,7 @@ template <IIterableOfTo<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQ
 ## Implementation notes
 ---
 
-- Due to use of COW, const methods of reps need no locking (just use Debug::AssertExternallySyncrhonized).
+- Due to use of COW, const methods of reps need no locking (just use Debug::AssertExternallySynchronized).
 - Due to use of COW, non-const methods of reps ALSO don't need locking, since the COW code assures there is only one reference at a time (and therefore one Envelope class, which itself asserts externally synchronized)
 
 - Generally have body functions of overloads have static_assert(TYPE REQUIREMENT) instead of using

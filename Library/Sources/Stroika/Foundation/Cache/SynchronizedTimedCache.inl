@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Cache {
                                                                          PurgeSpoiledDataFlagType purgeSpoiledData) -> VALUE
     {
         /*
-         *  The main reason for this class (as opposed to Syncrhonized<TimedCache>), is this logic: unlocking the shared 
+         *  The main reason for this class (as opposed to Synchronized<TimedCache>), is this logic: unlocking the shared 
          *  lock and then fetching the new value (oprionally with a write lock).
          */
         auto&& readLock = shared_lock{fMutex_}; // try shared_lock for case where present, and then lose it if we need to update object

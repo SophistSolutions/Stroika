@@ -7336,7 +7336,7 @@ None
     - cleanups to Instruments API (not backward compat but should be irrelevant)
     - In Frameworks/SystemPerformance::Capturer - if constructed wtih explicit capture sets, then run once immediately
     - Documented thread safety for various classes (and cleaned up sample/use of Captuere
-      cuz was already internally syncrhonized)
+      cuz was already internally synchronized)
     - MeasurementSet::MergeAdditions()
     - Capturer now CORRECTLY handles multiple capturesets and sychronizes each appropriately (with
       just one thread as well as you can).
@@ -13609,7 +13609,7 @@ None
                 <li>Added regression tests for Thread::Interrupt () - and found it was broken - so fixed it</li>
                 <li>more tweaks to Thread class - lock_guards and made more methods const since const relaly applies to smartptr - not underlying data</li>
                 <li>Thread::operator== and != nullptr - use that instead of GetStatus ()</li>
-                <li>hopefully primve Thread::Ptr operator= with more overloads (to test fix on syncrhonized<Thread::Ptr>)</li>
+                <li>hopefully primve Thread::Ptr operator= with more overloads (to test fix on synrchonized<Thread::Ptr>)</li>
                 <li>lose Thread::Abort_Forced_Unsafe () - was not fully implemented and not a good idea, so dont even bother deprecating - pretty sure never used</li>
                 <li>https://stroika.atlassian.net/browse/STK-461 - wrap Thread class as Debug::AssertExternallySynchronized  - for envelope / smart ptr</li>
                 <li>another small race fix with abort when NotYetRunning</li>
@@ -13621,7 +13621,7 @@ None
                 <li>Threads: some name and dbgtrace cleanups; and fixes for regressions in how threads are named under POSIX (crash/failure)</li>
                 <li>Thread docs/cleanups and name change - for POSIX - CalledInRepThreadAbortProc_ -> InteruptionSignalHandler_</li>
                 <li>lose added dbgtrace for SuppressInterruptionInContext::~SuppressInterruptionInContext () with comments why</li>
-                <li>Thread::Ptr code doesnt work well with synchonized - must use syncrhonized.store ()</li>
+                <li>Thread::Ptr code doesnt work well with synchonized - must use synrchonized.store ()</li>
                 <li>make Thread not copyable - just movable, and new type Thread::Ptr to allow copy (like I did for Stream/Stream::Ptr)</li>
                 <li>docs about Thread::Yield () - cancelation point</li>
                 <li>renamed AbortAndWaitUntilDone -> AbortAndWaitForDoneUntil; and marked old name as deprecated</li>

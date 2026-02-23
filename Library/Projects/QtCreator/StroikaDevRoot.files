@@ -987,12 +987,6 @@ Library/Sources/Stroika/Foundation/Streams/InputOutputStream.inl
 Library/Sources/Stroika/Foundation/Streams/InputStream.cpp
 Library/Sources/Stroika/Foundation/Streams/InputStream.h
 Library/Sources/Stroika/Foundation/Streams/InputStream.inl
-Library/Sources/Stroika/Foundation/Streams/InternallySyncrhonizedInputOutputStream.h
-Library/Sources/Stroika/Foundation/Streams/InternallySyncrhonizedInputOutputStream.inl
-Library/Sources/Stroika/Foundation/Streams/InternallySyncrhonizedInputStream.h
-Library/Sources/Stroika/Foundation/Streams/InternallySyncrhonizedInputStream.inl
-Library/Sources/Stroika/Foundation/Streams/InternallySyncrhonizedOutputStream.h
-Library/Sources/Stroika/Foundation/Streams/InternallySyncrhonizedOutputStream.inl
 Library/Sources/Stroika/Foundation/Streams/MemoryStream.cpp
 Library/Sources/Stroika/Foundation/Streams/MemoryStream.h
 Library/Sources/Stroika/Foundation/Streams/MemoryStream.inl

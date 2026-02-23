@@ -128,5 +128,5 @@ Depending on the subclass, this might be:
 #### Examples:
   - template <typename ELEMENT_TYPE> class OutputStream<ELEMENT_TYPE>::_IRep;
 
-    Some sub-types will be internally syncrhonized, and others C++-Standard-Thread-Safety
+    Some sub-types will be internally synchronized, and others C++-Standard-Thread-Safety
 

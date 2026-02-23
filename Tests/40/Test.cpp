@@ -952,7 +952,7 @@ namespace {
 namespace {
     namespace RegressionTest18_RWSynchronized_ {
         namespace Private_ {
-            template <typename SYNCRHONIZED_INT>
+            template <typename SYNCHRONIZED_INT>
             void Test1_MultipleConcurrentReaders (bool mustBeEqualToZero, unsigned int repeatCount, double sleepTime)
             {
                 Debug::TraceContextBumper ctx{"...Test1_MultipleConcurrentReaders"};
@@ -960,7 +960,7 @@ namespace {
                  *  Verify that both threads are maintaining the lock at the same time.
                  */
                 // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the EXPECT_TRUE about countWhereTwoHoldingRead below will fail!
-                SYNCRHONIZED_INT sharedData{0};
+                SYNCHRONIZED_INT sharedData{0};
                 atomic<unsigned int> countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
                 atomic<unsigned int> countWhereTwoHoldingRead{0};
                 atomic<unsigned int> sum1{};

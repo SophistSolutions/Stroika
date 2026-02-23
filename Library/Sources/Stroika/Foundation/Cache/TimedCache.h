@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  @see SynchronizedTimedCache<> - for internally synchonized implementation
      *
-     *  @see SyncrhonizedCallerStalenessCache
+     *  @see SynchronizedCallerStalenessCache
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
@@ -392,7 +392,7 @@ namespace Stroika::Foundation::Cache {
         }
 
     private:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
 
     private:
         Time::DurationSeconds  fMinimumAllowedFreshness_;

@@ -16,7 +16,7 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  * 
  *  TODO:
- *      @todo Probably should use Debug::AssertExternallySyncrhonized in SharedByValue
+ *      @todo Probably should use Debug::AssertExternallySynchronized in SharedByValue
  *
  */
 

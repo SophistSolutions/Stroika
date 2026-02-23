@@ -384,7 +384,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         /**
-         * Capture the process results and running PID. NOTE - this uses Syncrhonized, since its generally looked at and set from
+         * Capture the process results and running PID. NOTE - this uses Synchronized, since its generally looked at and set from
          * two different threads.
          */
         struct DetailedRunnableRep_ {

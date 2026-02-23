@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         nonvirtual mongocxx::pool& PeekPool () const;
 
     private:
-        // shared_ptr is internally synchronized for copies / control block updates (refCnt) - and mongocxx::pool internally syncrhonized
+        // shared_ptr is internally synchronized for copies / control block updates (refCnt) - and mongocxx::pool internally synrchonized
         shared_ptr<mongocxx::pool> fPool_;
     };
 

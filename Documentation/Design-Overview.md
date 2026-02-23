@@ -429,7 +429,7 @@ struct Logger ... {
 }
 ```
 
-In this case, all mutable methods (such as Logger::SetAppender(), SetSignalHandlers::SetSignalHanlders()) are internally syncrhonized,
+In this case, all mutable methods (such as Logger::SetAppender(), SetSignalHandlers::SetSignalHanlders()) are internally synchronized,
 and so safe to call from any thread.
 
 This pattern is safe to use before main (because the Get() method can ensure the underlying singleton object is constructed before returning it).

@@ -42,7 +42,7 @@ using namespace Stroika::Frameworks::WebServer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // As name suggests, DANGEROUS because called from threads BESIDES the threadpool ones, and so can easily cause assert failures cuz Connection
-// objects CHECK they are not used un-externally-syncrhonized!
+// objects CHECK they are not used un-externally-synrchonized!
 // issue is the DbgTrace functions DEREFERENCE the shared_ptrs (in print function) and they do so to OTHER connections
 // than their own (GetActiveConnections/GetInactiveConnections).
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_ 1

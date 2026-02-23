@@ -304,7 +304,7 @@ namespace {
     struct SingleFileDatabaseRep_ final : Database::Document::LocalDocumentDB::IRep {
 
         const filesystem::path fExternalFile_;
-        shared_ptr<MemoryDatabaseRep_<SYNC_STYLE>> fMemoryDB_; // already internally syncrhonized, must be shared_ptr cuz it uses shared_from_this
+        shared_ptr<MemoryDatabaseRep_<SYNC_STYLE>> fMemoryDB_; // already internally synrchonized, must be shared_ptr cuz it uses shared_from_this
         const DataExchange::Variant::Reader fReader_;
         const DataExchange::Variant::Writer fWriter_;
         const bool                          fFlushOnEachWrite_;
