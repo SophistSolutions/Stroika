@@ -103,6 +103,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
     public:
         /**
          */
+        Ptr () noexcept          = default;
         Ptr (const Ptr& src)     = default;
         Ptr (Ptr&& src) noexcept = default;
         Ptr (nullptr_t) noexcept;
