@@ -43,16 +43,22 @@ using Database::Document::EngineProperties;
 
 namespace {
 
+    template <InternallySynchronized SYNC_STYLE>
+    using MyMaybeLock_ =
+        conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedMutex, recursive_mutex>;
+
     /*
      *  Store collections entirely in RAM.
-     *     \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
+     *     \note   \em Thread-Safety  depends on InternallySynchronized
      */
+    template <InternallySynchronized SYNC_STYLE>
     struct MemoryDatabaseRep_ final : Database::Document::LocalDocumentDB::IRep {
 
         using CollectionRep_ = Mapping<GUID, Document::Document>;
 
-        const Document::LocalDocumentDB::Options      fOptions_;
-        Synchronized<Mapping<String, CollectionRep_>> fCollections_;
+        const Document::LocalDocumentDB::Options fOptions_;
+        [[no_unique_address]] mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
+        Mapping<String, CollectionRep_> fCollections_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
             const shared_ptr<MemoryDatabaseRep_> fConnectionRep_; // save to bump reference count (so lifetime of collection always >= lifetime of documentDB)
@@ -65,6 +71,7 @@ namespace {
             }
             virtual String GetName () const override
             {
+                scoped_lock critSec{fConnectionRep_->fMaybeLock_};
                 return fTableName_;
             }
             virtual IDType Add (const Document::Document& v) override
@@ -72,19 +79,19 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Add"};
 #endif
+                scoped_lock critSec{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
                         optional<VariantValue> vID = v.Lookup (Document::kID);
                         Require (not vID.has_value () or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
                         GUID               id         = vID.has_value () ? GUID{vID->As<String> ()} : GUID::GenerateNew ();
-                        auto               rwLock     = fConnectionRep_->fCollections_.rwget ();
-                        CollectionRep_     collection = rwLock.cref ().LookupValue (fTableName_);
+                        CollectionRep_     collection = fConnectionRep_->fCollections_.LookupValue (fTableName_);
                         Document::Document doc2Add    = v;
                         if (vID) {
                             doc2Add.Remove (Document::kID); // already in parent KEY so don't store redundantly
                         }
                         collection.Add (id, doc2Add);
-                        rwLock.rwref ().Add (fTableName_, collection);
+                        fConnectionRep_->fCollections_.Add (fTableName_, collection);
                         return id.ToString ();
                     },
                     fTableName_, true);
@@ -94,9 +101,10 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Get"};
 #endif
+                scoped_lock critSec{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
-                        optional<Document::Document> r = fConnectionRep_->fCollections_->LookupValue (fTableName_).Lookup (GUID{id});
+                        optional<Document::Document> r = fConnectionRep_->fCollections_.LookupValue (fTableName_).Lookup (GUID{id});
                         if (r) {
                             r->Add (Document::kID, id);
                         }
@@ -112,9 +120,10 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
+                scoped_lock critSec{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
-                        return fConnectionRep_->fCollections_->LookupValue (fTableName_)
+                        return fConnectionRep_->fCollections_.LookupValue (fTableName_)
                             .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
                                 Document::Document d = kvp.fValue;
                                 d.Add (Document::kID, kvp.fKey.ToString ());
@@ -136,6 +145,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Update"};
 #endif
+                scoped_lock critSec{fConnectionRep_->fMaybeLock_};
                 fConnectionRep_->WrapExecute_ (
                     [&] () {
                         Document::Document uploadDoc = newV;
@@ -144,8 +154,7 @@ namespace {
                         }
                         static const auto  kExcept1_           = RuntimeErrorException{"no such table"sv};
                         static const auto  kNoSuchIDException_ = RuntimeErrorException{"no such id"sv};
-                        auto               rwLock              = fConnectionRep_->fCollections_.rwget ();
-                        CollectionRep_     collection          = rwLock.cref ().LookupChecked (fTableName_, kExcept1_);
+                        CollectionRep_     collection          = fConnectionRep_->fCollections_.LookupChecked (fTableName_, kExcept1_);
                         Document::Document d2Update = onlyTheseFields ? collection.LookupChecked (id, kNoSuchIDException_) : uploadDoc;
                         // any fields listed in onlyTheseFields, but not present in newV need to be removed
                         if (onlyTheseFields) {
@@ -155,7 +164,7 @@ namespace {
                         }
                         d2Update.RemoveIf (Document::kID);
                         collection.Add (id, d2Update);
-                        rwLock.rwref ().Add (fTableName_, collection); // replace the actual collection in our master database of collections
+                        fConnectionRep_->fCollections_.Add (fTableName_, collection); // replace the actual collection in our master database of collections
                     },
                     fTableName_, true);
             }
@@ -164,13 +173,13 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::MemoryDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
+                scoped_lock critSec{fConnectionRep_->fMaybeLock_};
                 fConnectionRep_->WrapExecute_ (
                     [&] () {
-                        auto rwLock = fConnectionRep_->fCollections_.rwget ();
-                        if (optional<CollectionRep_> oc = rwLock.cref ().Lookup (fTableName_)) {
+                        if (optional<CollectionRep_> oc = fConnectionRep_->fCollections_.Lookup (fTableName_)) {
                             CollectionRep_ c = *oc;
                             if (c.RemoveIf (id)) {
-                                rwLock.rwref ().Add (fTableName_, c); // replace the actual collection in our master database of collections
+                                fConnectionRep_->fCollections_.Add (fTableName_, c); // replace the actual collection in our master database of collections
                             }
                         }
                     },
@@ -235,7 +244,7 @@ namespace {
         {
             uintmax_t totalSize{};
             // WAG/Weak but adequate Estimate
-            for (const KeyValuePair<String, CollectionRep_>& ci : fCollections_.load ()) {
+            for (const KeyValuePair<String, CollectionRep_>& ci : fCollections_) {
                 totalSize += ci.fKey.size () + 3;
                 for (const KeyValuePair<GUID, Document::Document>& di : ci.fValue) {
                     totalSize += 20; // for GUID
@@ -249,24 +258,26 @@ namespace {
         }
         virtual Set<String> GetCollections () override
         {
-            return Set<String>{fCollections_.load ().Keys ()};
+            scoped_lock declareContext{fMaybeLock_};
+            return Set<String>{fCollections_.Keys ()};
         }
         virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
-            auto rwLock = fCollections_.rwget ();
-            if (not rwLock.cref ().Lookup (name)) {
-                rwLock.rwref ().Add (name, {});
+            scoped_lock declareContext{fMaybeLock_};
+            if (not fCollections_.Lookup (name)) {
+                fCollections_.Add (name, {});
             }
             return GetCollection (name);
         }
         virtual void DropCollection (const String& name) override
         {
-            auto rwLock = fCollections_.rwget ();
-            rwLock.rwref ().RemoveIf (name);
+            scoped_lock declareContext{fMaybeLock_};
+            fCollections_.RemoveIf (name);
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
-            Require (fCollections_.load ().ContainsKey (name));
+            scoped_lock declareContext{fMaybeLock_};
+            Require (fCollections_.ContainsKey (name));
             return Document::Collection::Ptr{
                 Memory::MakeSharedPtr<MyCollectionRep_> (Debug::UncheckedDynamicPointerCast<MemoryDatabaseRep_> (shared_from_this ()), name)};
         }
@@ -289,17 +300,18 @@ namespace {
      *  Store collections in json file (leveraging MemoryDatabaseRep_ internally).
      *     \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
      */
+    template <InternallySynchronized SYNC_STYLE>
     struct SingleFileDatabaseRep_ final : Database::Document::LocalDocumentDB::IRep {
 
-        const filesystem::path              fExternalFile_;
-        shared_ptr<MemoryDatabaseRep_>      fMemoryDB_; // already internally syncrhonized, must be shared_ptr cuz it uses shared_from_this
+        const filesystem::path fExternalFile_;
+        shared_ptr<MemoryDatabaseRep_<SYNC_STYLE>> fMemoryDB_; // already internally syncrhonized, must be shared_ptr cuz it uses shared_from_this
         const DataExchange::Variant::Reader fReader_;
         const DataExchange::Variant::Writer fWriter_;
         const bool                          fFlushOnEachWrite_;
         bool                                fDirty_{true}; // if true, we have changes that haven't yet been flushed to disk
         const OpertionCallbackPtr           fOperationLoggingCallback_{nullptr};
 #if qStroika_Foundation_Common_Platform_Windows
-        optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
+       const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
 #endif
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
@@ -323,10 +335,10 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Add"};
 #endif
+                scoped_lock critSec{fDBRep_->fMemoryDB_->fMaybeLock_};
                 return fDBRep_->WrapExecute_ (
                     [&] () {
-                        [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
-                        auto                  id     = fDelegateToInMemoryDB_->Add (v);
+                        auto id = fDelegateToInMemoryDB_->Add (v);
                         fDBRep_->DataChangedSoMaybeWrite2Disk ();
                         return id;
                     },
@@ -337,6 +349,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Get"};
 #endif
+                scoped_lock critSec{fDBRep_->fMemoryDB_->fMaybeLock_};
                 return fDBRep_->WrapExecute_ ([&] () { return fDelegateToInMemoryDB_->Get (id, projection); }, fName_, false);
             }
             virtual Sequence<Document::Document> GetAll (const optional<Filter>& filter, const optional<Projection>& projection) override
@@ -352,9 +365,9 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Update"};
 #endif
+                scoped_lock critSec{fDBRep_->fMemoryDB_->fMaybeLock_};
                 fDBRep_->WrapExecute_ (
                     [&] () {
-                        [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                         fDelegateToInMemoryDB_->Update (id, newV, onlyTheseFields);
                         fDBRep_->DataChangedSoMaybeWrite2Disk ();
                     },
@@ -365,9 +378,9 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::MyCollectionRep_::Remove"};
 #endif
+                scoped_lock critSec{fDBRep_->fMemoryDB_->fMaybeLock_};
                 fDBRep_->WrapExecute_ (
                     [&] () {
-                        [[maybe_unused]] auto rwLock = fDBRep_->fMemoryDB_->fCollections_.rwget ();
                         fDelegateToInMemoryDB_->Remove (id);
                         fDBRep_->DataChangedSoMaybeWrite2Disk ();
                     },
@@ -401,7 +414,7 @@ namespace {
         SingleFileDatabaseRep_ ([[maybe_unused]] const Document::LocalDocumentDB::Options&   options,
                                 const Document::LocalDocumentDB::Options::SingleFileStorage& sfOptions)
             : fExternalFile_{sfOptions.fFile}
-            , fMemoryDB_{make_shared<MemoryDatabaseRep_> (stripOptionsForMemDB_ (options))}
+            , fMemoryDB_{make_shared<MemoryDatabaseRep_<SYNC_STYLE>> (stripOptionsForMemDB_ (options))}
             , fReader_{get<DataExchange::Variant::Reader> (sfOptions.fSerialization)}
             , fWriter_{get<DataExchange::Variant::Writer> (sfOptions.fSerialization)}
             , fFlushOnEachWrite_{sfOptions.fFlushOnEachWrite}
@@ -434,6 +447,7 @@ namespace {
         }
         virtual Database::Document::Connection::Options GetOptions () const override
         {
+            scoped_lock                             declareContext{fMemoryDB_->fMaybeLock_};
             Database::Document::Connection::Options o = fMemoryDB_->GetOptions ();
             o.fOperationLoggingCallback               = fOperationLoggingCallback_;
             return o;
@@ -452,9 +466,9 @@ namespace {
         }
         virtual Document::Collection::Ptr CreateCollection (const String& name) override
         {
+            scoped_lock declareContext{fMemoryDB_->fMaybeLock_};
             return WrapExecute_ (
                 [&] () {
-                    [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
                     fMemoryDB_->CreateCollection (name);
                     DataChangedSoMaybeWrite2Disk ();
                     return GetCollection (name);
@@ -463,9 +477,9 @@ namespace {
         }
         virtual void DropCollection (const String& name) override
         {
+            scoped_lock declareContext{fMemoryDB_->fMaybeLock_};
             WrapExecute_ (
                 [&] () {
-                    [[maybe_unused]] auto rwLock = fMemoryDB_->fCollections_.rwget ();
                     fMemoryDB_->DropCollection (name);
                     DataChangedSoMaybeWrite2Disk ();
                 },
@@ -473,6 +487,7 @@ namespace {
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
+            scoped_lock               declareContext{fMemoryDB_->fMaybeLock_};
             Document::Collection::Ptr memDBCollection = fMemoryDB_->GetCollection (name);
             return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
                 Debug::UncheckedDynamicPointerCast<SingleFileDatabaseRep_> (shared_from_this ()), name, memDBCollection)};
@@ -491,16 +506,17 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::DoReadFromFS", "path={}"_f, fExternalFile_};
 #endif
+            scoped_lock declareContext{fMemoryDB_->fMaybeLock_};
             if (filesystem::exists (fExternalFile_)) {
-                auto rwLock = fMemoryDB_->fCollections_.rwget ();
-                rwLock.rwref ().clear ();
+                fMemoryDB_->fCollections_.clear ();
                 for (KeyValuePair<String, VariantValue> collectionAndDocument :
                      fReader_.Read (FileInputStream::New (fExternalFile_)).As<Mapping<String, VariantValue>> ()) {
-                    rwLock.rwref ().Add (collectionAndDocument.fKey,
-                                         collectionAndDocument.fValue.As<Mapping<String, VariantValue>> ().Map<Mapping<GUID, Document::Document>> (
-                                             [&] (const KeyValuePair<String, VariantValue>& kvp) -> KeyValuePair<GUID, Document::Document> {
-                                                 return {GUID{kvp.fKey}, kvp.fValue.As<Document::Document> ()};
-                                             }));
+                    fMemoryDB_->fCollections_.Add (
+                        collectionAndDocument.fKey,
+                        collectionAndDocument.fValue.As<Mapping<String, VariantValue>> ().Map<Mapping<GUID, Document::Document>> (
+                            [&] (const KeyValuePair<String, VariantValue>& kvp) -> KeyValuePair<GUID, Document::Document> {
+                                return {GUID{kvp.fKey}, kvp.fValue.As<Document::Document> ()};
+                            }));
                 }
             }
         }
@@ -518,11 +534,12 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::DoWriteToFS", "path={}"_f, fExternalFile_};
 #endif
+            scoped_lock declareContext{fMemoryDB_->fMaybeLock_};
             using namespace IO::FileSystem;
             ThroughTmpFileWriter                  tmpFile{fExternalFile_};
             IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
             Mapping<String, VariantValue>         collectionsAsVV;
-            for (const KeyValuePair<String, Mapping<GUID, Document::Document>>& collection : fMemoryDB_->fCollections_.load ()) {
+            for (const KeyValuePair<String, Mapping<GUID, Document::Document>>& collection : fMemoryDB_->fCollections_) {
                 Mapping<GUID, Document::Document> collectionValue = collection.fValue;
                 Mapping<String, VariantValue>     collWithStringKey;
                 for (const KeyValuePair<GUID, Document::Document>& kvp : collectionValue) {
@@ -553,13 +570,17 @@ namespace {
     };
 
     // Store each collection in a folder under the root folder
+    // Mostly intrinsically internally synchronized, but maybe could use locks here. Corner cases?
+    // like update, while adds happening. Won't cause CORRUPTION, but unclear what guarantees we want
+    // to offer about what completes before what?
+    template <InternallySynchronized SYNC_STYLE>
     struct DirectoryFilesystemDatabaseRep_ final : Database::Document::LocalDocumentDB::IRep {
         const Document::LocalDocumentDB::Options fOptions_;
         const filesystem::path                   fRoot_;
         const DataExchange::Variant::Reader      fReader_;
         const DataExchange::Variant::Writer      fWriter_;
 #if qStroika_Foundation_Common_Platform_Windows
-        optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
+       const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
 #endif
 
         struct MyCollectionRep_ final : Document::Collection::IRep {
@@ -647,6 +668,7 @@ namespace {
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::MyCollectionRep_::Update",
                                        "id={},newV={}, onlyTheseFields={}"_f, id, newV, onlyTheseFields};
 #endif
+                scoped_lock critSec{fMaybeLock_};
                 fDBRep_->WrapExecute_ (
                     [&] () {
                         Document::Document updatedDoc =
@@ -803,6 +825,7 @@ namespace {
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
             Require (GetCollections ().Contains (name));
+                scoped_lock critSec{fMaybeLock_};
             return Document::Collection::Ptr{Memory::MakeSharedPtr<MyCollectionRep_> (
                 Debug::UncheckedDynamicPointerCast<DirectoryFilesystemDatabaseRep_> (shared_from_this ()), name)};
         }
@@ -829,15 +852,36 @@ namespace {
  */
 auto Document::LocalDocumentDB::New (const Options& options) -> Ptr
 {
-    if (get_if<Options::MemoryStorage> (&options.fStorage)) {
-        return Ptr{Memory::MakeSharedPtr<MemoryDatabaseRep_> (options)};
+    switch (options.fInternallySynchronizedLetter) {
+        case eInternallySynchronized:
+            if (get_if<Options::MemoryStorage> (&options.fStorage)) {
+                return Ptr{Memory::MakeSharedPtr<MemoryDatabaseRep_<eInternallySynchronized>> (options)};
+            }
+            else if (auto fop = get_if<Options::SingleFileStorage> (&options.fStorage)) {
+                return Ptr{Memory::MakeSharedPtr<SingleFileDatabaseRep_<eInternallySynchronized>> (options, *fop)};
+            }
+            else if (auto dop = get_if<Options::DirectoryFileStorage> (&options.fStorage)) {
+                return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_<eInternallySynchronized>> (options, *dop)};
+            }
+            RequireNotReached ();
+            return nullptr;
+        case eNotKnownInternallySynchronized:
+            if (get_if<Options::MemoryStorage> (&options.fStorage)) {
+                return Ptr{Memory::MakeSharedPtr<MemoryDatabaseRep_<Execution::eNotKnownInternallySynchronized>> (options)};
+            }
+            else if (auto fop = get_if<Options::SingleFileStorage> (&options.fStorage)) {
+                return Ptr{Memory::MakeSharedPtr<SingleFileDatabaseRep_<eNotKnownInternallySynchronized>> (options, *fop)};
+            }
+            else if (auto dop = get_if<Options::DirectoryFileStorage> (&options.fStorage)) {
+                return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_<eNotKnownInternallySynchronized>> (options, *dop)};
+            }
+            RequireNotReached ();
+            return nullptr;
+        default:
+            RequireNotReached ();
+            return nullptr;
     }
-    else if (auto fop = get_if<Options::SingleFileStorage> (&options.fStorage)) {
-        return Ptr{Memory::MakeSharedPtr<SingleFileDatabaseRep_> (options, *fop)};
-    }
-    else if (auto dop = get_if<Options::DirectoryFileStorage> (&options.fStorage)) {
-        return Ptr{Memory::MakeSharedPtr<DirectoryFilesystemDatabaseRep_> (options, *dop)};
-    }
+
     AssertNotImplemented ();
     return nullptr;
 }

@@ -57,11 +57,11 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
         /**
          * \brief use eInternallySynchronized to make letter internally synchronized
          * 
-         *      \note - as of 2026-01-28, all the implementations are actually eInternallySynchronized, but
-         *              easy to fix so they are not (so they will be more performant in that case).
-         * 
          *      \note this refers to in-process syncrhonization. Future flags/fields/options will be needed
          *            in other impls to assure cross-process syncrhonization (not sure if even appropriate for this impl but maybe something simple with flock).
+         * 
+         *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
+         *            to check for unsafe thread usage.
          */
         Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};
 
