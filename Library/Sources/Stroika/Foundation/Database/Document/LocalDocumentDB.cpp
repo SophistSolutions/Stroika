@@ -46,6 +46,8 @@ namespace {
     template <InternallySynchronized SYNC_STYLE>
     using MyMaybeLock_ =
         conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedMutex, recursive_mutex>;
+    static_assert (Common::BasicLockable<MyMaybeLock_<InternallySynchronized::eNotKnownInternallySynchronized>>);
+    static_assert (Common::BasicLockable<MyMaybeLock_<InternallySynchronized::eInternallySynchronized>>);
 
     /*
      *  Store collections entirely in RAM.
