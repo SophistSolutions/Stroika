@@ -61,6 +61,29 @@ namespace Stroika::Foundation::Common {
     }
 
     /**
+     * \brief Logically the C++ standard BasicLockable named requirement, but that was not included in std c++ library
+     * 
+     * \see https://en.cppreference.com/w/cpp/named_req/BasicLockable.html
+     */
+    template <typename T>
+    concept BasicLockable = requires (T lo) {
+        // Requires a public lock() member function
+        { lo.lock () } -> std::same_as<void>;
+        // Requires a public unlock() member function
+        { lo.unlock () } -> std::same_as<void>;
+    };
+
+    /**
+     * \brief Logically the C++ standard Lockable named requirement, but that was not included in std c++ library
+     * 
+     * \see https://en.cppreference.com/w/cpp/named_req/Lockable.html
+     */
+    template <typename T>
+    concept Lockable = BasicLockable<T> and requires (T lo) {
+        { lo.try_lock () } -> std::same_as<bool>;
+    };
+
+    /**
      * \brief ClassNotFinal
      */
     template <typename T>
