@@ -147,7 +147,7 @@ endif
 	@$(MAKE) --no-print-directory --directory=ThirdPartyComponents distclean
 	@$(MAKE) --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
-stroika-clobber:
+library-clobber:
 ifeq ($(CONFIGURATION),)
 	echo NYI
 else
