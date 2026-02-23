@@ -330,7 +330,8 @@ namespace Stroika::Foundation::Debug {
 #endif
     };
     // see Satisfies Concepts:
-    static_assert (movable<AssertExternallySynchronizedMutex> and copyable<AssertExternallySynchronizedMutex> and Common::BasicLockable<AssertExternallySynchronizedMutex>);
+    static_assert (movable<AssertExternallySynchronizedMutex> and copyable<AssertExternallySynchronizedMutex> and
+                   Common::BasicLockable<AssertExternallySynchronizedMutex>);
 
 }
 
