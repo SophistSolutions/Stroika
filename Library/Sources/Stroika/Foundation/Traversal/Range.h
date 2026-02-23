@@ -28,7 +28,8 @@
  *      This notion of 'range' has VERY LITTLE todo with the std::range feature (which is more like Stroika 'Iterable')
  *
  *  TODO:
- *          @todo   Better integrate with http://stroika-bugs.sophists.com/browse/STK-779 - C++20 ranges library
+ *          @todo   Did a DECENT job of constraints/concepts, but could do better, and consider where we have GetPrevious/GetNext.
+ *                  Its RARELY used here (more fundemental for DiscreteRange) - so maybe just include there?
  * 
  *          @todo   Carefully review intersection/union bounds code for new open/closed parameters. Either make sure
  *                  it works or at least more carefully document in method headers the quirks of the
@@ -39,9 +40,6 @@ namespace Stroika::Foundation::Traversal {
 
     /**
      * \brief requirements for 'T' to use Range<T>.
-     * 
-     *      \todo - should this require GetNext/GetPrevious? - API CURRENTLY DOES --LGP 2026-02-23, which doesnt always make sense. COULD move that to
-     *                                      DISCRETE TRAITS/DISCRETE Range???
      */
     template <typename T>
     concept IRangeable = copyable<T> and totally_ordered<T>;
@@ -237,27 +235,27 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  Legal TRAITS object for Range template.
      */
-    template <typename TRAITS,typename T>
-    concept IRangeableTraits = same_as<T,T>;
+    template <typename TRAITS, typename T>
+    concept IRangeableTraits = requires (T, TRAITS) {
+        typename TRAITS::SignedDifferenceType;
+        typename TRAITS::UnsignedDifferenceType;
+        { TRAITS::kLowerBound} -> convertible_to<T>;
+        { TRAITS::kUpperBound} -> convertible_to<T>;
+        { TRAITS::kLowerBoundOpenness} -> convertible_to<Openness>;
+        { TRAITS::kUpperBoundOpenness} -> convertible_to<Openness>;
+    };
 
     /**
      * \brief requirements for 'T' to use Range<T>.
      * 
-     *      \todo - should this require GetNext/GetPrevious? - API CURRENTLY DOES --LGP 2026-02-23, which doesnt always make sense. COULD move that to
+     *      \todo - should Range<T> require GetNext/GetPrevious? - API CURRENTLY DOES --LGP 2026-02-23, which doesnt always make sense. COULD move that to
      *                                      DISCRETE TRAITS/DISCRETE Range???
      */
     template <typename TRAITS, typename T>
     concept IAdvanceAndRetreatable = requires (T t, TRAITS) {
-       {TRAITS::GetNext (t) } -> same_as<T>;
-       {TRAITS::GetPrevious (t) } -> same_as<T>;
+        { TRAITS::GetNext (t) } -> convertible_to<T>;
+        { TRAITS::GetPrevious (t) } -> convertible_to<T>;
     };
-
-    
-   
-    // /**
-    //  */
-    // template <IRangeable T, typename RANGE_TYPE>
-    // class DisjointRange;
 
     /**
      *  A Range<> is analogous to a mathematical range. It's left and and its right sides can
@@ -440,7 +438,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  @see std::clamp
          */
-        constexpr T Pin (T v) const requires IAdvanceAndRetreatable<TRAITS, T>;
+        constexpr T Pin (T v) const
+            requires IAdvanceAndRetreatable<TRAITS, T>;
 
     public:
         /**
@@ -612,14 +611,10 @@ namespace Stroika::Foundation::Traversal {
         Openness fEndOpenness_;
     };
 
-
-     /**
-      */
+    /**
+     */
     template <typename RANGE_TYPE>
     concept IRange = derived_from<RANGE_TYPE, Range<typename RANGE_TYPE::value_type, typename RANGE_TYPE::TraitsType>>;
-
-
-
 
     /**
      *  Alias: T + RANGE => RANGE.Offset(T)

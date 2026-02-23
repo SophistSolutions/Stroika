@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Common {
     using DifferenceType = typename conditional_t<is_enum_v<T>, LazyType<underlying_type_t, T>, LazyType<Private_::BaseDifferenceType_, T>>::type;
 
     /**
-     *  Given a type, if there is an unsigned variant of it, convert to that. Works for any type T (and returns T)
+     *  Given a type, if there is an unsigned variant of it, convert to that, else value is T. Works for any type T.
      * 
      *  \par Example Usage
      *      \code

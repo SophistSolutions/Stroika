@@ -41,21 +41,20 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
-     * \brief requirements for 'T' to use DiscreteRange<T>: roughly to be IRangeable (copyable and well ordered), and adding the requirement of being somewhat integral
+     * \brief requirements for 'T' to use DiscreteRange<T>: same as IRangeable<T> - because the 'discrete' part is handled via TRAITS.
      * 
      *      \todo - should this require GetNext/GetPrevious? - API CURRENTLY DOES --LGP 2026-02-23, which doesnt always make sense. COULD move that to
      *                                      DISCRETE TRAITS/DISCRETE Range???
-     * 
-     * and INTEGRAL doesnt work for all cases - DEBUG WHY!!!
      */
     template <typename T>
-    concept IDiscreteRangeable = IRangeable<T> /*and integral<T>*/;
+    concept IDiscreteRangeable = IRangeable<T>;
 
     /**
-     *  
+     *  Same as Range traits requirements, but MUST support GetNext/GetPrevious, and must be CLOSED.
      */
-    template <typename TRAITS,typename T>
-    concept IDiscreteRangeableTraits = IAdvanceAndRetreatable<TRAITS, T>;
+    template <typename TRAITS, typename T>
+    concept IDiscreteRangeableTraits = IRangeableTraits<TRAITS, T> and IAdvanceAndRetreatable<TRAITS, T> and
+                                       TRAITS::kLowerBoundOpenness == Openness::eClosed and TRAITS::kUpperBoundOpenness == Openness::eClosed;
 
     /**
      *  \brief A DiscreteRange is a Range where the underlying endpoints are integral (discrete, not continuous); 
@@ -90,10 +89,6 @@ namespace Stroika::Foundation::Traversal {
      */
     template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS = RangeTraits::Default<T>>
     class DiscreteRange : public Range<T, TRAITS> {
-    public:
-        static_assert (TRAITS::kLowerBoundOpenness == Openness::eClosed);
-        static_assert (TRAITS::kUpperBoundOpenness == Openness::eClosed);
-
     private:
         using inherited = Range<T, TRAITS>;
 
@@ -199,6 +194,12 @@ namespace Stroika::Foundation::Traversal {
     private:
         struct MyIterable_;
     };
+
+
+     /**
+      */
+    template <typename RANGE_TYPE>
+    concept IDiscreteRange = derived_from<RANGE_TYPE, DiscreteRange<typename RANGE_TYPE::value_type, typename RANGE_TYPE::TraitsType>>;
 
     /**
      *  Intersection ()

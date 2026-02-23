@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Traversal {
      ************* DisjointDiscreteRange<T, RANGE_TYPE>::FindHints ******************
      ********************************************************************************
      */
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::FindHints::FindHints (value_type seedPosition, bool forwardFirst)
         : fSeedPosition{seedPosition}
         , fForwardFirst{forwardFirst}
@@ -23,35 +23,35 @@ namespace Stroika::Foundation::Traversal {
      ********************* DisjointDiscreteRange<T, RANGE_TYPE> *********************
      ********************************************************************************
      */
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const RangeType& from)
         : inherited{from}
     {
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const initializer_list<RangeType>& from)
         : inherited{from}
     {
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     template <IIterableOfTo<RANGE_TYPE> RANGES_OF_T>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (RANGES_OF_T&& from)
         : DisjointDiscreteRange{begin (forward<RANGES_OF_T> (from)), end (forward<RANGES_OF_T> (from))}
     {
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     template <IIterableOfTo<T> TS>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (TS&& from)
         : DisjointDiscreteRange{begin (forward<TS> (from)), end (forward<TS> (from))}
     {
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     template <IInputIterator<RANGE_TYPE> ITERATOR_OF_RANGE_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_RANGE_OF_T>> ITERATOR_OF_RANGE_OF_T2>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (ITERATOR_OF_RANGE_OF_T&& start, ITERATOR_OF_RANGE_OF_T2&& end)
         : inherited{forward<ITERATOR_OF_RANGE_OF_T> (start), forward<ITERATOR_OF_RANGE_OF_T2> (end)}
     {
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     template <IInputIterator<T> ITERATOR_OF_T, sentinel_for<remove_cvref_t<ITERATOR_OF_T>> ITERATOR_OF_T2>
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (ITERATOR_OF_T&& start, ITERATOR_OF_T2&& end)
     {
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Traversal {
         }
         *this = move (THIS_CLASS_{srs});
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     void DisjointDiscreteRange<T, RANGE_TYPE>::Add (const value_type& elt)
     {
         Containers::Sequence<RangeType> srs{this->SubRanges ()};
@@ -111,19 +111,19 @@ namespace Stroika::Foundation::Traversal {
         srs.push_back (DiscreteRange<value_type>{elt, elt});
         *this = move (THIS_CLASS_{srs});
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointDiscreteRange
     {
         // @todo could do more efficiently
         return DisjointDiscreteRange{inherited::Intersection (rhs).SubRanges ()};
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::Intersection (const DisjointDiscreteRange& rhs) const -> DisjointDiscreteRange
     {
         // @todo could do more efficiently
         return DisjointDiscreteRange{inherited::Intersection (rhs).SubRanges ()};
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::GetNext (value_type elt) const -> optional<value_type>
     {
         Containers::Sequence<RangeType> subRanges{this->SubRanges ()};
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return nullopt;
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::GetPrevious (value_type elt) const -> optional<value_type>
     {
         Containers::Sequence<RangeType> subRanges{this->SubRanges ()};
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return nullopt;
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::Elements () const -> Iterable<value_type>
     {
         using UnsignedDifferenceType = typename RANGE_TYPE::UnsignedDifferenceType;
@@ -204,12 +204,12 @@ namespace Stroika::Foundation::Traversal {
         };
         return Traversal::CreateGenerator<value_type> (getNext);
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::Find (const function<bool (value_type)>& that) const -> optional<value_type>
     {
         return this->empty () ? optional<value_type>{} : Find (that, FindHints (this->GetBounds ().GetLowerBound (), true));
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::Find (const function<bool (value_type)>& that, const FindHints& hints) const -> optional<value_type>
     {
         Require (this->Contains (hints.fSeedPosition));
@@ -234,12 +234,12 @@ namespace Stroika::Foundation::Traversal {
             return nullopt;
         }
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF) const -> optional<value_type>
     {
         return this->empty () ? optional<value_type>{} : FindLastThat (testF, FindHints (this->GetBounds ().GetUpperBound (), false));
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const
         -> optional<value_type>
     {
@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Traversal {
             return nullopt;
         }
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool (value_type)>& testF,
                                                          const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const
         -> optional<value_type>
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Traversal {
         Ensure (testF (i));
         return i;
     }
-    template <typename T, typename RANGE_TYPE>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition, bool forwardFirst) const
         -> optional<value_type>
     {

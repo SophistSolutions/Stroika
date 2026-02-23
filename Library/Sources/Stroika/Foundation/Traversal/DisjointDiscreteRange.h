@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  @todo Add CONCEPT to require RANGE_TYPE subtype of DiscreteRange
      */
-    template <typename T, typename RANGE_TYPE = DiscreteRange<T>>
+    template <IDiscreteRangeable T, IDiscreteRange RANGE_TYPE = DiscreteRange<T>>
     class DisjointDiscreteRange : public DisjointRange<T, RANGE_TYPE> {
     private:
         using inherited   = DisjointRange<T, RANGE_TYPE>;
