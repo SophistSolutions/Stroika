@@ -513,7 +513,7 @@ namespace {
             if (filesystem::exists (fExternalFile_)) {
                 fMemoryDB_->fCollections_.clear ();
                 for (KeyValuePair<String, VariantValue> collectionAndDocument :
-                     fReader_.Read (FileInputStream::New (fExternalFile_)).As<Mapping<String, VariantValue>> ()) {
+                     fReader_.Read (FileInputStream::New (fExternalFile_)).template As<Mapping<String, VariantValue>> ()) {
                     fMemoryDB_->fCollections_.Add (
                         collectionAndDocument.fKey,
                         collectionAndDocument.fValue.As<Mapping<String, VariantValue>> ().template Map<Mapping<GUID, Document::Document>> (
