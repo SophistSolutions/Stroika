@@ -195,8 +195,7 @@ namespace Stroika::Foundation::Traversal {
         struct MyIterable_;
     };
 
-
-     /**
+    /**
       */
     template <typename RANGE_TYPE>
     concept IDiscreteRange = derived_from<RANGE_TYPE, DiscreteRange<typename RANGE_TYPE::value_type, typename RANGE_TYPE::TraitsType>>;

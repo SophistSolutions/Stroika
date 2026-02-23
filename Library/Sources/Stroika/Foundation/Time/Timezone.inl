@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Time {
     /**
      *  Returns Timezone object in UTC timezone.
      */
-    inline constexpr Timezone           Timezone::kUTC{TZ_::eUTC};
+    inline constexpr Timezone Timezone::kUTC{TZ_::eUTC};
 
     /**
      *  Returns Timezone object in localtime timezone.
@@ -43,11 +43,11 @@ namespace Stroika::Foundation::Time {
      *  \note - LocalTime is a STICKY property. This does NOT return the FIXED OFFSET for the current local-time, but rather a special
      *          Timezone which always references that global current timezone.
      */
-    inline constexpr Timezone           Timezone::kLocalTime{TZ_::eLocalTime};
+    inline constexpr Timezone Timezone::kLocalTime{TZ_::eLocalTime};
 
     inline constexpr optional<Timezone> Timezone::kUnknown{nullopt};
 
-    inline make_signed_t<time_t>        Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
+    inline make_signed_t<time_t> Timezone::GetBiasFromUTC (const Date& date, const TimeOfDay& tod) const
     {
         // Cast to avoid warning, but no chance of overflow cuz GetBiasInMinutesFromUTC range restricted and time_t at least 4 bytes
         return static_cast<make_signed_t<time_t>> (60) * GetBiasInMinutesFromUTC (date, tod);

@@ -239,10 +239,10 @@ namespace Stroika::Foundation::Traversal {
     concept IRangeableTraits = requires (T, TRAITS) {
         typename TRAITS::SignedDifferenceType;
         typename TRAITS::UnsignedDifferenceType;
-        { TRAITS::kLowerBound} -> convertible_to<T>;
-        { TRAITS::kUpperBound} -> convertible_to<T>;
-        { TRAITS::kLowerBoundOpenness} -> convertible_to<Openness>;
-        { TRAITS::kUpperBoundOpenness} -> convertible_to<Openness>;
+        { TRAITS::kLowerBound } -> convertible_to<T>;
+        { TRAITS::kUpperBound } -> convertible_to<T>;
+        { TRAITS::kLowerBoundOpenness } -> convertible_to<Openness>;
+        { TRAITS::kUpperBoundOpenness } -> convertible_to<Openness>;
     };
 
     /**

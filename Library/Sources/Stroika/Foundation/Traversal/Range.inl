@@ -171,7 +171,8 @@ namespace Stroika::Foundation::Traversal {
         return GetLowerBound () + GetDistanceSpanned () / 2;
     }
     template <IRangeable T, IRangeableTraits<T> TRAITS>
-    constexpr T Range<T, TRAITS>::Pin (T v) const requires IAdvanceAndRetreatable<TRAITS, T>
+    constexpr T Range<T, TRAITS>::Pin (T v) const
+        requires IAdvanceAndRetreatable<TRAITS, T>
     {
         Require (not empty ());
         Assert (fBegin_ != fEnd_ or (fBeginOpenness_ == Openness::eClosed and fEndOpenness_ == Openness::eClosed));
