@@ -17,6 +17,7 @@
 #include <thread>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 
@@ -55,6 +56,11 @@ namespace Stroika::Foundation::Debug {
      * 
      *      Only if qStroika_Foundation_Debug_AssertionsChecked is true, there is no TSAN, and qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is made
      *      do we turn on qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled.
+     * 
+     *  \note Satisfies Concepts:
+     *      o   movable<AssertExternallySynchronizedMutex> 
+     *      o   copyable<AssertExternallySynchronizedMutex>
+     *      o   Common::BasicLockable<AssertExternallySynchronizedMutex>
      * 
      *  \note TRIED to do this with constexpr bool kAssertExternallySynchronizedMutexEnabled, but as of C++20 rules
      *        still too much of a PITA to use: cannot conditionally define classes, and nearly anything
@@ -323,7 +329,8 @@ namespace Stroika::Foundation::Debug {
         static mutex& GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLocks_ (could do one mutex per AssertExternallySynchronizedMutex but static probably performs better)
 #endif
     };
-    static_assert (movable<AssertExternallySynchronizedMutex> and copyable<AssertExternallySynchronizedMutex>);
+    // see Satisfies Concepts:
+    static_assert (movable<AssertExternallySynchronizedMutex> and copyable<AssertExternallySynchronizedMutex> and Common::BasicLockable<AssertExternallySynchronizedMutex>);
 
 }
 
