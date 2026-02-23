@@ -202,9 +202,9 @@ namespace Stroika::Foundation::Traversal {
      *          And most can be eliminated by slightly better Move constructor support on the iterator class.
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (regular<Iterator<T>>);
-     *      o   static_assert (input_iterator<Iterator<T>>);
-     *      o   static_assert (sentinel_for<default_sentinel_t, Iterator<T>>);
+     *      o   regular<Iterator<T>>
+     *      o   input_iterator<Iterator<T>>
+     *      o   sentinel_for<default_sentinel_t, Iterator<T>>
      * 
      *  @see Iterable<T>
      *
