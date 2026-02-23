@@ -9,23 +9,23 @@ namespace Stroika::Foundation::Traversal {
      ********************** DisjointRange<T, RANGE_TYPE> ****************************
      ********************************************************************************
      */
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE>::DisjointRange (const RangeType& from)
     {
         MergeIn_ (from);
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline DisjointRange<T, RANGE_TYPE>::DisjointRange (const initializer_list<RangeType>& from)
         : DisjointRange{begin (from), end (from)}
     {
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     template <typename CONTAINER_OF_RANGE_OF_T>
     inline DisjointRange<T, RANGE_TYPE>::DisjointRange (const CONTAINER_OF_RANGE_OF_T& from)
         : DisjointRange{begin (from), end (from)}
     {
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T, sentinel_for<remove_cvref_t<COPY_FROM_ITERATOR_OF_RANGE_OF_T>> COPY_FROM_ITERATOR_OF_RANGE_OF_T2>
     DisjointRange<T, RANGE_TYPE>::DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_RANGE_OF_T2&& end)
     {
@@ -40,32 +40,32 @@ namespace Stroika::Foundation::Traversal {
             }
         }
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline auto DisjointRange<T, RANGE_TYPE>::SubRanges () const -> Containers::Sequence<RangeType>
     {
         return fSubRanges_;
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE> DisjointRange<T, RANGE_TYPE>::FullRange ()
     {
         return DisjointRange<RangeType>{RangeType::FullRange ()};
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline bool DisjointRange<T, RANGE_TYPE>::empty () const
     {
         return fSubRanges_.empty ();
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline void DisjointRange<T, RANGE_TYPE>::clear ()
     {
         fSubRanges_.clear ();
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     bool DisjointRange<T, RANGE_TYPE>::Contains (value_type elt) const
     {
         return static_cast<bool> (fSubRanges_.Find ([&elt] (const RangeType& r) { return r.Contains (elt); }));
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     bool DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const
     {
         // @todo could be more efficient
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Traversal {
         Containers::Sequence<RANGE_TYPE> sr{intersection.SubRanges ()};
         return sr.size () == 1 and sr[0] == rhs;
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     RANGE_TYPE DisjointRange<T, RANGE_TYPE>::GetBounds () const
     {
         // NOTE: this code counts on the fact that the subranges are ORDERED
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Traversal {
                 return RangeType{fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound ()};
         }
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     RANGE_TYPE DisjointRange<T, RANGE_TYPE>::Closure () const
     {
         // NOTE: this code counts on the fact that the subranges are ORDERED
@@ -105,25 +105,25 @@ namespace Stroika::Foundation::Traversal {
                 return RangeType{fSubRanges_[0].GetLowerBound (), fSubRanges_.Last ()->GetUpperBound ()};
         }
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline bool DisjointRange<T, RANGE_TYPE>::Intersects (const RangeType& rhs) const
     {
         // @todo could do more efficiently
         return not Intersection (rhs).empty ();
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline bool DisjointRange<T, RANGE_TYPE>::Intersects (const DisjointRange& rhs) const
     {
         // @todo could do more efficiently
         return not Intersection (rhs).empty ();
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     auto DisjointRange<T, RANGE_TYPE>::Intersection (const RangeType& rhs) const -> DisjointRange
     {
         // @todo could do more efficiently
         return Intersection (DisjointRange{rhs});
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     auto DisjointRange<T, RANGE_TYPE>::Intersection (const DisjointRange& rhs) const -> DisjointRange
     {
         // @todo could do more efficiently
@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Traversal {
         }
         return DisjointRange{disjointRanges};
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     auto DisjointRange<T, RANGE_TYPE>::Union (const DisjointRange& rhs) const -> DisjointRange
     {
         // @todo could do more efficiently
@@ -151,14 +151,14 @@ namespace Stroika::Foundation::Traversal {
         }
         return DisjointRange{disjointRanges};
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     auto DisjointRange<T, RANGE_TYPE>::UnionBounds (const DisjointRange& rhs) const -> RangeType
     {
         // @todo could do more efficiently (since 1-dimensional and subranges ordered, just need to min (lhs of each)
         // and max (rhs of each (and grab closedness of edge captured)
         return Union (rhs).GetBounds ();
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     Characters::String DisjointRange<T, RANGE_TYPE>::ToString (const function<Characters::String (T)>& elt2String) const
     {
         Characters::StringBuilder out;
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Traversal {
         out << "]"sv;
         return out.str ();
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     void DisjointRange<T, RANGE_TYPE>::MergeIn_ (const RangeType& r)
     {
         using namespace Characters::Literals;
@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Traversal {
         }
 #endif
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline void DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ () const
     {
         if constexpr (qStroika_Foundation_Debug_AssertionsChecked) {
@@ -357,7 +357,7 @@ namespace Stroika::Foundation::Traversal {
             }
         }
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     constexpr bool DisjointRange<T, RANGE_TYPE>::operator== (const DisjointRange& rhs) const
     {
         return SubRanges () == rhs.SubRanges ();
@@ -368,12 +368,12 @@ namespace Stroika::Foundation::Traversal {
      ***************** DisjointRange<T, RANGE_TYPE> Operators ***********************
      ********************************************************************************
      */
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline DisjointRange<T, RANGE_TYPE> operator+ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
         return lhs.Union (rhs);
     }
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     inline DisjointRange<T, RANGE_TYPE> operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
         return lhs.Intersection (rhs);

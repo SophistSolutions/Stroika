@@ -52,6 +52,12 @@ namespace Stroika::Foundation::Traversal {
     concept IDiscreteRangeable = IRangeable<T> /*and integral<T>*/;
 
     /**
+     *  
+     */
+    template <typename TRAITS,typename T>
+    concept IDiscreteRangeableTraits = IAdvanceAndRetreatable<TRAITS, T>;
+
+    /**
      *  \brief A DiscreteRange is a Range where the underlying endpoints are integral (discrete, not continuous); 
      *         this implies you can iterate over the members of the range, and its endpoints are closed.
      *
@@ -82,7 +88,7 @@ namespace Stroika::Foundation::Traversal {
      *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
      *          iterable with all possible legal values of the enum.
      */
-    template <IDiscreteRangeable T, typename TRAITS = RangeTraits::Default<T>>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS = RangeTraits::Default<T>>
     class DiscreteRange : public Range<T, TRAITS> {
     public:
         static_assert (TRAITS::kLowerBoundOpenness == Openness::eClosed);
@@ -197,7 +203,7 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  Intersection ()
      */
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     DiscreteRange<T, TRAITS> operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs);
 
 }

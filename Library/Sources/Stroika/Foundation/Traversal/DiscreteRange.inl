@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Traversal {
      ***************** DiscreteRange<T, TRAITS>::MyIteratorRep_ *********************
      ********************************************************************************
      */
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     struct DiscreteRange<T, TRAITS>::MyIteratorRep_ : Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIteratorRep_> {
         using inherited = typename Iterator<T>::IRep;
         T    fCur;
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Traversal {
      ***************** DiscreteRange<T, TRAITS>::MyIterable_ ************************
      ********************************************************************************
      */
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     struct DiscreteRange<T, TRAITS>::MyIterable_ : Iterable<T> {
         struct MyRep_ : Iterable<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
             using inherited = typename Iterable<T>::_IRep;
@@ -133,18 +133,18 @@ namespace Stroika::Foundation::Traversal {
      ***************************** DiscreteRange<T> *********************************
      ********************************************************************************
      */
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr DiscreteRange<T, TRAITS>::DiscreteRange (T begin, T end)
         : inherited{begin, end}
     {
         Require (begin <= end);
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const optional<T>& begin, const optional<T>& end)
         : inherited{begin, end}
     {
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr DiscreteRange<T, TRAITS>::DiscreteRange (const Range<T, TRAITS>& r)
     {
         // Could do more efficiently
@@ -154,33 +154,33 @@ namespace Stroika::Foundation::Traversal {
             *this = DiscreteRange{r.GetLowerBound (), r.GetUpperBound ()};
         }
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::FullRange ()
     {
         return DiscreteRange{TRAITS::kLowerBound, TRAITS::kUpperBound};
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr Range<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
     {
         return inherited::Intersection (rhs);
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::Intersection (const DiscreteRange& rhs) const
     {
         return DiscreteRange{inherited::Intersection (rhs)};
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr Range<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
     {
         return inherited::UnionBounds (rhs);
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr DiscreteRange<T, TRAITS> DiscreteRange<T, TRAITS>::UnionBounds (const DiscreteRange& rhs) const
     {
         auto r = inherited::UnionBounds (rhs);
         return DiscreteRange{r.GetLowerBound (), r.GetUpperBound ()};
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr typename DiscreteRange<T, TRAITS>::UnsignedDifferenceType DiscreteRange<T, TRAITS>::GetNumberOfContainedPoints () const
     {
         if (this->empty ()) {
@@ -190,23 +190,23 @@ namespace Stroika::Foundation::Traversal {
             return this->GetDistanceSpanned () + 1;
         }
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     constexpr auto DiscreteRange<T, TRAITS>::Offset (SignedDifferenceType o) const -> DiscreteRange
     {
         Require (not this->empty ());
         return inherited::Offset (o);
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     Iterable<T> DiscreteRange<T, TRAITS>::Elements () const
     {
         return this->empty () ? MyIterable_{} : MyIterable_{this->GetLowerBound (), this->GetUpperBound ()};
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     inline DiscreteRange<T, TRAITS>::operator Iterable<T> () const
     {
         return Elements ();
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     Iterator<T> DiscreteRange<T, TRAITS>::begin () const
     {
         if (this->empty ()) {
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Traversal {
             return Iterator<T>{make_unique<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ())};
         }
     }
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     inline Iterator<T> DiscreteRange<T, TRAITS>::end () const
     {
         return Iterator<T>::GetEmptyIterator ();
@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Traversal {
      *********************************** operator^ **********************************
      ********************************************************************************
      */
-    template <IDiscreteRangeable T, typename TRAITS>
+    template <IDiscreteRangeable T, IDiscreteRangeableTraits<T> TRAITS>
     inline DiscreteRange<T, TRAITS> operator^ (const DiscreteRange<T, TRAITS>& lhs, const DiscreteRange<T, TRAITS>& rhs)
     {
         return lhs.Intersection (rhs);

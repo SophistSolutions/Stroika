@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Traversal {
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   operator==, operator!= supported, but this assumes operator== is defined on 'T'
      */
-    template <IRangeable T, typename RANGE_TYPE = Range<T>>
+    template <IRangeable T, IRange RANGE_TYPE = Range<T>>
     class DisjointRange {
     public:
         /**
@@ -178,12 +178,12 @@ namespace Stroika::Foundation::Traversal {
 
     /**
      */
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE> operator+ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
 
     /**
      */
-    template <IRangeable T, typename RANGE_TYPE>
+    template <IRangeable T, IRange RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE> operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs);
 
 }

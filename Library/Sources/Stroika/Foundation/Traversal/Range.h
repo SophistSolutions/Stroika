@@ -234,8 +234,30 @@ namespace Stroika::Foundation::Traversal {
 
     }
 
-    template <IRangeable T, typename RANGE_TYPE>
-    class DisjointRange;
+    /**
+     *  Legal TRAITS object for Range template.
+     */
+    template <typename TRAITS,typename T>
+    concept IRangeableTraits = same_as<T,T>;
+
+    /**
+     * \brief requirements for 'T' to use Range<T>.
+     * 
+     *      \todo - should this require GetNext/GetPrevious? - API CURRENTLY DOES --LGP 2026-02-23, which doesnt always make sense. COULD move that to
+     *                                      DISCRETE TRAITS/DISCRETE Range???
+     */
+    template <typename TRAITS, typename T>
+    concept IAdvanceAndRetreatable = requires (T t, TRAITS) {
+       {TRAITS::GetNext (t) } -> same_as<T>;
+       {TRAITS::GetPrevious (t) } -> same_as<T>;
+    };
+
+    
+   
+    // /**
+    //  */
+    // template <IRangeable T, typename RANGE_TYPE>
+    // class DisjointRange;
 
     /**
      *  A Range<> is analogous to a mathematical range. It's left and and its right sides can
@@ -280,7 +302,7 @@ namespace Stroika::Foundation::Traversal {
      *  @see DisjointRange
      *  @see DisjointDiscreteRange
      */
-    template <IRangeable T, typename TRAITS = RangeTraits::Default<T>>
+    template <IRangeable T, IRangeableTraits<T> TRAITS = RangeTraits::Default<T>>
     class Range {
     public:
         /**
@@ -418,7 +440,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  @see std::clamp
          */
-        constexpr T Pin (T v) const;
+        constexpr T Pin (T v) const requires IAdvanceAndRetreatable<TRAITS, T>;
 
     public:
         /**
@@ -494,8 +516,9 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          * if two regions are disjoint, this can encompass a larger region than the actual union would
+         *      \note really returns DisjointRange<>
          */
-        nonvirtual DisjointRange<T, Range> Union (const Range& rhs) const;
+        nonvirtual auto Union (const Range& rhs) const;
 
     public:
         /**
@@ -589,29 +612,33 @@ namespace Stroika::Foundation::Traversal {
         Openness fEndOpenness_;
     };
 
-    /**
-     */
+
+     /**
+      */
     template <typename RANGE_TYPE>
     concept IRange = derived_from<RANGE_TYPE, Range<typename RANGE_TYPE::value_type, typename RANGE_TYPE::TraitsType>>;
+
+
+
 
     /**
      *  Alias: T + RANGE => RANGE.Offset(T)
      *  Alias: RANGE + RANGE => RANGE.Union (RANGE)
      */
-    template <IRangeable T, typename TRAITS>
+    template <IRangeable T, IRangeableTraits<T> TRAITS>
     constexpr Range<T, TRAITS> operator+ (const T& lhs, const Range<T, TRAITS>& rhs);
-    template <IRangeable T, typename TRAITS>
+    template <IRangeable T, IRangeableTraits<T> TRAITS>
     constexpr Range<T, TRAITS> operator+ (const Range<T, TRAITS>& lhs, const T& rhs);
-    template <IRangeable T, typename TRAITS>
-    DisjointRange<T, Range<T, TRAITS>> operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
+    template <IRangeable T, IRangeableTraits<T> TRAITS>
+    auto operator+ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
     /**
      *  Alias: T * RANGE => RANGE.Times(T)
      *  \pre T has operator* (T,T) -> T defined
      */
-    template <IRangeable T, typename TRAITS>
+    template <IRangeable T, IRangeableTraits<T> TRAITS>
     constexpr Range<T, TRAITS> operator* (const T& lhs, const Range<T, TRAITS>& rhs);
-    template <IRangeable T, typename TRAITS>
+    template <IRangeable T, IRangeableTraits<T> TRAITS>
     constexpr Range<T, TRAITS> operator* (const Range<T, TRAITS>& lhs, const T& rhs);
 
     /**
@@ -626,7 +653,7 @@ namespace Stroika::Foundation::Traversal {
      *          Assert (((RT{1, 2, eOpen, eClosed} ^ RT{2, 3, eClosed, eOpen}) == RT{2,2,eClosed,eClosed}));
      *      \endcode
      */
-    template <IRangeable T, typename TRAITS>
+    template <IRangeable T, IRangeableTraits<T> TRAITS>
     constexpr Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs);
 
 }
