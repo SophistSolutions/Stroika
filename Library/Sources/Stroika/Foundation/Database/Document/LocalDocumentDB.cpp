@@ -124,7 +124,7 @@ namespace {
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
                         return fConnectionRep_->fCollections_.LookupValue (fTableName_)
-                            .Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
+                            .template Map<Sequence<Document::Document>> ([&] (const KeyValuePair<GUID, Document::Document>& kvp) -> optional<Document::Document> {
                                 Document::Document d = kvp.fValue;
                                 d.Add (Document::kID, kvp.fKey.ToString ());
                                 if (filter and not filter->Matches (d)) {
@@ -513,7 +513,7 @@ namespace {
                      fReader_.Read (FileInputStream::New (fExternalFile_)).As<Mapping<String, VariantValue>> ()) {
                     fMemoryDB_->fCollections_.Add (
                         collectionAndDocument.fKey,
-                        collectionAndDocument.fValue.As<Mapping<String, VariantValue>> ().Map<Mapping<GUID, Document::Document>> (
+                        collectionAndDocument.fValue.As<Mapping<String, VariantValue>> ().template Map<Mapping<GUID, Document::Document>> (
                             [&] (const KeyValuePair<String, VariantValue>& kvp) -> KeyValuePair<GUID, Document::Document> {
                                 return {GUID{kvp.fKey}, kvp.fValue.As<Document::Document> ()};
                             }));
@@ -648,7 +648,7 @@ namespace {
                         for (const auto& entry : filesystem::directory_iterator{fCollectionRoot_}) {
                             if (entry.path ().extension () == ".json"sv) { // Check if the entry is a JSON file
                                 Document::Document d =
-                                    fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).As<Document::Document> ();
+                                    fDBRep_->fReader_.Read (IO::FileSystem::FileInputStream::New (entry.path ())).template As<Document::Document> ();
                                 d.Add (Document::kID, entry.path ().stem ().string ());
                                 if (not filter or filter->Matches (d)) {
                                     if (projection) {
@@ -705,7 +705,7 @@ namespace {
                 TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::DoReadFromFS", "path={}"_f, docFilePath};
 #endif
                 if (filesystem::exists (docFilePath)) {
-                    return fDBRep_->fReader_.Read (FileInputStream::New (docFilePath)).As<Document::Document> ();
+                    return fDBRep_->fReader_.Read (FileInputStream::New (docFilePath)).template As<Document::Document> ();
                 }
                 return nullopt;
             }
