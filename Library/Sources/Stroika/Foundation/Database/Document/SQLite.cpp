@@ -353,14 +353,19 @@ namespace {
 
 namespace {
     using Connection::Options;
+
+    template <InternallySynchronized SYNC_STYLE>
+    using MyMaybeLock_ =
+        conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedMutex, recursive_mutex>;
+
+    template <Execution::InternallySynchronized SYNC_STYLE>
     struct ConnectionRep_ final : Database::Document::SQLite::Connection::IRep {
 
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
-        const Options                                                  fOptions_;
-        const bool                                                     fAllowUserDefinedRowID_{false};
+        const Options fOptions_;
+        const bool    fAllowUserDefinedRowID_{false};
+        mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
 
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsynchronized connection, share its context
             shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
             const String               fTableName_;
 
@@ -373,10 +378,6 @@ namespace {
                 : fConnectionRep_{connectionRep}
                 , fTableName_{collectionName}
             {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-                fAssertExternallySynchronizedMutex_.SetAssertExternallySynchronizedMutexContext (
-                    connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
-#endif
             }
             virtual ~CollectionRep_ () = default;
             virtual String GetName () const override
@@ -389,7 +390,7 @@ namespace {
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Add"};
 #endif
                 Require (not v.ContainsKey (Database::Document::kID) or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
 
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
@@ -450,7 +451,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Get", "id={}, projection={}"_f, id, projection};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
                         // locally construct MyPreparedStatement_ for case with projection, and/or cache statement for grabbing whole thing
@@ -528,7 +529,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"SQLite::CollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
                         // Optimize some important special cases
@@ -605,7 +606,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Update"};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 fConnectionRep_->WrapExecute_ (
                     [&] () {
                         Document::Document uploadDoc = newV;
@@ -647,7 +648,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"SQLite::CollectionRep_::Remove"};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 if (fRemoveStatement_ == nullptr) [[unlikely]] {
                     fRemoveStatement_ = MyPreparedStatement_{fConnectionRep_->fDB_, "delete from \"{}\" where id=?;"_f(fTableName_)};
                 }
@@ -854,7 +855,7 @@ namespace {
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             Require (GetCollections ().Contains (name));
             return Document::Collection::Ptr{
                 Memory::MakeSharedPtr<CollectionRep_> (Debug::UncheckedDynamicPointerCast<ConnectionRep_> (shared_from_this ()), name)};
@@ -866,7 +867,7 @@ namespace {
         }
         virtual void Exec (const String& sql) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             WrapExecute_ (
                 [&] () {
                     int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), nullptr, nullptr, nullptr);
@@ -878,9 +879,9 @@ namespace {
         }
         virtual Duration GetBusyTimeout () const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronizedMutex_};
-            optional<int>                                         d;
-            auto callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+            scoped_lock   declareContext{fMaybeLock_};
+            optional<int> d;
+            auto          callback = SQLiteCallback_{[&] ([[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
                 Assert (argc == 1);
                 Assert (::strcmp (azColName[0], "timeout") == 0);
                 int val = ::atoi (argv[0]);
@@ -894,7 +895,7 @@ namespace {
         }
         virtual void SetBusyTimeout (const Duration& timeout) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
         }
         virtual JournalModeType GetJournalMode () const override
@@ -934,7 +935,7 @@ namespace {
         }
         virtual void SetJournalMode (JournalModeType journalMode) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             switch (journalMode) {
                 case JournalModeType::eDelete:
                     ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, nullptr), fDB_);
@@ -1015,7 +1016,15 @@ Document::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  */
 auto Document::SQLite::Connection::New (const Options& options) -> Ptr
 {
-    return Ptr{Memory::MakeSharedPtr<ConnectionRep_> (options)};
+    switch (options.fInternallySynchronizedLetter) {
+        case Execution::eInternallySynchronized:
+            return Ptr{Memory::MakeSharedPtr<ConnectionRep_<Execution::eInternallySynchronized>> (options)};
+        case Execution::eNotKnownInternallySynchronized:
+            return Ptr{Memory::MakeSharedPtr<ConnectionRep_<Execution::eNotKnownInternallySynchronized>> (options)};
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
 }
 
 /*

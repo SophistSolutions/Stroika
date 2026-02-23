@@ -119,6 +119,14 @@ namespace Stroika::Foundation::Database::Document::SQLite {
          */
         struct Options final : Database::Document::Connection::Options {
             /**
+             * \brief use eInternallySynchronized to make letter internally synchronized
+             * 
+             *      \note this refers to in-process syncrhonization. Future flags/fields/options will be needed
+             *            in other impls to assure cross-process syncrhonization (not sure if even appropriate for this impl but maybe something simple with flock).
+             */
+            Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};
+
+            /**
              *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
              *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or
              *  surprising how to interpret). @todo perhaps provide an API to 'parse' an SQLite URI into one of these Stroika
@@ -271,7 +279,8 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             /**
              */
             Ptr (const Ptr& src);
-            Ptr (const shared_ptr<IRep>& src = nullptr);
+            Ptr (const shared_ptr<IRep>& src);
+            Ptr (nullptr_t);
 
         public:
             ~Ptr () = default;

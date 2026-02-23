@@ -38,6 +38,10 @@ namespace Stroika::Foundation::Database::Document::SQLite {
         : Ptr{Debug::UncheckedDynamicPointerCast<IRep> (src)}
     {
     }
+    inline Connection::Ptr::Ptr (nullptr_t)
+        : Ptr{shared_ptr<IRep>{nullptr}}
+    {
+    }
     inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
     {
         inherited::operator= (src);
