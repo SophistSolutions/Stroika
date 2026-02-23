@@ -27,8 +27,8 @@ namespace Stroika::Frameworks::WebServer {
      *  A message refers to a single back-and-forth request/response pair exchanged over HTTP.
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (not copyable<Message>);
-     *      o   static_assert (movable<Message>);
+     *      o   not copyable<Message>
+     *      o   movable<Message>
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

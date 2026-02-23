@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Traversal {
      *  exceedingly simplistic pattern of access.
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (copyable<Iterable<T>>);  // not not default-unitarizable, and not equals_comparable
+     *      o   copyable<Iterable<T>>  // not not default-unitarizable, and not equals_comparable
      * 
      *  *Important Design Note* (lifetime of iterators):
      *      The Lifetime of Iterator<T> objects created by an Iterable<T> instance must always be less

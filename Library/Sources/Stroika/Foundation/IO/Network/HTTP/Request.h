@@ -29,8 +29,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *  HTTP Request object that (shared by HTTP Client and HTTP Server APIs).
      * 
      *  \note Satisfies Concepts:
-     *      o   static_assert (not copyable<Request>);
-     *      o   static_assert (movable<Request>);
+     *      o   not copyable<Request>
+     *      o   movable<Request>
      * 
      *  \note - @todo - KEY MISSING FEATURE is BODY and STREAM - which are just in the Frameworks/WebServer subclass
      *

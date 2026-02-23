@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Characters {
      *      with String::CTOR, it will generate a runtime exception (so more costly runtime checking).
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (regular<String>);
+     *      o   regular<String>
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *

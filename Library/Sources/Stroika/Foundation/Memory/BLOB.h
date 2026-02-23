@@ -41,9 +41,9 @@ namespace Stroika::Foundation::Memory {
      *  A BLOB can be thought of as a 'forever' span<const byte>.
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (totally_ordered<BLOB>);
-     *      o   static_assert (regular<BLOB>);
-     *      o   static_assert (Common::explicitly_convertible_to<BLOB, span<const byte>>);
+     *      o   totally_ordered<BLOB>
+     *      o   regular<BLOB>
+     *      o   Common::explicitly_convertible_to<BLOB, span<const byte>>
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *

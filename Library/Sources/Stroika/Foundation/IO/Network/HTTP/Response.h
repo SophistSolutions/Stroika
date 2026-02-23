@@ -26,8 +26,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     /**
      *  \note Satisfies Concepts:
-     *      o   static_assert (not copyable<Response>);
-     *      o   static_assert (movable<Response>);
+     *      o   not copyable<Response>
+     *      o   movable<Response>
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Memory {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (Common::explicitly_convertible_to<InlineBuffer<byte>, span<const byte>>);
+     *      o   Common::explicitly_convertible_to<InlineBuffer<byte>, span<const byte>>
      * 
      *  \note   InlineBuffer<T> can roughly be used as a replacement for vector<> - behaving similarly, except that its optimized
      *          for the case where the caller statically knows GENERALLY the right size for the buffer, in which case it can be

@@ -59,8 +59,8 @@ namespace Stroika::Frameworks::WebServer {
      *      \endcode
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (not copyable<Response>);
-     *      o   static_assert (movable<Response>);
+     *      o   not copyable<Response>
+     *      o   movable<Response>
      * 
      *  TODO:
      *      @todo Support http://stroika-bugs.sophists.com/browse/STK-727 - HTTP Chunked Transfer Trailers. We do support

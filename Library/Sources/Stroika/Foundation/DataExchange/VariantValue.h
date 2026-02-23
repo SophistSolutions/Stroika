@@ -148,7 +148,7 @@ namespace Stroika::Foundation::DataExchange {
      *      \endcode    
      * 
      *  \note Satisfies Concepts:
-     *      o   static_assert (regular<VariantValue);
+     *      o   regular<VariantValue>
      * 
      *  TODO:
      *

@@ -31,8 +31,8 @@ namespace Stroika::Frameworks::WebServer {
      *  \brief this represents a HTTP request object for the WebServer module
      * 
      *  \note Satisfies Concepts:
-     *      o   static_assert (not copyable<Request>);
-     *      o   static_assert (movable<Request>);
+     *      o   not copyable<Request>
+     *      o   movable<Request>
      * 
      *  TODO:
      *      @todo Probably/possibly hide the fInputStream and other public

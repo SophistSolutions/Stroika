@@ -30,10 +30,10 @@ namespace Stroika::Foundation::Common {
      *  A very common 16-byte opaque ID structure.
      *
      *  \note Satisfies Concepts:
-     *      o   static_assert (sizeof (GUID) == 16);
-     *      o   static_assert (ranges::range<GUID>);
-     *      o   static_assert (regular<GUID>);
-     *      o   static_assert (totally_ordered<GUID>);
+     *      o   sizeof (GUID) == 16
+     *      o   ranges::range<GUID>
+     *      o   regular<GUID>
+     *      o   totally_ordered<GUID>
      * 
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *      o   static_assert (totally_ordered<GUID>);
