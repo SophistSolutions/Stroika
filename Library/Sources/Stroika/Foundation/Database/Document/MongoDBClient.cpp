@@ -386,10 +386,19 @@ namespace {
 }
 
 namespace {
+    template <InternallySynchronized SYNC_STYLE>
+    using MyMaybeLock_ =
+        conditional_t<SYNC_STYLE == InternallySynchronized::eNotKnownInternallySynchronized, Debug::AssertExternallySynchronizedMutex, recursive_mutex>;
+    static_assert (Common::BasicLockable<MyMaybeLock_<InternallySynchronized::eNotKnownInternallySynchronized>>);
+    static_assert (Common::BasicLockable<MyMaybeLock_<InternallySynchronized::eInternallySynchronized>>);
+}
+
+namespace {
+    template <Execution::InternallySynchronized SYNC_STYLE>
     struct AdminRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::AdminConnection::IRep {
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
-        variant<mongocxx::client, mongocxx::pool::entry>               fClientStorage_;
-        mongocxx::client*                                              fClientPtr_;
+        [[no_unique_address]] mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
+        variant<mongocxx::client, mongocxx::pool::entry> fClientStorage_;
+        mongocxx::client*                                fClientPtr_;
 
         AdminRep_ (const AdminRep_&) = delete;
         AdminRep_ (const AdminConnection::Options& options)
@@ -418,6 +427,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"MongoDBClient::AdminRep_::run_command"};
 #endif
+            scoped_lock critSec{fMaybeLock_};
             try {
                 return FromBSON_ (fClientPtr_->database ("admin").run_command (ToBSON_ (v)));
             }
@@ -427,6 +437,7 @@ namespace {
         }
         virtual Set<String> GetDatabases () override
         {
+            scoped_lock critSec{fMaybeLock_};
             try {
                 vector<string> n = fClientPtr_->list_database_names ();
                 return Iterable<string>{n}.Map<Set<String>> ([] (string i) { return String::FromUTF8 (i); });
@@ -437,6 +448,7 @@ namespace {
         }
         virtual void DropDatabase (const String& dbName) override
         {
+            scoped_lock critSec{fMaybeLock_};
             try {
                 mongocxx::database{fClientPtr_->database (dbName.AsUTF8<string> ())}.drop ();
             }
@@ -446,6 +458,7 @@ namespace {
         }
         virtual void CreateDatabase (const String& dbName) override
         {
+            scoped_lock critSec{fMaybeLock_};
             try {
                 // doesn't appear to be anything todo to create the database except maybe  writing to it
                 mongocxx::database d{fClientPtr_->database (dbName.AsUTF8<string> ())};
@@ -460,9 +473,9 @@ namespace {
 }
 
 namespace {
+    template <Execution::InternallySynchronized SYNC_STYLE>
     struct ConnectionRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::Connection::IRep {
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_; // since shares unsynrchonized connection, share its context
             shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count
             mongocxx::collection       fCollection_;
 
@@ -470,10 +483,6 @@ namespace {
                 : fConnectionRep_{connectionRep}
                 , fCollection_{connectionRep->fDatabase_.collection (collectionName.AsUTF8<string> ())}
             {
-#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-                fAssertExternallySynchronizedMutex_.SetAssertExternallySynchronizedMutexContext (
-                    connectionRep->fAssertExternallySynchronizedMutex_.GetSharedContext ());
-#endif
             }
             virtual String GetName () const override
             {
@@ -485,7 +494,7 @@ namespace {
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Add"};
 #endif
                 Require (not v.ContainsKey (Database::Document::kID) or fConnectionRep_->fOptions_.fAddAllowsExternallySpecifiedIDs);
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
                         try {
@@ -506,7 +515,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Get"};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () -> optional<Document::Document> {
                         try {
@@ -538,7 +547,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::GetAll", "filter={}, projection={}"_f, filter, projection};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 return fConnectionRep_->WrapExecute_ (
                     [&] () {
                         auto [mongoFilter, myFilter] = Partition_ (filter);
@@ -580,7 +589,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Update"};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 fConnectionRep_->WrapExecute_ (
                     [&] () {
                         // incomplete... - not sure how to handle partial update vs full update - must read mongo docs more carefully
@@ -595,22 +604,26 @@ namespace {
                                 if (auto o = fCollection_.update_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
                                                                       make_document (kvp ("$set", bsonDoc.view ())))) {
                                     if (o->modified_count () == 0) {
-                                        Throw (RuntimeErrorException{"failed to update doc - not modified"});
+                                        static const auto kExcept_ = RuntimeErrorException{"failed to update doc - not modified"sv};
+                                        Throw (kExcept_);
                                     }
                                 }
                                 else {
-                                    Throw (RuntimeErrorException{"failed to update doc"});
+                                    static const auto kExcept_ = RuntimeErrorException{"failed to update doc"sv};
+                                    Throw (kExcept_);
                                 }
                             }
                             else {
                                 if (auto o = fCollection_.replace_one (make_document (kvp ("_id", ToBSONId_ (id.AsUTF8<string> ()))),
                                                                        bsonDoc.view ())) {
                                     if (o->modified_count () == 0) {
-                                        Throw (RuntimeErrorException{"failed to replace doc - not modified"sv});
+                                        static const auto kExcept_ = RuntimeErrorException{"failed to replace doc - not modified"sv};
+                                        Throw (kExcept_);
                                     }
                                 }
                                 else {
-                                    Throw (RuntimeErrorException{"failed to replace doc"sv});
+                                    static const auto kExcept_ = RuntimeErrorException{"failed to replace doc"sv};
+                                    Throw (kExcept_);
                                 }
                             }
                         }
@@ -625,7 +638,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 TraceContextBumper ctx{"MongoDBClient::CollectionRep_::Remove"};
 #endif
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+                scoped_lock declareContext{fConnectionRep_->fMaybeLock_};
                 fConnectionRep_->WrapExecute_ (
                     [&] () {
                         try {
@@ -644,7 +657,7 @@ namespace {
             }
         };
 
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex_;
+        [[no_unique_address]] mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
         variant<mongocxx::client, mongocxx::pool::entry> fClientStorage_; // not directly used, but needed to free the resource when this connection obj goes away - and implicitly stored in database
         mongocxx::database        fDatabase_;
         const Connection::Options fOptions_;
@@ -709,7 +722,7 @@ namespace {
         }
         virtual Set<String> GetCollections () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             return WrapExecute_ (
                 [&] () -> Set<String> {
                     try {
@@ -735,7 +748,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"mongocxx::CreateCollection", "name={}"_f, name};
 #endif
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             return WrapExecute_ (
                 [&] () {
                     fDatabase_.create_collection (name.AsUTF8<string> ());
@@ -748,7 +761,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"mongocxx::DropCollection", "name={}"_f, name};
 #endif
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             WrapExecute_ (
                 [&] () {
                     try {
@@ -762,7 +775,7 @@ namespace {
         }
         virtual Document::Collection::Ptr GetCollection (const String& name) override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             Require (GetCollections ().Contains (name));
             try {
                 return Document::Collection::Ptr{
@@ -774,7 +787,7 @@ namespace {
         }
         virtual Document::Transaction mkTransaction () override
         {
-            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronizedMutex_};
+            scoped_lock declareContext{fMaybeLock_};
             try {
                 Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
                 return Transaction{conn};
@@ -883,7 +896,15 @@ auto Document::MongoDBClient::AdminConnection::New (const AdminConnection::Optio
 #if qStroika_Foundation_Debug_AssertionsChecked
     Require (sActivatorLiveCnt_ > 0);
 #endif
-    return Ptr{Memory::MakeSharedPtr<AdminRep_> (options)};
+    switch (options.fInternallySynchronizedLetter) {
+        case Execution::eInternallySynchronized:
+            return Ptr{Memory::MakeSharedPtr<AdminRep_<Execution::eInternallySynchronized>> (options)};
+        case Execution::eNotKnownInternallySynchronized:
+            return Ptr{Memory::MakeSharedPtr<AdminRep_<Execution::eNotKnownInternallySynchronized>> (options)};
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
 }
 
 /*
@@ -896,7 +917,15 @@ auto Document::MongoDBClient::Connection::New (const Connection::Options& option
 #if qStroika_Foundation_Debug_AssertionsChecked
     Require (sActivatorLiveCnt_ > 0);
 #endif
-    return Ptr{Memory::MakeSharedPtr<ConnectionRep_> (options)};
+    switch (options.fInternallySynchronizedLetter) {
+        case Execution::eInternallySynchronized:
+            return Ptr{Memory::MakeSharedPtr<ConnectionRep_<Execution::eInternallySynchronized>> (options)};
+        case Execution::eNotKnownInternallySynchronized:
+            return Ptr{Memory::MakeSharedPtr<ConnectionRep_<Execution::eNotKnownInternallySynchronized>> (options)};
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
 }
 
 /*

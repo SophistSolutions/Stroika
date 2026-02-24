@@ -16,6 +16,10 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         : inherited{src}
     {
     }
+    inline AdminConnection::Ptr::Ptr (nullptr_t) noexcept
+        : inherited{nullptr}
+    {
+    }
     inline Document AdminConnection::Ptr::run_command (const Document& v)
     {
         return get ()->run_command (v);
@@ -44,6 +48,10 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
      */
     inline Connection::Ptr::Ptr (const Ptr& src)
         : Ptr{Debug::UncheckedDynamicPointerCast<IRep> (src)}
+    {
+    }
+    inline Connection::Ptr::Ptr (nullptr_t) noexcept
+        : inherited{nullptr}
     {
     }
     inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)

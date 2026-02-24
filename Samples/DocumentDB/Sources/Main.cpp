@@ -103,14 +103,13 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             auto                  adminDB = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
             IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
             adminDB.CreateDatabase (kTestDBName_);
-            // @todo support internallySyncrhonized so can re-use here!
-            Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
-                MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+            Database::Document::Connection::Ptr internallySyncrhonizedConnection = MongoDBClient::Connection::New (MongoDBClient::Connection::Options{
+                .fInternallySynchronizedLetter = eInternallySynchronized, .fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
             cerr << "Starting mongodb employees sample:" << endl;
             EmployeesDB ([=] () {
                 cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
-                return MongoDBClient::Connection::New (
-                    MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
+                return internallySyncrhonizedConnection; // each thread using same internally syncrhonized connection
+                    // or can create a new connection each time in factory, and make them unsynchronized
             });
             cerr << "done." << endl;
         }
@@ -192,7 +191,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::MemoryStorage{}});
         ComputerNetworksModel ([=] () {
             cerr << "\tConnecting to trivial document db: memory" << endl;
-            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
+            return internallySynchronizedDBConnection; // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }
@@ -207,7 +206,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::MemoryStorage{}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: memory" << endl;
-            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
+            return internallySynchronizedDBConnection; // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }
@@ -223,7 +222,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
                         .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
-            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
+            return internallySynchronizedDBConnection; // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }
@@ -239,7 +238,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
                         .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
-            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
+            return internallySynchronizedDBConnection; // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }

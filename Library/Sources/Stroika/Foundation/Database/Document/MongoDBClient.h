@@ -111,8 +111,10 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         public:
             /**
              */
+            Ptr ()noexcept = default;
             Ptr (const Ptr& src) noexcept = default;
-            Ptr (const shared_ptr<IRep>& src = nullptr) noexcept;
+            Ptr (const shared_ptr<IRep>& src) noexcept;
+            Ptr (nullptr_t) noexcept;
 
         public:
             ~Ptr () noexcept = default;
@@ -170,6 +172,16 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          */
         struct Options final : Database::Document::Connection::Options {
             /**
+             * \brief use eInternallySynchronized to make letter (connection object) internally synchronized
+             * 
+             *      \note The remote database is always 'synchronized' / threadsafe.
+             * 
+             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
+             *            to check for unsafe thread usage.
+             */
+            Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};
+
+            /**
              * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */
             variant<String, ConnectionPool> fConnectionTarget;
@@ -194,6 +206,16 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
          */
         struct Options final : Database::Document::Connection::Options {
             /**
+             * \brief use eInternallySynchronized to make letter (connection object) internally synchronized
+             * 
+             *      \note The remote database is always 'synchronized' / threadsafe.
+             * 
+             *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
+             *            to check for unsafe thread usage.
+             */
+            Execution::InternallySynchronized fInternallySynchronizedLetter{Execution::eNotKnownInternallySynchronized};
+
+            /**
              * @brief see https://www.mongodb.com/docs/manual/reference/connection-string/
              */
             variant<String, ConnectionPool> fConnectionTarget;
@@ -217,8 +239,10 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         public:
             /**
              */
+            Ptr () noexcept = default;
             Ptr (const Ptr& src);
-            Ptr (const shared_ptr<IRep>& src = nullptr);
+            Ptr (const shared_ptr<IRep>& src);
+            Ptr (nullptr_t) noexcept;
 
         public:
             ~Ptr () = default;
