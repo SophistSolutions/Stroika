@@ -1166,6 +1166,32 @@ namespace {
         EXPECT_TRUE (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
     }
 }
+
+namespace {
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy or qCompilerAndStdLib_template_template_auto_deduced_Buggy
+    template <typename X>
+    using RANGE_TEMPLATE_BWA = Traversal::Range<X>;
+#endif
+    GTEST_TEST (Foundation_Time, ClockCast)
+    {
+        TraceContextBumper ctx{"ClockCast"};
+        {
+            TimePointSeconds                   tickCount = Time::GetTickCount (); // tick count not zero-based (zero at app start)
+            DisplayedRealtimeClock::time_point secondsSinceAppStart = Time::clock_cast<DisplayedRealtimeClock> (tickCount);
+        }
+        {
+            using Traversal::Range;
+            TimePointSeconds start = Time::GetTickCount ();
+            Execution::Sleep (20ms);
+            TimePointSeconds        now   = Time::GetTickCount ();
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy or qCompilerAndStdLib_template_template_auto_deduced_Buggy
+            Range<DisplayedRealtimeClock::time_point> taken = Time::clock_cast<DisplayedRealtimeClock, RANGE_TEMPLATE_BWA> (Range{start, now});
+#else
+            Range<DisplayedRealtimeClock::time_point> taken = Time::clock_cast<DisplayedRealtimeClock> (Range{start, now});
+#endif
+        }
+    }
+}
 #endif
 
 int main (int argc, const char* argv[])

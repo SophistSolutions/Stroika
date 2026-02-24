@@ -62,8 +62,8 @@ namespace Stroika::Foundation::Time {
         constexpr bool kCanUseStdClockCnv_ = 
             same_as<DESTINATION_CLOCK_T,SOURCE_CLOCK_T> 
                 or (
-                    ( same_as<DESTINATION_CLOCK_T, chrono::system_clock> or same_as<DESTINATION_CLOCK_T, chrono::utc_clock> or same_as<DESTINATION_CLOCK_T, chrono::gps_clock> or same_as<DESTINATION_CLOCK_T, chrono::file_clock> or  same_as<DESTINATION_CLOCK_T, chrono::tai_clock>)
-                        and (same_as<SOURCE_CLOCK_T, chrono::system_clock> or same_as<SOURCE_CLOCK_T, chrono::utc_clock> or same_as<SOURCE_CLOCK_T, chrono::gps_clock> or same_as<SOURCE_CLOCK_T, chrono::file_clock> or  same_as<SOURCE_CLOCK_T, chrono::tai_clock>)
+                    (same_as<DESTINATION_CLOCK_T, chrono::system_clock> or same_as<DESTINATION_CLOCK_T, chrono::utc_clock> or same_as<DESTINATION_CLOCK_T, chrono::gps_clock> or same_as<DESTINATION_CLOCK_T, chrono::file_clock> or same_as<DESTINATION_CLOCK_T, chrono::tai_clock>) and
+                    (same_as<SOURCE_CLOCK_T, chrono::system_clock> or same_as<SOURCE_CLOCK_T, chrono::utc_clock> or same_as<SOURCE_CLOCK_T, chrono::gps_clock> or same_as<SOURCE_CLOCK_T, chrono::file_clock> or  same_as<SOURCE_CLOCK_T, chrono::tai_clock>)
                 )
         ;
         // clang-format on

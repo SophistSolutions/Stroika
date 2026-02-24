@@ -18,14 +18,38 @@
 
 namespace Stroika::Foundation::Time {
 
-    /*
+    /**
      *  \brief like std::chrono::clock_cast, but supports steady_clock, and others not explicitly supported by std::chrono::clock_cast (through experiment/approximation), and ranges of time_points...
      * 
+     *  Background:
+     *      std::chrono::clock_cast is a C++20 standard library function template used to convert a std::chrono::time_point
+     *      from one clock to another (e.g., system_clock to utc_clock or file_clock).
+     * 
+     *      But - it only supports few cases. This function supports those, but also ALL others by approximating.
+     *
      *  \see commentary in https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
      * 
      *  \note - for some cases, the conversion is estimated, and may vary slightly from run run to run.
      *  \note - range overload is both HANDY for normal case, and CRITICAL for case where we approximate, so that valid ranges
      *          always map to valid ranges (one jitter, not two). Note also - use of template/template param for RANGE is to avoid mutual inclusion issues.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          // background: using TimePointSeconds = time_point<RealtimeClock, DurationSeconds>;
+     *          //             using DisplayedRealtimeClock = AppStartZeroedClock<RealtimeClock, DurationSeconds>;
+     *          TimePointSeconds tickCount = GetTickCount ();   // tick count not zero-based (zero at app start)
+     *          DisplayedRealtimeClock::time_point secondsSinceAppStart = clock_cast<DisplayedRealtimeClock> (tickCount);
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          // Since the adjustment to clocks is not gauranteed consistent across calls, its handy sometimes
+     *          // to do several at a time to assure they are all mutually consistent (and preserve distance etc).
+     *          TimePointSeconds start = GetTickCount ();
+     *          Sleep (20ms);   // DoSomeWork ();
+     *          TimePointSeconds now = GetTickCount ();
+     *          Range<TimePointSeconds> taken = clock_cast<DisplayedRealtimeClock> (Range{start, now});
+     *      \endcode
      */
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
     typename DESTINATION_CLOCK_T::time_point clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp);
