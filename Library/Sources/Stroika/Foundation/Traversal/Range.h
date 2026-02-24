@@ -610,10 +610,14 @@ namespace Stroika::Foundation::Traversal {
         Openness fBeginOpenness_;
         Openness fEndOpenness_;
     };
-
-    // Deduction guides dont appear to be needed, but maybe?
-    // template <IRangeable T>
-    // Range (T b, T e) -> Range<T, RangeTraits::Default<T>>;
+    template <IRangeable T>
+    Range (T, T) -> Range<T, RangeTraits::Default<T>>;
+    template <IRangeable T>
+    Range (T, T, Openness, Openness) -> Range<T, RangeTraits::Default<T>>;
+    template <IRangeable T>
+    Range (optional<T>, optional<T>) -> Range<T, RangeTraits::Default<T>>;
+    template <IRangeable T>
+    Range (optional<T>, optional<T>, Openness, Openness) -> Range<T, RangeTraits::Default<T>>;
 
     /**
      */
