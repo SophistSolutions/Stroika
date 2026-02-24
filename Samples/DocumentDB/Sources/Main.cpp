@@ -81,10 +81,9 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             auto                  adminDB = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
             IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
             adminDB.CreateDatabase (kTestDBName_);
-            Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
-                MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
             cerr << "Starting MongoDBClient networks sample:" << endl;
             ComputerNetworksModel ([=] () {
+                // can create a new connection each time
                 cerr << "\tConnecting to {} database {}"_f(*mongoConnectionString, kTestDBName_) << endl;
                 return MongoDBClient::Connection::New (
                     MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
@@ -104,6 +103,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
             auto                  adminDB = AdminConnection::New (AdminConnection::Options{.fConnectionTarget = *mongoConnectionString});
             IgnoreExceptionsForCall (adminDB.DropDatabase (kTestDBName_));
             adminDB.CreateDatabase (kTestDBName_);
+            // @todo support internallySyncrhonized so can re-use here!
             Database::Document::Connection::Ptr p = MongoDBClient::Connection::New (
                 MongoDBClient::Connection::Options{.fConnectionTarget = *mongoConnectionString, .fDatabase = kTestDBName_});
             cerr << "Starting mongodb employees sample:" << endl;
@@ -188,11 +188,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         static constexpr Activity kActivity_{"performing trivial document db networks sample"sv};
         DeclareActivity           da{&kActivity_};
         cerr << "Starting trivial document db networks sample:" << endl;
-        auto internallySynchronizedDBConnection =
-            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
+        auto internallySynchronizedDBConnection = LocalDocumentDB::New (LocalDocumentDB::Options{
+            .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::MemoryStorage{}});
         ComputerNetworksModel ([=] () {
             cerr << "\tConnecting to trivial document db: memory" << endl;
-            return internallySynchronizedDBConnection;
+            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }
@@ -203,11 +203,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         static constexpr Activity kActivity_{"performing trivial document db employees sample"sv};
         DeclareActivity           da{&kActivity_};
         cerr << "Starting trivial document db employees sample:" << endl;
-        auto internallySynchronizedDBConnection =
-            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::MemoryStorage{}});
+        auto internallySynchronizedDBConnection = LocalDocumentDB::New (LocalDocumentDB::Options{
+            .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::MemoryStorage{}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: memory" << endl;
-            return internallySynchronizedDBConnection;
+            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }
@@ -219,11 +219,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         DeclareActivity           da{&kActivity_};
         cerr << "Starting trivial document db employees sample:" << endl;
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-test.json";
-        auto             internallySynchronizedDBConnection =
-            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p}});
+        auto             internallySynchronizedDBConnection = LocalDocumentDB::New (LocalDocumentDB::Options{
+                        .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
-            return internallySynchronizedDBConnection;
+            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }
@@ -235,11 +235,11 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         DeclareActivity           da{&kActivity_};
         cerr << "Starting trivial document db employees sample:" << endl;
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-dir-test";
-        auto             internallySynchronizedDBConnection =
-            LocalDocumentDB::New (LocalDocumentDB::Options{.fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p}});
+        auto             internallySynchronizedDBConnection = LocalDocumentDB::New (LocalDocumentDB::Options{
+                        .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
-            return internallySynchronizedDBConnection;
+            return internallySynchronizedDBConnection;      // re-used multiple times from different threads
         });
         cerr << "done." << endl;
     }
