@@ -76,7 +76,15 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
              *
              *  If false, more compact, and no leading/trailing spaces.
              */
-            optional<bool> fJSONPrettyPrint;
+            optional<bool> fPrettyPrint;
+
+            [[deprecated ("Since Stroika v3.0d23 use fPrettyPrint")]] optional<bool> fJSONPrettyPrint; //deprecated name
+
+            /**
+             * This defaults to off, since its costly, and rarely needed. Principally used for regression tests
+             * where we want to compare we get the same results as last time.
+             */
+            optional<bool> fCanonicalize;
 
             /**
              */

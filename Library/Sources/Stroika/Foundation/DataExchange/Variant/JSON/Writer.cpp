@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
+#include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Memory/BlockAllocated.h"
 #include "Stroika/Foundation/Streams/TextToBinary.h"
 
@@ -18,6 +19,7 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
+using Containers::SortedMapping;
 using Memory::MakeSharedPtr;
 
 /*
@@ -30,12 +32,13 @@ namespace {
     struct OptionValues_ final {
         OptionValues_ (const Variant::JSON::Writer::Options& o)
             : fFloatOptions{o.fFloatOptions.value_or (Characters::FloatConversion::ToStringOptions{})}
-            , fJSONPrettyPrint{o.fJSONPrettyPrint.value_or (true)}
+            , fPrettyPrint{o.fPrettyPrint.value_or (o.fJSONPrettyPrint.value_or(true))}
+            , fCanonicalize{o.fCanonicalize.value_or (false)}
             , fSpacesPerIndent{o.fSpacesPerIndent.value_or (4)}
             , fAllowNANInf{o.fAllowNANInf.value_or (true)}
             , fLineTermination{o.fLineTermination.value_or (Characters::kEOL<char>)}
         {
-            if (not fJSONPrettyPrint) {
+            if (not fPrettyPrint) {
                 fSpacesPerIndent = 0;
             }
             if (fSpacesPerIndent != 0) {
@@ -43,7 +46,8 @@ namespace {
             }
         }
         Characters::FloatConversion::ToStringOptions fFloatOptions;
-        bool                                         fJSONPrettyPrint;
+        bool                                         fPrettyPrint;
+        bool                                         fCanonicalize;
         unsigned int                                 fSpacesPerIndent;
         String                                       fIndentSpace;
         bool                                         fAllowNANInf;
@@ -59,7 +63,7 @@ namespace {
 namespace {
     void Indent_ (const OptionValues_& options, const OutputStream::Ptr<Character>& out, int indentLevel)
     {
-        // if test not needed, but speed tweak (especially since incorporates options.fJSONPrettyPrint check
+        // if test not needed, but speed tweak (especially since incorporates options.fPrettyPrint check
         if (options.fSpacesPerIndent != 0) {
             constexpr bool kSpeedTweak_ = true;
             if constexpr (kSpeedTweak_) {
@@ -177,7 +181,7 @@ namespace {
     void PrettyPrint_ (const OptionValues_& options, const vector<VariantValue>& v, const OutputStream::Ptr<Character>& out, int indentLevel)
     {
         out.Write ('[');
-        if (options.fJSONPrettyPrint) {
+        if (options.fPrettyPrint) {
             out.Write (options.fLineTermination);
         }
         for (auto i = v.begin (); i != v.end (); ++i) {
@@ -186,7 +190,7 @@ namespace {
             if (i + 1 != v.end ()) {
                 out.Write (',');
             }
-            if (options.fJSONPrettyPrint) {
+            if (options.fPrettyPrint) {
                 out.Write (options.fLineTermination);
             }
         }
@@ -196,10 +200,14 @@ namespace {
     void PrettyPrint_ (const OptionValues_& options, const Mapping<String, VariantValue>& v, const OutputStream::Ptr<Character>& out, int indentLevel)
     {
         out.Write ('{');
-        if (options.fJSONPrettyPrint) {
+        if (options.fPrettyPrint) {
             out.Write (options.fLineTermination);
         }
-        for (auto i = v.begin (); i != v.end ();) {
+        Mapping<String, VariantValue> vv {v};
+        if (options.fCanonicalize) {
+            vv = SortedMapping<String,VariantValue>{vv};
+        }
+        for (auto i = vv.begin (); i != vv.end ();) {
             Indent_ (options, out, indentLevel + 1);
             PrettyPrint_ (options, i->fKey, out, indentLevel + 1);
             out.Write (" : "sv);
@@ -208,7 +216,7 @@ namespace {
             if (i != v.end ()) {
                 out.Write (',');
             }
-            if (options.fJSONPrettyPrint) {
+            if (options.fPrettyPrint) {
                 out.Write (options.fLineTermination);
             }
         }
@@ -273,7 +281,7 @@ public:
     {
         OutputStream::Ptr<Character> textOut = TextToBinary::Writer::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
         PrettyPrint_ (fOptions_, v, textOut, 0);
-        if (fOptions_.fJSONPrettyPrint) {
+        if (fOptions_.fPrettyPrint) {
             textOut.Write (fOptions_.fLineTermination); // a single elt not LF terminated, but the entire doc should be.
         }
     }
