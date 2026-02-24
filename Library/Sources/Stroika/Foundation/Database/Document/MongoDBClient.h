@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Database::Document::MongoDBClient {
         public:
             /**
              */
-            Ptr ()noexcept = default;
+            Ptr () noexcept               = default;
             Ptr (const Ptr& src) noexcept = default;
             Ptr (const shared_ptr<IRep>& src) noexcept;
             Ptr (nullptr_t) noexcept;
