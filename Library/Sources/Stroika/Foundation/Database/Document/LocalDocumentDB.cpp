@@ -312,6 +312,7 @@ namespace {
         const DataExchange::Variant::Writer fWriter_;
         const bool                          fFlushOnEachWrite_;
         bool                                fDirty_{true}; // if true, we have changes that haven't yet been flushed to disk
+        const bool                          fReadOnly_{false};
         const OpertionCallbackPtr           fOperationLoggingCallback_{nullptr};
 #if qStroika_Foundation_Common_Platform_Windows
         const optional<Time::DurationSeconds> fRetryOnSharingViolationFor_;
@@ -422,6 +423,7 @@ namespace {
             , fWriter_{get<DataExchange::Variant::Writer> (sfOptions.fSerialization)}
             , fFlushOnEachWrite_{sfOptions.fFlushOnEachWrite}
             , fDirty_{not fFlushOnEachWrite_}
+            , fReadOnly_{sfOptions.fReadOnly}
             , fOperationLoggingCallback_{options.fOperationLoggingCallback}
 #if qStroika_Foundation_Common_Platform_Windows
             , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
@@ -537,25 +539,27 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::DoWriteToFS", "path={}"_f, fExternalFile_};
 #endif
-            scoped_lock declareContext{fMemoryDB_->fMaybeLock_};
-            using namespace IO::FileSystem;
-            ThroughTmpFileWriter                  tmpFile{fExternalFile_};
-            IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
-            Mapping<String, VariantValue>         collectionsAsVV;
-            for (const KeyValuePair<String, Mapping<GUID, Document::Document>>& collection : fMemoryDB_->fCollections_) {
-                Mapping<GUID, Document::Document> collectionValue = collection.fValue;
-                Mapping<String, VariantValue>     collWithStringKey;
-                for (const KeyValuePair<GUID, Document::Document>& kvp : collectionValue) {
-                    collWithStringKey.Add (kvp.fKey.ToString (), VariantValue{kvp.fValue});
+            if (not this->fReadOnly_) {
+                scoped_lock declareContext{fMemoryDB_->fMaybeLock_};
+                using namespace IO::FileSystem;
+                ThroughTmpFileWriter                  tmpFile{fExternalFile_};
+                IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
+                Mapping<String, VariantValue>         collectionsAsVV;
+                for (const KeyValuePair<String, Mapping<GUID, Document::Document>>& collection : fMemoryDB_->fCollections_) {
+                    Mapping<GUID, Document::Document> collectionValue = collection.fValue;
+                    Mapping<String, VariantValue>     collWithStringKey;
+                    for (const KeyValuePair<GUID, Document::Document>& kvp : collectionValue) {
+                        collWithStringKey.Add (kvp.fKey.ToString (), VariantValue{kvp.fValue});
+                    }
+                    collectionsAsVV.Add (collection.fKey, VariantValue{collWithStringKey});
                 }
-                collectionsAsVV.Add (collection.fKey, VariantValue{collWithStringKey});
-            }
-            this->fWriter_.Write (VariantValue{collectionsAsVV}, outStream);
-            outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
+                this->fWriter_.Write (VariantValue{collectionsAsVV}, outStream);
+                outStream.Close (); // close like this so we can throw exception - cannot throw if we count on DTOR
 #if qStroika_Foundation_Common_Platform_Windows
-            tmpFile.fRetryOnSharingViolationFor = fRetryOnSharingViolationFor_;
+                tmpFile.fRetryOnSharingViolationFor = fRetryOnSharingViolationFor_;
 #endif
-            tmpFile.Commit (); // any exceptions cause the tmp file to be automatically cleaned up
+                tmpFile.Commit (); // any exceptions cause the tmp file to be automatically cleaned up
+            }
             fDirty_ = false;
         }
         template <typename FUN>

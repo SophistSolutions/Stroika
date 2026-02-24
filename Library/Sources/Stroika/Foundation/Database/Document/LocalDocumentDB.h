@@ -86,6 +86,12 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
             bool fForceCreateNew{false};
 
             /**
+             * If true, the file will be read (unless fForceCreateNew is set, and it can), but will never be written to disk.
+             * (just cached in memory).
+             */
+            bool fReadOnly{false};
+
+            /**
             * If true, each modification causes a write. If false, the implmentation MAY buffer writes (or may write thruough).
             * The caller can always trigger a write by calling Flush(), or destorying the connection.
             */
