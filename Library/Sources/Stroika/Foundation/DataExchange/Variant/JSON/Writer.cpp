@@ -32,7 +32,7 @@ namespace {
     struct OptionValues_ final {
         OptionValues_ (const Variant::JSON::Writer::Options& o)
             : fFloatOptions{o.fFloatOptions.value_or (Characters::FloatConversion::ToStringOptions{})}
-            , fPrettyPrint{o.fPrettyPrint.value_or (o.fJSONPrettyPrint.value_or(true))}
+            , fPrettyPrint{o.fPrettyPrint.value_or (o.fJSONPrettyPrint.value_or (true))}
             , fCanonicalize{o.fCanonicalize.value_or (false)}
             , fSpacesPerIndent{o.fSpacesPerIndent.value_or (4)}
             , fAllowNANInf{o.fAllowNANInf.value_or (true)}
@@ -203,9 +203,9 @@ namespace {
         if (options.fPrettyPrint) {
             out.Write (options.fLineTermination);
         }
-        Mapping<String, VariantValue> vv {v};
+        Mapping<String, VariantValue> vv{v};
         if (options.fCanonicalize) {
-            vv = SortedMapping<String,VariantValue>{vv};
+            vv = SortedMapping<String, VariantValue>{vv};
         }
         for (auto i = vv.begin (); i != vv.end ();) {
             Indent_ (options, out, indentLevel + 1);
