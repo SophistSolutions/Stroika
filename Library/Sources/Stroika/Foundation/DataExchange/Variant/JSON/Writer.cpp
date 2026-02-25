@@ -29,6 +29,9 @@ using Memory::MakeSharedPtr;
 
 namespace {
     // Just like Writer::Options but without optionals... fill those in
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     struct OptionValues_ final {
         OptionValues_ (const Variant::JSON::Writer::Options& o)
             : fFloatOptions{o.fFloatOptions.value_or (Characters::FloatConversion::ToStringOptions{})}
@@ -53,6 +56,9 @@ namespace {
         bool                                         fAllowNANInf;
         String                                       fLineTermination;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 }
 
 /*
