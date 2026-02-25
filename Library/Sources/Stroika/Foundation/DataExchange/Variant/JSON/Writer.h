@@ -122,7 +122,6 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
-
     public:
         Writer (const Options& options = {});
 
