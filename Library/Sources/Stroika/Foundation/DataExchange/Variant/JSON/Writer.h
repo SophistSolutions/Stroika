@@ -91,7 +91,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
             optional<Characters::FloatConversion::ToStringOptions> fFloatOptions;
 
             /**
-             *  This defaults to 4. If fJSONPrettyPrint evaluates false, then this is ignored.
+             *  This defaults to 4. If fPrettyPrint evaluates false, then this is ignored.
              */
             optional<unsigned int> fSpacesPerIndent;
 
