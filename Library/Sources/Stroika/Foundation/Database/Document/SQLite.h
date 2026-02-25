@@ -122,8 +122,8 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             /**
              * \brief use eInternallySynchronized to make letter internally synchronized
              * 
-             *      \note this refers to in-process syncrhonization. Future flags/fields/options will be needed
-             *            in other impls to assure cross-process syncrhonization (not sure if even appropriate for this impl but maybe something simple with flock).
+             *      \note this refers to in-process synchronization. Future flags/fields/options will be needed
+             *            in other impls to assure cross-process synchronization (not sure if even appropriate for this impl but maybe something simple with flock).
              * 
              *      \note if set eNotKnownInternallySynchronized (the default), in debug mode, the system uses AssertExternallySynchronizedMutex
              *            to check for unsafe thread usage.

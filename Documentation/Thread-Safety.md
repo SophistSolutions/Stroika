@@ -10,7 +10,7 @@ Stroika classes respect several different levels of thread safety:
 
 - <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
 
-  Certain utiltiies that are meant for sharing data between threads, manage their state/syncrhonization
+  Certain utiltiies that are meant for sharing data between threads, manage their state/synchronization
   fully internally.
 
 - <a href='#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter'>C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
@@ -107,7 +107,7 @@ This threadsafety means the object is:
 
 You just cannot tell which based on the type itself (you need to know the type of the underlying contained letter object).
 
-If or the type of syncrhonization required on the underlying 'letter' or 'rep' depends on the source of that object. See the OBJECT::New () static method used to construct that
+If or the type of synchronization required on the underlying 'letter' or 'rep' depends on the source of that object. See the OBJECT::New () static method used to construct that
 shared rep object.
 
 #### Examples:
@@ -119,7 +119,7 @@ shared rep object.
 
 ## <a name='Thread-Safety-Rules-Depends-On-Subtype'>Thread-Safety-Rules-Depends-On-Subtype</a>
 
-For this abstract class, the thread safety rules are left ambiguous. The type of syncrhonization required for this object depends on the (concrete) subtype.
+For this abstract class, the thread safety rules are left ambiguous. The type of synchronization required for this object depends on the (concrete) subtype.
 
 Depending on the subclass, this might be:
   - <a href='#C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a> OR
