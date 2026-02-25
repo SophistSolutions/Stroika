@@ -25,8 +25,6 @@ QUICK_BUILD ?= 1
 
 VERSION=3.3.0
 #VERSION=3.2.5
-#VERSION=3.2.4
-#VERSION=3.2.3
 ifeq (Unix,$(BuildPlatform))
 ifeq ($(VERSION), 3.2.5)
 # This version of xerces requires more recent copy of cmake
