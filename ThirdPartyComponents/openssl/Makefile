@@ -21,7 +21,8 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-VERSION:=3.6.0
+VERSION:=3.6.1
+#VERSION:=3.6.0
 #VERSION:=3.5.4
 #VERSION:=3.5.0
 #VERSION:=3.4.1
