@@ -69,6 +69,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
 
     public:
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         /**
          */
         struct Options {
@@ -119,6 +120,8 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
             optional<String> fLineTermination;
         };
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
 
     public:
         Writer (const Options& options = {});
