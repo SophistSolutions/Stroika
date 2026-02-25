@@ -1176,8 +1176,8 @@ namespace {
     {
         TraceContextBumper ctx{"ClockCast"};
         {
-            TimePointSeconds                   tickCount = Time::GetTickCount (); // tick count not zero-based (zero at app start)
-            DisplayedRealtimeClock::time_point secondsSinceAppStart = Time::clock_cast<DisplayedRealtimeClock> (tickCount);
+            [[maybe_unused]] TimePointSeconds tickCount = Time::GetTickCount (); // tick count not zero-based (zero at app start)
+            [[maybe_unused]] DisplayedRealtimeClock::time_point secondsSinceAppStart = Time::clock_cast<DisplayedRealtimeClock> (tickCount);
         }
         {
             using Traversal::Range;
@@ -1185,9 +1185,10 @@ namespace {
             Execution::Sleep (20ms);
             TimePointSeconds now = Time::GetTickCount ();
 #if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy or qCompilerAndStdLib_template_template_auto_deduced_Buggy
-            Range<DisplayedRealtimeClock::time_point> taken = Time::clock_cast<DisplayedRealtimeClock, RANGE_TEMPLATE_BWA> (Range{start, now});
+            [[maybe_unused]] Range<DisplayedRealtimeClock::time_point> taken =
+                Time::clock_cast<DisplayedRealtimeClock, RANGE_TEMPLATE_BWA> (Range{start, now});
 #else
-            Range<DisplayedRealtimeClock::time_point> taken = Time::clock_cast<DisplayedRealtimeClock> (Range{start, now});
+            [[maybe_unused]] Range<DisplayedRealtimeClock::time_point> taken = Time::clock_cast<DisplayedRealtimeClock> (Range{start, now});
 #endif
         }
     }
