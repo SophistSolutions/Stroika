@@ -57,11 +57,6 @@ namespace Stroika::Foundation::Debug {
      *      Only if qStroika_Foundation_Debug_AssertionsChecked is true, there is no TSAN, and qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is made
      *      do we turn on qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled.
      * 
-     *  \note Satisfies Concepts:
-     *      o   movable<AssertExternallySynchronizedMutex> 
-     *      o   copyable<AssertExternallySynchronizedMutex>
-     *      o   Common::BasicLockable<AssertExternallySynchronizedMutex>
-     * 
      *  \note TRIED to do this with constexpr bool kAssertExternallySynchronizedMutexEnabled, but as of C++20 rules
      *        still too much of a PITA to use: cannot conditionally define classes, and nearly anything
      *        based on requires/if constexpr, unless it is a template.
@@ -105,6 +100,11 @@ namespace Stroika::Foundation::Debug {
      *  \note   typically used as
      *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
      *
+     *  \note Satisfies Concepts:
+     *      o   movable<AssertExternallySynchronizedMutex> 
+     *      o   copyable<AssertExternallySynchronizedMutex>
+     *      o   Common::BasicLockable<AssertExternallySynchronizedMutex>
+     * 
      *  \par Example Usage
      *      \code
      *          struct foo   {
