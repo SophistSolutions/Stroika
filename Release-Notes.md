@@ -8,6 +8,1737 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
+
+
+- Scripts
+  - fixed scripts FormatCode so works on macos (weaker version of expand)
+
+
+#if 0
+
+
+
+commit 40c7c8d2674d050a1381d9cc847225c932420c4c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 15 11:17:15 2026 -0500
+
+    minor cleanup of BackgroundProcess::WaitForStarted(), and progress on ProcessRunner::CreateRunnable_
+
+commit 75f93180be06cacc21b0063d3b8b31ddea0d2a03
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 15 12:07:07 2026 -0500
+
+    Various cleanups to ProcessRunner code - but principally deprecating ProgressMonitor API (was never used, and dont have clear docs about how I intended to use it - can add back in the future if ever needed, but document how it mgiht work)
+
+commit b238be0129fe34ee7f20a979b4a372b33773516b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 15 16:48:33 2026 -0500
+
+    ProcessRunner internal refactoring of private CreateRunnable_ into CreateDetailedRunnable_ and CreateSimpleRunnable_ () and have it return shared_ptr so lifetime safety FIX
+
+commit c485898c1029e9f2e841e994eabbca7c7a31f68b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 15 17:38:59 2026 -0500
+
+    ProcessRunner 'ToString' methods added to a few places to ease debugging
+
+commit 6c2797e37311fbf26c0f42b8cdef5baf71a0f0da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 15 17:43:05 2026 -0500
+
+    fixed typo
+
+commit e128b9b0cab6c08ed801eb1127d508db94150415
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 15 18:29:24 2026 -0500
+
+    Added mingw to path in .vscode/launch.json
+
+commit 33d46d4de50801ffa442a17419fb4914716497c0
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Jan 15 22:00:52 2026 -0500
+
+    fix unix specific typos in recent checkins
+
+commit 8abb208423f9751638384f27554f82ee356c25eb
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Jan 16 08:12:03 2026 -0500
+
+    define new compiler bug define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy for clang++15 and workaround
+
+commit a7f299294f51c847a48e923ad5a2888147863af9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 08:26:50 2026 -0500
+
+    Cosmetic
+
+commit 8197294c017d941af49d30d46c54780deeeb7bb9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 08:27:43 2026 -0500
+
+    progress/cleanups on ProcessRunner fDetached support (incomplete)
+
+commit 295c70ce57221c6f2a9e113b51c7d5f777d7e70c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 09:18:34 2026 -0500
+
+    cosmetic
+
+commit 0ab179a305345c648dc8ebdba69493fb2204646c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 09:19:09 2026 -0500
+
+    draft (not yet working) test Foundation_Execution_ProcessRunner RunInBackgroundDetached
+
+commit c07782750bb3213a76219a133cc0c68d29acc2ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 10:47:33 2026 -0500
+
+    Cosmetic
+
+commit 94dabcd1352005c329d12d4117099d0c17cecd5a
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Jan 16 11:05:22 2026 -0500
+
+    document restrictions in ProcessRunner when fDetached, and enforce them and fix behavior for POSIX case (untested)
+
+commit 9dff428cb4ace23f6ffa0fc66b2c6ff383167896
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Jan 16 11:14:51 2026 -0500
+
+    fixed RunInBackground detached for POSIX (enabled test for posix)
+
+commit 859faba248d5e7fd0b53e96b593a3948c40adf62
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 11:47:03 2026 -0500
+
+    appear to have fixed ProcessRunner detached mode on windows too
+
+commit 19ebb47181465680ef6c96977e8f9247823573e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 11:52:09 2026 -0500
+
+    enabled new retest Foundation_Execution_ProcessRunner RunInBackgroundDetached
+
+commit b4f8f795cd1083e791f5cf765e560ef00e976699
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 15:05:56 2026 -0500
+
+    cosmetic
+
+commit edabe779ee1a2259365086404f6ff1268a962360
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 16 15:06:57 2026 -0500
+
+    cosmetic
+
+commit d1a1869a51ea7fc655d547ef5c0fd7858e5c976a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 17 04:36:01 2026 -0500
+
+    cleanup Foundation_Execution_Exceptions, Test4_Activities_ and added additional regtest for case I had notes was a problem but seems fine (at least on windoze)
+
+commit 27061abb419c0a2f94bdfd42e6eb105917e697fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 17 05:07:56 2026 -0500
+
+    docs on building
+
+commit 40895cda53e32925748d81ab6f3029c2efa77c93
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 17 05:58:38 2026 -0500
+
+    maked fArgument field const since its public so it can only be read not set (must be set vai CTOR so can be taken into account in message)
+
+commit 3d62c0020fd4647e784c91fbb60caff476cfbdce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 17 05:59:02 2026 -0500
+
+    cosmetic
+
+commit 254e71ec73a2e58cbfad82aaed00075c5d317d97
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 19 07:43:18 2026 -0500
+
+    Comments
+
+commit b0b33f25b6e0fdbfeea97ea0964f54efb4d37781
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 19 16:08:06 2026 -0500
+
+    progress (incomplete) on TrivialDocumentDB filesystem impls
+
+commit 02e188b4738f945f7d37f43dc26898564e4b6c23
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 20 12:05:13 2026 -0500
+
+    dbgtrace cleanup
+
+commit 76a01c6e3209eb50ae9754506150a30a33e8ab73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 20 17:39:36 2026 -0300
+
+    TrivialDocumentDB - SingleFileDatabaseRep_ mostly working
+
+commit cced12312b288dc03fb8a2410fd028eda3062f81
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 20 18:58:43 2026 -0300
+
+    DataExchange/Variant/Reader Read method now const
+
+commit fab1263d49e1d91e957fe4b9d32a20c51d96e985
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 20 17:40:31 2026 -0500
+
+    more fixes to TrivialDocumentDB SingleFileDatabaseRep_ support
+
+commit b255ec7913a4b3df472d649b9e3c4b48bf4925df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 20 17:55:54 2026 -0500
+
+    Samples/DocumentDB example use of TrivialDocumentDB::Options::SingleFileStorage
+
+commit 1552139a43f7c39ee5638007c8de7d71acc567f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 20 19:26:28 2026 -0500
+
+    minor DirectoryFilesystemDatabaseRep_ progress
+
+commit 83e1c533e2cd86dace19beba3b58c76184395616
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 21 07:39:38 2026 -0500
+
+    Database/Document/TrivialDocumentDB  DirectoryFilesystemDatabaseRep_ support
+
+commit 8fbd859e21ef0aeda49c9f97a51a5898e7745462
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 21 08:22:12 2026 -0500
+
+    minor fix to Database/Document/TrivialDocumentDB
+
+commit f119fea397e6244d5f02ba3b28127d3bd2b1c245
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 21 08:22:32 2026 -0500
+
+    test TrivialDocumentDB::Options::DirectoryFileStorage in sample
+
+commit cbe3c66ad9c2a9d16a6172589a249f29b0077f0a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 23 09:57:45 2026 -0500
+
+    cleanups
+
+commit 5f1df8e8a7f956adfdcc4f8c3710f259acec1370
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 23 16:39:39 2026 -0500
+
+    fixed several bugs with new TrivialDocumentDB::DirectoryFilesystemDatabaseRep_
+
+commit 8b4d423021a110fb8c80d49b731cc132f3af44fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 23 16:40:16 2026 -0500
+
+    Minor cleanups to Samples/DocumentDB
+
+commit eda40c6f838f03a8785704de8ccdd396e76cddb3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 23 16:41:48 2026 -0500
+
+    improved regtests for TrivialDocumentDB
+
+commit 3dd8b1c2cddb594ef8f32a099e3f3d11048458ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 24 16:22:37 2026 -0500
+
+    DocumentDB API docs/enforced requires - Add(document) requires arg not have ID; document GetCollection requires collection has been created
+
+commit c2f99f970f4ac1acaeab4d227fedf0bb24be6097
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 25 06:18:42 2026 -0500
+
+    DocumentDB::CreateCollection now returns created (or existing) Collection::Ptr
+
+commit dc99839afaeed81c2186d59ddb112d977340c2b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 25 07:34:19 2026 -0500
+
+    fixed typos
+
+commit 4d6d31b66f73499a445d1ce355605566eac52537
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 25 07:46:51 2026 -0500
+
+    minor cleanup
+
+commit b065754444a2bde744b3646528483783a716eb7b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 25 08:20:25 2026 -0500
+
+    Comments
+
+commit 5bfcaaf3daa1be4b1ee4e28bc2d37afbe2e427a3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 13:06:25 2026 -0500
+
+    Samples/HTMLUI/QuasarBasedHTMLApp npm update
+
+commit ea98aa5a4de00f3be667933dcf3333d0c0383b09
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 14:08:06 2026 -0500
+
+    Database::Document - various cleanups, including new Options feature, and new option fAddAllowsExternallySpecifiedIDs, and respected in Add () method (not everywhere yet but mostly and assert when would fail)
+
+commit 4e4f7967d11730cc46fdefd74060363e34d45b77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 14:59:26 2026 -0500
+
+    changed default for Database/Document/Connection Options fAddAllowsExternallySpecifiedIDs to true (since the easiest to use, least surprising)
+
+commit 3c14db37c4008da84e54de599cdf4af53a1265db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 14:59:55 2026 -0500
+
+    minor mostly cosmetic
+
+commit 92b3446ff9e2e9081394965626621e52b31c82eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 15:00:26 2026 -0500
+
+    ProcessRunner mostly cosmetic
+
+commit e0d237c383d28b8da8202d325887f33ea021dd3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 16:21:06 2026 -0500
+
+    fixed a few small typos in TrivialDocumentDB
+
+commit 735b3e806acd68e3ac2fb4ee61baca2a3a4473c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 16:37:51 2026 -0500
+
+    fixed typo
+
+commit 960189ed3c8257952046d7cea0c19b1490a3eab9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 16:56:07 2026 -0500
+
+    note macos thread bug (rare) - another github action failure running this test
+
+commit adeec97b31edaef0a8ada83523e066a31d02bff3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 16:57:03 2026 -0500
+
+    mostly cosmetic
+
+commit ff560663fdfdee7b63e83a1d41af8c27811a16db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 17:01:33 2026 -0500
+
+    const fix for Database/Document/ObjectCollection Ptr, and added missing AddOrUpdate () method
+
+commit 52b70706818a18952aeadace22b0ffa78eb0dfed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 27 21:39:07 2026 -0500
+
+    fixed typo
+
+commit 85213824956ba5e39d024b5aa13b68e2c84e67e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 28 11:37:47 2026 -0500
+
+    renamed Database\Document\TrivialDocumentDB to Database\Document\LocalDocumentDB
+
+commit 9d13c8a05416fc3b8405af2dd484725a589d6e9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 28 12:22:37 2026 -0500
+
+    DocumentDB: LocalDB Option fInternallySynchronizedLetter (not respected fully yet), and Ptr::GetOne (Filter) overload
+
+commit faa28896d18f8279630ae40b1b01892e86f8fd02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 28 14:32:00 2026 -0500
+
+    Database/Document/Collection doc cleanups, and renmaed GetOne to Get
+
+commit 0ed85e0d3ca23336d120fde1fee6e0ab85d5ee5f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 28 16:22:47 2026 -0500
+
+    Draft DocumentDB tests - TestAddNewWithExternalKeysProvided_ enabled for some, but disabled for sqlite and mongo where not working yet
+
+commit 321c46396fae6bc066f3c1eb953c3b71bc0a0d2f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 28 20:20:06 2026 -0500
+
+    re-fix https://jira.mongodb.org/browse/CXX-3291 issue - still broken (mongodb thirdpartycomponents build script)
+
+commit fb611a4f9cb55e806200d7ab9708f06128d1f8ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 28 22:27:20 2026 -0500
+
+    fixed Database/Document/MongoDBClient to handle either oid _id or string _id field, and other cleanups
+
+commit 02abf7f003a07e8d87557022d8f7f121cab07613
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 28 22:28:55 2026 -0500
+
+    Cosmetic test cleanup; and enabled TestAddNewWithExternalKeysProvided_ test for DocumentDB MongoDB support (still todo sqlite)
+
+commit df21837903b973ad7e39baeafe3185f3d79caaae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 29 08:31:28 2026 -0500
+
+    docs
+
+commit f7ba1de40a18a99be33ab9b8b465583840e71dc9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 29 08:35:04 2026 -0500
+
+    fixed missing overloads for Get/GetOrThrow in Document/ObjectCollection
+
+commit a9467b9a8ca8e095ab98f395bef85df835c84fb5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 29 14:05:00 2026 -0500
+
+    cosmetic
+
+commit 5f53e80613bf6f50c7e15e90aebf2b3b5b3a2e26
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 29 14:06:05 2026 -0500
+
+    Mostly cosmetic/docs (GUID)
+
+commit 85f099f64df4d06289507eeb54ee3b2bc250fbd8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 29 21:59:37 2026 -0500
+
+    fixed DocumentDB::SQLite support for options.fAddAllowsExternallySpecifiedIDs (inelegant but working)
+
+commit 9ddd9e97fdfee92ec98b01d02a4f4978adfa50a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 29 22:01:08 2026 -0500
+
+    re-enabled and embellished regtests for Database::Document::SQLite use of TestAddNewWithExternalKeysProvided_ etc
+
+commit 355a8d62f9cb7e2973f71969146f79f9a8c77f5c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 11:00:27 2026 -0500
+
+    sqlite documebtdb cleanups
+
+commit 66556dbcfa70a5c1f0567a22b44213b6456cb060
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 13:11:08 2026 -0500
+
+    ReadMe/docs
+
+commit 0f560d0b373e3fa9dbc619b3caffd669f293e497
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 13:12:06 2026 -0500
+
+    added new top level makefile target stroika-clobber and used it in .vscode/tasks.json for rebuild task
+
+commit e8cc700634736a2bae73344f3a6529fbb9f47153
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 13:12:20 2026 -0500
+
+    cosmetic
+
+commit 26665fa1fa52267bd143658c4b76593dbe783989
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 13:12:49 2026 -0500
+
+    removed ThirdPartyComponents/*/CURRENT/** from C_Cpp.files.exclude (experimenting a bit)
+
+commit 2cb0a0d60d5198af628e9ea252df41f26cb97a4c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 13:16:24 2026 -0500
+
+    fixed warning
+
+commit 6edcdd5baaa4cd55cecee5c1a54b374e8bc5dfac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 13:29:30 2026 -0500
+
+    Sample HTMLUI npm upgrade
+
+commit e2a2584924fcd8a70eed1ae31b3fa1e448300580
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 30 18:06:40 2026 -0500
+
+    htmlui sample - in html - show Last succesful communication: less than a minute ago
+
+commit 3e9ba1d861e4f750f4f696b9a8a10819f5fefeaa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 31 09:09:40 2026 -0500
+
+    removed remaining use of moment-js, and attempted use of date-fns, and just use luxon - seems to work better (millisecond support at least)
+
+commit 199170d44b90a3dd76fe548d1f61fa52f1aa864f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 31 09:10:17 2026 -0500
+
+    cosmetic
+
+commit d825d9b8d296c08c52376c39f34a5db54777fffe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 31 09:16:36 2026 -0500
+
+    docs
+
+commit ebc1b61e079cfc2a3fed0fda722a7bb299366442
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 31 09:16:56 2026 -0500
+
+    vscode keeps reformatting my html
+
+commit 1e30eef5c67a813f8b69d976fc8a9f71416bd548
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 4 15:22:47 2026 -0500
+
+    tweaked weakassert in Characters/CodeCvt.inl
+
+commit dea249d44078b53feedb7923c7010d03658e480b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 4 21:47:28 2026 -0500
+
+    Cosmetic
+
+commit ec0c627266d4a4ba19ea5b27e8ba515729d7741e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 4 21:47:49 2026 -0500
+
+    HTMLUI sample cleanups
+
+commit 61147a595183bad2cddc6e476eb8e7cff6398681
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 08:48:13 2026 -0500
+
+    various cleanups to WellKnownLocations - leave a few variables uninitialized (use qStroika_Foundation_INDETERMINATE)
+
+commit 80b1a4b112982e95e44302346dbeb75177629971
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 08:53:05 2026 -0500
+
+    new define qStroika_Foundation_INDETERMINATE
+
+commit 0b6559ef9d57a06dcb1ec014812080e17a17277d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 08:54:24 2026 -0500
+
+    use new qStroika_Foundation_INDETERMINATE
+
+commit 3d393d75c872f8f3c3bc8e1c819298b04e69813d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 08:55:01 2026 -0500
+
+    use new qStroika_Foundation_INDETERMINATE
+
+commit 2dbb858fb2cadddd44d89b28596cd26333951529
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 08:55:19 2026 -0500
+
+    Cosmetic
+
+commit 5138bad6ddcf09c472420fe000c2a8d63f816e60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 11:55:13 2026 -0500
+
+    Fixed ThroughTmpFileWriter - not 100% - but much better - random filename generation so fewer conflicts with other processes doing same thing - and weakassert on failure/conflict
+
+commit d1b7fb16f9f21f42adc7f7a88422f285371cba11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 20:01:50 2026 -0500
+
+    Draft support in DocumentDB code for GetDiskSize () and fOperationLoggingCallback option specification
+
+commit 8e53246f60207bb0da76c7ad708b96233597ba8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 20:03:38 2026 -0500
+
+    renamed GetDiskSize to GetsSpaceConsumed
+
+commit f424f3dc5dfc068cd59bd83501516358212f33ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 22:38:06 2026 -0500
+
+    more support for DocumentDB OpertionCallbackPtr support - at least for directory-based LocalDB - ready to test
+
+commit bc9aed40ddc6923da26f1841f2de6883c0cdc42f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 5 22:54:18 2026 -0500
+
+    more activity support in DocumentDB wrappers
+
+commit d73e12f8be2f6cade378477cac7622903daa4e9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 00:54:41 2026 -0500
+
+    fixed typo
+
+commit 91356d8e6976fbef5d287e1359e42528ea2657eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 08:08:04 2026 -0500
+
+    cosmetic
+
+commit 80e9b3afb83eee9cf956d6609eb05780047611e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 10:20:34 2026 -0500
+
+    Database::Document::Connection (Ptr and WrapLoggingExecuteHelper_) cleanups/progress
+
+commit f405a789f0a55407b52c17117bc8b4a6d22434e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 11:20:57 2026 -0500
+
+    more progress on DocumentDB WrapExecute_ logging support
+
+commit caee8c9fdff3cae73d656d7817b50624923be248
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 11:59:16 2026 -0500
+
+    finsihed first draft WrapExecute_ logging code on LocalDB
+
+commit 424cf447ff26d8f471195cccb180c3c4ee4ecd1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 16:13:29 2026 -0500
+
+    Minor cleanup of DeclareActivity use in Database/Document/Collection
+
+commit 20e23fe073b9cc41f8014b602bf411cbd5391fb7
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Feb 6 16:36:09 2026 -0500
+
+    fixed code in Library/Sources/Stroika/Foundation/Database/Document/LocalDocumentDB.cpp for pickier c++ compiler
+
+commit 1d9dd8cd967af9d63838fc5d222cd03042d00912
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 17:14:18 2026 -0500
+
+    cosmetic
+
+commit e7f72d13fff17435bbcd886ae6457b2d3fe2d5b3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 17:16:01 2026 -0500
+
+    Database/Document/SQLite.cpp support for WrapExecute_ (so reports log stats/trace messages)
+
+commit 928ed5a8b6a0e156e26057578852e973290e4f5f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 17:56:06 2026 -0500
+
+    DocumentDB::MongoDB client - support for WrapExecute_/logging/tracking
+
+commit 33af9afa804d1574b0b23bad652f0bc45cd56442
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Fri Feb 6 18:11:37 2026 -0500
+
+    docs in FAQ about common vscode build errors on new machine
+
+commit fa73521546bc38e228b90097777545c6a3edbdb0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 18:12:35 2026 -0500
+
+    docs
+
+commit 50d87c6a63e54b964e855ac8436fbec91a862c83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 6 21:12:17 2026 -0500
+
+    minor refactoring of Database/Document/MongoDBClient
+
+commit 95f96f91853cc300296c3269ffd15db839bf0062
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 09:11:01 2026 -0500
+
+    Database/Document Collection added 'GetName' method, and used in LazyEvalActivity declaration/exception report
+
+commit 48408a2d44b272bbb1d8b45bfe9f2dc32b1f320d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 09:21:36 2026 -0500
+
+    renamed qStroika_Foundation_INDETERMINATE -> qStroika_Foundation_ATTRIBUTE_INDETERMINATE
+
+commit 80f1bec3bcaca3f02e9d1e96ae1a1c20f855cd39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 10:27:29 2026 -0500
+
+    #if qStroika_Foundation_Common_Platform_Windows = added fRetryOnSharingViolationFor support to IO/FileSystem/ThroughTmpFileWriter - defaulting to retry for one second
+
+commit dc5e441e6bcc5e98e440043ca1d62db19bf6766c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 10:27:50 2026 -0500
+
+    docs
+
+commit 4e090550c770138d6ac1a8a46d03c8a71d819555
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 10:48:48 2026 -0500
+
+    LocalDocumentDB file-based impls now how option for fRetryOnSharingViolationFor (passed to ThroughTmpFileWriter)
+
+commit c58299af7efd68d5994213ded2817589a112f482
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 11:24:29 2026 -0500
+
+    cosmetic and docs (qStroika_Foundation_ATTRIBUTE_INDETERMINATE)
+
+commit f4266968cc50cef230d2b02d1f1864106940d182
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 12:03:49 2026 -0500
+
+    fixed log warning about IF_TYPE_PROP_VIRTUAL - mapped to Interface::Type::eDeviceVirtualInternalNetwork and added docs
+
+commit c27dcabd1dea9a25601c6375f7d22d821b9a6067
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 13:03:45 2026 -0500
+
+    Minor cleanups to ProcessRunner (Windows) verbosity on happy path (USE_NOISY_TRACE_IN_THIS_MODULE_)
+
+commit ffd905f1226ae92ae876d34d4875f1228014efd7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 13:08:14 2026 -0500
+
+    fixed typo
+
+commit f26e7b146bc05dd846cc3b2c09eb6f53d6988dbd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 13:52:06 2026 -0500
+
+    DbgTrace / comment cleanups
+
+commit f54466c10e351332eb63f982ef5f407027fab06a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 14:12:12 2026 -0500
+
+    IO/FileSystem/ThroughTmpFileWriter treat ERROR_ACCESS_DENIED same as ERROR_SHARING_VIOLATION
+
+commit c30f27d2f603204948533284cd046367de1140d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 17:42:41 2026 -0500
+
+    Minor improvements to ModuleGetterSetter, including: concept checking on IMPL, better docs, and new AssureLoaded method
+
+commit 8083c5a8fec49d53686cd72909a9f1bea03f5a1e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 17:43:13 2026 -0500
+
+    Minor code cleanups
+
+commit d8f5b17c3b1ec0b05a5c974a1b209dd60f94d40d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 17:44:43 2026 -0500
+
+    improve clarity on Samples/HTMLUI/Backend, and fixed #if check to qStroika_HasComponent_syslog for including syslog usage
+
+commit cac4790ea278a250f13a3fb49ecb1708f15e5647
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 18:47:46 2026 -0500
+
+    Tweak messages in DataExchange/OptionsFile
+
+commit 1a3f88096793ddcfba8105894233021b6573eafb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 7 23:17:13 2026 -0500
+
+    fixed DocumentDB SQLite bindings - so support funky table names (wrap them in quotes)
+
+commit 445ac3caef541eee106c59c6172e0394db0d78ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 8 00:18:48 2026 -0500
+
+    sqlite DocumentDB: fixed bug where query with force add ids, but object missing
+
+commit 876aeb00de8b84e6fe65f11a2a73dbeb66bf7e45
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 8 22:46:59 2026 -0500
+
+    Memory::CopyToIf () overloads now constexpr
+
+commit 7cdccd0012eaac27345c10cb154b93e33a041fdf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 8 22:47:36 2026 -0500
+
+    More ToStringOptions CTORs constexpr
+
+commit dbd5d08cd7cb4af91e8e4e5bfb35c3b594f71b61
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 8 23:17:38 2026 -0500
+
+    Duration STRING format (emitted, not read) now uses eFixedPoint, not automatic/scientific; +exxx stuff only supported in ISO 8601 Part 2
+
+commit 474268fe1e8717f1b24c8da10dc11172b635831e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 8 23:34:31 2026 -0500
+
+    Fixed FloatConversion::ToString (eTrimZeros) case of last .0 (cuz I had documented it that way and better), and added regtests for this and many other eFixedPoint FloatConversion::ToString() calls
+
+commit 4fa91cdace7ae7154595e59d1841a84ed1d62e25
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 9 07:32:12 2026 -0500
+
+    revert Duration change til I can consider more
+
+commit bb7b29acd28ccbb62fe0b45a188bc1e7d2afda13
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 07:52:56 2026 -0500
+
+    cleanups of Characters/FloatConversion code
+
+commit db196a1b2a45dedf7483f84d09e6443b00ac27f9
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 08:08:09 2026 -0500
+
+    qStroika_Foundation_ATTRIBUTE_INDETERMINATE cleanups
+
+commit 194fdf1c9e214009786ffd5d94bf383af759b698
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 08:48:46 2026 -0500
+
+    lots of cleanups and simplifications / docs for FloatConversion code (sb no semantic changes, except making a few things inline->constexpr), and added Precision::kDefault - mostly docs.
+
+commit 39e55131823b3de409912df3f2c8449b669acfae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 9 08:54:46 2026 -0500
+
+    cosmetic
+
+commit e04b2dcf86f63c61efb112a03b4994bf3941d984
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 9 09:02:18 2026 -0500
+
+    cosmetic
+
+commit 4a3a7bf4838bb12f5308282fcf0b351ea3325f9f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 10:03:33 2026 -0500
+
+    docs
+
+commit c22c1e6d1fb3c76ea026f06179ad010a1bf09721
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 11:01:09 2026 -0500
+
+    Added FloatFormatType::eStandard (not NYI really) - and several other cleanups to ToString_GeneralCase_ - but still more todo - but testing passes all regtests
+
+commit d3bc62ee7d733002d227aa6d6aa5f4af38144bd9
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 11:02:11 2026 -0500
+
+    now for Duration ToString code - use ToStringOptions {eStandard} - still not properly implemnted, but at least documented and should still pass regtests
+
+commit dde7fb50c54f75b719ce4b39d66946774f058c29
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 11:31:31 2026 -0500
+
+    improved FloatConversion regtests
+
+commit c97d439d0789e0ce874f69d1e2d1c48638162a86
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 13:15:40 2026 -0500
+
+    fixed FloatConversion handling of precision for scientific case (and updated regtests)
+
+commit 6584694198d5352b7dff624bb9b6a1f8ac903dae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 9 13:29:02 2026 -0500
+
+    new Precision::CalculatePrecision () utility with regtests
+
+commit d6dad1b3b56dba890e4fc34c7dd27271e2a0a135
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 9 13:43:06 2026 -0500
+
+    cosmetic
+
+commit d5797cd831b59dd718797c0ae734e6c5bda3eaf3
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 13:46:41 2026 -0500
+
+    Minor tweak to Precision::CalculatePrecision
+
+commit de91b7cb7ef9c3c4965acda3ce6e9f260c36f69d
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 14:40:46 2026 -0500
+
+    fixed bugs with Precision::CalculatePrecision and progress using it (incomplete);
+
+commit 4b58e06b4b4d302e5e0e553a3c271a4be42acb96
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 14:41:16 2026 -0500
+
+    regtests with Precision::CalculatePrecision
+
+commit 60f88908f2093ee36041b6dda9ebe454fb010d04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 9 15:39:07 2026 -0500
+
+    cosmetic
+
+commit 9af0f7922c0d6e166f8ab04cfe6f9b1329840482
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 15:42:07 2026 -0500
+
+    more progress on Precision::CalculatePrecision () code and regtests; and use in ToString_GeneralCase_ for FloatFormatType::eStandard
+
+commit 4d51c025013595040a3d0df2bb3c2109bcc4a2e8
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 15:56:36 2026 -0500
+
+    more fixes to ToString_GeneralCase_ () for FloatFormatType::eStandard
+
+commit ce82dd032d0ca53af117138b8671659a4a0c6537
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 22:19:41 2026 -0500
+
+    incomplete draft Round_ (span<char> number) support and minor progress on ToString_GeneralCase_() all for FloatConversion code
+
+commit 2717315a8f644c416f79cd3fe18da77b7d44b598
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 22:24:42 2026 -0500
+
+    regtests for recent changes to help keep this working while developing furhter
+
+commit 9f9dd5c51c46e53c88e6bc1d258f6348d6349614
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 9 23:53:50 2026 -0500
+
+    FloatConversion docs
+
+commit 0a5f2458d3ed5272a64ee446fe1c37b2361cd6f3
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Feb 10 13:17:49 2026 -0500
+
+    improved Precision::CalculatePrecision(); more regtests and docs; new approach experimenting with format_sig_figs_ ... and regtests
+
+commit dc76cd054861246932e2d0a7121091f13733a1fa
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Feb 10 16:21:47 2026 -0500
+
+    fix recent FloatConversion code for g++11
+
+commit b4d9a2ed2569194d72440c3f0458f6bbe691f554
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Feb 10 17:01:51 2026 -0500
+
+    More FloatConversion cleanup
+
+commit 24fd459953c96a5772c453c881de48a795add464
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Tue Feb 10 17:42:44 2026 -0500
+
+    More cleanups to FloatConversion ToString_GeneralCase_ code
+
+commit 88b7645323ea3a1165bba8ffb395ffce711170a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 10 20:05:53 2026 -0500
+
+    fixed typo
+
+commit e78bdb0f8ad3359823355f17d9bc852a660e4c50
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 10 20:09:40 2026 -0500
+
+    address warning
+
+commit b0072fc2f4497d2a293e1e8bac351d642fd6d40c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 10 20:46:37 2026 -0500
+
+    fixed typo
+
+commit 06e946c63101889e0b013773236b610ad4d29ff0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 10 22:22:43 2026 -0500
+
+    fixed typos
+
+commit db634f27d465eae4a1e64357d0addeb7306781f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 11 08:46:12 2026 -0500
+
+    fixed typos
+
+commit a08e5cb387845d319a2c0e55868e5cff53bd42f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 11 09:25:47 2026 -0500
+
+    Comments
+
+commit fbde3447e4fb1defc707e1d10b330565312a2ede
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 11 12:50:57 2026 -0500
+
+    fixed small regression in formatNonScientific_
+
+commit 8daf109c41505cfd34ac458ee9232dc36748ff2f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Feb 12 08:41:08 2026 -0500
+
+    Minor celanups to FloatConversion code
+
+commit 41df84e2bad73b8ed6e131b2307a0bc47d3357d0
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Feb 12 08:42:47 2026 -0500
+
+    Costmetic
+
+commit 28d8cf625585abc8246526476ea163d638a4d6d7
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Feb 12 10:05:15 2026 -0500
+
+    fixed regtest docs for .local => .lan name change
+
+commit abd19c2f22e5fdec7e64ef4d94c2ddf978ede529
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Feb 12 10:13:28 2026 -0500
+
+    fixed typo
+
+commit abeaac2ec5a8dc3d19c000e9cfe6c6b28126a14f
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Thu Feb 12 11:00:13 2026 -0500
+
+    Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
+
+commit d4141569d008e879cd684c442c45693c5a140a0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 11:03:22 2026 -0500
+
+    cosmetic
+
+commit a5274a92b987d719c3ba2f2958dfbc70cc21b784
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 12:43:58 2026 -0500
+
+    cosmetic
+
+commit 2400429f86868142d1716bc906083cde75c53706
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 13:22:37 2026 -0500
+
+    echo config/daemon.json in .github/workflows/build-N-test.yml
+
+commit 7783d19f128942bd770ac9ef1e075cefbe0f908f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 13:52:07 2026 -0500
+
+    dry setting dockerroot on windows github action to d:\docker
+
+commit ff0492adda781957f4d5a610df7bcf15acb6eb77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 14:08:37 2026 -0500
+
+    another try to get docker container to work on windows again (github actions)
+
+commit 7b17446def2bd95b34583343dea4bfb41b7d0bec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 14:12:18 2026 -0500
+
+    another try to get docker container to work on windows again (github actions)
+
+commit 4da509e527d00ae439b8efd0e57d9536812aabff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 16:00:42 2026 -0500
+
+    FloatConversion: docs, and corresponding regtests on ToString formats; and deprecated FloatFormatType::eAutomaticScientific
+
+commit 522ffbf73d07aa205c25175f6217e537bd0123d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 18:02:54 2026 -0500
+
+    FloatConversion: deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros; replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
+
+commit c1f55bda49fd72f87c8cecfb26feec7941c4296c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 12 18:59:52 2026 -0500
+
+    cosmetic
+
+commit 2afb92efdcd0f4ead2c55be3d00f6ef2b0c4b1af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 13 10:44:37 2026 -0500
+
+    disable some deprecation warnings
+
+commit 0afb186e33c86fa7d2357f91b4cbf787d82a427a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 13 11:24:59 2026 -0500
+
+    Building stroika docs / FAQ for command 'cpptools.activeConfigName' not found
+
+commit 1337e8f5ab168396e41b2a03132eda6bddc61673
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 13 11:25:51 2026 -0500
+
+    Draft qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy BWA
+
+commit ba84749b92d7acaacba9ce9ff266bddc070bc423
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 13 12:01:30 2026 -0500
+
+    draft support for qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy (clang/macos//xcode issue)
+
+commit 17847daa22a552f8f9a0d483a2fc113dd17255d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 13 13:55:40 2026 -0500
+
+    Cosmetic
+
+commit 775c03a02cfd3d586026b23e96c690db7d4ec6e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 13 14:50:22 2026 -0500
+
+    fixed small regresison in FloatConversion code
+
+commit 48b80dafecf00811d0883b476a15c675f7c9d97e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 13 15:48:51 2026 -0500
+
+    Minor progress on /Characters/FloatConversion
+
+commit 2817beaea1890d49a14dc57f8c09770fc7199d4f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 11:46:43 2026 -0500
+
+    fixed a couple bugs in new Characters/FloatConversion code
+
+commit b9a68e60037a83035070e3780727860eee7c7bf9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 11:47:40 2026 -0500
+
+    more regtests for new floatconversion code
+
+commit b596562b305d5a914f3fc32f7d5b53e0b5b85591
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 15:58:58 2026 -0500
+
+    minor cleanups to Characters/FloatConversion.h
+
+commit 41010fb0b0559f47a4f5e03d31f5d02c9c5a1625
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 15:59:32 2026 -0500
+
+    maybe address regtest failure on macos (cannot test there now easily)
+
+commit a910885b40d255dc058e7b964dd21cecd52792f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 16:44:31 2026 -0500
+
+    FloatConversion warning suppression (for recent changes)
+
+commit 7eaccffabe61ce6602bd9bae1a21644a98fb3d9e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 17:11:20 2026 -0500
+
+    test workaroudn for issue on macos floating point
+
+commit 45fd488669eb72195a73fcd4fa53411320bce405
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 19:47:39 2026 -0500
+
+    debug macos floatconversion issue
+
+commit 68ec21881ea47d6a0e75e1c53aaf9e10eb69e917
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 20:38:06 2026 -0500
+
+    MacOS case in regtest for FloatConversion::ToString
+
+commit c8d179bed46784f35cbb7968d330322298cd5871
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 15 21:09:32 2026 -0500
+
+    fixed typo
+
+commit 67209ccebc092f1cc7416de84e5949554944a2ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 16 15:54:44 2026 -0500
+
+    HTMLUI sample - add Database statistics (back) - because though there is no DB in this sample, its common enough in apps like it (that I would be cloning HTMLUI sample to create) - it makes sense to include (easily removed in cloned apps)
+
+commit 2e5846117de30c38964ca7d8a81d718d80526a64
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 16 23:28:59 2026 -0500
+
+    fixed Document::MongoDBClient::GetSpaceConsumed ()
+
+commit a92db0f4e31993a1f2dd7a04b511edd39e4ef475
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 17 11:13:00 2026 -0500
+
+    Execution::WaitForIOReader = kDefaultTypeOfMonitor now includes Error and HUP events (cuz typically if you are waiting for a read, you would probably want to know about those too)
+
+commit b387c8176fd9a50e3c0f0c8d63e19e2c25642da8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 17 11:13:18 2026 -0500
+
+    cosmetic
+
+commit 0f3d0da3c97dfb8958b8607a9d7ad0615c5972a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 17 11:13:44 2026 -0500
+
+    cosmetic
+
+commit 76a793b08d2e433e11907e562f127686b699421d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 17 11:15:14 2026 -0500
+
+    In Frameworks::WebServer::ConnectionManager: kInactiveSocketMonitorEvents2Watch4_ includes HUP and Error events - and use that for fInactiveSockSetPoller_: this probably addresses issue where we have lots of accumulating uninteresting connections in webserver sometimes (testing)
+
+commit 5ee56feccecccf670103179428eae74ce5de33b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 17 18:23:03 2026 -0500
+
+    revert kInactiveSocketMonitorEvents2Watch4_ / kDefaultTypeOfMonitor 'fix' until I can debug why it breaks things
+
+commit b139007c3d9d5391cb3f440dacf789d8e7579aa2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 17 20:29:22 2026 -0500
+
+    Minor progress on WaitForIOReader: lose TypeOfMonitor::eError and eHUP, and added ePriority (and docs) - must revisit earlier idea of what might be wrong with poll code
+
+commit 18d29f36941dd329b1b24f021998bfd40faa632c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 00:07:30 2026 -0500
+
+    minor cleanups to Network/ConnectionOrientedStreamSocket, AND - fixed so tracks if we've ever seen 0 returned by READ/RECV, and if so, mark socket at EOF, so henceforth always returns known zero bytes available and read returns zero (so can tell cleanly shutdown and closed)
+
+commit 8e647a0fee0478083facd433b058fd99548fcb78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 00:18:23 2026 -0500
+
+    Execution/WaitForIOReady USE_NOISY_TRACE_IN_THIS_MODULE_ improvements
+
+commit d302f1e252cf6c3cf2fe1e1a836192c692f8561b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 00:20:44 2026 -0500
+
+    Minor cleanups to Network/HTTP/MessageStartTextInputStreamBinaryAdapter (code is a bit of a mess)
+
+commit e353d5f939a33e20be640bc621c7d65ad1818580
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 00:48:01 2026 -0500
+
+    Minor samples HTMLUI cleanup
+
+commit a4f896935e928dbb6f93cd4930f6f3f8d940caa4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 07:19:44 2026 -0500
+
+    fixed InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () bug - was quite wrong result
+
+commit 3565d9d17aef56f93d57dc3684efe30ddaa22f96
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 07:29:12 2026 -0500
+
+    fixed bug in WebServer::Connection::MyMessage_::ReadHeaders () - one case I was returning eIncompleteButMoreMayBeAvailable fixed to return eIncompleteDeadEnd
+
+commit 528d5a39e5b3f137ca30a926aa7cd1b482a1b2c4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 07:37:58 2026 -0500
+
+    Comments
+
+commit 802ecf9d18ff6ea03ae3bd6e50db42abc63d6864
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 07:50:59 2026 -0500
+
+    Frameworks/WebServer/ConnectionManager DbgTrace (USE_NOISY_TRACE_IN_THIS_MODULE_) cleanups/improvements (still off by default so no big change except when debugging)
+
+commit 0ac52c42d01475fa1ed49b031e3e3eec432993f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 08:41:00 2026 -0500
+
+    Comments
+
+commit 6411300196702a06f085b811ab0b726fbfeb6528
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 12:43:57 2026 -0500
+
+    Comments
+
+commit 6e55da1bfc1ae08964d0255bc0f7222e533c7661
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 12:44:39 2026 -0500
+
+    Comments and SuppressInterruptionInContext in BackTrace::Capture so clear not a cancelation point
+
+commit cb6ebef1c9aafbe154a8f670c62be801a9d7fc78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 12:45:16 2026 -0500
+
+    Cosmetic
+
+commit bb342f36fe9b5b78e0669bc38d86dc02bce19613
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 13:00:43 2026 -0500
+
+    fixed typo
+
+commit 7142f6101b72595ac05c368d93d0c4f3a71c79d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 13:01:46 2026 -0500
+
+    Suppressed interrupt throw DBGTRACE message now has stacktrace too
+
+commit 74508666b79fa01c384b9056c9159db9b3253053
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 13:04:56 2026 -0500
+
+    Cosmetic
+
+commit 4520d017d8b32d0d825c1ecc185f46d5178f2854
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 14:04:18 2026 -0500
+
+    Cosmeticv
+
+commit 3a807c12c78427708a8f5cbc49c6f3acd48dc461
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 14:47:11 2026 -0500
+
+    cosmetic
+
+commit 5923b6327250bf2d5c33e45cf076c1cebf812ad6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 14:47:35 2026 -0500
+
+    improved DbgTrace with CheckForInterruption
+
+commit 334f9017edcf87aee14059a618df9d3dad1c717e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 14:47:57 2026 -0500
+
+    minor code cleanups
+
+commit 39323256fd5c2c0bcc7508ad4df8b997a2a59e69
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 16:57:56 2026 -0500
+
+    HTMLUI Service startup cleanup logic
+
+commit d373f6abdc6e7a2543c02b043d15f4c504b5bede
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 17:22:19 2026 -0500
+
+    minor tweaks to HTMLUI sample html about page
+
+commit 77c67752a68a5f1da707467047eb927243cb381b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 18 23:40:32 2026 -0500
+
+    new fReadInitialData option for LocalDocumentDB::SingleFile variant
+
+commit 6708c5bf2efb8900f67b11ae7afaa680d119cd55
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 19 07:43:14 2026 -0500
+
+    fixed typo
+
+commit 80403be1483de77d3453b0127db0ae54285f8872
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 19 08:01:14 2026 -0500
+
+    renamed recent LocalDB option fReadInitialData -> fForceCreateNew
+
+commit 433fe3bed7b81ab881c5fbe2140de9915a5769c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 19 22:00:51 2026 -0500
+
+    Database::Document::LocalDocumentDB FlushOnEachWrite option and explicit Flush API
+
+commit ae1eb7043c602a6d9e43e9c2e7e7fe544f8a4172
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 19 22:21:44 2026 -0500
+
+    IO/FileSystem/ThroughTmpFileWriter for WINDOWs - if DeleteFileW fails, use MoveFileExW (null, MOVEFILE_DELAY_UNTIL_REBOOT) to force eventually delete
+
+commit cc26afc4a1ba8cdf8679b9d7ab50b645917efb68
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 19 22:34:26 2026 -0500
+
+    cosmetic
+
+commit 344bbf4d67f7668ffd567009ea9077078da15620
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 21 00:09:21 2026 -0500
+
+    Cleanup warnings
+
+commit 088fbb6b8e91f1d2f8258a1d011a1e32422c0f56
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 21 00:13:54 2026 -0500
+
+    Cosmetic
+
+commit f1db70c4d440ab294758800e113c03541487df0c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 22 20:10:45 2026 -0500
+
+    fixed typo
+
+commit 43871add8ca1cb08a67ea2fe10c376b09184acdf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 22 20:24:51 2026 -0500
+
+    Document::SQLite API now longer has Peek() at sqlite3 object, cuz would break thread safety gaurantees
+
+commit de3724293ab97eca671d3c7fbdd8384cb7a45be7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 07:47:33 2026 -0500
+
+    Database/Document/Connection now has nullptr CTOR
+
+commit 738687fff200129348c1c715ae930e7024aff87a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 08:23:47 2026 -0500
+
+    DocumentDB::SQLite::New/Options now has fInternallySynchronizedLetter which it respects to create internally syncrhonized (optionally) implementation
+
+commit efd45a1e92c413e031e8af7ea40e84745adefb79
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 08:24:06 2026 -0500
+
+    Comments
+
+commit f203fee5a7fd428e449831115ecb4a50029cf77f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 08:52:23 2026 -0500
+
+    cosmetic
+
+commit 57f6228d5ef2500718fd03bbc1514e209ea9eeb6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 08:52:40 2026 -0500
+
+    Comments
+
+commit 4c3dd05ca02deba87fa2d2dc96b0960dfe1b62da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 09:52:07 2026 -0500
+
+    minor cleanup
+
+commit a1345b5b1acbc140e9b245a7744e87ad6e388a49
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 10:07:24 2026 -0500
+
+    improved performance and docs about thread safety on LocalDocumentDB
+
+commit 3a8d58f09139b61e3035dad7934384cedfa27d66
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 10:15:09 2026 -0500
+
+    cosmetic/fix typos
+
+commit 949e2d865a2871d1c28594851460a8def5770a8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 10:35:22 2026 -0500
+
+    cosmetic and fixed typo
+
+commit 9606bb5ae902f10b7dfba6e79bd27d9e9f249b37
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 10:36:57 2026 -0500
+
+    renamed makefile target stroika-clobber to library-clobber
+
+commit 25d78566c2b7d62cd29b9c4d67f649f38919e081
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 11:37:11 2026 -0500
+
+    Cleanup Satisfies Concepts: comments
+
+commit e823f20d014bc5d22d3ecc4c01fb013892e22d83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 11:37:33 2026 -0500
+
+    Cleanup Satisfies Concepts: comments
+
+commit 649f2f4ec84ffe03c3fe349dba3002ab350762e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 11:38:12 2026 -0500
+
+    Added to Common::Concepts BasicLockable and Lockable - from std-c++
+
+commit 96dafb34a03dc8c18ca3eca7fefe1723d9ec1064
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 11:39:20 2026 -0500
+
+    mark AssertExternallySynchronizedMutex as Common::BasicLockable<> - docs and static_assert
+
+commit f1d4f01959f569c02e2b9e9c0a833bfb69ea8f06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 12:56:35 2026 -0500
+
+    Add back accidentally removed No/arg Database::Document::Connection::Ptr CTOR
+
+commit f7c0d7f8d46f66d7ca72e43a0f00beacb1281d20
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 23 13:00:00 2026 -0500
+
+    fix a couple minor bugs caused by changing regular C++ code into template
+
+commit 0c918f95ec6e7b4b5013c6a8dd5291a4e889bf0f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 13:00:54 2026 -0500
+
+    make format-code
+
+commit 53ba7fca5b28f5ab710a29e1fdeedf9f2df17f07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 13:01:19 2026 -0500
+
+    static asserts / docs
+
+commit 490bad592fe37fa282773210b266eedb12142c65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 13:04:26 2026 -0500
+
+    cosmetic
+
+commit 8103956a0c79043165e2d2eeefd6447b3a1ed383
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 23 13:12:15 2026 -0500
+
+    Moved a couple comments since vscode intellicode stuff seems to grab from definition sometimes not declaration
+
+commit 504661dd68ba090bfd62b77ebbdd990ee85dbb98
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 23 14:09:22 2026 -0500
+
+    Added some concept usage for Range/DiscreteRange (IRangeable, IDiscreteRangeable) - just a start, but about 80% there
+
+commit f92b56d7403567f815979070e6d053a205d024d2
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 23 15:00:28 2026 -0500
+
+    Added IRangeableTraits<T> and IAdvanceAndRetreatable<TRAITS use on Pin () method and IDsicretreRangeableTraits for discreteRange template class
+
+commit 077772e8f0cd194a0b90f75eaeb7233f853036e5
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Mon Feb 23 15:42:51 2026 -0500
+
+    Lots of concept cleanups to RANGES code (not C++ ranges, Stroika ranges)
+
+commit f8b683a3559d7e16b0c1bba8372616437113601a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 15:52:36 2026 -0500
+
+    make format-code
+
+commit 9a8f6e55d4970faace0916cc6582bf652d2301eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 16:51:41 2026 -0500
+
+    fix minor compilation issue
+
+commit 3379cf271e4451a8ef92dfd5d79598c602088e0a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 23 18:48:06 2026 -0500
+
+    Simplify/enahance BWA for qCompilerAndStdLib_template_template_auto_deduced_Buggy
+
+commit 2dc1a0d2b38ccb41d99fd70ff18979678452778c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 09:05:43 2026 -0500
+
+    Time::clock_cast cleanups, docs, and regtests
+
+commit 8ebfcda02ca8ac1131ebdd57472af1ee32bd8b64
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 09:06:24 2026 -0500
+
+    Range<> deduction guides abortive start - probably not needed
+
+commit b0af31cfbc6b341b5d26f5b03910442afd6607dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 09:07:22 2026 -0500
+
+    (mostly) fixed Samples/DocumentDB to use new .fInternallySynchronizedLetter = eInternallySynchronized for internally syncrhonized connections
+
+commit efd04f1dd7a3074b2a158f305c2cd8fa6b6efa21
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 10:09:20 2026 -0500
+
+    cosmetic
+
+commit 68b1d476e7e86152003a351c1b4cf83cbe649e3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 10:10:43 2026 -0500
+
+    Database/Document/MongoDBClient support for .fInternallySynchronizedLetter = eInternallySynchronized option, and used in sample DocumentDB app
+
+commit 81f3398b7173447124e4c3bc46f0fb0fcbf584ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 10:13:49 2026 -0500
+
+    cosmetic
+
+commit 55601bdffd5eeaadad80171191b7b07fbdfc0327
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 10:23:58 2026 -0500
+
+    Need Range deduction guides after all
+
+commit 274624479d104505b313d4eac91739412a606ecd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 15:40:16 2026 -0500
+
+    deprecated/renamed fJSONPrettyPrint->fPrettyPrint name of option for JSONSerializer; and added fCanonicalize support to it (not yet tested)
+
+commit 12ec9dee0aa050a9b6f838defe195fa09eb82ee1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 16:11:04 2026 -0500
+
+    cosmetic
+
+commit a52ceab2840e3adbef85ab950287fde49eba94c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 17:28:34 2026 -0500
+
+    Options ReadOnly flag for LocalDocumentDB single-file object
+
+commit 59e87b04180982458a2fe1aab8447d8d24918eee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 19:43:14 2026 -0500
+
+    Fixed warning
+
+commit 3ac96af63940eefd0858d7b95e4558c106ee81a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 19:43:31 2026 -0500
+
+    fixed warnings
+
+commit 00b9b26dd342ac4e3ac6e27142939636756dfb1e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 21:05:20 2026 -0500
+
+    fixed missing includes
+
+commit 2c81200b9e5d781c4fe7a5f4f12719f661eb530a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 24 21:06:21 2026 -0500
+
+    fixed typos
+
+commit eb4ed4fcc05c8ab03b4571851a84246415a4e98e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 08:43:18 2026 -0500
+
+    Comments
+
+commit d8d42a97b5b5933117a8ecb66c1eacc31647b316
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:04:11 2026 -0500
+
+    start 3.0d23 release
+
+commit 6d7ac6d1dfc7de3adaf17221c0f1accfd7e29010
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:05:46 2026 -0500
+
+    curl 8.18.0
+
+commit b6a4578affaf005ea472917b23b80188faa9afb2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:06:37 2026 -0500
+
+    cosmetic
+
+commit 09482fbdbfb020bd00687bba7e2b31e7eaba533a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:07:43 2026 -0500
+
+    openssl 3.6.1
+
+commit a18ffe7df0cf4f97786fbad246877cc78b13119d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:08:42 2026 -0500
+
+    sqlite 3.51.2
+
+commit fd03540ac7b2d0089c0e69d565b253717d52a414
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:09:19 2026 -0500
+
+    cosmetic
+
+commit c2e7e01077902ffd756e401a406620d74cd80931
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:10:09 2026 -0500
+
+    cosmetic
+
+commit c3eadc2e1e202619dfc40f759a2f3e09d643f8df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:11:47 2026 -0500
+
+    zlib 1.3.2
+
+commit c5cee8ea8b0c2196ccdc2e91a02d024e5f19905e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 10:12:37 2026 -0500
+
+    cosmetic
+
+commit cdabad231f267ac68449385983356ec5e9296c5b
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Feb 25 10:37:10 2026 -0500
+
+    fixed typo
+
+commit c95c81beeb38b24eb74a0561d5e03732f57a3663
+Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
+Date:   Wed Feb 25 11:47:56 2026 -0500
+
+    silence depreaction warning on gcc
+
+commit 203b55da2295db588098c048f181f5e7bc28ec0f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 11:55:25 2026 -0500
+
+    cosmetic
+
+commit 390ea84a3a88add6855ea6eeabd157635b86d454
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 13:00:17 2026 -0500
+
+    temporarily reset zlib version to 1.3.1
+
+commit 50ad09edd94137f305a0daa08a46a2e7df4cf46b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 13:26:56 2026 -0500
+
+    docker windows now uses VS_17_14_27
+
+commit de1c3032d027eae3340bf69ae3782092daae4e79
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 13:28:08 2026 -0500
+
+    silence warning
+
+commit b5b9ca7497cc3a926de68e1f03356799d71fe332
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 15:08:13 2026 -0500
+
+    hopefully fixed (by simplifying makefile) mkaefile for top level make of all or libraries when QUICK_BUILD=1 is on (now that default so more prominent when it was broken) - handling failures
+
+commit 2fd28eb38f76912c46b5a56b9537ebc086a80fba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 25 15:14:43 2026 -0500
+
+    re-enable zlib 1.3.2 - now that I have (hopefully) fixed makefile for windows
+
+#endif
+
+
+
+
 ### 3.0d22 {2026-01-08} {[diff](../../compare/3.0d21...3.0d22)}
 
 #### TLDR
