@@ -68,6 +68,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
         class Rep_;
 
     public:
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         /**
          */
         struct Options {
@@ -117,6 +118,7 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
              */
             optional<String> fLineTermination;
         };
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
     public:
         Writer (const Options& options = {});
