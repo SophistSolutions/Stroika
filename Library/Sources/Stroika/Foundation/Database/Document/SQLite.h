@@ -23,6 +23,7 @@
 #include "Stroika/Foundation/Database/Document/EngineProperties.h"
 #include "Stroika/Foundation/Database/Document/Transaction.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Time/Duration.h"
 

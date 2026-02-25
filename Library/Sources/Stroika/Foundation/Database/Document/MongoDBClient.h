@@ -25,6 +25,7 @@ namespace mongocxx {
 #include "Stroika/Foundation/Database/Document/Connection.h"
 #include "Stroika/Foundation/Database/Document/EngineProperties.h"
 #include "Stroika/Foundation/Database/Document/Transaction.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 
 /*
  *  \file
