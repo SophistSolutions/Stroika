@@ -15,16 +15,25 @@ especially those they need to be aware of when upgrading.
 - Documentation
   - Building-Stroika.md
     - Varied updates
+    - docs in FAQ about common vscode build errors on new machine
   - Misc cleanups, including ReadMe docs
 
 - Build System and Scripts
   - .vscode
     - removed ThirdPartyComponents/*/CURRENT/** from C_Cpp.files.exclude (experimenting a bit)
+  - .github Actions/Workflows
+    - setting dockerroot on windows github action to d:\docker (to address running out of space issue on windows)
+  - Build/Release docs
+    - fixed regtest docs for .local => .lan name change
   - Makefile
     - added new top level makefile target library-clobber and used it in .vscode/tasks.json for rebuild task
   - Scripts
     - fixed scripts FormatCode so works on macos (weaker version of expand)
     - Added mingw to path in .vscode/launch.json
+  - Docker
+    - Windows
+      - now uses VS_17_14_27
+
 
 
 - Compiler Bug Defines
@@ -33,10 +42,26 @@ especially those they need to be aware of when upgrading.
 - Characters
   - CodeCvt
     - tweaked weakassert in CodeCvt.inl
+  - FloatConversion
+    - Lots of cleanups and significant improvement (but alot of cleanup needed after I lose deprecated APIs)
+    - More ToStringOptions CTORs constexpr
+    - Fixed FloatConversion::ToString (eTrimZeros) case of last .0 (cuz I had documented it that way and better), and added regtests for this and many other eFixedPoint FloatConversion::ToString() calls
+    - lots of cleanups and simplifications / docs for FloatConversion code (sb no semantic changes, except making a few things inline->constexpr), and added Precision::kDefault - mostly docs.
+    - Added FloatFormatType::eStandard (not NYI really) - and several other cleanups to ToString_GeneralCase_ - but still more todo - but testing passes all regtests
+    - improved FloatConversion regtests
+    - fixed FloatConversion handling of precision for scientific case (and updated regtests)
+    - new Precision::CalculatePrecision () utility with regtests
+    - regtests for recent changes to help keep this working while developing furhter
+    - Docs
+    - improved Precision::CalculatePrecision(); more regtests and docs; new approach experimenting with format_sig_figs_ ... and regtests
+    - Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
+    - docs, and corresponding regtests on ToString formats; and deprecated FloatFormatType::eAutomaticScientific
+    - deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros; replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
+
 
 - Common
   - StdCompat
-    - #define qStroika_Foundation_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
+    - #define qStroika_Foundation_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
 
 - Database
   - DocumentDB
@@ -45,16 +70,23 @@ especially those they need to be aware of when upgrading.
         and respected in Add () method (not everywhere yet but mostly and assert when would fail) and support
         in concrete containers
       - Ptr::GetOne (Filter) overload
-      - renmaed GetOne to Get
+      - renamed GetOne to Get
       - support in DocumentDB code for GetsSpaceConsumed () 
       - support fOperationLoggingCallback option specification
-      - more activity support in DocumentDB wrappers
+      - Improve use of DeclareActivity in DocumentDB wrappers
+      - Collection added 'GetName' method, and used in LazyEvalActivity declaration/exception report
     - LocalDocumentDB
       - Renamed TrivialDocumentDB -> LocalDocumentDB (questionable but both names sucked)
       - Implemented SingleFileDB, DirecotryDB and MemoryDB cases decently.
       - Examples/Samples/RegressionTests
+      - file-based impls now how option for fRetryOnSharingViolationFor (passed to ThroughTmpFileWriter)
     - MongoDBClient
       - fixed to handle either oid _id or string _id field, and other cleanups
+      - support for WrapExecute_/logging/tracking
+    - SQLite
+      - support for WrapExecute_ (so reports log stats/trace messages)
+      - fixed SQLite bindings - so support funky table names (wrap them in quotes)
+      - fixed bug where query with force add ids, but object missing
     - all concrete DocumentDBs get (LocalDocumentDB, SQLite and Mongo)
       - Option fInternallySynchronizedLetter
     - Tests
@@ -64,6 +96,9 @@ especially those they need to be aware of when upgrading.
     - fixed missing overloads for Get/GetOrThrow in Document/ObjectCollection
 
 - DataExchange
+  - OptionsFile
+    - Tweak messages
+
   - Variant
     - Reader
       - Read method now const
@@ -71,12 +106,17 @@ especially those they need to be aware of when upgrading.
 - Execution
   - CommandLine
     - maked fArgument field const since its public so it can only be read not set
+  - ModuleGetterSetter
+    - concept checking on IMPL
+    - better docs
+    - new AssureLoaded method
   - ProcessRunner
     - minor cleanup of BackgroundProcess::WaitForStarted()
     - Various cleanups 
     - deprecated ProgressMonitor API (was never used, and dont have clear docs about how I intended to use it - can add back in the future if ever needed, but document how it mgiht work)
     - refactoring of private CreateRunnable_ into CreateDetailedRunnable_ and CreateSimpleRunnable_ () and have it return shared_ptr so lifetime safety FIX
     - ProcessRunner 'ToString' methods added to a few places to ease debugging
+    - Minor cleanups to (Windows) verbosity on happy path (USE_NOISY_TRACE_IN_THIS_MODULE_)
     - RunInBackground
       - fDetached support
       - document restrictions in ProcessRunner when fDetached, and enforce them and fix behavior for POSIX case (untested)
@@ -90,13 +130,32 @@ especially those they need to be aware of when upgrading.
       - various cleanups: leave a few variables uninitialized (use qStroika_Foundation_INDETERMINATE)
     - ThroughTmpFileWriter
       - Fixed - not 100% - but much better - random filename generation so fewer conflicts with other processes doing same thing - and weakassert on failure/conflict
+      - #if qStroika_Foundation_Common_Platform_Windows = added fRetryOnSharingViolationFor support to IO/FileSystem/ThroughTmpFileWriter - defaulting to retry for one second
+      - treat ERROR_ACCESS_DENIED same as ERROR_SHARING_VIOLATION (as both can happen from virus scanner)
+  - Network
+    - Interface
+      - fixed log warning about IF_TYPE_PROP_VIRTUAL - mapped to Interface::Type::eDeviceVirtualInternalNetwork and added docs
+
+- Memory
+  - Common
+    - Memory::CopyToIf () overloads now constexpr
+- Time
+  - Duration
+    - now for Duration ToString code - use ToStringOptions {eStandard}  (+exxx stuff only supported in ISO 8601 Part 2)
+
 
 - Samples
   - HTMLUI
-    - QuasarBasedHTMLApp npm update/upgrade/audit-fix
-    - cleanups (especially to html)
-    - in html - show Last succesful communication: less than a minute ago
-    - removed remaining use of moment-js, and attempted use of date-fns, and just use luxon - seems to work better (millisecond support at least)
+    - cleanups
+    - Backend
+      - improve clarity on Samples/HTMLUI/Backend, and fixed #if check to qStroika_HasComponent_syslog for including syslog usage
+      - Service startup cleanup logic
+    - HTML
+      - About page cleanups
+        - serveral
+        - show Last succesful communication: e.g. less than a minute ago
+      - QuasarBasedHTMLApp npm update/upgrade/audit-fix
+      - removed remaining use of moment-js, and attempted use of date-fns, and just use luxon - seems to work better (millisecond support at least)
 
 - Tests
   - RegressionTests
@@ -104,338 +163,17 @@ especially those they need to be aware of when upgrading.
 
 - ThirdPartyComponents
   - curl
-    curl 8.18.0
+    - VERSION 8.18.0
   - mongocxx
     - Makefile - re-fix https://jira.mongodb.org/browse/CXX-3291
   - openssl
-    openssl 3.6.1
+    - VERSION 3.6.1
   - sqlite
-      sqlite 3.51.2
+    - VERSION 3.51.2
   - zlib
-    zlib 1.3.2
-
+    - VERSION 1.3.2
 
 #if 0
-
-
-commit 80e9b3afb83eee9cf956d6609eb05780047611e7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 6 10:20:34 2026 -0500
-
-    Database::Document::Connection (Ptr and WrapLoggingExecuteHelper_) cleanups/progress
-
-commit 424cf447ff26d8f471195cccb180c3c4ee4ecd1f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 6 16:13:29 2026 -0500
-
-    Minor cleanup of DeclareActivity use in Database/Document/Collection
-
-commit 20e23fe073b9cc41f8014b602bf411cbd5391fb7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Feb 6 16:36:09 2026 -0500
-
-    fixed code in Library/Sources/Stroika/Foundation/Database/Document/LocalDocumentDB.cpp for pickier c++ compiler
-
-commit e7f72d13fff17435bbcd886ae6457b2d3fe2d5b3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 6 17:16:01 2026 -0500
-
-    Database/Document/SQLite.cpp support for WrapExecute_ (so reports log stats/trace messages)
-
-commit 928ed5a8b6a0e156e26057578852e973290e4f5f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 6 17:56:06 2026 -0500
-
-    DocumentDB::MongoDB client - support for WrapExecute_/logging/tracking
-
-commit 33af9afa804d1574b0b23bad652f0bc45cd56442
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Fri Feb 6 18:11:37 2026 -0500
-
-    docs in FAQ about common vscode build errors on new machine
-
-commit 50d87c6a63e54b964e855ac8436fbec91a862c83
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 6 21:12:17 2026 -0500
-
-    minor refactoring of Database/Document/MongoDBClient
-
-commit 95f96f91853cc300296c3269ffd15db839bf0062
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 09:11:01 2026 -0500
-
-    Database/Document Collection added 'GetName' method, and used in LazyEvalActivity declaration/exception report
-
-commit 48408a2d44b272bbb1d8b45bfe9f2dc32b1f320d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 09:21:36 2026 -0500
-
-    renamed qStroika_Foundation_INDETERMINATE -> qStroika_Foundation_ATTRIBUTE_INDETERMINATE
-
-commit 80f1bec3bcaca3f02e9d1e96ae1a1c20f855cd39
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 10:27:29 2026 -0500
-
-    #if qStroika_Foundation_Common_Platform_Windows = added fRetryOnSharingViolationFor support to IO/FileSystem/ThroughTmpFileWriter - defaulting to retry for one second
-
-commit 4e090550c770138d6ac1a8a46d03c8a71d819555
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 10:48:48 2026 -0500
-
-    LocalDocumentDB file-based impls now how option for fRetryOnSharingViolationFor (passed to ThroughTmpFileWriter)
-
-commit f4266968cc50cef230d2b02d1f1864106940d182
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 12:03:49 2026 -0500
-
-    fixed log warning about IF_TYPE_PROP_VIRTUAL - mapped to Interface::Type::eDeviceVirtualInternalNetwork and added docs
-
-commit c27dcabd1dea9a25601c6375f7d22d821b9a6067
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 13:03:45 2026 -0500
-
-    Minor cleanups to ProcessRunner (Windows) verbosity on happy path (USE_NOISY_TRACE_IN_THIS_MODULE_)
-
-commit f26e7b146bc05dd846cc3b2c09eb6f53d6988dbd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 13:52:06 2026 -0500
-
-    DbgTrace / comment cleanups
-
-commit f54466c10e351332eb63f982ef5f407027fab06a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 14:12:12 2026 -0500
-
-    IO/FileSystem/ThroughTmpFileWriter treat ERROR_ACCESS_DENIED same as ERROR_SHARING_VIOLATION
-
-commit c30f27d2f603204948533284cd046367de1140d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 17:42:41 2026 -0500
-
-    Minor improvements to ModuleGetterSetter, including: concept checking on IMPL, better docs, and new AssureLoaded method
-
-commit d8f5b17c3b1ec0b05a5c974a1b209dd60f94d40d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 17:44:43 2026 -0500
-
-    improve clarity on Samples/HTMLUI/Backend, and fixed #if check to qStroika_HasComponent_syslog for including syslog usage
-
-commit cac4790ea278a250f13a3fb49ecb1708f15e5647
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 18:47:46 2026 -0500
-
-    Tweak messages in DataExchange/OptionsFile
-
-commit 1a3f88096793ddcfba8105894233021b6573eafb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 23:17:13 2026 -0500
-
-    fixed DocumentDB SQLite bindings - so support funky table names (wrap them in quotes)
-
-commit 445ac3caef541eee106c59c6172e0394db0d78ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 8 00:18:48 2026 -0500
-
-    sqlite DocumentDB: fixed bug where query with force add ids, but object missing
-
-commit 876aeb00de8b84e6fe65f11a2a73dbeb66bf7e45
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 8 22:46:59 2026 -0500
-
-    Memory::CopyToIf () overloads now constexpr
-
-commit 7cdccd0012eaac27345c10cb154b93e33a041fdf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 8 22:47:36 2026 -0500
-
-    More ToStringOptions CTORs constexpr
-
-commit dbd5d08cd7cb4af91e8e4e5bfb35c3b594f71b61
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 8 23:17:38 2026 -0500
-
-    Duration STRING format (emitted, not read) now uses eFixedPoint, not automatic/scientific; +exxx stuff only supported in ISO 8601 Part 2
-
-commit 474268fe1e8717f1b24c8da10dc11172b635831e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 8 23:34:31 2026 -0500
-
-    Fixed FloatConversion::ToString (eTrimZeros) case of last .0 (cuz I had documented it that way and better), and added regtests for this and many other eFixedPoint FloatConversion::ToString() calls
-
-commit 4fa91cdace7ae7154595e59d1841a84ed1d62e25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 9 07:32:12 2026 -0500
-
-    revert Duration change til I can consider more
-
-commit bb7b29acd28ccbb62fe0b45a188bc1e7d2afda13
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 07:52:56 2026 -0500
-
-    cleanups of Characters/FloatConversion code
-
-commit 194fdf1c9e214009786ffd5d94bf383af759b698
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 08:48:46 2026 -0500
-
-    lots of cleanups and simplifications / docs for FloatConversion code (sb no semantic changes, except making a few things inline->constexpr), and added Precision::kDefault - mostly docs.
-
-commit c22c1e6d1fb3c76ea026f06179ad010a1bf09721
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 11:01:09 2026 -0500
-
-    Added FloatFormatType::eStandard (not NYI really) - and several other cleanups to ToString_GeneralCase_ - but still more todo - but testing passes all regtests
-
-commit d3bc62ee7d733002d227aa6d6aa5f4af38144bd9
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 11:02:11 2026 -0500
-
-    now for Duration ToString code - use ToStringOptions {eStandard} - still not properly implemnted, but at least documented and should still pass regtests
-
-commit dde7fb50c54f75b719ce4b39d66946774f058c29
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 11:31:31 2026 -0500
-
-    improved FloatConversion regtests
-
-commit c97d439d0789e0ce874f69d1e2d1c48638162a86
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 13:15:40 2026 -0500
-
-    fixed FloatConversion handling of precision for scientific case (and updated regtests)
-
-commit 6584694198d5352b7dff624bb9b6a1f8ac903dae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 9 13:29:02 2026 -0500
-
-    new Precision::CalculatePrecision () utility with regtests
-
-commit d5797cd831b59dd718797c0ae734e6c5bda3eaf3
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 13:46:41 2026 -0500
-
-    Minor tweak to Precision::CalculatePrecision
-
-commit de91b7cb7ef9c3c4965acda3ce6e9f260c36f69d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 14:40:46 2026 -0500
-
-    fixed bugs with Precision::CalculatePrecision and progress using it (incomplete);
-
-commit 4b58e06b4b4d302e5e0e553a3c271a4be42acb96
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 14:41:16 2026 -0500
-
-    regtests with Precision::CalculatePrecision
-
-commit 9af0f7922c0d6e166f8ab04cfe6f9b1329840482
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 15:42:07 2026 -0500
-
-    more progress on Precision::CalculatePrecision () code and regtests; and use in ToString_GeneralCase_ for FloatFormatType::eStandard
-
-commit 4d51c025013595040a3d0df2bb3c2109bcc4a2e8
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 15:56:36 2026 -0500
-
-    more fixes to ToString_GeneralCase_ () for FloatFormatType::eStandard
-
-commit ce82dd032d0ca53af117138b8671659a4a0c6537
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 22:19:41 2026 -0500
-
-    incomplete draft Round_ (span<char> number) support and minor progress on ToString_GeneralCase_() all for FloatConversion code
-
-commit 2717315a8f644c416f79cd3fe18da77b7d44b598
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 22:24:42 2026 -0500
-
-    regtests for recent changes to help keep this working while developing furhter
-
-commit 9f9dd5c51c46e53c88e6bc1d258f6348d6349614
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 23:53:50 2026 -0500
-
-    FloatConversion docs
-
-commit 0a5f2458d3ed5272a64ee446fe1c37b2361cd6f3
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Feb 10 13:17:49 2026 -0500
-
-    improved Precision::CalculatePrecision(); more regtests and docs; new approach experimenting with format_sig_figs_ ... and regtests
-
-commit dc76cd054861246932e2d0a7121091f13733a1fa
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Feb 10 16:21:47 2026 -0500
-
-    fix recent FloatConversion code for g++11
-
-commit b4d9a2ed2569194d72440c3f0458f6bbe691f554
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Feb 10 17:01:51 2026 -0500
-
-    More FloatConversion cleanup
-
-commit 24fd459953c96a5772c453c881de48a795add464
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Tue Feb 10 17:42:44 2026 -0500
-
-    More cleanups to FloatConversion ToString_GeneralCase_ code
-
-commit fbde3447e4fb1defc707e1d10b330565312a2ede
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 11 12:50:57 2026 -0500
-
-    fixed small regression in formatNonScientific_
-
-commit 28d8cf625585abc8246526476ea163d638a4d6d7
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Feb 12 10:05:15 2026 -0500
-
-    fixed regtest docs for .local => .lan name change
-
-commit abeaac2ec5a8dc3d19c000e9cfe6c6b28126a14f
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Feb 12 11:00:13 2026 -0500
-
-    Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
-
-commit 2400429f86868142d1716bc906083cde75c53706
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 12 13:22:37 2026 -0500
-
-    echo config/daemon.json in .github/workflows/build-N-test.yml
-
-commit 7783d19f128942bd770ac9ef1e075cefbe0f908f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 12 13:52:07 2026 -0500
-
-    dry setting dockerroot on windows github action to d:\docker
-
-commit ff0492adda781957f4d5a610df7bcf15acb6eb77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 12 14:08:37 2026 -0500
-
-    another try to get docker container to work on windows again (github actions)
-
-commit 7b17446def2bd95b34583343dea4bfb41b7d0bec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 12 14:12:18 2026 -0500
-
-    another try to get docker container to work on windows again (github actions)
-
-commit 4da509e527d00ae439b8efd0e57d9536812aabff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 12 16:00:42 2026 -0500
-
-    FloatConversion: docs, and corresponding regtests on ToString formats; and deprecated FloatFormatType::eAutomaticScientific
-
-commit 522ffbf73d07aa205c25175f6217e537bd0123d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 12 18:02:54 2026 -0500
-
-    FloatConversion: deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros; replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
-
 commit 0afb186e33c86fa7d2357f91b4cbf787d82a427a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 13 11:24:59 2026 -0500
@@ -454,53 +192,6 @@ Date:   Fri Feb 13 12:01:30 2026 -0500
 
     draft support for qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy (clang/macos//xcode issue)
 
-commit 775c03a02cfd3d586026b23e96c690db7d4ec6e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 13 14:50:22 2026 -0500
-
-    fixed small regresison in FloatConversion code
-
-commit 48b80dafecf00811d0883b476a15c675f7c9d97e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 13 15:48:51 2026 -0500
-
-    Minor progress on /Characters/FloatConversion
-
-commit 2817beaea1890d49a14dc57f8c09770fc7199d4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 11:46:43 2026 -0500
-
-    fixed a couple bugs in new Characters/FloatConversion code
-
-commit b9a68e60037a83035070e3780727860eee7c7bf9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 11:47:40 2026 -0500
-
-    more regtests for new floatconversion code
-
-commit b596562b305d5a914f3fc32f7d5b53e0b5b85591
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 15:58:58 2026 -0500
-
-    minor cleanups to Characters/FloatConversion.h
-
-commit 41010fb0b0559f47a4f5e03d31f5d02c9c5a1625
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 15:59:32 2026 -0500
-
-    maybe address regtest failure on macos (cannot test there now easily)
-
-commit a910885b40d255dc058e7b964dd21cecd52792f3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 16:44:31 2026 -0500
-
-    FloatConversion warning suppression (for recent changes)
-
-commit 68ec21881ea47d6a0e75e1c53aaf9e10eb69e917
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 20:38:06 2026 -0500
-
-    MacOS case in regtest for FloatConversion::ToString
 
 commit 67209ccebc092f1cc7416de84e5949554944a2ab
 Author: Lewis Pringle <lewis@sophists.com>
@@ -591,18 +282,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 18 14:47:35 2026 -0500
 
     improved DbgTrace with CheckForInterruption
-
-commit 39323256fd5c2c0bcc7508ad4df8b997a2a59e69
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 16:57:56 2026 -0500
-
-    HTMLUI Service startup cleanup logic
-
-commit d373f6abdc6e7a2543c02b043d15f4c504b5bede
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 17:22:19 2026 -0500
-
-    minor tweaks to HTMLUI sample html about page
 
 commit 77c67752a68a5f1da707467047eb927243cb381b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -772,11 +451,6 @@ Date:   Tue Feb 24 17:28:34 2026 -0500
 
     Options ReadOnly flag for LocalDocumentDB single-file object
 
-commit 50ad09edd94137f305a0daa08a46a2e7df4cf46b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 13:26:56 2026 -0500
-
-    docker windows now uses VS_17_14_27
 
 commit b5b9ca7497cc3a926de68e1f03356799d71fe332
 Author: Lewis Pringle <lewis@sophists.com>
