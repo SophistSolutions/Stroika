@@ -12,10 +12,12 @@ RUN apt-get -qq install -y lsb-release
 #install the latest (C++20 compat) g++ compilers
 RUN apt-get -qq install -y g++-11 g++-12
 
-RUN apt-get install -y software-properties-common; \
-    add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
-    apt-get update; \
-    apt-get -qq install -y g++-13
+# As of 2026-02-26 installing g++-13 just fails here. So give up on it. Not sure we really need it.
+# At least try without...
+# RUN apt-get install -y software-properties-common; \
+#     add-apt-repository -y ppa:ubuntu-toolchain-r/test; \
+#     apt-get update; \
+#     apt-get -qq install -y g++-13
 
 
 # For reasons which elude me, installing libc++-N removes all the other
