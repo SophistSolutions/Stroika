@@ -8,16 +8,69 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-- Scripts
-  - fixed scripts FormatCode so works on macos (weaker version of expand)
 
-  - Added mingw to path in .vscode/launch.json
+>>> PREP FOR NEXT RELEASE
+
+
+- Documentation
+  - Building-Stroika.md
+    - Varied updates
+  - Misc cleanups, including ReadMe docs
+
+- Build System and Scripts
+  - .vscode
+    - removed ThirdPartyComponents/*/CURRENT/** from C_Cpp.files.exclude (experimenting a bit)
+  - Makefile
+    - added new top level makefile target library-clobber and used it in .vscode/tasks.json for rebuild task
+  - Scripts
+    - fixed scripts FormatCode so works on macos (weaker version of expand)
+    - Added mingw to path in .vscode/launch.json
+
 
 - Compiler Bug Defines
   -     define new compiler bug define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy for clang++15 and workaround
 
+- Characters
+  - CodeCvt
+    - tweaked weakassert in CodeCvt.inl
+
+- Common
+  - StdCompat
+    - #define qStroika_Foundation_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
+
+- Database
+  - DocumentDB
+    - API
+      - Database::Document  new Options feature, and new option fAddAllowsExternallySpecifiedIDs,
+        and respected in Add () method (not everywhere yet but mostly and assert when would fail) and support
+        in concrete containers
+      - Ptr::GetOne (Filter) overload
+      - renmaed GetOne to Get
+      - support in DocumentDB code for GetsSpaceConsumed () 
+      - support fOperationLoggingCallback option specification
+      - more activity support in DocumentDB wrappers
+    - LocalDocumentDB
+      - Renamed TrivialDocumentDB -> LocalDocumentDB (questionable but both names sucked)
+      - Implemented SingleFileDB, DirecotryDB and MemoryDB cases decently.
+      - Examples/Samples/RegressionTests
+    - MongoDBClient
+      - fixed to handle either oid _id or string _id field, and other cleanups
+    - all concrete DocumentDBs get (LocalDocumentDB, SQLite and Mongo)
+      - Option fInternallySynchronizedLetter
+    - Tests
+      - TestAddNewWithExternalKeysProvided_ (for all backends)
+  - ObjectCollection
+    - const fix for Ptr, and added missing AddOrUpdate () method
+    - fixed missing overloads for Get/GetOrThrow in Document/ObjectCollection
+
+- DataExchange
+  - Variant
+    - Reader
+      - Read method now const
 
 - Execution
+  - CommandLine
+    - maked fArgument field const since its public so it can only be read not set
   - ProcessRunner
     - minor cleanup of BackgroundProcess::WaitForStarted()
     - Various cleanups 
@@ -31,355 +84,45 @@ especially those they need to be aware of when upgrading.
       - appear to have fixed ProcessRunner detached mode on windows too
     - Tests: Foundation_Execution_ProcessRunner RunInBackgroundDetached
 
+- IO
+  - FileSystem
+    - WellKnownLocations
+      - various cleanups: leave a few variables uninitialized (use qStroika_Foundation_INDETERMINATE)
+    - ThroughTmpFileWriter
+      - Fixed - not 100% - but much better - random filename generation so fewer conflicts with other processes doing same thing - and weakassert on failure/conflict
+
+- Samples
+  - HTMLUI
+    - QuasarBasedHTMLApp npm update/upgrade/audit-fix
+    - cleanups (especially to html)
+    - in html - show Last succesful communication: less than a minute ago
+    - removed remaining use of moment-js, and attempted use of date-fns, and just use luxon - seems to work better (millisecond support at least)
+
+- Tests
+  - RegressionTests
+    - cleanup Foundation_Execution_Exceptions, Test4_Activities_ and added tests
+
+- ThirdPartyComponents
+  - curl
+    curl 8.18.0
+  - mongocxx
+    - Makefile - re-fix https://jira.mongodb.org/browse/CXX-3291
+  - openssl
+    openssl 3.6.1
+  - sqlite
+      sqlite 3.51.2
+  - zlib
+    zlib 1.3.2
+
+
 #if 0
 
-commit d1a1869a51ea7fc655d547ef5c0fd7858e5c976a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 17 04:36:01 2026 -0500
-
-    cleanup Foundation_Execution_Exceptions, Test4_Activities_ and added additional regtest for case I had notes was a problem but seems fine (at least on windoze)
-
-commit 27061abb419c0a2f94bdfd42e6eb105917e697fe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 17 05:07:56 2026 -0500
-
-    docs on building
-
-commit 40895cda53e32925748d81ab6f3029c2efa77c93
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 17 05:58:38 2026 -0500
-
-    maked fArgument field const since its public so it can only be read not set (must be set vai CTOR so can be taken into account in message)
-
-commit b0b33f25b6e0fdbfeea97ea0964f54efb4d37781
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 19 16:08:06 2026 -0500
-
-    progress (incomplete) on TrivialDocumentDB filesystem impls
-
-commit 76a01c6e3209eb50ae9754506150a30a33e8ab73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 20 17:39:36 2026 -0300
-
-    TrivialDocumentDB - SingleFileDatabaseRep_ mostly working
-
-commit cced12312b288dc03fb8a2410fd028eda3062f81
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 20 18:58:43 2026 -0300
-
-    DataExchange/Variant/Reader Read method now const
-
-commit fab1263d49e1d91e957fe4b9d32a20c51d96e985
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 20 17:40:31 2026 -0500
-
-    more fixes to TrivialDocumentDB SingleFileDatabaseRep_ support
-
-commit b255ec7913a4b3df472d649b9e3c4b48bf4925df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 20 17:55:54 2026 -0500
-
-    Samples/DocumentDB example use of TrivialDocumentDB::Options::SingleFileStorage
-
-commit 1552139a43f7c39ee5638007c8de7d71acc567f8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 20 19:26:28 2026 -0500
-
-    minor DirectoryFilesystemDatabaseRep_ progress
-
-commit 83e1c533e2cd86dace19beba3b58c76184395616
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 21 07:39:38 2026 -0500
-
-    Database/Document/TrivialDocumentDB  DirectoryFilesystemDatabaseRep_ support
-
-commit 8fbd859e21ef0aeda49c9f97a51a5898e7745462
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 21 08:22:12 2026 -0500
-
-    minor fix to Database/Document/TrivialDocumentDB
-
-commit f119fea397e6244d5f02ba3b28127d3bd2b1c245
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 21 08:22:32 2026 -0500
-
-    test TrivialDocumentDB::Options::DirectoryFileStorage in sample
-
-commit 5f1df8e8a7f956adfdcc4f8c3710f259acec1370
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 23 16:39:39 2026 -0500
-
-    fixed several bugs with new TrivialDocumentDB::DirectoryFilesystemDatabaseRep_
-
-commit 8b4d423021a110fb8c80d49b731cc132f3af44fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 23 16:40:16 2026 -0500
-
-    Minor cleanups to Samples/DocumentDB
-
-commit eda40c6f838f03a8785704de8ccdd396e76cddb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 23 16:41:48 2026 -0500
-
-    improved regtests for TrivialDocumentDB
-
-commit 3dd8b1c2cddb594ef8f32a099e3f3d11048458ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 24 16:22:37 2026 -0500
-
-    DocumentDB API docs/enforced requires - Add(document) requires arg not have ID; document GetCollection requires collection has been created
-
-commit c2f99f970f4ac1acaeab4d227fedf0bb24be6097
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 25 06:18:42 2026 -0500
-
-    DocumentDB::CreateCollection now returns created (or existing) Collection::Ptr
-
-commit 5bfcaaf3daa1be4b1ee4e28bc2d37afbe2e427a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 27 13:06:25 2026 -0500
-
-    Samples/HTMLUI/QuasarBasedHTMLApp npm update
-
-commit ea98aa5a4de00f3be667933dcf3333d0c0383b09
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 27 14:08:06 2026 -0500
-
-    Database::Document - various cleanups, including new Options feature, and new option fAddAllowsExternallySpecifiedIDs, and respected in Add () method (not everywhere yet but mostly and assert when would fail)
-
-commit 4e4f7967d11730cc46fdefd74060363e34d45b77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 27 14:59:26 2026 -0500
-
-    changed default for Database/Document/Connection Options fAddAllowsExternallySpecifiedIDs to true (since the easiest to use, least surprising)
-
-commit e0d237c383d28b8da8202d325887f33ea021dd3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 27 16:21:06 2026 -0500
-
-    fixed a few small typos in TrivialDocumentDB
-
-commit 960189ed3c8257952046d7cea0c19b1490a3eab9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 27 16:56:07 2026 -0500
-
-    note macos thread bug (rare) - another github action failure running this test
-
-commit ff560663fdfdee7b63e83a1d41af8c27811a16db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 27 17:01:33 2026 -0500
-
-    const fix for Database/Document/ObjectCollection Ptr, and added missing AddOrUpdate () method
-
-commit 85213824956ba5e39d024b5aa13b68e2c84e67e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 28 11:37:47 2026 -0500
-
-    renamed Database\Document\TrivialDocumentDB to Database\Document\LocalDocumentDB
-
-commit 9d13c8a05416fc3b8405af2dd484725a589d6e9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 28 12:22:37 2026 -0500
-
-    DocumentDB: LocalDB Option fInternallySynchronizedLetter (not respected fully yet), and Ptr::GetOne (Filter) overload
-
-commit faa28896d18f8279630ae40b1b01892e86f8fd02
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 28 14:32:00 2026 -0500
-
-    Database/Document/Collection doc cleanups, and renmaed GetOne to Get
-
-commit 0ed85e0d3ca23336d120fde1fee6e0ab85d5ee5f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 28 16:22:47 2026 -0500
-
-    Draft DocumentDB tests - TestAddNewWithExternalKeysProvided_ enabled for some, but disabled for sqlite and mongo where not working yet
-
-commit 321c46396fae6bc066f3c1eb953c3b71bc0a0d2f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 28 20:20:06 2026 -0500
-
-    re-fix https://jira.mongodb.org/browse/CXX-3291 issue - still broken (mongodb thirdpartycomponents build script)
-
-commit fb611a4f9cb55e806200d7ab9708f06128d1f8ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 28 22:27:20 2026 -0500
-
-    fixed Database/Document/MongoDBClient to handle either oid _id or string _id field, and other cleanups
-
-commit 02abf7f003a07e8d87557022d8f7f121cab07613
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 28 22:28:55 2026 -0500
-
-    Cosmetic test cleanup; and enabled TestAddNewWithExternalKeysProvided_ test for DocumentDB MongoDB support (still todo sqlite)
-
-commit df21837903b973ad7e39baeafe3185f3d79caaae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 29 08:31:28 2026 -0500
-
-    docs
-
-commit f7ba1de40a18a99be33ab9b8b465583840e71dc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 29 08:35:04 2026 -0500
-
-    fixed missing overloads for Get/GetOrThrow in Document/ObjectCollection
-
-commit 5f53e80613bf6f50c7e15e90aebf2b3b5b3a2e26
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 29 14:06:05 2026 -0500
-
-    Mostly cosmetic/docs (GUID)
-
-commit 85f099f64df4d06289507eeb54ee3b2bc250fbd8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 29 21:59:37 2026 -0500
-
-    fixed DocumentDB::SQLite support for options.fAddAllowsExternallySpecifiedIDs (inelegant but working)
-
-commit 9ddd9e97fdfee92ec98b01d02a4f4978adfa50a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 29 22:01:08 2026 -0500
-
-    re-enabled and embellished regtests for Database::Document::SQLite use of TestAddNewWithExternalKeysProvided_ etc
-
-commit 355a8d62f9cb7e2973f71969146f79f9a8c77f5c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 30 11:00:27 2026 -0500
-
-    sqlite documebtdb cleanups
-
-commit 66556dbcfa70a5c1f0567a22b44213b6456cb060
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 30 13:11:08 2026 -0500
-
-    ReadMe/docs
-
-commit 0f560d0b373e3fa9dbc619b3caffd669f293e497
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 30 13:12:06 2026 -0500
-
-    added new top level makefile target stroika-clobber and used it in .vscode/tasks.json for rebuild task
-
-commit 26665fa1fa52267bd143658c4b76593dbe783989
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 30 13:12:49 2026 -0500
-
-    removed ThirdPartyComponents/*/CURRENT/** from C_Cpp.files.exclude (experimenting a bit)
-
-commit 6edcdd5baaa4cd55cecee5c1a54b374e8bc5dfac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 30 13:29:30 2026 -0500
-
-    Sample HTMLUI npm upgrade
-
-commit e2a2584924fcd8a70eed1ae31b3fa1e448300580
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jan 30 18:06:40 2026 -0500
-
-    htmlui sample - in html - show Last succesful communication: less than a minute ago
-
-commit 3e9ba1d861e4f750f4f696b9a8a10819f5fefeaa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 31 09:09:40 2026 -0500
-
-    removed remaining use of moment-js, and attempted use of date-fns, and just use luxon - seems to work better (millisecond support at least)
-
-commit d825d9b8d296c08c52376c39f34a5db54777fffe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 31 09:16:36 2026 -0500
-
-    docs
-
-commit ebc1b61e079cfc2a3fed0fda722a7bb299366442
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 31 09:16:56 2026 -0500
-
-    vscode keeps reformatting my html
-
-commit 1e30eef5c67a813f8b69d976fc8a9f71416bd548
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 4 15:22:47 2026 -0500
-
-    tweaked weakassert in Characters/CodeCvt.inl
-
-commit ec0c627266d4a4ba19ea5b27e8ba515729d7741e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 4 21:47:49 2026 -0500
-
-    HTMLUI sample cleanups
-
-commit 61147a595183bad2cddc6e476eb8e7cff6398681
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 08:48:13 2026 -0500
-
-    various cleanups to WellKnownLocations - leave a few variables uninitialized (use qStroika_Foundation_INDETERMINATE)
-
-commit 80b1a4b112982e95e44302346dbeb75177629971
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 08:53:05 2026 -0500
-
-    new define qStroika_Foundation_INDETERMINATE
-
-commit 0b6559ef9d57a06dcb1ec014812080e17a17277d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 08:54:24 2026 -0500
-
-    use new qStroika_Foundation_INDETERMINATE
-
-commit 3d393d75c872f8f3c3bc8e1c819298b04e69813d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 08:55:01 2026 -0500
-
-    use new qStroika_Foundation_INDETERMINATE
-
-commit 5138bad6ddcf09c472420fe000c2a8d63f816e60
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 11:55:13 2026 -0500
-
-    Fixed ThroughTmpFileWriter - not 100% - but much better - random filename generation so fewer conflicts with other processes doing same thing - and weakassert on failure/conflict
-
-commit d1b7fb16f9f21f42adc7f7a88422f285371cba11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 20:01:50 2026 -0500
-
-    Draft support in DocumentDB code for GetDiskSize () and fOperationLoggingCallback option specification
-
-commit 8e53246f60207bb0da76c7ad708b96233597ba8e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 20:03:38 2026 -0500
-
-    renamed GetDiskSize to GetsSpaceConsumed
-
-commit f424f3dc5dfc068cd59bd83501516358212f33ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 22:38:06 2026 -0500
-
-    more support for DocumentDB OpertionCallbackPtr support - at least for directory-based LocalDB - ready to test
-
-commit bc9aed40ddc6923da26f1841f2de6883c0cdc42f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 5 22:54:18 2026 -0500
-
-    more activity support in DocumentDB wrappers
 
 commit 80e9b3afb83eee9cf956d6609eb05780047611e7
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 6 10:20:34 2026 -0500
 
     Database::Document::Connection (Ptr and WrapLoggingExecuteHelper_) cleanups/progress
-
-commit f405a789f0a55407b52c17117bc8b4a6d22434e0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 6 11:20:57 2026 -0500
-
-    more progress on DocumentDB WrapExecute_ logging support
-
-commit caee8c9fdff3cae73d656d7817b50624923be248
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 6 11:59:16 2026 -0500
-
-    finsihed first draft WrapExecute_ logging code on LocalDB
 
 commit 424cf447ff26d8f471195cccb180c3c4ee4ecd1f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -441,12 +184,6 @@ Date:   Sat Feb 7 10:48:48 2026 -0500
 
     LocalDocumentDB file-based impls now how option for fRetryOnSharingViolationFor (passed to ThroughTmpFileWriter)
 
-commit c58299af7efd68d5994213ded2817589a112f482
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 11:24:29 2026 -0500
-
-    cosmetic and docs (qStroika_Foundation_ATTRIBUTE_INDETERMINATE)
-
 commit f4266968cc50cef230d2b02d1f1864106940d182
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 7 12:03:49 2026 -0500
@@ -476,12 +213,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 7 17:42:41 2026 -0500
 
     Minor improvements to ModuleGetterSetter, including: concept checking on IMPL, better docs, and new AssureLoaded method
-
-commit 8083c5a8fec49d53686cd72909a9f1bea03f5a1e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 7 17:43:13 2026 -0500
-
-    Minor code cleanups
 
 commit d8f5b17c3b1ec0b05a5c974a1b209dd60f94d40d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -542,12 +273,6 @@ Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Mon Feb 9 07:52:56 2026 -0500
 
     cleanups of Characters/FloatConversion code
-
-commit db196a1b2a45dedf7483f84d09e6443b00ac27f9
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 9 08:08:09 2026 -0500
-
-    qStroika_Foundation_ATTRIBUTE_INDETERMINATE cleanups
 
 commit 194fdf1c9e214009786ffd5d94bf383af759b698
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -711,12 +436,6 @@ Date:   Thu Feb 12 18:02:54 2026 -0500
 
     FloatConversion: deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros; replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
 
-commit 2afb92efdcd0f4ead2c55be3d00f6ef2b0c4b1af
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 13 10:44:37 2026 -0500
-
-    disable some deprecation warnings
-
 commit 0afb186e33c86fa7d2357f91b4cbf787d82a427a
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 13 11:24:59 2026 -0500
@@ -777,18 +496,6 @@ Date:   Sun Feb 15 16:44:31 2026 -0500
 
     FloatConversion warning suppression (for recent changes)
 
-commit 7eaccffabe61ce6602bd9bae1a21644a98fb3d9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 17:11:20 2026 -0500
-
-    test workaroudn for issue on macos floating point
-
-commit 45fd488669eb72195a73fcd4fa53411320bce405
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 15 19:47:39 2026 -0500
-
-    debug macos floatconversion issue
-
 commit 68ec21881ea47d6a0e75e1c53aaf9e10eb69e917
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 15 20:38:06 2026 -0500
@@ -848,12 +555,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 18 00:20:44 2026 -0500
 
     Minor cleanups to Network/HTTP/MessageStartTextInputStreamBinaryAdapter (code is a bit of a mess)
-
-commit e353d5f939a33e20be640bc621c7d65ad1818580
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 00:48:01 2026 -0500
-
-    Minor samples HTMLUI cleanup
 
 commit a4f896935e928dbb6f93cd4930f6f3f8d940caa4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1071,36 +772,6 @@ Date:   Tue Feb 24 17:28:34 2026 -0500
 
     Options ReadOnly flag for LocalDocumentDB single-file object
 
-commit 6d7ac6d1dfc7de3adaf17221c0f1accfd7e29010
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 10:05:46 2026 -0500
-
-    curl 8.18.0
-
-commit b6a4578affaf005ea472917b23b80188faa9afb2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 10:06:37 2026 -0500
-
-    cosmetic
-
-commit 09482fbdbfb020bd00687bba7e2b31e7eaba533a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 10:07:43 2026 -0500
-
-    openssl 3.6.1
-
-commit a18ffe7df0cf4f97786fbad246877cc78b13119d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 10:08:42 2026 -0500
-
-    sqlite 3.51.2
-
-commit c3eadc2e1e202619dfc40f759a2f3e09d643f8df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 10:11:47 2026 -0500
-
-    zlib 1.3.2
-
 commit 50ad09edd94137f305a0daa08a46a2e7df4cf46b
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 25 13:26:56 2026 -0500
@@ -1118,6 +789,16 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 25 15:14:43 2026 -0500
 
     re-enable zlib 1.3.2 - now that I have (hopefully) fixed makefile for windows
+
+
+
+    docker containers: use MSYS_20251213
+
+commit 6080242e6de536bd8c05e707a5d4eed2f8904bad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 26 10:32:49 2026 -0500
+
+    fixed configure script so test for presence of python doesn't hang on latest msys under docker
 
 #endif
 
