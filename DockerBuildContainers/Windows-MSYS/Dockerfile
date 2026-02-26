@@ -41,16 +41,15 @@ FROM ${BASE_IMAGE}
 ARG MSYS_DIR=c:/msys64/
 ARG MSYS_ASDOS_DIR=c:\msys64
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
-# ARG MSYS_20220904=https://github.com/msys2/msys2-installer/releases/download/2022-09-04/msys2-base-x86_64-20220904.sfx.exe
-# ARG MSYS_20230127=https://github.com/msys2/msys2-installer/releases/download/2023-01-27/msys2-base-x86_64-20230127.sfx.exe
 # ARG MSYS_20240507=https://github.com/msys2/msys2-installer/releases/download/2024-05-07/msys2-base-x86_64-20240507.sfx.exe
 # ARG MSYS_20241208=https://github.com/msys2/msys2-installer/releases/download/2024-12-08/msys2-base-x86_64-20241208.sfx.exe
-ARG MSYS_20250622=https://github.com/msys2/msys2-installer/releases/download/2025-06-22/msys2-base-x86_64-20250622.sfx.exe
+# ARG MSYS_20250622=https://github.com/msys2/msys2-installer/releases/download/2025-06-22/msys2-base-x86_64-20250622.sfx.exe
+ARG MSYS_20251213=https://github.com/msys2/msys2-installer/releases/download/2025-12-13/msys2-base-x86_64-20251213.sfx.exe
 
 SHELL ["powershell"]
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
   $ErrorActionPreference = 'Stop'; \
-  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20250622" -OutFile msys2.exe; \
+  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20251213" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
   function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
