@@ -205,7 +205,7 @@ ifeq ($(QUICK_BUILD), 1)
 libraries:
 	@#See if files already there, and if so skip all this, and else do non-quick build
 	@if [[ -f $(StroikaFoundationLib) && -f $(StroikaFrameworksLib) ]]; then \
-		$(MAKE) --no-print-directory IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED ; \
+		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED ; \
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika-Foundation and Stroika-Frameworks libraries exist and QUICK_BUILD=1"; \
 	else\
 		$(MAKE) --no-print-directory libraries QUICK_BUILD=0; \
