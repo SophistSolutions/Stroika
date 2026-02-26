@@ -569,7 +569,9 @@ namespace {
         auto                      CheckMatchesExpected_WRITER_ = [] (const VariantValue& v, const string& expected) {
             Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
             using Writer                         = DataExchange::Variant::JSON::Writer;
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             Writer{Writer::Options{.fLineTermination = "\n"sv}}.Write (v, out);
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             string x = out.As<string> ();
             // not quite true, but almost: EXPECT_TRUE (out.As<string> () == expected);
             if (x != expected) {
