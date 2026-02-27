@@ -18,6 +18,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 
@@ -103,7 +104,7 @@ namespace Stroika::Foundation::Debug {
      *  \note Satisfies Concepts:
      *      o   movable<AssertExternallySynchronizedMutex> 
      *      o   copyable<AssertExternallySynchronizedMutex>
-     *      o   Common::BasicLockable<AssertExternallySynchronizedMutex>
+     *      o   Common::StdCompat::BasicLockable<AssertExternallySynchronizedMutex>
      * 
      *  \par Example Usage
      *      \code
@@ -331,7 +332,7 @@ namespace Stroika::Foundation::Debug {
     };
     // see Satisfies Concepts:
     static_assert (movable<AssertExternallySynchronizedMutex> and copyable<AssertExternallySynchronizedMutex> and
-                   Common::BasicLockable<AssertExternallySynchronizedMutex>);
+                   Common::StdCompat::BasicLockable<AssertExternallySynchronizedMutex>);
 
 }
 

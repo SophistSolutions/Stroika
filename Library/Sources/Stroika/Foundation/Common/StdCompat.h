@@ -36,7 +36,9 @@
  * 
  *  The purpose of this module is to define any std c++ functions/classes etc - which may not be provided by the
  *  current std c++ library (often because not compiled with appropriate --std=... flag) - and/or because its
- *  an old compiler. 
+ *  an old compiler.
+ * 
+ *  This also includes 'named requirements' - rendered as concepts (probably SHOULD be part of CPP standard but are not).
  *
  *  This doesn't strictly violate any rules about sticking stuff into namespace std - cuz we don't. That's why we use a
  *  separate namespace (that often just indirects to the namespace std - where the function/class is defined already).
@@ -51,6 +53,29 @@ namespace Stroika::Foundation::Common::StdCompat {
      *  By default include all of std, but throw in selected missing things from some implementations.
      */
     using namespace std;
+
+    /**
+     * \brief Logically the C++ standard BasicLockable named requirement, but that was not included in std c++ library
+     * 
+     * \see https://en.cppreference.com/w/cpp/named_req/BasicLockable.html
+     */
+    template <typename T>
+    concept BasicLockable = requires (T lo) {
+        // Requires a public lock() member function
+        { lo.lock () } -> std::same_as<void>;
+        // Requires a public unlock() member function
+        { lo.unlock () } -> std::same_as<void>;
+    };
+
+    /**
+     * \brief Logically the C++ standard Lockable named requirement, but that was not included in std c++ library
+     * 
+     * \see https://en.cppreference.com/w/cpp/named_req/Lockable.html
+     */
+    template <typename T>
+    concept Lockable = BasicLockable<T> and requires (T lo) {
+        { lo.try_lock () } -> std::same_as<bool>;
+    };
 
 #if qStroika_HasComponent_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
