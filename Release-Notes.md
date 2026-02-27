@@ -8,13 +8,15 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-
 ### 3.0d23 {2026-02-??} {[diff](../../compare/3.0d22...3.0d23)} DRAFT NOTES
 
 #### TLDR
 
 - Implemented more fully and internally syncrhonized versions of various DocumentDB backends
 - Fixed issue with webserver 'leaving around' extra connections in lists of open connections
+- fixed github action out of space issues (again)
+- Duration no longer emits ISO 8601 Part 2 format strings (fail to parse in some js libraries)
+- fixed processrunner hang which caused service manager (service restart) on UNIX to not work properly
 
 #### Upgrade Notes (3.0d22 to 3.0d23)
 
@@ -58,20 +60,18 @@ especially those they need to be aware of when upgrading.
       - CodeCvt
         - tweaked weakassert in CodeCvt.inl
       - FloatConversion
+        - Docs
         - Lots of cleanups and significant improvement (but alot of cleanup needed after I lose deprecated APIs)
         - More ToStringOptions CTORs constexpr
         - Fixed FloatConversion::ToString (eTrimZeros) case of last .0 (cuz I had documented it that way and better), and added regtests for this and many other eFixedPoint FloatConversion::ToString() calls
         - lots of cleanups and simplifications / docs for FloatConversion code (sb no semantic changes, except making a few things inline->constexpr), and added Precision::kDefault - mostly docs.
         - Added FloatFormatType::eStandard (not NYI really) - and several other cleanups to ToString_GeneralCase_ - but still more todo - but testing passes all regtests
         - improved FloatConversion regtests
-        - fixed FloatConversion handling of precision for scientific case (and updated regtests)
-        - new Precision::CalculatePrecision () utility with regtests
-        - regtests for recent changes to help keep this working while developing furhter
-        - Docs
-        - improved Precision::CalculatePrecision(); more regtests and docs; new approach experimenting with format_sig_figs_ ... and regtests
+        - fixed FloatConversion handling of precision for scientific case
+        - new Precision::CalculatePrecision () utility
         - Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
-        - docs, and corresponding regtests on ToString formats; and deprecated FloatFormatType::eAutomaticScientific
-        - deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros; replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
+        - deprecated FloatFormatType::eAutomaticScientific
+        - deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros: replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
     - Common
       - StdCompat
         - #define qStroika_Foundation_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
@@ -79,7 +79,7 @@ especially those they need to be aware of when upgrading.
     - Database
       - DocumentDB
         - API
-          - Database::Document  new Options feature, and new option fAddAllowsExternallySpecifiedIDs,
+          - Database::Document new Options feature, and new option fAddAllowsExternallySpecifiedIDs,
             and respected in Add () method (not everywhere yet but mostly and assert when would fail) and support
             in concrete containers
           - Ptr::GetOne (Filter) overload
