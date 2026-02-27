@@ -9,15 +9,26 @@ especially those they need to be aware of when upgrading.
 
 
 
->>> PREP FOR NEXT RELEASE
+### 3.0d23 {2026-02-??} {[diff](../../compare/3.0d22...3.0d23)} DRAFT NOTES
 
+#### TLDR
+
+- Implemented more fully and internally syncrhonized versions of various DocumentDB backends
+- Fixed issue with webserver 'leaving around' extra connections in lists of open connections
+
+#### Upgrade Notes (3.0d22 to 3.0d23)
+
+- Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
+- Renamed TrivialDocumentDB -> LocalDocumentDB
+
+#### Change Details
 
 - Documentation
   - Building-Stroika.md
     - Varied updates
     - docs in FAQ about common vscode build errors on new machine
-  - Misc cleanups, including ReadMe docs
-
+    - FAQ for command 'cpptools.activeConfigName' not found
+  - Misc cleanups, including ReadMe docs, and class comments/docs
 - Build System and Scripts
   - .vscode
     - removed ThirdPartyComponents/*/CURRENT/** from C_Cpp.files.exclude (experimenting a bit)
@@ -27,124 +38,166 @@ especially those they need to be aware of when upgrading.
     - fixed regtest docs for .local => .lan name change
   - Makefile
     - added new top level makefile target library-clobber and used it in .vscode/tasks.json for rebuild task
+    - fixed (by simplifying makefile) mkaefile for top level make of all or libraries when QUICK_BUILD=1 is on (now that default so more prominent when it was broken) - handling failures
   - Scripts
+    - configure
+      - fixed configure script so test for presence of python doesn't hang on latest msys under docker
     - fixed scripts FormatCode so works on macos (weaker version of expand)
     - Added mingw to path in .vscode/launch.json
   - Docker
     - Windows
-      - now uses VS_17_14_27
-
-
-
+      - now uses VS_17_14_27 visual studio
+      - now uses MSYS_20251213
 - Compiler Bug Defines
-  -     define new compiler bug define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy for clang++15 and workaround
-
-- Characters
-  - CodeCvt
-    - tweaked weakassert in CodeCvt.inl
-  - FloatConversion
-    - Lots of cleanups and significant improvement (but alot of cleanup needed after I lose deprecated APIs)
-    - More ToStringOptions CTORs constexpr
-    - Fixed FloatConversion::ToString (eTrimZeros) case of last .0 (cuz I had documented it that way and better), and added regtests for this and many other eFixedPoint FloatConversion::ToString() calls
-    - lots of cleanups and simplifications / docs for FloatConversion code (sb no semantic changes, except making a few things inline->constexpr), and added Precision::kDefault - mostly docs.
-    - Added FloatFormatType::eStandard (not NYI really) - and several other cleanups to ToString_GeneralCase_ - but still more todo - but testing passes all regtests
-    - improved FloatConversion regtests
-    - fixed FloatConversion handling of precision for scientific case (and updated regtests)
-    - new Precision::CalculatePrecision () utility with regtests
-    - regtests for recent changes to help keep this working while developing furhter
-    - Docs
-    - improved Precision::CalculatePrecision(); more regtests and docs; new approach experimenting with format_sig_figs_ ... and regtests
-    - Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
-    - docs, and corresponding regtests on ToString formats; and deprecated FloatFormatType::eAutomaticScientific
-    - deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros; replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
-
-
-- Common
-  - StdCompat
-    - #define qStroika_Foundation_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
-
-- Database
-  - DocumentDB
-    - API
-      - Database::Document  new Options feature, and new option fAddAllowsExternallySpecifiedIDs,
-        and respected in Add () method (not everywhere yet but mostly and assert when would fail) and support
-        in concrete containers
-      - Ptr::GetOne (Filter) overload
-      - renamed GetOne to Get
-      - support in DocumentDB code for GetsSpaceConsumed () 
-      - support fOperationLoggingCallback option specification
-      - Improve use of DeclareActivity in DocumentDB wrappers
-      - Collection added 'GetName' method, and used in LazyEvalActivity declaration/exception report
-    - LocalDocumentDB
-      - Renamed TrivialDocumentDB -> LocalDocumentDB (questionable but both names sucked)
-      - Implemented SingleFileDB, DirecotryDB and MemoryDB cases decently.
-      - Examples/Samples/RegressionTests
-      - file-based impls now how option for fRetryOnSharingViolationFor (passed to ThroughTmpFileWriter)
-    - MongoDBClient
-      - fixed to handle either oid _id or string _id field, and other cleanups
-      - support for WrapExecute_/logging/tracking
-    - SQLite
-      - support for WrapExecute_ (so reports log stats/trace messages)
-      - fixed SQLite bindings - so support funky table names (wrap them in quotes)
-      - fixed bug where query with force add ids, but object missing
-    - all concrete DocumentDBs get (LocalDocumentDB, SQLite and Mongo)
-      - Option fInternallySynchronizedLetter
-    - Tests
-      - TestAddNewWithExternalKeysProvided_ (for all backends)
-  - ObjectCollection
-    - const fix for Ptr, and added missing AddOrUpdate () method
-    - fixed missing overloads for Get/GetOrThrow in Document/ObjectCollection
-
-- DataExchange
-  - OptionsFile
-    - Tweak messages
-
-  - Variant
-    - Reader
-      - Read method now const
-
-- Execution
-  - CommandLine
-    - maked fArgument field const since its public so it can only be read not set
-  - ModuleGetterSetter
-    - concept checking on IMPL
-    - better docs
-    - new AssureLoaded method
-  - ProcessRunner
-    - minor cleanup of BackgroundProcess::WaitForStarted()
-    - Various cleanups 
-    - deprecated ProgressMonitor API (was never used, and dont have clear docs about how I intended to use it - can add back in the future if ever needed, but document how it mgiht work)
-    - refactoring of private CreateRunnable_ into CreateDetailedRunnable_ and CreateSimpleRunnable_ () and have it return shared_ptr so lifetime safety FIX
-    - ProcessRunner 'ToString' methods added to a few places to ease debugging
-    - Minor cleanups to (Windows) verbosity on happy path (USE_NOISY_TRACE_IN_THIS_MODULE_)
-    - RunInBackground
-      - fDetached support
-      - document restrictions in ProcessRunner when fDetached, and enforce them and fix behavior for POSIX case (untested)
-      - fixed RunInBackground detached for POSIX (enabled test for posix)
-      - appear to have fixed ProcessRunner detached mode on windows too
-    - Tests: Foundation_Execution_ProcessRunner RunInBackgroundDetached
-
-- IO
-  - FileSystem
-    - WellKnownLocations
-      - various cleanups: leave a few variables uninitialized (use qStroika_Foundation_INDETERMINATE)
-    - ThroughTmpFileWriter
-      - Fixed - not 100% - but much better - random filename generation so fewer conflicts with other processes doing same thing - and weakassert on failure/conflict
-      - #if qStroika_Foundation_Common_Platform_Windows = added fRetryOnSharingViolationFor support to IO/FileSystem/ThroughTmpFileWriter - defaulting to retry for one second
-      - treat ERROR_ACCESS_DENIED same as ERROR_SHARING_VIOLATION (as both can happen from virus scanner)
-  - Network
-    - Interface
-      - fixed log warning about IF_TYPE_PROP_VIRTUAL - mapped to Interface::Type::eDeviceVirtualInternalNetwork and added docs
-
-- Memory
-  - Common
-    - Memory::CopyToIf () overloads now constexpr
-- Time
-  - Duration
-    - now for Duration ToString code - use ToStringOptions {eStandard}  (+exxx stuff only supported in ISO 8601 Part 2)
-
-
+  - define new compiler bug define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy for clang++15 and workaround
+  - new qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy BWA
+  - Simplify/enahance BWA for qCompilerAndStdLib_template_template_auto_deduced_Buggy
+- Library
+  - Foundation
+    - Characters
+      - CodeCvt
+        - tweaked weakassert in CodeCvt.inl
+      - FloatConversion
+        - Lots of cleanups and significant improvement (but alot of cleanup needed after I lose deprecated APIs)
+        - More ToStringOptions CTORs constexpr
+        - Fixed FloatConversion::ToString (eTrimZeros) case of last .0 (cuz I had documented it that way and better), and added regtests for this and many other eFixedPoint FloatConversion::ToString() calls
+        - lots of cleanups and simplifications / docs for FloatConversion code (sb no semantic changes, except making a few things inline->constexpr), and added Precision::kDefault - mostly docs.
+        - Added FloatFormatType::eStandard (not NYI really) - and several other cleanups to ToString_GeneralCase_ - but still more todo - but testing passes all regtests
+        - improved FloatConversion regtests
+        - fixed FloatConversion handling of precision for scientific case (and updated regtests)
+        - new Precision::CalculatePrecision () utility with regtests
+        - regtests for recent changes to help keep this working while developing furhter
+        - Docs
+        - improved Precision::CalculatePrecision(); more regtests and docs; new approach experimenting with format_sig_figs_ ... and regtests
+        - Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
+        - docs, and corresponding regtests on ToString formats; and deprecated FloatFormatType::eAutomaticScientific
+        - deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros; replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
+    - Common
+      - StdCompat
+        - #define qStroika_Foundation_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
+        - Added to Common::Concepts BasicLockable and Lockable - from std-c++
+    - Database
+      - DocumentDB
+        - API
+          - Database::Document  new Options feature, and new option fAddAllowsExternallySpecifiedIDs,
+            and respected in Add () method (not everywhere yet but mostly and assert when would fail) and support
+            in concrete containers
+          - Ptr::GetOne (Filter) overload
+          - renamed GetOne to Get
+          - support in DocumentDB code for GetsSpaceConsumed () 
+          - support fOperationLoggingCallback option specification
+          - Improve use of DeclareActivity in DocumentDB wrappers
+          - Collection added 'GetName' method, and used in LazyEvalActivity declaration/exception report
+        - LocalDocumentDB
+          - Renamed TrivialDocumentDB -> LocalDocumentDB (questionable but both names sucked)
+          - Implemented SingleFileDB, DirecotryDB and MemoryDB cases decently.
+          - Examples/Samples/RegressionTests
+          - file-based impls now how option for fRetryOnSharingViolationFor (passed to ThroughTmpFileWriter)
+          - new fReadInitialData option for LocalDocumentDB::SingleFile variant
+          - renamed recent LocalDB option fReadInitialData -> fForceCreateNew
+          - Database::Document::LocalDocumentDB FlushOnEachWrite option and explicit Flush API
+        - MongoDBClient
+          - fixed to handle either oid _id or string _id field, and other cleanups
+          - support for WrapExecute_/logging/tracking
+        - SQLite
+          - support for WrapExecute_ (so reports log stats/trace messages)
+          - fixed SQLite bindings - so support funky table names (wrap them in quotes)
+          - fixed bug where query with force add ids, but object missing
+          - API no longer has Peek() at sqlite3 object, cuz would break thread safety gaurantees (for internally syncrhonized case)
+        - all concrete DocumentDBs get (LocalDocumentDB, SQLite and Mongo)
+          - Option fInternallySynchronizedLetter
+        - Tests
+          - TestAddNewWithExternalKeysProvided_ (for all backends)
+      - ObjectCollection
+        - const fix for Ptr, and added missing AddOrUpdate () method
+        - fixed missing overloads for Get/GetOrThrow in Document/ObjectCollection
+    - DataExchange
+      - OptionsFile
+        - Tweak messages
+      - Variant
+        - Reader
+          - Read method now const
+        - Writer
+          - JSON
+            - deprecated/renamed fJSONPrettyPrint->fPrettyPrint name of option for JSONSerializer;
+            - added fCanonicalize support to it (for easier diff testing)
+    - Debug
+      - AssertExternallySynchronizedMutex
+        - mark as Common::StdCompat::BasicLockable<> - docs and static_assert
+      - BackTrace
+        - Comments and SuppressInterruptionInContext in BackTrace::Capture so clear not a cancelation point
+    - Execution
+      - CommandLine
+        - maked fArgument field const since its public so it can only be read not set
+      - ModuleGetterSetter
+        - concept checking on IMPL
+        - better docs
+        - new AssureLoaded method
+      - ProcessRunner
+        - minor cleanup of BackgroundProcess::WaitForStarted()
+        - Various cleanups 
+        - deprecated ProgressMonitor API (was never used, and dont have clear docs about how I intended to use it - can add back in the future if ever needed, but document how it mgiht work)
+        - refactoring of private CreateRunnable_ into CreateDetailedRunnable_ and CreateSimpleRunnable_ () and have it return shared_ptr so lifetime safety FIX
+        - ProcessRunner 'ToString' methods added to a few places to ease debugging
+        - Minor cleanups to (Windows) verbosity on happy path (USE_NOISY_TRACE_IN_THIS_MODULE_)
+        - RunInBackground
+          - fDetached support
+          - document restrictions in ProcessRunner when fDetached, and enforce them and fix behavior for POSIX case (untested)
+          - fixed RunInBackground detached for POSIX (enabled test for posix)
+          - appear to have fixed ProcessRunner detached mode on windows too
+        - Tests: Foundation_Execution_ProcessRunner RunInBackgroundDetached
+      - Thread
+        - Suppressed interrupt throw DBGTRACE message now has stacktrace too
+        - improved DbgTrace with CheckForInterruption
+      - WaitForIOReady
+        - Execution::WaitForIOReady = kDefaultTypeOfMonitor now includes Error and HUP events (cuz typically if you are waiting for a read, you would probably want to know about those too)
+        - lose TypeOfMonitor::eError and eHUP, and added ePriority (and docs)
+        - USE_NOISY_TRACE_IN_THIS_MODULE_ improvements
+    - IO
+      - FileSystem
+        - WellKnownLocations
+          - various cleanups: leave a few variables uninitialized (use qStroika_Foundation_INDETERMINATE)
+        - ThroughTmpFileWriter
+          - Fixed - not 100% - but much better - random filename generation so fewer conflicts with other processes doing same thing - and weakassert on failure/conflict
+          - #if qStroika_Foundation_Common_Platform_Windows = added fRetryOnSharingViolationFor support to IO/FileSystem/ThroughTmpFileWriter - defaulting to retry for one second
+          - treat ERROR_ACCESS_DENIED same as ERROR_SHARING_VIOLATION (as both can happen from virus scanner)
+          - for WINDOWs - if DeleteFileW fails, use MoveFileExW (null, MOVEFILE_DELAY_UNTIL_REBOOT) to force eventually delete
+      - Network
+        - Interface
+          - fixed log warning about IF_TYPE_PROP_VIRTUAL - mapped to Interface::Type::eDeviceVirtualInternalNetwork and added docs
+        -  ConnectionOrientedStreamSocket
+          - minor cleanups
+          - fixed so tracks if we've ever seen 0 returned by READ/RECV, and if so, mark socket at EOF, so henceforth always returns known zero bytes available and read returns zero (so can tell cleanly shutdown and closed)
+        - HTTP
+          - MessageStartTextInputStreamBinaryAdapterMinor 
+            - small cleanups (code is a bit of a mess)
+    - Memory
+      - Common
+        - Memory::CopyToIf () overloads now constexpr
+    - Streams
+      - InputStream
+        - fixed InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () bug - was quite wrong result
+    - Time
+      - ClockCast
+        - Time::clock_cast cleanups, docs, and regtests
+      - Duration
+        - now for Duration ToString code - use ToStringOptions {eStandard}  (+exxx stuff only supported in ISO 8601 Part 2)
+    - Traversal
+      - DiscreteRange, DisjointRange, DiscreteDisjointRange, Range
+        - Added concept usage
+          - Added IRangeableTraits<T> and IAdvanceAndRetreatable<TRAITS use on Pin () method and IDsicretreRangeableTraits for discreteRange template class
+      - Range
+        - deduction guides
+  - Frameworks
+    - WebServer
+      - ConnectionManager
+        - kInactiveSocketMonitorEvents2Watch4_ includes HUP and Error events - and use that for fInactiveSockSetPoller_: this probably addresses issue where we have lots of accumulating uninteresting connections in webserver sometimes (testing)
+        - fixed bug in WebServer::Connection::MyMessage_::ReadHeaders () - one case I was returning eIncompleteButMoreMayBeAvailable fixed to return eIncompleteDeadEnd
+          - **important cuz caused connections to hang around longer than they should**
+        - DbgTrace (USE_NOISY_TRACE_IN_THIS_MODULE_) cleanups/improvements (still off by default so no big change except when debugging)
 - Samples
+  - DocumentDB
+    - fixed to use new .fInternallySynchronizedLetter = eInternallySynchronized for internally syncrhonized connections
   - HTMLUI
     - cleanups
     - Backend
@@ -156,11 +209,11 @@ especially those they need to be aware of when upgrading.
         - show Last succesful communication: e.g. less than a minute ago
       - QuasarBasedHTMLApp npm update/upgrade/audit-fix
       - removed remaining use of moment-js, and attempted use of date-fns, and just use luxon - seems to work better (millisecond support at least)
-
+    - Both
+      - add (fake) Database statistics (so easier in other cloned apps to include/provide)
 - Tests
   - RegressionTests
     - cleanup Foundation_Execution_Exceptions, Test4_Activities_ and added tests
-
 - ThirdPartyComponents
   - curl
     - VERSION 8.18.0
@@ -172,312 +225,39 @@ especially those they need to be aware of when upgrading.
     - VERSION 3.51.2
   - zlib
     - VERSION 1.3.2
-
-#if 0
-commit 0afb186e33c86fa7d2357f91b4cbf787d82a427a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 13 11:24:59 2026 -0500
-
-    Building stroika docs / FAQ for command 'cpptools.activeConfigName' not found
-
-commit 1337e8f5ab168396e41b2a03132eda6bddc61673
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 13 11:25:51 2026 -0500
-
-    Draft qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy BWA
-
-commit ba84749b92d7acaacba9ce9ff266bddc070bc423
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 13 12:01:30 2026 -0500
-
-    draft support for qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy (clang/macos//xcode issue)
-
-
-commit 67209ccebc092f1cc7416de84e5949554944a2ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 16 15:54:44 2026 -0500
-
-    HTMLUI sample - add Database statistics (back) - because though there is no DB in this sample, its common enough in apps like it (that I would be cloning HTMLUI sample to create) - it makes sense to include (easily removed in cloned apps)
-
-commit 2e5846117de30c38964ca7d8a81d718d80526a64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 16 23:28:59 2026 -0500
-
-    fixed Document::MongoDBClient::GetSpaceConsumed ()
-
-commit a92db0f4e31993a1f2dd7a04b511edd39e4ef475
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 17 11:13:00 2026 -0500
-
-    Execution::WaitForIOReader = kDefaultTypeOfMonitor now includes Error and HUP events (cuz typically if you are waiting for a read, you would probably want to know about those too)
-
-commit 76a793b08d2e433e11907e562f127686b699421d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 17 11:15:14 2026 -0500
-
-    In Frameworks::WebServer::ConnectionManager: kInactiveSocketMonitorEvents2Watch4_ includes HUP and Error events - and use that for fInactiveSockSetPoller_: this probably addresses issue where we have lots of accumulating uninteresting connections in webserver sometimes (testing)
-
-commit 5ee56feccecccf670103179428eae74ce5de33b1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 17 18:23:03 2026 -0500
-
-    revert kInactiveSocketMonitorEvents2Watch4_ / kDefaultTypeOfMonitor 'fix' until I can debug why it breaks things
-
-commit b139007c3d9d5391cb3f440dacf789d8e7579aa2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 17 20:29:22 2026 -0500
-
-    Minor progress on WaitForIOReader: lose TypeOfMonitor::eError and eHUP, and added ePriority (and docs) - must revisit earlier idea of what might be wrong with poll code
-
-commit 18d29f36941dd329b1b24f021998bfd40faa632c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 00:07:30 2026 -0500
-
-    minor cleanups to Network/ConnectionOrientedStreamSocket, AND - fixed so tracks if we've ever seen 0 returned by READ/RECV, and if so, mark socket at EOF, so henceforth always returns known zero bytes available and read returns zero (so can tell cleanly shutdown and closed)
-
-commit 8e647a0fee0478083facd433b058fd99548fcb78
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 00:18:23 2026 -0500
-
-    Execution/WaitForIOReady USE_NOISY_TRACE_IN_THIS_MODULE_ improvements
-
-commit d302f1e252cf6c3cf2fe1e1a836192c692f8561b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 00:20:44 2026 -0500
-
-    Minor cleanups to Network/HTTP/MessageStartTextInputStreamBinaryAdapter (code is a bit of a mess)
-
-commit a4f896935e928dbb6f93cd4930f6f3f8d940caa4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 07:19:44 2026 -0500
-
-    fixed InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () bug - was quite wrong result
-
-commit 3565d9d17aef56f93d57dc3684efe30ddaa22f96
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 07:29:12 2026 -0500
-
-    fixed bug in WebServer::Connection::MyMessage_::ReadHeaders () - one case I was returning eIncompleteButMoreMayBeAvailable fixed to return eIncompleteDeadEnd
-
-commit 802ecf9d18ff6ea03ae3bd6e50db42abc63d6864
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 07:50:59 2026 -0500
-
-    Frameworks/WebServer/ConnectionManager DbgTrace (USE_NOISY_TRACE_IN_THIS_MODULE_) cleanups/improvements (still off by default so no big change except when debugging)
-
-commit 6e55da1bfc1ae08964d0255bc0f7222e533c7661
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 12:44:39 2026 -0500
-
-    Comments and SuppressInterruptionInContext in BackTrace::Capture so clear not a cancelation point
-
-commit 7142f6101b72595ac05c368d93d0c4f3a71c79d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 13:01:46 2026 -0500
-
-    Suppressed interrupt throw DBGTRACE message now has stacktrace too
-
-commit 5923b6327250bf2d5c33e45cf076c1cebf812ad6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 14:47:35 2026 -0500
-
-    improved DbgTrace with CheckForInterruption
-
-commit 77c67752a68a5f1da707467047eb927243cb381b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 18 23:40:32 2026 -0500
-
-    new fReadInitialData option for LocalDocumentDB::SingleFile variant
-
-commit 80403be1483de77d3453b0127db0ae54285f8872
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 19 08:01:14 2026 -0500
-
-    renamed recent LocalDB option fReadInitialData -> fForceCreateNew
-
-commit 433fe3bed7b81ab881c5fbe2140de9915a5769c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 19 22:00:51 2026 -0500
-
-    Database::Document::LocalDocumentDB FlushOnEachWrite option and explicit Flush API
-
-commit ae1eb7043c602a6d9e43e9c2e7e7fe544f8a4172
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 19 22:21:44 2026 -0500
-
-    IO/FileSystem/ThroughTmpFileWriter for WINDOWs - if DeleteFileW fails, use MoveFileExW (null, MOVEFILE_DELAY_UNTIL_REBOOT) to force eventually delete
-
-commit 43871add8ca1cb08a67ea2fe10c376b09184acdf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 22 20:24:51 2026 -0500
-
-    Document::SQLite API now longer has Peek() at sqlite3 object, cuz would break thread safety gaurantees
-
-commit de3724293ab97eca671d3c7fbdd8384cb7a45be7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 07:47:33 2026 -0500
-
-    Database/Document/Connection now has nullptr CTOR
-
-commit 738687fff200129348c1c715ae930e7024aff87a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 08:23:47 2026 -0500
-
-    DocumentDB::SQLite::New/Options now has fInternallySynchronizedLetter which it respects to create internally syncrhonized (optionally) implementation
-
-commit a1345b5b1acbc140e9b245a7744e87ad6e388a49
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 10:07:24 2026 -0500
-
-    improved performance and docs about thread safety on LocalDocumentDB
-
-commit 9606bb5ae902f10b7dfba6e79bd27d9e9f249b37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 10:36:57 2026 -0500
-
-    renamed makefile target stroika-clobber to library-clobber
-
-commit 25d78566c2b7d62cd29b9c4d67f649f38919e081
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 11:37:11 2026 -0500
-
-    Cleanup Satisfies Concepts: comments
-
-commit e823f20d014bc5d22d3ecc4c01fb013892e22d83
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 11:37:33 2026 -0500
-
-    Cleanup Satisfies Concepts: comments
-
-commit 649f2f4ec84ffe03c3fe349dba3002ab350762e4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 11:38:12 2026 -0500
-
-    Added to Common::Concepts BasicLockable and Lockable - from std-c++
-
-commit 96dafb34a03dc8c18ca3eca7fefe1723d9ec1064
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 11:39:20 2026 -0500
-
-    mark AssertExternallySynchronizedMutex as Common::BasicLockable<> - docs and static_assert
-
-commit f1d4f01959f569c02e2b9e9c0a833bfb69ea8f06
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 12:56:35 2026 -0500
-
-    Add back accidentally removed No/arg Database::Document::Connection::Ptr CTOR
-
-commit f7c0d7f8d46f66d7ca72e43a0f00beacb1281d20
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 23 13:00:00 2026 -0500
-
-    fix a couple minor bugs caused by changing regular C++ code into template
-
-commit 53ba7fca5b28f5ab710a29e1fdeedf9f2df17f07
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 13:01:19 2026 -0500
-
-    static asserts / docs
-
-commit 8103956a0c79043165e2d2eeefd6447b3a1ed383
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 23 13:12:15 2026 -0500
-
-    Moved a couple comments since vscode intellicode stuff seems to grab from definition sometimes not declaration
-
-commit 504661dd68ba090bfd62b77ebbdd990ee85dbb98
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 23 14:09:22 2026 -0500
-
-    Added some concept usage for Range/DiscreteRange (IRangeable, IDiscreteRangeable) - just a start, but about 80% there
-
-commit f92b56d7403567f815979070e6d053a205d024d2
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 23 15:00:28 2026 -0500
-
-    Added IRangeableTraits<T> and IAdvanceAndRetreatable<TRAITS use on Pin () method and IDsicretreRangeableTraits for discreteRange template class
-
-commit 077772e8f0cd194a0b90f75eaeb7233f853036e5
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Mon Feb 23 15:42:51 2026 -0500
-
-    Lots of concept cleanups to RANGES code (not C++ ranges, Stroika ranges)
-
-commit 3379cf271e4451a8ef92dfd5d79598c602088e0a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 23 18:48:06 2026 -0500
-
-    Simplify/enahance BWA for qCompilerAndStdLib_template_template_auto_deduced_Buggy
-
-commit 2dc1a0d2b38ccb41d99fd70ff18979678452778c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 24 09:05:43 2026 -0500
-
-    Time::clock_cast cleanups, docs, and regtests
-
-commit 8ebfcda02ca8ac1131ebdd57472af1ee32bd8b64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 24 09:06:24 2026 -0500
-
-    Range<> deduction guides abortive start - probably not needed
-
-commit b0af31cfbc6b341b5d26f5b03910442afd6607dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 24 09:07:22 2026 -0500
-
-    (mostly) fixed Samples/DocumentDB to use new .fInternallySynchronizedLetter = eInternallySynchronized for internally syncrhonized connections
-
-commit 68b1d476e7e86152003a351c1b4cf83cbe649e3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 24 10:10:43 2026 -0500
-
-    Database/Document/MongoDBClient support for .fInternallySynchronizedLetter = eInternallySynchronized option, and used in sample DocumentDB app
-
-commit 55601bdffd5eeaadad80171191b7b07fbdfc0327
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 24 10:23:58 2026 -0500
-
-    Need Range deduction guides after all
-
-commit 274624479d104505b313d4eac91739412a606ecd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 24 15:40:16 2026 -0500
-
-    deprecated/renamed fJSONPrettyPrint->fPrettyPrint name of option for JSONSerializer; and added fCanonicalize support to it (not yet tested)
-
-commit a52ceab2840e3adbef85ab950287fde49eba94c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 24 17:28:34 2026 -0500
-
-    Options ReadOnly flag for LocalDocumentDB single-file object
-
-
-commit b5b9ca7497cc3a926de68e1f03356799d71fe332
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 15:08:13 2026 -0500
-
-    hopefully fixed (by simplifying makefile) mkaefile for top level make of all or libraries when QUICK_BUILD=1 is on (now that default so more prominent when it was broken) - handling failures
-
-commit 2fd28eb38f76912c46b5a56b9537ebc086a80fba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 25 15:14:43 2026 -0500
-
-    re-enable zlib 1.3.2 - now that I have (hopefully) fixed makefile for windows
-
-
-
-    docker containers: use MSYS_20251213
-
-commit 6080242e6de536bd8c05e707a5d4eed2f8904bad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 26 10:32:49 2026 -0500
-
-    fixed configure script so test for presence of python doesn't hang on latest msys under docker
-
-#endif
-
-
-
+    - several patches to build process/zlib makefile needed for this
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 11, 12, 13, 14. 15 }
+  - Clang++ { unix: 15, 16, 17, 18, 19, 20; XCode: 15.2, 15.4, 16.2, 16.4 }
+  - MSVC: { 17.14.27 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 25H2
+    - mcr.microsoft.com/windows/servercore:ltsc2025 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20250622.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 26.2 - arm64/m1 chip
+    - 14.8.3, 15.7.2 on github actions
+  - Linux: { Ubuntu: [22.04, 24.04, 25.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, debian-12), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - [CodeQL](https://codeql.github.com/)
+  - [Valgrind/MemCheck](https://valgrind.org/docs/manual/mc-manual.html)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3.0), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3.0)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+
+----------------------------
 
 ### 3.0d22 {2026-01-08} {[diff](../../compare/3.0d21...3.0d22)}
 
