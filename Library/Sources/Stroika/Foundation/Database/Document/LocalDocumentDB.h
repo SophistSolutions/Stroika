@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
 
     public:
         /**
-        */
+         */
         nonvirtual Ptr& operator= (const Ptr& src);
         nonvirtual Ptr& operator= (Ptr&& src) noexcept;
 
@@ -179,7 +179,19 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
     /**
      *  \brief create an LocalDocumentDB database (and connection) object, guided by argument Options.
      * 
-     *  \note 
+     *  \par Example Usage
+     *      \code
+     *          // In memory DB can be used by multiple threads
+     *          Connection::Ptr internallySynchronizedMemoryDBConnection = LocalDocumentDB::New (LocalDocumentDB::Options{
+     *              .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::MemoryStorage{}});
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          // only json file read-only using DocumentDB API
+     *          Connection::Ptr copyFrom = LocalDocumentDB::New (LocalDocumentDB::Options{
+     *              .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = loadFromStartupFile, .fReadOnly = true}});
+     *      \endcode
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      *          the internal synchronization of the resulting letter object is controlled by Options::fInternallySynchronizedLetter
@@ -188,7 +200,7 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
     Ptr New (const Options& options);
 
     /**
-         */
+     */
     class IRep : public Database::Document::Connection::IRep {
     public:
         /**
