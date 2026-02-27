@@ -241,7 +241,7 @@ especially those they need to be aware of when upgrading.
       - MSYS (msys2-base-x86_64-20250622.sfx.exe)
     - WSL v2
   - MacOS
-    - 26.2 - arm64/m1 chip
+    - 26.3 - arm64/m1 chip
     - 14.8.3, 15.7.2 on github actions
   - Linux: { Ubuntu: [22.04, 24.04, 25.04], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
 - Hardware Tested/Supported
