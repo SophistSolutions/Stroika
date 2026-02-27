@@ -149,6 +149,13 @@ endif
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --build . --target zlibstatic --target zlib ${CMAKE_BUILD_AND_INSTALL_ARGS} ${CMAKE_BUILD_TYPE_EXTRA_ARG_}  > BUILD-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 	@+cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
+	@#FIX:  zsd.lib(zutil.obj) : warning LNK4099: PDB 'zsd.pdb' was not found with 'zsd.lib(zutil.obj)' or at 'C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\zsd.pdb'; linking object as if no debug info
+ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
+ifeq (1,$(POST_132_Build_))
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zsd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+endif
+endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Patching:" `$(StroikaRoot)ScriptsLib/SubstituteBackVariables ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc`
 	@${SED} -i 's/^libdir=.*/libdir=$${prefix}\/lib/g' "${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc"
