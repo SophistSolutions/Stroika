@@ -152,8 +152,8 @@ endif
 	@#FIX:  zsd.lib(zutil.obj) : warning LNK4099: PDB 'zsd.pdb' was not found with 'zsd.lib(zutil.obj)' or at 'C:\Sandbox\Stroika\DevRoot\Builds\Debug\Tests\zsd.pdb'; linking object as if no debug info
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
 ifeq (1,$(POST_132_Build_))
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
-	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zsd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/"
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
+	@-cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_}${CMAKE_BUILD_TYPE_}/zsd.pdb "${PER_CONFIGURATION_BUILDS_DIR_}lib/" 2> /dev/null
 endif
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(BuildPlatform)))
