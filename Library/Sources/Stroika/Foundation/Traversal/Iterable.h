@@ -1393,39 +1393,41 @@ namespace Stroika::Foundation::Traversal {
 
     protected:
         /**
-         *  @see Memory::SharedByValue_State
+         *  @see Memory::SharedByValueSupport::SharingState
          *
          *  Don't call this lightly. This is just meant for low level or debugging, and for subclass optimizations
          *  based on the state of the shared common object.
          */
-        nonvirtual Memory::SharedByValue_State _GetSharingState () const;
+        nonvirtual Memory::SharedByValueSupport::SharingState _GetSharingState () const;
 
     private:
         static shared_ptr<_IRep> Clone_ (const _IRep& rep);
-
-    private:
-#if (__cplusplus < kStrokia_Foundation_Common_cplusplus_20) || qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
-        struct Rep_Cloner_ {
-            auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
-            {
-                return Iterable<T>::Clone_ (t);
-            }
-        };
-#else
-        using Rep_Cloner_ = decltype ([] (const _IRep& t) -> shared_ptr<_IRep> { return Iterable<T>::Clone_ (t); });
-#endif
 
     private:
         template <typename CONTAINER_OF_T>
         static Iterable<T> mk_ (CONTAINER_OF_T&& from)
             requires (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>);
 
+    private:
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
+        struct Rep_Cloner_ {
+            auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
+            {
+                return Clone_ (t);
+            }
+        };
     protected:
-        /**
+        using _SharedByValueRepType =
+            Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, Rep_Cloner_>>;
+#else
+    protected:
+        /*
          *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
-         *  However, protected because manipulation needed in some subclasses (rarely) - like UpdatableIteratable.
+         *  However, protected because manipulation needed in some subclasses (rarely) - like _GetWritableRepAndPatchAssociatedIterator.
          */
-        using _SharedByValueRepType = Memory::SharedByValue<_IRep, Memory::SharedByValue_Traits<_IRep, shared_ptr<_IRep>, Rep_Cloner_>>;
+        using _SharedByValueRepType =
+            Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, decltype([](const _IRep& t) {return Clone_ (t);})>>;
+#endif
 
     protected:
         template <typename REP_SUB_TYPE = _IRep>

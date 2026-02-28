@@ -235,13 +235,13 @@ namespace Stroika::Foundation::Traversal {
     inline Iterable<T>::Iterable (const shared_ptr<typename Iterable<T>::_IRep>& rep) noexcept
         : _fRep{(RequireExpression (rep != nullptr), rep)}
     {
-        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
+        Require (_fRep.GetSharingState () != Memory::SharedByValueSupport::SharingState::eNull);
     }
     template <typename T>
     inline Iterable<T>::Iterable (shared_ptr<typename Iterable<T>::_IRep>&& rep) noexcept
         : _fRep{(RequireExpression (rep != nullptr), move (rep))}
     {
-        Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
+        Require (_fRep.GetSharingState () != Memory::SharedByValueSupport::SharingState::eNull);
         Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    inline Memory::SharedByValue_State Iterable<T>::_GetSharingState () const
+    inline Memory::SharedByValueSupport::SharingState Iterable<T>::_GetSharingState () const
     {
         return _fRep.GetSharingState ();
     }
