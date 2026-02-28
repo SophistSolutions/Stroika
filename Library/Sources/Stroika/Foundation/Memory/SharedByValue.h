@@ -17,56 +17,82 @@
  * 
  *  TODO:
  *      @todo Probably should use Debug::AssertExternallySynchronized in SharedByValue
- *
  */
 
 namespace Stroika::Foundation::Memory {
 
-    // @todo redo as C++ concept in C++20
-    template <typename T, typename SHARED_IMLP, typename COPIER>
-    constexpr bool SharedByValue_IsCopier ()
-    {
-        // @todo should match API function<SHARED_IMLP(const T&)>
-        return true;
-    }
-
     /**
-     *  \brief  SharedByValue_CopyByDefault is the default template parameter for copying SharedByValue
-     *
-     * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.
-     * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
+     * @brief Support types and concepts for SharedByValue template.
      */
-    template <typename T, typename SHARED_IMLP = shared_ptr<T>>
-    struct SharedByValue_CopyByDefault {
-        nonvirtual SHARED_IMLP operator() (const T& t) const;
-    };
-
-    /**
-     *  \brief  SharedByValue_Traits is a utility struct to provide parameterized support
-     *          for SharedByValue<>
-     *
-     *  This class should allow SHARED_IMLP to be std::shared_ptr (or another shared_ptr implementation).
-     */
-    template <typename T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
-    struct SharedByValue_Traits {
-        using element_type = T;
+    namespace SharedByValueSupport {
 
         /**
-         *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to synchronize itself.
+         * Check if COPIER is a legit 'copier' type for SharedByValue
+         * 
+         * @tparam SHARED_IMPL 
+         * @tparam T 
          */
-        using element_copier_type = COPIER;
-        using shared_ptr_type     = SHARED_IMLP;
-    };
+        template <typename COPIER, typename T, typename SHARED_IMPL>
+        concept IValueCopier = requires (COPIER c, const T& t, SHARED_IMPL) {
+            { c (t) } -> convertible_to<SHARED_IMPL>;
+        };
 
-    /**
-     *   This state is meant purely for code that may manage their internal behavior
-     *   based on details of reference counting - not for semantic reasons, but to enhance performance.
-     */
-    enum class SharedByValue_State {
-        eNull,
-        eSolo,
-        eShared,
-    };
+        /**
+         *  \brief  DefaultValueCopier is the default template parameter for copying SharedByValue
+         *
+         * DefaultValueCopier is the a simple copying mechanism used by SharedByValue<>.
+         * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
+         */
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>>
+        struct DefaultValueCopier {
+            static SHARED_IMPL operator() (const T& t);
+        };
+        static_assert (IValueCopier<DefaultValueCopier<int>, int, shared_ptr<int>>);
+
+        /**
+         * Check if a TRAITS is a valid 'traits type' for SharedByValue
+         * 
+         * @tparam SHARED_IMPL 
+         * @tparam T 
+         */
+        template <typename TRAITS, typename T>
+        concept ITraits =
+            requires (TRAITS) {
+                typename TRAITS::element_type;
+                typename TRAITS::element_copier_type;
+                typename TRAITS::shared_ptr_type;
+            } and same_as<typename TRAITS::shared_ptr_type::element_type, T> and
+            IValueCopier<typename TRAITS::element_copier_type, T, typename TRAITS::shared_ptr_type>;
+
+        /**
+         *  \brief  DefaultTraits is a utility struct to provide parameterized support
+         *          for SharedByValue<>
+         *
+         *  This class should allow SHARED_IMPL to be std::shared_ptr (or another shared_ptr implementation).
+         */
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = DefaultValueCopier<T, SHARED_IMPL>>
+        struct DefaultTraits {
+            using element_type = T;
+
+            /**
+             *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to synchronize itself.
+             */
+            using element_copier_type = COPIER;
+            using shared_ptr_type     = SHARED_IMPL;
+        };
+        static_assert (ITraits<DefaultTraits<int>, int>);
+
+        /**
+         *   This state is meant purely for code that may manage their internal behavior
+         *   based on details of reference counting - not for semantic reasons, but to enhance performance.
+         */
+        enum class SharingState {
+            eNull,
+            eSolo,
+            eShared,
+        };
+
+    }
 
     /**
      *  \brief  SharedByValue is a utility class to implement Copy-On-Write (aka COW) - sort of halfway between unique_ptr and shared_ptr
@@ -77,7 +103,7 @@ namespace Stroika::Foundation::Memory {
      *  to facilitate implementing the copy-on-write semantics which are often handy in providing
      *  high-performance data structures.
      *
-     *  This class should allow SHARED_IMLP to be std::shared_ptr (or another shared_ptr implementation).
+     *  This class should allow SHARED_IMPL to be std::shared_ptr (or another shared_ptr implementation).
      *
      *  This class template was originally called CopyOnWrite.
      * 
@@ -121,8 +147,11 @@ namespace Stroika::Foundation::Memory {
      *  TODO:
      *      @todo http://stroika-bugs.sophists.com/browse/STK-798 - review docs and thread safety
      */
-    template <typename T, typename TRAITS = SharedByValue_Traits<T>>
+    template <typename T, SharedByValueSupport::ITraits<T> TRAITS = SharedByValueSupport::DefaultTraits<T>>
     class SharedByValue {
+    public:
+        using SharingState = SharedByValueSupport::SharingState;
+
     public:
         using element_type        = typename TRAITS::element_type;
         using element_copier_type = typename TRAITS::element_copier_type;
@@ -139,7 +168,7 @@ namespace Stroika::Foundation::Memory {
          *  It can be copied by another copy of the same kind (including same kind of copier).
          *
          *  Or it can be explicitly constructed from a SHARED_IMPL (any existing shared_ptr, along
-         *  with a copier (defaults to SharedByValue_CopyByDefault). If passed a bare pointer, that
+         *  with a copier (defaults to DefaultValueCopier). If passed a bare pointer, that
          *  pointer will be wrapped in a shared_ptr (so it better not be already), and the SharedByValue()
          *  will take ownership of the lifetime of that pointer.
          *
@@ -240,13 +269,13 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  @see SharedByValue_State.
+         *  @see SharingState.
          *
          *  Note that two subsequent calls on an object CAN return different answers, without any calls to 'this' object.
          *  That's because another shared copy can lose a reference. So - if this once returns 'shared', it might later return
          *  solo, without any change to THIS object.
          */
-        nonvirtual SharedByValue_State GetSharingState () const;
+        nonvirtual SharingState GetSharingState () const;
 
     public:
         /**
@@ -258,7 +287,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Returns the number of references to the underlying shared pointer.
          *
-         *  @see SharedByValue_State
+         *  @see SharingState
          */
         nonvirtual unsigned int use_count () const;
 

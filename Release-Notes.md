@@ -174,6 +174,8 @@ especially those they need to be aware of when upgrading.
     - Memory
       - Common
         - Memory::CopyToIf () overloads now constexpr
+      - SharedByValue
+        - substantial cleanup of SharedByValue code - mostly using concepts and lambda copier (static function in more cases) and namespace for more details
     - Streams
       - InputStream
         - fixed InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () bug - was quite wrong result
