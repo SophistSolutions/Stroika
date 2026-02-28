@@ -293,16 +293,6 @@ inline InternetMediaTypeRegistry::FrontendRep_ InternetMediaTypeRegistry::kDefau
 
 /*
  ********************************************************************************
- ******************** InternetMediaTypeRegistry::Rep_Cloner_ ********************
- ********************************************************************************
- */
-auto InternetMediaTypeRegistry::Rep_Cloner_::operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
-{
-    return MakeSharedPtr<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
-};
-
-/*
- ********************************************************************************
  *************************** InternetMediaTypeRegistry **************************
  ********************************************************************************
  */

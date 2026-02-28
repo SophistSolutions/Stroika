@@ -208,12 +208,23 @@ namespace Stroika::Foundation::DataExchange {
         struct IFrontendRep_;
         struct FrontendRep_;
 
+        static shared_ptr<IFrontendRep_> MakeSharedFrontendRep_ (const IFrontendRep_& t);
+
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
-            shared_ptr<IFrontendRep_> operator() (const IFrontendRep_& t) const;
+            static auto operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
+            {
+                return MakeSharedFrontendRep_ (t);
+            }
         };
         using SharedRepByValuePtr_ =
-            Memory::SharedByValue<IFrontendRep_, Memory::SharedByValue_Traits<IFrontendRep_, shared_ptr<IFrontendRep_>, Rep_Cloner_>>;
-
+            Memory::SharedByValue<IFrontendRep_, Memory::SharedByValueSupport::DefaultTraits<IFrontendRep_, shared_ptr<IFrontendRep_>, Rep_Cloner_>>;
+#else
+        using SharedRepByValuePtr_ =
+            Memory::SharedByValue<IFrontendRep_, Memory::SharedByValueSupport::DefaultTraits<IFrontendRep_, shared_ptr<IFrontendRep_>, decltype ([] (const IFrontendRep_& t) {
+                                                                                                 return MakeSharedFrontendRep_ (t);
+                                                                                             })>>;
+#endif
         SharedRepByValuePtr_ fFrontEndRep_;
 
         static FrontendRep_ kDefaultFrontEndForNoBackend_;
