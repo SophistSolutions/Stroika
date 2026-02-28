@@ -195,6 +195,21 @@ namespace {
     };
     static_assert (movable<MyPreparedStatement_>);
     static_assert (not copyable<MyPreparedStatement_>);
+
+    String ExtractColumnText_ (::sqlite3_stmt* statement, unsigned int col)
+    {
+        RequireNotNull (statement);
+        Require (col < static_cast<unsigned int> (::sqlite3_column_count (statement)));
+        const char* t = reinterpret_cast<const char*> (::sqlite3_column_text (statement, static_cast<int> (col)));
+        if (t == nullptr) [[unlikely]] {
+            int colType = ::sqlite3_column_type (statement, col);
+            if (colType == SQLITE_NULL) [[likely]] {
+                return String{};
+            }
+            Throw (RuntimeErrorException{"Expected text column but got column type {}"_f(colType)});
+        }
+        return String::FromUTF8 (t);
+    }
 }
 
 /*
@@ -311,7 +326,7 @@ namespace {
     }
     // called with the result of a statement after a 'step' operation that produced a ROW.
     // And assumes the row contains data from the Partition_ algorithm above
-    Document::Document ExtractRowValueAfterStep_ (::sqlite3_stmt* statement, int dataCol, const IDType& id,
+    Document::Document ExtractRowValueAfterStep_ (::sqlite3_stmt* statement, unsigned int dataCol, const IDType& id,
                                                   const optional<tuple<String, Sequence<String>>>& sqliteProjection,
                                                   const optional<Projection>&                      remainingProjection)
     {
@@ -319,9 +334,8 @@ namespace {
          *      https://www.sqlite.org/json1.html
          *          "There is a subtle incompatibility between the json_extract() function in SQLite and the json_extract() function in MySQL. The MySQL version of json_extract() always returns JSON. The SQLite version of json_extract() only returns JSON if there are two or more PATH arguments"
          */
-        static const auto kJSONReader_ = Variant::JSON::Reader{};
-        VariantValue      valueReadBackFromDB =
-            kJSONReader_.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, dataCol))));
+        static const auto  kJSONReader_        = Variant::JSON::Reader{};
+        VariantValue       valueReadBackFromDB = kJSONReader_.Read (ExtractColumnText_ (statement, dataCol));
         Document::Document dr;
         if (sqliteProjection == nullopt) {
             dr = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
@@ -512,7 +526,7 @@ namespace {
                                 result = Document::Document{};
                             }
                             else {
-                                result = ExtractRowValueAfterStep_ (useStatment, 0, id, sqliteProjection, remainingAfterProjection);
+                                result = ExtractRowValueAfterStep_ (useStatment, 0u, id, sqliteProjection, remainingAfterProjection);
                             }
                             rc = ::sqlite3_step (useStatment);
                         }
@@ -541,11 +555,10 @@ namespace {
                             ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                             int rc;
                             while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
-                                static const auto kJSONReader_ = Variant::JSON::Reader{};
-                                String       id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
-                                VariantValue valueReadBackFromDB =
-                                    kJSONReader_.Read (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 1))));
-                                Document::Document vDoc = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
+                                static const auto  kJSONReader_        = Variant::JSON::Reader{};
+                                String             id                  = ExtractColumnText_ (statement, 0u);
+                                VariantValue       valueReadBackFromDB = kJSONReader_.Read (ExtractColumnText_ (statement, 1u));
+                                Document::Document vDoc                = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
                                 vDoc.Add (Document::kID, id);
                                 result += vDoc;
                             }
@@ -558,7 +571,7 @@ namespace {
                             ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                             int rc;
                             while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
-                                String id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
+                                String             id = ExtractColumnText_ (statement, 0u);
                                 Document::Document vDoc;
                                 vDoc.Add (Document::kID, id);
                                 result += vDoc;
@@ -586,8 +599,8 @@ namespace {
                             ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (statement), fConnectionRep_->fDB_);
                             int rc;
                             while ((rc = ::sqlite3_step (statement)) == SQLITE_ROW) {
-                                String id = String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (statement, 0)));
-                                Document::Document vDoc = ExtractRowValueAfterStep_ (statement, 1, id, sqliteProjection, remainingAfterProjection);
+                                String id = ExtractColumnText_ (statement, 0u);
+                                Document::Document vDoc = ExtractRowValueAfterStep_ (statement, 1u, id, sqliteProjection, remainingAfterProjection);
                                 if (remainingFilter == nullopt or remainingFilter->Matches (vDoc)) {
                                     if (remainingAfterProjection) {
                                         vDoc = remainingAfterProjection->Apply (vDoc); // some attributes need to be projected after filter cuz maybe used in filtering
