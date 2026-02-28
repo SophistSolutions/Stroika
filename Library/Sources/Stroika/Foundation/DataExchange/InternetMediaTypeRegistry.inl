@@ -10,10 +10,6 @@ namespace Stroika::Foundation::DataExchange {
      ************************** InternetMediaTypeRegistry ***************************
      ********************************************************************************
      */
-    inline auto InternetMediaTypeRegistry::MakeSharedFrontendRep_ (const IFrontendRep_& t) -> shared_ptr<IFrontendRep_>
-    {
-        return MakeSharedPtr<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
-    }
     inline optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const filesystem::path& fileSuffix) const
     {
         return GetAssociatedContentType (String{fileSuffix});

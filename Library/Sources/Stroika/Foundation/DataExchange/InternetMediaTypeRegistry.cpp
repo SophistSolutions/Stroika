@@ -677,6 +677,11 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
     return MakeSharedPtr<DefaultEmptyBackendRep_> ();
 }
 
+auto InternetMediaTypeRegistry::CloneAsSharedPtr_ (const IFrontendRep_& t) -> shared_ptr<IFrontendRep_>
+{
+    return Memory::MakeSharedPtr<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
+}
+
 #if qStroika_Foundation_Common_Platform_Windows
 auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<IBackendRep>
 {
