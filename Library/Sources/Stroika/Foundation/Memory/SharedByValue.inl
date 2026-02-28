@@ -21,8 +21,8 @@ namespace Stroika::Foundation::Memory {
     using SharedByValue_Traits [[deprecated ("Since Stroika v3.0d23 - use DefaultTraits directly")]] =
         SharedByValueSupport::DefaultTraits<T, SHARED_IMPL>;
 
-    using SharedByValue_State [[deprecated ("Since Stroika v3.0d23 - use SharedByValueSupport::SharingState directly")]] = SharedByValueSupport::SharingState;
-
+    using SharedByValue_State [[deprecated ("Since Stroika v3.0d23 - use SharedByValueSupport::SharingState directly")]] =
+        SharedByValueSupport::SharingState;
 
     /*
      ********************************************************************************
