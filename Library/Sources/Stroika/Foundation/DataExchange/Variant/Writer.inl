@@ -9,7 +9,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
      ***************************** DataExchange::Writer *****************************
      ********************************************************************************
      */
-    inline auto Writer:: CloneAsShared_ (const _IRep& t) -> _SharedPtrIRep
+    inline auto Writer::CloneAsShared_ (const _IRep& t) -> _SharedPtrIRep
     {
         return t.Clone ();
     }
