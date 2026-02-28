@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Memory {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
             static SHARED_IMPL operator() (const T& t);
 #else
-            SHARED_IMPL operator() (const T& t);
+            SHARED_IMPL operator() (const T& t) const;
 #endif
         };
         static_assert (IValueCopier<DefaultValueCopier<int>, int, shared_ptr<int>>);
