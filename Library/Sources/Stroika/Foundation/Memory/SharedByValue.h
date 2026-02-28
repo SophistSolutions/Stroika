@@ -45,7 +45,11 @@ namespace Stroika::Foundation::Memory {
          */
         template <typename T, typename SHARED_IMPL = shared_ptr<T>>
         struct DefaultValueCopier {
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
             static SHARED_IMPL operator() (const T& t);
+#else
+            SHARED_IMPL operator() (const T& t);
+#endif
         };
         static_assert (IValueCopier<DefaultValueCopier<int>, int, shared_ptr<int>>);
 

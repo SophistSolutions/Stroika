@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Memory {
     using SharedByValue_CopyByDefault [[deprecated ("Since Stroika v3.0d23 - use SharedByValueSupport directly")]] =
         SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>;
 
-    template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = DefaultValueCopier<T, SHARED_IMPL>>
+    template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>>
     using SharedByValue_Traits [[deprecated ("Since Stroika v3.0d23 - use DefaultTraits directly")]] =
         SharedByValueSupport::DefaultTraits<T, SHARED_IMPL>;
 
