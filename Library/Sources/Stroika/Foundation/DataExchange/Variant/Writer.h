@@ -114,10 +114,19 @@ namespace Stroika::Foundation::DataExchange::Variant {
         static String _WriteAsStringHelper (const function<void (Streams::OutputStream::Ptr<Characters::Character>)>& f);
 
     private:
+           static      _SharedPtrIRep CloneAsShared_ (const _IRep& t) ; // forward declare so can define _IRep out of line
+
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct _Rep_Cloner {
-            inline _SharedPtrIRep operator() (const _IRep& t) const;
+             _SharedPtrIRep operator() (const _IRep& t) const
+             {
+                return CloneAsShared_ (t);
+             }
         };
-        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
+        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
+#else
+        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, _SharedPtrIRep, decltype ([] (const _IRep& t) { return CloneAsShared_ (t); })>>;
+#endif
 
     private:
         SharedRepByValuePtr_ fRep_;
