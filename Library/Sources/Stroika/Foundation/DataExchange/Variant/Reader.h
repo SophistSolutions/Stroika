@@ -91,15 +91,28 @@ namespace Stroika::Foundation::DataExchange::Variant {
         using _SharedPtrIRep = shared_ptr<_IRep>;
 
     private:
-        struct _Rep_Cloner {
-            _SharedPtrIRep operator() (const _IRep& t) const;
+        static shared_ptr<_IRep> MakeSharedRep_ (const _IRep& t); // forward declare so can delay defining _IRep til outside of class scope
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
+        struct Rep_Cloner_ {
+            static auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
+            {
+                return MakeSharedRep_ (t);
+            }
         };
-        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
+        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, Rep_Cloner_>>;
+#else
+        using SharedRepByValuePtr_ =
+            Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, decltype ([] (const _IRep& t) {
+                                                                                         return MakeSharedRep_ (t);
+                                                                                     })>>;
+#endif
 
     private:
         SharedRepByValuePtr_ fRep_;
     };
 
+    /**
+     */
     class Reader::_IRep {
     public:
         virtual ~_IRep ()                                                                                          = default;
