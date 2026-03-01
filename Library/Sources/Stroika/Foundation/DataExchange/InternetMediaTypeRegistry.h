@@ -212,7 +212,11 @@ namespace Stroika::Foundation::DataExchange {
 
 #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
-            static auto operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+            static auto operator() (const IFrontendRep_& t) -> shared_ptr<IFrontendRep_>
+#else
+            auto operator() (const IFrontendRep_& t) const -> shared_ptr<IFrontendRep_>
+#endif
             {
                 return CloneAsSharedPtr_ (t);
             }
