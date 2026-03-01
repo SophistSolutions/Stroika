@@ -202,11 +202,12 @@ namespace {
         Require (col < static_cast<unsigned int> (::sqlite3_column_count (statement)));
         const char* t = reinterpret_cast<const char*> (::sqlite3_column_text (statement, static_cast<int> (col)));
         if (t == nullptr) [[unlikely]] {
-            int colType = ::sqlite3_column_type (statement, col);
-            if (colType == SQLITE_NULL) [[likely]] {
-                return String{};
+            switch (int colType = ::sqlite3_column_type (statement, col)) {
+                case SQLITE_NULL:
+                    return String{};
+                default:
+                    Throw (RuntimeErrorException{"Expected text column but got column type {}"_f(colType)});
             }
-            Throw (RuntimeErrorException{"Expected text column but got column type {}"_f(colType)});
         }
         return String::FromUTF8 (t);
     }
