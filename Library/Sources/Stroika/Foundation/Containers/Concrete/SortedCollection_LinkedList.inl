@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        [[no_unique_address]] const INORDER_COMPARER fInorderComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const INORDER_COMPARER fInorderComparer_;
 
         // Iterable<T>::_IRep overrides
     public:
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         DataStructureImplType_                                     fData_;
-        [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -427,7 +427,7 @@ namespace Stroika::Foundation::Execution {
         Streams::InputStream::Ptr<byte>                                fStdIn_;  // just while we support deprecated API
         Streams::OutputStream::Ptr<byte>                               fStdOut_; // ""
         Streams::OutputStream::Ptr<byte>                               fStdErr_; // ""
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     public:
         [[deprecated ("Since Stroika v3.0d12 - pass stdin/stdout/stderr to ProcessRunner Run() method (if needed)")]] ProcessRunner (
@@ -635,7 +635,7 @@ namespace Stroika::Foundation::Execution {
             shared_ptr<DetailedRunnableRep_> fDetailedRunnableRep_;
         };
         shared_ptr<Rep_>                                               fRep_;
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         friend class ProcessRunner;

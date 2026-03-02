@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
          */
         class IRep : public SQL::Connection::IRep {
         public:
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
 
         private:
             friend class Ptr;

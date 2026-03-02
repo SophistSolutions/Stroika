@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Debug {
      *          Since the DEBUG version will allocate memory, which may fail, those failures trigger assertion failure and abort.
      *
      *  \note   typically used as
-     *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+     *              qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
      *
      *  \note Satisfies Concepts:
      *      o   movable<AssertExternallySynchronizedMutex> 
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Debug {
      *  \par Example Usage
      *      \code
      *          struct foo   {
-     *              [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+     *              qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
      *              inline  void    DoReadWriteStuffOnData ()
      *              {
      *                  AssertExternallySynchronizedMutex::WriteContext declareContext { fThisAssertExternallySynchronized_ };
@@ -178,8 +178,8 @@ namespace Stroika::Foundation::Debug {
                 // most logically a multiset, but std::multiset is not threadsafe and requires external locking.
                 // So does forward_list, but its closer to lock free, so try it for now
                 // GetSharedLockMutexThreads_ () used to access fSharedLocks_
-                [[no_unique_address]] array<thread::id, kInlineSharedLockBufSize_> fInitialThreads_;
-                [[no_unique_address]] uint8_t fInitialThreadsSize_{0}; // not sure how to add this field only conditionally
+                 array<thread::id, kInlineSharedLockBufSize_> fInitialThreads_;
+                 uint8_t fInitialThreadsSize_{0}; // not sure how to add this field only conditionally
                 forward_list<thread::id>      fOverflowThreads_;
             } fSharedLocks_;
 

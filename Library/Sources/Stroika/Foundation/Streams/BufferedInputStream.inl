@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         private:
             typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
             StreamReader<ELEMENT_TYPE>                                     fReader_;
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
 
         // read the source into one big buffer. Keep it all around, so seekable
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
             Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE>            fBufferOfAllReadDataSoFar_;
             SeekOffsetType                                                 fSeekOffset_{0}; // always inside fBufferOfAllReadDataSoFar_
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
 
         // pretty easy/efficient case cuz we can throw away data as we go, and since not seekable, not many cases to analyze
@@ -269,7 +269,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
             Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE>            fIntermediateBuffer_;
             size_t                                                         fReadOffsetIntoIntermediateBuf_{0};
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }
 

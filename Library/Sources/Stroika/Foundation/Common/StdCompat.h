@@ -31,6 +31,9 @@
 #include <format>
 #endif
 
+
+
+
 /**
  *  \file
  * 
@@ -392,6 +395,23 @@ namespace Stroika::Foundation::Common::StdCompat {
     // INTENTIONALLY UNBALANCED WITH _END - cuz this is used all over the place!!!
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wassume\"");
 #endif
+
+
+    /**
+     * \brief qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS - used for the attribute [[no_unique_address]]
+     * 
+     *  Though all the compilers we target SOMEWHAT support this, MSVC appears to support it by ignoring it. Which is crazy
+     *  cuz it DOES support msvc::no_unique_address
+     */
+#if qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy && defined (_MSC_VER)
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#elif __has_cpp_attribute(no_unique_address)
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[no_unique_address]]
+#else
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#endif
+
+
 
 
 }

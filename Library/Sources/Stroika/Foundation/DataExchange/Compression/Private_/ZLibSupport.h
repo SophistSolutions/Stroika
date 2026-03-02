@@ -60,7 +60,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Private_ {
         qStroika_ATTRIBUTE_INDETERMINATE byte fInBuf_[CHUNK_]; // uninitialized cuz written before read
         SeekOffsetType                                   _fSeekOffset{};
         optional<byte> _fNextOutputByte_; // 'cached' next output byte - if not nullopt - magic needed to make AvailableToRead
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
         BaseRep_ (const Streams::InputStream::Ptr<byte>& in)
             : fInStream_{in}

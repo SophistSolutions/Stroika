@@ -269,7 +269,7 @@ namespace {
         SeekableFlag                                            fSeekable_;
         AdoptFDPolicy                                           fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
         optional<filesystem::path>                              fFileName_;
-        [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
 

@@ -267,7 +267,7 @@ namespace {
         InputStream::Ptr<byte>                                         _fSource;
         const Characters::CodeCvt<Character>                           _fCharConverter;
         SeekOffsetType                                                 _fOffset{0};
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     class UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {

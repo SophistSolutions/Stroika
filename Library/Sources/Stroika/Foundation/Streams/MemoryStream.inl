@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             vector<ElementType>      fData_; // subtle, but important data declared before cursors for initialization CTOR sake
             typename vector<ElementType>::iterator                         fReadCursor_;
             typename vector<ElementType>::iterator                         fWriteCursor_;
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }
     namespace Private_ {

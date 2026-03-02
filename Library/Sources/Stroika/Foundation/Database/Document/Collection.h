@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Database::Document::Collection {
         nonvirtual bool operator== (nullptr_t) const noexcept;
 
     public:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
     };
 
     /**

@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
             Memory::InlineBuffer<ELEMENT_TYPE> fCachedData_;
             SeekOffsetType                     fOffset_{0}; // this rep's seek offset (as oppsed to that in fRealIn)
             SeekOffsetType                     fCacheBaseOffset_{0};
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
         if (in.IsSeekable ()) {
             return in;

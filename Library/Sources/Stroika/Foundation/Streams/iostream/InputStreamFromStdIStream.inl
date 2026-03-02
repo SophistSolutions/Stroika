@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
         private:
             basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& fOriginalStreamRef_;
             SeekableFlag                                                          fSeekable_;
-            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex        fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex        fThisAssertExternallySynchronized_;
         };
     }
 

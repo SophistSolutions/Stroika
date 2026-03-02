@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Database::Document {
         nonvirtual String ToString () const;
 
     protected:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
         unique_ptr<IRep>                                               _fRep;
     };
 
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Database::Document {
         virtual Disposition GetDisposition () const = 0;
 
     protected:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
     private:
         friend class Transaction;

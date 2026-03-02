@@ -1421,7 +1421,7 @@ namespace {
             END_LIB_EXCEPTION_MAPPER_
         }
         shared_ptr<xercesc::DOMDocument>                               fXMLDoc;
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
 

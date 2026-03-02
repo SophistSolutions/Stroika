@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         Statement                                                      fAddNew_Statement_;
         Statement                                                      fUpdate_Statement_;
         Statement                                                      fDeleteByID_Statement_;
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         template <typename FUN>

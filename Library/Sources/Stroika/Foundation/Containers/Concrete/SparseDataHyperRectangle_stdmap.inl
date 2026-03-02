@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         T                                                          fDefaultValue_;
         DataStructureImplType_                                     fData_;
-        [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

@@ -89,7 +89,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         shared_ptr<_IRep>                                              fRep_;
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         class MyRep_;

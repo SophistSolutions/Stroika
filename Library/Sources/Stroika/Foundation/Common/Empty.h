@@ -17,7 +17,7 @@
 namespace Stroika::Foundation::Common {
 
     /**
-     *  Believe it or not, this is often useful in template metaprogramming. Because you cannot declare a data member as 'void'. This amounts to same thing if used with [[no_unique_address]]
+     *  Believe it or not, this is often useful in template metaprogramming. Because you cannot declare a data member as 'void'. This amounts to same thing if used with [[no_unique_address]]/qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
      */
     struct Empty {};
     static_assert (std::is_empty_v<Empty>);

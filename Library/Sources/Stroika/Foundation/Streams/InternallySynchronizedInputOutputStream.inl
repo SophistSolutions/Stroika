@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
             }
 
         private:
-            [[no_unique_address]] OPTIONS       fOptions_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS OPTIONS       fOptions_;
             mutable typename OPTIONS::MutexType fCriticalSection_;
         };
         template <typename ELEMENT_TYPE, typename OPTIONS>

@@ -102,7 +102,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<IO::Network::SocketAddress>                           fPeerAddress_;
         Request                                                        fRequest_;
         Response                                                       fResponse_;
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
 }

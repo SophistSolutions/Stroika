@@ -59,7 +59,7 @@ namespace {
         using CollectionRep_ = Mapping<GUID, Document::Document>;
 
         const Document::LocalDocumentDB::Options fOptions_;
-        [[no_unique_address]] mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
         Mapping<String, CollectionRep_> fCollections_;
 
         struct MyCollectionRep_ final : Document::Collection::IRep {

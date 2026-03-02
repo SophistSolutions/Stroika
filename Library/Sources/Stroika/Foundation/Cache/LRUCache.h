@@ -284,12 +284,12 @@ namespace Stroika::Foundation::Cache {
         nonvirtual size_t H_ (typename Common::ArgByValueType<KEY> k) const;
 
     private:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
 
     private:
-        [[no_unique_address]] const KeyEqualsCompareFunctionType fKeyEqualsComparer_;
-        [[no_unique_address]] const KEY_HASH_FUNCTION            fHashFunction_;
-        [[no_unique_address]] STATS_TYPE                         fStats_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyEqualsCompareFunctionType fKeyEqualsComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KEY_HASH_FUNCTION            fHashFunction_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS STATS_TYPE                         fStats_;
 
         struct CacheElement_;
         struct CacheIterator_;

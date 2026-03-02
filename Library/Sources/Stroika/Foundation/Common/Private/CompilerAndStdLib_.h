@@ -3428,6 +3428,22 @@ TRIED alignas to fix on the array but no luck
 
 #endif
 
+
+/**
+ *  
+ */
+#ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy
+
+#if defined(_MSC_VER)
+// first noticed broken in _MSC_VER_2k22_17Pt14_
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+#else
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy 0
+#endif
+
+#endif
+
+
 /*
  *
  *      FAILED: REGRESSION TEST DUE TO EXCEPTION: 'Invalid Time Format'

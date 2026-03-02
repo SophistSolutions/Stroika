@@ -652,7 +652,7 @@ namespace Stroika::Foundation::Containers {
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
         nonvirtual bool                             operator() (const Association& lhs, const Association& rhs) const;
-        [[no_unique_address]] VALUE_EQUALS_COMPARER fValueEqualsComparer;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
 
 }

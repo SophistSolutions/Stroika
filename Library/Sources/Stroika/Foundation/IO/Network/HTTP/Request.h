@@ -110,7 +110,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual String ToString () const;
 
     protected:
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
     private:
         String  fHTTPVersion_;

@@ -37,8 +37,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         const DataExchange::ValidationStrategy             fInjectivityViolationPolicy_;
-        [[no_unique_address]] const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
-        [[no_unique_address]] const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
         // Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep overrides
     public:
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         DataStructureImplType_                                     fData_;
-        [[no_unique_address]] Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*
