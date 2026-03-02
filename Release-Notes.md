@@ -76,6 +76,7 @@ especially those they need to be aware of when upgrading.
       - StdCompat
         - #define qStroika_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
         - Added to Common::Concepts BasicLockable and Lockable - from std-c++
+        - renamed _ASSUME_ATTRIBUTE_ -> qStroika_ATTRIBUTE_ASSUME
     - Database
       - DocumentDB
         - API

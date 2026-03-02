@@ -355,6 +355,8 @@ namespace Stroika::Foundation::Common::StdCompat {
 #endif
 
     /**
+     * \brief qStroika_ATTRIBUTE_INDETERMINATE is used where you would use a C++ attribute for a variable that is intentionally uninitialized
+     * 
      * [[indeterminate]]
      * https://en.cppreference.com/w/cpp/language/attributes/indeterminate.html
      * 
@@ -368,6 +370,29 @@ namespace Stroika::Foundation::Common::StdCompat {
 #else
 #define qStroika_ATTRIBUTE_INDETERMINATE
 #endif
+
+    /**
+     * \brief qStroika_ATTRIBUTE_ASSUME(C) is used where you would put a C++ attribute assume expression, to assume a condition is true for a given block.
+     *
+     *  The assume attribute was introduced in c++23, and Stroika OPTIONALLY supports this, but doesn't require it as of Stroika v3.
+     *  So use qStroika_ATTRIBUTE_ASSUME () to conditionally use [[assume(X)]]
+     */
+#if __has_cpp_attribute(assume)
+#define qStroika_ATTRIBUTE_ASSUME(X) [[assume (X)]];
+#elif _MSC_VER
+    // Docs not clear.
+    // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p1774r4.pdf suggests this hack. BUT...
+    // https://github.com/MicrosoftDocs/cpp-docs/blob/main/docs/build/optimization-best-practices.md seems to hint __assume doesn't evaluate X, except to pay attention to simple a>constant compares so this should be OK
+#define qStroika_ATTRIBUTE_ASSUME(X) __assume (X);
+#else
+#define qStroika_ATTRIBUTE_ASSUME(X)
+#endif
+
+#if qCompilerAndStdLib_AssumeWarningSpamming_Buggy
+    // INTENTIONALLY UNBALANCED WITH _END - cuz this is used all over the place!!!
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wassume\"");
+#endif
+
 
 }
 

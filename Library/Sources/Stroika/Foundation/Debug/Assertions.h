@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 #include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 
 /**
@@ -255,7 +256,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertionsChecked
 #define Assert(c) AssertExpression (c)
 #else
-#define Assert(c) _ASSUME_ATTRIBUTE_ (c)
+#define Assert(c) qStroika_ATTRIBUTE_ASSUME (c)
 #endif
 
     /**
@@ -279,7 +280,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertionsChecked
 #define Require(c) RequireExpression (c)
 #else
-#define Require(c) _ASSUME_ATTRIBUTE_ (c)
+#define Require(c) qStroika_ATTRIBUTE_ASSUME (c)
 #endif
 
     /**
@@ -301,7 +302,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertionsChecked
 #define Ensure(c) EnsureExpression (c)
 #else
-#define Ensure(c) _ASSUME_ATTRIBUTE_ (c)
+#define Ensure(c) qStroika_ATTRIBUTE_ASSUME (c)
 #endif
 
     /**
