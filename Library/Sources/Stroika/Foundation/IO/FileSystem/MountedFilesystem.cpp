@@ -256,7 +256,7 @@ namespace {
                 v.fVolumeID       = String::FromSDKString (volumeNameBuf);
                 v.fDevicePaths    = GetDisksForVolume_ (volumeNameBuf);
 
-                qStroika_Foundation_ATTRIBUTE_INDETERMINATE TCHAR volPathsBuf[10 * 1024];
+                qStroika_ATTRIBUTE_INDETERMINATE TCHAR volPathsBuf[10 * 1024];
                 DWORD                                             retLen = 0;
                 DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (std::size (volPathsBuf)), &retLen);
                 if (x == 0) {

@@ -829,7 +829,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
     inline char StyledTextIOReader::GetNextChar () const
     {
-        qStroika_Foundation_ATTRIBUTE_INDETERMINATE char c; // Better to leave uninitialized for performance reasons - LGP 2003-03-17
+        qStroika_ATTRIBUTE_INDETERMINATE char c; // Better to leave uninitialized for performance reasons - LGP 2003-03-17
         if (fSrcStream.read1 (&c) == 1) {
             return c;
         }
@@ -841,7 +841,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
     inline char StyledTextIOReader::PeekNextChar () const
     {
-        qStroika_Foundation_ATTRIBUTE_INDETERMINATE char c; // Better to leave uninitialized for performance reasons - LGP 2003-03-17
+        qStroika_ATTRIBUTE_INDETERMINATE char c; // Better to leave uninitialized for performance reasons - LGP 2003-03-17
         if (fSrcStream.read1 (&c) == 1) {
             PutBackLastChar ();
             return c;

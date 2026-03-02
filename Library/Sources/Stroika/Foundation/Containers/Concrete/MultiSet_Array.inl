@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             size_t                                                 index = Find_ (tmp);
             if (index != kNotFound_) {
                 Assert (index < fData_.size ());
-                qStroika_Foundation_ATTRIBUTE_INDETERMINATE size_t result;
+                qStroika_ATTRIBUTE_INDETERMINATE size_t result;
                 if (tmp.fCount > count) {
                     tmp.fCount -= count;
                     Assert (tmp.fCount > 0);

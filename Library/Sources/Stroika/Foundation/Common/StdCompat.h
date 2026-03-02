@@ -360,13 +360,13 @@ namespace Stroika::Foundation::Common::StdCompat {
      * 
      *  \par Example Usage
      *      \code
-     *         qStroika_Foundation_ATTRIBUTE_INDETERMINATE byte r[1024]; // don't initialize explicitly cuz filled in below before used (performance)
+     *         qStroika_ATTRIBUTE_INDETERMINATE byte r[1024]; // don't initialize explicitly cuz filled in below before used (performance)
      *      \endcode
      */
 #if __has_cpp_attribute(indeterminate)
-#define qStroika_Foundation_ATTRIBUTE_INDETERMINATE [[indeterminate]]
+#define qStroika_ATTRIBUTE_INDETERMINATE [[indeterminate]]
 #else
-#define qStroika_Foundation_ATTRIBUTE_INDETERMINATE
+#define qStroika_ATTRIBUTE_INDETERMINATE
 #endif
 
 }

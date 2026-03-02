@@ -500,7 +500,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
 
             bool                                             forceScientific = fabs (f) >= std::pow (10, effectivePrecision);
-            qStroika_Foundation_ATTRIBUTE_INDETERMINATE char format[100]; // filled in with mkFmtWithPrecisionArg_
+            qStroika_ATTRIBUTE_INDETERMINATE char format[100]; // filled in with mkFmtWithPrecisionArg_
             resultStrLen            = ::snprintf (buf.data (), buf.size (),
                                                   mkFmtWithPrecisionArg_ (std::begin (format), std::end (format),
                                                                same_as<FLOAT_TYPE, long double> ? 'L' : '\0', forceScientific),
@@ -749,7 +749,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     return Math::nan<T> ();
                 }
             }
-            qStroika_Foundation_ATTRIBUTE_INDETERMINATE T d; //  - set below
+            qStroika_ATTRIBUTE_INDETERMINATE T d; //  - set below
             static_assert (same_as<T, float> or same_as<T, double> or same_as<T, long double>);
             if constexpr (sizeof (CHAR_T) == 1) {
                 if constexpr (same_as<T, float>) {
@@ -847,7 +847,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          */
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
-            qStroika_Foundation_ATTRIBUTE_INDETERMINATE T result;
+            qStroika_ATTRIBUTE_INDETERMINATE T result;
 #if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
 #if qCompilerAndStdLib_to_chars_assmes_str_nul_terminated_Buggy
             asciiS.push_back (0);
@@ -890,7 +890,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 #if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
-            qStroika_Foundation_ATTRIBUTE_INDETERMINATE T result;
+            qStroika_ATTRIBUTE_INDETERMINATE T result;
             char*                                         b = asciiS.begin ();
             char*                                         e = asciiS.end ();
             if (b != e and *b == '+') [[unlikely]] {
@@ -957,7 +957,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         Require (start <= end);
         RequireNotNull (remainder);
-        qStroika_Foundation_ATTRIBUTE_INDETERMINATE T result;
+        qStroika_ATTRIBUTE_INDETERMINATE T result;
 #if __cpp_lib_to_chars >= 201611 and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy
         /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
