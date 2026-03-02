@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 
 /**
  *  \file
