@@ -118,7 +118,11 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
 #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct _Rep_Cloner {
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+            static _SharedPtrIRep operator() (const _IRep& t)
+#else
             _SharedPtrIRep operator() (const _IRep& t) const
+#endif
             {
                 return CloneAsShared_ (t);
             }

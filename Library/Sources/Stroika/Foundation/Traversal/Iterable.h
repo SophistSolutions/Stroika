@@ -1411,7 +1411,11 @@ namespace Stroika::Foundation::Traversal {
     private:
 #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+            static auto operator() (const _IRep& t) -> shared_ptr<_IRep>
+#else
             auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
+#endif
             {
                 return Clone_ (t);
             }
