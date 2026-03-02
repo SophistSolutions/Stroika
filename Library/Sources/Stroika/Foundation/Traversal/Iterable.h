@@ -1662,9 +1662,9 @@ namespace Stroika::Foundation::Traversal {
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IEqualsComparer<T>) T_EQUALS_COMPARER>
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
-        nonvirtual bool                         operator() (const Iterable& lhs, const Iterable& rhs) const;
+        nonvirtual bool                                        operator() (const Iterable& lhs, const Iterable& rhs) const;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS T_EQUALS_COMPARER fElementComparer;
-        bool                                    fUseIterableSize;
+        bool                                                   fUseIterableSize;
     };
 
     /**
@@ -1677,7 +1677,7 @@ namespace Stroika::Foundation::Traversal {
     template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (IThreeWayComparer<T>) T_THREEWAY_COMPARER>
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
-        nonvirtual auto                           operator() (const Iterable& lhs, const Iterable& rhs) const;
+        nonvirtual auto                                          operator() (const Iterable& lhs, const Iterable& rhs) const;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS T_THREEWAY_COMPARER fElementComparer;
     };
 

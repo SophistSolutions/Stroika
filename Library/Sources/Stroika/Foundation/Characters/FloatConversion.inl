@@ -499,7 +499,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 f = useRoundedFloat;
             }
 
-            bool                                             forceScientific = fabs (f) >= std::pow (10, effectivePrecision);
+            bool                                  forceScientific = fabs (f) >= std::pow (10, effectivePrecision);
             qStroika_ATTRIBUTE_INDETERMINATE char format[100]; // filled in with mkFmtWithPrecisionArg_
             resultStrLen            = ::snprintf (buf.data (), buf.size (),
                                                   mkFmtWithPrecisionArg_ (std::begin (format), std::end (format),
@@ -891,8 +891,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             qStroika_ATTRIBUTE_INDETERMINATE T result;
-            char*                                         b = asciiS.begin ();
-            char*                                         e = asciiS.end ();
+            char*                              b = asciiS.begin ();
+            char*                              e = asciiS.end ();
             if (b != e and *b == '+') [[unlikely]] {
                 ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
             }

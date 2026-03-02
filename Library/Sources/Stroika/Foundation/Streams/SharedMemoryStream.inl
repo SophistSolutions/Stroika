@@ -503,7 +503,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
 
         private:
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS mutable LOCK_IMPL fMutex_;
-            size_t                                  fSpaceClearedFromStreamHead_{0};
+            size_t                                                 fSpaceClearedFromStreamHead_{0};
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS conditional_t<kLocking_, Execution::WaitableEvent, Common::Empty> fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
             vector<ElementType>                          fData_; // Important data comes before cursors cuz of use in CTOR
             typename vector<ElementType>::const_iterator fReadCursor_;

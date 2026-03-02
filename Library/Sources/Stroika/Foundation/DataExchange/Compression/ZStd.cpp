@@ -153,8 +153,8 @@ namespace {
             eEndOutput,
             eDone
         };
-        Stage_                                                         fStage_{Stage_::eReadingInput};
-        SeekOffsetType                                                 fSeekOffset_{};
+        Stage_                               fStage_{Stage_::eReadingInput};
+        SeekOffsetType                       fSeekOffset_{};
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
@@ -252,9 +252,9 @@ namespace {
         span<byte> fRawUnprocessedInputBytes_{}; // empty or subspan of fInputBuf_
         Memory::InlineBuffer<byte, kSmallSoBlockAllocWorksWellNotInlineAnyhow_> fOutBuf_{
             Memory::eUninitialized, ::ZSTD_DStreamOutSize ()}; // used to cache extra output (uncompressed) bytes not yet returned (NOTE - CStreamOutSize maybe wrong to use here)
-        span<byte>                                                     fOutputBufCache_{}; // empty or subspan of fOutBuf_
-        ZSTD_DCtx*                                                     fCtx_{nullptr};
-        SeekOffsetType                                                 fSeekOffset_{};
+        span<byte>                           fOutputBufCache_{}; // empty or subspan of fOutBuf_
+        ZSTD_DCtx*                           fCtx_{nullptr};
+        SeekOffsetType                       fSeekOffset_{};
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     public:

@@ -756,7 +756,7 @@ namespace Stroika::Foundation::Execution {
             nonvirtual explicit operator bool () const;
 
         private:
-            shared_ptr<Rep_>                                               fRep_;
+            shared_ptr<Rep_>                     fRep_;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 #if qCompilerAndStdLib_thread_local_static_inline_twice_Buggy
             static weak_ptr<Rep_>& sCurrentThreadRep_BWA_ ()

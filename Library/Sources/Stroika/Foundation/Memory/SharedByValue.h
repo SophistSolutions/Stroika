@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Memory {
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS element_copier_type fCopier_; // often zero sized
-        shared_ptr_type                           fSharedImpl_;
+        shared_ptr_type                                          fSharedImpl_;
 
     public:
         /**

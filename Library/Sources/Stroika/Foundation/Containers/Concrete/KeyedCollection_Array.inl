@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                                     fData_;
+        DataStructureImplType_               fData_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:

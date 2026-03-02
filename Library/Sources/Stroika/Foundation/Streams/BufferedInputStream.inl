@@ -63,8 +63,8 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
 
         private:
-            typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
-            StreamReader<ELEMENT_TYPE>                                     fReader_;
+            typename InputStream::Ptr<ELEMENT_TYPE> fRealIn_;
+            StreamReader<ELEMENT_TYPE>              fReader_;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
 
@@ -172,9 +172,9 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
 
         private:
-            typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
-            Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE>            fBufferOfAllReadDataSoFar_;
-            SeekOffsetType                                                 fSeekOffset_{0}; // always inside fBufferOfAllReadDataSoFar_
+            typename InputStream::Ptr<ELEMENT_TYPE>             fRealIn_;
+            Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE> fBufferOfAllReadDataSoFar_;
+            SeekOffsetType                                      fSeekOffset_{0}; // always inside fBufferOfAllReadDataSoFar_
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
 
@@ -266,9 +266,9 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
 
         private:
-            typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
-            Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE>            fIntermediateBuffer_;
-            size_t                                                         fReadOffsetIntoIntermediateBuf_{0};
+            typename InputStream::Ptr<ELEMENT_TYPE>             fRealIn_;
+            Memory::InlineBuffer<ELEMENT_TYPE, INLINE_BUF_SIZE> fIntermediateBuffer_;
+            size_t                                              fReadOffsetIntoIntermediateBuf_{0};
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }

@@ -41,8 +41,8 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
         DbgTrace ("nEltsLeft={}"_f, static_cast<unsigned long long> (nEltsLeft));
 #endif
         qStroika_ATTRIBUTE_INDETERMINATE byte buf[64 * 1024];
-        byte*                                            s = std::begin (buf);
-        byte*                                            e = std::end (buf);
+        byte*                                 s = std::begin (buf);
+        byte*                                 e = std::end (buf);
         if (nEltsLeft < std::size (buf)) {
             e = s + nEltsLeft;
         }

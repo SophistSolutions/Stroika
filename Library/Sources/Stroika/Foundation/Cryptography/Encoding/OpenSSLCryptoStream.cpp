@@ -279,7 +279,7 @@ namespace {
         {
             Require (IsOpenWrite ());
             qStroika_ATTRIBUTE_INDETERMINATE byte outBuf[EVP_MAX_BLOCK_LENGTH];
-            size_t                                           nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
+            size_t                                nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
             Assert (nBytesInOutBuf < sizeof (outBuf));
             fRealOut_.Write (span{outBuf, nBytesInOutBuf});
         }

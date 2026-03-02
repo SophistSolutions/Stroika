@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, typename SHARED_IMPL>
-    #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
     inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>::operator() (const T& t)
 #else
     inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>::operator() (const T& t) const

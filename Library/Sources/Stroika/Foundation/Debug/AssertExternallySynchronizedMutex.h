@@ -178,9 +178,9 @@ namespace Stroika::Foundation::Debug {
                 // most logically a multiset, but std::multiset is not threadsafe and requires external locking.
                 // So does forward_list, but its closer to lock free, so try it for now
                 // GetSharedLockMutexThreads_ () used to access fSharedLocks_
-                 array<thread::id, kInlineSharedLockBufSize_> fInitialThreads_;
-                 uint8_t fInitialThreadsSize_{0}; // not sure how to add this field only conditionally
-                forward_list<thread::id>      fOverflowThreads_;
+                array<thread::id, kInlineSharedLockBufSize_> fInitialThreads_;
+                uint8_t                                      fInitialThreadsSize_{0}; // not sure how to add this field only conditionally
+                forward_list<thread::id>                     fOverflowThreads_;
             } fSharedLocks_;
 
         private:

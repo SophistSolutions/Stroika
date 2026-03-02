@@ -205,11 +205,11 @@ namespace {
         }
 
     private:
-        int                                                     fFD_;
-        FlushFlag                                               fFlushFlag;
-        AdoptFDPolicy                                           fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-        bool                                                    fSeekable_{true};
-        optional<filesystem::path>                              fFileName_;
+        int                                                                    fFD_;
+        FlushFlag                                                              fFlushFlag;
+        AdoptFDPolicy                                                          fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+        bool                                                                   fSeekable_{true};
+        optional<filesystem::path>                                             fFileName_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }

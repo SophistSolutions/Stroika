@@ -257,7 +257,7 @@ namespace {
                 v.fDevicePaths    = GetDisksForVolume_ (volumeNameBuf);
 
                 qStroika_ATTRIBUTE_INDETERMINATE TCHAR volPathsBuf[10 * 1024];
-                DWORD                                             retLen = 0;
+                DWORD                                  retLen = 0;
                 DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (std::size (volPathsBuf)), &retLen);
                 if (x == 0) {
                     DbgTrace ("Ignoring error getting paths (volume='{}')"_f, String::FromSDKString (volumeNameBuf));

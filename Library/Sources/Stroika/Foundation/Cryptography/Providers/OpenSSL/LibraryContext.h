@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         };
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS LibraryInit_                             fLibraryInit_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS LibraryInit_ fLibraryInit_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
 #if OPENSSL_VERSION_MAJOR >= 3

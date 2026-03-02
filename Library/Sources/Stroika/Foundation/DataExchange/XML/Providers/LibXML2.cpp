@@ -726,8 +726,8 @@ namespace {
             else {
                 xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (nullptr, nullptr, nullptr, 0, "in-stream.xml" /*filename*/);
                 Execution::ThrowIfNull (ctxt);
-                [[maybe_unused]] auto&&        cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-                MyLibXML2StructuredErrGrabber_ errCatcher{ctxt};
+                [[maybe_unused]] auto&&               cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+                MyLibXML2StructuredErrGrabber_        errCatcher{ctxt};
                 qStroika_ATTRIBUTE_INDETERMINATE byte buf[1024];
                 while (auto n = in.ReadBlocking (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
