@@ -3,7 +3,7 @@
  */
 
 namespace Stroika::Foundation::Common {
-    
+
     /////////////////////////////////////////////////////////////
     ////////////////////// DEPREACTED BELOW /////////////////////
     /////////////////////////////////////////////////////////////
@@ -190,4 +190,3 @@ namespace Stroika::Foundation::Common {
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 }
-

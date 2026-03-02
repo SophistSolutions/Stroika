@@ -464,12 +464,11 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
-
     /**
      * @brief check T has had remove_cvref_t called on it (e.g. ICVRefTd<const string&> is string)
      */
     template <typename T>
-    concept ICVRefTd = same_as<T,remove_cvref_t<T>>;
+    concept ICVRefTd = same_as<T, remove_cvref_t<T>>;
 
     /**
      *  from https://stackoverflow.com/questions/32785105/implementing-a-switch-type-trait-with-stdconditional-t-chain-calls
