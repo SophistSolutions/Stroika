@@ -12,6 +12,7 @@
 #include <iterator>   // needed for std::begin/std::end calls
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <variant>
 
 #include "Stroika/Foundation/Common/Common.h"
