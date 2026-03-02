@@ -204,11 +204,13 @@ namespace {
         if (t == nullptr) [[unlikely]] {
             switch (int colType = ::sqlite3_column_type (statement, col)) {
                 case SQLITE_NULL:
+                    // DbgTrace ("extractcoltext col={} ct={}, returning null string for NULL result"_f, col, ::sqlite3_column_type (statement, col));
                     return String{};
                 default:
                     Throw (RuntimeErrorException{"Expected text column but got column type {}"_f(colType)});
             }
         }
+        // DbgTrace ("extractcolt ext col={} ct={}, returning '{}"_f, col, ::sqlite3_column_type (statement, col), String::FromUTF8 (t));
         return String::FromUTF8 (t);
     }
 }
@@ -335,8 +337,9 @@ namespace {
          *      https://www.sqlite.org/json1.html
          *          "There is a subtle incompatibility between the json_extract() function in SQLite and the json_extract() function in MySQL. The MySQL version of json_extract() always returns JSON. The SQLite version of json_extract() only returns JSON if there are two or more PATH arguments"
          */
-        static const auto  kJSONReader_        = Variant::JSON::Reader{};
-        VariantValue       valueReadBackFromDB = kJSONReader_.Read (ExtractColumnText_ (statement, dataCol));
+        static const auto kJSONReader_ = Variant::JSON::Reader{};
+        String            colText      = ExtractColumnText_ (statement, dataCol);
+        VariantValue valueReadBackFromDB = colText.empty () ? VariantValue{} : kJSONReader_.Read (colText); // treat NULL or "" as empty document, not syntax error
         Document::Document dr;
         if (sqliteProjection == nullopt) {
             dr = valueReadBackFromDB.As<Mapping<String, VariantValue>> ();
