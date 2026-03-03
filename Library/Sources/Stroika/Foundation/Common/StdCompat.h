@@ -400,12 +400,22 @@ namespace Stroika::Foundation::Common::StdCompat {
      *  Though all the compilers we target SOMEWHAT support this, MSVC appears to support it by ignoring it. Which is crazy
      *  cuz it DOES support msvc::no_unique_address
      */
-#if qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy && defined(_MSC_VER)
+#if qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy && defined(_MSC_VER)
+#if qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#else
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#endif
 #elif __has_cpp_attribute(no_unique_address)
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#endif
+
+#if qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLY_Buggy && defined(_MSC_VER)
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW [[msvc::no_unique_address]]
+#else
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #endif
 
 }

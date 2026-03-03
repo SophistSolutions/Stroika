@@ -54,7 +54,7 @@ especially those they need to be aware of when upgrading.
   - define new compiler bug define qCompilerAndStdLib_NamedAutoLocalBindingNotCapturable_Buggy for clang++15 and workaround
   - new qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy BWA
   - Simplify/enahance BWA for qCompilerAndStdLib_template_template_auto_deduced_Buggy
-  - new qCompilerAndStdLib_NO_UNIQUE_ADDR__Buggy
+  - new qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
 - Library
   - Foundation
     - Characters
@@ -78,7 +78,8 @@ especially those they need to be aware of when upgrading.
         - #define qStroika_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
         - Added to Common::Concepts BasicLockable and Lockable - from std-c++
         - renamed _ASSUME_ATTRIBUTE_ -> qStroika_ATTRIBUTE_ASSUME
-        - new qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS - and use instead of [[no_unique_address]]
+        - new qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW
+          use instead of [[no_unique_address]] (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
     - Database
       - DocumentDB
         - API

@@ -3429,15 +3429,30 @@ TRIED alignas to fix on the array but no luck
 #endif
 
 /**
- *  
+ *  This controls if you must use msvc::no_unqiue or regular one
  */
-#ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy
+#ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy
 
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k22_17Pt14_
-#define qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy                                                              \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
 #else
-#define qCompilerAndStdLib_NO_UNIQUE_ADDR_Buggy 0
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy 0
+#endif
+
+#endif
+
+/**
+ *  This controls even MSVC::NOUNIQUE is so broken unsafe to use
+ */
+#ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
+
+#if defined(_MSC_VER)
+// first noticed broken in _MSC_VER_2k22_17Pt14_
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt14_)
+#else
+#define qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy 0
 #endif
 
 #endif
