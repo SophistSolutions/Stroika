@@ -29,7 +29,7 @@
 [29]	Foundation::Containers::Stack
 [30]	Foundation::Containers::STL
 [31]	Foundation::Cryptography
-[32]	Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)
+[32]	Foundation::DataExchange::Reader/Writers
 [33]	Foundation::DataExchange::ObjectVariantMapper
 [34]	Foundation::DataExchange::XML
 [35]	Foundation::DataExchange::Other
