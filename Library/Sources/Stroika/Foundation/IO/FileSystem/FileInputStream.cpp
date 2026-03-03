@@ -265,11 +265,11 @@ namespace {
         }
 
     private:
-        int                                                                    fFD_;
-        SeekableFlag                                                           fSeekable_;
-        AdoptFDPolicy                                                          fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-        optional<filesystem::path>                                             fFileName_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        int                        fFD_;
+        SeekableFlag               fSeekable_;
+        AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+        optional<filesystem::path> fFileName_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
 

@@ -264,10 +264,10 @@ namespace {
         }
 
     protected:
-        InputStream::Ptr<byte>               _fSource;
-        const Characters::CodeCvt<Character> _fCharConverter;
-        SeekOffsetType                       _fOffset{0};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        InputStream::Ptr<byte>                          _fSource;
+        const Characters::CodeCvt<Character>            _fCharConverter;
+        SeekOffsetType                                  _fOffset{0};
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
     class UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
