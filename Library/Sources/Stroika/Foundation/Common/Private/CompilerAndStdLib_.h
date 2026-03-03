@@ -3429,7 +3429,7 @@ TRIED alignas to fix on the array but no luck
 #endif
 
 /**
- *  This controls if you must use msvc::no_unqiue or regular one
+ *  This controls if you must use [[msvc::no_unique_address]] or [[no_unique_address]]
  */
 #ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy
 
@@ -3444,7 +3444,7 @@ TRIED alignas to fix on the array but no luck
 #endif
 
 /**
- *  This controls even MSVC::NOUNIQUE is so broken unsafe to use
+ *  This controls even [[msvc::no_unique_address]] is so broken unsafe to use in many places
  */
 #ifndef qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
 
