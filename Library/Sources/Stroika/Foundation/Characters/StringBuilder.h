@@ -372,7 +372,7 @@ namespace Stroika::Foundation::Characters {
         }
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
 
     private:
         Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{}; // not nul-terminated
