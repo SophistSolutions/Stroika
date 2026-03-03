@@ -37,8 +37,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         const DataExchange::ValidationStrategy                            fInjectivityViolationPolicy_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
         // Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep overrides
     public:
