@@ -116,9 +116,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
     private:
-        tuple<INDEXES...>                    fDimensions_;
-        DataStructureImplType_               fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        tuple<INDEXES...>                               fDimensions_;
+        DataStructureImplType_                          fData_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*

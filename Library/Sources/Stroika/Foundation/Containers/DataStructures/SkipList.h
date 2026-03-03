@@ -570,9 +570,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS KeyComparerType   fKeyThreeWayComparer_{};
-        size_t                                                 fLength_{0};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS mutable StatsType fStats_{};
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW KeyComparerType   fKeyThreeWayComparer_{};
+        size_t                                                            fLength_{0};
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW mutable StatsType fStats_{};
     };
 
     /*
