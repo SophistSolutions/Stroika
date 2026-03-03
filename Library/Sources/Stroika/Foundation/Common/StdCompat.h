@@ -412,6 +412,10 @@ namespace Stroika::Foundation::Common::StdCompat {
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #endif
 
+    /**
+     * \brief [[msvc::no_unique_address]] isn't always broken in MSVC. Annotate with this
+     *        on things where its not broken.
+     */
 #if qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLY_Buggy && defined(_MSC_VER)
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW [[msvc::no_unique_address]]
 #else
