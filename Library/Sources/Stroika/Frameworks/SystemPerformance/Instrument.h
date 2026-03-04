@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::SystemPerformance {
         Set<MeasurementType>                 fCapturedMeasurementTypes_;
         DataExchange::ObjectVariantMapper    fObjectVariantMapper_;
         unique_ptr<IRep>                     fCaptureRep_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
 }
