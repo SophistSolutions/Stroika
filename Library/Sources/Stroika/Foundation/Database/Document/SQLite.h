@@ -372,7 +372,7 @@ namespace Stroika::Foundation::Database::Document::SQLite {
             virtual void Exec (const String& sql) = 0;
 
         public:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
 
         private:
             friend class Ptr;
