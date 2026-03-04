@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         // these are stored inside fData_ (often zero sized so no matter) - but if not zero sized - @todo just re-use the space inside fData_
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW const KeyExtractorType fKeyExtractor_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType fKeyExtractor_;
 
     public:
         Rep_ (const KeyExtractorType& keyExtractor, HASHTABLE<HASH_TABLE_TRAITS>&& src)
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         DataStructureImplType_                          fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         friend inherited; // for HashTableBasedContainerRepImpl

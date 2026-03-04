@@ -25,8 +25,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = IImplRepBase_;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW const KeyExtractorType     fKeyExtractor_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW const KEY_INORDER_COMPARER fKeyComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType     fKeyExtractor_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KEY_INORDER_COMPARER fKeyComparer_;
 
     public:
         Rep_ (const KeyExtractorType& keyExtractor, const KEY_INORDER_COMPARER& inorderComparer)
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         DataStructureImplType_                          fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
     /*
