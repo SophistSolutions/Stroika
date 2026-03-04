@@ -420,7 +420,7 @@ namespace Stroika::Foundation::Memory {
         struct AdoptAndDeleteRep_; // for user allocated new byte[]....
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         shared_ptr<_IRep>                                                             fRep_;
     };
     static_assert (totally_ordered<BLOB>);
