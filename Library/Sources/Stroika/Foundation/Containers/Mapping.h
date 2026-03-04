@@ -700,7 +700,7 @@ namespace Stroika::Foundation::Containers {
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
         nonvirtual bool                                                       operator() (const Mapping& lhs, const Mapping& rhs) const;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW VALUE_EQUALS_COMPARER fValueEqualsComparer;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
 
 }

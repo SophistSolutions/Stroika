@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Rep_ (const Rep_& from) = default;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW EQUALS_COMPARER fEqualsComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS EQUALS_COMPARER fEqualsComparer_;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         DataStructureImplType_                          fData_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Private::ContainerDebugChangeCounts_ fChangeCounts_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Private::ContainerDebugChangeCounts_ fChangeCounts_;
 
     private:
         friend inherited;
