@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Streams {
         nonvirtual SeekableFlag GetSeekability () const;
 
     protected:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized; // refers to PTR not REP
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized; // refers to PTR not REP
 
     private:
         shared_ptr<IRep<ELEMENT_TYPE>> fRep_;

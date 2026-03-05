@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             const ELEMENT_TYPE*                  fStart_;
             const ELEMENT_TYPE*                  fEnd_;
             const ELEMENT_TYPE*                  fCursor_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }
 

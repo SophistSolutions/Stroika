@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             size_t                 fOffset_{};
             optional<ELEMENT_TYPE> fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
             optional<ELEMENT_TYPE>               fPutBack_{};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
         return Ptr<ELEMENT_TYPE>{Memory::MakeSharedPtr<IterableAdapterStreamRep_> (it)};
     }

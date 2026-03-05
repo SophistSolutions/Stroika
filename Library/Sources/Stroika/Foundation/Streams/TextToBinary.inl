@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
             OutputStream::Ptr<byte>              _fSource;
             Characters::CodeCvt<Character>       _fConverter;
             std::mbstate_t                       _fMBState_{};
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
 
         template <Characters ::IUNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Streams::TextToBinary {
         protected:
             OutputStream::Ptr<byte>              _fSource;
             Characters::UTFConvert               _fConverter;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }
 
