@@ -1514,7 +1514,7 @@ namespace Stroika::Foundation::Traversal {
         const Iterable<T>*  fIterableEnvelope_;
 
 #if qStroika_Foundation_Debug_AssertionsChecked
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
 #endif
     };
     //static_assert (movable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>> and not copyable<Iterable<int>::_SafeReadRepAccessor<REP_SUB_TYPE>>);
@@ -1552,7 +1552,7 @@ namespace Stroika::Foundation::Traversal {
     private:
         REP_SUB_TYPE* fRepReference_;
 #if qStroika_Foundation_Debug_AssertionsChecked
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex::WriteContext fAssertWriteLock_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex::WriteContext fAssertWriteLock_;
         Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qStroika_Foundation_Debug_AssertionsChecked this field (as we do for read accessor)
 #endif
     };
@@ -1663,7 +1663,7 @@ namespace Stroika::Foundation::Traversal {
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
         nonvirtual bool                                        operator() (const Iterable& lhs, const Iterable& rhs) const;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS T_EQUALS_COMPARER fElementComparer;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW T_EQUALS_COMPARER fElementComparer;
         bool                                                   fUseIterableSize;
     };
 
@@ -1678,7 +1678,7 @@ namespace Stroika::Foundation::Traversal {
     struct Iterable<T>::SequentialThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr SequentialThreeWayComparer (const T_THREEWAY_COMPARER& elementComparer = {});
         nonvirtual auto                                          operator() (const Iterable& lhs, const Iterable& rhs) const;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS T_THREEWAY_COMPARER fElementComparer;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW T_THREEWAY_COMPARER fElementComparer;
     };
 
 #if !qCompilerAndStdLib_constructible_Buggy
