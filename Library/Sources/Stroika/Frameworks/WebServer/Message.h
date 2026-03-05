@@ -99,9 +99,9 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     private:
-        optional<IO::Network::SocketAddress> fPeerAddress_;
-        Request                              fRequest_;
-        Response                             fResponse_;
+        optional<IO::Network::SocketAddress>            fPeerAddress_;
+        Request                                         fRequest_;
+        Response                                        fResponse_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

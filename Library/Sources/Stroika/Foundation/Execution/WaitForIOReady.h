@@ -305,8 +305,8 @@ namespace Stroika::Foundation::Execution {
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-        const Traversal::Iterable<pair<T, TypeOfMonitorSet>>                          fPollData_;
-        const optional<pair<SDKPollableType, TypeOfMonitorSet>>                       fPollable2Wakeup_;
+        const Traversal::Iterable<pair<T, TypeOfMonitorSet>>                                     fPollData_;
+        const optional<pair<SDKPollableType, TypeOfMonitorSet>>                                  fPollable2Wakeup_;
     };
 
 }

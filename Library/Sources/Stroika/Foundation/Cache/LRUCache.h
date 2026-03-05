@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Cache {
         nonvirtual size_t H_ (typename Common::ArgByValueType<KEY> k) const;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW  Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW const KeyEqualsCompareFunctionType fKeyEqualsComparer_;

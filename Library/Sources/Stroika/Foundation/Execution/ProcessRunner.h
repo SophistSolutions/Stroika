@@ -421,12 +421,12 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     private:
-        optional<filesystem::path>           fExecutable_; // if omitted, derived from fArgs[0]
-        CommandLine                          fArgs_;
-        Options                              fOptions_;
-        Streams::InputStream::Ptr<byte>      fStdIn_;  // just while we support deprecated API
-        Streams::OutputStream::Ptr<byte>     fStdOut_; // ""
-        Streams::OutputStream::Ptr<byte>     fStdErr_; // ""
+        optional<filesystem::path>                      fExecutable_; // if omitted, derived from fArgs[0]
+        CommandLine                                     fArgs_;
+        Options                                         fOptions_;
+        Streams::InputStream::Ptr<byte>                 fStdIn_;  // just while we support deprecated API
+        Streams::OutputStream::Ptr<byte>                fStdOut_; // ""
+        Streams::OutputStream::Ptr<byte>                fStdErr_; // ""
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     public:
@@ -634,7 +634,7 @@ namespace Stroika::Foundation::Execution {
             Thread::CleanupPtr               fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
             shared_ptr<DetailedRunnableRep_> fDetailedRunnableRep_;
         };
-        shared_ptr<Rep_>                     fRep_;
+        shared_ptr<Rep_>                                fRep_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:

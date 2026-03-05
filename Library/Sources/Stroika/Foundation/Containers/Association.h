@@ -651,7 +651,7 @@ namespace Stroika::Foundation::Containers {
     struct Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
-        nonvirtual bool operator() (const Association& lhs, const Association& rhs) const;
+        nonvirtual bool                                            operator() (const Association& lhs, const Association& rhs) const;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
 
