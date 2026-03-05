@@ -88,7 +88,7 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual const T& _GetRep () const;
 
     private:
-        shared_ptr<_IRep>                               fRep_;
+        shared_ptr<_IRep>                            fRep_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:

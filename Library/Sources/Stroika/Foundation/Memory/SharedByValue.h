@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Memory {
     private:
         using DeclaredInstanceCopierType_ =
             conditional_t<same_as<instance_defined_copier_type, MissingCopierTypeSentinel>, Common::Empty, instance_defined_copier_type>;
-        shared_ptr_type                                                             fSharedImpl_;
+        shared_ptr_type                                                          fSharedImpl_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE DeclaredInstanceCopierType_ fCopier_; // often zero sized
 
     public:

@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        const DataExchange::ValidationStrategy                                       fInjectivityViolationPolicy_;
+        const DataExchange::ValidationStrategy                                    fInjectivityViolationPolicy_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using IteratorRep_           = Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
 
     private:
-        DataStructureImplType_                          fData_;
+        DataStructureImplType_                       fData_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Private::ContainerDebugChangeCounts_ fChangeCounts_;
     };
 
