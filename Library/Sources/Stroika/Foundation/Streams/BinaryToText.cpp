@@ -264,9 +264,9 @@ namespace {
         }
 
     protected:
-        InputStream::Ptr<byte>                          _fSource;
-        const Characters::CodeCvt<Character>            _fCharConverter;
-        SeekOffsetType                                  _fOffset{0};
+        InputStream::Ptr<byte>                       _fSource;
+        const Characters::CodeCvt<Character>         _fCharConverter;
+        SeekOffsetType                               _fOffset{0};
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
