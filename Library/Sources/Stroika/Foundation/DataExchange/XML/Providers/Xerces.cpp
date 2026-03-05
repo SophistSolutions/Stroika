@@ -1420,7 +1420,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        shared_ptr<xercesc::DOMDocument>                fXMLDoc;
+        shared_ptr<xercesc::DOMDocument>             fXMLDoc;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
