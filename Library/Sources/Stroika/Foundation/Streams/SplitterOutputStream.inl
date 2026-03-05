@@ -74,9 +74,9 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
             }
 
         private:
-            typename OutputStream::Ptr<ELEMENT_TYPE>        fRealOut1_;
-            typename OutputStream::Ptr<ELEMENT_TYPE>        fRealOut2_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            typename OutputStream::Ptr<ELEMENT_TYPE>     fRealOut1_;
+            typename OutputStream::Ptr<ELEMENT_TYPE>     fRealOut2_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }
 

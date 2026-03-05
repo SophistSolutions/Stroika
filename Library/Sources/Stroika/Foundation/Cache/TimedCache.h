@@ -392,7 +392,7 @@ namespace Stroika::Foundation::Cache {
         }
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
 
     private:
         Time::DurationSeconds  fMinimumAllowedFreshness_;
@@ -413,7 +413,7 @@ namespace Stroika::Foundation::Cache {
         MyMapType_ fMap_;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW mutable typename TRAITS::StatsType fStats_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
     };
 
 }

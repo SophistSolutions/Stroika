@@ -382,7 +382,7 @@ namespace Stroika::Foundation::IO::Network {
             nonvirtual const _IRep& _cref () const;
 
         protected:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
         private:
             shared_ptr<_IRep> fRep_;

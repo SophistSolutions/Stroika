@@ -78,7 +78,7 @@ especially those they need to be aware of when upgrading.
         - #define qStroika_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
         - Added to Common::Concepts BasicLockable and Lockable - from std-c++
         - renamed _ASSUME_ATTRIBUTE_ -> qStroika_ATTRIBUTE_ASSUME
-        - new qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW
+        - new qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
           use instead of [[no_unique_address]] (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
     - Database
       - DocumentDB

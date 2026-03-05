@@ -210,7 +210,7 @@ namespace {
         AdoptFDPolicy              fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
         bool                       fSeekable_{true};
         optional<filesystem::path> fFileName_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
 

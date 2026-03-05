@@ -161,10 +161,10 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     }
                 }
             }
-            typename InputStream::Ptr<ELEMENT_TYPE>         fRealIn_;
-            SeekOffsetType                                  fOffsetMine2Real_; // subtract from real offset to get our offset
-            optional<SeekOffsetType>                        fForcedEndInReal_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            typename InputStream::Ptr<ELEMENT_TYPE>      fRealIn_;
+            SeekOffsetType                               fOffsetMine2Real_; // subtract from real offset to get our offset
+            optional<SeekOffsetType>                     fForcedEndInReal_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }
 

@@ -114,7 +114,7 @@ namespace {
         byte                                            fSrcBufferedRawBytes_[4]; // not used directly, but always through fSrcBufferedSpan_
         span<byte>                                      fSrcBufferedSpan_;
         SeekOffsetType                                  _fOffset{0};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
 

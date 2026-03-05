@@ -417,13 +417,13 @@ namespace Stroika::Foundation::Common::StdCompat {
      *        on things where its not broken.
      */
 #if qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW [[msvc::no_unique_address]]
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE [[msvc::no_unique_address]]
 #else
-#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+#define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #endif
 
 // EMPHASIZE that this is qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
-// and not qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW cuz its known buggy
+// and not qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE cuz its known buggy
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 
 }

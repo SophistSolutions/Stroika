@@ -112,7 +112,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual String ToString () const;
 
     protected:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
     private:
         tuple<Status, optional<String>> fStatusAndOverrideReason_;

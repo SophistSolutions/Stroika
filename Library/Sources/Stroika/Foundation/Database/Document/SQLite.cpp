@@ -383,7 +383,7 @@ namespace {
 
         const Options fOptions_;
         const bool    fAllowUserDefinedRowID_{false};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
 
         struct CollectionRep_ final : Stroika::Foundation::Database::Document::Collection::IRep {
             shared_ptr<ConnectionRep_> fConnectionRep_; // save to bump reference count

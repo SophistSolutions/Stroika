@@ -155,7 +155,7 @@ namespace {
         };
         Stage_                                          fStage_{Stage_::eReadingInput};
         SeekOffsetType                                  fSeekOffset_{};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         struct CompressResult_ {
@@ -255,7 +255,7 @@ namespace {
         span<byte>                                      fOutputBufCache_{}; // empty or subspan of fOutBuf_
         ZSTD_DCtx*                                      fCtx_{nullptr};
         SeekOffsetType                                  fSeekOffset_{};
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     public:
         DecompressingByteStreamRep_ ()                                   = delete;

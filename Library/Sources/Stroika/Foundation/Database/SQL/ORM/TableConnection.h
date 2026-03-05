@@ -174,17 +174,17 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         nonvirtual void Delete (const T& v);
 
     private:
-        Connection::Ptr                                 fConnection_;
-        shared_ptr<const EngineProperties>              fEngineProperties_;
-        Schema::Table                                   fTableSchema_;
-        ObjectVariantMapper                             fObjectVariantMapper_;
-        OpertionCallbackPtr                             fTableOpertionCallback_;
-        Statement                                       fGetByID_Statement_;
-        Statement                                       fGetAll_Statement_;
-        Statement                                       fAddNew_Statement_;
-        Statement                                       fUpdate_Statement_;
-        Statement                                       fDeleteByID_Statement_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        Connection::Ptr                              fConnection_;
+        shared_ptr<const EngineProperties>           fEngineProperties_;
+        Schema::Table                                fTableSchema_;
+        ObjectVariantMapper                          fObjectVariantMapper_;
+        OpertionCallbackPtr                          fTableOpertionCallback_;
+        Statement                                    fGetByID_Statement_;
+        Statement                                    fGetAll_Statement_;
+        Statement                                    fAddNew_Statement_;
+        Statement                                    fUpdate_Statement_;
+        Statement                                    fDeleteByID_Statement_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
     private:
         template <typename FUN>
