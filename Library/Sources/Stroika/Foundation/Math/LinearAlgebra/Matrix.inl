@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         DimensionType fDimensions_;
         // nb: use vector<> because for debug builds - big difference in speed  - and hidden anyhow
         // row*nCols + col is addressing scheme
-        vector<T>                            fData_;
+        vector<T>                                       fData_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

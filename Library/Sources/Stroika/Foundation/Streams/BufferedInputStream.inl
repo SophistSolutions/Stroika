@@ -63,8 +63,8 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
             }
 
         private:
-            typename InputStream::Ptr<ELEMENT_TYPE> fRealIn_;
-            StreamReader<ELEMENT_TYPE>              fReader_;
+            typename InputStream::Ptr<ELEMENT_TYPE>         fRealIn_;
+            StreamReader<ELEMENT_TYPE>                      fReader_;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
 
