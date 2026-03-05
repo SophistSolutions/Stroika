@@ -6,9 +6,12 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <functional>
 #include <memory>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
+#include "Stroika/Foundation/Common/Empty.h"
 #include "Stroika/Foundation/Common/StdCompat.h"
 
 /**
@@ -18,6 +21,8 @@
  * 
  *  TODO:
  *      @todo Probably should use Debug::AssertExternallySynchronized in SharedByValue
+ *      @todo Understand and either remove or better document why we allow calling rwget etc with
+ *            external COPIER - why not always use the same one?
  */
 
 namespace Stroika::Foundation::Memory {
@@ -28,63 +33,179 @@ namespace Stroika::Foundation::Memory {
     namespace SharedByValueSupport {
 
         /**
-         * Check if COPIER is a legit 'copier' type for SharedByValue
-         * 
-         * @tparam SHARED_IMPL 
-         * @tparam T 
-         */
-        template <typename COPIER, typename T, typename SHARED_IMPL>
-        concept IValueCopier = requires (COPIER c, const T& t, SHARED_IMPL) {
-            { c (t) } -> convertible_to<SHARED_IMPL>;
-        };
-
-        /**
          *  \brief  DefaultValueCopier is the default template parameter for copying SharedByValue
          *
          * DefaultValueCopier is the a simple copying mechanism used by SharedByValue<>.
          * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
          */
         template <typename T, typename SHARED_IMPL = shared_ptr<T>>
-        struct DefaultValueCopier {
+        SHARED_IMPL DefaultValueCopier_NEW (const T& t);
+
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>>
+        struct DefaultValueCopier_OLD {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
             static SHARED_IMPL operator() (const T& t);
 #else
             SHARED_IMPL operator() (const T& t) const;
 #endif
         };
-        static_assert (IValueCopier<DefaultValueCopier<int>, int, shared_ptr<int>>);
 
         /**
-         * Check if a TRAITS is a valid 'traits type' for SharedByValue
+         *  Sometimes we want to have NO COPIER defined - either in the traits, or the instance value.
+         *  Use this sentinel value to check that case. Like optional<> for types.
+         */
+        using MissingCopierTypeSentinel = nullptr_t;
+
+        /**
+         * Is COPIER_TYPE a legit copier of T to SHARED_IMPL.
+         */
+        template <typename COPIER_TYPE, typename T, typename SHARED_IMPL>
+        concept ICopier = requires (COPIER_TYPE copier, SHARED_IMPL, T t) {
+            { copier (t) } -> same_as<SHARED_IMPL>;
+        };
+
+        /**
+         * logically this is optional<ICopier>
+         */
+        template <typename COPIER_TYPE, typename T, typename SHARED_IMPL>
+        concept IOptionalCopier = same_as<remove_cvref_t<COPIER_TYPE>, MissingCopierTypeSentinel> or ICopier<COPIER_TYPE, T, SHARED_IMPL>;
+
+        /**
+         * Check if a TRAITS is a valid 'traits type' for SharedByValue:
+         *      o element_type (this must be T)
+         *      o shared_ptr_type (typically shared_ptr<T> or something that looks like that)
+         *      o instance_defined_copier_type is ICopier or MissingCopierTypeSentinel
+         *      o type of kDefaultCopier is ICopier or MissingCopierTypeSentinel
+         *      o element_copier_type is ICopier (at least one must not be a sentinel value)
          * 
-         * @tparam SHARED_IMPL 
+         * @tparam TRAITS 
          * @tparam T 
          */
         template <typename TRAITS, typename T>
         concept ITraits =
-            requires (TRAITS) {
+            requires (TRAITS, T t) {
                 typename TRAITS::element_type;
-                typename TRAITS::element_copier_type;
                 typename TRAITS::shared_ptr_type;
-            } and same_as<typename TRAITS::shared_ptr_type::element_type, T> and
-            IValueCopier<typename TRAITS::element_copier_type, T, typename TRAITS::shared_ptr_type>;
+            } and same_as<typename TRAITS::shared_ptr_type::element_type, T> and Common::ICVRefTd<typename TRAITS::element_type>
+
+            and
+            requires (TRAITS) {
+                typename TRAITS::default_copier_type;
+                { TRAITS::kDefaultCopier } -> IOptionalCopier<T, typename TRAITS::shared_ptr_type>;
+            } and Common::ICVRefTd<typename TRAITS::default_copier_type>
+
+            and
+            requires (TRAITS) {
+                typename TRAITS::instance_defined_copier_type;
+                { typename TRAITS::instance_defined_copier_type{} } -> IOptionalCopier<T, typename TRAITS::shared_ptr_type>;
+            } and Common::ICVRefTd<typename TRAITS::instance_defined_copier_type>
+
+            and
+            requires (TRAITS, T t) {
+                typename TRAITS::element_copier_type;
+                { typename TRAITS::element_copier_type{} } -> ICopier<T, typename TRAITS::shared_ptr_type>;
+            } and Common::ICVRefTd<typename TRAITS::element_copier_type>
+
+            and not(same_as<typename TRAITS::instance_defined_copier_type, MissingCopierTypeSentinel> and
+                    same_as<decltype (TRAITS::kDefaultCopier), MissingCopierTypeSentinel>)
+
+            and (same_as<typename TRAITS::instance_defined_copier_type, MissingCopierTypeSentinel> or
+                 same_as<decltype (TRAITS::kDefaultCopier), MissingCopierTypeSentinel> or
+                 convertible_to<decltype (TRAITS::kDefaultCopier), typename TRAITS::instance_defined_copier_type>);
+
+        /**
+         *  \brief  ExplicitTraits is a utility struct to provide parameterized TRAITS support for SharedByValue<>
+         *
+         * @tparam T 
+         * @tparam SHARED_IMPL 
+         * @tparam DEFAULT_COPIER_TYPE 
+         * @tparam DEFAULT_COPIER 
+         * @tparam INSTANCE_COPIER_TYPE     typically nullptr_t, or occasionally function<SHARED_IMPL (const T&)>
+         */
+        template <typename T, typename SHARED_IMPL, IOptionalCopier<T, SHARED_IMPL> DEFAULT_COPIER_TYPE, DEFAULT_COPIER_TYPE DEFAULT_COPIER, IOptionalCopier<T, SHARED_IMPL> INSTANCE_COPIER_TYPE>
+        struct ExplicitTraits {
+            /**
+             * @brief SharedByValue 'of T' type
+             */
+            using element_type = T;
+
+            /**
+             * @brief shared_ptr<T> typically, but could be another 'shared_ptr'-like class
+             */
+            using shared_ptr_type = SHARED_IMPL;
+
+            /**
+             * @brief  
+             */
+            using default_copier_type = DEFAULT_COPIER_TYPE;
+
+            /**
+             * @brief the default copier - which takes a 'T' and generates the appropriate SHARED_IMPL
+             */
+            static constexpr default_copier_type kDefaultCopier{DEFAULT_COPIER};
+
+            /**
+             * instance_defined_copier_type can be MissingCopierTypeSentinel, to indicate no user-defined (instance-defined) copy function
+             * or it refers to the type of the function which converts to the appropriate shared_ptr type (typically function<SHARED_IMPL (const T&)>)
+             */
+            using instance_defined_copier_type = INSTANCE_COPIER_TYPE;
+
+            /**
+             * This is the type returned by GetElementCopier () - its either instance_defined_copier_type, or function<SHARED_IMPL (const T&)>
+             */
+            using element_copier_type =
+                conditional_t<same_as<instance_defined_copier_type, MissingCopierTypeSentinel>, function<SHARED_IMPL (const T&)>, instance_defined_copier_type>;
+        };
+
+        /**
+         * @brief SharedByValue traits object for global type specification of shared_ptr copier
+         * 
+         *  This is the default, and most efficient, and nearly always appropriate way to go.
+         * 
+         * @tparam T 
+         * @tparam SHARED_IMPL 
+         * @tparam COPIER 
+         */
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = DefaultValueCopier_OLD<T, SHARED_IMPL>>
+        using DefaultTraits_NoInstanceCopier = ExplicitTraits<T, SHARED_IMPL, COPIER, COPIER{}, MissingCopierTypeSentinel>;
+        static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, DefaultValueCopier_OLD<int, shared_ptr<int>>>, int>);
+        static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>>, int>);
+        static_assert (ITraits<DefaultTraits_NoInstanceCopier<int>, int>);
+
+        /**
+         * @brief SharedByValue traits object for per-instance constructor specification of shared_ptr copier only
+         * 
+         * @tparam T 
+         * @tparam SHARED_IMPL 
+         * @tparam COPIER 
+         */
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = function<shared_ptr<T> (const T&)>>
+        using DefaultTraits_InstanceCopierOnly = ExplicitTraits<T, SHARED_IMPL, nullptr_t, nullptr_t{}, COPIER>;
+        static_assert (ITraits<DefaultTraits_InstanceCopierOnly<int>, int>);
+
+        /**
+         * @brief Both a default copier, and a function<sharedimp(T)> instance copier.
+         * 
+         * @tparam T 
+         * @tparam SHARED_IMPL 
+         * @tparam COPIER 
+         */
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename DEFAULT_COPIER = DefaultValueCopier_OLD<T, SHARED_IMPL>,
+                  typename INSTANCE_COPIER = function<shared_ptr<T> (const T&)>>
+        using DefaultTraits_DefaultAndInstanceCopiers = ExplicitTraits<T, SHARED_IMPL, DEFAULT_COPIER, DEFAULT_COPIER{}, INSTANCE_COPIER>;
+        static_assert (ITraits<DefaultTraits_DefaultAndInstanceCopiers<int>, int>);
 
         /**
          *  \brief  DefaultTraits is a utility struct to provide parameterized support
          *          for SharedByValue<>
          *
          *  This class should allow SHARED_IMPL to be std::shared_ptr (or another shared_ptr implementation).
+         * 
+         *  \note we selected DefaultTraits_NoInstanceCopier as the default, since its the lowest overhead,
+         *        and nearly always easiest to use.
          */
-        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = DefaultValueCopier<T, SHARED_IMPL>>
-        struct DefaultTraits {
-            using element_type = T;
-
-            /**
-             *  Note that the COPIER can ASSERT externally synchronized, and doesnt need to synchronize itself.
-             */
-            using element_copier_type = COPIER;
-            using shared_ptr_type     = SHARED_IMPL;
-        };
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = DefaultValueCopier_OLD<T, SHARED_IMPL>>
+        using DefaultTraits = DefaultTraits_NoInstanceCopier<T, SHARED_IMPL, COPIER>;
         static_assert (ITraits<DefaultTraits<int>, int>);
 
         /**
@@ -114,6 +235,10 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \note Though there IS a fCopier, this is only the default copier, and calls to rwget() can always provide
      *        an alternative copier.
+     *
+     * 
+     *  \note - though we theoretically support instance_copier_type, I don't think this has ever been tested, and is
+     *        either very little used, or never used.
      *
      *  \par Example Usage
      *      \code
@@ -156,11 +281,15 @@ namespace Stroika::Foundation::Memory {
     class SharedByValue {
     public:
         using SharingState = SharedByValueSupport::SharingState;
+        using TraitsType   = TRAITS;
 
     public:
-        using element_type        = typename TRAITS::element_type;
-        using element_copier_type = typename TRAITS::element_copier_type;
-        using shared_ptr_type     = typename TRAITS::shared_ptr_type;
+        using element_type                 = typename TRAITS::element_type;
+        using element_copier_type          = typename TRAITS::element_copier_type;
+        using shared_ptr_type              = typename TRAITS::shared_ptr_type;
+        using MissingCopierTypeSentinel    = SharedByValueSupport::MissingCopierTypeSentinel;
+        using instance_defined_copier_type = typename TRAITS::instance_defined_copier_type;
+        using default_copier_type          = typename TRAITS::default_copier_type;
 
     public:
         static_assert (same_as<T, typename TRAITS::element_type>);
@@ -173,20 +302,34 @@ namespace Stroika::Foundation::Memory {
          *  It can be copied by another copy of the same kind (including same kind of copier).
          *
          *  Or it can be explicitly constructed from a SHARED_IMPL (any existing shared_ptr, along
-         *  with a copier (defaults to DefaultValueCopier). If passed a bare pointer, that
-         *  pointer will be wrapped in a shared_ptr (so it better not be already), and the SharedByValue()
-         *  will take ownership of the lifetime of that pointer.
+         *  with a copier (defaults to DefaultValueCopier). 
          *
          *  You can also copy a straight 'element_type' value into a SharedByValue.
+         * 
+         *  \note prior to Stroika v3.0d23 you could pass a bare pointer that
+         *        pointer will be wrapped in a shared_ptr and the SharedByValue()
+         *        will take ownership of the lifetime of that pointer. BUt I decided rarely useful and 
+         *        easy to manually wrap in an explicit shared_ptr{}, and then the behavior provides less
+         *        chance to surprise.
          */
-        SharedByValue () noexcept = default;
-        SharedByValue (nullptr_t n) noexcept;
+        SharedByValue () noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
+        SharedByValue (nullptr_t n) noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
         SharedByValue (SharedByValue&& from) noexcept      = default;
         SharedByValue (const SharedByValue& from) noexcept = default;
-        explicit SharedByValue (const element_type& from, const element_copier_type& copier = element_copier_type{}) noexcept;
-        explicit SharedByValue (const shared_ptr_type& from, const element_copier_type& copier = element_copier_type{}) noexcept;
-        explicit SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier = element_copier_type{}) noexcept;
-        explicit SharedByValue (element_type* from, const element_copier_type& copier = element_copier_type{});
+        explicit SharedByValue (const element_type& from)
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
+        explicit SharedByValue (const shared_ptr_type& from) noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
+        explicit SharedByValue (shared_ptr_type&& from) noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
+        SharedByValue (const element_type& from, const instance_defined_copier_type& copier)
+            requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>);
+        SharedByValue (const shared_ptr_type& from, const instance_defined_copier_type& copier) noexcept
+            requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>);
+        SharedByValue (shared_ptr_type&& from, const instance_defined_copier_type&& copier) noexcept
+            requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>);
 
     public:
         nonvirtual SharedByValue& operator= (SharedByValue&& src) noexcept      = default;
@@ -196,6 +339,9 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         * @brief returns true iff sharedptr is not null
+         * 
+         *  \see https://en.cppreference.com/w/cpp/memory/shared_ptr/operator_bool.html
          */
         nonvirtual explicit operator bool () const noexcept;
 
@@ -258,7 +404,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         * These operators require that the underlying ptr is non-nil.
+         * These operators require that the underlying ptr is non-null.
          */
         nonvirtual const element_type& operator* () const;
 
@@ -270,7 +416,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual element_copier_type GetDefaultCopier () const;
+        nonvirtual element_copier_type GetElementCopier () const;
 
     public:
         /**
@@ -297,8 +443,10 @@ namespace Stroika::Foundation::Memory {
         nonvirtual unsigned int use_count () const;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW element_copier_type fCopier_; // often zero sized
-        shared_ptr_type                                          fSharedImpl_;
+        using DeclaredInstanceCopierType_ =
+            conditional_t<same_as<instance_defined_copier_type, MissingCopierTypeSentinel>, Common::Empty, instance_defined_copier_type>;
+        shared_ptr_type                                                             fSharedImpl_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_TRY_ANYHOW DeclaredInstanceCopierType_ fCopier_; // often zero sized
 
     public:
         /**
@@ -317,6 +465,10 @@ namespace Stroika::Foundation::Memory {
         template <typename COPIER>
         nonvirtual void BreakReferences_ (COPIER&& copier);
     };
+    // NOT strictly gauranteed by C++, but we want to be warned if this ever fails, and correct or if we must
+    // conditionalize the test
+    static_assert (same_as<SharedByValue<int>::TraitsType, SharedByValueSupport::DefaultTraits_NoInstanceCopier<int>>); // if this fails, next one is meaningless
+    static_assert (sizeof (SharedByValue<int>) == sizeof (shared_ptr<int>)); // no space overhead for copier (by default)
 
 }
 

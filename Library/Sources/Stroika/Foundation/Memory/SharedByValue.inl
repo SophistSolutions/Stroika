@@ -6,17 +6,13 @@
 
 namespace Stroika::Foundation::Memory {
 
+    // DEPRECATED STUFF
     template <typename T, typename SHARED_IMPL, typename COPIER>
     [[deprecated ("Since Stroika v3.0d23 - not used - doesnt do anything")]] constexpr bool SharedByValue_IsCopier ()
     {
         // @todo should match API function<SHARED_IMPL(const T&)>
         return true;
     }
-
-    template <typename T, typename SHARED_IMPL = shared_ptr<T>>
-    using SharedByValue_CopyByDefault [[deprecated ("Since Stroika v3.0d23 - use SharedByValueSupport directly")]] =
-        SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>;
-
     template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>>
     using SharedByValue_Traits [[deprecated ("Since Stroika v3.0d23 - use DefaultTraits directly")]] =
         SharedByValueSupport::DefaultTraits<T, SHARED_IMPL>;
@@ -30,11 +26,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, typename SHARED_IMPL>
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>::operator() (const T& t)
-#else
-    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>::operator() (const T& t) const
-#endif
+    SHARED_IMPL SharedByValueSupport::DefaultValueCopier_NEW (const T& t)
     {
         if constexpr (same_as<SHARED_IMPL, shared_ptr<T>>) {
             return Memory::MakeSharedPtr<T> (t); // more efficient
@@ -43,6 +35,15 @@ namespace Stroika::Foundation::Memory {
             return SHARED_IMPL{new T{t}};
         }
     }
+    template <typename T, typename SHARED_IMPL>
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier_OLD<T, SHARED_IMPL>::operator() (const T& t)
+#else
+    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier_OLD<T, SHARED_IMPL>::operator() (const T& t) const
+#endif
+    {
+        return DefaultValueCopier_NEW (t);
+    }
 
     /*
      ********************************************************************************
@@ -50,33 +51,69 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue ([[maybe_unused]] nullptr_t) noexcept
-        : fCopier_{element_copier_type{}}
-        , fSharedImpl_{}
+    inline SharedByValue<T, TRAITS>::SharedByValue () noexcept
+        requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+        : fSharedImpl_{}
     {
+        if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            fCopier_ = TRAITS::kDefaultCopier;
+        }
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue (const shared_ptr_type& from, const element_copier_type& copier) noexcept
+    inline SharedByValue<T, TRAITS>::SharedByValue ([[maybe_unused]] nullptr_t) noexcept
+        requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+        : fSharedImpl_{}
+    {
+        if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            fCopier_ = TRAITS::kDefaultCopier;
+        }
+    }
+    template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
+    inline SharedByValue<T, TRAITS>::SharedByValue (const shared_ptr_type& from) noexcept
+        requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+        : fSharedImpl_{from}
+    {
+        if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            fCopier_ = TRAITS::kDefaultCopier;
+        }
+    }
+    template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
+    inline SharedByValue<T, TRAITS>::SharedByValue (const element_type& from)
+        requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+        : fSharedImpl_{TRAITS::kDefaultCopier (from)}
+    {
+        if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            fCopier_ = TRAITS::kDefaultCopier;
+        }
+    }
+    template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
+    inline SharedByValue<T, TRAITS>::SharedByValue (shared_ptr_type&& from) noexcept
+        requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+        : fSharedImpl_{move (from)}
+    {
+        if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            fCopier_ = TRAITS::kDefaultCopier;
+        }
+    }
+    template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
+    inline SharedByValue<T, TRAITS>::SharedByValue (const shared_ptr_type& from, const instance_defined_copier_type& copier) noexcept
+        requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>)
         : fCopier_{copier}
         , fSharedImpl_{from}
     {
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue (const element_type& from, const element_copier_type& copier) noexcept
+    inline SharedByValue<T, TRAITS>::SharedByValue (const element_type& from, const instance_defined_copier_type& copier)
+        requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>)
         : fCopier_{copier}
         , fSharedImpl_{copier (from)}
     {
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue (shared_ptr_type&& from, const element_copier_type&& copier) noexcept
+    inline SharedByValue<T, TRAITS>::SharedByValue (shared_ptr_type&& from, const instance_defined_copier_type&& copier) noexcept
+        requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>)
         : fCopier_{move (copier)}
         , fSharedImpl_{move (from)}
-    {
-    }
-    template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
-    inline SharedByValue<T, TRAITS>::SharedByValue (element_type* from, const element_copier_type& copier)
-        : fCopier_{copier}
-        , fSharedImpl_{from}
     {
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
@@ -92,7 +129,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline SharedByValue<T, TRAITS>::operator bool () const noexcept
     {
-        return fSharedImpl_.get () != nullptr;
+        return static_cast<bool> (fSharedImpl_);
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline SharedByValue<T, TRAITS>& SharedByValue<T, TRAITS>::operator= (shared_ptr_type&& from) noexcept
@@ -117,7 +154,12 @@ namespace Stroika::Foundation::Memory {
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline auto SharedByValue<T, TRAITS>::rwget_ptr () -> shared_ptr_type
     {
-        return rwget_ptr (fCopier_);
+        if constexpr (same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            return rwget_ptr (TRAITS::kDefaultCopier);
+        }
+        else {
+            return rwget_ptr (fCopier_);
+        }
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     template <typename COPIER>
@@ -133,7 +175,12 @@ namespace Stroika::Foundation::Memory {
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline auto SharedByValue<T, TRAITS>::rwget () -> element_type*
     {
-        return rwget (fCopier_);
+        if constexpr (same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            return rwget (TRAITS::kDefaultCopier);
+        }
+        else {
+            return rwget (fCopier_);
+        }
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     template <typename COPIER>
@@ -175,9 +222,14 @@ namespace Stroika::Foundation::Memory {
         return fSharedImpl_ == nullptr;
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
-    inline typename SharedByValue<T, TRAITS>::element_copier_type SharedByValue<T, TRAITS>::GetDefaultCopier () const
+    inline auto SharedByValue<T, TRAITS>::GetElementCopier () const -> element_copier_type
     {
-        return fCopier_;
+        if constexpr (same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            return TRAITS::kDefaultCopier;
+        }
+        else {
+            return fCopier_;
+        }
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline auto SharedByValue<T, TRAITS>::GetSharingState () const -> SharingState
@@ -222,7 +274,12 @@ namespace Stroika::Foundation::Memory {
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline void SharedByValue<T, TRAITS>::AssureNOrFewerReferences (unsigned int n)
     {
-        AssureNOrFewerReferences (fCopier_, n);
+        if constexpr (same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+            AssureNOrFewerReferences (TRAITS::kDefaultCopier, n);
+        }
+        else {
+            AssureNOrFewerReferences (fCopier_, n);
+        }
     }
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     template <typename COPIER>
