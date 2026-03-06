@@ -2562,6 +2562,54 @@ In file included from ../Characters/String.h:18,
 
 #endif
 
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy2 0
+
+/**
+ *  VERY unsure if this is a LGP bug or a compiler bug
+ * 
+ * 
+ /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<int>’:
+/usr/include/c++/14/concepts:130:44:   required by substitution of ‘template<class _Tp>  requires requires(_Tp& __t) {{__t->~_Tp()}noexcept;} constexpr const bool std::__detail::__destructible_impl<_Tp> [with _Tp = Stroika::Foundation::Traversal::Iterable<int>]’
+  130 |       requires requires(_Tp& __t) { { __t.~_Tp() } noexcept; }
+      |                                       ~~~~~^~~
+/usr/include/c++/14/concepts:134:39:   required from ‘constexpr const bool std::__detail::__destructible<Stroika::Foundation::Traversal::Iterable<int> >’
+  134 |       constexpr bool __destructible = __destructible_impl<_Tp>;
+      |                                       ^~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/14/concepts:155:38:   required from here
+  155 |     concept destructible = __detail::__destructible<_Tp>;
+      |                            ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:1433:15: error: could not convert ‘<lambda closure object>Stroika::Foundation::Traversal::Iterable<int>::<lambda(const Stroika::Foundation::Traversal::Iterable<int>::_IRep&)>()’ from ‘Stroika::Foundation::Traversal::Iterable<int>::<lambda(const Stroika::Foundation::Traversal::Iterable<int>::_IRep&)>’ to ‘Stroika::Foundation::Traversal::Iterable<int>::<lambda(const Stroika::Foundation::Traversal::Iterable<int>::_IRep&)>’
+ 1433 |         using _SharedByValueRepType = Memory::SharedByValue<
+      |               ^~~~~~~~~~~~~~~~~~~~~
+      |               |
+      |               Stroika::Foundation::Traversal::Iterable<int>::<lambda(const Stroika::Foundation::Traversal::Iterable<int>::_IRep&)>
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>’:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.h:201:38:   required from here
+  201 |     class String : public Traversal::Iterable<Character> {
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:1433:15: error: could not convert ‘<lambda closure object>Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::<lambda(const Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::_IRep&)>()’ from ‘Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::<lambda(const Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::_IRep&)>’ to ‘Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::<lambda(const Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::_IRep&)>’
+ 1433 |         using _SharedByValueRepType = Memory::SharedByValue<
+      |               ^~~~~~~~~~~~~~~~~~~~~
+      |               |
+      |               Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::<lambda(const Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>::_IRep&)>
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>’:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/String.h:1950:52:   required from here
+ 1950 |     Characters::String Iterable<Characters::String>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const;
+      |                                                    ^~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Traversal/Iterable.h:1433:15: error: could not convert ‘<lambda closure object>Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characte
+ */
+
+#ifndef qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// VERIFIED BROKEN IN GCC 14
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
+#else
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy 0
+#endif
+
+#endif
+
 /**
  /../../Memory/../Streams/../Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>’:
 ../../../Memory/../Streams/InputStream.inl:269:65:   required from here

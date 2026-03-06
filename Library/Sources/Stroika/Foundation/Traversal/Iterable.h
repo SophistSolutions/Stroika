@@ -1409,7 +1409,7 @@ namespace Stroika::Foundation::Traversal {
             requires (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>);
 
     private:
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy || qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy
         struct Rep_Cloner_ {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
             static auto operator() (const _IRep& t) -> shared_ptr<_IRep>
