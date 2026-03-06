@@ -13,7 +13,7 @@ namespace Stroika::Foundation::Memory {
         // @todo should match API function<SHARED_IMPL(const T&)>
         return true;
     }
-    template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = SharedByValueSupport::DefaultValueCopier<T, SHARED_IMPL>>
+    template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = SharedByValueSupport::DefaultValueCopier_OLD<T, SHARED_IMPL>>
     using SharedByValue_Traits [[deprecated ("Since Stroika v3.0d23 - use DefaultTraits directly")]] =
         SharedByValueSupport::DefaultTraits<T, SHARED_IMPL>;
 
