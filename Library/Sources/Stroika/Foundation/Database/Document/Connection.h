@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Database::Document::Connection {
 
     protected:
         // note this protects the LETTER (smart_ptr) not the envelope
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
     };
 
     /**

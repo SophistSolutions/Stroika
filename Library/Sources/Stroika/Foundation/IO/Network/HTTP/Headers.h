@@ -488,8 +488,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         optional<IfNoneMatch>       fIfNoneMatch_;
         optional<CookieList>        fSetCookieList_; // store optional cuz often missing, and faster init
         optional<TransferEncodings> fTransferEncoding_; // must access through property to access extended property handlers (except root getter/setter)
-        optional<Containers::Set<String>>    fVary_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        optional<Containers::Set<String>>            fVary_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
     template <>
     Association<String, String> Headers::As () const;

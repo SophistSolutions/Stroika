@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Database::SQL {
         virtual optional<Row> GetNextRow () = 0;
 
     protected:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
     };
 
 }

@@ -125,8 +125,8 @@ namespace Stroika::Foundation::Cryptography::Providers::OpenSSL {
         };
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS LibraryInit_ fLibraryInit_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE LibraryInit_ fLibraryInit_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 
 #if OPENSSL_VERSION_MAJOR >= 3
         Containers::Association<String, ::OSSL_PROVIDER*> fLoadedProviders_; // providers maybe listed multiple times here, if loaded multiple times by callers
