@@ -82,7 +82,8 @@ namespace Stroika::Foundation::Traversal {
             using _ContextObjectType = conditional_t<same_as<CONTEXT_FOR_EACH_ITERATOR, void>, Common::Empty, CONTEXT_FOR_EACH_ITERATOR>;
 
         protected:
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE _ContextObjectType _fContextForEachIterator;
+            // FAILED: Assert; *fCountRunning == 0;Stroika::Foundation::Traversal::IterableFromIterator<struct Stroika::Foundation::Common::CountedValue<int,unsigned int>,void,void>::_Rep::_IteratorTracker::~_IteratorTracker;C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Traversal\IterableFromIterator.inl: 18
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY _ContextObjectType _fContextForEachIterator;
 
 #if qStroika_Foundation_Debug_AssertionsChecked
         protected:
