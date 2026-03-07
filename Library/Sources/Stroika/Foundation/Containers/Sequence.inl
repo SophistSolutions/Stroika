@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Containers {
         static constexpr bool                kSubClass_ = is_class_v<T> or is_union_v<T>;
         Sequence<T>*                         fV;
         size_t                               fIndex_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS conditional_t<kSubClass_, Common::Empty, T> fValue_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kSubClass_, Common::Empty, T> fValue_;
 
     public:
         TemporaryElementReference_ (const TemporaryElementReference_&) = default;
