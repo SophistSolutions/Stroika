@@ -660,7 +660,10 @@ namespace {
             }
         };
 
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
+        //$ ./Builds/Release/Tests/Test36.exe
+        //..[ RUN      ] Foundation_Database.SimpleMongoDBClientTest_
+        //unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
         variant<mongocxx::client, mongocxx::pool::entry> fClientStorage_; // not directly used, but needed to free the resource when this connection obj goes away - and implicitly stored in database
         mongocxx::database        fDatabase_;
         const Connection::Options fOptions_;
