@@ -432,8 +432,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         Memory::InlineBuffer<BucketType_, kBufferedBuckets_> fBuckets_;
 
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS KeyHasherType         fHasher_;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS KeyEqualsComparerType fKeyComparer_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE KeyHasherType         fHasher_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE KeyEqualsComparerType fKeyComparer_;
 
         size_t fCachedSize_{0};
 
