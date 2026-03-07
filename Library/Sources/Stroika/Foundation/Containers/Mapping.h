@@ -699,8 +699,8 @@ namespace Stroika::Foundation::Containers {
     struct Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
-        nonvirtual bool                                            operator() (const Mapping& lhs, const Mapping& rhs) const;
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS VALUE_EQUALS_COMPARER fValueEqualsComparer;
+        nonvirtual bool                                                    operator() (const Mapping& lhs, const Mapping& rhs) const;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE VALUE_EQUALS_COMPARER fValueEqualsComparer;
     };
 
 }

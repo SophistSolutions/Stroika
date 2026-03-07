@@ -67,24 +67,24 @@ namespace Stroika::Foundation::Containers::Concrete {
         struct ElementEqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             static_assert (not is_reference_v<KEY_EQUALS_COMPARER>);
             constexpr ElementEqualsComparer (const KeyExtractorType& keyExtractor = {}, const KEY_EQUALS_COMPARER& keyEqualsComparer = {})
-                : fKeyExtractor_{keyExtractor}
+                : fKeyExtractor{keyExtractor}
                 , fKeyComparer{keyEqualsComparer}
             {
             }
             constexpr int operator() (const value_type& lhs, const KEY_TYPE& rhs) const
             {
-                return fKeyComparer (fKeyExtractor_ (lhs), rhs);
+                return fKeyComparer (fKeyExtractor (lhs), rhs);
             };
             constexpr int operator() (const KEY_TYPE& lhs, const value_type& rhs) const
             {
-                return fKeyComparer (lhs, fKeyExtractor_ (rhs));
+                return fKeyComparer (lhs, fKeyExtractor (rhs));
             };
             constexpr int operator() (const value_type& lhs, const value_type& rhs) const
             {
-                return fKeyComparer (fKeyExtractor_ (lhs), fKeyExtractor_ (rhs));
+                return fKeyComparer (fKeyExtractor (lhs), fKeyExtractor (rhs));
             };
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType    fKeyExtractor_;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KEY_EQUALS_COMPARER fKeyComparer;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KeyExtractorType    fKeyExtractor;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE const KEY_EQUALS_COMPARER fKeyComparer;
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
         };
 
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <Cryptography::Digest::IHashFunction<KEY_TYPE> KEY_HASHER = hash<key_type>>
         struct ElementHash {
             constexpr ElementHash (const KeyExtractorType& keyExtractor = {}, const KEY_HASHER& kh = {})
-                : fKeyExtractor_{keyExtractor}
+                : fKeyExtractor{keyExtractor}
                 , fKeyHasher{kh}
             {
             }
@@ -111,9 +111,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             auto operator() (const value_type& v) const noexcept
             {
-                return fKeyHasher (fKeyExtractor_ (v));
+                return fKeyHasher (fKeyExtractor (v));
             }
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType fKeyExtractor_;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KeyExtractorType fKeyExtractor;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KEY_HASHER       fKeyHasher;
 
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key

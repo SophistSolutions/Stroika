@@ -396,7 +396,7 @@ namespace {
 namespace {
     template <Execution::InternallySynchronized SYNC_STYLE>
     struct AdminRep_ final : Stroika::Foundation::Database::Document::MongoDBClient::AdminConnection::IRep {
-        // $ ./Builds/Release/Tests/Test36.exe
+        // qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY because ./Builds/Release/Tests/Test36.exe
         //...[ RUN      ] Foundation_Database.SimpleMongoDBClientTest_
         //    unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
@@ -660,7 +660,7 @@ namespace {
             }
         };
 
-        //$ ./Builds/Release/Tests/Test36.exe
+        //qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY because: ./Builds/Release/Tests/Test36.exe
         //..[ RUN      ] Foundation_Database.SimpleMongoDBClientTest_
         //unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY mutable MyMaybeLock_<SYNC_STYLE> fMaybeLock_; // mutable cuz this is what we lock to assure internal sync for const/non-const methods
