@@ -2603,7 +2603,8 @@ In file included from ../Characters/String.h:18,
 
 #if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 14
-#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 14)
+// VERIFIED BROKEN IN GCC 15
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 15)
 #else
 #define qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy 0
 #endif
