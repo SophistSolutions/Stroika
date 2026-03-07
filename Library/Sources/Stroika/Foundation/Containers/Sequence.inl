@@ -30,9 +30,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     struct Sequence<T>::TemporaryElementReference_ : conditional_t<is_class_v<T> or is_union_v<T>, T, Common::Empty> {
     private:
-        static constexpr bool                kSubClass_ = is_class_v<T> or is_union_v<T>;
-        Sequence<T>*                         fV;
-        size_t                               fIndex_;
+        static constexpr bool                        kSubClass_ = is_class_v<T> or is_union_v<T>;
+        Sequence<T>*                                 fV;
+        size_t                                       fIndex_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kSubClass_, Common::Empty, T> fValue_;
 
     public:
