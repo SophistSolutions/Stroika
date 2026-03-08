@@ -50,6 +50,7 @@ namespace Stroika::Foundation::Memory {
      *************************** SharedByValue<T, TRAITS> ***************************
      ********************************************************************************
      */
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline SharedByValue<T, TRAITS>::SharedByValue () noexcept
         requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
@@ -116,6 +117,7 @@ namespace Stroika::Foundation::Memory {
         , fSharedImpl_{move (from)}
     {
     }
+#endif
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS>
     inline SharedByValue<T, TRAITS>& SharedByValue<T, TRAITS>::operator= (const shared_ptr_type& from) noexcept
     {

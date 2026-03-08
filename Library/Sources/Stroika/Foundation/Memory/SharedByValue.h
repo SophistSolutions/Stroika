@@ -312,12 +312,75 @@ namespace Stroika::Foundation::Memory {
          *        easy to manually wrap in an explicit shared_ptr{}, and then the behavior provides less
          *        chance to surprise.
          */
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         SharedByValue () noexcept
             requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
         SharedByValue (nullptr_t n) noexcept
             requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
+#else
+        SharedByValue () noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+            : fSharedImpl_{}
+        {
+            if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+                fCopier_ = TRAITS::kDefaultCopier;
+            }
+        }
+        SharedByValue ([[maybe_unused]] nullptr_t) noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+            : fSharedImpl_{}
+        {
+            if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+                fCopier_ = TRAITS::kDefaultCopier;
+            }
+        }
+#endif
         SharedByValue (SharedByValue&& from) noexcept      = default;
         SharedByValue (const SharedByValue& from) noexcept = default;
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        SharedByValue (const shared_ptr_type& from) noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+            : fSharedImpl_{from}
+        {
+            if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+                fCopier_ = TRAITS::kDefaultCopier;
+            }
+        }
+        SharedByValue (const element_type& from)
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+            : fSharedImpl_{TRAITS::kDefaultCopier (from)}
+        {
+            if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+                fCopier_ = TRAITS::kDefaultCopier;
+            }
+        }
+        SharedByValue (shared_ptr_type&& from) noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
+            : fSharedImpl_{move (from)}
+        {
+            if constexpr (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>) {
+                fCopier_ = TRAITS::kDefaultCopier;
+            }
+        }
+        SharedByValue (const shared_ptr_type& from, const instance_defined_copier_type& copier) noexcept
+            requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>)
+            : fCopier_{copier}
+            , fSharedImpl_{from}
+        {
+        }
+        SharedByValue (const element_type& from, const instance_defined_copier_type& copier)
+            requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>)
+            : fCopier_{copier}
+            , fSharedImpl_{copier (from)}
+        {
+        }
+        SharedByValue (shared_ptr_type&& from, const instance_defined_copier_type&& copier) noexcept
+            requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>)
+            : fCopier_{move (copier)}
+            , fSharedImpl_{move (from)}
+        {
+        }
+#else
         explicit SharedByValue (const element_type& from)
             requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
         explicit SharedByValue (const shared_ptr_type& from) noexcept
@@ -330,6 +393,7 @@ namespace Stroika::Foundation::Memory {
             requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>);
         SharedByValue (shared_ptr_type&& from, const instance_defined_copier_type&& copier) noexcept
             requires (not same_as<instance_defined_copier_type, MissingCopierTypeSentinel>);
+#endif
 
     public:
         nonvirtual SharedByValue& operator= (SharedByValue&& src) noexcept      = default;
