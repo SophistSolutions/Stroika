@@ -13,7 +13,7 @@ namespace Stroika::Foundation::Memory {
         // @todo should match API function<SHARED_IMPL(const T&)>
         return true;
     }
-    template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = SharedByValueSupport::DefaultValueCopier_OLD<T, SHARED_IMPL>>
+    template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = SharedByValueSupport::DefaultValueCopier_FunctionObject<T, SHARED_IMPL>>
     using SharedByValue_Traits [[deprecated ("Since Stroika v3.0d23 - use DefaultTraits directly")]] =
         SharedByValueSupport::DefaultTraits<T, SHARED_IMPL>;
 
@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, typename SHARED_IMPL>
-    SHARED_IMPL SharedByValueSupport::DefaultValueCopier_NEW (const T& t)
+    SHARED_IMPL SharedByValueSupport::DefaultValueCopier (const T& t)
     {
         if constexpr (same_as<SHARED_IMPL, shared_ptr<T>>) {
             return Memory::MakeSharedPtr<T> (t); // more efficient
@@ -37,12 +37,12 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, typename SHARED_IMPL>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier_OLD<T, SHARED_IMPL>::operator() (const T& t)
+    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier_FunctionObject<T, SHARED_IMPL>::operator() (const T& t)
 #else
-    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier_OLD<T, SHARED_IMPL>::operator() (const T& t) const
+    inline SHARED_IMPL SharedByValueSupport::DefaultValueCopier_FunctionObject<T, SHARED_IMPL>::operator() (const T& t) const
 #endif
     {
-        return DefaultValueCopier_NEW (t);
+        return DefaultValueCopier (t);
     }
 
     /*
