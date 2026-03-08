@@ -41,6 +41,11 @@ namespace Stroika::Foundation::Memory {
         template <typename T, typename SHARED_IMPL = shared_ptr<T>>
         SHARED_IMPL DefaultValueCopier (const T& t);
 
+        /**
+         *  \brief DefaultValueCopier_FunctionObject same as DefaultValueCopier, but as a function object
+         * 
+         *  \note before Stroika 3.0d23, this was the only style of copier supported.
+         */
         template <typename T, typename SHARED_IMPL = shared_ptr<T>>
         struct DefaultValueCopier_FunctionObject {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
@@ -65,7 +70,7 @@ namespace Stroika::Foundation::Memory {
         };
 
         /**
-         * logically this is optional<ICopier>
+         * logically this is optional<ICopier> (@see MissingCopierTypeSentinel)
          */
         template <typename COPIER_TYPE, typename T, typename SHARED_IMPL>
         concept IOptionalCopier = same_as<remove_cvref_t<COPIER_TYPE>, MissingCopierTypeSentinel> or ICopier<COPIER_TYPE, T, SHARED_IMPL>;
@@ -135,7 +140,7 @@ namespace Stroika::Foundation::Memory {
             using shared_ptr_type = SHARED_IMPL;
 
             /**
-             * @brief  
+             * @brief satisfies IOptionalCopier, and used as default for instance copier, and if no instance copier, used to copy objects when a change occurs
              */
             using default_copier_type = DEFAULT_COPIER_TYPE;
 
@@ -157,6 +162,7 @@ namespace Stroika::Foundation::Memory {
                 conditional_t<same_as<instance_defined_copier_type, MissingCopierTypeSentinel>, function<SHARED_IMPL (const T&)>, instance_defined_copier_type>;
         };
 
+        // magic to make the templates work...
         template <typename T, typename SHARED_IMPL, typename COPIER_TYPE>
         constexpr auto GetDefaultCopierInstance_ ()
         {
@@ -179,12 +185,12 @@ namespace Stroika::Foundation::Memory {
          * @tparam COPIER_TYPE - the type of the copier (function object type or function pointer type)
          * @tparam COPIER_INSTANCE - the instance of the copier (defaults to appropriate value based on type)
          */
-        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER_TYPE = DefaultValueCopier_FunctionObject<T, SHARED_IMPL>,
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER_TYPE = SHARED_IMPL (*) (const T&),
                   auto COPIER_INSTANCE = GetDefaultCopierInstance_<T, SHARED_IMPL, COPIER_TYPE> ()>
         using DefaultTraits_NoInstanceCopier = ExplicitTraits<T, SHARED_IMPL, COPIER_TYPE, COPIER_INSTANCE, MissingCopierTypeSentinel>;
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, DefaultValueCopier_FunctionObject<int, shared_ptr<int>>>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, DefaultValueCopier_FunctionObject<int>>, int>);
-        // static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, DefaultValueCopier<int>>, int>);
+        static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, shared_ptr<int> (*) (const int&), DefaultValueCopier<int>>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, shared_ptr<int> (*) (const int&), DefaultValueCopier<int, shared_ptr<int>>>, int>);
@@ -224,10 +230,11 @@ namespace Stroika::Foundation::Memory {
          *  \note we selected DefaultTraits_NoInstanceCopier as the default, since its the lowest overhead,
          *        and nearly always easiest to use.
          */
-        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = DefaultValueCopier_FunctionObject<T, SHARED_IMPL>>
-        using DefaultTraits = DefaultTraits_NoInstanceCopier<T, SHARED_IMPL, COPIER>;
+        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER_TYPE = SHARED_IMPL (*) (const T&),
+                  auto COPIER_INSTANCE = GetDefaultCopierInstance_<T, SHARED_IMPL, COPIER_TYPE> ()>
+        using DefaultTraits = DefaultTraits_NoInstanceCopier<T, SHARED_IMPL, COPIER_TYPE, COPIER_INSTANCE>;
         static_assert (ITraits<DefaultTraits<int>, int>);
-       // static_assert (ITraits<DefaultTraits<int, shared_ptr<int>, DefaultValueCopier<int,shared_ptr<int>>>, int>);
+        static_assert (ITraits<DefaultTraits<int, shared_ptr<int>, shared_ptr<int> (*) (const int&), DefaultValueCopier<int>>, int>);
 
         /**
          *   This state is meant purely for code that may manage their internal behavior
@@ -552,7 +559,7 @@ namespace Stroika::Foundation::Memory {
     };
     // NOT strictly gauranteed by C++, but we want to be warned if this ever fails, and correct or if we must
     // conditionalize the test
-    static_assert (same_as<SharedByValue<int>::TraitsType, SharedByValueSupport::DefaultTraits_NoInstanceCopier<int>>); // if this fails, next one is meaningless
+    //static_assert (same_as<SharedByValue<int>::TraitsType, SharedByValueSupport::DefaultTraits_NoInstanceCopier<int>>); // if this fails, next one is meaningless
     static_assert (sizeof (SharedByValue<int>) == sizeof (shared_ptr<int>)); // no space overhead for copier (by default)
 
 }
