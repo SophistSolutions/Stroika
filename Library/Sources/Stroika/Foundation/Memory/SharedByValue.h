@@ -314,11 +314,6 @@ namespace Stroika::Foundation::Memory {
          */
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         SharedByValue () noexcept
-            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
-        SharedByValue (nullptr_t n) noexcept
-            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
-#else
-        SharedByValue () noexcept
             requires (not same_as<default_copier_type, MissingCopierTypeSentinel>)
             : fSharedImpl_{}
         {
@@ -334,6 +329,11 @@ namespace Stroika::Foundation::Memory {
                 fCopier_ = TRAITS::kDefaultCopier;
             }
         }
+#else
+        SharedByValue () noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
+        SharedByValue (nullptr_t n) noexcept
+            requires (not same_as<default_copier_type, MissingCopierTypeSentinel>);
 #endif
         SharedByValue (SharedByValue&& from) noexcept      = default;
         SharedByValue (const SharedByValue& from) noexcept = default;
