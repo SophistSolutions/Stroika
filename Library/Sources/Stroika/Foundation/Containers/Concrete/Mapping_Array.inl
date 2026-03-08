@@ -35,7 +35,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
+        //  ./Builds/Release/Tests/Test17.exe
+        // [ RUN      ] Foundation_Containers_Mapping.Mapping_Array
+        // unknown file: error: SEH exception with code 0xc0000005 thrown in the test body.
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
 
         // Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep overrides
     public:
