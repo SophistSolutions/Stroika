@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Memory {
     namespace SharedByValueSupport {
 
         /**
-         *  \brief  DefaultValueCopier is the default template parameter for copying SharedByValue
+         *  \brief  DefaultValueCopier is the default value-copier for copying SharedByValue (thing that clones a shared_ptr)
          *
          * DefaultValueCopier is the a simple copying mechanism used by SharedByValue<>.
          * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
@@ -213,15 +213,15 @@ namespace Stroika::Foundation::Memory {
          * @brief Both a default copier, and a function<sharedimp(T)> instance copier.
          * 
          * @tparam T 
-         * @tparam DEFAULT_COPIER 
-         * @tparam INSTANCE_COPIER 
+         * @tparam DEFAULT_COPIER_TYPE 
+         * @tparam INSTANCE_COPIER_TYPE 
          * 
          * \note shared_ptr_type is inferred from the result of INSTANCE_COPIER_TYPE.
          */
-        template <typename T, typename DEFAULT_COPIER = DefaultValueCopier_FunctionObject<T, shared_ptr<T>>,
+        template <typename T, typename DEFAULT_COPIER_TYPE = DefaultValueCopier_FunctionObject<T, shared_ptr<T>>,
                   typename INSTANCE_COPIER_TYPE = function<shared_ptr<T> (const T&)>>
         using DefaultTraits_DefaultAndInstanceCopiers =
-            ExplicitTraits<T, invoke_result_t<INSTANCE_COPIER_TYPE, T>, DEFAULT_COPIER, DEFAULT_COPIER{}, INSTANCE_COPIER_TYPE>;
+            ExplicitTraits<T, invoke_result_t<INSTANCE_COPIER_TYPE, T>, DEFAULT_COPIER_TYPE, DEFAULT_COPIER_TYPE{}, INSTANCE_COPIER_TYPE>;
         static_assert (ITraits<DefaultTraits_DefaultAndInstanceCopiers<int>, int>);
 
         /**
@@ -282,10 +282,9 @@ namespace Stroika::Foundation::Memory {
      *          EXPECT_TRUE (c == b);
      *      \endcode
      *
-     * 
      *  \par Example Usage
      *      \code
-     *          static shared_ptr<_IRep> Clone_ (const _IRep& rep);
+     *          static shared_ptr<_IRep> Clone_ (const _IRep& rep); // if you need fancier logic to clone your shared_ptr value
      *          using _SharedByValueRepType = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, Clone_>>;
      *      \endcode
      *
