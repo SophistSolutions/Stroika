@@ -17,6 +17,7 @@
 
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/ConceptsBase.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 
 /*
  *  \file
@@ -208,18 +209,7 @@ namespace Stroika::Foundation::Common {
     template <typename...>
     using True = true_type;
 
-    namespace Private_ {
-        template <class _Ty>
-        concept _Boolean_testable_impl = convertible_to<_Ty, bool>;
-    }
-
-    /**
-     *  \brief handy re-usable concept, with the obvious meaning, and strangely omitted from std-c++ (though used in exposition).
-     */
-    template <class _Ty>
-    concept Boolean_testable = Private_::_Boolean_testable_impl<_Ty> && requires (_Ty&& __t) {
-        { !static_cast<_Ty&&> (__t) } -> Private_::_Boolean_testable_impl;
-    };
+    using StdCompat::Boolean_testable;
 
     /**
      * \brief equality_comparable_with, but less strict - just checks if it can be equality compared!

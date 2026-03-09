@@ -78,6 +78,23 @@ namespace Stroika::Foundation::Common::StdCompat {
         { lo.try_lock () } -> std::same_as<bool>;
     };
 
+    namespace Private_ {
+        template <class _Ty>
+        concept _Boolean_testable_impl = convertible_to<_Ty, bool>;
+    }
+
+    /**
+     *  \brief handy re-usable concept, with the obvious meaning, and strangely omitted from std-c++ (though used in exposition).
+     * 
+     *  \see https://en.cppreference.com/w/cpp/concepts/boolean-testable.html
+     */
+    template <class _Ty>
+    concept Boolean_testable = Private_::_Boolean_testable_impl<_Ty> && requires (_Ty&& __t) {
+        { !static_cast<_Ty&&> (__t) } -> Private_::_Boolean_testable_impl;
+    };
+
+
+
 #if qStroika_HasComponent_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
 #elif __has_include(<format>)
