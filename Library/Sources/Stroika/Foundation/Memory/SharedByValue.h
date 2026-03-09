@@ -170,7 +170,8 @@ namespace Stroika::Foundation::Memory {
          * 
          * @tparam T 
          * @tparam COPIER_INSTANCE - the instance of the copier (defaults to appropriate value based on type)
-         *                         - the type of the shared_ptr is inferred from the result of this.
+         * 
+         * \note shared_ptr_type SHOULD BE inferred from the result of COPIER_INSTANCE.
          * 
          * \note
          *      Tempting to make the SHARED_IMPL passed to ExplicitTraits be 
@@ -199,24 +200,28 @@ namespace Stroika::Foundation::Memory {
          *  This has no 'default' value for the copier (must always be explicitly specified in CTOR or copied from other instance through CTOR).
          * 
          * @tparam T 
-         * @tparam SHARED_IMPL 
          * @tparam COPIER         
+         * 
+         * \note shared_ptr_type is inferred from the result of COPIER_TYPE.
          */
-        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename COPIER = function<shared_ptr<T> (const T&)>>
-        using DefaultTraits_InstanceCopierOnly = ExplicitTraits<T, SHARED_IMPL, MissingCopierTypeSentinel, MissingCopierTypeSentinel{}, COPIER>;
+        template <typename T, typename COPIER_TYPE = function<shared_ptr<T> (const T&)>>
+        using DefaultTraits_InstanceCopierOnly =
+            ExplicitTraits<T, invoke_result_t<COPIER_TYPE, T>, MissingCopierTypeSentinel, MissingCopierTypeSentinel{}, COPIER_TYPE>;
         static_assert (ITraits<DefaultTraits_InstanceCopierOnly<int>, int>);
 
         /**
          * @brief Both a default copier, and a function<sharedimp(T)> instance copier.
          * 
          * @tparam T 
-         * @tparam SHARED_IMPL 
          * @tparam DEFAULT_COPIER 
          * @tparam INSTANCE_COPIER 
+         * 
+         * \note shared_ptr_type is inferred from the result of INSTANCE_COPIER_TYPE.
          */
-        template <typename T, typename SHARED_IMPL = shared_ptr<T>, typename DEFAULT_COPIER = DefaultValueCopier_FunctionObject<T, SHARED_IMPL>,
-                  typename INSTANCE_COPIER = function<shared_ptr<T> (const T&)>>
-        using DefaultTraits_DefaultAndInstanceCopiers = ExplicitTraits<T, SHARED_IMPL, DEFAULT_COPIER, DEFAULT_COPIER{}, INSTANCE_COPIER>;
+        template <typename T, typename DEFAULT_COPIER = DefaultValueCopier_FunctionObject<T, shared_ptr<T>>,
+                  typename INSTANCE_COPIER_TYPE = function<shared_ptr<T> (const T&)>>
+        using DefaultTraits_DefaultAndInstanceCopiers =
+            ExplicitTraits<T, invoke_result_t<INSTANCE_COPIER_TYPE, T>, DEFAULT_COPIER, DEFAULT_COPIER{}, INSTANCE_COPIER_TYPE>;
         static_assert (ITraits<DefaultTraits_DefaultAndInstanceCopiers<int>, int>);
 
         /**
