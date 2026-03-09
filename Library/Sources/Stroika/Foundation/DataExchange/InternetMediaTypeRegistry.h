@@ -211,7 +211,7 @@ namespace Stroika::Foundation::DataExchange {
         static shared_ptr<IFrontendRep_> CloneAsSharedPtr_ (const IFrontendRep_& t);
 
         using SharedRepByValuePtr_ =
-            Memory::SharedByValue<IFrontendRep_, Memory::SharedByValueSupport::DefaultTraits<IFrontendRep_, shared_ptr<IFrontendRep_>, shared_ptr<IFrontendRep_> (*) (const IFrontendRep_&), CloneAsSharedPtr_>>;
+            Memory::SharedByValue<IFrontendRep_, Memory::SharedByValueSupport::DefaultTraits<IFrontendRep_, CloneAsSharedPtr_>>;
         SharedRepByValuePtr_ fFrontEndRep_;
 
         static FrontendRep_ kDefaultFrontEndForNoBackend_;
