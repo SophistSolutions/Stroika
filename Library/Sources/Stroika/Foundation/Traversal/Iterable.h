@@ -1408,23 +1408,6 @@ namespace Stroika::Foundation::Traversal {
         static Iterable<T> mk_ (CONTAINER_OF_T&& from)
             requires (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>);
 
-    private:
-#if (qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy || qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy) && 0
-        struct Rep_Cloner_ {
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            static auto operator() (const _IRep& t) -> shared_ptr<_IRep>
-#else
-            auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
-#endif
-            {
-                return Clone_ (t);
-            }
-        };
-
-    protected:
-        using _SharedByValueRepType =
-            Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, Rep_Cloner_>>;
-#else
     protected:
         /*
          *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
@@ -1432,7 +1415,6 @@ namespace Stroika::Foundation::Traversal {
          */
         using _SharedByValueRepType = Memory::SharedByValue<
             _IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, shared_ptr<_IRep> (*) (const _IRep&), Clone_>>;
-#endif
 
     protected:
         template <typename REP_SUB_TYPE = _IRep>

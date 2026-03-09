@@ -92,22 +92,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
 
     private:
         static shared_ptr<_IRep> MakeSharedRep_ (const _IRep& t); // forward declare so can delay defining _IRep til outside of class scope
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy && 0
-        struct Rep_Cloner_ {
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            static auto operator() (const _IRep& t) -> shared_ptr<_IRep>
-#else
-            auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
-#endif
-            {
-                return MakeSharedRep_ (t);
-            }
-        };
-        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, Rep_Cloner_>>;
-#else
+
+    private:
         using SharedRepByValuePtr_ =
             Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, shared_ptr<_IRep> (*) (const _IRep&), MakeSharedRep_>>;
-#endif
 
     private:
         SharedRepByValuePtr_ fRep_;
