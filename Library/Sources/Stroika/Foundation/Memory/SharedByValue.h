@@ -194,6 +194,9 @@ namespace Stroika::Foundation::Memory {
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, shared_ptr<int> (*) (const int&), DefaultValueCopier<int, shared_ptr<int>>>, int>);
+        static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, shared_ptr<int>, shared_ptr<int> (*) (const int&), DefaultValueCopier<int>>, int>);
+       // want to make this work
+       // static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, DefaultValueCopier<int, shared_ptr<int>>>, int>);
 
         /**
          * @brief SharedByValue traits object for per-instance constructor specification of shared_ptr copier only

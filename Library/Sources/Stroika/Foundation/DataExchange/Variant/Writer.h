@@ -116,7 +116,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     private:
         static _SharedPtrIRep CloneAsShared_ (const _IRep& t); // forward declare so can define _IRep out of line
 
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
+#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy && 0
         struct _Rep_Cloner {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
             static _SharedPtrIRep operator() (const _IRep& t)
@@ -130,9 +130,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
 #else
         using SharedRepByValuePtr_ =
-            Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, _SharedPtrIRep, decltype ([] (const _IRep& t) {
-                                                                                         return CloneAsShared_ (t);
-                                                                                     })>>;
+            Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, _SharedPtrIRep, shared_ptr<_IRep> (*) (const _IRep&), CloneAsShared_>>;
 #endif
 
     private:

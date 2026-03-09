@@ -1409,7 +1409,7 @@ namespace Stroika::Foundation::Traversal {
             requires (copyable<remove_cvref_t<CONTAINER_OF_T>> or same_as<remove_cvref_t<CONTAINER_OF_T>, initializer_list<T>>);
 
     private:
-#if qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy || qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy
+#if (qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy || qCompilerAndStdLib_lambdas_in_unevaluatedContext_2_Buggy) && 0
         struct Rep_Cloner_ {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
             static auto operator() (const _IRep& t) -> shared_ptr<_IRep>
@@ -1431,7 +1431,7 @@ namespace Stroika::Foundation::Traversal {
          *  However, protected because manipulation needed in some subclasses (rarely) - like _GetWritableRepAndPatchAssociatedIterator.
          */
         using _SharedByValueRepType = Memory::SharedByValue<
-            _IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, decltype ([] (const _IRep& t) { return Clone_ (t); })>>;
+            _IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, shared_ptr<_IRep> (*) (const _IRep&), Clone_>>;
 #endif
 
     protected:
