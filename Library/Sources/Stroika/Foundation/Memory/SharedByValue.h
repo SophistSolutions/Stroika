@@ -132,17 +132,17 @@ namespace Stroika::Foundation::Memory {
             /**
              * @brief SharedByValue 'of T' type
              */
-            using element_type = T;
+            using element_type = remove_cvref_t<T>;
 
             /**
              * @brief shared_ptr<T> typically, but could be another 'shared_ptr'-like class
              */
-            using shared_ptr_type = SHARED_IMPL;
+            using shared_ptr_type = remove_cvref_t<SHARED_IMPL>;
 
             /**
              * @brief satisfies IOptionalCopier, and used as default for instance copier, and if no instance copier, used to copy objects when a change occurs
              */
-            using default_copier_type = DEFAULT_COPIER_TYPE;
+            using default_copier_type = remove_cvref_t<DEFAULT_COPIER_TYPE>;
 
             /**
              * @brief the default copier - which takes a 'T' and generates the appropriate SHARED_IMPL
@@ -153,13 +153,13 @@ namespace Stroika::Foundation::Memory {
              * instance_defined_copier_type can be MissingCopierTypeSentinel, to indicate no user-defined (instance-defined) copy function
              * or it refers to the type of the function which converts to the appropriate shared_ptr type (typically function<SHARED_IMPL (const T&)>)
              */
-            using instance_defined_copier_type = INSTANCE_COPIER_TYPE;
+            using instance_defined_copier_type = remove_cvref_t<INSTANCE_COPIER_TYPE>;
 
             /**
              * This is the type returned by GetElementCopier () - its either instance_defined_copier_type, or function<SHARED_IMPL (const T&)>
              */
             using element_copier_type =
-                conditional_t<same_as<instance_defined_copier_type, MissingCopierTypeSentinel>, function<SHARED_IMPL (const T&)>, instance_defined_copier_type>;
+                conditional_t<same_as<instance_defined_copier_type, MissingCopierTypeSentinel>, function<shared_ptr_type (const T&)>, instance_defined_copier_type>;
         };
 
         /**
