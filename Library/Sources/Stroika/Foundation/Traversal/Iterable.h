@@ -1413,8 +1413,8 @@ namespace Stroika::Foundation::Traversal {
          *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
          *  However, protected because manipulation needed in some subclasses (rarely) - like _GetWritableRepAndPatchAssociatedIterator.
          */
-        using _SharedByValueRepType = Memory::SharedByValue<
-            _IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, shared_ptr<_IRep> (*) (const _IRep&), Clone_>>;
+        using _SharedByValueRepType =
+            Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, shared_ptr<_IRep>, shared_ptr<_IRep> (*) (const _IRep&), Clone_>>;
 
     protected:
         template <typename REP_SUB_TYPE = _IRep>

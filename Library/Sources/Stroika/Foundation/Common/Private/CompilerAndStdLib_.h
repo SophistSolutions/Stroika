@@ -2472,7 +2472,6 @@ Configuration.cpp:126:21: error: no viable conversion from 'common_comparison_ca
 
 #endif
 
-
 /**
  /../../Memory/../Streams/../Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>’:
 ../../../Memory/../Streams/InputStream.inl:269:65:   required from here
