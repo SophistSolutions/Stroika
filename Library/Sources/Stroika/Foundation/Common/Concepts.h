@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Common {
          */
         template <size_t i>
         struct arg {
-            using type = typename std::tuple_element<i, std::tuple<ARGS...>>::type;
+            using type = typename tuple_element<i, tuple<ARGS...>>::type;
             // the i-th argument is equivalent to the i-th tuple element of a tuple
             // composed of those arguments.
         };
@@ -241,29 +241,29 @@ namespace Stroika::Foundation::Common {
      *  \see https://stackoverflow.com/questions/76547398/stdconvertible-to-failing-to-recognize-explicitly-convertible-types
      */
     template <class FROM, class TO>
-    concept explicitly_convertible_to = requires { static_cast<TO> (std::declval<FROM> ()); };
+    concept explicitly_convertible_to = requires { static_cast<TO> (declval<FROM> ()); };
 
     /**
      */
     template <typename OT>
-    concept IOptional = same_as<remove_cvref_t<OT>, std::optional<typename OT::value_type>>;
-    static_assert (IOptional<std::optional<int>>);
+    concept IOptional = same_as<remove_cvref_t<OT>, optional<typename OT::value_type>>;
+    static_assert (IOptional<optional<int>>);
     static_assert (not IOptional<int>);
 
     namespace Private_ {
 #if qCompilerAndStdLib_template_concept_matcher_requires_Buggy
         template <typename T1, typename T2 = void>
-        struct is_shared_ptr_ : std::false_type {};
+        struct is_shared_ptr_ : false_type {};
         template <typename T1>
-        struct is_shared_ptr_<shared_ptr<T1>> : std::true_type {};
+        struct is_shared_ptr_<shared_ptr<T1>> : true_type {};
         template <typename T1, typename T2 = void>
-        struct is_pair_ : std::false_type {};
+        struct is_pair_ : false_type {};
         template <typename T1, typename T2>
-        struct is_pair_<pair<T1, T2>> : std::true_type {};
+        struct is_pair_<pair<T1, T2>> : true_type {};
         template <typename... ARGS>
-        struct is_variant_ : std::false_type {};
+        struct is_variant_ : false_type {};
         template <typename... ARGS>
-        struct is_variant_<variant<ARGS...>> : std::true_type {};
+        struct is_variant_<variant<ARGS...>> : true_type {};
 #endif
     }
 
@@ -303,10 +303,10 @@ namespace Stroika::Foundation::Common {
     static_assert (not ISharedPtr<int>);
 
     namespace Private_ {
-        template <typename T, std::size_t N>
+        template <typename T, size_t N>
         concept has_tuple_element = requires (T t) {
-            typename std::tuple_element_t<N, std::remove_const_t<T>>;
-            { get<N> (t) } -> std::convertible_to<const std::tuple_element_t<N, T>&>;
+            typename tuple_element_t<N, remove_const_t<T>>;
+            { get<N> (t) } -> convertible_to<const tuple_element_t<N, T>&>;
         };
     }
 
@@ -316,12 +316,12 @@ namespace Stroika::Foundation::Common {
      *  based on https://stackoverflow.com/questions/68443804/c20-concept-to-check-tuple-like-types
      */
     template <typename T>
-    concept ITuple = !std::is_reference_v<T> && requires (T t) {
-        typename std::tuple_size<T>::type;
-        requires std::derived_from<std::tuple_size<T>, std::integral_constant<std::size_t, std::tuple_size_v<T>>>;
-    } && []<std::size_t... N> (std::index_sequence<N...>) {
+    concept ITuple = !is_reference_v<T> && requires (T t) {
+        typename tuple_size<T>::type;
+        requires derived_from<tuple_size<T>, integral_constant<size_t, tuple_size_v<T>>>;
+    } && []<size_t... N> (index_sequence<N...>) {
         return (Private_::has_tuple_element<T, N> && ...);
-    }(std::make_index_sequence<std::tuple_size_v<T>> ());
+    }(make_index_sequence<tuple_size_v<T>> ());
 
     /**
      *  \brief - detect if T is a std::variant<> type.
@@ -380,20 +380,20 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T>
     concept IHasSizeMethod = requires (const T& t) {
-        { t.size () } -> std::convertible_to<size_t>;
+        { t.size () } -> convertible_to<size_t>;
     };
 
     namespace Private_ {
         template <typename T>
         concept HasEq_ = requires (T t) {
-            { t == t } -> std::convertible_to<bool>;
+            { t == t } -> convertible_to<bool>;
         };
         template <typename T>
         constexpr inline bool HasEq_v_ = HasEq_<T>;
         template <typename T, typename U>
-        constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
+        constexpr inline bool HasEq_v_<pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
         template <typename... Ts>
-        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
+        constexpr inline bool HasEq_v_<tuple<Ts...>> = (HasEq_v_<Ts> and ...);
         template <typename T>
         constexpr bool HasUsableEqualToOptimization ()
         {
@@ -486,7 +486,7 @@ namespace Stroika::Foundation::Common {
         using type                  = T;
     };
     template <typename HEAD, typename... TAIL>
-    struct Select : std::conditional_t<HEAD::value, HEAD, Select<TAIL...>> {};
+    struct Select : conditional_t<HEAD::value, HEAD, Select<TAIL...>> {};
     template <typename T>
     struct Select<T> {
         using type = T;
