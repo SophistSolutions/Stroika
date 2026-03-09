@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Memory {
                 conditional_t<same_as<instance_defined_copier_type, MissingCopierTypeSentinel>, function<SHARED_IMPL (const T&)>, instance_defined_copier_type>;
         };
 
-        // magic to make the templates work...
+        // magic to make the templates auto-select of static vs function object work...
         template <typename T, typename SHARED_IMPL, typename COPIER_TYPE>
         constexpr auto GetDefaultCopierInstance_ ()
         {
