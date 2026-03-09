@@ -422,8 +422,12 @@ namespace Stroika::Foundation::Common::StdCompat {
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #endif
 
-// EMPHASIZE that this is qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
-// and not qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE cuz its known buggy
+    /**
+     * \brief qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY same as qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+     * 
+     * EMPHASIZE that this is qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
+     * and not qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE cuz its known buggy
+     */
 #define qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS
 
 }
