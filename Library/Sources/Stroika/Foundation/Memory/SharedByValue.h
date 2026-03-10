@@ -314,9 +314,6 @@ namespace Stroika::Foundation::Memory {
      *      but is a little ambiguous if its measuring pointer (shared reference) equality or actual value equality.
      *
      *      Better to let the caller use operator<=> on cget() or *cget() to make clear their intentions.
-     * 
-     *  TODO:
-     *      @todo http://stroika-bugs.sophists.com/browse/STK-798 - review docs and thread safety
      */
     template <typename T, SharedByValueSupport::ITraits<T> TRAITS = SharedByValueSupport::DefaultTraits<T>>
     class SharedByValue {
@@ -572,7 +569,7 @@ namespace Stroika::Foundation::Memory {
     };
     // NOT strictly gauranteed by C++, but we want to be warned if this ever fails, and correct or if we must
     // conditionalize the test
-    //static_assert (same_as<SharedByValue<int>::TraitsType, SharedByValueSupport::DefaultTraits_NoInstanceCopier<int>>); // if this fails, next one is meaningless
+    static_assert (same_as<SharedByValue<int>::TraitsType, SharedByValueSupport::DefaultTraits_NoInstanceCopier<int>>); // if this fails, next one is meaningless
     static_assert (sizeof (SharedByValue<int>) == sizeof (shared_ptr<int>)); // no space overhead for copier (by default)
 
 }
