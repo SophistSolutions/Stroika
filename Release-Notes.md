@@ -8,15 +8,17 @@ especially those they need to be aware of when upgrading.
 ## History
 
 
-### 3.0d23 {2026-02-??} {[diff](../../compare/3.0d22...3.0d23)} DRAFT NOTES
+### 3.0d23 {2026-03-??} {[diff](../../compare/3.0d22...3.0d23)} DRAFT NOTES
 
 #### TLDR
 
-- Implemented more fully and internally syncrhonized versions of various DocumentDB backends
+- Implemented more fully and internally synchronized versions of various DocumentDB backends
 - Fixed issue with webserver 'leaving around' extra connections in lists of open connections
 - fixed github action out of space issues (again)
 - Duration no longer emits ISO 8601 Part 2 format strings (fail to parse in some js libraries)
 - fixed processrunner hang which caused service manager (service restart) on UNIX to not work properly
+- Big cleanup of SharedByValue (concepts etc)
+- qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE use so VS how properly optimizes size in at least a few cases (most important ones).
 
 #### Upgrade Notes (3.0d22 to 3.0d23)
 
@@ -55,6 +57,10 @@ especially those they need to be aware of when upgrading.
   - new qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy BWA
   - Simplify/enahance BWA for qCompilerAndStdLib_template_template_auto_deduced_Buggy
   - new qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
+  - BWA  issue with crasher in g++13 release build was compiler bug, but worked around by cleaning up general case code (more tolerant of bad data from sql) - hard to isolate bug - and only appears to happen with sanitizers and optimization and g++13
+  - lose define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy and qCompilerAndStdLib_lambdas_in_unevaluatedContext2_Buggy cuz no more BWAs for it, and no way (effectively) to test anymore if its still there
+  - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+  - bug defines qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
 - Library
   - Foundation
     - Characters
@@ -74,12 +80,15 @@ especially those they need to be aware of when upgrading.
         - deprecated FloatFormatType::eAutomaticScientific
         - deprecated TrimTrailingZerosType, eDontTrimZeros, eTrimZeros: replaced with eScientificWithWhitespaceTrimmed and eFixedPointWithWhitespaceTrimmed
     - Common
+      - Concepts
+        - new concept concept ICVRefTd 
       - StdCompat
         - #define qStroika_ATTRIBUTE_INDETERMINATE [[indeterminate]], and used all over the place instead of comments
         - Added to Common::Concepts BasicLockable and Lockable - from std-c++
         - renamed _ASSUME_ATTRIBUTE_ -> qStroika_ATTRIBUTE_ASSUME
         - new qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
           use instead of [[no_unique_address]] (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
+        - qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS with qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE (cuz works) and with qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
     - Database
       - DocumentDB
         - API
@@ -107,7 +116,8 @@ especially those they need to be aware of when upgrading.
           - support for WrapExecute_ (so reports log stats/trace messages)
           - fixed SQLite bindings - so support funky table names (wrap them in quotes)
           - fixed bug where query with force add ids, but object missing
-          - API no longer has Peek() at sqlite3 object, cuz would break thread safety gaurantees (for internally syncrhonized case)
+          - API no longer has Peek() at sqlite3 object, cuz would break thread safety gaurantees (for internally synchronized case)
+          - refactor extract of string col value from sqlite through ExtractColumnText_ helper with asserts and mapping of null-column to empty string - and otherwise throws if bad column type or cannot convert
         - all concrete DocumentDBs get (LocalDocumentDB, SQLite and Mongo)
           - Option fInternallySynchronizedLetter
         - Tests
@@ -150,6 +160,8 @@ especially those they need to be aware of when upgrading.
           - fixed RunInBackground detached for POSIX (enabled test for posix)
           - appear to have fixed ProcessRunner detached mode on windows too
         - Tests: Foundation_Execution_ProcessRunner RunInBackgroundDetached
+      - SpinLock
+         - lose dependency on pre c++20
       - Thread
         - Suppressed interrupt throw DBGTRACE message now has stacktrace too
         - improved DbgTrace with CheckForInterruption
@@ -179,7 +191,10 @@ especially those they need to be aware of when upgrading.
       - Common
         - Memory::CopyToIf () overloads now constexpr
       - SharedByValue
-        - substantial cleanup of SharedByValue code - mostly using concepts and lambda copier (static function in more cases) and namespace for more details
+        - Major cleanup using concepts - now can control if it uses instance var or not easily
+          and checked with traits, and concepts and right CTOR overloads present/absent accordingly.
+        - new namespace SharedByValueSupport for most of the concepts/traits/utility definitions
+          - DefaultValueCopier
     - Streams
       - InputStream
         - fixed InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () bug - was quite wrong result
@@ -203,7 +218,7 @@ especially those they need to be aware of when upgrading.
         - DbgTrace (USE_NOISY_TRACE_IN_THIS_MODULE_) cleanups/improvements (still off by default so no big change except when debugging)
 - Samples
   - DocumentDB
-    - fixed to use new .fInternallySynchronizedLetter = eInternallySynchronized for internally syncrhonized connections
+    - fixed to use new .fInternallySynchronizedLetter = eInternallySynchronized for internally synchronized connections
   - HTMLUI
     - cleanups
     - Backend
@@ -220,6 +235,7 @@ especially those they need to be aware of when upgrading.
 - Tests
   - RegressionTests
     - cleanup Foundation_Execution_Exceptions, Test4_Activities_ and added tests
+    - cosmetic cleanup Tests-Description.txt
 - ThirdPartyComponents
   - curl
     - VERSION 8.18.0
@@ -1092,7 +1108,7 @@ None
       - NestedException
         - new overload for NestedException CTOR
       - Synchronized
-        - Added requires to Syncrhonized CTOR to produce better error messages from compiler
+        - Added requires to synchronized CTOR to produce better error messages from compiler
     - Math
       - **new** PrimeAtLeastThisBig
     - Memory
@@ -1199,7 +1215,7 @@ None
   - Frameworks
     - WebServer
       - slightly better default count of threads in WebServer/ConnectionManager based on # maxConnections
-      - re-implemented qStroika_Framework_WebServer_Connection_TrackExtraStats stats collection to use Syncrhonized<> instead
+      - re-implemented qStroika_Framework_WebServer_Connection_TrackExtraStats stats collection to use synchronized<> instead
         of atomic<> so we can capture more stuff like webmethod, uri, and peer-socket-address; 
 - Samples
   - HTMLUI
@@ -3397,7 +3413,7 @@ None
   - Cache
     - fix Cache::Stats_Basic so copyable
     - redo lazy access to Mapping<> in CallerStalenessCache for special case of void KEY - since I now am experimenting with better validation of Mapping<> template parameters
-    - cleanups to LRUCache constructors (factory deduction approach), and similarly SyncrhonizedLRUCache
+    - cleanups to LRUCache constructors (factory deduction approach), and similarly synchronizedLRUCache
     - Test8_NewLRUCacheConstructors_ in regtests
     - better use of requires/concepts
   - Characters
@@ -3615,7 +3631,7 @@ None
       - Streams::TextToByteReader uses new IterableToInputStream::New to add Iterable<Character> overload to New; and switched to new namespace style for this streams class
     - SharedMemoryStream
       - SharedMemoryStream no longer accepts overloads with InternallySynchronized parameter - since always internallyschrhonized
-    - InternallySyncrhonizedXXXStream: 
+    - InternallySynchronizedXXXStream: 
       - big cleanups to (and mostly convert to namesapce from quasinamespace code) InternallySynchronizedInputStream, InternallySynchronizedOutputStream, and InternallySynchronizedInputOutputStream
     - OpenSSLInputStream/OpenSSLOutputStream
     - FileInputStream/FileOutputStream
@@ -3896,7 +3912,7 @@ None
         - Simplified Ptr::AbortAndWaitForDoneUntil - so just calls abort/wait. But hten had to fix serious bug with condition variable code - processing new stop tokens (tricky case); and commented out one bit of POSIX thread code for interupt handling I think no longer needed (must test; commented)
         - Cleanup (orthoganal more) Thread::New overloads
         - ***not backward compatible*** - lose Thread::Interrupt and InterruptException support; only support AbortException and Abort(); removed call IgnoreExceptionsExceptThreadInterruptForCall and replace with IgnoreExceptionsExceptThreadAbortForCall; Documented rationale in Thread.h
-        - Thread wrap fSavedExeption_ in Syncrhonized<> to avoid warnings in use from DbgTrace calls (could in principle be called elsewhere is why we must fix)
+        - Thread wrap fSavedExeption_ in synchronized<> to avoid warnings in use from DbgTrace calls (could in principle be called elsewhere is why we must fix)
       - ThreadPool
         - ThreadPool: many small cleanups; and incompatible change to GetTasks () - returning Collection<TaskInfo> - describing stats about tasks (more to come here); and better dbgtrace logging and other small docs cleanups
         - threadpool - changed default CTOR so defaults to thread::hardware_concurrency () poolsize
@@ -4373,7 +4389,7 @@ None
         - TimedCache (and SynchronizedTimedCache) use Time::Duration directly (no longer support overload taking DUrationSecondsType): should be mostly transparent/backward compatable, except for C++ 2 conversions on construction issue may cause some code to not build without explicit specificaiton (_duration) that something is a duration arg to TimedCache
         - TimedCache::GetElements -> TimedCache::Eleements() to match LRUCache naming (never released)
         - MANY not entirely backward compatible changes to Cache::TimedCache. MOSTLY, this was LOSING the template parameter TRACK_READ_ACCESS from DefaultTraits, and replacing it with LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed being used rarely in Lookup and LookupValue calls as appropriate. This allowed making Lookup() methods const (thread implications). ALSO - use the nomenclature fresheness throughout TimedCache API, so GetTimeout deprecated, and now GetMinimumAllowedFreshness () (similarly for SetTimeout). DoBookkeeping () DEPRECATED (renamed to) PurgeSpoiledData; and Lookup() no longer calls 'clearold' - but really not needed since Add does now(depending on PurgeSpoiledDataFlagType flag to Add) so not that useful. For most use cases, no changes should be needed to calling code. NOTE STILL NOT YET IMPLEMETNED these changes in SynchronizedTimedCache (next)
-        - GetElements() support in TimedCache, and use that in SyncrhonizedTimedCache copy constructor
+        - GetElements() support in TimedCache, and use that in SynchronizedTimedCache copy constructor
         - Comments, cleanups, and extra optional arg to TimedCache::LookupValue (): https://stroika.atlassian.net/browse/STK-944
         - comments and fixed minor recent regression in SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue
         - https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
@@ -5911,7 +5927,7 @@ None
 #### TLDR
 - Fixed bug with CallerStalenessCache
 - SQL/SQLite: various fixes/enhancements (journalmode, and stuff relating to busy timeouts)
-- Syncrhonized<> helper suports timed waits now
+- Synchronized<> helper suports timed waits now
 - Debug::AppearsDuringMainLifetime ()
 
 #### Change Details
@@ -8921,7 +8937,7 @@ None
 
     - Execution::Sleep() - See https://github.com/microsoft/WSL/issues/4898 - workaround nanosleep EINVAL on Windows/WSL 1 (triggers on ubuntu 20.04)
 
-    - Syncrhonized\<\>
+    - Synchronized\<\>
 
       - Added Synchronized\<T, TRAITS\>::try_lock () implementation
 
