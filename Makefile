@@ -28,7 +28,9 @@ else
 export ALL_INCLUDES_BUILDING_DOCUMENTATION?=1
 endif
 
-
+#
+# QUICK_BUILD=1 skips some steps you might occasionally want todo (done in regtests).
+#
 export QUICK_BUILD?=1
 
 .DEFAULT_GOAL := help
@@ -208,6 +210,7 @@ libraries:
 		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED ; \
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika-Foundation and Stroika-Frameworks libraries exist and QUICK_BUILD=1"; \
 	else\
+		$(MAKE) --no-print-directory third-party-components QUICK_BUILD=1; \
 		$(MAKE) --no-print-directory libraries QUICK_BUILD=0; \
 	fi
 else
