@@ -186,13 +186,13 @@ namespace Stroika::Foundation::Memory {
          *             |                                                                                              ^~~~~~~~~~~~~~
          *              /usr/include/c++/14/type_traits:3163:53: error: static assertion failed: each argument type must be a complete class or an unbounded array
          */
-        template <typename T, auto COPIER_INSTANCE = DefaultValueCopier<T, shared_ptr<T>>>
+        template <typename T, auto COPIER_INSTANCE = &DefaultValueCopier<T, shared_ptr<T>>>
         using DefaultTraits_NoInstanceCopier =
             ExplicitTraits<T, shared_ptr<T>, decltype (COPIER_INSTANCE), COPIER_INSTANCE, MissingCopierTypeSentinel>;
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, DefaultValueCopier_FunctionObject<int, shared_ptr<int>>{}>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, DefaultValueCopier_FunctionObject<int>{}>, int>);
         static_assert (ITraits<DefaultTraits_NoInstanceCopier<int>, int>);
-        static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, DefaultValueCopier<int>>, int>);
+        static_assert (ITraits<DefaultTraits_NoInstanceCopier<int, &DefaultValueCopier<int>>, int>);
 
         /**
          * @brief SharedByValue traits object for per-instance constructor specification of shared_ptr copier only
@@ -239,10 +239,10 @@ namespace Stroika::Foundation::Memory {
          *          using _SharedByValueRepType = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, Clone_>>;
          *      \endcode
          */
-        template <typename T, auto COPIER_INSTANCE = DefaultValueCopier<T, shared_ptr<T>>>
+        template <typename T, auto COPIER_INSTANCE = &DefaultValueCopier<T, shared_ptr<T>>>
         using DefaultTraits = DefaultTraits_NoInstanceCopier<T, COPIER_INSTANCE>;
         static_assert (ITraits<DefaultTraits<int>, int>);
-        static_assert (ITraits<DefaultTraits<int, DefaultValueCopier<int>>, int>);
+        static_assert (ITraits<DefaultTraits<int, &DefaultValueCopier<int>>, int>);
 
         /**
          *   This state is meant purely for code that may manage their internal behavior
@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Memory {
      *  \par Example Usage
      *      \code
      *          static shared_ptr<_IRep> Clone_ (const _IRep& rep); // if you need fancier logic to clone your shared_ptr value
-     *          using _SharedByValueRepType = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, Clone_>>;
+     *          using _SharedByValueRepType = SharedByValue<_IRep, SharedByValueSupport::DefaultTraits<_IRep, &Clone_>>;
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

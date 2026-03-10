@@ -117,7 +117,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         static _SharedPtrIRep CloneAsShared_ (const _IRep& t); // forward declare so can define _IRep out of line
 
     private:
-        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, CloneAsShared_>>;
+        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, &CloneAsShared_>>;
 
     private:
         SharedRepByValuePtr_ fRep_;

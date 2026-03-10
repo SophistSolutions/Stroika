@@ -94,7 +94,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         static shared_ptr<_IRep> MakeSharedRep_ (const _IRep& t); // forward declare so can delay defining _IRep til outside of class scope
 
     private:
-        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, MakeSharedRep_>>;
+        using SharedRepByValuePtr_ = Memory::SharedByValue<_IRep, Memory::SharedByValueSupport::DefaultTraits<_IRep, &MakeSharedRep_>>;
 
     private:
         SharedRepByValuePtr_ fRep_;
