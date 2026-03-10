@@ -93,6 +93,14 @@ namespace Stroika::Foundation::Common::StdCompat {
         { !static_cast<_Ty&&> (__t) } -> Private_::_Boolean_testable_impl;
     };
 
+    /**
+     *  \brief like convertible_to, but also handling cases where T has an explicit CTOR taking From
+     * 
+     *  \see https://stackoverflow.com/questions/76547398/stdconvertible-to-failing-to-recognize-explicitly-convertible-types
+     */
+    template <class FROM, class TO>
+    concept explicitly_convertible_to = requires { static_cast<TO> (declval<FROM> ()); };
+
 #if qStroika_HasComponent_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
 #elif __has_include(<format>)

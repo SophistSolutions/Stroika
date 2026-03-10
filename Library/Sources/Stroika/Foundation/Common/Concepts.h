@@ -210,6 +210,7 @@ namespace Stroika::Foundation::Common {
     using True = true_type;
 
     using StdCompat::Boolean_testable;
+    using StdCompat::explicitly_convertible_to;
 
     /**
      * \brief equality_comparable_with, but less strict - just checks if it can be equality compared!
@@ -224,14 +225,6 @@ namespace Stroika::Foundation::Common {
     };
     static_assert (not equality_comparable_with<nullopt_t, optional<int>>);
     static_assert (Weak_Equality_Comparable_With<nullopt_t, optional<int>>);
-
-    /**
-     *  \brief like convertible_to, but also handling cases where T has an explicit CTOR taking From
-     * 
-     *  \see https://stackoverflow.com/questions/76547398/stdconvertible-to-failing-to-recognize-explicitly-convertible-types
-     */
-    template <class FROM, class TO>
-    concept explicitly_convertible_to = requires { static_cast<TO> (declval<FROM> ()); };
 
     /**
      */
