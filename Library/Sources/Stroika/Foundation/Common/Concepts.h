@@ -309,9 +309,7 @@ namespace Stroika::Foundation::Common {
     concept ITuple = !is_reference_v<T> && requires (T t) {
         typename tuple_size<T>::type;
         requires derived_from<tuple_size<T>, integral_constant<size_t, tuple_size_v<T>>>;
-    } && []<size_t... N> (index_sequence<N...>) {
-        return (Private_::has_tuple_element<T, N> && ...);
-    }(make_index_sequence<tuple_size_v<T>> ());
+    } && []<size_t... N> (index_sequence<N...>) { return (Private_::has_tuple_element<T, N> && ...); }(make_index_sequence<tuple_size_v<T>> ());
 
     /**
      *  \brief - detect if T is a std::variant<> type.

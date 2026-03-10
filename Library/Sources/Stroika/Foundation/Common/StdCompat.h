@@ -93,8 +93,6 @@ namespace Stroika::Foundation::Common::StdCompat {
         { !static_cast<_Ty&&> (__t) } -> Private_::_Boolean_testable_impl;
     };
 
-
-
 #if qStroika_HasComponent_fmtlib
 #define qStroika_Foundation_Characters_FMT_PREFIX_ fmt
 #elif __has_include(<format>)
