@@ -289,7 +289,7 @@ String UserInfo::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     if (name) {
-        sb << ", name: "sv << name;
+        sb << "name: "sv << name;
     }
     if (given_name) {
         sb << ", given_name: "sv << given_name;
