@@ -380,6 +380,9 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     auto r = nonCachingFetcher ();
     if (fCache_) {
         fCache_->fTokens.Add (tr, r);
+        // cache ID_Token return from TOKEN API (since that has the expiry and userinfo information)
+        // This maybe best! Avoids whole API call, and I'm not sure we have the right URL todo this with facebook
+        // as identity manager...
         // @todo if we got access token AND id token - parse out of ID token the user info and cache in
         // ...
     }
@@ -445,6 +448,7 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     UserInfo userInfo = nonCachingFetcher ();
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
+        fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo); // @todo add TIMEOUT!!!
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("returning: {}"_f, userInfo);
