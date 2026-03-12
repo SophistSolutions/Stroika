@@ -227,6 +227,7 @@ especially those they need to be aware of when upgrading.
     - Backend
       - improve clarity on Samples/HTMLUI/Backend, and fixed #if check to qStroika_HasComponent_syslog for including syslog usage
       - Service startup cleanup logic
+      - Improved logging about where logfile is on startup, and more
     - HTML
       - About page cleanups
         - serveral

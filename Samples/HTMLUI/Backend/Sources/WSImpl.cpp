@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Common/StroikaVersion.h"
 #include "Stroika/Foundation/Common/SystemConfiguration.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
+#include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/IO/Network/HTTP/ClientErrorException.h"
 #include "Stroika/Foundation/Memory/Optional.h"
@@ -95,14 +96,22 @@ namespace {
     // as identity manager...
     optional<Auth::UserInfo> GetUserInfo_ (const optional<WebServiceIdentity>& wsi)
     {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{"{}:GetUserInfo_", "wsi={}"_f, wsi};
+#endif
+        Debug::TimingTrace ttx{"GetUserInfo_", 10ms};
         using Stroika::Frameworks::Auth::OAuth::ProviderConfiguration;
         // @todo to support multiple providers, we will need to somehow annotate the access tokens to tell one from another (e.g. prepend providername-)
         // but for now, just pick the first and assume thats it...
         ProviderConfiguration providerConfiguration{Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (
             GetUseProvider_ (), RuntimeErrorException{"Unrecognized provider name"sv})};
         if (wsi and wsi->fBearerToken) {
-            Stroika::Frameworks::Auth::OAuth::Fetcher f{providerConfiguration};
-            return Auth::UserInfo{f.GetUserInfo (wsi->fBearerToken.value_or (String{}))};
+            Stroika::Frameworks::Auth::OAuth::Fetcher  f{providerConfiguration};
+            Stroika::Frameworks::Auth::OAuth::UserInfo clientUserInfo = f.GetUserInfo (wsi->fBearerToken.value_or ({}));
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("returning {}"_f, clientUserInfo);
+#endif
+            return Auth::UserInfo{clientUserInfo};
         }
         return nullopt;
     }
