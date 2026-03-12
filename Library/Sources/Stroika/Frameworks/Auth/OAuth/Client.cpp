@@ -379,6 +379,7 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     }
     auto r = nonCachingFetcher ();
     if (fCache_) {
+        scoped_lock critSec{fMaybeLock_};
         fCache_->fTokens.Add (tr, r);
         // cache ID_Token return from TOKEN API (since that has the expiry and userinfo information)
         // This maybe best! Avoids whole API call, and I'm not sure we have the right URL todo this with facebook
@@ -465,12 +466,11 @@ void Fetcher::ClearOldStuffFromCache_ () const
 #endif
     // quicky algorithm - hopefully good enuf for starters --LGP 2026-03-12
     if (fCache_) {
-        scoped_lock critSec{fMaybeLock_};
         Time::DateTime now = Time::DateTime::Now ();
+        scoped_lock    critSec{fMaybeLock_};
         if (Time::GetTickCount () > fNextClearAt_) {
-            fCache_->fAccessToken2UserInfo.RemoveAll ([&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) {
-                return now > kvp.fValue.expires_at;
-            });
+            fCache_->fAccessToken2UserInfo.RemoveAll (
+                [&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return now > kvp.fValue.expires_at; });
             fCache_->fAccessToken2UserInfo.RetainAll (fCache_->fAccessToken2UserInfo.Keys ());
             fNextClearAt_ = Time::GetTickCount ();
         }

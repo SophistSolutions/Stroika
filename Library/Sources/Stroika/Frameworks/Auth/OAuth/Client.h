@@ -272,9 +272,10 @@ namespace Stroika::Frameworks::Auth::OAuth {
         unique_ptr<Cache_> fCache_;
 
     private:
-        nonvirtual void                                         ClearOldStuffFromCache_ () const;
+        nonvirtual void ClearOldStuffFromCache_ () const;
+
     private:
-        static constexpr auto                                   kClearMaxFrequency_{30s};
+        static constexpr auto          kClearMaxFrequency_{30s};
         mutable Time::TimePointSeconds fNextClearAt_{Time::GetTickCount () + kClearMaxFrequency_};
     };
 
