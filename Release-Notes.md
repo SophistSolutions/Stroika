@@ -7,10 +7,6 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-- #if qStroika_Foundation_Debug_TraceToFile define Debug::GetTraceFileName () API returning name of tracefile;
-  Used that in several samples to conditionally write it to the LOGGER output
-
-
 ### 3.0d23 {2026-03-??} {[diff](../../compare/3.0d22...3.0d23)} DRAFT NOTES
 
 #### TLDR
@@ -143,6 +139,8 @@ especially those they need to be aware of when upgrading.
         - mark as Common::StdCompat::BasicLockable<> - docs and static_assert
       - BackTrace
         - Comments and SuppressInterruptionInContext in BackTrace::Capture so clear not a cancelation point
+      - Trace
+        - #if qStroika_Foundation_Debug_TraceToFile define Debug::GetTraceFileName () API returning name of tracefile;
     - Execution
       - CommandLine
         - maked fArgument field const since its public so it can only be read not set
@@ -168,6 +166,8 @@ especially those they need to be aware of when upgrading.
       - Thread
         - Suppressed interrupt throw DBGTRACE message now has stacktrace too
         - improved DbgTrace with CheckForInterruption
+      - VirtualLockable
+        **new utility class**
       - WaitForIOReady
         - Execution::WaitForIOReady = kDefaultTypeOfMonitor now includes Error and HUP events (cuz typically if you are waiting for a read, you would probably want to know about those too)
         - lose TypeOfMonitor::eError and eHUP, and added ePriority (and docs)
@@ -220,6 +220,8 @@ especially those they need to be aware of when upgrading.
           - **important cuz caused connections to hang around longer than they should**
         - DbgTrace (USE_NOISY_TRACE_IN_THIS_MODULE_) cleanups/improvements (still off by default so no big change except when debugging)
 - Samples
+  - Several
+    - #if qStroika_Foundation_Debug_TraceToFile LOGGER output GetTraceFileName
   - DocumentDB
     - fixed to use new .fInternallySynchronizedLetter = eInternallySynchronized for internally synchronized connections
   - HTMLUI

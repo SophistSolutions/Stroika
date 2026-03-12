@@ -46,7 +46,7 @@ Execution pattern classes (external process runner, exception handling support, 
 - [UpdatableWaitForIOReady.h](UpdatableWaitForIOReady.h)
 - [UserCanceledException.h](UserCanceledException.h)
 - [Users.h](Users.h)
-- [VirtualConstant.h](VirtualConstant.h)
+- [VirtualLockable.h](VirtualLockable.h)
 - [WaitableEvent.h](WaitableEvent.h)
 - [WaitForIOReady.h](WaitForIOReady.h)
 - [WhenTimeExceeded.h](WhenTimeExceeded.h)
