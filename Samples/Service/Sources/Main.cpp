@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Fatal.h"
+#include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
@@ -158,6 +159,10 @@ int main (int argc, const char* argv[])
         Logger::sThe.SetAppenders (MakeSharedPtr<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
 #endif
     }
+#endif
+
+#if qStroika_Foundation_Debug_TraceToFile
+    Logger::sThe.Log (Logger::eInfo, "Debugging Log2TraceFile: {}"_f, Debug::GetTraceFileName ());
 #endif
 
     /*

@@ -142,6 +142,10 @@ namespace {
                 return appenders;
             }());
 
+#if qStroika_Foundation_Debug_TraceToFile
+            Logger::sThe.Log (Logger::eInfo, "Debugging Log2TraceFile: {}"_f, Debug::GetTraceFileName ());
+#endif
+
             Options_ options{cmdLine};
 
             /*

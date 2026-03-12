@@ -3,7 +3,6 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2026.  All rights reserved
  */
 
-#include <filesystem>
 #include <mutex>
 
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_TraceToFile);
@@ -29,11 +28,6 @@ namespace Stroika::Foundation::Debug {
 
     public:
         static Emitter& Get () noexcept;
-
-#if qStroika_Foundation_Debug_TraceToFile
-    public:
-        static filesystem::path GetTraceFileName ();
-#endif
 
     public:
         /**

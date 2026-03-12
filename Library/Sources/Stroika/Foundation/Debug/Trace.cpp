@@ -121,7 +121,7 @@ namespace {
 #if qStroika_Foundation_Debug_TraceToFile
         PrivateModuleData_ ()
         {
-            fTraceFile.open (Debug::Private_::Emitter::GetTraceFileName ().native ().c_str (), ios::out | ios::binary);
+            fTraceFile.open (GetTraceFileName ().native ().c_str (), ios::out | ios::binary);
         }
 #endif
     };
@@ -155,7 +155,7 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
         sModuleData_->fEmitter.EmitTraceMessage ("***Starting TraceLog***"_f);
         sModuleData_->fEmitter.EmitTraceMessage ("Starting at {}"_f, Time::DateTime::Now ().Format ());
 #if qStroika_Foundation_Debug_TraceToFile
-        sModuleData_->fEmitter.EmitTraceMessage ("TraceFileName: {}"_f, Emitter::GetTraceFileName ());
+        sModuleData_->fEmitter.EmitTraceMessage ("TraceFileName: {}"_f, GetTraceFileName ());
 #endif
         sModuleData_->fEmitter.EmitTraceMessage ("EXEPath={}"_f, Execution::GetEXEPath ());
         sModuleData_->fEmitter.EmitTraceMessage ("<debug-state>"_f);
@@ -170,55 +170,6 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
     call_once (sOnceFlag_, [=] () { emitFirstTime (); });
     return sModuleData_->fEmitter;
 }
-
-#if qStroika_Foundation_Debug_TraceToFile
-filesystem::path Debug::Private_::Emitter::GetTraceFileName ()
-{
-    auto mkTraceFileName_ = [] () -> filesystem::path {
-        // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
-        // (could fix of course, but I'm not sure desirable - reasonable defaults)
-        //
-        // Don't want to use TempFileLibrarian cuz we don't want these deleted on app exit
-        SDKString mfname;
-        {
-            try {
-                mfname = Execution::GetEXEPath ().native ();
-            }
-            catch (...) {
-                mfname = SDKSTR ("{unknown}");
-            }
-            {
-                size_t i = mfname.rfind (filesystem::path::preferred_separator);
-                if (i != SDKString::npos) {
-                    mfname = mfname.substr (i + 1);
-                }
-                i = mfname.rfind ('.');
-                if (i != SDKString::npos) {
-                    mfname.erase (i);
-                }
-            }
-            for (auto i = mfname.begin (); i != mfname.end (); ++i) {
-                if (*i == ' ') {
-                    *i = '-';
-                }
-            }
-        }
-        SDKString nowstr = Time::DateTime::Now ().Format (Time::DateTime::kISO8601Format).AsSDKString (); // use eISO8601 instead of eCurrentLocale cuz locale CTOR not safe to construct before main
-        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
-            if (*i == ':') {
-                *i = '-';
-            }
-            if (*i == '/' or *i == ' ') {
-                *i = '_';
-            }
-        }
-        return IO::FileSystem::WellKnownLocations::GetTemporary () /
-               CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
-    };
-    static filesystem::path sTraceFileName_ = mkTraceFileName_ ();
-    return sTraceFileName_;
-}
-#endif
 
 #if qStroika_Foundation_Debug_TraceToFile
 namespace {
@@ -598,6 +549,60 @@ string Debug::GetDbgTraceThreadName_A (thread::id threadID)
 {
     return mkThreadLabelForThreadID_ (threadID).second;
 }
+
+#if qStroika_Foundation_Debug_TraceToFile
+/*
+ ********************************************************************************
+ ************************* Debug::GetTraceFileName ******************************
+ ********************************************************************************
+ */
+filesystem::path Debug::GetTraceFileName ()
+{
+    auto mkTraceFileName_ = [] () -> filesystem::path {
+        // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
+        // (could fix of course, but I'm not sure desirable - reasonable defaults)
+        //
+        // Don't want to use TempFileLibrarian cuz we don't want these deleted on app exit
+        SDKString mfname;
+        {
+            try {
+                mfname = Execution::GetEXEPath ().native ();
+            }
+            catch (...) {
+                mfname = SDKSTR ("{unknown}");
+            }
+            {
+                size_t i = mfname.rfind (filesystem::path::preferred_separator);
+                if (i != SDKString::npos) {
+                    mfname = mfname.substr (i + 1);
+                }
+                i = mfname.rfind ('.');
+                if (i != SDKString::npos) {
+                    mfname.erase (i);
+                }
+            }
+            for (auto i = mfname.begin (); i != mfname.end (); ++i) {
+                if (*i == ' ') {
+                    *i = '-';
+                }
+            }
+        }
+        SDKString nowstr = Time::DateTime::Now ().Format (Time::DateTime::kISO8601Format).AsSDKString (); // use eISO8601 instead of eCurrentLocale cuz locale CTOR not safe to construct before main
+        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
+            if (*i == ':') {
+                *i = '-';
+            }
+            if (*i == '/' or *i == ' ') {
+                *i = '_';
+            }
+        }
+        return IO::FileSystem::WellKnownLocations::GetTemporary () /
+               CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
+    };
+    static filesystem::path sTraceFileName_ = mkTraceFileName_ ();
+    return sTraceFileName_;
+}
+#endif
 
 /*
  ********************************************************************************

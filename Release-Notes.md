@@ -7,6 +7,9 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+- #if qStroika_Foundation_Debug_TraceToFile define Debug::GetTraceFileName () API returning name of tracefile;
+  Used that in several samples to conditionally write it to the LOGGER output
+
 
 ### 3.0d23 {2026-03-??} {[diff](../../compare/3.0d22...3.0d23)} DRAFT NOTES
 

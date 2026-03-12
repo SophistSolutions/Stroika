@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
+#include <filesystem>
 #include <span>
 #include <thread>
 
@@ -96,6 +97,13 @@ namespace Stroika::Foundation::Debug {
      */
     wstring GetDbgTraceThreadName (thread::id threadID);
     string  GetDbgTraceThreadName_A (thread::id threadID);
+
+#if qStroika_Foundation_Debug_TraceToFile
+    /**
+     * @brief Return the path where the tracefile exists. Note this is only available if the qStroika_Foundation_Debug_TraceToFile function is enabled.
+     */
+    filesystem::path GetTraceFileName ();
+#endif
 
     /**
      *  Define a new start/end context (with optional label) for trace messages emitted with DbgTrace (), and indent future
