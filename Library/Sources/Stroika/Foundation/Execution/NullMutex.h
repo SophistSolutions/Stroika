@@ -9,12 +9,10 @@
 #include <mutex>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/StdCompat.h"
 
 /*
- *
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
- * 
- *      @todo see concepts and add static_assert (ILockable - see diff lockable concepts and doc which and enforce wtih statis assert)
  */
 
 namespace Stroika::Foundation::Execution {
@@ -26,27 +24,14 @@ namespace Stroika::Foundation::Execution {
      *  locking to be present, but effectively all compiled (even constexpr) away.
      */
     struct NullMutex {
-        constexpr void lock () const
-        {
-        }
-        constexpr bool try_lock () const
-        {
-            return true;
-        }
-        constexpr void unlock () const
-        {
-        }
-        constexpr void lock_shared () const
-        {
-        }
-        constexpr bool try_lock_shared () const
-        {
-            return true;
-        }
-        constexpr void unlock_shared () const
-        {
-        }
+        constexpr void lock () const;
+        constexpr bool try_lock () const;
+        constexpr void unlock () const;
+        constexpr void lock_shared () const;
+        constexpr bool try_lock_shared () const;
+        constexpr void unlock_shared () const;
     };
+    static_assert (Common::StdCompat::Lockable<NullMutex>);
 
 }
 
