@@ -107,7 +107,7 @@ namespace {
             GetUseProvider_ (), RuntimeErrorException{"Unrecognized provider name"sv})};
         if (wsi and wsi->fBearerToken) {
             Stroika::Frameworks::Auth::OAuth::Fetcher  f{providerConfiguration};
-            Stroika::Frameworks::Auth::OAuth::UserInfo clientUserInfo = f.GetUserInfo (wsi->fBearerToken.value_or ({}));
+            Stroika::Frameworks::Auth::OAuth::UserInfo clientUserInfo = f.GetUserInfo (wsi->fBearerToken.value_or (String{}));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("returning {}"_f, clientUserInfo);
 #endif
