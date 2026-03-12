@@ -83,31 +83,38 @@ namespace {
 }
 
 namespace {
-    // Kludge - til we support multiple providers
+    // @todo to support multiple providers, we will need to somehow annotate the access tokens to tell one from another (e.g. prepend providername-)
+    // but for now, just pick the first and assume thats it...
+    // @todo - use mapping/cache of these?? Or just a single static one cuz we only support one provider?
+    // @todo to support multiple providers  = but for now since only one, we can use a single static internally syncrhonized fetcher with caching
     String GetUseProvider_ ([[maybe_unused]] const optional<WebServiceIdentity>& wsi)
     {
         return NullCoalesce (NullCoalesce (gAppConfiguration->fAuth).fOAuthClients).FirstValue ({.fProvider = "google"sv}).fProvider;
     }
-    // @todo MEMOIZE CACHE and use this fetch as backup.... But be sure to respect TTL - so we don't use
-    // access token too long...
-    //
-    // or better yet - cache ID_Token return from TOKEN API (since that has the expiry and userinfo information)
-    // This maybe best! Avoids whole API call, and I'm not sure we have the right URL todo this with facebook
-    // as identity manager...
+    shared_ptr<Stroika::Frameworks::Auth::OAuth::Fetcher> GetInternallySynchronizedUserAuthFetcher_ ([[maybe_unused]] const optional<WebServiceIdentity>& wsi)
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TimingTrace ttx{"GetInternallySynchronizedUserAuthFetcher_", 100ns};
+#endif
+        using namespace Stroika::Frameworks::Auth::OAuth;
+        static auto sFetcher_ = make_shared<Fetcher> (ProviderConfiguration{kDefaultProviderConfigurations.LookupChecked (
+                                                          GetUseProvider_ (wsi), RuntimeErrorException{"Unrecognized provider name"sv})},
+                                                      Fetcher::Options{.fCaching = true, .fInternallySyncrhonized = eInternallySynchronized});
+        return sFetcher_;
+    }
+}
+
+namespace {
     optional<Auth::UserInfo> GetUserInfo_ (const optional<WebServiceIdentity>& wsi)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"{}:GetUserInfo_", "wsi={}"_f, wsi};
 #endif
         Debug::TimingTrace ttx{"GetUserInfo_", 10ms};
-        using Stroika::Frameworks::Auth::OAuth::ProviderConfiguration;
-        // @todo to support multiple providers, we will need to somehow annotate the access tokens to tell one from another (e.g. prepend providername-)
-        // but for now, just pick the first and assume thats it...
-        ProviderConfiguration providerConfiguration{Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (
-            GetUseProvider_ (wsi), RuntimeErrorException{"Unrecognized provider name"sv})};
         if (wsi and wsi->fBearerToken) {
-            Stroika::Frameworks::Auth::OAuth::Fetcher  f{providerConfiguration};
-            Stroika::Frameworks::Auth::OAuth::UserInfo clientUserInfo = f.GetUserInfo (wsi->fBearerToken.value_or (String{}));
+            using namespace Stroika::Frameworks::Auth::OAuth;
+            shared_ptr<Stroika::Frameworks::Auth::OAuth::Fetcher> f              = GetInternallySynchronizedUserAuthFetcher_ (wsi);
+            UserInfo                                              clientUserInfo = f->GetUserInfo (wsi->fBearerToken.value_or (String{}));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("returning {}"_f, clientUserInfo);
 #endif

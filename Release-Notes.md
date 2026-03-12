@@ -18,6 +18,7 @@ especially those they need to be aware of when upgrading.
 - fixed processrunner hang which caused service manager (service restart) on UNIX to not work properly
 - Big cleanup of SharedByValue (concepts etc)
 - qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE use so VS how properly optimizes size in at least a few cases (most important ones).
+- OAuth fetcher caching
 
 #### Upgrade Notes (3.0d22 to 3.0d23)
 
@@ -235,7 +236,7 @@ especially those they need to be aware of when upgrading.
       - improve clarity on Samples/HTMLUI/Backend, and fixed #if check to qStroika_HasComponent_syslog for including syslog usage
       - Service startup cleanup logic
       - Improved logging about where logfile is on startup, and more
-      - Use improved OAuth library (caching) and a bit of other OAuth sample cleanup
+      - use internally syncrhonized caching OAuth fetcher, and related cleanups
     - HTML
       - About page cleanups
         - serveral
