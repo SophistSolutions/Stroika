@@ -10,9 +10,12 @@
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/GUID.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/TypedBLOB.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
+#include "Stroika/Foundation/Execution/VirtualLockable.h"
 #include "Stroika/Foundation/IO/Network/URI.h"
 
 #include "Stroika/Frameworks/Auth/OAuth/Configuration.h"
@@ -36,8 +39,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
     using DataExchange::ObjectVariantMapper;
 
     /**
-    *   MEANT to be provider independent, but best docs I've found so far...
-    * 
+     *   MEANT to be provider independent, but best docs I've found so far...
+     * 
      *  https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
      */
     struct TokenRequest {
@@ -89,10 +92,22 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         optional<String> code_verifier;
 
+        /**
+         */
         nonvirtual String ToString () const;
 
+        /**
+         */
         nonvirtual TypedBLOB ToWireFormat () const;
-        static TokenRequest  FromWireFormat (const TypedBLOB& src);
+
+        /**
+         */
+        static TokenRequest FromWireFormat (const TypedBLOB& src);
+
+        /**
+         * @brief Compare by string value of various fields.
+         */
+        auto operator<=> (const TokenRequest& rhs) const = default;
 
         static const ObjectVariantMapper kMapper;
     };
@@ -185,12 +200,33 @@ namespace Stroika::Frameworks::Auth::OAuth {
 
     /**
      *  \brief simple wrapper on IO::Network::Transfer to do fetching (more configurability to do)
+     * 
+     *  \note often you will want to use CachingFetcher
      */
     class Fetcher {
     public:
+        struct Options {
+            bool                              fCaching{false};
+            Execution::InternallySynchronized fInternallySyncrhonized{Execution::eNotKnownInternallySynchronized};
+        };
+
+    public:
+        /**
+         *  \par Example Usage
+         *      \code
+         *          // rarely used, no caching
+         *          ProviderConfiguration providerConfiguration{Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (
+         *                                                      GetUseProvider_ (wsi), RuntimeErrorException{"Unrecognized provider name"sv})};
+         *          if (wsi and wsi->fBearerToken) {
+         *              Auth::OAuth::Fetcher  f{providerConfiguration};
+         *              Auth::OAuth::UserInfo clientUserInfo = f.GetUserInfo (wsi->fBearerToken.value_or (String{}));
+         *              return clientUserInfo;
+         *          }
+         *      \endcode
+         */
         Fetcher ()               = delete;
         Fetcher (const Fetcher&) = default;
-        Fetcher (const ProviderConfiguration& providerConfiguration);
+        Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options = {});
 
     public:
         /**
@@ -226,7 +262,17 @@ namespace Stroika::Frameworks::Auth::OAuth {
         nonvirtual UserInfo GetUserInfo (const String& accessToken) const;
 
     private:
-        const ProviderConfiguration fProviderConfiguration_;
+        const ProviderConfiguration        fProviderConfiguration_;
+        mutable Execution::VirtualLockable fMaybeLock_; // either Debug::AssertExternallySyncrhonized or std::recursive_mutex
+        struct Cache_ {
+            // @todo REIMPLEMENT with new Cache layer code to support this - TTLCacher
+            Containers::Mapping<TokenRequest, TokenResponse> fTokens;
+            Containers::Mapping<String, UserInfo>            fAccessToken2UserInfo;
+        };
+        unique_ptr<Cache_> fCache_;
+
+    private:
+        nonvirtual void ClearOldStuffFromCache_ () const;
     };
 
 }

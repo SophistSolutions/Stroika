@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/FormURLEncoded/Writer.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Connection.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Streams/BinaryToText.h"
@@ -27,6 +28,9 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Auth::OAuth;
 
 using Memory::BLOB;
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+// #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -337,29 +341,59 @@ UserInfo UserInfo::FromWireFormat (const TypedBLOB& src)
  ***************************** Auth::OAuth::Fetcher *****************************
  ********************************************************************************
  */
-Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration)
+Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options)
     : fProviderConfiguration_{providerConfiguration}
+    , fMaybeLock_{options.fInternallySyncrhonized == eInternallySynchronized ? VirtualLockable::Make<recursive_mutex> ()
+                                                                             : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
+    , fCache_{options.fCaching ? make_unique<Cache_> () : nullptr}
 {
 }
 
 TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
 {
-    URI  tokenRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.token_uri, RuntimeErrorException{"no token_uri"sv});
-    auto connection      = IO::Network::Transfer::Connection::New ();
-    try {
-        //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (tr.ToWireFormat ().fData));
-        IO::Network::Transfer::Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());
-        //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
-        return TokenResponse::FromWireFormat (r.GetTypedData ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"OAuth::Fetcher::GetToken", "tr={}"_f, tr};
+#endif
+    auto nonCachingFetcher = [&] () -> TokenResponse {
+        URI  tokenRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.token_uri, RuntimeErrorException{"no token_uri"sv});
+        auto connection      = IO::Network::Transfer::Connection::New ();
+        try {
+            //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (tr.ToWireFormat ().fData));
+            IO::Network::Transfer::Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());
+            //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
+            return TokenResponse::FromWireFormat (r.GetTypedData ());
+        }
+        catch (...) {
+            DbgTrace ("Fetcher::Token: exception={}"_f, current_exception ());
+            Execution::ReThrow ();
+        }
+    };
+    if (fCache_) {
+        scoped_lock critSec{fMaybeLock_};
+        if (optional<TokenResponse> o = fCache_->fTokens.Lookup (tr)) {
+            auto now = DateTime::Now ();
+            if (o->expires_at <= now) {
+                return *o;
+            }
+        }
     }
-    catch (...) {
-        DbgTrace ("Fetcher::Token: exception={}"_f, current_exception ());
-        Execution::ReThrow ();
+    auto r = nonCachingFetcher ();
+    if (fCache_) {
+        fCache_->fTokens.Add (tr, r);
+        // @todo if we got access token AND id token - parse out of ID token the user info and cache in
+        // ...
     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("returning: {}"_f, r);
+#endif
+    return r;
 }
 
 void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"OAuth::Fetcher::RevokeTokens", "tr={}"_f, tr};
+#endif
     if (optional<URI> revokeURI = fProviderConfiguration_.revocation_endpoint) {
         auto connection = IO::Network::Transfer::Connection::New ();
         try {
@@ -376,18 +410,51 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
     }
 }
 
-Auth::OAuth::UserInfo Fetcher::GetUserInfo (const String& accessToken) const
+UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 {
-    URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
-    auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{"Bearer "sv + accessToken};
-    auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = authInfo});
-    try {
-        IO::Network::Transfer::Response r = connection.GET (userInfoRequestURI);
-        //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
-        return Auth::OAuth::UserInfo::FromWireFormat (r.GetTypedData ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{"OAuth::Fetcher::GetUserInfo", "accessToken={}"_f, tr};
+#endif
+    auto nonCachingFetcher = [&] () -> UserInfo {
+        URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
+        auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{"Bearer "sv + accessToken};
+        auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = authInfo});
+        try {
+            IO::Network::Transfer::Response r = connection.GET (userInfoRequestURI);
+            //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
+            return UserInfo::FromWireFormat (r.GetTypedData ());
+        }
+        catch (...) {
+            DbgTrace ("Fetcher::UserInfo: exception={}"_f, current_exception ());
+            Execution::ReThrow ();
+        }
+    };
+    if (fCache_) {
+        scoped_lock critSec{fMaybeLock_};
+        if (optional<UserInfo> ou = fCache_->fAccessToken2UserInfo.Lookup (accessToken)) {
+            // no need expiresAt too check!
+            return *ou;
+        }
+        // if (optional<TokenResponse> o = fCache_->fTokens.Lookup (tr)) {
+        //     auto now = DateTime::Now ();
+        //     if (o->expires_at <= now) {
+        //         return *o;
+        //     }
+        // }
     }
-    catch (...) {
-        DbgTrace ("Fetcher::UserInfo: exception={}"_f, current_exception ());
-        Execution::ReThrow ();
+    UserInfo userInfo = nonCachingFetcher ();
+    if (fCache_) {
+        scoped_lock critSec{fMaybeLock_};
     }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("returning: {}"_f, userInfo);
+#endif
+    return userInfo;
+}
+
+void Fetcher::ClearOldStuffFromCache_ () const
+{
+    //NYI
+    // very sloppy impl....
+    // redo so only runs every 30 seconds or so... - skip if run since last 30 seconds
 }

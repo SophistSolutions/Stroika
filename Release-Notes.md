@@ -214,6 +214,10 @@ especially those they need to be aware of when upgrading.
       - Range
         - deduction guides
   - Frameworks
+    - Auth
+      - OAuth
+        - Client
+          - Support for caching, and options for internally/externally synchronized
     - WebServer
       - ConnectionManager
         - kInactiveSocketMonitorEvents2Watch4_ includes HUP and Error events - and use that for fInactiveSockSetPoller_: this probably addresses issue where we have lots of accumulating uninteresting connections in webserver sometimes (testing)
