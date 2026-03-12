@@ -112,7 +112,6 @@ namespace {
 #endif
         Debug::TimingTrace ttx{"GetUserInfo_", 10ms};
         if (wsi and wsi->fBearerToken) {
-            using namespace Stroika::Frameworks::Auth::OAuth;
             shared_ptr<Stroika::Frameworks::Auth::OAuth::Fetcher> f              = GetInternallySynchronizedUserAuthFetcher_ (wsi);
             UserInfo                                              clientUserInfo = f->GetUserInfo (wsi->fBearerToken.value_or (String{}));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
