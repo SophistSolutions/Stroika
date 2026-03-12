@@ -62,6 +62,7 @@ help:
 	@$(ECHO) "    distclean:"
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
+	@$(ECHO) "    library-clobber:             -    Clobber library and things that depend on it (i.e. all but configurations and third-party-components)"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
 	@$(ECHO) "    project-files-vs-code:       -    Builds project files for visual studio code"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
@@ -151,7 +152,10 @@ endif
 
 library-clobber:
 ifeq ($(CONFIGURATION),)
-	echo NYI
+	@for i in $(APPLY_CONFIGS) ; do\
+		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/Library-Clobber {$$i}:";\
+		$(MAKE) --no-print-directory library-clobber CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+	done
 else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}:"
 	@#only delete ALL intermediate files (cuz includes Config.mk etc and forces rebuild all)
