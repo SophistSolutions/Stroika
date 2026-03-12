@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Debug {
      *  \note Satisfies Concepts:
      *      o   movable<AssertExternallySynchronizedMutex> 
      *      o   copyable<AssertExternallySynchronizedMutex>
-     *      o   Common::StdCompat::BasicLockable<AssertExternallySynchronizedMutex>
+     *      o   Common::StdCompat::Lockable<AssertExternallySynchronizedMutex>
      * 
      *  \par Example Usage
      *      \code
@@ -252,6 +252,12 @@ namespace Stroika::Foundation::Debug {
 
     public:
         /**
+         * \brief Like lock() - if it would succeed, same then, but if would fail instead of assert out, just return false.
+         */
+        nonvirtual bool try_lock () noexcept;
+
+    public:
+        /**
          *  Just decrement lock count
          *
          *  \pre    still running on the same locking thread and locks not unbalanced
@@ -319,6 +325,7 @@ namespace Stroika::Foundation::Debug {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     private:
         nonvirtual void lock_ () noexcept;
+        nonvirtual bool try_lock_ () noexcept;
         nonvirtual void unlock_ () noexcept;
         nonvirtual void lock_shared_ () const noexcept;
         nonvirtual void unlock_shared_ () const noexcept;
@@ -332,7 +339,7 @@ namespace Stroika::Foundation::Debug {
     };
     // see Satisfies Concepts:
     static_assert (movable<AssertExternallySynchronizedMutex> and copyable<AssertExternallySynchronizedMutex> and
-                   Common::StdCompat::BasicLockable<AssertExternallySynchronizedMutex>);
+                   Common::StdCompat::Lockable<AssertExternallySynchronizedMutex>);
 
 }
 

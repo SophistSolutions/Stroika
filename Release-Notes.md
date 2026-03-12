@@ -136,7 +136,8 @@ especially those they need to be aware of when upgrading.
             - added fCanonicalize support to it (for easier diff testing)
     - Debug
       - AssertExternallySynchronizedMutex
-        - mark as Common::StdCompat::BasicLockable<> - docs and static_assert
+        - support try_lock
+        - mark as Common::StdCompat::Lockable<> - docs and static_assert
       - BackTrace
         - Comments and SuppressInterruptionInContext in BackTrace::Capture so clear not a cancelation point
       - Trace

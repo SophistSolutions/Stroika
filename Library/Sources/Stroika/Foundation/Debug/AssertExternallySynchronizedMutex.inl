@@ -152,6 +152,14 @@ namespace Stroika::Foundation::Debug {
         lock_ ();
 #endif
     }
+    inline bool AssertExternallySynchronizedMutex::try_lock () noexcept
+    {
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
+        return try_lock_ ();
+#else
+        return true;
+#endif
+    }
     inline void AssertExternallySynchronizedMutex::unlock () noexcept
     {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled

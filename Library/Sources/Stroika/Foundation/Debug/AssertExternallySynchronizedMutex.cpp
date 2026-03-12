@@ -56,6 +56,36 @@ void AssertExternallySynchronizedMutex::lock_ () noexcept
     }
 }
 
+bool AssertExternallySynchronizedMutex::try_lock_ () noexcept
+{
+    // Note - not critical if there are races in this, as its just a diagnostic for debugging, and false-negatives OK
+    bool lockedSuccessfully = true;
+    try {
+        SharedContext* sharedContext = fSharedContext_.get ();
+        if (sharedContext->fFullLocks_++ == 0) {
+            // If first time in, save thread-id
+            sharedContext->fThreadWithFullLock_ = this_thread::get_id ();
+            if (not sharedContext->GetSharedLockEmpty_ ()) {
+                // If first already shared locks - OK - so long as same thread
+                lockedSuccessfully = sharedContext->CountOfIInSharedLockThreads_ (sharedContext->fThreadWithFullLock_) ==
+                                     sharedContext->GetSharedLockThreadsCount_ ();
+            }
+        }
+        else {
+            // If first already locked - OK - so long as same thread
+            lockedSuccessfully = (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());
+        }
+        if (not lockedSuccessfully) {
+            unlock_ ();
+        }
+    }
+    catch (...) {
+        AssertNotReached ();
+        lockedSuccessfully = false;
+    }
+    return lockedSuccessfully;
+}
+
 void AssertExternallySynchronizedMutex::unlock_ () noexcept
 {
     SharedContext* sharedContext = fSharedContext_.get ();
