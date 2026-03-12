@@ -1824,7 +1824,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\NullLock.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h">
@@ -3378,7 +3378,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\NullLock.inl">
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl">

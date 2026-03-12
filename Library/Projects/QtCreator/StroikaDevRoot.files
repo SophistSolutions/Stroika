@@ -681,8 +681,8 @@ Library/Sources/Stroika/Foundation/Execution/ModuleGetterSetter.inl
 Library/Sources/Stroika/Foundation/Execution/ModuleInit.cpp
 Library/Sources/Stroika/Foundation/Execution/ModuleInit.h
 Library/Sources/Stroika/Foundation/Execution/ModuleInit.inl
-Library/Sources/Stroika/Foundation/Execution/NullMutex.h
-Library/Sources/Stroika/Foundation/Execution/NullMutex.inl
+Library/Sources/Stroika/Foundation/Execution/NullLock.h
+Library/Sources/Stroika/Foundation/Execution/NullLock.inl
 Library/Sources/Stroika/Foundation/Execution/OperationNotSupportedException.cpp
 Library/Sources/Stroika/Foundation/Execution/OperationNotSupportedException.h
 Library/Sources/Stroika/Foundation/Execution/PIDLoop.h

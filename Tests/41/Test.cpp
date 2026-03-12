@@ -25,7 +25,7 @@
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Containers/Stack.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-#include "Stroika/Foundation/Execution/NullMutex.h"
+#include "Stroika/Foundation/Execution/NullLock.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Math/Common.h"
@@ -97,7 +97,7 @@ namespace {
         void DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
         {
             Debug::TraceContextBumper traceCtx{"{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()"};
-            NullMutex                 lock;
+            NullLock                  lock;
             //mutex lock;
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
             Thread::Ptr                 iterateThread   = mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
@@ -166,7 +166,7 @@ namespace {
             static constexpr initializer_list<int> kOrigValueInit_   = {1, 3, 4, 5, 6, 33, 12, 13};
             static constexpr initializer_list<int> kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
 
-            NullMutex lock;
+            NullLock lock;
             //mutex lock;
 
             DoItOnce_<Set<int>> (&lock, Set<int> (kOrigValueInit_), kRepeatCount_, [&lock] (Synchronized<Set<int>>* oneToKeepOverwriting) {

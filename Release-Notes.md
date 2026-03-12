@@ -24,6 +24,7 @@ especially those they need to be aware of when upgrading.
 
 - Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
 - Renamed TrivialDocumentDB -> LocalDocumentDB
+- Renamed NullMutex to NullLock
 
 #### Change Details
 
@@ -150,6 +151,8 @@ especially those they need to be aware of when upgrading.
         - concept checking on IMPL
         - better docs
         - new AssureLoaded method
+      - NullLock
+        - **renamed NullMutex to NullLock**
       - ProcessRunner
         - minor cleanup of BackgroundProcess::WaitForStarted()
         - Various cleanups 

@@ -6,7 +6,7 @@
 ##
 ## EXAMPLE USAGE
 ##		ScriptsLib/FormatCode Library *.h *.inl *.cpp
-##		ScriptsLib/FormatCode Library/Sources/Stroika/Foundation/Execution NullMutex.h
+##		ScriptsLib/FormatCode Library/Sources/Stroika/Foundation/Execution NullLock.h
 ##
 ##	NOTE ALSO - can override default clang settings with
 ##		Configuration/.SourceCodeFormatOverrides.sh
