@@ -386,6 +386,7 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
         // @todo if we got access token AND id token - parse out of ID token the user info and cache in
         // ...
     }
+    ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("returning: {}"_f, r);
 #endif
@@ -450,6 +451,7 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
         scoped_lock critSec{fMaybeLock_};
         fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo); // @todo add TIMEOUT!!!
     }
+    ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("returning: {}"_f, userInfo);
 #endif
@@ -458,7 +460,19 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 
 void Fetcher::ClearOldStuffFromCache_ () const
 {
-    //NYI
-    // very sloppy impl....
-    // redo so only runs every 30 seconds or so... - skip if run since last 30 seconds
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TimingTrace ctx{"OAuth::ClearOldStuffFromCache_", 1ms};
+#endif
+    // quicky algorithm - hopefully good enuf for starters --LGP 2026-03-12
+    if (fCache_) {
+        scoped_lock critSec{fMaybeLock_};
+        Time::DateTime now = Time::DateTime::Now ();
+        if (Time::GetTickCount () > fNextClearAt_) {
+            fCache_->fAccessToken2UserInfo.RemoveAll ([&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) {
+                return now > kvp.fValue.expires_at;
+            });
+            fCache_->fAccessToken2UserInfo.RetainAll (fCache_->fAccessToken2UserInfo.Keys ());
+            fNextClearAt_ = Time::GetTickCount ();
+        }
+    }
 }
