@@ -84,7 +84,7 @@ namespace {
 
 namespace {
     // Kludge - til we support multiple providers
-    String GetUseProvider_ ()
+    String GetUseProvider_ ([[maybe_unused]] const optional<WebServiceIdentity>& wsi)
     {
         return NullCoalesce (NullCoalesce (gAppConfiguration->fAuth).fOAuthClients).FirstValue ({.fProvider = "google"sv}).fProvider;
     }
@@ -104,7 +104,7 @@ namespace {
         // @todo to support multiple providers, we will need to somehow annotate the access tokens to tell one from another (e.g. prepend providername-)
         // but for now, just pick the first and assume thats it...
         ProviderConfiguration providerConfiguration{Stroika::Frameworks::Auth::OAuth::kDefaultProviderConfigurations.LookupChecked (
-            GetUseProvider_ (), RuntimeErrorException{"Unrecognized provider name"sv})};
+            GetUseProvider_ (wsi), RuntimeErrorException{"Unrecognized provider name"sv})};
         if (wsi and wsi->fBearerToken) {
             Stroika::Frameworks::Auth::OAuth::Fetcher  f{providerConfiguration};
             Stroika::Frameworks::Auth::OAuth::UserInfo clientUserInfo = f.GetUserInfo (wsi->fBearerToken.value_or (String{}));

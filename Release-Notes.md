@@ -235,6 +235,7 @@ especially those they need to be aware of when upgrading.
       - improve clarity on Samples/HTMLUI/Backend, and fixed #if check to qStroika_HasComponent_syslog for including syslog usage
       - Service startup cleanup logic
       - Improved logging about where logfile is on startup, and more
+      - Use improved OAuth library (caching) and a bit of other OAuth sample cleanup
     - HTML
       - About page cleanups
         - serveral
