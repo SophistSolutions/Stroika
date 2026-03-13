@@ -444,7 +444,10 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual void RemoveAll ();
         template <typename ITERABLE_OF_KEY_OR_ADDABLE>
-        nonvirtual size_t RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items);
+        nonvirtual size_t RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items)
+            requires (IIterableOfTo<ITERABLE_OF_KEY_OR_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> or
+                      IIterableOfTo<ITERABLE_OF_KEY_OR_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>> or
+                      IIterableOfTo<ITERABLE_OF_KEY_OR_ADDABLE, KEY_TYPE>);
         template <typename ITERATOR_OF_KEY_OR_ADDABLE, sentinel_for<remove_cvref_t<ITERATOR_OF_KEY_OR_ADDABLE>> ITERATOR_OF_KEY_OR_ADDABLE2>
         nonvirtual size_t RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE&& start, ITERATOR_OF_KEY_OR_ADDABLE2&& end);
         template <predicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> PREDICATE>

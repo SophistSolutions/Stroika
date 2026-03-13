@@ -247,6 +247,8 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERABLE_OF_KEY_OR_ADDABLE>
     size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items)
+        requires (IIterableOfTo<ITERABLE_OF_KEY_OR_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> or
+                  IIterableOfTo<ITERABLE_OF_KEY_OR_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>> or IIterableOfTo<ITERABLE_OF_KEY_OR_ADDABLE, KEY_TYPE>)
     {
         using ITEM_T = ranges::range_value_t<ITERABLE_OF_KEY_OR_ADDABLE>;
         static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or
@@ -371,7 +373,12 @@ namespace Stroika::Foundation::Containers {
                 *this = result;
             }
             else {
-                Assert (*this == result); // so why assign?
+                if constexpr (equality_comparable<MAPPED_VALUE_TYPE>) {
+                    Assert (*this == result); // so why assign?
+                }
+                else {
+                    // @todo assert keys equal...
+                }
             }
         }
     }

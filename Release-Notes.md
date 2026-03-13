@@ -90,6 +90,9 @@ especially those they need to be aware of when upgrading.
         - new qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE and qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
           use instead of [[no_unique_address]] (see qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
         - qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS with qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE (cuz works) and with qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCBUGGY
+    - Containers
+      - Mapping
+        - A few fixes to RetainAll/RemoveAll - concepts/corner cases - no changes to running code - just to checks/reporting
     - Database
       - DocumentDB
         - API
