@@ -469,10 +469,9 @@ void Fetcher::ClearOldStuffFromCache_ () const
         Time::DateTime now = Time::DateTime::Now ();
         scoped_lock    critSec{fMaybeLock_};
         if (Time::GetTickCount () > fNextClearAt_) {
-            fCache_->fAccessToken2UserInfo.RemoveAll (
-                [&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return now > kvp.fValue.expires_at; });
+            fCache_->fTokens.RemoveAll ([&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return now > kvp.fValue.expires_at; });
             fCache_->fAccessToken2UserInfo.RetainAll (fCache_->fAccessToken2UserInfo.Keys ());
-            fNextClearAt_ = Time::GetTickCount ();
+            fNextClearAt_ = Time::GetTickCount () + kClearMaxFrequency_;
         }
     }
 }
