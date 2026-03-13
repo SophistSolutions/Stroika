@@ -40,9 +40,11 @@ namespace Stroika::Frameworks::Auth::OAuth {
     using DataExchange::ObjectVariantMapper;
 
     /**
+     *  @brief this is the argument to the Fetcher::GetToken () API. It typically consists of a client_id, client_secret, authorization 'code' and other things in OAUTH client auto token request.
+     * 
      *   MEANT to be provider independent, but best docs I've found so far...
      * 
-     *  https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
+     *  \see https://developers.google.com/identity/protocols/oauth2/web-server#httprest_3
      */
     struct TokenRequest {
         /**
@@ -114,6 +116,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
     };
 
     /**
+     *  @brief this is the response to the Fetcher::GetToken () API. It typically provides an 'access token' with a set of scopes, and other things about the provided access.
+     * 
      *   MEANT to be provider independent, but best docs I've found so far...
      * 
      *  https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
