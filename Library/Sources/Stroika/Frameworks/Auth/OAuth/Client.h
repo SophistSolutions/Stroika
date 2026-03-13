@@ -226,7 +226,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         Fetcher ()               = delete;
         Fetcher (const Fetcher&) = default;
-        Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options = {});
+        Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options = Options{});
 
     public:
         /**
