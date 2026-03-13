@@ -53,6 +53,12 @@ String ProviderConfiguration::ToString () const
     if (auth_provider_x509_cert_url) {
         sb << ", auth_provider_x509_cert_url: " << *auth_provider_x509_cert_url;
     }
+    if (introspection_endpoint) {
+        sb << ", introspection_endpoint: " << *introspection_endpoint;
+    }
+    if (tokeninfo_endpoint) {
+        sb << ", tokeninfo_endpoint: " << *tokeninfo_endpoint;
+    }
     sb << "}"sv;
     return sb;
 }

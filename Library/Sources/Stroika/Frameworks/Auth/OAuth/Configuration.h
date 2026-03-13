@@ -121,6 +121,16 @@ namespace Stroika::Frameworks::Auth::OAuth {
         optional<URI> auth_provider_x509_cert_url;
 
         /**
+         * @brief RFC 7662 compatible API for finding info about a token - https://datatracker.ietf.org/doc/html/rfc7662
+         */
+        optional<URI> introspection_endpoint;
+
+        /**
+         * @brief logically similar to introspection_endpoint, but googles incompatible way
+         */
+        optional<URI> tokeninfo_endpoint;
+
+        /**
          *  Fetch the data from the openid_configuration_uri, and use it to augment the fields
          *  of this structure, and return the updated record (replacing items that conflict).
          * 

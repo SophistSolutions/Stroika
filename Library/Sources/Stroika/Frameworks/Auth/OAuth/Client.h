@@ -168,6 +168,26 @@ namespace Stroika::Frameworks::Auth::OAuth {
     };
 
     /**
+     * @brief RFC 7662 compatible API for finding info about a token - https://datatracker.ietf.org/doc/html/rfc7662
+     * 
+     *  FOR NOW - we only use expires_at field and only support google token_info API
+     */
+    struct TokenIntrospectionResponse {
+
+        /**
+         * OAuth uses expires_in, but we convert to an expires_at since better to track (in UTC)
+         */
+        DateTime expires_at = DateTime::Now ();
+
+        nonvirtual String ToString () const;
+
+        nonvirtual TypedBLOB              ToWireFormat () const;
+        static TokenIntrospectionResponse FromWireFormat (const TypedBLOB& src);
+
+        static const ObjectVariantMapper kMapper;
+    };
+
+    /**
      */
     struct UserInfo {
 
@@ -269,6 +289,22 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *        create a new Fetcher instance.
          */
         nonvirtual UserInfo GetUserInfo (const String& accessToken) const;
+
+    private:
+        //     Google TokenInfo Endpoint
+        // You can use this endpoint to "introspect" an access token by sending a GET request:
+        // Endpoint: https://oauth2.googleapis.com/tokeninfo
+        // Parameter: access_token
+        // Example Request
+        // http
+        // GET https://oauth2.googleapis.com
+
+        // Expected JSON Response
+        // If the token is valid, Google returns metadata including the expiration time:
+        //
+        // DOES NOT USE CACHE!!!
+        // Only used so that when we are given an accessCode to get userInfo for - so we can know how long it remains active in the cache
+        nonvirtual optional<TokenIntrospectionResponse> FetchTokenIntrospection_ (const String& accessToken) const;
 
     private:
         /*

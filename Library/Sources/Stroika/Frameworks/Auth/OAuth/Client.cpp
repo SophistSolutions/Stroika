@@ -285,6 +285,77 @@ TypedBLOB TokenRevocationRequest::ToWireFormat () const
 
 /*
  ********************************************************************************
+ ******************** Auth::OAuth::TokenIntrospectionResponse *******************
+ ********************************************************************************
+ */
+String TokenIntrospectionResponse::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << ", expires_at: "sv << expires_at;
+    sb << "}"sv;
+    return sb;
+}
+
+const ObjectVariantMapper TokenIntrospectionResponse::kMapper = [] () {
+    ObjectVariantMapper mapper;
+    using TypeMappingDetails = ObjectVariantMapper::TypeMappingDetails;
+    mapper.AddCommonType<String> ();
+    mapper.AddCommonType<optional<String>> ();
+    mapper.AddCommonType<DateTime> ();
+    mapper.AddCommonType<Set<String>> ();
+#if 0
+    Google TokenInfo Endpoint
+        +You can use this endpoint to "introspect" an access token by sending a GET request:
+        +Endpoint: https://oauth2.googleapis.com/tokeninfo
+        +Parameter: access_token
+        +Example Request
+            +http GET https://oauth2.googleapis.com
+        +
+        +Expected JSON Response
+            +If the token is valid, Google returns metadata including the expiration time:
+            +json
+            +{
+            +  "azp": "123456789-example.apps.googleusercontent.com",
+            +  "aud": "123456789-example.apps.googleusercontent.com",
+            +  "sub": "111222333444555",
+            +  "scope": "https://www.googleapis.com/auth/userinfo.email openid",
+            +  "exp": "1710275200",   // Expiration time in Unix epoch format
+            +  "expires_in": "3599",  // Seconds remaining until expiration
+            +  "email": "user@example.com",
+            +  "email_verified": "true"
+#endif
+    mapper.AddClass<TokenIntrospectionResponse> ({
+        // expires_at in wire-format is expires_in seconds into future
+        {"expires_in"sv, &TokenIntrospectionResponse::expires_at,
+         TypeMappingDetails{ObjectVariantMapper::FromObjectMapperType<DateTime> (
+                                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const DateTime* objOfType) -> VariantValue {
+                                    return VariantValue{(objOfType->AsUTC () - DateTime::NowUTC ()).As<int> ()};
+                                }),
+                            ObjectVariantMapper::ToObjectMapperType<DateTime> (
+                                [] ([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, DateTime* into) -> void {
+                                    *into = DateTime::NowUTC ().AddSeconds (d.As<int> ());
+                                })}},
+    });
+    return mapper;
+}();
+
+TypedBLOB TokenIntrospectionResponse::ToWireFormat () const
+{
+    return TypedBLOB{Variant::JSON::Writer{}.WriteAsBLOB (kMapper.FromObject (*this)), InternetMediaTypes::kJSON};
+}
+
+TokenIntrospectionResponse TokenIntrospectionResponse::FromWireFormat (const TypedBLOB& src)
+{
+    if (not src.fType or not InternetMediaTypeRegistry::sThe->IsA (InternetMediaTypes::kJSON, *src.fType)) {
+        static const auto kExcept_ = RuntimeErrorException{"Expected JSON"sv};
+        Throw (kExcept_);
+    }
+    return kMapper.ToObject<TokenIntrospectionResponse> (Variant::JSON::Reader{}.Read (src.fData));
+}
+
+/*
+ ********************************************************************************
  ****************************** Auth::OAuth::UserInfo ***************************
  ********************************************************************************
  */
@@ -353,8 +424,9 @@ Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration, const Opti
 Fetcher::Fetcher (const Fetcher& src)
     : fProviderConfiguration_{src.fProviderConfiguration_}
     , fOptions_{src.fOptions_}
-    , fMaybeLock_{src.fOptions_.fInternallySyncrhonized == eInternallySynchronized ? VirtualLockable::Make<recursive_mutex> ()
-                                                                             : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
+    , fMaybeLock_{src.fOptions_.fInternallySyncrhonized == eInternallySynchronized
+                      ? VirtualLockable::Make<recursive_mutex> ()
+                      : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
     , fCache_{src.fCache_ ? make_unique<Cache_> () : nullptr}
 {
 }
@@ -417,6 +489,14 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"OAuth::Fetcher::RevokeTokens", "tr={}"_f, tr};
 #endif
+    if (fCache_) {
+        scoped_lock critSec{fMaybeLock_};
+        // remove references to the argument access_token (we dont cache refresh tokens currently)
+        fCache_->fTokens.RemoveAll (
+            [&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return tr.access_token == kvp.fValue.access_token; });
+        fCache_->fAccessToken2Expiration.RemoveIf (tr.access_token);
+        fCache_->fAccessToken2UserInfo.RemoveIf (tr.access_token);
+    }
     if (optional<URI> revokeURI = fProviderConfiguration_.revocation_endpoint) {
         auto connection = IO::Network::Transfer::Connection::New ();
         try {
@@ -432,6 +512,33 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
         DbgTrace ("Fetcher::RevokeTokens: skipping due to missing revocation_endpoint"_f);
     }
 }
+
+#if 0
+Google TokenInfo Endpoint
+You can use this endpoint to "introspect" an access token by sending a GET request: 
+Endpoint: https://oauth2.googleapis.com/tokeninfo
+Parameter: access_token 
+Example Request
+http
+GET https://oauth2.googleapis.com
+Use code with caution.
+
+Expected JSON Response
+If the token is valid, Google returns metadata including the expiration time: 
+Google Cloud Documentation
+Google Cloud Documentation
+json
+{
+  "azp": "123456789-example.apps.googleusercontent.com",
+  "aud": "123456789-example.apps.googleusercontent.com",
+  "sub": "111222333444555",
+  "scope": "https://www.googleapis.com/auth/userinfo.email openid",
+  "exp": "1710275200",   // Expiration time in Unix epoch format
+  "expires_in": "3599",  // Seconds remaining until expiration
+  "email": "user@example.com",
+  "email_verified": "true"
+}
+#endif
 
 UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 {
@@ -468,8 +575,25 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     }
     UserInfo userInfo = nonCachingFetcher ();
     if (fCache_) {
+        /// if this is first time we've seen the access_code (load balancing situation where another server generates access_code and we dont see it)
+        // we still need to know how long the user_info is valid for - so ask, and if we cannot tell, make a conservative guess
+        {
+            unique_lock tmpLock{fMaybeLock_};
+            if (not fCache_->fAccessToken2Expiration.ContainsKey (accessToken)) {
+                tmpLock.unlock (); // don't hold lock while fetching
+                if (optional<TokenIntrospectionResponse> o = FetchTokenIntrospection_ (accessToken)) {
+                    tmpLock.lock (); // but re-lock to update data structures
+                    fCache_->fAccessToken2Expiration.Add (accessToken, o->expires_at);
+                }
+                else {
+                    tmpLock.lock (); // but re-lock to update data structures
+                    static constexpr auto kWAG_ = 30s;
+                    fCache_->fAccessToken2Expiration.Add (accessToken, Time::DateTime::NowUTC () + kWAG_);
+                }
+            }
+        }
         scoped_lock critSec{fMaybeLock_};
-        fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo); // @todo add TIMEOUT!!!
+        fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo);
     }
     ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -478,15 +602,49 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     return userInfo;
 }
 
+optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospection_ (const String& accessToken) const
+{
+    if (fProviderConfiguration_.introspection_endpoint) {
+        // NYI, but no biggie cuz google doesn't either
+        // https://datatracker.ietf.org/doc/html/rfc7662
+        AssertNotImplemented ();
+    }
+    if (fProviderConfiguration_.tokeninfo_endpoint) {
+        auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{"Bearer "sv + accessToken};
+        auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = authInfo});
+        try {
+            // A successful request returns a JSON object containing information about the token, such as:
+            // issued_to: The client ID to whom the token was issued.
+            // audience: The intended audience for the token.
+            // user_id: The obfuscated unique identifier for the user.
+            // scope: The space-separated list of scopes granted to the token.
+            // expires_in: The number of seconds left until the token expires.
+            // email: The user's email address.
+            // verified_email: A boolean indicating if the email address is verified.
+            // hd: The hosted domain of the user if they belong to a Google Workspace account.
+
+            // CLOSE to same as UserInfo - but all I use this for is the expiration info, so good enuf for that...
+            IO::Network::Transfer::Response r = connection.GET (*fProviderConfiguration_.tokeninfo_endpoint);
+            DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
+            return TokenIntrospectionResponse::FromWireFormat (r.GetTypedData ());
+        }
+        catch (...) {
+            DbgTrace ("Fetcher::FetchTokenInfo_: exception={}"_f, current_exception ());
+            Execution::ReThrow ();
+        }
+    }
+    return nullopt;
+}
+
 void Fetcher::ClearOldStuffFromCache_ () const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TimingTrace ctx{"OAuth::ClearOldStuffFromCache_", 1ms};
 #endif
     // quicky algorithm - hopefully good enuf for starters --LGP 2026-03-12
+    scoped_lock critSec{fMaybeLock_};
     if (fCache_) {
         Time::DateTime now = Time::DateTime::Now ();
-        scoped_lock    critSec{fMaybeLock_};
         if (Time::GetTickCount () > fCache_->fNextClearAt_) {
             fCache_->fTokens.RemoveAll ([&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return now > kvp.fValue.expires_at; });
             auto keys2Keep = fCache_->fAccessToken2UserInfo.Keys ();
