@@ -625,7 +625,7 @@ optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospection_ (const St
 
             // CLOSE to same as UserInfo - but all I use this for is the expiration info, so good enuf for that...
             IO::Network::Transfer::Response r = connection.GET (*fProviderConfiguration_.tokeninfo_endpoint);
-            DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
+            // DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
             return TokenIntrospectionResponse::FromWireFormat (r.GetTypedData ());
         }
         catch (...) {
