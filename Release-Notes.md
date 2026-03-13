@@ -225,6 +225,7 @@ especially those they need to be aware of when upgrading.
       - OAuth
         - Client
           - Support for caching, and options for internally/externally synchronized
+          - Auth::OAuth::TokenIntrospectionResponse/tokeninfo_endpoint/introspection_endpoint support for FetchTokenIntrospection_ () - internally - so when user_info fetched - we try to get its expires_at too
     - WebServer
       - ConnectionManager
         - kInactiveSocketMonitorEvents2Watch4_ includes HUP and Error events - and use that for fInactiveSockSetPoller_: this probably addresses issue where we have lots of accumulating uninteresting connections in webserver sometimes (testing)
