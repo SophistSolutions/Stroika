@@ -343,9 +343,19 @@ UserInfo UserInfo::FromWireFormat (const TypedBLOB& src)
  */
 Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options)
     : fProviderConfiguration_{providerConfiguration}
+    , fOptions_{options}
     , fMaybeLock_{options.fInternallySyncrhonized == eInternallySynchronized ? VirtualLockable::Make<recursive_mutex> ()
                                                                              : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
     , fCache_{options.fCaching ? make_unique<Cache_> () : nullptr}
+{
+}
+
+Fetcher::Fetcher (const Fetcher& src)
+    : fProviderConfiguration_{src.fProviderConfiguration_}
+    , fOptions_{src.fOptions_}
+    , fMaybeLock_{src.fOptions_.fInternallySyncrhonized == eInternallySynchronized ? VirtualLockable::Make<recursive_mutex> ()
+                                                                             : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
+    , fCache_{src.fCache_ ? make_unique<Cache_> () : nullptr}
 {
 }
 
@@ -381,11 +391,19 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
         fCache_->fTokens.Add (tr, r);
-        // cache ID_Token return from TOKEN API (since that has the expiry and userinfo information)
-        // This maybe best! Avoids whole API call, and I'm not sure we have the right URL todo this with facebook
-        // as identity manager...
-        // @todo if we got access token AND id token - parse out of ID token the user info and cache in
-        // ...
+        fCache_->fAccessToken2Expiration.Add (r.access_token, r.expires_at);
+        if (r.id_token) {
+            // @todo
+            // NOTE - ID_token doesnt contain EXACTLY same info as user_info endpoint - may need to update API to reflect this difference
+            // No, a decoded ID token may not contain the exact same information as the userinfo endpoint response
+            // . The information can overlap significantly, but there are key differences:
+
+            // cache ID_Token return from TOKEN API (since that has the expiry and userinfo information)
+            // This maybe best! Avoids whole API call, and I'm not sure we have the right URL todo this with facebook
+            // as identity manager...
+            // @todo if we got access token AND id token - parse out of ID token the user info and cache in
+            // ...
+        }
     }
     ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -436,16 +454,17 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     };
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
-        if (optional<UserInfo> ou = fCache_->fAccessToken2UserInfo.Lookup (accessToken)) {
-            // no need expiresAt too check!
-            return *ou;
+        if (optional<DateTime> od = fCache_->fAccessToken2Expiration.Lookup (accessToken)) {
+            Time::DateTime now = Time::DateTime::Now ();
+            if (now > *od) {
+                fCache_->fAccessToken2UserInfo.RemoveIf (accessToken); // may as well remove if its expired
+            }
+            else {
+                if (optional<UserInfo> ou = fCache_->fAccessToken2UserInfo.Lookup (accessToken)) {
+                    return *ou;
+                }
+            }
         }
-        // if (optional<TokenResponse> o = fCache_->fTokens.Lookup (tr)) {
-        //     auto now = DateTime::Now ();
-        //     if (o->expires_at <= now) {
-        //         return *o;
-        //     }
-        // }
     }
     UserInfo userInfo = nonCachingFetcher ();
     if (fCache_) {
@@ -468,10 +487,12 @@ void Fetcher::ClearOldStuffFromCache_ () const
     if (fCache_) {
         Time::DateTime now = Time::DateTime::Now ();
         scoped_lock    critSec{fMaybeLock_};
-        if (Time::GetTickCount () > fNextClearAt_) {
+        if (Time::GetTickCount () > fCache_->fNextClearAt_) {
             fCache_->fTokens.RemoveAll ([&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return now > kvp.fValue.expires_at; });
-            fCache_->fAccessToken2UserInfo.RetainAll (fCache_->fAccessToken2UserInfo.Keys ());
-            fNextClearAt_ = Time::GetTickCount () + kClearMaxFrequency_;
+            auto keys2Keep = fCache_->fAccessToken2UserInfo.Keys ();
+            fCache_->fAccessToken2Expiration.RetainAll (keys2Keep);
+            fCache_->fAccessToken2UserInfo.RetainAll (keys2Keep);
+            fCache_->fNextClearAt_ = Time::GetTickCount () + Cache_::kClearMaxFrequency_;
         }
     }
 }

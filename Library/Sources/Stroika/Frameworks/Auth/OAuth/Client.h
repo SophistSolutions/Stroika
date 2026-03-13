@@ -33,9 +33,9 @@ namespace Stroika::Frameworks::Auth::OAuth {
     using Characters::String;
     using Containers::Set;
     using DataExchange::TypedBLOB;
+    using Execution::InternallySynchronized;
     using IO::Network::URI;
     using Time::DateTime;
-    using Execution::InternallySynchronized;
 
     using DataExchange::ObjectVariantMapper;
 
@@ -199,7 +199,6 @@ namespace Stroika::Frameworks::Auth::OAuth {
         static const ObjectVariantMapper kMapper;
     };
 
-
     /**
      *  \brief simple wrapper on IO::Network::Transfer to do fetching (more configurability to do)
      * 
@@ -208,8 +207,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
     class Fetcher {
     public:
         struct Options {
-            bool                              fCaching { false};
-            InternallySynchronized fInternallySyncrhonized {InternallySynchronized::eNotKnownInternallySynchronized};
+            bool                   fCaching{false};
+            InternallySynchronized fInternallySyncrhonized{InternallySynchronized::eNotKnownInternallySynchronized};
         };
 
     public:
@@ -225,9 +224,12 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *              return clientUserInfo;
          *          }
          *      \endcode
+         * 
+         *  \note if you create a COPY of a Fetcher, it will NOT contain the same CACHE (so you can use this to clear/lose the cache).
+         *        But it will contain all the same OPTIONS settings
          */
-        Fetcher ()               = delete;
-        Fetcher (const Fetcher&) = default;
+        Fetcher () = delete;
+        Fetcher (const Fetcher& src);
         Fetcher (const ProviderConfiguration& providerConfiguration);
         Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options);
 
@@ -261,25 +263,34 @@ namespace Stroika::Frameworks::Auth::OAuth {
          * curl -v -H "Authorization: Bearer ddd" https://www.googleapis.com/oauth2/v3/userinfo
          * 
          * @todo FIND DOCS FOR THIS - try docs on https://accounts.google.com/.well-known/openid-configuration
+         * 
+         *  \note this MAY generate a slightly abbreviated user-info object, if the original access token was retrieved
+         *        with an id_token (parsed out of that). To avoid that, if you want the full userInfo from the endpoint,
+         *        create a new Fetcher instance.
          */
         nonvirtual UserInfo GetUserInfo (const String& accessToken) const;
 
     private:
+        /*
+         * NOTE that fMaybeLock_ applies to BOTH cache and ?? - not sure what else there is???
+         * So why not  use Syncrhonized? Cuz we dont have maybe-syncrhonized?
+         */
         const ProviderConfiguration        fProviderConfiguration_;
+        const Options                      fOptions_;
         mutable Execution::VirtualLockable fMaybeLock_; // either Debug::AssertExternallySyncrhonized or std::recursive_mutex
         struct Cache_ {
+            static constexpr auto  kClearMaxFrequency_{30s};
+            Time::TimePointSeconds fNextClearAt_{Time::GetTickCount () + kClearMaxFrequency_};
+
             // @todo REIMPLEMENT with new Cache layer code to support this - TTLCacher
             Containers::Mapping<TokenRequest, TokenResponse> fTokens;
+            Containers::Mapping<String, DateTime>            fAccessToken2Expiration;
             Containers::Mapping<String, UserInfo>            fAccessToken2UserInfo;
         };
         unique_ptr<Cache_> fCache_;
 
     private:
         nonvirtual void ClearOldStuffFromCache_ () const;
-
-    private:
-        static constexpr auto          kClearMaxFrequency_{30s};
-        mutable Time::TimePointSeconds fNextClearAt_{Time::GetTickCount () + kClearMaxFrequency_};
     };
 
 }
