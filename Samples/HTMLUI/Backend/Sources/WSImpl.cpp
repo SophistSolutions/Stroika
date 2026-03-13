@@ -69,7 +69,7 @@ namespace {
 }
 
 namespace {
-    const Duration kCaptureFrequency_ = 30s;
+    const Duration     kCaptureFrequency_ = 30s;
     struct MyCapturer_ final : Capturer {
     public:
         Instruments::CPU::Instrument     fCPUInstrument{};
