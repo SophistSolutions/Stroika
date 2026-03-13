@@ -69,7 +69,7 @@ namespace {
 }
 
 namespace {
-    const Duration     kCaptureFrequency_ = 30s;
+    const Duration kCaptureFrequency_ = 30s;
     struct MyCapturer_ final : Capturer {
     public:
         Instruments::CPU::Instrument     fCPUInstrument{};
@@ -112,8 +112,9 @@ namespace {
 #endif
         Debug::TimingTrace ttx{"GetUserInfo_", 10ms};
         if (wsi and wsi->fBearerToken) {
-            shared_ptr<Stroika::Frameworks::Auth::OAuth::Fetcher> f              = GetInternallySynchronizedUserAuthFetcher_ (wsi);
-            UserInfo                                              clientUserInfo = f->GetUserInfo (wsi->fBearerToken.value_or (String{}));
+            using namespace Stroika::Frameworks::Auth::OAuth;
+            shared_ptr<Fetcher> f              = GetInternallySynchronizedUserAuthFetcher_ (wsi);
+            UserInfo            clientUserInfo = f->GetUserInfo (wsi->fBearerToken.value_or (String{}));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("returning {}"_f, clientUserInfo);
 #endif
