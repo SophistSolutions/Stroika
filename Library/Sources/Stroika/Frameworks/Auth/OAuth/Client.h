@@ -35,6 +35,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
     using DataExchange::TypedBLOB;
     using IO::Network::URI;
     using Time::DateTime;
+    using Execution::InternallySynchronized;
 
     using DataExchange::ObjectVariantMapper;
 
@@ -198,6 +199,7 @@ namespace Stroika::Frameworks::Auth::OAuth {
         static const ObjectVariantMapper kMapper;
     };
 
+
     /**
      *  \brief simple wrapper on IO::Network::Transfer to do fetching (more configurability to do)
      * 
@@ -206,8 +208,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
     class Fetcher {
     public:
         struct Options {
-            bool                              fCaching{false};
-            Execution::InternallySynchronized fInternallySyncrhonized{Execution::eNotKnownInternallySynchronized};
+            bool                              fCaching { false};
+            InternallySynchronized fInternallySyncrhonized {InternallySynchronized::eNotKnownInternallySynchronized};
         };
 
     public:
@@ -226,7 +228,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         Fetcher ()               = delete;
         Fetcher (const Fetcher&) = default;
-        Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options = Options{});
+        Fetcher (const ProviderConfiguration& providerConfiguration);
+        Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options);
 
     public:
         /**

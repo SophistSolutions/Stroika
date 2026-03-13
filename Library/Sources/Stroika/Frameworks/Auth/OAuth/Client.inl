@@ -4,4 +4,14 @@
 
 namespace Stroika::Frameworks::Auth::OAuth {
 
+    /*
+     ********************************************************************************
+     ************************************* Fetcher **********************************
+     ********************************************************************************
+     */
+    inline Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration)
+        : Fetcher{providerConfiguration, Options{}}
+    {
+    }
+
 }
