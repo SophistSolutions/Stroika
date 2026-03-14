@@ -278,11 +278,6 @@ namespace Stroika::Foundation::Cache {
         using TraitsType = TRAITS;
 
     public:
-        static_assert (Common::IInOrderComparer<typename TraitsType::InOrderComparerType, KEY>,
-                       "TraitsType::InOrderComparerType - comparer not valid IInOrderComparer- see "
-                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
-
-    public:
         using LookupMarksDataAsRefreshed = TimedCacheSupport::LookupMarksDataAsRefreshed;
 
     public:
