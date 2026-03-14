@@ -25,7 +25,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *
  *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
  *              Basically - KEY=RESULT? And then the arg to add/lookup don't take key? Maybe key is void?
  *
@@ -56,14 +55,30 @@
 namespace Stroika::Foundation::Cache {
 
     namespace TimedCacheSupport {
+
+        /**
+         * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
+         */
+        template <typename TRAITS, typename KEY, typename VALUE, typename STRICT_INORDER_COMPARER = less<KEY>>
+        concept ITraits =
+            requires (TRAITS) {
+                typename TRAITS::KeyType;
+                typename TRAITS::ResultType;
+                typename TRAITS::StatsType;
+            } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
+            Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
+            Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
+
         /**
          * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
          * 
          *  \note This class was incompatibly changed in Stroika 3.0d1. It used to have a TRACK_READ_ACCESS parameter.
          *        Since Stroika 3.0d1, instead, if you wish to set that true, call Lookup (..., eTreatFoundThroughLookupAsRefreshed) instead
          *        of Lookup ()
+         * 
+         *  \see ITraits<> above
          */
-        template <typename KEY, typename VALUE, typename STRICT_INORDER_COMPARER = less<KEY>>
+        template <typename KEY, typename VALUE, Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>>
         struct DefaultTraits {
             using KeyType    = KEY;
             using ResultType = VALUE;
@@ -242,6 +257,10 @@ namespace Stroika::Foundation::Cache {
      *  \note   This cache assumes one timeout for all items. To have timeouts vary by item,
      *          @see CallerStalenessCache.
      *
+     *  \note Satisfies Concepts:
+     *      o   moveable<TimedCache<KEY,VALUE>>
+     *      o   copyable<TimedCache<KEY,VALUE>>
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      * 
      *  \note   we REQUIRE (without a way to enforce) - that the STATS object be internally synchronized, so that we can
@@ -253,7 +272,7 @@ namespace Stroika::Foundation::Cache {
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
-    template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class TimedCache {
     public:
         using TraitsType = TRAITS;
@@ -271,14 +290,16 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         * Note that TimedCache is copyable and moveable by value, with all the obvious expections
+         * of copying/moving sub-elements.
          */
         explicit TimedCache (const Time::Duration& minimumAllowedFreshness);
-        TimedCache (TimedCache&&)      = default;
-        TimedCache (const TimedCache&) = default;
+        TimedCache (TimedCache&& src) noexcept;
+        TimedCache (const TimedCache& src);
 
     public:
-        nonvirtual TimedCache& operator= (TimedCache&&)      = default;
-        nonvirtual TimedCache& operator= (const TimedCache&) = default;
+        nonvirtual TimedCache& operator= (TimedCache&& rhs) noexcept;
+        nonvirtual TimedCache& operator= (const TimedCache& rhs);
 
     public:
         /**
@@ -415,6 +436,8 @@ namespace Stroika::Foundation::Cache {
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
     };
+    static_assert (movable<TimedCache<int, int>>); // see Satisfies Concepts
+    static_assert (copyable<TimedCache<int, int>>);
 
 }
 

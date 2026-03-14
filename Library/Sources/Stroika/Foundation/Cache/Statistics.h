@@ -21,6 +21,18 @@ namespace Stroika::Foundation::Cache::Statistics {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
+    template <typename STATS_TYPE>
+    concept IStatsType = requires (STATS_TYPE s) {
+        { s.IncrementHits () };
+        { s.IncrementMisses () };
+        { s.ToString () } -> same_as<Characters::String>;
+    };
+
+    /**
+     *  Helper detail class for analyzing and tuning cache statistics.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     */
     struct Stats_Basic {
         Stats_Basic () = default;
         Stats_Basic (const Stats_Basic& src);
@@ -36,6 +48,7 @@ namespace Stroika::Foundation::Cache::Statistics {
         atomic<unsigned int> fCachedCollected_Hits{};
         atomic<unsigned int> fCachedCollected_Misses{};
     };
+    static_assert (IStatsType<Stats_Basic>);
 
     /**
      *  Helper for DefaultTraits - when not collecting stats.
@@ -51,6 +64,7 @@ namespace Stroika::Foundation::Cache::Statistics {
          */
         nonvirtual Characters::String ToString () const;
     };
+    static_assert (IStatsType<Stats_Null>);
 
     /**
      *  Helper for DefaultTraits.
@@ -58,6 +72,7 @@ namespace Stroika::Foundation::Cache::Statistics {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     using StatsType_DEFAULT = conditional_t<qStroika_Foundation_Debug_AssertionsChecked, Stats_Basic, Stats_Null>;
+    static_assert (IStatsType<StatsType_DEFAULT>);
 
 }
 

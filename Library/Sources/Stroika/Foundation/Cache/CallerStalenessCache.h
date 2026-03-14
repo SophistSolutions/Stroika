@@ -15,6 +15,8 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   Consider if this can be implemented with 'TRAITS' changes to TimedCache
+ * 
  *      @todo   Add StatsType support (like other caches).
  *
  *      @todo   Add() overload where caller provides the time data was captured (don't assume now)

@@ -53,6 +53,8 @@ namespace Stroika::Foundation::Cache {
      *        The main difference between an LRUCache and TimedCache has to do with when an element is evicted from the Cache.
      *        With a TimedCache, its evicted only when its overly aged (now - when added to cache). With an LRUCache, its more random, and depends a
      *        bit on luck (when using hashing) and how recently an item was last accessed.
+     * 
+     *        With a TimedCache, you track 'time' associated with each cache element. With LRUCache, no such timing association exists.
      *
      *  \par Example Usage
      *      \code
