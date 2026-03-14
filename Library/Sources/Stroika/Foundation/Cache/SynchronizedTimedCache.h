@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Cache {
      *  @see TimedCache<> - for unsynchronized implementation
      *
      */
-    template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class SynchronizedTimedCache : private TimedCache<KEY, VALUE, TRAITS> {
     private:
         using inherited = TimedCache<KEY, VALUE, TRAITS>;

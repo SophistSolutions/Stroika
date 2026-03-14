@@ -9,12 +9,12 @@ namespace Stroika::Foundation::Cache {
      ***************** SynchronizedTimedCache<KEY, VALUE, TRAITS> *******************
      ********************************************************************************
      */
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const Time::Duration& minimumAllowedFreshness)
         : inherited{minimumAllowedFreshness}
     {
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const SynchronizedTimedCache& src)
         : inherited{src.GetMinimumAllowedFreshness ()}
     {
@@ -23,32 +23,32 @@ namespace Stroika::Foundation::Cache {
             inherited::Add (ci.fKey, ci.fValue, ci.fLastRefreshedAt);
         }
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline Time::Duration SynchronizedTimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::GetMinimumAllowedFreshness ();
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::SetMinimumAllowedFreshness (minimumAllowedFreshness);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::Elements () const -> Traversal::Iterable<CacheElement>
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::Elements ();
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key,
                                                                                Time::TimePointSeconds*              lastRefreshedAt) const
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::Lookup (key);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key,
                                                                     [[maybe_unused]] LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
         -> optional<VALUE>
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Cache {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         return inherited::Lookup (key);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY> key,
                                                                          const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
                                                                          [[maybe_unused]] LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Cache {
             }
         }
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                                                                  TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData)
     {
@@ -97,26 +97,26 @@ namespace Stroika::Foundation::Cache {
         // but this is probably better as fewer lock calls and not likely doing a purge loop anyhow...
         inherited::Add (key, result, purgeSpoiledData);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY>   key,
                                                                  typename Common::ArgByValueType<VALUE> result, Time::Duration freshAsOf)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::Add (key, result, freshAsOf);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Remove (typename Common::ArgByValueType<KEY> key)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::Remove (key);
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::clear ()
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::clear ();
     }
-    template <typename KEY, typename VALUE, typename TRAITS>
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::PurgeSpoiledData ()
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
