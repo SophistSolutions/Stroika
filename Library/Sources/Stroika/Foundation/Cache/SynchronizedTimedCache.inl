@@ -4,6 +4,7 @@
 
 namespace Stroika::Foundation::Cache {
 
+#if 0
     /*
      ********************************************************************************
      ***************** SynchronizedTimedCache<KEY, VALUE, TRAITS> *******************
@@ -122,5 +123,6 @@ namespace Stroika::Foundation::Cache {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::PurgeSpoiledData ();
     }
+#endif
 
 }

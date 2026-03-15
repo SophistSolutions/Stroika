@@ -20,6 +20,15 @@
 
 namespace Stroika::Foundation::Cache {
 
+#if 1
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    struct TCTRAITS_ : TRAITS {
+        static constexpr inline Execution::InternallySynchronized kInternallySynchronized{Execution::InternallySynchronized::eInternallySynchronized};
+    };
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    using SynchronizedTimedCache = TimedCache<KEY, VALUE, TCTRAITS_<KEY, VALUE, TRAITS>>;
+#else
+
     /**
      *  @see TimedCache but internally synchronized. You could use Synchronized<TimedCache>, but this is simpler to use and
      *  performs better, due to not write locking until the last minute needed (you expect a cache to mostly be read
@@ -170,6 +179,7 @@ namespace Stroika::Foundation::Cache {
     private:
         mutable shared_timed_mutex fMutex_; // careful this is non-recursive
     };
+#endif
 
 }
 
