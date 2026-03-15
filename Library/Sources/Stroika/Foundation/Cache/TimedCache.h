@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Cache {
         /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
          */
-        template <typename TRAITS, typename KEY, typename VALUE, typename STRICT_INORDER_COMPARER = less<KEY>>
+        template <typename TRAITS, typename KEY, typename VALUE>
         concept ITraits =
             requires (TRAITS) {
                 typename TRAITS::KeyType;
@@ -80,10 +80,14 @@ namespace Stroika::Foundation::Cache {
          *        Since Stroika 3.0d1, instead, if you wish to set that true, call Lookup (..., eTreatFoundThroughLookupAsRefreshed) instead
          *        of Lookup ()
          * 
+         *  \note this class was incompatibly changed in Stroika 3.0d23. It used to have the STRICT_INORDER_COPARER as third arugment
+         *        but InternallySynchronized added as new third pushing comarer to fourth.
+         * 
          *  \see ITraits<> above
          */
-        template <typename KEY, typename VALUE, Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>>
-        struct DefaultTraits {
+        template <typename KEY, typename VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
+                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>>
+        struct ExplicitTraits {
             using KeyType    = KEY;
             using ResultType = VALUE;
 
@@ -93,8 +97,13 @@ namespace Stroika::Foundation::Cache {
              */
             using InOrderComparerType = STRICT_INORDER_COMPARER;
 
-            static constexpr inline InternallySynchronized kInternallySynchronized{InternallySynchronized::eNotKnownInternallySynchronized};
+            static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
         };
+
+        /**
+         */
+        template <typename KEY, typename VALUE>
+        using DefaultTraits = ExplicitTraits<KEY, VALUE>;
 
         /**
          *  Flag to facilitate automatic cleanup of internal data structures as data tracked becomes uneeded.
@@ -144,10 +153,29 @@ namespace Stroika::Foundation::Cache {
      *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
      *          {
      *              const Time::Duration                                        kCacheTTL_{5min};
-     *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};
+     *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};    // not threadsafe (not internally synchronized) by default
      *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
      *                  return DNS::kThe.ReverseLookup (inetAddr);
      *              });
+     *          }
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
+     *          {
+     *              static const Time::Duration                                             kCacheTTL_{5min}; // @todo fix when Stroika Duration bug supports constexpr this should
+     *              using INTERNALLY_SYNCRHONIZED_ = Cache::TimedChacheSupport::ExplicitTraits<InternetAddress, optional<String>, InternallySynchronized::eInternallySynchronized>;
+     *              static Cache::TimedCache<InternetAddress, optional<String>, INTERNALLY_SYNCRHONIZED_> sCache_{kCacheTTL_};   // now sCache 'threadsafe'
+     *              try {
+     *                  return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
+     *                      return DNS::kThe.ReverseLookup (inetAddr);
+     *                  });
+     *              }
+     *              catch (...) {
+     *                  // NOTE - to NEGATIVELY CACHE failure, you could call sCache_.Add (inetAddr, nullopt);
+     *                  return nullopt; // if DNS is failing, just dont do this match, dont abandon all data collection
+     *              }
      *          }
      *      \endcode
      *

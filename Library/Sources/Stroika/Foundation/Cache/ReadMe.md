@@ -20,7 +20,7 @@ Cache Types:
 
 - LRUCache - [LRUCache.h](LRUCache.h)
 
-  This cache stores a fixed amount of data, and as you access the data from the cache throws away old data when its not been accessed in a while.
+  This cache stores a fixed (capped) amount of data, and as you access the data from the cache throws away old data when its not been accessed in a while.
 
 - TimedCache - [TimedCache.h](TimedCache.h)
 
@@ -35,7 +35,6 @@ Other:
 - [Statistics.h](Statistics.h)
 - [SynchronizedCallerStalenessCache.h](SynchronizedCallerStalenessCache.h)
 - [SynchronizedLRUCache.h](SynchronizedLRUCache.h)
-- [SynchronizedTimedCache.h](SynchronizedTimedCache.h)
 
 TODO:
 

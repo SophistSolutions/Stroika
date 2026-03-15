@@ -25,6 +25,7 @@ especially those they need to be aware of when upgrading.
 - Renamed FloatConversion::Precision to FloatConversion::SignificantFigures
 - Renamed TrivialDocumentDB -> LocalDocumentDB
 - Renamed NullMutex to NullLock
+- Replace use of SynchronizedTimedCache with use of InternallySynchronized traits argument (documented in TimedCache CTOR example)
 
 #### Change Details
 
@@ -64,6 +65,10 @@ especially those they need to be aware of when upgrading.
   - bug defines qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
 - Library
   - Foundation
+    - Cache
+      - TimedCache major cleanup using concepts/traits
+      - now directly includes (optional) support for internal syncrhonization
+      - deprecated SynchronizedTimedCache (directly supported by TimedCache now).
     - Characters
       - CodeCvt
         - tweaked weakassert in CodeCvt.inl
