@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Debug/AssertExternallySynchronizedMutex.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Execution/Synchronized.h"
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
@@ -56,6 +57,8 @@ namespace Stroika::Foundation::Cache {
 
     namespace TimedCacheSupport {
 
+        using Execution::InternallySynchronized;
+
         /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
          */
@@ -65,6 +68,7 @@ namespace Stroika::Foundation::Cache {
                 typename TRAITS::KeyType;
                 typename TRAITS::ResultType;
                 typename TRAITS::StatsType;
+                { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
             } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
             Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
             Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
@@ -88,6 +92,8 @@ namespace Stroika::Foundation::Cache {
             /**
              */
             using InOrderComparerType = STRICT_INORDER_COMPARER;
+
+            static constexpr inline InternallySynchronized kInternallySynchronized{InternallySynchronized::eNotKnownInternallySynchronized};
         };
 
         /**
@@ -408,7 +414,10 @@ namespace Stroika::Foundation::Cache {
         }
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        //      qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized,
+                                                                   shared_timed_mutex, Debug::AssertExternallySynchronizedMutex>
+            fMaybeMutex_;
 
     private:
         Time::DurationSeconds  fMinimumAllowedFreshness_;
