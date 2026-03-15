@@ -32,6 +32,11 @@ namespace Stroika::Foundation::Execution {
      *          // then use as regular mutex
      *          scoped_lock critSec{fMaybeLock_};
      *      \endcode
+     * 
+     *  \note Satisfies Concepts:
+     *      o   movable<VirtualLockable>;
+     *      o   not copyable<VirtualLockable>);
+     *      o   Common::StdCompat::Lockable<VirtualLockable>;
      */
     class VirtualLockable {
     public:
@@ -69,7 +74,7 @@ namespace Stroika::Foundation::Execution {
         };
         unique_ptr<IRep_> fRep_;
     };
-    static_assert (movable<VirtualLockable>);
+    static_assert (movable<VirtualLockable>); // see Satisfies Concepts
     static_assert (not copyable<VirtualLockable>);
     static_assert (Common::StdCompat::Lockable<VirtualLockable>);
 
