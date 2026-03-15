@@ -35,10 +35,14 @@ namespace Stroika::Foundation::Cache::Statistics {
      */
     struct Stats_Basic {
         Stats_Basic () = default;
+        Stats_Basic (Stats_Basic&& src) noexcept;
         Stats_Basic (const Stats_Basic& src);
 
-        void IncrementHits ();
-        void IncrementMisses ();
+        nonvirtual Stats_Basic& operator= (Stats_Basic&& rhs) noexcept;
+        nonvirtual Stats_Basic& operator= (const Stats_Basic& rhs);
+
+        nonvirtual void IncrementHits ();
+        nonvirtual void IncrementMisses ();
 
         /**
          *  @see Characters::ToString ();
