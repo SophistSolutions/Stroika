@@ -221,13 +221,16 @@ namespace {
             struct FolderDetails_ {
                 int size; // ...info to cache about a folder
             };
-            Synchronized<Cache::TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>>> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
+            constexpr bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = true;
+            using CACHE_TRAITS_ =
+                Cache::TimedCacheSupport::ExplicitTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, Execution::InternallySynchronized::eNotKnownInternallySynchronized,
+                                                         less<ScanFolderKey_>, Statistics::StatsType_DEFAULT, AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS>;
+            Synchronized<Cache::TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>, CACHE_TRAITS_>> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
 
             shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
             {
                 auto lockedCache = sCachedScanFoldersDetails_.rwget ();
-                if (optional<shared_ptr<FolderDetails_>> o =
-                        lockedCache->Lookup (folder, TimedCacheSupport::LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed)) {
+                if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder)) {
                     return *o;
                 }
                 else {
@@ -239,9 +242,9 @@ namespace {
 
             void DoIt ()
             {
-                auto f1      = AccessFolder_ (L"folder1");
-                auto f2      = AccessFolder_ (L"folder2");
-                auto f1again = AccessFolder_ (L"folder1"); // if you trace through the debug code you'll see this is a cache hit
+                auto f1      = AccessFolder_ ("folder1");
+                auto f2      = AccessFolder_ ("folder2");
+                auto f1again = AccessFolder_ ("folder1"); // if you trace through the debug code you'll see this is a cache hit
             }
         }
     }

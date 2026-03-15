@@ -104,12 +104,7 @@ namespace Stroika::Foundation::Cache {
             Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
             if (i->second.fLastRefreshedAt < lastAccessThreshold) {
                 /**
-                 *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
-                 * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
-                 * So instead, count on PurgeUnusedData being called automatically on future adds,
-                 * explicit user calls to purge unused data.
-                 *
-                 *      i = fMap_.erase (i);
+                 *  Cannot update fMap_ to indicate item expired const constant overload
                  */
                 fStats_.IncrementMisses ();
                 return nullopt;
@@ -121,6 +116,37 @@ namespace Stroika::Foundation::Cache {
             return i->second.fResult;
         }
     }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt)
+    {
+        shared_lock                   critSec{fMaybeMutex_};
+        typename MyMapType_::iterator i   = fMap_.find (key);
+        Time::TimePointSeconds        now = Time::GetTickCount ();
+        if (i == fMap_.end ()) {
+            fStats_.IncrementMisses ();
+            return nullopt;
+        }
+        else {
+            Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
+            if (TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) {
+                i->second.fLastRefreshedAt = Time::GetTickCount ();
+            }
+            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
+                /**
+                 *  since expired, remove from cache
+                 */
+                (void)fMap_.erase (i);
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            fStats_.IncrementHits ();
+            if (lastRefreshedAt != nullptr) {
+                *lastRefreshedAt = i->second.fLastRefreshedAt;
+            }
+            return i->second.fResult;
+        }
+    }
+    // SOON TO BE DEPRECATED OVERLOAD
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
     {
@@ -152,6 +178,52 @@ namespace Stroika::Foundation::Cache {
             return i->second.fResult;
         }
     }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY>                          key,
+                                                       const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller)
+    {
+        auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
+        if (optional<VALUE> o = Lookup (key)) {
+            return *o;
+        }
+        else {
+            /**
+             *  unlocking the shared lock while fetching the new value (optionally with a write lock).
+             */
+            readLock.unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
+
+            constexpr bool kHoldWriteLockDuringCacheFill = false;
+            // never used true, and caused some trouble- need to invesigate
+            // possibly add to TRAITS and retry
+#if 0
+            *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
+            *  This is because typically, filling the cache
+            *  will be slow (otherwise you would be us using the SynchronizedTimedCache).
+            *
+            *  But this has the downside, that you could try filling the cache multiple times with the same value.
+            *
+            *  Thats perfectly safe, but not speedy.
+            *
+            *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
+            *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
+            *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
+#endif
+            if constexpr (kHoldWriteLockDuringCacheFill) {
+                // Avoid two threds calling cache for same key value at the same time
+                [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
+                VALUE                   v         = cacheFiller (key);
+                newRWLock.unlock ();
+                Add (key, v); // if purgeSpoiledData must be done, do while holding lock
+                return v;
+            }
+            else {
+                VALUE v = cacheFiller (key);
+                Add (key, v);
+                return v;
+            }
+        }
+    }
+    // SOON TO BE FULLY DEPRECATED API
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY>                          key,
                                                        const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
@@ -199,6 +271,7 @@ namespace Stroika::Foundation::Cache {
             }
         }
     }
+
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                                               PurgeSpoiledDataFlagType prgeSpoiledData)

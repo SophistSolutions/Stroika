@@ -53,6 +53,9 @@
 
 namespace Stroika::Foundation::Cache {
 
+    /**
+     * TimedCacheSupport mostly for defining TRAITS object that configures the cache behavior.
+     */
     namespace TimedCacheSupport {
 
         using Execution::InternallySynchronized;
@@ -67,6 +70,7 @@ namespace Stroika::Foundation::Cache {
                               typename TRAITS::ResultType;
                               typename TRAITS::StatsType;
                               { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
+                              { TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed } -> convertible_to<bool>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
                           Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
                           Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
@@ -84,18 +88,38 @@ namespace Stroika::Foundation::Cache {
          *  \see ITraits<> above
          */
         template <typename KEY, typename VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
-                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>>
+                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT, bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
         struct ExplicitTraits {
             using KeyType    = KEY;
             using ResultType = VALUE;
 
-            using StatsType = Statistics::StatsType_DEFAULT;
+            /**
+             */
+            static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
 
             /**
              */
             using InOrderComparerType = STRICT_INORDER_COMPARER;
 
-            static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
+            /**
+             */
+            using StatsType = STATS_TYPE;
+
+            /*
+             *  This is useful for behavior like an LRU cache, where you express INTEREST in an item by using it.
+             *  Use this if the data doesn't truely expire, but you want to keep intresting / recently used data around (though you maybe should
+             *  just use LRUCache in that case).
+             * 
+             *  This is off by default.
+             * 
+             *  \note this only applies to NON-CONST methods, like the non-const Lookup() overload, and LookupValue() methods.
+             * 
+             *  \note Before Stroika v3.0d23, this was expressed via the optional argument to Lookup/LookupValue of type 
+             *        LookupMarksDataAsRefreshed  (value eTreatFoundThroughLookupAsRefreshed).
+             *  \note   Before Stroika 3.0d1, this used to support TraitsType::kTrackReadAccess, and if it was true did the same
+             *          as the newer Lookup (..., eTreatFoundThroughLookupAsRefreshed)
+             */
+            static constexpr inline bool kAutomaticallyMarkDataAsRefreshedEachTimeAccessed = AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS;
         };
 
         /**
@@ -112,7 +136,7 @@ namespace Stroika::Foundation::Cache {
         };
 
         /**
-         *  
+         *  --DEPRECATED SINCE STROIKA 3.0d23 - use kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead in TRAITS
          */
         enum class LookupMarksDataAsRefreshed {
             eTreatFoundThroughLookupAsRefreshed,
@@ -310,6 +334,7 @@ namespace Stroika::Foundation::Cache {
         using TraitsType = TRAITS;
 
     public:
+        // DEPRECATED SINCE STROIKA v3.0d23
         using LookupMarksDataAsRefreshed = TimedCacheSupport::LookupMarksDataAsRefreshed;
 
     public:
@@ -363,16 +388,17 @@ namespace Stroika::Foundation::Cache {
          *  If lastRefreshedAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain the last time
          *  the data was refreshed.
          * 
-         *  Occasionally, a caller might want to have the ACT of doing a lookup mark the item as fresh, in which case call
-         *  Lookup (..., eTreatFoundThroughLookupAsRefreshed) instead.
+         *  \note that the non-const overload of Lookup respects TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed, and will
+         *        auto-refresh the item (similar to LRUCache) if found.
          * 
          *  Occasionally, a caller might want to ASSURE it gets data, and just use the cached value if fresh enuf, and specify
          *  a lookup lambda to fetch the actual data if its not fresh, in which case call LookupValue ().
          *
-         *  \note   Before Stroika 3.0d1, this used to support TraitsType::kTrackReadAccess, and if it was true did the same
-         *          as the newer Lookup (..., eTreatFoundThroughLookupAsRefreshed)
+         *  \note difference between const and non-const overloads is just that some extra bookkeeping can be done and kAutomaticallyMarkDataAsRefreshedEachTimeAccessed respected in non-const overload.
          */
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr);
+        [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]]
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:
@@ -389,8 +415,10 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note   This function may update the TimedCache (which is why it is non-const).
          */
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller);
+        // SOON TO BE FULLY DEPRECATED API
         nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
-                                      LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed,
+                                      LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
                                       PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
     public:
@@ -440,7 +468,6 @@ namespace Stroika::Foundation::Cache {
         }
 
     private:
-        //      qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized,
                                                                    shared_timed_mutex, Debug::AssertExternallySynchronizedMutex>
             fMaybeMutex_;
