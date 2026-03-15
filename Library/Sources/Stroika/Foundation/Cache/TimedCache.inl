@@ -23,34 +23,42 @@ namespace Stroika::Foundation::Cache {
     inline TimedCache<KEY, VALUE, TRAITS>::TimedCache (TimedCache&& src) noexcept
         : fMinimumAllowedFreshness_{src.fMinimumAllowedFreshness_}
         , fNextAutoClearAt_{src.fNextAutoClearAt_}
-        , fMap_{move (src.fMap_)}
-        , fStats_{move (src.fStats_)}
     {
+        [[maybe_unused]] auto&& srcLock = scoped_lock{src.fMaybeMutex_};
+        fMap_                           = move (src.fMap_);
+        fStats_                         = move (src.fStats_);
     }
     template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline TimedCache<KEY, VALUE, TRAITS>::TimedCache (const TimedCache& src)
         : fMinimumAllowedFreshness_{src.fMinimumAllowedFreshness_}
         , fNextAutoClearAt_{src.fNextAutoClearAt_}
-        , fMap_{src.fMap_}
-        , fStats_{src.fStats_}
     {
+        [[maybe_unused]] auto&& srcLock = shared_lock{src.fMaybeMutex_};
+        fMap_                           = src.fMap_;
+        fStats_                         = src.fStats_;
     }
     template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto TimedCache<KEY, VALUE, TRAITS>::operator= (TimedCache&& rhs) noexcept -> TimedCache&
     {
-        fMinimumAllowedFreshness_ = rhs.fMinimumAllowedFreshness_;
-        fNextAutoClearAt_         = rhs.fNextAutoClearAt_;
-        fMap_                     = move (rhs.fMap_);
-        fStats_                   = move (rhs.fStats_);
+        // @todo lock both at once!!!
+        [[maybe_unused]] auto&& srcLock  = scoped_lock{rhs.fMaybeMutex_};
+        [[maybe_unused]] auto&& thisLock = scoped_lock{fMaybeMutex_};
+        fMinimumAllowedFreshness_        = rhs.fMinimumAllowedFreshness_;
+        fNextAutoClearAt_                = rhs.fNextAutoClearAt_;
+        fMap_                            = move (rhs.fMap_);
+        fStats_                          = move (rhs.fStats_);
         return *this;
     }
     template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto TimedCache<KEY, VALUE, TRAITS>::operator= (const TimedCache& rhs) -> TimedCache&
     {
-        fMinimumAllowedFreshness_ = rhs.fMinimumAllowedFreshness_;
-        fNextAutoClearAt_         = rhs.fNextAutoClearAt_;
-        fMap_                     = rhs.fMap_;
-        fStats_                   = rhs.fStats_;
+        // @todo lock both at once!!!
+        [[maybe_unused]] auto&& srcLock  = scoped_lock{rhs.fMaybeMutex_};
+        [[maybe_unused]] auto&& thisLock = scoped_lock{fMaybeMutex_};
+        fMinimumAllowedFreshness_        = rhs.fMinimumAllowedFreshness_;
+        fNextAutoClearAt_                = rhs.fNextAutoClearAt_;
+        fMap_                            = rhs.fMap_;
+        fStats_                          = rhs.fStats_;
         return *this;
     }
     template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
