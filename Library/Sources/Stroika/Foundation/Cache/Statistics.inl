@@ -9,7 +9,7 @@ namespace Stroika::Foundation::Cache::Statistics {
      ***************************** Statistics::Stats_Basic **************************
      ********************************************************************************
      */
-    inline Stats_Basic::Stats_Basic (Stats_Basic&& src)
+    inline Stats_Basic::Stats_Basic (Stats_Basic&& src) noexcept
         : fCachedCollected_Hits{src.fCachedCollected_Hits.load ()}
         , fCachedCollected_Misses{src.fCachedCollected_Misses.load ()}
     {
