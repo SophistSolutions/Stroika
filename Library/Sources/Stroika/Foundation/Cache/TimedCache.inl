@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Cache {
                 // Avoid two threds calling cache for same key value at the same time
                 [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
                 VALUE                   v         = cacheFiller (key);
-                newRWLock.unlock();
+                newRWLock.unlock ();
                 Add (key, v, purgeSpoiledData); // if purgeSpoiledData must be done, do while holding lock
                 return v;
             }
