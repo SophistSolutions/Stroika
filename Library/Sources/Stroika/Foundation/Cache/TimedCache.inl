@@ -12,14 +12,14 @@ namespace Stroika::Foundation::Cache {
      ************************* TimedCache<KEY,VALUE,TRAITS> *************************
      ********************************************************************************
      */
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& minimumAllowedFreshness)
         : fMinimumAllowedFreshness_{minimumAllowedFreshness}
         , fNextAutoClearAt_{Time::GetTickCount () + minimumAllowedFreshness}
     {
         Require (fMinimumAllowedFreshness_ > 0.0s);
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline TimedCache<KEY, VALUE, TRAITS>::TimedCache (TimedCache&& src) noexcept
         : fMinimumAllowedFreshness_{src.fMinimumAllowedFreshness_}
         , fNextAutoClearAt_{src.fNextAutoClearAt_}
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Cache {
         fMap_                           = move (src.fMap_);
         fStats_                         = move (src.fStats_);
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline TimedCache<KEY, VALUE, TRAITS>::TimedCache (const TimedCache& src)
         : fMinimumAllowedFreshness_{src.fMinimumAllowedFreshness_}
         , fNextAutoClearAt_{src.fNextAutoClearAt_}
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Cache {
         fMap_                           = src.fMap_;
         fStats_                         = src.fStats_;
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto TimedCache<KEY, VALUE, TRAITS>::operator= (TimedCache&& rhs) noexcept -> TimedCache&
     {
         // @todo lock both at once!!!
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Cache {
         fStats_                          = move (rhs.fStats_);
         return *this;
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto TimedCache<KEY, VALUE, TRAITS>::operator= (const TimedCache& rhs) -> TimedCache&
     {
         // @todo lock both at once!!!
@@ -61,13 +61,13 @@ namespace Stroika::Foundation::Cache {
         fStats_                          = rhs.fStats_;
         return *this;
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
         shared_lock critSec{fMaybeMutex_};
         return Time::Duration{fMinimumAllowedFreshness_};
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness)
     {
         Require (minimumAllowedFreshness > 0.0s);
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Cache {
             ClearOld_ (); // ClearOld_ not ClearIfNeeded_ to force auto-update of fNextAutoClearAt_, and cuz moderately likely items interestingly out of date after adjust of min allowed freshness
         }
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     auto TimedCache<KEY, VALUE, TRAITS>::Elements () const -> Traversal::Iterable<CacheElement>
     {
         vector<CacheElement> r;
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Cache {
         }
         return Traversal::Iterable<CacheElement>{move (r)};
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt) const
     {
         shared_lock                         critSec{fMaybeMutex_};
@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Cache {
             return i->second.fResult;
         }
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
     {
         scoped_lock                   critSec{fMaybeMutex_};
@@ -152,13 +152,13 @@ namespace Stroika::Foundation::Cache {
             return i->second.fResult;
         }
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY>                          key,
                                                        const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
                                                        LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
                                                        PurgeSpoiledDataFlagType   purgeSpoiledData)
     {
-        auto&& readLock = shared_lock{fMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
+        auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
         if (optional<VALUE> o = Lookup (key, successfulLookupRefreshesAcceesFlag)) {
             return *o;
         }
@@ -186,9 +186,10 @@ namespace Stroika::Foundation::Cache {
             constexpr bool kHoldWriteLockDuringCacheFill = false;
             if constexpr (kHoldWriteLockDuringCacheFill) {
                 // Avoid two threds calling cache for same key value at the same time
-                [[maybe_unused]] auto&& newRWLock = lock_guard{fMutex_};
+                [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
                 VALUE                   v         = cacheFiller (key);
-                inherited::Add (key, v, purgeSpoiledData); // if purgeSpoiledData must be done, do while holding lock
+                newRWLock.unlock();
+                Add (key, v, purgeSpoiledData); // if purgeSpoiledData must be done, do while holding lock
                 return v;
             }
             else {
@@ -198,7 +199,7 @@ namespace Stroika::Foundation::Cache {
             }
         }
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                                               PurgeSpoiledDataFlagType prgeSpoiledData)
     {
@@ -214,39 +215,39 @@ namespace Stroika::Foundation::Cache {
             i->second = MyResult_{result}; // overwrite if its already there
         }
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                                               Time::TimePointSeconds freshAsOf)
     {
         scoped_lock critSec{fMaybeMutex_};
         fMap_.insert ({key, MyResult_{result, freshAsOf}});
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Common::ArgByValueType<KEY> key)
     {
         scoped_lock critSec{fMaybeMutex_};
         fMap_.erase (key);
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::clear ()
     {
         scoped_lock critSec{fMaybeMutex_};
         fMap_.clear ();
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::PurgeSpoiledData ()
     {
         scoped_lock critSec{fMaybeMutex_};
         ClearOld_ ();
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::ClearIfNeeded_ ()
     {
         if (fNextAutoClearAt_ < Time::GetTickCount ()) {
             ClearOld_ ();
         }
     }
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::ClearOld_ ()
     {
         Time::TimePointSeconds now = Time::GetTickCount ();

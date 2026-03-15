@@ -39,8 +39,6 @@
  *
  *      @todo   Improve Regression Tests And Docs (quite weak)
  *
- *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)
- *
  *      @todo   Perhaps use Stroika Mapping<> instead of std::map<> - and in that way - we can use aribtrary externally
  *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we don't ahve problem with
  *              creating the default, specify default type to create in the TRAITS object (so for example, if using Hash,
@@ -63,15 +61,15 @@ namespace Stroika::Foundation::Cache {
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
          */
         template <typename TRAITS, typename KEY, typename VALUE>
-        concept ITraits =
-            requires (TRAITS) {
-                typename TRAITS::KeyType;
-                typename TRAITS::ResultType;
-                typename TRAITS::StatsType;
-                { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
-            } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
-            Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
-            Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
+        concept ITraits = copyable<KEY> and copyable<VALUE> and
+                          requires (TRAITS) {
+                              typename TRAITS::KeyType;
+                              typename TRAITS::ResultType;
+                              typename TRAITS::StatsType;
+                              { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
+                          } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
+                          Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
+                          Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
 
         /**
          * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
@@ -106,7 +104,7 @@ namespace Stroika::Foundation::Cache {
         using DefaultTraits = ExplicitTraits<KEY, VALUE>;
 
         /**
-         *  Flag to facilitate automatic cleanup of internal data structures as data tracked becomes uneeded.
+         *  Flag to facilitate automatic cleanup of internal data structures as data tracked becomes unneeded.
          */
         enum class PurgeSpoiledDataFlagType {
             eAutomaticallyPurgeSpoiledData,
@@ -306,7 +304,7 @@ namespace Stroika::Foundation::Cache {
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
-    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class TimedCache {
     public:
         using TraitsType = TRAITS;
@@ -462,6 +460,7 @@ namespace Stroika::Foundation::Cache {
         };
 
     private:
+        // @todo could consider using Stroika Mapping<> - or TRAITS specified Mapper strategy
         using MyMapType_ = map<KEY, MyResult_, typename TRAITS::InOrderComparerType>;
         MyMapType_ fMap_;
 
