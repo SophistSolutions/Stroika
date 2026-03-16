@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Cache {
          *  \see ITraits<> above
          */
         template <typename KEY, typename VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
-                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT,
+                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>,bool TRACK_FRESHNESS = true,bool TRACK_EXPIRATION = false, typename STATS_TYPE = Statistics::StatsType_DEFAULT,
                   float AUTOMATIC_PURGE_FREQUENCY_SECONDS = kDefaultAutomaticPurgeFrequency, bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
         struct ExplicitTraits {
             using KeyType    = KEY;
@@ -120,13 +120,13 @@ namespace Stroika::Foundation::Cache {
              * SO FAR ALL WE HAVE IMPLEMENTED
              * @brief freshness means when last added/updated (or if kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) then last accessed too)
              */
-            static constexpr inline bool kTrackFreshness{true};
+            static constexpr inline bool kTrackFreshness{TRACK_FRESHNESS};
 
             /**
              * SO FAR NOT IMPLEMENTED
              * @brief Track on a per-item when it expires. If not tracked, we use expiresAt as whenAdded + minFreshness
              */
-            static constexpr inline bool kTrackExpiresAt{false};
+            static constexpr inline bool kTrackExpiresAt{TRACK_EXPIRATION};
 
             /**
              */
