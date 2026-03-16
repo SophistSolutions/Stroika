@@ -213,7 +213,6 @@ namespace {
             }
         }
         namespace Example2_ {
-            using Execution::Synchronized;
             using Time::Duration;
 
             using ScanFolderKey_ = String;
@@ -221,21 +220,20 @@ namespace {
             struct FolderDetails_ {
                 int size; // ...info to cache about a folder
             };
-            constexpr bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = true;
-            using CACHE_TRAITS_ =
-                Cache::TimedCacheSupport::ExplicitTraits<ScanFolderKey_, shared_ptr<FolderDetails_>, Execution::InternallySynchronized::eNotKnownInternallySynchronized,
-                                                         less<ScanFolderKey_>, Statistics::StatsType_DEFAULT, AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS>;
-            Synchronized<Cache::TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>, CACHE_TRAITS_>> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
+
+            struct CACHE_TRAITS_ : Cache::TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>> {
+                static constexpr inline bool kAutomaticallyMarkDataAsRefreshedEachTimeAccessed = true;  // override one value from default
+            };
+            Cache::TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>, CACHE_TRAITS_> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
 
             shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
             {
-                auto lockedCache = sCachedScanFoldersDetails_.rwget ();
-                if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder)) {
+                if (optional<shared_ptr<FolderDetails_>> o = sCachedScanFoldersDetails_.Lookup (folder)) {
                     return *o;
                 }
                 else {
                     shared_ptr<FolderDetails_> fd = make_shared<FolderDetails_> (); // and fill in default values looking at disk
-                    lockedCache->Add (folder, fd);
+                    sCachedScanFoldersDetails_.Add (folder, fd);
                     return fd;
                 }
             }
