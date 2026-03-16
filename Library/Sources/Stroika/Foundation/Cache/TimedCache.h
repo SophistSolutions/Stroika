@@ -61,6 +61,20 @@ namespace Stroika::Foundation::Cache {
         using Execution::InternallySynchronized;
 
         /**
+         * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - disable automatic purging
+         * 
+         *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
+         */
+        constexpr float kNoAutomaticPurgeSentinal = -1.0;
+
+        /**
+         * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - default to purging every 30 seconds
+         * 
+         *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
+         */
+        constexpr float kDefaultAutomaticPurgeFrequency = 30.0;
+
+        /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
          */
         template <typename TRAITS, typename KEY, typename VALUE>
@@ -70,6 +84,7 @@ namespace Stroika::Foundation::Cache {
                               typename TRAITS::ResultType;
                               typename TRAITS::StatsType;
                               { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
+                              { TRAITS::kAutomaticPurgeFrequency } -> convertible_to<Time::DurationSeconds>;
                               { TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed } -> convertible_to<bool>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
                           Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
@@ -88,7 +103,8 @@ namespace Stroika::Foundation::Cache {
          *  \see ITraits<> above
          */
         template <typename KEY, typename VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
-                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT, bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
+                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT,
+                  float AUTOMATIC_PURGE_FREQUENCY_SECONDS = kDefaultAutomaticPurgeFrequency, bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
         struct ExplicitTraits {
             using KeyType    = KEY;
             using ResultType = VALUE;
@@ -104,6 +120,15 @@ namespace Stroika::Foundation::Cache {
             /**
              */
             using StatsType = STATS_TYPE;
+
+            /**
+             *  How often modifying operations to the cache will automatically trigger a call to PurgeExpiredData ()
+             * 
+             *  This defaults to kDefaultAutomaticPurgeFrequency (but can be set to NEVER (kNoAutomaticPurgeSentinal)).
+             * 
+             *  \note - NOT triggered asynchronously, but from modifying APIs, like Add, or non-const Lookup()
+             */
+            static constexpr Time::DurationSeconds kAutomaticPurgeFrequency{AUTOMATIC_PURGE_FREQUENCY_SECONDS};
 
             /*
              *  This is useful for behavior like an LRU cache, where you express INTEREST in an item by using it.
@@ -129,6 +154,8 @@ namespace Stroika::Foundation::Cache {
 
         /**
          *  Flag to facilitate automatic cleanup of internal data structures as data tracked becomes unneeded.
+         * 
+         *  --DEPRECATED SINCE STROIKA 3.0d23 - use kAutomaticPurgeFrequency instead in TRAITS
          */
         enum class PurgeSpoiledDataFlagType {
             eAutomaticallyPurgeSpoiledData,
@@ -338,6 +365,7 @@ namespace Stroika::Foundation::Cache {
         using LookupMarksDataAsRefreshed = TimedCacheSupport::LookupMarksDataAsRefreshed;
 
     public:
+        // DEPRECATED SINCE STROIKA v3.0d23
         using PurgeSpoiledDataFlagType = TimedCacheSupport::PurgeSpoiledDataFlagType;
 
     public:
@@ -398,8 +426,6 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr);
-        [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]]
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:
         /**
@@ -416,21 +442,12 @@ namespace Stroika::Foundation::Cache {
          *  \note   This function may update the TimedCache (which is why it is non-const).
          */
         nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller);
-        // SOON TO BE FULLY DEPRECATED API
-        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
-                                      LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
-                                      PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
     public:
         /**
          *  Updates/adds the given value associated with key, and updates the last-access date to now (or argument freshAsOf).
-         * 
-         *  The parameter PurgeSpoiledData defaults to eAutomaticallyPurgeSpoiledData; this allows the accumulated data
-         *  to automatically be purged as it becomes irrelevant (@see PurgeSpoiledData). But for performance sake,
-         *  callers may call Add (..., eDontAutomaticallyPurgeSpoiledData)
          */
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
-                             PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result);
         nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds freshAsOf);
 
     public:
@@ -451,12 +468,15 @@ namespace Stroika::Foundation::Cache {
          * 
          *  Can be triggered automatically (so not explicitly) by passing eAutomaticallyPurgeSpoiledData to Add ()
          */
-        nonvirtual void PurgeSpoiledData ();
+        nonvirtual void PurgeExpiredData ();
+
+    private:
+        nonvirtual void AutomaticallyPurgeExpiredDataHelper_ ();
 
     public:
-        [[deprecated ("Since Stroika v3.0d1, use PurgeSpoiledData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
+        [[deprecated ("Since Stroika v3.0d1, use PurgeExpiredData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
         {
-            PurgeSpoiledData ();
+            PurgeExpiredData ();
         }
         [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] Time::Duration GetTimeout () const
         {
@@ -466,6 +486,16 @@ namespace Stroika::Foundation::Cache {
         {
             SetMinimumAllowedFreshness (timeout);
         }
+        [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]]
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
+        [[deprecated ("Since Stroika v3.0d23 - use kAutomaticPurgeFrequency in TRAITS instead of PurgeSpoiledDataFlagType, and "
+                      "kAutomaticallyMarkDataAsRefreshedEachTimeAccessed in TRAITS instead of LookupMarksDataAsRefreshed")]]
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
+                                      LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
+                                      PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        [[deprecated ("Since Stroika v3.0d23 - use kAutomaticPurgeFrequency in TRAITS instead of PurgeSpoiledDataFlagType")]]
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
+                             PurgeSpoiledDataFlagType purgeSpoiledData);
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized,
@@ -477,10 +507,10 @@ namespace Stroika::Foundation::Cache {
         Time::TimePointSeconds fNextAutoClearAt_;
 
     private:
-        nonvirtual void ClearIfNeeded_ ();
         nonvirtual void ClearOld_ ();
 
     private:
+        // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
             VALUE                  fResult;
             Time::TimePointSeconds fLastRefreshedAt{Time::GetTickCount ()};

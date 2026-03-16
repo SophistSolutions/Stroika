@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Cache {
         scoped_lock critSec{fMaybeMutex_};
         if (fMinimumAllowedFreshness_ != minimumAllowedFreshness) {
             fMinimumAllowedFreshness_ = minimumAllowedFreshness;
-            ClearOld_ (); // ClearOld_ not ClearIfNeeded_ to force auto-update of fNextAutoClearAt_, and cuz moderately likely items interestingly out of date after adjust of min allowed freshness
+            ClearOld_ (); // ClearOld_ not AutomaticallyPurgeExpiredDataHelper_ to force auto-update of fNextAutoClearAt_, and cuz moderately likely items interestingly out of date after adjust of min allowed freshness
         }
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -271,14 +271,27 @@ namespace Stroika::Foundation::Cache {
             }
         }
     }
-
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result)
+    {
+        scoped_lock critSec{fMaybeMutex_};
+        AutomaticallyPurgeExpiredDataHelper_ ();
+        typename MyMapType_::iterator i = fMap_.find (key);
+        if (i == fMap_.end ()) {
+            fMap_.insert ({key, MyResult_{result}});
+        }
+        else {
+            i->second = MyResult_{result}; // overwrite if its already there
+        }
+    }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                                               PurgeSpoiledDataFlagType prgeSpoiledData)
     {
+        // DEPRECATED OVERLOAD
         scoped_lock critSec{fMaybeMutex_};
         if (prgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
-            ClearIfNeeded_ ();
+            AutomaticallyPurgeExpiredDataHelper_ ();
         }
         typename MyMapType_::iterator i = fMap_.find (key);
         if (i == fMap_.end ()) {
@@ -308,23 +321,26 @@ namespace Stroika::Foundation::Cache {
         fMap_.clear ();
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    inline void TimedCache<KEY, VALUE, TRAITS>::PurgeSpoiledData ()
+    inline void TimedCache<KEY, VALUE, TRAITS>::PurgeExpiredData ()
     {
         scoped_lock critSec{fMaybeMutex_};
         ClearOld_ ();
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    inline void TimedCache<KEY, VALUE, TRAITS>::ClearIfNeeded_ ()
+    inline void TimedCache<KEY, VALUE, TRAITS>::AutomaticallyPurgeExpiredDataHelper_ ()
     {
-        if (fNextAutoClearAt_ < Time::GetTickCount ()) {
-            ClearOld_ ();
+        if constexpr (TRAITS::kAutomaticPurgeFrequency != Time::DurationSeconds{TimedCacheSupport::kNoAutomaticPurgeSentinal}) {
+            auto now = Time::GetTickCount ();
+            if (fNextAutoClearAt_ < now) {
+                ClearOld_ ();
+                fNextAutoClearAt_ = now;
+            }
         }
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::ClearOld_ ()
     {
-        Time::TimePointSeconds now = Time::GetTickCount ();
-        fNextAutoClearAt_          = now + fMinimumAllowedFreshness_ * 0.75; // somewhat arbitrary how far into the future we do this...
+        Time::TimePointSeconds now                 = Time::GetTickCount ();
         Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
         for (typename MyMapType_::iterator i = fMap_.begin (); i != fMap_.end ();) {
             if (i->second.fLastRefreshedAt < lastAccessThreshold) {
@@ -333,6 +349,9 @@ namespace Stroika::Foundation::Cache {
             else {
                 ++i;
             }
+        }
+        if constexpr (TRAITS::kAutomaticPurgeFrequency != Time::DurationSeconds{TimedCacheSupport::kNoAutomaticPurgeSentinal}) {
+            fNextAutoClearAt_ = now + TRAITS::kAutomaticPurgeFrequency;
         }
     }
 
