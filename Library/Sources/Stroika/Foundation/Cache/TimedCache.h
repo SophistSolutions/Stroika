@@ -543,7 +543,7 @@ namespace Stroika::Foundation::Cache {
         {
             scoped_lock critSec{fMaybeMutex_};
             if (purgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
-                AutomaticallyPurgeExpiredDataHelper_ ();
+                AutomaticallyPurgeExpiredDataSometimes_ ();
             }
             typename MyMapType_::iterator i = fMap_.find (key);
             if (i == fMap_.end ()) {
