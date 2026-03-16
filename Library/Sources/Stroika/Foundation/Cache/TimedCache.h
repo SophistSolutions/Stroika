@@ -189,12 +189,11 @@ namespace Stroika::Foundation::Cache {
      *
      *  \par Example Usage
      *      Use TimedCache to avoid needlessly redundant lookups
-     *
      *      \code
      *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
      *          {
      *              const Time::Duration                                        kCacheTTL_{5min};
-     *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};    // not threadsafe (not internally synchronized) by default
+     *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};    // not threadsafe (not internally synchronized) by default - but checked with Debug::AssertExternallySyncrhonizedMutex
      *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
      *                  return DNS::kThe.ReverseLookup (inetAddr);
      *              });
@@ -202,21 +201,18 @@ namespace Stroika::Foundation::Cache {
      *      \endcode
      *
      *  \par Example Usage
+     *      Same as above, but adding internal syncrhonization (automatic thread safety)
      *      \code
-     *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
+     *          optional<String> ReverseDNSLookup_ThreadSafe_ (const InternetAddress& inetAddr)
      *          {
-     *              static const Time::Duration                                             kCacheTTL_{5min}; // @todo fix when Stroika Duration bug supports constexpr this should
-     *              using INTERNALLY_SYNCRHONIZED_ = Cache::TimedChacheSupport::ExplicitTraits<InternetAddress, optional<String>, InternallySynchronized::eInternallySynchronized>;
-     *              static Cache::TimedCache<InternetAddress, optional<String>, INTERNALLY_SYNCRHONIZED_> sCache_{kCacheTTL_};   // now sCache 'threadsafe'
-     *              try {
-     *                  return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
-     *                      return DNS::kThe.ReverseLookup (inetAddr);
-     *                  });
-     *              }
-     *              catch (...) {
-     *                  // NOTE - to NEGATIVELY CACHE failure, you could call sCache_.Add (inetAddr, nullopt);
-     *                  return nullopt; // if DNS is failing, just dont do this match, dont abandon all data collection
-     *              }
+     *              const Time::Duration                                        kCacheTTL_{5min};
+     *              struct CACHE_TRAITS_ : Cache::TimedCacheSupport::DefaultTraits<InternetAddress, optional<String>> {
+     *                  static constexpr inline InternallySynchronized kInternallySynchronized{InternallySynchronized::eInternallySynchronized};
+     *              };
+     *              static Cache::TimedCache<InternetAddress, optional<String>, CACHE_TRAITS_> sCache_{kCacheTTL_};    // NOW the cache is threadsafe
+     *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
+     *                  return DNS::kThe.ReverseLookup (inetAddr);
+     *              });
      *          }
      *      \endcode
      *
@@ -231,11 +227,16 @@ namespace Stroika::Foundation::Cache {
      *          auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
      *
      *          Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0_duration};
+     *          OR
+     *              struct CACHE_TRAITS_ : Cache::TimedCacheSupport::DefaultTraits<String, DiskSpaceUsageType> {
+     *                  static constexpr inline bool kAutomaticallyMarkDataAsRefreshedEachTimeAccessed = true; // to treat lookups as 'refreshing' the cache like LRU
+     *              };
+     *          Cache::TimedCache<String, DiskSpaceUsageType, CACHE_TRAITS_> sDiskUsageCache_{5.0_duration};
      *
      *          // explicitly caller maintaining the cache
      *          optional<DiskSpaceUsageType> LookupDiskStats_Try1 (String diskName)
      *          {
-     *              optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);    // maybe use eTreatFoundThroughLookupAsRefreshed depending on your application
+     *              optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
      *              if (not o.has_value ()) {
      *                  o = LookupDiskStats_ (diskName);
      *                  if (o) {
@@ -248,7 +249,6 @@ namespace Stroika::Foundation::Cache {
      *          // more automatic maintainance of that update pattern
      *          DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
      *          {
-     *              // maybe use eTreatFoundThroughLookupAsRefreshed depending on your application
      *              return sDiskUsageCache_.LookupValue (diskName,
      *                                              [](String diskName) -> DiskSpaceUsageType {
      *                                                  return LookupDiskStats_ (diskName);
@@ -269,18 +269,6 @@ namespace Stroika::Foundation::Cache {
      *              EXPECT_TRUE (LookupDiskStats_Try3 ("xx").size == 33);
      *          }
      *      \endcode
-     *
-     *  \note   Only calls to @Add, @Lookup (...,eTreatFoundThroughLookupAsRefreshed), and @LookupValue (on a cache miss when updating) update the
-     *          lastRefreshed time.
-     *
-     *          For most use cases (when caching something) - the default behavior of only updating
-     *          the last-access time on Add makes sense. But for the case where this class is used
-     *          to OWN an object (see shared_ptr example below) - then treating a read asccess as a refresh can be helpful.
-     * 
-     *          Before Stroika 3.0d1, there was a template parameter which allowed treating Lookup () this way. But that
-     *          has significant downsides (making lookup non-const which has threading implications). Instead now, we have
-     *          non-const methods you can use todo this instead of Lookup, and then there is no need for special
-     *          template paremeters, or non-cost Lookup.
      *
      *  \par Example Usage
      *      To use TimedCache<> to 'own' a set of objects (say a set caches where we are the only
