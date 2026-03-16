@@ -493,6 +493,33 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+
+/*
+s/13/Test.cpp ... 
+In file included from Test.cpp:15:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/TimedCache.h:110:61: error: sorry, non-type template argument of type 'float' is not yet supported
+                  float AUTOMATIC_PURGE_FREQUENCY_SECONDS = kDefaultAutomaticPurgeFrequency, bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
+                                                            ^
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/TimedCache.h:110:25: error: template parameter missing a default argument
+                  float AUTOMATIC_PURGE_FREQUENCY_SECONDS = kDefaultAutomaticPurgeFrequency, bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
+                        ^
+                        */
+#ifndef qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__clang__) && !defined(__APPLE__)
+// still broken in clang++ 15
+#define qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#else
+#define qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy 0
+#endif
+
+#endif
+
+
 /*
 ProcessRunner.cpp:517:91: error: reference to local binding 'prDetails' declared in enclosing function 'Stroika::Foundation::Execution::ProcessRunner::Run'
 */

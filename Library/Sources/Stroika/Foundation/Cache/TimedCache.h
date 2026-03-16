@@ -72,7 +72,11 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
          */
+#if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
+        constexpr int kDefaultAutomaticPurgeFrequency = 30;
+#else
         constexpr float kDefaultAutomaticPurgeFrequency = 30.0f;
+#endif
 
         /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
@@ -106,8 +110,14 @@ namespace Stroika::Foundation::Cache {
          *  \see ITraits<> above
          */
         template <typename KEY, typename VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
-                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>,bool TRACK_FRESHNESS = true,bool TRACK_EXPIRATION = false, typename STATS_TYPE = Statistics::StatsType_DEFAULT,
-                  float AUTOMATIC_PURGE_FREQUENCY_SECONDS = kDefaultAutomaticPurgeFrequency, bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
+                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, bool TRACK_FRESHNESS = true, bool TRACK_EXPIRATION = false, typename STATS_TYPE = Statistics::StatsType_DEFAULT,
+#if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
+                  int
+#else
+                  float
+#endif
+                       AUTOMATIC_PURGE_FREQUENCY_SECONDS                   = kDefaultAutomaticPurgeFrequency,
+                  bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
         struct ExplicitTraits {
             using KeyType    = KEY;
             using ResultType = VALUE;
