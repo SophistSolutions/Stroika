@@ -144,8 +144,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY>                          key,
-                                                       const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller)
+    template <Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY> key, CACHE_FILLTER_T&& cacheFiller)
     {
         auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
         if (optional<VALUE> o = Lookup (key)) {

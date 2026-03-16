@@ -156,7 +156,6 @@ namespace Stroika::Foundation::Cache {
             eAutomaticallyPurgeSpoiledData,
             eDontAutomaticallyPurgeSpoiledData
         };
-
         enum class [[deprecated (
             "Since Stroika 3.0d23 use TRAITS kAutomaticallyMarkDataAsRefreshedEachTimeAccessed")]] LookupMarksDataAsRefreshed {
             eTreatFoundThroughLookupAsRefreshed,
@@ -337,13 +336,11 @@ namespace Stroika::Foundation::Cache {
      *      o   moveable<TimedCache<KEY,VALUE>>
      *      o   copyable<TimedCache<KEY,VALUE>>
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     * &&&&todo fix docs on threadsafet - depends on traits - 
+     *  \note   \em Thread-Safety   if (TRAITS::kInternallySynchronized == eInternallySynchronized)           <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
+     *  \note   \em Thread-Safety   if (TRAITS::kInternallySynchronized == eNotKnownInternallySynchronized)   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      * 
      *  \note   we REQUIRE (without a way to enforce) - that the STATS object be internally synchronized, so that we can
      *          maintain statistics, without requiring the lookup method be non-const; this is only for tuning/debugging, anyhow...
-     *
-     *  @see SynchronizedTimedCache<> - for internally synchonized implementation
      *
      *  @see CallerStalenessCache
      *  @see LRUCache
@@ -413,19 +410,25 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Usually one will use this as (cacheFiller overload):
+         *  Usually one will use this as:
          *      \code
          *          VALUE v = cache.LookupValue (key, ts, [this] () -> VALUE {return this->realLookup(key); });
          *      \endcode
-         *
-         *  However, the method (Lookup) returing an optional is occasionally useful, if you don't want to fill the cache
-         *  but just see if a value is present.
-         *
-         *  The overload with cacheFiller, will update the 'time stored' for the argument key if a new value is fetched.
+         * 
+         *  This operates as if:
+         *      if (auto ov = Lookup (key)) {
+         *          return *ov;
+         *      }
+         *      else {
+         *          VALUE r = cacheFiller();
+         *          Add (r);
+         *          return r;
+         *      }
          *
          *  \note   This function may update the TimedCache (which is why it is non-const).
          */
-        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller);
+        template <Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, CACHE_FILLTER_T&& cacheFiller);
 
     public:
         /**
