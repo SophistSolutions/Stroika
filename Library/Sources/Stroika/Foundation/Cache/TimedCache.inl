@@ -89,6 +89,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt) const
+        requires (TRAITS::kTrackFreshness)
     {
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i   = fMap_.find (key);
@@ -115,6 +116,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt)
+        requires (TRAITS::kTrackFreshness)
     {
         shared_lock                   critSec{fMaybeMutex_};
         typename MyMapType_::iterator i   = fMap_.find (key);
@@ -204,6 +206,7 @@ namespace Stroika::Foundation::Cache {
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
                                               Time::TimePointSeconds freshAsOf)
+        requires (TRAITS::kTrackFreshness)
     {
         scoped_lock critSec{fMaybeMutex_};
         AutomaticallyPurgeExpiredDataSometimes_ ();

@@ -86,7 +86,10 @@ namespace Stroika::Foundation::Cache {
                               { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
                               { TRAITS::kAutomaticPurgeFrequency } -> convertible_to<Time::DurationSeconds>;
                               { TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed } -> convertible_to<bool>;
+                              { TRAITS::kTrackFreshness } -> convertible_to<bool>;
+                              { TRAITS::kTrackExpiresAt } -> convertible_to<bool>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
+                          TRAITS::kTrackFreshness != TRAITS::kTrackExpiresAt and
                           Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
                           Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
 
@@ -170,7 +173,6 @@ namespace Stroika::Foundation::Cache {
          * @tparam KEY 
          * @tparam VALUE 
          * @tparam TRAITS 
-         * @tparam VALUE> 
          */
         template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
         struct InternallySynchronizedTraits : TRAITS {
@@ -400,10 +402,8 @@ namespace Stroika::Foundation::Cache {
             KEY   fKey;
             VALUE fValue;
 
-            // include if kTrackFreshness
-            Time::TimePointSeconds fLastRefreshedAt;
-            // include if kTrackExpiresAt
-            // Time::TimePointSeconds fExpiresAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiresAt, Time::TimePointSeconds, Common::Empty> fExpiresAt;
         };
 
     public:
@@ -427,8 +427,10 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note difference between const and non-const overloads is just that some extra bookkeeping can be done and kAutomaticallyMarkDataAsRefreshedEachTimeAccessed respected in non-const overload.
          */
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const
+            requires (TRAITS::kTrackFreshness);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr)
+            requires (TRAITS::kTrackFreshness);
 
     public:
         /**
@@ -457,7 +459,8 @@ namespace Stroika::Foundation::Cache {
          *  Updates/adds the given value associated with key, and updates the last-access date to now (or argument freshAsOf).
          */
         nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result);
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds freshAsOf);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds freshAsOf)
+            requires (TRAITS::kTrackFreshness);
 
     public:
         /**
