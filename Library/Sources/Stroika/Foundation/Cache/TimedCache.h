@@ -152,6 +152,19 @@ namespace Stroika::Foundation::Cache {
         template <typename KEY, typename VALUE>
         using DefaultTraits = ExplicitTraits<KEY, VALUE>;
 
+        /**
+         * @brief InternallySynchronizedTraits same as argument traits, but resetting the kInternallySynchronized to eInternallySynchronized
+         * 
+         * @tparam KEY 
+         * @tparam VALUE 
+         * @tparam TRAITS 
+         * @tparam VALUE> 
+         */
+        template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
+        struct InternallySynchronizedTraits : TRAITS {
+            static constexpr inline Execution::InternallySynchronized kInternallySynchronized{Execution::InternallySynchronized::eInternallySynchronized};
+        };
+
         enum class [[deprecated ("Since Stroika 3.0d23 use TRAITS kAutomaticPurgeFrequency")]] PurgeSpoiledDataFlagType {
             eAutomaticallyPurgeSpoiledData,
             eDontAutomaticallyPurgeSpoiledData
@@ -577,6 +590,16 @@ namespace Stroika::Foundation::Cache {
     };
     static_assert (movable<TimedCache<int, int>>); // see Satisfies Concepts
     static_assert (copyable<TimedCache<int, int>>);
+
+    /**
+     * @brief SynchronizedTimedCache just adds eInternallySynchronized to the argument TRAITS - handy shortcut
+     * 
+     * @tparam KEY 
+     * @tparam VALUE 
+     * @tparam TRAITS 
+     */
+    template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    using SynchronizedTimedCache = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<KEY, VALUE, TRAITS>>;
 
 }
 
