@@ -8,6 +8,6 @@
 
 #include "Stroika/Foundation/Cache/TimedCache.h"
 
-_DeprecatedFile_ ("DEPRECATED in v2.1d23 - moved to TimedCache.h");
+_DeprecatedFile_ ("DEPRECATED SynchronizedTimedCache.h in v2.1d23 - moved to TimedCache.h");
 
 #endif /*_Stroika_Foundation_Cache_SynchronizedTimedCache_h_*/
