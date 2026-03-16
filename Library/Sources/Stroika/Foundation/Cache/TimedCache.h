@@ -65,14 +65,14 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
          */
-        constexpr float kNoAutomaticPurgeSentinal = -1.0;
+        constexpr float kNoAutomaticPurgeSentinal = -1.0f;
 
         /**
          * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - default to purging every 30 seconds
          * 
          *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
          */
-        constexpr float kDefaultAutomaticPurgeFrequency = 30.0;
+        constexpr float kDefaultAutomaticPurgeFrequency = 30.0f;
 
         /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Cache {
             using StatsType = STATS_TYPE;
 
             /**
-             *  How often modifying operations to the cache will automatically trigger a call to PurgeExpiredData ()
+             *  How often TimedCache-modifying operations will automatically trigger a call to PurgeExpiredData ()
              * 
              *  This defaults to kDefaultAutomaticPurgeFrequency (but can be set to NEVER (kNoAutomaticPurgeSentinal)).
              * 
@@ -152,20 +152,13 @@ namespace Stroika::Foundation::Cache {
         template <typename KEY, typename VALUE>
         using DefaultTraits = ExplicitTraits<KEY, VALUE>;
 
-        /**
-         *  Flag to facilitate automatic cleanup of internal data structures as data tracked becomes unneeded.
-         * 
-         *  --DEPRECATED SINCE STROIKA 3.0d23 - use kAutomaticPurgeFrequency instead in TRAITS
-         */
-        enum class PurgeSpoiledDataFlagType {
+        enum class [[deprecated ("Since Stroika 3.0d23 use TRAITS kAutomaticPurgeFrequency")]] PurgeSpoiledDataFlagType {
             eAutomaticallyPurgeSpoiledData,
             eDontAutomaticallyPurgeSpoiledData
         };
 
-        /**
-         *  --DEPRECATED SINCE STROIKA 3.0d23 - use kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead in TRAITS
-         */
-        enum class LookupMarksDataAsRefreshed {
+        enum class [[deprecated (
+            "Since Stroika 3.0d23 use TRAITS kAutomaticallyMarkDataAsRefreshedEachTimeAccessed")]] LookupMarksDataAsRefreshed {
             eTreatFoundThroughLookupAsRefreshed,
             eDontTreatFoundThroughLookupAsRefreshed
         };
@@ -345,13 +338,13 @@ namespace Stroika::Foundation::Cache {
      *      o   copyable<TimedCache<KEY,VALUE>>
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     * &&&&todo fix docs on threadsafet - depends on traits - 
      * 
      *  \note   we REQUIRE (without a way to enforce) - that the STATS object be internally synchronized, so that we can
      *          maintain statistics, without requiring the lookup method be non-const; this is only for tuning/debugging, anyhow...
      *
      *  @see SynchronizedTimedCache<> - for internally synchonized implementation
      *
-     *  @see SynchronizedCallerStalenessCache
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
@@ -361,17 +354,8 @@ namespace Stroika::Foundation::Cache {
         using TraitsType = TRAITS;
 
     public:
-        // DEPRECATED SINCE STROIKA v3.0d23
-        using LookupMarksDataAsRefreshed = TimedCacheSupport::LookupMarksDataAsRefreshed;
-
-    public:
-        // DEPRECATED SINCE STROIKA v3.0d23
-        using PurgeSpoiledDataFlagType = TimedCacheSupport::PurgeSpoiledDataFlagType;
-
-    public:
         /**
-         * Note that TimedCache is copyable and moveable by value, with all the obvious expections
-         * of copying/moving sub-elements.
+         * Note that TimedCache is copyable and moveable by value.
          */
         explicit TimedCache (const Time::Duration& minimumAllowedFreshness);
         TimedCache (TimedCache&& src) noexcept;
@@ -431,7 +415,7 @@ namespace Stroika::Foundation::Cache {
         /**
          *  Usually one will use this as (cacheFiller overload):
          *      \code
-         *          VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
+         *          VALUE v = cache.LookupValue (key, ts, [this] () -> VALUE {return this->realLookup(key); });
          *      \endcode
          *
          *  However, the method (Lookup) returing an optional is occasionally useful, if you don't want to fill the cache
@@ -466,14 +450,23 @@ namespace Stroika::Foundation::Cache {
          *  May be called occasionally to free resources used by cached items that are out of date.
          *  Not necessary to call - but can save memory.
          * 
-         *  Can be triggered automatically (so not explicitly) by passing eAutomaticallyPurgeSpoiledData to Add ()
+         *  Can be triggered automatically - see TRAITS::kAutomaticPurgeFrequency
          */
         nonvirtual void PurgeExpiredData ();
 
     private:
-        nonvirtual void AutomaticallyPurgeExpiredDataHelper_ ();
+        nonvirtual void AutomaticallyPurgeExpiredDataSometimes_ ();
 
     public:
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        using LookupMarksDataAsRefreshed
+            [[deprecated ("Since Stroika 3.0d23 use TRAITS kAutomaticallyMarkDataAsRefreshedEachTimeAccessed")]] =
+                TimedCacheSupport::LookupMarksDataAsRefreshed;
+        using PurgeSpoiledDataFlagType
+            [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]] =
+                TimedCacheSupport::PurgeSpoiledDataFlagType;
         [[deprecated ("Since Stroika v3.0d1, use PurgeExpiredData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
         {
             PurgeExpiredData ();
@@ -487,20 +480,87 @@ namespace Stroika::Foundation::Cache {
             SetMinimumAllowedFreshness (timeout);
         }
         [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]]
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
+        {
+            // DEPRECATED API
+            scoped_lock                   critSec{fMaybeMutex_};
+            typename MyMapType_::iterator i   = fMap_.find (key);
+            Time::TimePointSeconds        now = Time::GetTickCount ();
+            if (i == fMap_.end ()) {
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            else {
+                Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
+                if (i->second.fLastRefreshedAt < lastAccessThreshold) {
+                    /**
+                 *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
+                 * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
+                 * So instead, count on PurgeUnusedData being called automatically on future adds,
+                 * explicit user calls to purge unused data.
+                 *
+                 *      i = fMap_.erase (i);
+                 */
+                    fStats_.IncrementMisses ();
+                    return nullopt;
+                }
+                if (successfulLookupRefreshesAcceesFlag == LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed) {
+                    i->second.fLastRefreshedAt = Time::GetTickCount ();
+                }
+                fStats_.IncrementHits ();
+                return i->second.fResult;
+            }
+        }
         [[deprecated ("Since Stroika v3.0d23 - use kAutomaticPurgeFrequency in TRAITS instead of PurgeSpoiledDataFlagType, and "
                       "kAutomaticallyMarkDataAsRefreshedEachTimeAccessed in TRAITS instead of LookupMarksDataAsRefreshed")]]
         nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, const function<VALUE (typename Common::ArgByValueType<KEY>)>& cacheFiller,
                                       LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
-                                      PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+                                      PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData)
+        {
+            auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
+            if (optional<VALUE> o = Lookup (key, successfulLookupRefreshesAcceesFlag)) {
+                return *o;
+            }
+            else {
+                readLock.unlock ();
+                constexpr bool kHoldWriteLockDuringCacheFill = false;
+                if constexpr (kHoldWriteLockDuringCacheFill) {
+                    [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
+                    VALUE                   v         = cacheFiller (key);
+                    newRWLock.unlock ();
+                    Add (key, v, purgeSpoiledData); // if purgeSpoiledData must be done, do while holding lock
+                    return v;
+                }
+                else {
+                    VALUE v = cacheFiller (key);
+                    Add (key, v, purgeSpoiledData);
+                    return v;
+                }
+            }
+        }
         [[deprecated ("Since Stroika v3.0d23 - use kAutomaticPurgeFrequency in TRAITS instead of PurgeSpoiledDataFlagType")]]
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
-                             PurgeSpoiledDataFlagType purgeSpoiledData);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType purgeSpoiledData)
+        {
+            scoped_lock critSec{fMaybeMutex_};
+            if (purgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
+                AutomaticallyPurgeExpiredDataHelper_ ();
+            }
+            typename MyMapType_::iterator i = fMap_.find (key);
+            if (i == fMap_.end ()) {
+                fMap_.insert ({key, MyResult_{result}});
+            }
+            else {
+                i->second = MyResult_{result}; // overwrite if its already there
+            }
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized,
-                                                                   shared_timed_mutex, Debug::AssertExternallySynchronizedMutex>
-            fMaybeMutex_;
+        using MaybeMutexType_ =
+            conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized, shared_timed_mutex, Debug::AssertExternallySynchronizedMutex>;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE MaybeMutexType_ fMaybeMutex_;
 
     private:
         Time::DurationSeconds  fMinimumAllowedFreshness_;

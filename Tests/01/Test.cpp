@@ -222,7 +222,7 @@ namespace {
             };
 
             struct CACHE_TRAITS_ : Cache::TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>> {
-                static constexpr inline bool kAutomaticallyMarkDataAsRefreshedEachTimeAccessed = true;  // override one value from default
+                static constexpr inline bool kAutomaticallyMarkDataAsRefreshedEachTimeAccessed = true; // override one value from default
             };
             Cache::TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>, CACHE_TRAITS_> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
 
