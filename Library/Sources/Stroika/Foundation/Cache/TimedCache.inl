@@ -229,6 +229,11 @@ namespace Stroika::Foundation::Cache {
         ClearOld_ ();
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    inline typename TRAITS::StatsType TimedCache<KEY, VALUE, TRAITS>::GetStats () const
+    {
+        return fStats_;
+    }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::AutomaticallyPurgeExpiredDataSometimes_ ()
     {
         if constexpr (TRAITS::kAutomaticPurgeFrequency != Time::DurationSeconds{TimedCacheSupport::kNoAutomaticPurgeSentinal}) {

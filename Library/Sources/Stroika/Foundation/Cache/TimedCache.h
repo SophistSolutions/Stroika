@@ -114,6 +114,18 @@ namespace Stroika::Foundation::Cache {
             static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
 
             /**
+             * SO FAR ALL WE HAVE IMPLEMENTED
+             * @brief freshness means when last added/updated (or if kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) then last accessed too)
+             */
+            static constexpr inline bool kTrackFreshness{true};
+
+            /**
+             * SO FAR NOT IMPLEMENTED
+             * @brief Track on a per-item when it expires. If not tracked, we use expiresAt as whenAdded + minFreshness
+             */
+            static constexpr inline bool kTrackExpiresAt{false};
+
+            /**
              */
             using InOrderComparerType = STRICT_INORDER_COMPARER;
 
@@ -367,6 +379,11 @@ namespace Stroika::Foundation::Cache {
         /**
          *  When items are added to the timed cache, there is a universal (for the entire cache) minimum allowed freshness (how old item
          *  allowed to be before thrown away).
+         * 
+         *  \alias Note - 'allowed freshness' == 'time to live' == 'TTL'.
+         * 
+         *  So an item added 30 seconds ago (freshness = 30s), would be thrown away/not returned as part of the cache
+         *  if the minimum allowed freshness was 5 seconds.
          */
         nonvirtual Time::Duration GetMinimumAllowedFreshness () const;
 
@@ -380,9 +397,13 @@ namespace Stroika::Foundation::Cache {
         /**
          */
         struct CacheElement {
-            KEY                    fKey;
-            VALUE                  fValue;
+            KEY   fKey;
+            VALUE fValue;
+
+            // include if kTrackFreshness
             Time::TimePointSeconds fLastRefreshedAt;
+            // include if kTrackExpiresAt
+            // Time::TimePointSeconds fExpiresAt;
         };
 
     public:
@@ -458,6 +479,11 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void PurgeExpiredData ();
 
+    public:
+        /**
+         */
+        nonvirtual typename TRAITS::StatsType GetStats () const;
+
     private:
         nonvirtual void AutomaticallyPurgeExpiredDataSometimes_ ();
 
@@ -498,13 +524,13 @@ namespace Stroika::Foundation::Cache {
                 Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
                 if (i->second.fLastRefreshedAt < lastAccessThreshold) {
                     /**
-                 *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
-                 * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
-                 * So instead, count on PurgeUnusedData being called automatically on future adds,
-                 * explicit user calls to purge unused data.
-                 *
-                 *      i = fMap_.erase (i);
-                 */
+                     *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
+                     * that required Lookup to be non-const (with synchronization in mind probably a pessimization).
+                     * So instead, count on PurgeUnusedData being called automatically on future adds,
+                     * explicit user calls to purge unused data.
+                     *
+                     *      i = fMap_.erase (i);
+                     */
                     fStats_.IncrementMisses ();
                     return nullopt;
                 }
