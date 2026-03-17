@@ -616,10 +616,10 @@ namespace Stroika::Foundation::Cache {
             }
             typename MyMapType_::iterator i = fMap_.find (key);
             if (i == fMap_.end ()) {
-                fMap_.insert ({key, MyResult_{result}});
+                fMap_.insert ({key, MyResult_{.fResult = result, .fLastRefreshedAt = Time::GetTickCount ()}});
             }
             else {
-                i->second = MyResult_{result}; // overwrite if its already there
+                i->second = MyResult_{.fResult = result, .fLastRefreshedAt = Time::GetTickCount ()}; // overwrite if its already there
             }
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996);
@@ -641,8 +641,10 @@ namespace Stroika::Foundation::Cache {
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
-            VALUE                  fResult;
-            Time::TimePointSeconds fLastRefreshedAt{Time::GetTickCount ()};
+            VALUE fResult;
+            //            Time::TimePointSeconds fLastRefreshedAt{Time::GetTickCount ()};
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiresAt, Time::TimePointSeconds, Common::Empty> fExpiresAt;
         };
 
     private:

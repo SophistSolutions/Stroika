@@ -160,60 +160,14 @@ namespace Stroika::Foundation::Cache {
         requires (TRAITS::kTrackExpiration)
     {
         AssertNotReached ();
-        shared_lock                         critSec{fMaybeMutex_};
-        typename MyMapType_::const_iterator i   = fMap_.find (key);
-        Time::TimePointSeconds              now = Time::GetTickCount ();
-        if (i == fMap_.end ()) {
-            fStats_.IncrementMisses ();
-            return nullopt;
-        }
-        else {
-            Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
-            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
-                /**
-                 *  Cannot update fMap_ to indicate item expired const constant overload
-                 */
-                fStats_.IncrementMisses ();
-                return nullopt;
-            }
-            fStats_.IncrementHits ();
-            if (lastRefreshedAt != nullptr) {
-                *lastRefreshedAt = i->second.fLastRefreshedAt;
-            }
-            return i->second.fResult;
-        }
+        return nullopt;
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt)
         requires (TRAITS::kTrackExpiration)
     {
         AssertNotReached ();
-        shared_lock                   critSec{fMaybeMutex_};
-        typename MyMapType_::iterator i   = fMap_.find (key);
-        Time::TimePointSeconds        now = Time::GetTickCount ();
-        if (i == fMap_.end ()) {
-            fStats_.IncrementMisses ();
-            return nullopt;
-        }
-        else {
-            Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
-            if constexpr (TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) {
-                i->second.fLastRefreshedAt = Time::GetTickCount ();
-            }
-            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
-                /**
-                 *  since expired, remove from cache
-                 */
-                (void)fMap_.erase (i);
-                fStats_.IncrementMisses ();
-                return nullopt;
-            }
-            fStats_.IncrementHits ();
-            if (lastRefreshedAt != nullptr) {
-                *lastRefreshedAt = i->second.fLastRefreshedAt;
-            }
-            return i->second.fResult;
-        }
+        return nullopt;
     }
 
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -268,10 +222,18 @@ namespace Stroika::Foundation::Cache {
         AutomaticallyPurgeExpiredDataSometimes_ ();
         typename MyMapType_::iterator i = fMap_.find (key);
         if (i == fMap_.end ()) {
-            fMap_.insert ({key, MyResult_{result}});
+            if constexpr (TRAITS::kTrackFreshness) {
+                fMap_.insert ({key, MyResult_{.fResult = result, .fLastRefreshedAt = Time::GetTickCount ()}});
+            }
+            else if constexpr (TRAITS::kTrackExpiration) {
+            }
         }
         else {
-            i->second = MyResult_{result}; // overwrite if its already there
+            if constexpr (TRAITS::kTrackFreshness) {
+                i->second = MyResult_{.fResult = result, .fLastRefreshedAt = Time::GetTickCount ()}; // overwrite if its already there
+            }
+            else if constexpr (TRAITS::kTrackExpiration) {
+            }
         }
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -281,7 +243,7 @@ namespace Stroika::Foundation::Cache {
     {
         scoped_lock critSec{fMaybeMutex_};
         AutomaticallyPurgeExpiredDataSometimes_ ();
-        fMap_.insert ({key, MyResult_{result, freshAsOf}});
+        fMap_.insert ({key, MyResult_{.fResult = result, .fLastRefreshedAt = freshAsOf}});
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
