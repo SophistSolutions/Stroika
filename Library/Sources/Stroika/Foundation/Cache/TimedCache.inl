@@ -16,10 +16,10 @@ namespace Stroika::Foundation::Cache {
     inline auto TimedCache<KEY, VALUE, TRAITS>::MyResult_::MakeCacheElement (const KEY& key) const -> CacheElement
     {
         if constexpr (TRAITS::kTrackFreshness) {
-            return CacheElement{.fKey = key, .fValue = *this, .fLastRefreshedAt = fLastRefreshedAt};
+            return CacheElement{.fKey = key, .fValue = fResult, .fLastRefreshedAt = fLastRefreshedAt};
         }
         else if constexpr (TRAITS::kTrackExpiration) {
-            return CacheElement{.fKey = key, .fValue = *this, .fExpiresAt = fExpiresAt};
+            return CacheElement{.fKey = key, .fValue = fResult, .fExpiresAt = fExpiresAt};
         }
     }
 
@@ -335,7 +335,7 @@ namespace Stroika::Foundation::Cache {
     {
         scoped_lock critSec{fMaybeMutex_};
         for (auto i = fMap_.begin (); i != fMap_.end ();) {
-            if (p (i.second.MakeCacheElement (i.first))) {
+            if (p (i->second.MakeCacheElement (i->first))) {
                 i = fMap_.erase (i);
             }
             else {
