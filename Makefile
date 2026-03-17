@@ -29,6 +29,11 @@ export ALL_INCLUDES_BUILDING_DOCUMENTATION?=1
 endif
 
 #
+# Often useful in looking at builds to see how long things took
+#
+ECHO_TIMESTAMPS?=1
+
+#
 # QUICK_BUILD=1 skips some steps you might occasionally want todo (done in regtests).
 #
 export QUICK_BUILD?=1
@@ -221,6 +226,9 @@ else
 libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Library --no-print-directory all
+ifeq (${ECHO_TIMESTAMPS},1)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Libraries-Done: `date +%T`
+endif
 endif
 endif
 
@@ -237,6 +245,9 @@ third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON Inte
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all
 	@$(MAKE) --no-print-directory --silent .vscode/c_cpp_properties.json
+ifeq (${ECHO_TIMESTAMPS},1)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Third-party-components-Build-Done: `date +%T`
+endif
 endif
 
 
@@ -302,6 +313,9 @@ else
 tests:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Tests --no-print-directory tests
+ifeq (${ECHO_TIMESTAMPS},1)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Tests-Done: `date +%T`
+endif
 endif
 
 
@@ -315,6 +329,9 @@ else
 samples:	IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT libraries
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Samples --no-print-directory samples
+ifeq (${ECHO_TIMESTAMPS},1)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Samples-Done: `date +%T`
+endif
 endif
 
 
@@ -328,6 +345,9 @@ else
 run-tests:	tests
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Tests --no-print-directory run-tests
+endif
+ifeq (${ECHO_TIMESTAMPS},1)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Run-Done: `date +%T`
 endif
 
 
