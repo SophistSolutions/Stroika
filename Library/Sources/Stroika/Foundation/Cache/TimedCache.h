@@ -80,6 +80,9 @@ namespace Stroika::Foundation::Cache {
 
         /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
+         * 
+         *  \note   ONE of (but for now not both) - kTrackFreshness or kTrackExpiresAt
+         *  \note   kTrackExpiresAt not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
          */
         template <typename TRAITS, typename KEY, typename VALUE>
         concept ITraits = copyable<KEY> and copyable<VALUE> and
@@ -94,6 +97,7 @@ namespace Stroika::Foundation::Cache {
                               { TRAITS::kTrackExpiresAt } -> convertible_to<bool>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
                           TRAITS::kTrackFreshness != TRAITS::kTrackExpiresAt and
+                          (not TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed or not TRAITS::kTrackExpiresAt) and
                           Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
                           Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
 
@@ -110,7 +114,8 @@ namespace Stroika::Foundation::Cache {
          *  \see ITraits<> above
          */
         template <typename KEY, typename VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
-                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, bool TRACK_FRESHNESS = true, bool TRACK_EXPIRATION = false, typename STATS_TYPE = Statistics::StatsType_DEFAULT,
+                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, bool TRACK_FRESHNESS = true,
+                  bool TRACK_EXPIRATION = false, Cache::Statistics::IStatsType STATS_TYPE = Statistics::StatsType_DEFAULT,
 #if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
                   int
 #else
@@ -143,6 +148,7 @@ namespace Stroika::Foundation::Cache {
             using InOrderComparerType = STRICT_INORDER_COMPARER;
 
             /**
+             * @brief Internally synchronized 'Stats' collector type (Cache::Statistics::IStatsType). Often null stats collector.
              */
             using StatsType = STATS_TYPE;
 
@@ -190,7 +196,7 @@ namespace Stroika::Foundation::Cache {
         };
 
         /**
-         * @brief 
+         * @brief take argument TRAITS, and set to track-expires-at mode.
          * 
          * @tparam KEY 
          * @tparam VALUE 
@@ -441,6 +447,7 @@ namespace Stroika::Foundation::Cache {
          * 
          *  If lastRefreshedAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain the last time
          *  the data was refreshed.
+         *  If expiresAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain expiresAt value.
          * 
          *  \note that the non-const overload of Lookup respects TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed, and will
          *        auto-refresh the item (similar to LRUCache) if found.
@@ -642,7 +649,6 @@ namespace Stroika::Foundation::Cache {
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
             VALUE fResult;
-            //            Time::TimePointSeconds fLastRefreshedAt{Time::GetTickCount ()};
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiresAt, Time::TimePointSeconds, Common::Empty> fExpiresAt;
         };
