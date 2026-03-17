@@ -13,6 +13,22 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    inline auto TimedCache<KEY, VALUE, TRAITS>::MyResult_::MakeCacheElement (const KEY& key) const -> CacheElement
+    {
+        if constexpr (TRAITS::kTrackFreshness) {
+            return CacheElement{.fKey = key, .fValue = *this, .fLastRefreshedAt = fLastRefreshedAt};
+        }
+        else if constexpr (TRAITS::kTrackExpiration) {
+            return CacheElement{.fKey = key, .fValue = *this, .fExpiresAt = fExpiresAt};
+        }
+    }
+
+    /*
+     ********************************************************************************
+     ************************* TimedCache<KEY,VALUE,TRAITS> *************************
+     ********************************************************************************
+     */
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     TimedCache<KEY, VALUE, TRAITS>::TimedCache (const Time::Duration& minimumAllowedFreshness)
         : fMinimumAllowedFreshness_{minimumAllowedFreshness}
         , fNextAutoClearAt_{Time::GetTickCount () + minimumAllowedFreshness}
@@ -94,12 +110,7 @@ namespace Stroika::Foundation::Cache {
         Time::TimePointSeconds now = Time::GetTickCount ();
         for (const auto& i : fMap_) {
             if (not Expired_ (i.second, now)) {
-                if constexpr (TRAITS::kTrackFreshness) {
-                    r.push_back (CacheElement{.fKey = i.first, .fValue = i.second.fResult, .fLastRefreshedAt = i.second.fLastRefreshedAt});
-                }
-                else if constexpr (TRAITS::kTrackExpiration) {
-                    r.push_back (CacheElement{.fKey = i.first, .fValue = i.second.fResult, .fExpiresAt = i.second.fExpiresAt});
-                }
+                r.push_back (i.second.MakeCacheElement (i.first));
             }
         }
         return Traversal::Iterable<CacheElement>{move (r)};
@@ -317,6 +328,30 @@ namespace Stroika::Foundation::Cache {
         scoped_lock critSec{fMaybeMutex_};
         fMap_.erase (key);
         AutomaticallyPurgeExpiredDataSometimes_ ();
+    }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <predicate<typename TimedCache<KEY, VALUE, TRAITS>::CacheElement> PREDICATE>
+    void TimedCache<KEY, VALUE, TRAITS>::RemoveAll (PREDICATE&& p)
+    {
+        scoped_lock critSec{fMaybeMutex_};
+        for (auto i = fMap_.begin (); i != fMap_.end ();) {
+            if (p (i.second.MakeCacheElement (i.first))) {
+                i = fMap_.erase (i);
+            }
+            else {
+                ++i;
+            }
+        }
+    }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <Traversal::IIterableOfTo<KEY> ITERABLE_OF_KEY_TYPE>
+    void TimedCache<KEY, VALUE, TRAITS>::RetainAll (const ITERABLE_OF_KEY_TYPE& items)
+    {
+        scoped_lock critSec{fMaybeMutex_};
+        // quickie inefficient implementation
+        Containers::Mapping<KEY, MyResult_> tmp{this->fMap_};
+        tmp.RetainAll (items);
+        fMap_ = tmp.As<MyMapType_> ();
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::clear ()

@@ -519,6 +519,19 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         */
+        template <predicate<typename TimedCache<KEY, VALUE, TRAITS>::CacheElement> PREDICATE>
+        nonvirtual void RemoveAll (PREDICATE&& p);
+
+    public:
+        /**
+         * @brief like Mapping<>::RetainAll () - throw away all elements not in items2Keep
+         */
+        template <Traversal::IIterableOfTo<KEY> ITERABLE_OF_KEY_TYPE>
+        nonvirtual void RetainAll (const ITERABLE_OF_KEY_TYPE& items2Keep);
+
+    public:
+        /**
          *  Remove everything from the cache
          */
         nonvirtual void clear ();
@@ -658,6 +671,8 @@ namespace Stroika::Foundation::Cache {
             VALUE fResult;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, Time::TimePointSeconds, Common::Empty> fExpiresAt;
+
+            nonvirtual CacheElement MakeCacheElement (const KEY& key) const;
         };
 
     private:
