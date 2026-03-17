@@ -58,6 +58,18 @@ namespace Stroika::Foundation::Cache {
         return *this;
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    inline bool TimedCache<KEY, VALUE, TRAITS>::Expired_ (const MyResult_& r, Time::TimePointSeconds now) const
+        requires (TRAITS::kTrackFreshness)
+    {
+        return now - fMinimumAllowedFreshness_ > r.fLastRefreshedAt;
+    }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    inline bool TimedCache<KEY, VALUE, TRAITS>::Expired_ (const MyResult_& r, Time::TimePointSeconds now)
+        requires (TRAITS::kTrackExpiration)
+    {
+        return now > r.fExpiresAt;
+    }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline Time::Duration TimedCache<KEY, VALUE, TRAITS>::GetMinimumAllowedFreshness () const
     {
         shared_lock critSec{fMaybeMutex_};
@@ -79,21 +91,32 @@ namespace Stroika::Foundation::Cache {
         shared_lock          critSec{fMaybeMutex_};
         vector<CacheElement> r;
         r.reserve (fMap_.size ());
-        Time::TimePointSeconds                  now                 = Time::GetTickCount ();
-        [[maybe_unused]] Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
+        Time::TimePointSeconds now = Time::GetTickCount ();
         for (const auto& i : fMap_) {
-            if constexpr (TRAITS::kTrackFreshness) {
-                if (i.second.fLastRefreshedAt >= lastAccessThreshold) {
+            if (not Expired_ (i.second, now)) {
+                if constexpr (TRAITS::kTrackFreshness) {
                     r.push_back (CacheElement{.fKey = i.first, .fValue = i.second.fResult, .fLastRefreshedAt = i.second.fLastRefreshedAt});
                 }
-            }
-            else if constexpr (TRAITS::kTrackExpiration) {
-                if (i.second.fExpiresAt >= now) {
+                else if constexpr (TRAITS::kTrackExpiration) {
                     r.push_back (CacheElement{.fKey = i.first, .fValue = i.second.fResult, .fExpiresAt = i.second.fExpiresAt});
                 }
             }
         }
         return Traversal::Iterable<CacheElement>{move (r)};
+    }
+    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    auto TimedCache<KEY, VALUE, TRAITS>::Keys () const -> Traversal::Iterable<KEY>
+    {
+        vector<KEY> r;
+        shared_lock critSec{fMaybeMutex_};
+        r.reserve (fMap_.size ());
+        Time::TimePointSeconds now = Time::GetTickCount ();
+        for (const auto& i : fMap_) {
+            if (not Expired_ (i.second, now)) {
+                r.push_back (i.first);
+            }
+        }
+        return Traversal::Iterable<KEY>{move (r)};
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt) const
@@ -107,8 +130,7 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
-            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
+            if (Expired_ (i->second, now)) {
                 /**
                  *  Cannot update fMap_ to indicate item expired const constant overload
                  */
@@ -134,11 +156,10 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
             if constexpr (TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) {
                 i->second.fLastRefreshedAt = Time::GetTickCount ();
             }
-            if (i->second.fLastRefreshedAt < lastAccessThreshold) {
+            if (Expired_ (i->second, now)) {
                 /**
                  *  since expired, remove from cache
                  */
@@ -166,7 +187,7 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            if (i->second.fExpiresAt < now) {
+            if (Expired_ (i->second, now)) {
                 /**
                  *  Cannot update fMap_ to indicate item expired const constant overload
                  */
@@ -192,7 +213,7 @@ namespace Stroika::Foundation::Cache {
             return nullopt;
         }
         else {
-            if (i->second.fExpiresAt < now) {
+            if (Expired_ (i->second, now)) {
                 /**
                  *  since expired, remove from cache
                  */
@@ -327,17 +348,9 @@ namespace Stroika::Foundation::Cache {
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::ClearOld_ ()
     {
-        Time::TimePointSeconds                  now                 = Time::GetTickCount ();
-        [[maybe_unused]] Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
+        Time::TimePointSeconds now = Time::GetTickCount ();
         for (typename MyMapType_::iterator i = fMap_.begin (); i != fMap_.end ();) {
-            qStroika_ATTRIBUTE_INDETERMINATE bool remove;
-            if constexpr (TRAITS::kTrackFreshness) {
-                remove = i->second.fLastRefreshedAt < lastAccessThreshold;
-            }
-            else if constexpr (TRAITS::kTrackExpiration) {
-                remove = i->second.fExpiresAt > now;
-            }
-            if (remove) {
+            if (Expired_ (i->second, now)) {
                 i = fMap_.erase (i);
             }
             else {

@@ -81,8 +81,8 @@ namespace Stroika::Foundation::Cache {
         /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
          * 
-         *  \note   ONE of (but for now not both) - kTrackFreshness or kTrackExpiresAt
-         *  \note   kTrackExpiresAt not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
+         *  \note   ONE of (but for now not both) - kTrackFreshness or kTrackExpiration
+         *  \note   kTrackExpiration not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
          */
         template <typename TRAITS, typename KEY, typename VALUE>
         concept ITraits = copyable<KEY> and copyable<VALUE> and
@@ -94,10 +94,10 @@ namespace Stroika::Foundation::Cache {
                               { TRAITS::kAutomaticPurgeFrequency } -> convertible_to<Time::DurationSeconds>;
                               { TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed } -> convertible_to<bool>;
                               { TRAITS::kTrackFreshness } -> convertible_to<bool>;
-                              { TRAITS::kTrackExpiresAt } -> convertible_to<bool>;
+                              { TRAITS::kTrackExpiration } -> convertible_to<bool>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
-                          TRAITS::kTrackFreshness != TRAITS::kTrackExpiresAt and
-                          (not TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed or not TRAITS::kTrackExpiresAt) and
+                          TRAITS::kTrackFreshness != TRAITS::kTrackExpiration and
+                          (not TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed or not TRAITS::kTrackExpiration) and
                           Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
                           Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
 
@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Cache {
              * SO FAR NOT IMPLEMENTED
              * @brief Track on a per-item when it expires. If not tracked, we use expiresAt as whenAdded + minFreshness
              */
-            static constexpr inline bool kTrackExpiresAt{TRACK_EXPIRATION};
+            static constexpr inline bool kTrackExpiration{TRACK_EXPIRATION};
 
             /**
              */
@@ -205,7 +205,8 @@ namespace Stroika::Foundation::Cache {
         template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
         struct TrackExpirationTraits : TRAITS {
             static constexpr inline bool kTrackFreshness{false};
-            static constexpr inline bool kTrackExpiresAt{true};
+            static constexpr inline bool kTrackExpiration{true};
+            static constexpr inline bool kAutomaticallyMarkDataAsRefreshedEachTimeAccessed{false}; // doesn't work with expiration based cache
         };
 
         enum class [[deprecated ("Since Stroika 3.0d23 use TRAITS kAutomaticPurgeFrequency")]] PurgeSpoiledDataFlagType {
@@ -432,7 +433,7 @@ namespace Stroika::Foundation::Cache {
             VALUE fValue;
 
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiresAt, Time::TimePointSeconds, Common::Empty> fExpiresAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, Time::TimePointSeconds, Common::Empty> fExpiresAt;
         };
 
     public:
@@ -440,6 +441,12 @@ namespace Stroika::Foundation::Cache {
          *  \note This returns the non-expired elements of the current cache object.
          */
         nonvirtual Traversal::Iterable<CacheElement> Elements () const;
+
+    public:
+        /**
+         *  \note This returns the non-expired keys of the current cache object.
+         */
+        nonvirtual Traversal::Iterable<KEY> Keys () const;
 
     public:
         /**
@@ -650,8 +657,14 @@ namespace Stroika::Foundation::Cache {
         struct MyResult_ {
             VALUE fResult;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiresAt, Time::TimePointSeconds, Common::Empty> fExpiresAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, Time::TimePointSeconds, Common::Empty> fExpiresAt;
         };
+
+    private:
+        bool Expired_ (const MyResult_& r, Time::TimePointSeconds now) const
+            requires (TRAITS::kTrackFreshness);
+        static bool Expired_ (const MyResult_& r, Time::TimePointSeconds now)
+            requires (TRAITS::kTrackExpiration);
 
     private:
         // @todo could consider using Stroika Mapping<> - or TRAITS specified Mapper strategy
