@@ -189,6 +189,19 @@ namespace Stroika::Foundation::Cache {
             static constexpr inline Execution::InternallySynchronized kInternallySynchronized{Execution::InternallySynchronized::eInternallySynchronized};
         };
 
+        /**
+         * @brief 
+         * 
+         * @tparam KEY 
+         * @tparam VALUE 
+         * @tparam TRAITS 
+         */
+        template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
+        struct TrackExpirationTraits : TRAITS {
+            static constexpr inline bool kTrackFreshness{false};
+            static constexpr inline bool kTrackExpiresAt{true};
+        };
+
         enum class [[deprecated ("Since Stroika 3.0d23 use TRAITS kAutomaticPurgeFrequency")]] PurgeSpoiledDataFlagType {
             eAutomaticallyPurgeSpoiledData,
             eDontAutomaticallyPurgeSpoiledData
@@ -441,6 +454,10 @@ namespace Stroika::Foundation::Cache {
             requires (TRAITS::kTrackFreshness);
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr)
             requires (TRAITS::kTrackFreshness);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* expiresAt = nullptr) const
+            requires (TRAITS::kTrackExpiration);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* expiresAt = nullptr)
+            requires (TRAITS::kTrackExpiration);
 
     public:
         /**
@@ -466,11 +483,20 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Updates/adds the given value associated with key, and updates the last-access date to now (or argument freshAsOf).
+         *  Updates/adds the given value associated with key.
+         *      if TRAITS::kTrackFreshness (the default)
+         *          o   The new items freshness is GetTickCount (), or the value given as argument
+         *      if TRAITS::kTrackExpiration
+         *          o   The new item's expiration is either given by expiresAt or now+ttl, or defaults to
+         *              GetMinimumFreshness()
          */
         nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result);
         nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds freshAsOf)
             requires (TRAITS::kTrackFreshness);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds expiresAt)
+            requires (TRAITS::kTrackExpiration);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::DurationSeconds ttl)
+            requires (TRAITS::kTrackExpiration);
 
     public:
         /**
