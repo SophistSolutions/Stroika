@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        template <predicate<typename TimedCache<KEY, VALUE, TRAITS>::CacheElement> PREDICATE>
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (predicate<typename TimedCache<KEY, VALUE, TRAITS>::CacheElement>) PREDICATE>
         nonvirtual void RemoveAll (PREDICATE&& p);
 
     public:

@@ -330,7 +330,7 @@ namespace Stroika::Foundation::Cache {
         AutomaticallyPurgeExpiredDataSometimes_ ();
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <predicate<typename TimedCache<KEY, VALUE, TRAITS>::CacheElement> PREDICATE>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (predicate<typename TimedCache<KEY, VALUE, TRAITS>::CacheElement>) PREDICATE>
     void TimedCache<KEY, VALUE, TRAITS>::RemoveAll (PREDICATE&& p)
     {
         scoped_lock critSec{fMaybeMutex_};
