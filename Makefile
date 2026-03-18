@@ -222,6 +222,7 @@ libraries:
 		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED ; \
 		$(MAKE) --no-print-directory third-party-components QUICK_BUILD=1; \
 		$(MAKE) --directory Library --no-print-directory all; \
+		if [[ "${ECHO_TIMESTAMPS}" == "1" ]]; then $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) Libraries-Done: `date +%T`; fi; \
 	fi
 else
 libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
