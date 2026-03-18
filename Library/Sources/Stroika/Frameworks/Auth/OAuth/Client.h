@@ -294,6 +294,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *  \note this MAY generate a slightly abbreviated user-info object, if the original access token was retrieved
          *        with an id_token (parsed out of that). To avoid that, if you want the full userInfo from the endpoint,
          *        create a new Fetcher instance (copying the Fetcher loses the cache info in the copy).
+         * 
+         * @todo maybe too quirky - just add flag saying ignoreCache?
          */
         nonvirtual UserInfo GetUserInfo (const String& accessToken) const;
 
@@ -309,34 +311,20 @@ namespace Stroika::Frameworks::Auth::OAuth {
         //
         // DOES NOT USE CACHE!!!
         // Only used so that when we are given an accessCode to get userInfo for - so we can know how long it remains active in the cache
-        nonvirtual optional<TokenIntrospectionResponse> FetchTokenIntrospection_ (const String& accessToken) const;
+        // NOTE: DONT throw on failure, just GUESS (maybe this should be a configurable option if we throw or not on introspection failure?)
+        nonvirtual optional<TokenIntrospectionResponse> FetchTokenIntrospectionQueitly_ (const String& accessToken) const;
 
     private:
-        /*
-         * NOTE that fMaybeLock_ applies to BOTH cache and ?? - not sure what else there is???
-         * So why not  use Syncrhonized? Cuz we dont have maybe-syncrhonized?
-         */
         const ProviderConfiguration fProviderConfiguration_;
         const Options               fOptions_;
 
-        // VirtualLockable is either Debug::AssertExternallySyncrhonized or std::recursive_mutex
-        // Note - even though only non-const data is Cache, and 3 separate caches all which could
-        // be internally synchronized, use internally syncrhonized caches, but dont bother since
-        // we want to keep them coherent. However, COULD do all that just using Synchronized<Cache_> - may
-        // still switch to that... --LGP 2026-03-17
-        mutable Execution::VirtualLockable fMaybeLock_;
         struct Cache_ {
-            static constexpr auto  kClearMaxFrequency_{30s};
-            Time::TimePointSeconds fNextClearAt_{Time::GetTickCount () + kClearMaxFrequency_};
-
             // user-info CAN be missing, and just validity and expiration date on access token can be the only info...
-            using UICACHETRAITS_ = Cache::TimedCacheSupport::TrackExpirationTraits<String, optional<UserInfo>>;
+            using UICACHETRAITS_ = Cache::TimedCacheSupport::InternallySynchronizedTraits<
+                Cache::TimedCacheSupport::TrackExpirationTraits<Cache::TimedCacheSupport::DefaultTraits<String, optional<UserInfo>>>>;
             Cache::TimedCache<String, optional<UserInfo>, UICACHETRAITS_> fAccessToken2UserInfo{30s};
         };
         unique_ptr<Cache_> fCache_;
-
-    private:
-        nonvirtual void ClearOldStuffFromCache_ () const;
     };
 
 }

@@ -199,11 +199,10 @@ namespace Stroika::Foundation::Cache {
         /**
          * @brief InternallySynchronizedTraits same as argument traits, but resetting the kInternallySynchronized to eInternallySynchronized
          * 
-         * @tparam KEY 
-         * @tparam VALUE 
          * @tparam TRAITS 
          */
-        template <typename KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
+        template <typename TRAITS>
+            requires (TimedCacheSupport::ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
         struct InternallySynchronizedTraits : TRAITS {
             static constexpr inline Execution::InternallySynchronized kInternallySynchronized{Execution::InternallySynchronized::eInternallySynchronized};
         };
@@ -211,11 +210,10 @@ namespace Stroika::Foundation::Cache {
         /**
          * @brief take argument TRAITS, and set to track-expires-at mode.
          * 
-         * @tparam KEY 
-         * @tparam VALUE 
          * @tparam TRAITS 
          */
-        template <typename KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
+        template <typename TRAITS>
+            requires (TimedCacheSupport::ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
         struct TrackExpirationTraits : TRAITS {
             static constexpr inline bool kTrackFreshness{false};
             static constexpr inline bool kTrackExpiration{true};
@@ -719,7 +717,7 @@ namespace Stroika::Foundation::Cache {
      * @tparam TRAITS 
      */
     template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    using SynchronizedTimedCache = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<KEY, VALUE, TRAITS>>;
+    using SynchronizedTimedCache = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TRAITS>>;
 
 }
 

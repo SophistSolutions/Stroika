@@ -416,8 +416,6 @@ UserInfo UserInfo::FromWireFormat (const TypedBLOB& src)
 Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration, const Options& options)
     : fProviderConfiguration_{providerConfiguration}
     , fOptions_{options}
-    , fMaybeLock_{options.fInternallySyncrhonized == eInternallySynchronized ? VirtualLockable::Make<recursive_mutex> ()
-                                                                             : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
     , fCache_{options.fCaching ? make_unique<Cache_> () : nullptr}
 {
 }
@@ -425,9 +423,6 @@ Fetcher::Fetcher (const ProviderConfiguration& providerConfiguration, const Opti
 Fetcher::Fetcher (const Fetcher& src)
     : fProviderConfiguration_{src.fProviderConfiguration_}
     , fOptions_{src.fOptions_}
-    , fMaybeLock_{src.fOptions_.fInternallySyncrhonized == eInternallySynchronized
-                      ? VirtualLockable::Make<recursive_mutex> ()
-                      : VirtualLockable::Make<Debug::AssertExternallySynchronizedMutex> ()}
     , fCache_{src.fCache_ ? make_unique<Cache_> () : nullptr}
 {
 }
@@ -438,11 +433,12 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     Debug::TraceContextBumper ctx{"OAuth::Fetcher::GetToken", "tr={}"_f, tr};
 #endif
     auto nonCachingFetcher = [&] () -> TokenResponse {
+        using namespace IO::Network::Transfer;
         URI  tokenRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.token_uri, RuntimeErrorException{"no token_uri"sv});
-        auto connection      = IO::Network::Transfer::Connection::New ();
+        auto connection      = Connection::New ();
         try {
             //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (tr.ToWireFormat ().fData));
-            IO::Network::Transfer::Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());
+            Response r = connection.POST (tokenRequestURI, tr.ToWireFormat ());
             //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
             return TokenResponse::FromWireFormat (r.GetTypedData ());
         }
@@ -453,7 +449,6 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     };
     auto r = nonCachingFetcher ();
     if (fCache_) {
-        scoped_lock        critSec{fMaybeLock_};
         optional<UserInfo> uInfo = nullopt;
         if (r.id_token) {
             // @todo
@@ -469,7 +464,6 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
         }
         fCache_->fAccessToken2UserInfo.Add (r.access_token, uInfo, r.expires_at.As<Time::TimePointSeconds> ());
     }
-    ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("returning: {}"_f, r);
 #endif
@@ -482,15 +476,15 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
     Debug::TraceContextBumper ctx{"OAuth::Fetcher::RevokeTokens", "tr={}"_f, tr};
 #endif
     if (fCache_) {
-        scoped_lock critSec{fMaybeLock_};
         // remove references to the argument access_token (we dont cache refresh tokens currently)
         fCache_->fAccessToken2UserInfo.Remove (tr.access_token);
     }
     if (optional<URI> revokeURI = fProviderConfiguration_.revocation_endpoint) {
-        auto connection = IO::Network::Transfer::Connection::New ();
+        using namespace IO::Network::Transfer;
+        auto connection = Connection::New ();
         try {
             //DbgTrace ("Sending={}"_f, Streams::BinaryToText::Convert (tr.ToWireFormat ().fData));
-            [[maybe_unused]] IO::Network::Transfer::Response r = connection.POST (*revokeURI, tr.ToWireFormat ());
+            [[maybe_unused]] Response r = connection.POST (*revokeURI, tr.ToWireFormat ());
         }
         catch (...) {
             DbgTrace ("Fetcher::RevokeTokens: exception={}"_f, current_exception ());
@@ -534,13 +528,19 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"OAuth::Fetcher::GetUserInfo", "accessToken={}"_f, accessToken};
 #endif
+    if (fCache_) {
+        // AccessToken can be in cache, but with no user info (if we got back GetToken result, but no ID-Token).
+        if (optional<optional<UserInfo>> oou = fCache_->fAccessToken2UserInfo.Lookup (accessToken); oou and *oou) {
+            return **oou;
+        }
+    }
     auto nonCachingFetcher = [&] () -> UserInfo {
         using namespace IO::Network::Transfer;
         URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
         auto authInfo   = Connection::Options::Authentication{"Bearer "sv + accessToken};
         auto connection = Connection::New (Connection::Options{.fAuthentication = authInfo});
         try {
-            IO::Network::Transfer::Response r = connection.GET (userInfoRequestURI);
+            Response r = connection.GET (userInfoRequestURI);
             //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
             return UserInfo::FromWireFormat (r.GetTypedData ());
         }
@@ -549,42 +549,32 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
             Execution::ReThrow ();
         }
     };
-    if (fCache_) {
-        scoped_lock critSec{fMaybeLock_};
-        // AccessToken can be in cache, but with no user info (if we got back GetToken result, but no ID-Token).
-        if (optional<optional<UserInfo>> oou = fCache_->fAccessToken2UserInfo.Lookup (accessToken); oou and *oou) {
-            return **oou;
-        }
-    }
     UserInfo userInfo = nonCachingFetcher ();
     if (fCache_) {
         /// if this is first time we've seen the access_code (load balancing situation where another server generates access_code and we dont see it)
         // we still need to know how long the user_info is valid for - so ask, and if we cannot tell, make a conservative guess
-        unique_lock                      tmpLock{fMaybeLock_};
         optional<Time::TimePointSeconds> accessTokenExpiresAt = fCache_->fAccessToken2UserInfo.GetExpiration (accessToken);
-        if (accessTokenExpiresAt == nullopt)
-            tmpLock.unlock (); // don't hold lock while fetching
-        if (optional<TokenIntrospectionResponse> o = FetchTokenIntrospection_ (accessToken)) {
-            accessTokenExpiresAt = o->expires_at.As<Time::TimePointSeconds> ();
+        if (accessTokenExpiresAt == nullopt) {
+            if (optional<TokenIntrospectionResponse> o = FetchTokenIntrospectionQueitly_ (accessToken)) {
+                accessTokenExpiresAt = o->expires_at.As<Time::TimePointSeconds> ();
+            }
+            else {
+                // @todo this should be option/configurable behavior
+                static constexpr auto kWAG_ = 30s;
+                Time::DateTime        t     = Time::DateTime::NowUTC () + kWAG_;
+                accessTokenExpiresAt        = t.As<Time::TimePointSeconds> ();
+            }
         }
-        else {
-            // @todo this should be option/configurable behavior
-            static constexpr auto kWAG_ = 30s;
-            Time::DateTime        t     = Time::DateTime::NowUTC () + kWAG_;
-            accessTokenExpiresAt        = t.As<Time::TimePointSeconds> ();
-        }
-        tmpLock.lock (); // restore lock before add to cache
         Assert (accessTokenExpiresAt);
         fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo, *accessTokenExpiresAt);
     }
-    ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("returning: {}"_f, userInfo);
 #endif
     return userInfo;
 }
 
-optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospection_ (const String& accessToken) const
+optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospectionQueitly_ (const String& accessToken) const
 {
     if (fProviderConfiguration_.introspection_endpoint) {
         // NYI, but no biggie cuz google doesn't either
@@ -592,8 +582,10 @@ optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospection_ (const St
         AssertNotImplemented ();
     }
     if (fProviderConfiguration_.tokeninfo_endpoint) {
-        auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{"Bearer "sv + accessToken};
-        auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = authInfo});
+        // non-standard approach, but the only one that works with google, the only provider I currently support!
+        using namespace IO::Network::Transfer;
+        auto authInfo   = Connection::Options::Authentication{"Bearer "sv + accessToken};
+        auto connection = Connection::New (Connection::Options{.fAuthentication = authInfo});
         try {
             // A successful request returns a JSON object containing information about the token, such as:
             // issued_to: The client ID to whom the token was issued.
@@ -606,29 +598,14 @@ optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospection_ (const St
             // hd: The hosted domain of the user if they belong to a Google Workspace account.
 
             // CLOSE to same as UserInfo - but all I use this for is the expiration info, so good enuf for that...
-            IO::Network::Transfer::Response r = connection.GET (*fProviderConfiguration_.tokeninfo_endpoint);
+            Response r = connection.GET (*fProviderConfiguration_.tokeninfo_endpoint);
             // DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
             return TokenIntrospectionResponse::FromWireFormat (r.GetTypedData ());
         }
         catch (...) {
-            DbgTrace ("Fetcher::FetchTokenInfo_: exception={}"_f, current_exception ());
-            Execution::ReThrow ();
+            DbgTrace ("Fetcher::FetchTokenIntrospectionQueitly_: exception={} - BEING IGNORED"_f, current_exception ());
+            return nullopt;
         }
     }
     return nullopt;
-}
-
-void Fetcher::ClearOldStuffFromCache_ () const
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx{"OAuth::ClearOldStuffFromCache_", 1ms};
-#endif
-    // quicky algorithm - hopefully good enuf for starters --LGP 2026-03-12
-    scoped_lock critSec{fMaybeLock_};
-    if (fCache_) {
-        if (Time::GetTickCount () > fCache_->fNextClearAt_) {
-            fCache_->fAccessToken2UserInfo.PurgeExpiredData ();
-            fCache_->fNextClearAt_ = Time::GetTickCount () + Cache_::kClearMaxFrequency_;
-        }
-    }
 }
