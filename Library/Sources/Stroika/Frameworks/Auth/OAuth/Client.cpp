@@ -555,16 +555,16 @@ optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospectionQueitly_ (c
             // hd: The hosted domain of the user if they belong to a Google Workspace account.
             //
             // Google TokenInfo Endpoint
-            // You can use this endpoint to "introspect" an access token by sending a GET request: 
+            // You can use this endpoint to "introspect" an access token by sending a GET request:
             // Endpoint: https://oauth2.googleapis.com/tokeninfo
-            // Parameter: access_token 
+            // Parameter: access_token
             // Example Request
             // http
             // GET https://oauth2.googleapis.com
             // Use code with caution.
             //
             // Expected JSON Response
-            // If the token is valid, Google returns metadata including the expiration time: 
+            // If the token is valid, Google returns metadata including the expiration time:
             // json
             // {
             // "azp": "123456789-example.apps.googleusercontent.com",
