@@ -16,10 +16,20 @@ namespace Stroika::Foundation::Cache {
     inline auto TimedCache<KEY, VALUE, TRAITS>::MyResult_::MakeCacheElement (const KEY& key) const -> CacheElement
     {
         if constexpr (TRAITS::kTrackFreshness) {
-            return CacheElement{.fKey = key, .fValue = fResult, .fLastRefreshedAt = fLastRefreshedAt};
+            if constexpr (same_as<void, VALUE>) {
+                return CacheElement{.fKey = key, .fExpiresAt = fExpiresAt};
+            }
+            else {
+                return CacheElement{.fKey = key, .fValue = fResult, .fExpiresAt = fExpiresAt};
+            }
         }
         else if constexpr (TRAITS::kTrackExpiration) {
-            return CacheElement{.fKey = key, .fValue = fResult, .fExpiresAt = fExpiresAt};
+            if constexpr (same_as<void, VALUE>) {
+                return CacheElement{.fKey = key, .fExpiresAt = fExpiresAt};
+            }
+            else {
+                return CacheElement{.fKey = key, .fValue = fResult, .fExpiresAt = fExpiresAt};
+            }
         }
     }
 
@@ -237,6 +247,24 @@ namespace Stroika::Foundation::Cache {
                 *expiresAt = i->second.fExpiresAt;
             }
             return i->second.fResult;
+        }
+    }
+    template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    optional<Time::TimePointSeconds> TimedCache<KEY, VALUE, TRAITS>::GetExpiration (typename Common::ArgByValueType<KEY> key) const
+    {
+        typename MyMapType_::const_iterator i = fMap_.find (key);
+        if (i == fMap_.end ()) {
+            return nullopt;
+        }
+        Time::TimePointSeconds now = Time::GetTickCount ();
+        if (Expired_ (i->second, now)) {
+            return nullopt;
+        }
+        if constexpr (TRAITS::kTrackExpiration) {
+            return i->second.fExpiresAt;
+        }
+        else if constexpr (TRAITS::kTrackFreshness) {
+            return i->second.fLastRefreshedAt + fMinimumAllowedFreshness_;
         }
     }
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>

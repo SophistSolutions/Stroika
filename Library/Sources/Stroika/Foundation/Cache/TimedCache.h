@@ -68,6 +68,7 @@ namespace Stroika::Foundation::Cache {
         // concept IKey = same_as<T,void> or copyable<T>;
 
         /**
+         * @brief any copyable type can use used as the value, with 'void' being a special sentinal type, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
          */
         template <typename T>
         concept IValue = same_as<T, void> or copyable<T>;
@@ -487,6 +488,12 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         * @brief Get the Expiration of object or nullopt of item expired/not in cache
+         */
+        nonvirtual optional<Time::TimePointSeconds> GetExpiration (typename Common::ArgByValueType<KEY> key) const;
+
+    public:
+        /**
          *  Usually one will use this as:
          *      \code
          *          VALUE v = cache.LookupValue (key, ts, [this] () -> VALUE {return this->realLookup(key); });
@@ -680,7 +687,7 @@ namespace Stroika::Foundation::Cache {
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
-            VALUE fResult;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fResult;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, Time::TimePointSeconds, Common::Empty> fExpiresAt;
 
