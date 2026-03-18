@@ -645,7 +645,6 @@ void Fetcher::ClearOldStuffFromCache_ () const
     // quicky algorithm - hopefully good enuf for starters --LGP 2026-03-12
     scoped_lock critSec{fMaybeLock_};
     if (fCache_) {
-        Time::DateTime now = Time::DateTime::Now ();
         if (Time::GetTickCount () > fCache_->fNextClearAt_) {
             fCache_->fTokens.PurgeExpiredData ();
             fCache_->fAccessToken2UserInfo.PurgeExpiredData ();
