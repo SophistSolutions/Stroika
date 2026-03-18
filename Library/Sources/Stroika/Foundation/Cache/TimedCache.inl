@@ -351,7 +351,7 @@ namespace Stroika::Foundation::Cache {
         // quickie inefficient implementation
         Containers::Mapping<KEY, MyResult_> tmp{this->fMap_};
         tmp.RetainAll (items);
-        fMap_ = tmp.As<MyMapType_> ();
+        fMap_ = tmp.template As<MyMapType_> ();
     }
     template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::clear ()
