@@ -453,8 +453,8 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     };
     auto r = nonCachingFetcher ();
     if (fCache_) {
-        scoped_lock critSec{fMaybeLock_};
-        fCache_->fAccessToken2Expiration.Add (r.access_token, r.expires_at, r.expires_at.As<Time::TimePointSeconds> ());
+        scoped_lock        critSec{fMaybeLock_};
+        optional<UserInfo> uInfo = nullopt;
         if (r.id_token) {
             // @todo
             // NOTE - ID_token doesnt contain EXACTLY same info as user_info endpoint - may need to update API to reflect this difference
@@ -467,6 +467,7 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
             // @todo if we got access token AND id token - parse out of ID token the user info and cache in
             // ...
         }
+        fCache_->fAccessToken2UserInfo.Add (r.access_token, uInfo, r.expires_at.As<Time::TimePointSeconds> ());
     }
     ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -483,7 +484,6 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
         // remove references to the argument access_token (we dont cache refresh tokens currently)
-        fCache_->fAccessToken2Expiration.Remove (tr.access_token);
         fCache_->fAccessToken2UserInfo.Remove (tr.access_token);
     }
     if (optional<URI> revokeURI = fProviderConfiguration_.revocation_endpoint) {
@@ -551,41 +551,31 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     };
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
-        if (optional<DateTime> od = fCache_->fAccessToken2Expiration.Lookup (accessToken)) {
-            if (optional<UserInfo> ou = fCache_->fAccessToken2UserInfo.Lookup (accessToken)) {
-                return *ou;
-            }
+        // AccessToken can be in cache, but with no user info (if we got back GetToken result, but no ID-Token).
+        if (optional<optional<UserInfo>> oou = fCache_->fAccessToken2UserInfo.Lookup (accessToken); oou and *oou) {
+            return **oou;
         }
     }
     UserInfo userInfo = nonCachingFetcher ();
     if (fCache_) {
         /// if this is first time we've seen the access_code (load balancing situation where another server generates access_code and we dont see it)
         // we still need to know how long the user_info is valid for - so ask, and if we cannot tell, make a conservative guess
-        optional<Time::TimePointSeconds> accessTokenExpiresAt;
-        {
-            unique_lock tmpLock{fMaybeLock_};
-            if (auto oate = fCache_->fAccessToken2Expiration.Lookup (accessToken)) {
-                accessTokenExpiresAt = oate->As<Time::TimePointSeconds> ();
-            }
-            else {
-                tmpLock.unlock (); // don't hold lock while fetching
-                if (optional<TokenIntrospectionResponse> o = FetchTokenIntrospection_ (accessToken)) {
-                    accessTokenExpiresAt = o->expires_at.As<Time::TimePointSeconds> ();
-                    tmpLock.lock (); // but re-lock to update data structures
-                    fCache_->fAccessToken2Expiration.Add (accessToken, o->expires_at, *accessTokenExpiresAt);
-                }
-                else {
-                    tmpLock.lock (); // but re-lock to update data structures
-                    static constexpr auto kWAG_ = 30s;
-                    Time::DateTime        t     = Time::DateTime::NowUTC () + kWAG_;
-                    accessTokenExpiresAt        = t.As<Time::TimePointSeconds> ();
-                    fCache_->fAccessToken2Expiration.Add (accessToken, t, *accessTokenExpiresAt);
-                }
-            }
+        unique_lock                      tmpLock{fMaybeLock_};
+        optional<Time::TimePointSeconds> accessTokenExpiresAt = fCache_->fAccessToken2UserInfo.GetExpiration (accessToken);
+        if (accessTokenExpiresAt == nullopt)
+            tmpLock.unlock (); // don't hold lock while fetching
+        if (optional<TokenIntrospectionResponse> o = FetchTokenIntrospection_ (accessToken)) {
+            accessTokenExpiresAt = o->expires_at.As<Time::TimePointSeconds> ();
         }
-        scoped_lock critSec{fMaybeLock_};
-        // fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo);
-        fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo);
+        else {
+            // @todo this should be option/configurable behavior
+            static constexpr auto kWAG_ = 30s;
+            Time::DateTime        t     = Time::DateTime::NowUTC () + kWAG_;
+            accessTokenExpiresAt        = t.As<Time::TimePointSeconds> ();
+        }
+        tmpLock.lock (); // restore lock before add to cache
+        Assert (accessTokenExpiresAt);
+        fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo, *accessTokenExpiresAt);
     }
     ClearOldStuffFromCache_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -638,8 +628,6 @@ void Fetcher::ClearOldStuffFromCache_ () const
     if (fCache_) {
         if (Time::GetTickCount () > fCache_->fNextClearAt_) {
             fCache_->fAccessToken2UserInfo.PurgeExpiredData ();
-            auto keys2Keep = fCache_->fAccessToken2UserInfo.Keys ();
-            fCache_->fAccessToken2Expiration.RetainAll (keys2Keep);
             fCache_->fNextClearAt_ = Time::GetTickCount () + Cache_::kClearMaxFrequency_;
         }
     }

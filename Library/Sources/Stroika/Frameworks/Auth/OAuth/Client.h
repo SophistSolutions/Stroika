@@ -269,6 +269,8 @@ namespace Stroika::Frameworks::Auth::OAuth {
          *  \note - confusingly - despite docs above to the contrary, if you are not getting a refresh_token back it could
          *          be because google doesn't return it except on the first get token call
          *          (https://stackoverflow.com/questions/10827920/not-receiving-google-oauth-refresh-token)
+         * 
+         *  \note this doesn't use the cache (if present) - and makes a remote WS call each time.
          */
         nonvirtual TokenResponse GetToken (const TokenRequest& tr) const;
 
@@ -291,21 +293,19 @@ namespace Stroika::Frameworks::Auth::OAuth {
          * 
          *  \note this MAY generate a slightly abbreviated user-info object, if the original access token was retrieved
          *        with an id_token (parsed out of that). To avoid that, if you want the full userInfo from the endpoint,
-         *        create a new Fetcher instance.
+         *        create a new Fetcher instance (copying the Fetcher loses the cache info in the copy).
          */
         nonvirtual UserInfo GetUserInfo (const String& accessToken) const;
 
     private:
-        //     Google TokenInfo Endpoint
-        // You can use this endpoint to "introspect" an access token by sending a GET request:
-        // Endpoint: https://oauth2.googleapis.com/tokeninfo
-        // Parameter: access_token
-        // Example Request
-        // http
-        // GET https://oauth2.googleapis.com
-
-        // Expected JSON Response
-        // If the token is valid, Google returns metadata including the expiration time:
+        //Google TokenInfo Endpoint:
+        //      You can use this endpoint to "introspect" an access token by sending a GET request:
+        //      Endpoint: https://oauth2.googleapis.com/tokeninfo
+        //          Parameter: access_token
+        //      Example Request
+        //          http  GET https://oauth2.googleapis.com
+        //      Expected JSON Response
+        //          If the token is valid, Google returns metadata including the expiration time:
         //
         // DOES NOT USE CACHE!!!
         // Only used so that when we are given an accessCode to get userInfo for - so we can know how long it remains active in the cache
@@ -329,11 +329,9 @@ namespace Stroika::Frameworks::Auth::OAuth {
             static constexpr auto  kClearMaxFrequency_{30s};
             Time::TimePointSeconds fNextClearAt_{Time::GetTickCount () + kClearMaxFrequency_};
 
-            using ACCESTOKENEXPIRATIONCAHCE_ = Cache::TimedCacheSupport::TrackExpirationTraits<String, DateTime>;
-            Cache::TimedCache<String, DateTime, ACCESTOKENEXPIRATIONCAHCE_> fAccessToken2Expiration{30s};
-
-            using UICACHETRAITS_ = Cache::TimedCacheSupport::TrackExpirationTraits<String, UserInfo>;
-            Cache::TimedCache<String, UserInfo, UICACHETRAITS_> fAccessToken2UserInfo{30s};
+            // user-info CAN be missing, and just validity and expiration date on access token can be the only info...
+            using UICACHETRAITS_ = Cache::TimedCacheSupport::TrackExpirationTraits<String, optional<UserInfo>>;
+            Cache::TimedCache<String, optional<UserInfo>, UICACHETRAITS_> fAccessToken2UserInfo{30s};
         };
         unique_ptr<Cache_> fCache_;
 
