@@ -5,6 +5,7 @@
 
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Containers/Association.h"
+#include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "Stroika/Foundation/DataExchange/Variant/FormURLEncoded/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/FormURLEncoded/Writer.h"
@@ -453,17 +454,14 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
         if (optional<TokenResponse> o = fCache_->fTokens.Lookup (tr)) {
-            auto now = DateTime::Now ();
-            if (o->expires_at <= now) {
-                return *o;
-            }
+            return *o;
         }
     }
     auto r = nonCachingFetcher ();
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
-        fCache_->fTokens.Add (tr, r);
-        fCache_->fAccessToken2Expiration.Add (r.access_token, r.expires_at);
+        fCache_->fTokens.Add (tr, r, r.expires_at.As<Time::TimePointSeconds> ());
+        fCache_->fAccessToken2Expiration.Add (r.access_token, r.expires_at, r.expires_at.As<Time::TimePointSeconds> ());
         if (r.id_token) {
             // @todo
             // NOTE - ID_token doesnt contain EXACTLY same info as user_info endpoint - may need to update API to reflect this difference
@@ -492,10 +490,10 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
         // remove references to the argument access_token (we dont cache refresh tokens currently)
-        fCache_->fTokens.RemoveAll (
-            [&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return tr.access_token == kvp.fValue.access_token; });
-        fCache_->fAccessToken2Expiration.RemoveIf (tr.access_token);
-        fCache_->fAccessToken2UserInfo.RemoveIf (tr.access_token);
+        fCache_->fTokens.RemoveAll ([&] (const auto& cacheElt) { return tr.access_token == cacheElt.fValue.access_token; });
+        fCache_->fAccessToken2Expiration.Remove (tr.access_token);
+        // fCache_->fAccessToken2UserInfo.RemoveIf (tr.access_token);
+        fCache_->fAccessToken2UserInfo.Remove (tr.access_token);
     }
     if (optional<URI> revokeURI = fProviderConfiguration_.revocation_endpoint) {
         auto connection = IO::Network::Transfer::Connection::New ();
@@ -543,12 +541,13 @@ json
 UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"OAuth::Fetcher::GetUserInfo", "accessToken={}"_f, tr};
+    Debug::TraceContextBumper ctx{"OAuth::Fetcher::GetUserInfo", "accessToken={}"_f, accessToken};
 #endif
     auto nonCachingFetcher = [&] () -> UserInfo {
+        using namespace IO::Network::Transfer;
         URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
-        auto authInfo   = IO::Network::Transfer::Connection::Options::Authentication{"Bearer "sv + accessToken};
-        auto connection = IO::Network::Transfer::Connection::New (IO::Network::Transfer::Connection::Options{.fAuthentication = authInfo});
+        auto authInfo   = Connection::Options::Authentication{"Bearer "sv + accessToken};
+        auto connection = Connection::New (Connection::Options{.fAuthentication = authInfo});
         try {
             IO::Network::Transfer::Response r = connection.GET (userInfoRequestURI);
             //DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
@@ -562,14 +561,8 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
         if (optional<DateTime> od = fCache_->fAccessToken2Expiration.Lookup (accessToken)) {
-            Time::DateTime now = Time::DateTime::Now ();
-            if (now > *od) {
-                fCache_->fAccessToken2UserInfo.RemoveIf (accessToken); // may as well remove if its expired
-            }
-            else {
-                if (optional<UserInfo> ou = fCache_->fAccessToken2UserInfo.Lookup (accessToken)) {
-                    return *ou;
-                }
+            if (optional<UserInfo> ou = fCache_->fAccessToken2UserInfo.Lookup (accessToken)) {
+                return *ou;
             }
         }
     }
@@ -577,22 +570,30 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     if (fCache_) {
         /// if this is first time we've seen the access_code (load balancing situation where another server generates access_code and we dont see it)
         // we still need to know how long the user_info is valid for - so ask, and if we cannot tell, make a conservative guess
+        optional<Time::TimePointSeconds> accessTokenExpiresAt;
         {
             unique_lock tmpLock{fMaybeLock_};
-            if (not fCache_->fAccessToken2Expiration.ContainsKey (accessToken)) {
+            if (auto oate = fCache_->fAccessToken2Expiration.Lookup (accessToken)) {
+                accessTokenExpiresAt = oate->As<Time::TimePointSeconds> ();
+            }
+            else {
                 tmpLock.unlock (); // don't hold lock while fetching
                 if (optional<TokenIntrospectionResponse> o = FetchTokenIntrospection_ (accessToken)) {
+                    accessTokenExpiresAt = o->expires_at.As<Time::TimePointSeconds> ();
                     tmpLock.lock (); // but re-lock to update data structures
-                    fCache_->fAccessToken2Expiration.Add (accessToken, o->expires_at);
+                    fCache_->fAccessToken2Expiration.Add (accessToken, o->expires_at, *accessTokenExpiresAt);
                 }
                 else {
                     tmpLock.lock (); // but re-lock to update data structures
                     static constexpr auto kWAG_ = 30s;
-                    fCache_->fAccessToken2Expiration.Add (accessToken, Time::DateTime::NowUTC () + kWAG_);
+                    Time::DateTime        t     = Time::DateTime::NowUTC () + kWAG_;
+                    accessTokenExpiresAt        = t.As<Time::TimePointSeconds> ();
+                    fCache_->fAccessToken2Expiration.Add (accessToken, t, *accessTokenExpiresAt);
                 }
             }
         }
         scoped_lock critSec{fMaybeLock_};
+        // fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo);
         fCache_->fAccessToken2UserInfo.Add (accessToken, userInfo);
     }
     ClearOldStuffFromCache_ ();
@@ -646,10 +647,10 @@ void Fetcher::ClearOldStuffFromCache_ () const
     if (fCache_) {
         Time::DateTime now = Time::DateTime::Now ();
         if (Time::GetTickCount () > fCache_->fNextClearAt_) {
-            fCache_->fTokens.RemoveAll ([&] (const KeyValuePair<TokenRequest, TokenResponse>& kvp) { return now > kvp.fValue.expires_at; });
+            fCache_->fTokens.PurgeExpiredData ();
+            fCache_->fAccessToken2UserInfo.PurgeExpiredData ();
             auto keys2Keep = fCache_->fAccessToken2UserInfo.Keys ();
             fCache_->fAccessToken2Expiration.RetainAll (keys2Keep);
-            fCache_->fAccessToken2UserInfo.RetainAll (keys2Keep);
             fCache_->fNextClearAt_ = Time::GetTickCount () + Cache_::kClearMaxFrequency_;
         }
     }

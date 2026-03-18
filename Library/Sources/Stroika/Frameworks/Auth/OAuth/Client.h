@@ -6,6 +6,7 @@
 
 #include "Stroika/Frameworks/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/GUID.h"
@@ -315,17 +316,27 @@ namespace Stroika::Frameworks::Auth::OAuth {
          * NOTE that fMaybeLock_ applies to BOTH cache and ?? - not sure what else there is???
          * So why not  use Syncrhonized? Cuz we dont have maybe-syncrhonized?
          */
-        const ProviderConfiguration        fProviderConfiguration_;
-        const Options                      fOptions_;
-        mutable Execution::VirtualLockable fMaybeLock_; // either Debug::AssertExternallySyncrhonized or std::recursive_mutex
+        const ProviderConfiguration fProviderConfiguration_;
+        const Options               fOptions_;
+
+        // VirtualLockable is either Debug::AssertExternallySyncrhonized or std::recursive_mutex
+        // Note - even though only non-const data is Cache, and 3 separate caches all which could
+        // be internally synchronized, use internally syncrhonized caches, but dont bother since
+        // we want to keep them coherent. However, COULD do all that just using Synchronized<Cache_> - may
+        // still switch to that... --LGP 2026-03-17
+        mutable Execution::VirtualLockable fMaybeLock_;
         struct Cache_ {
             static constexpr auto  kClearMaxFrequency_{30s};
             Time::TimePointSeconds fNextClearAt_{Time::GetTickCount () + kClearMaxFrequency_};
 
-            // @todo REIMPLEMENT with new Cache layer code to support this - TTLCacher
-            Containers::Mapping<TokenRequest, TokenResponse> fTokens;
-            Containers::Mapping<String, DateTime>            fAccessToken2Expiration;
-            Containers::Mapping<String, UserInfo>            fAccessToken2UserInfo;
+            using TOKTEN_REQ_CACHETRAITS_ = Cache::TimedCacheSupport::TrackExpirationTraits<TokenRequest, TokenResponse>;
+            Cache::TimedCache<TokenRequest, TokenResponse, TOKTEN_REQ_CACHETRAITS_> fTokens{30};
+
+            using ACCESTOKENEXPIRATIONCAHCE_ = Cache::TimedCacheSupport::TrackExpirationTraits<String, DateTime>;
+            Cache::TimedCache<String, DateTime, ACCESTOKENEXPIRATIONCAHCE_> fAccessToken2Expiration{30s};
+
+            using UICACHETRAITS_ = Cache::TimedCacheSupport::TrackExpirationTraits<String, UserInfo>;
+            Cache::TimedCache<String, UserInfo, UICACHETRAITS_> fAccessToken2UserInfo{30s};
         };
         unique_ptr<Cache_> fCache_;
 
