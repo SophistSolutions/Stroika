@@ -305,27 +305,7 @@ const ObjectVariantMapper TokenIntrospectionResponse::kMapper = [] () {
     mapper.AddCommonType<optional<String>> ();
     mapper.AddCommonType<DateTime> ();
     mapper.AddCommonType<Set<String>> ();
-#if 0
-    Google TokenInfo Endpoint
-        +You can use this endpoint to "introspect" an access token by sending a GET request:
-        +Endpoint: https://oauth2.googleapis.com/tokeninfo
-        +Parameter: access_token
-        +Example Request
-            +http GET https://oauth2.googleapis.com
-        +
-        +Expected JSON Response
-            +If the token is valid, Google returns metadata including the expiration time:
-            +json
-            +{
-            +  "azp": "123456789-example.apps.googleusercontent.com",
-            +  "aud": "123456789-example.apps.googleusercontent.com",
-            +  "sub": "111222333444555",
-            +  "scope": "https://www.googleapis.com/auth/userinfo.email openid",
-            +  "exp": "1710275200",   // Expiration time in Unix epoch format
-            +  "expires_in": "3599",  // Seconds remaining until expiration
-            +  "email": "user@example.com",
-            +  "email_verified": "true"
-#endif
+    // @todo Introspection API INCOMPLETE.... - but need to test with provider that supports it to flesh this out usefully
     mapper.AddClass<TokenIntrospectionResponse> ({
         // expires_at in wire-format is expires_in seconds into future
         {"expires_in"sv, &TokenIntrospectionResponse::expires_at,
@@ -496,33 +476,6 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
     }
 }
 
-#if 0
-Google TokenInfo Endpoint
-You can use this endpoint to "introspect" an access token by sending a GET request: 
-Endpoint: https://oauth2.googleapis.com/tokeninfo
-Parameter: access_token 
-Example Request
-http
-GET https://oauth2.googleapis.com
-Use code with caution.
-
-Expected JSON Response
-If the token is valid, Google returns metadata including the expiration time: 
-Google Cloud Documentation
-Google Cloud Documentation
-json
-{
-  "azp": "123456789-example.apps.googleusercontent.com",
-  "aud": "123456789-example.apps.googleusercontent.com",
-  "sub": "111222333444555",
-  "scope": "https://www.googleapis.com/auth/userinfo.email openid",
-  "exp": "1710275200",   // Expiration time in Unix epoch format
-  "expires_in": "3599",  // Seconds remaining until expiration
-  "email": "user@example.com",
-  "email_verified": "true"
-}
-#endif
-
 UserInfo Fetcher::GetUserInfo (const String& accessToken) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -535,6 +488,9 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
         }
     }
     auto nonCachingFetcher = [&] () -> UserInfo {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx2{"upstream oauth provider fetcher"};
+#endif
         using namespace IO::Network::Transfer;
         URI userInfoRequestURI = Memory::ValueOfOrThrow (fProviderConfiguration_.userinfo_endpoint, RuntimeErrorException{"no userinfo_endpoint"sv});
         auto authInfo   = Connection::Options::Authentication{"Bearer "sv + accessToken};
@@ -551,10 +507,10 @@ UserInfo Fetcher::GetUserInfo (const String& accessToken) const
     };
     UserInfo userInfo = nonCachingFetcher ();
     if (fCache_) {
-        /// if this is first time we've seen the access_code (load balancing situation where another server generates access_code and we dont see it)
-        // we still need to know how long the user_info is valid for - so ask, and if we cannot tell, make a conservative guess
         optional<Time::TimePointSeconds> accessTokenExpiresAt = fCache_->fAccessToken2UserInfo.GetExpiration (accessToken);
         if (accessTokenExpiresAt == nullopt) {
+            // if this is first time we've seen the access_code (e.g. load balancing situation where another server generates access_code and we dont see it)
+            // we still need to know how long the user_info is valid for - so ask, and if we cannot tell, make a conservative guess
             if (optional<TokenIntrospectionResponse> o = FetchTokenIntrospectionQueitly_ (accessToken)) {
                 accessTokenExpiresAt = o->expires_at.As<Time::TimePointSeconds> ();
             }
@@ -587,6 +543,7 @@ optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospectionQueitly_ (c
         auto authInfo   = Connection::Options::Authentication{"Bearer "sv + accessToken};
         auto connection = Connection::New (Connection::Options{.fAuthentication = authInfo});
         try {
+            //
             // A successful request returns a JSON object containing information about the token, such as:
             // issued_to: The client ID to whom the token was issued.
             // audience: The intended audience for the token.
@@ -596,8 +553,32 @@ optional<TokenIntrospectionResponse> Fetcher::FetchTokenIntrospectionQueitly_ (c
             // email: The user's email address.
             // verified_email: A boolean indicating if the email address is verified.
             // hd: The hosted domain of the user if they belong to a Google Workspace account.
-
+            //
+            // Google TokenInfo Endpoint
+            // You can use this endpoint to "introspect" an access token by sending a GET request: 
+            // Endpoint: https://oauth2.googleapis.com/tokeninfo
+            // Parameter: access_token 
+            // Example Request
+            // http
+            // GET https://oauth2.googleapis.com
+            // Use code with caution.
+            //
+            // Expected JSON Response
+            // If the token is valid, Google returns metadata including the expiration time: 
+            // json
+            // {
+            // "azp": "123456789-example.apps.googleusercontent.com",
+            // "aud": "123456789-example.apps.googleusercontent.com",
+            // "sub": "111222333444555",
+            // "scope": "https://www.googleapis.com/auth/userinfo.email openid",
+            // "exp": "1710275200",   // Expiration time in Unix epoch format
+            // "expires_in": "3599",  // Seconds remaining until expiration
+            // "email": "user@example.com",
+            // "email_verified": "true"
+            // }
+            //
             // CLOSE to same as UserInfo - but all I use this for is the expiration info, so good enuf for that...
+            //
             Response r = connection.GET (*fProviderConfiguration_.tokeninfo_endpoint);
             // DbgTrace ("rawResponse={}"_f, Streams::BinaryToText::Convert (r.GetData ()));
             return TokenIntrospectionResponse::FromWireFormat (r.GetTypedData ());
