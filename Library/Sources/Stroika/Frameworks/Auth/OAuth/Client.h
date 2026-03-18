@@ -329,9 +329,6 @@ namespace Stroika::Frameworks::Auth::OAuth {
             static constexpr auto  kClearMaxFrequency_{30s};
             Time::TimePointSeconds fNextClearAt_{Time::GetTickCount () + kClearMaxFrequency_};
 
-            using TOKTEN_REQ_CACHETRAITS_ = Cache::TimedCacheSupport::TrackExpirationTraits<TokenRequest, TokenResponse>;
-            Cache::TimedCache<TokenRequest, TokenResponse, TOKTEN_REQ_CACHETRAITS_> fTokens{30};
-
             using ACCESTOKENEXPIRATIONCAHCE_ = Cache::TimedCacheSupport::TrackExpirationTraits<String, DateTime>;
             Cache::TimedCache<String, DateTime, ACCESTOKENEXPIRATIONCAHCE_> fAccessToken2Expiration{30s};
 

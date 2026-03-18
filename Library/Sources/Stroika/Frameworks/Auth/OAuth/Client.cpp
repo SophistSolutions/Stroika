@@ -451,16 +451,9 @@ TokenResponse Fetcher::GetToken (const TokenRequest& tr) const
             Execution::ReThrow ();
         }
     };
-    if (fCache_) {
-        scoped_lock critSec{fMaybeLock_};
-        if (optional<TokenResponse> o = fCache_->fTokens.Lookup (tr)) {
-            return *o;
-        }
-    }
     auto r = nonCachingFetcher ();
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
-        fCache_->fTokens.Add (tr, r, r.expires_at.As<Time::TimePointSeconds> ());
         fCache_->fAccessToken2Expiration.Add (r.access_token, r.expires_at, r.expires_at.As<Time::TimePointSeconds> ());
         if (r.id_token) {
             // @todo
@@ -490,9 +483,7 @@ void Fetcher::RevokeTokens (const TokenRevocationRequest& tr) const
     if (fCache_) {
         scoped_lock critSec{fMaybeLock_};
         // remove references to the argument access_token (we dont cache refresh tokens currently)
-        fCache_->fTokens.RemoveAll ([&] (const auto& cacheElt) { return tr.access_token == cacheElt.fValue.access_token; });
         fCache_->fAccessToken2Expiration.Remove (tr.access_token);
-        // fCache_->fAccessToken2UserInfo.RemoveIf (tr.access_token);
         fCache_->fAccessToken2UserInfo.Remove (tr.access_token);
     }
     if (optional<URI> revokeURI = fProviderConfiguration_.revocation_endpoint) {
@@ -646,7 +637,6 @@ void Fetcher::ClearOldStuffFromCache_ () const
     scoped_lock critSec{fMaybeLock_};
     if (fCache_) {
         if (Time::GetTickCount () > fCache_->fNextClearAt_) {
-            fCache_->fTokens.PurgeExpiredData ();
             fCache_->fAccessToken2UserInfo.PurgeExpiredData ();
             auto keys2Keep = fCache_->fAccessToken2UserInfo.Keys ();
             fCache_->fAccessToken2Expiration.RetainAll (keys2Keep);
