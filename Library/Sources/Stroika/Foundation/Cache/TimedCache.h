@@ -61,6 +61,18 @@ namespace Stroika::Foundation::Cache {
         using Execution::InternallySynchronized;
 
         /**
+         * @brief @todo maybe allow void KEY - but some work todo this!
+         * 
+         */
+        // template <typename T>
+        // concept IKey = same_as<T,void> or copyable<T>;
+
+        /**
+         */
+        template <typename T>
+        concept IValue = same_as<T, void> or copyable<T>;
+
+        /**
          * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - disable automatic purging
          * 
          *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
@@ -85,7 +97,7 @@ namespace Stroika::Foundation::Cache {
          *  \note   kTrackExpiration not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
          */
         template <typename TRAITS, typename KEY, typename VALUE>
-        concept ITraits = copyable<KEY> and copyable<VALUE> and
+        concept ITraits = copyable<KEY> and IValue<VALUE> and
                           requires (TRAITS) {
                               typename TRAITS::KeyType;
                               typename TRAITS::ResultType;
@@ -113,7 +125,7 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \see ITraits<> above
          */
-        template <typename KEY, typename VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
+        template <typename KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
                   Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, bool TRACK_FRESHNESS = true,
                   bool TRACK_EXPIRATION = false, Cache::Statistics::IStatsType STATS_TYPE = Statistics::StatsType_DEFAULT,
 #if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
@@ -180,7 +192,7 @@ namespace Stroika::Foundation::Cache {
 
         /**
          */
-        template <typename KEY, typename VALUE>
+        template <typename KEY, IValue VALUE>
         using DefaultTraits = ExplicitTraits<KEY, VALUE>;
 
         /**
@@ -190,7 +202,7 @@ namespace Stroika::Foundation::Cache {
          * @tparam VALUE 
          * @tparam TRAITS 
          */
-        template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
+        template <typename KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
         struct InternallySynchronizedTraits : TRAITS {
             static constexpr inline Execution::InternallySynchronized kInternallySynchronized{Execution::InternallySynchronized::eInternallySynchronized};
         };
@@ -202,7 +214,7 @@ namespace Stroika::Foundation::Cache {
          * @tparam VALUE 
          * @tparam TRAITS 
          */
-        template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
+        template <typename KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = DefaultTraits<KEY, VALUE>>
         struct TrackExpirationTraits : TRAITS {
             static constexpr inline bool kTrackFreshness{false};
             static constexpr inline bool kTrackExpiration{true};
@@ -390,7 +402,7 @@ namespace Stroika::Foundation::Cache {
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
-    template <copyable KEY, copyable VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class TimedCache {
     public:
         using TraitsType = TRAITS;
