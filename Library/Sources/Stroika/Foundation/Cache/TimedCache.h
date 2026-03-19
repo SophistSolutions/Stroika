@@ -449,8 +449,7 @@ namespace Stroika::Foundation::Cache {
          */
         struct CacheElement {
             KEY   fKey;
-            VALUE fValue;
-
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fValue;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, Time::TimePointSeconds, Common::Empty> fExpiresAt;
         };
