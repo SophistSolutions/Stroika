@@ -27,8 +27,12 @@ namespace Stroika::Foundation::Common {
      *  \note   Use sizeof(T) <= 2*sizeof(void*) - because passing by reference involves copying one pointer and then if you
      *          access once, that's a second copy. So may as well copy 2 directly (very loosie goosy, as depends on
      *          relative cost of main memory access versus stack).
+     * 
+     *  \note   Sadly (from a template use simplicity point of view) - no good way to handle the 'void' case in current C++
+     *          (that I'm aware of --LGP 2026-03-19) - so at least give slightly better error message from compiler with requires
      */
     template <typename T, typename CHECK_T = remove_cvref_t<T>>
+        requires (not same_as<T, void>)
     using ArgByValueType = conditional_t<(sizeof (CHECK_T) <= 2 * sizeof (void*)) and is_trivially_copyable_v<CHECK_T>, CHECK_T, const CHECK_T&>;
 
 }
