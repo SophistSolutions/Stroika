@@ -381,6 +381,16 @@ namespace Stroika::Foundation::Cache {
      *              auto f1again = AccessFolder_ ("folder1");  // if you trace through the debug code you'll see this is a cache hit
      *          }
      *      \endcode
+     * 
+     *  \par Example Usage
+     *      Use 'void' as second type argument - just storing the first KEY value (like keyedCollection or just presence/absence test - like accessKeys)
+     *
+     *      \code
+     *          Cache::TimedCache<Characters::String, void> validAccessKeyCache{30s};
+     *          EXPECT_TRUE (validAccessKeyCache.GetExpiration ("fred") == nullopt);
+     *          validAccessKeyCache.Add ("fred");
+     *          EXPECT_TRUE (validAccessKeyCache.GetExpiration ("fred"));
+     *      \endcode
      *
      *  \note   This cache will keep using more and more memory until the cached items become
      *          out of date. For a cache that limits the max number of entries, use the @see LRUCache.
@@ -521,12 +531,22 @@ namespace Stroika::Foundation::Cache {
          *          o   The new item's expiration is either given by expiresAt or now+ttl, or defaults to
          *              GetMinimumFreshness()
          */
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result);
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds freshAsOf)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key)
+            requires (same_as<VALUE, void>);
+        template <typename V = VALUE>
+            requires (not same_as<V, void>)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result);
+        template <typename V = VALUE>
+            requires (not same_as<V, void>)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, Time::TimePointSeconds freshAsOf)
             requires (TRAITS::kTrackFreshness);
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::TimePointSeconds expiresAt)
+        template <typename V = VALUE>
+            requires (not same_as<V, void>)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, Time::TimePointSeconds expiresAt)
             requires (TRAITS::kTrackExpiration);
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, Time::DurationSeconds ttl)
+        template <typename V = VALUE>
+            requires (not same_as<V, void>)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, Time::DurationSeconds ttl)
             requires (TRAITS::kTrackExpiration);
 
     public:
@@ -651,8 +671,10 @@ namespace Stroika::Foundation::Cache {
                 }
             }
         }
+        template <typename V = VALUE>
+            requires (not same_as<V, void>)
         [[deprecated ("Since Stroika v3.0d23 - use kAutomaticPurgeFrequency in TRAITS instead of PurgeSpoiledDataFlagType")]]
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType purgeSpoiledData)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, PurgeSpoiledDataFlagType purgeSpoiledData)
         {
             scoped_lock critSec{fMaybeMutex_};
             if (purgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {

@@ -246,10 +246,22 @@ namespace {
             }
         }
     }
-    GTEST_TEST (Foundation_Caching, Test4_TimedCache_)
+    GTEST_TEST (Foundation_Caching, TimedCache_Basics)
     {
+        Debug::TraceContextBumper ctx{"TimedCache_Basics"};
         Test4_TimedCache_Private_::Example1_::DoIt ();
         Test4_TimedCache_Private_::Example2_::DoIt ();
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Caching, TimedCache_void_result)
+    {
+        Debug::TraceContextBumper                   ctx{"TimedCache_void_result"};
+        Cache::TimedCache<Characters::String, void> validAccessKeyCache{30s};
+        EXPECT_TRUE (validAccessKeyCache.GetExpiration ("fred") == nullopt);
+        validAccessKeyCache.Add ("fred");
+        EXPECT_TRUE (validAccessKeyCache.GetExpiration ("fred"));
     }
 }
 

@@ -313,7 +313,23 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result)
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key)
+        requires (same_as<VALUE, void>)
+    {
+        scoped_lock critSec{fMaybeMutex_};
+        AutomaticallyPurgeExpiredDataSometimes_ ();
+        Time::TimePointSeconds now = Time::GetTickCount ();
+        if constexpr (TRAITS::kTrackFreshness) {
+            fMap_.insert_or_assign (key, MyResult_{.fLastRefreshedAt = now});
+        }
+        else if constexpr (TRAITS::kTrackExpiration) {
+            fMap_.insert_or_assign (key, MyResult_{.fExpiresAt = now + fMinimumAllowedFreshness_});
+        }
+    }
+    template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename V>
+        requires (not same_as<V, void>)
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result)
     {
         scoped_lock critSec{fMaybeMutex_};
         AutomaticallyPurgeExpiredDataSometimes_ ();
@@ -326,7 +342,9 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
+    template <typename V>
+        requires (not same_as<V, void>)
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result,
                                               Time::TimePointSeconds freshAsOf)
         requires (TRAITS::kTrackFreshness)
     {
@@ -335,7 +353,9 @@ namespace Stroika::Foundation::Cache {
         fMap_.insert_or_assign (key, MyResult_{.fResult = result, .fLastRefreshedAt = freshAsOf});
     }
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> result,
+    template <typename V>
+        requires (not same_as<V, void>)
+    void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result,
                                               Time::TimePointSeconds expiresAt)
         requires (TRAITS::kTrackExpiration)
     {
@@ -344,8 +364,10 @@ namespace Stroika::Foundation::Cache {
         fMap_.insert_or_assign (key, MyResult_{.fResult = result, .fExpiresAt = expiresAt});
     }
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename V>
+        requires (not same_as<V, void>)
     inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY>   key,
-                                                     typename Common::ArgByValueType<VALUE> result, Time::DurationSeconds ttl)
+                                                     typename Common::ArgByValueType<V> result, Time::DurationSeconds ttl)
         requires (TRAITS::kTrackExpiration)
     {
         Add (key, result, ttl + Time::GetTickCount ());
