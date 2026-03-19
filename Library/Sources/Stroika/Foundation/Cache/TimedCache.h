@@ -37,8 +37,6 @@
  *              NOTE - I DID this already for CallerStalenessCache, so pretty easy, but for the case where KEY=void, you can
  *              really use either so LOW PRIORITY.
  *
- *      @todo   Improve Regression Tests And Docs (quite weak)
- *
  *      @todo   Perhaps use Stroika Mapping<> instead of std::map<> - and in that way - we can use aribtrary externally
  *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we don't ahve problem with
  *              creating the default, specify default type to create in the TRAITS object (so for example, if using Hash,

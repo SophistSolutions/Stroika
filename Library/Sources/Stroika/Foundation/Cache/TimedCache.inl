@@ -366,8 +366,8 @@ namespace Stroika::Foundation::Cache {
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename V>
         requires (not same_as<V, void>)
-    inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY>   key,
-                                                     typename Common::ArgByValueType<V> result, Time::DurationSeconds ttl)
+    inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result,
+                                                     Time::DurationSeconds ttl)
         requires (TRAITS::kTrackExpiration)
     {
         Add (key, result, ttl + Time::GetTickCount ());
