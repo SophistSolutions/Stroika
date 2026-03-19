@@ -1166,7 +1166,7 @@ namespace {
                     f ();
                 }
             },
-            Thread::eAutoStart, L"Consumer");
+            Thread::eAutoStart, "Consumer");
         Execution::Sleep (0.5);
         // make sure we can interrupt a blocking read on the BlockingQueue
         consumerThread.AbortAndWaitForDone ();
