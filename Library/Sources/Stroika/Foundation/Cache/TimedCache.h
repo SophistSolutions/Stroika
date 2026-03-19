@@ -60,7 +60,6 @@ namespace Stroika::Foundation::Cache {
 
         /**
          * @brief @todo maybe allow void KEY - but some work todo this!
-         * 
          */
         // template <typename T>
         // concept IKey = same_as<T,void> or copyable<T>;
@@ -92,7 +91,7 @@ namespace Stroika::Foundation::Cache {
         /**
          * @brief Check if argument TRAITS is a valid TRAITS object for TimedCache<>
          * 
-         *  \note   ONE of (but for now not both) - kTrackFreshness or kTrackExpiration
+         *  \note   ONE of (but not both) - kTrackFreshness or kTrackExpiration
          *  \note   kTrackExpiration not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
          */
         template <typename TRAITS, typename KEY, typename VALUE>
@@ -101,13 +100,19 @@ namespace Stroika::Foundation::Cache {
                               typename TRAITS::KeyType;
                               typename TRAITS::ResultType;
                               typename TRAITS::StatsType;
+                              typename TRAITS::TimeStampType;
+                              typename TRAITS::TimeStampDifferenceType;
                               { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
-                              { TRAITS::kAutomaticPurgeFrequency } -> convertible_to<Time::DurationSeconds>;
+                              { TRAITS::kAutomaticPurgeFrequency } -> convertible_to<typename TRAITS::TimeStampDifferenceType>;
                               { TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed } -> convertible_to<bool>;
                               { TRAITS::kTrackFreshness } -> convertible_to<bool>;
                               { TRAITS::kTrackExpiration } -> convertible_to<bool>;
+                              { TRAITS::GetCurrentTimestamp () } -> convertible_to<typename TRAITS::TimeStampType>;
+                              {
+                                  declval<typename TRAITS::TimeStampType> () - declval<typename TRAITS::TimeStampType> ()
+                              } -> convertible_to<typename TRAITS::TimeStampDifferenceType>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
-                          TRAITS::kTrackFreshness != TRAITS::kTrackExpiration and
+                          TRAITS::kTrackFreshness != TRAITS::kTrackExpiration and totally_ordered<typename TRAITS::TimeStampType> and
                           (not TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed or not TRAITS::kTrackExpiration) and
                           Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType> and
                           Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
@@ -124,19 +129,33 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \see ITraits<> above
          */
-        template <typename KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED = InternallySynchronized::eNotKnownInternallySynchronized,
-                  Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER = less<KEY>, bool TRACK_FRESHNESS = true,
-                  bool TRACK_EXPIRATION = false, Cache::Statistics::IStatsType STATS_TYPE = Statistics::StatsType_DEFAULT,
+        template <typename KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER,
+                  bool TRACK_FRESHNESS, bool TRACK_EXPIRATION, Cache::Statistics::IStatsType STATS_TYPE, typename TIMESTAMP_TYPE,
+                  typename TIMESTAMP_DIFFERENCE_TYPE, TIMESTAMP_TYPE (*GET_CURRENT_TIMESTAMP) (),
 #if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
-                  int
+                  int AUTOMATIC_PURGE_FREQUENCY_SECONDS,
 #else
-                  float
+                  float AUTOMATIC_PURGE_FREQUENCY_SECONDS,
 #endif
-                       AUTOMATIC_PURGE_FREQUENCY_SECONDS                   = kDefaultAutomaticPurgeFrequency,
-                  bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS = false>
+                  bool AUTO_MARK_DATA_AS_REFRESHED_ON_EACH_WRITABLE_ACCESS>
         struct ExplicitTraits {
             using KeyType    = KEY;
             using ResultType = VALUE;
+
+            /**
+             * @brief  Typically Time::TimePointSeconds
+             */
+            using TimeStampType = TIMESTAMP_TYPE;
+
+            /**
+             * @brief  Typically Time::DurationSeconds
+             */
+            using TimeStampDifferenceType = TIMESTAMP_DIFFERENCE_TYPE;
+
+            /**
+             * @brief Get the Current Timestamp object - defaults to Time::GetTickCount ()
+             */
+            static constexpr auto GetCurrentTimestamp{GET_CURRENT_TIMESTAMP};
 
             /**
              */
@@ -170,7 +189,7 @@ namespace Stroika::Foundation::Cache {
              * 
              *  \note - NOT triggered asynchronously, but from modifying APIs, like Add, or non-const Lookup()
              */
-            static constexpr Time::DurationSeconds kAutomaticPurgeFrequency{AUTOMATIC_PURGE_FREQUENCY_SECONDS};
+            static constexpr TimeStampDifferenceType kAutomaticPurgeFrequency{AUTOMATIC_PURGE_FREQUENCY_SECONDS};
 
             /*
              *  This is useful for behavior like an LRU cache, where you express INTEREST in an item by using it.
@@ -190,9 +209,15 @@ namespace Stroika::Foundation::Cache {
         };
 
         /**
+         * @brief 
+         * 
+         * @tparam KEY 
+         * @tparam VALUE 
          */
         template <typename KEY, IValue VALUE>
-        using DefaultTraits = ExplicitTraits<KEY, VALUE>;
+        using DefaultTraits =
+            ExplicitTraits<KEY, VALUE, InternallySynchronized::eNotKnownInternallySynchronized, less<KEY>, true, false, Statistics::StatsType_DEFAULT,
+                           Time::TimePointSeconds, Time::DurationSeconds, &Time::GetTickCount, kDefaultAutomaticPurgeFrequency, false>;
 
         /**
          * @brief InternallySynchronizedTraits same as argument traits, but resetting the kInternallySynchronized to eInternallySynchronized
@@ -416,6 +441,16 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         */
+        using TimeStampType = typename TRAITS::TimeStampType;
+
+    public:
+        /**
+         */
+        using TimeStampDifferenceType = typename TRAITS::TimeStampDifferenceType;
+
+    public:
+        /**
          * Note that TimedCache is copyable and moveable by value.
          */
         explicit TimedCache (const Time::Duration& minimumAllowedFreshness);
@@ -448,10 +483,10 @@ namespace Stroika::Foundation::Cache {
         /**
          */
         struct CacheElement {
-            KEY   fKey;
+            KEY                                          fKey;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fValue;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, Time::TimePointSeconds, Common::Empty> fExpiresAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
         };
 
     public:
@@ -482,20 +517,45 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note difference between const and non-const overloads is just that some extra bookkeeping can be done and kAutomaticallyMarkDataAsRefreshedEachTimeAccessed respected in non-const overload.
          */
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> keybd_event) const
             requires (TRAITS::kTrackFreshness);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr)
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key)
             requires (TRAITS::kTrackFreshness);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* expiresAt = nullptr) const
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key) const
             requires (TRAITS::kTrackExpiration);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, Time::TimePointSeconds* expiresAt = nullptr)
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key)
+            requires (TRAITS::kTrackExpiration);
+
+    public:
+        /**
+         *  \brief Returns the value associated with argument 'key', or nullopt, if its missing (missing same as expired). Can be used to retrieve lastRefreshedAt
+         * 
+         *  If lastRefreshedAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain the last time
+         *  the data was refreshed.
+         *  If expiresAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain expiresAt value.
+         * 
+         *  \note that the non-const overload of Lookup respects TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed, and will
+         *        auto-refresh the item (similar to LRUCache) if found.
+         * 
+         *  Occasionally, a caller might want to ASSURE it gets data, and just use the cached value if fresh enuf, and specify
+         *  a lookup lambda to fetch the actual data if its not fresh, in which case call LookupValue ().
+         *
+         *  \note difference between const and non-const overloads is just that some extra bookkeeping can be done and kAutomaticallyMarkDataAsRefreshedEachTimeAccessed respected in non-const overload.
+         */
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key) const
+            requires (TRAITS::kTrackFreshness);
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key)
+            requires (TRAITS::kTrackFreshness);
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key) const
+            requires (TRAITS::kTrackExpiration);
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> ke)
             requires (TRAITS::kTrackExpiration);
 
     public:
         /**
          * @brief Get the Expiration of object or nullopt of item expired/not in cache
          */
-        nonvirtual optional<Time::TimePointSeconds> GetExpiration (typename Common::ArgByValueType<KEY> key) const;
+        nonvirtual optional<TimeStampType> GetExpiration (typename Common::ArgByValueType<KEY> key) const;
 
     public:
         /**
@@ -523,7 +583,7 @@ namespace Stroika::Foundation::Cache {
         /**
          *  Updates/adds the given value associated with key.
          *      if TRAITS::kTrackFreshness (the default)
-         *          o   The new items freshness is GetTickCount (), or the value given as argument
+         *          o   The new items freshness is TRAITS::GetCurrentTimestamp (), or the value given as argument
          *      if TRAITS::kTrackExpiration
          *          o   The new item's expiration is either given by expiresAt or now+ttl, or defaults to
          *              GetMinimumFreshness()
@@ -535,15 +595,15 @@ namespace Stroika::Foundation::Cache {
         nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result);
         template <typename V = VALUE>
             requires (not same_as<V, void>)
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, Time::TimePointSeconds freshAsOf)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, TimeStampType freshAsOf)
             requires (TRAITS::kTrackFreshness);
         template <typename V = VALUE>
             requires (not same_as<V, void>)
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, Time::TimePointSeconds expiresAt)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, TimeStampType expiresAt)
             requires (TRAITS::kTrackExpiration);
         template <typename V = VALUE>
             requires (not same_as<V, void>)
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, Time::DurationSeconds ttl)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> result, TimeStampDifferenceType ttl)
             requires (TRAITS::kTrackExpiration);
 
     public:
@@ -615,13 +675,13 @@ namespace Stroika::Foundation::Cache {
             // DEPRECATED API
             scoped_lock                   critSec{fMaybeMutex_};
             typename MyMapType_::iterator i   = fMap_.find (key);
-            Time::TimePointSeconds        now = Time::GetTickCount ();
+            TimeStampType                 now = TRAITS::GetCurrentTimestamp ();
             if (i == fMap_.end ()) {
                 fStats_.IncrementMisses ();
                 return nullopt;
             }
             else {
-                Time::TimePointSeconds lastAccessThreshold = now - fMinimumAllowedFreshness_;
+                TimeStampType lastAccessThreshold = now - fMinimumAllowedFreshness_;
                 if (i->second.fLastRefreshedAt < lastAccessThreshold) {
                     /**
                      *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
@@ -635,7 +695,7 @@ namespace Stroika::Foundation::Cache {
                     return nullopt;
                 }
                 if (successfulLookupRefreshesAcceesFlag == LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed) {
-                    i->second.fLastRefreshedAt = Time::GetTickCount ();
+                    i->second.fLastRefreshedAt = TRAITS::GetCurrentTimestamp ();
                 }
                 fStats_.IncrementHits ();
                 return i->second.fResult;
@@ -679,10 +739,54 @@ namespace Stroika::Foundation::Cache {
             }
             typename MyMapType_::iterator i = fMap_.find (key);
             if (i == fMap_.end ()) {
-                fMap_.insert ({key, MyResult_{.fResult = result, .fLastRefreshedAt = Time::GetTickCount ()}});
+                fMap_.insert ({key, MyResult_{.fResult = result, .fLastRefreshedAt = TRAITS::GetCurrentTimestamp ()}});
             }
             else {
-                i->second = MyResult_{.fResult = result, .fLastRefreshedAt = Time::GetTickCount ()}; // overwrite if its already there
+                i->second = MyResult_{.fResult = result, .fLastRefreshedAt = TRAITS::GetCurrentTimestamp ()}; // overwrite if its already there
+            }
+        }
+        [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* lastRefreshedAt) const
+            requires (TRAITS::kTrackFreshness)
+        {
+            if (auto r = LookupDetails (key)) {
+                if (lastRefreshedAt != nullptr) {
+                    *lastRefreshedAt = get<2> (*r);
+                }
+                return get<1> (*r);
+            }
+        }
+        [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* lastRefreshedAt)
+            requires (TRAITS::kTrackFreshness)
+        {
+            if (auto r = LookupDetails (key)) {
+                if (lastRefreshedAt != nullptr) {
+                    *lastRefreshedAt = get<2> (*r);
+                }
+                return get<1> (*r);
+            }
+        }
+        [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* expiresAt) const
+            requires (TRAITS::kTrackExpiration)
+        {
+            if (auto r = LookupDetails (key)) {
+                if (expiresAt != nullptr) {
+                    *expiresAt = get<2> (*r);
+                }
+                return get<1> (*r);
+            }
+        }
+        [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* expiresAt)
+            requires (TRAITS::kTrackExpiration)
+        {
+            if (auto r = LookupDetails (key)) {
+                if (expiresAt != nullptr) {
+                    *expiresAt = get<2> (*r);
+                }
+                return get<1> (*r);
             }
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996);
@@ -695,8 +799,8 @@ namespace Stroika::Foundation::Cache {
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE MaybeMutexType_ fMaybeMutex_;
 
     private:
-        Time::DurationSeconds  fMinimumAllowedFreshness_;
-        Time::TimePointSeconds fNextAutoClearAt_;
+        TimeStampDifferenceType fMinimumAllowedFreshness_;
+        TimeStampType           fNextAutoClearAt_;
 
     private:
         nonvirtual void ClearOld_ ();
@@ -705,16 +809,16 @@ namespace Stroika::Foundation::Cache {
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fResult;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, Time::TimePointSeconds, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, Time::TimePointSeconds, Common::Empty> fExpiresAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
 
             nonvirtual CacheElement MakeCacheElement (const KEY& key) const;
         };
 
     private:
-        bool Expired_ (const MyResult_& r, Time::TimePointSeconds now) const
+        bool Expired_ (const MyResult_& r, TimeStampType now) const
             requires (TRAITS::kTrackFreshness);
-        static bool Expired_ (const MyResult_& r, Time::TimePointSeconds now)
+        static bool Expired_ (const MyResult_& r, TimeStampType now)
             requires (TRAITS::kTrackExpiration);
 
     private:
