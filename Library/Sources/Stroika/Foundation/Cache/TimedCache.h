@@ -59,10 +59,26 @@ namespace Stroika::Foundation::Cache {
         using Execution::InternallySynchronized;
 
         /**
+         * @brief does this cache have a KEY type (overwhelming YES, but sometimes handy to have 'singleton' cache, where you cache something, but just one of them)
+         * 
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          using Cache::SynchronizedCallerStalenessCache;
+         *          // one cache of network interfaces - but dont recompute it periodically
+         *          static SynchronizedCallerStalenessCache<void, Collection<NetworkInterface>> sCache_;
+         *          results = sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (kDefaultItemCacheLifetime_)),
+         *                                  [] () -> Collection<NetworkInterface> { return CollectAllNetworkInterfaces_ (); });
+         *      \endcode
+         */
+        template <typename KEY>
+        static constexpr bool IsKeyedCache = not same_as<KEY, void>;
+
+        /**
          * @brief @todo maybe allow void KEY - but some work todo this!
          */
-        // template <typename T>
-        // concept IKey = same_as<T,void> or copyable<T>;
+        template <typename T>
+        concept IKey = same_as<T, void> or copyable<T>;
 
         /**
          * @brief any copyable type can use used as the value, with 'void' being a special sentinal type, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
@@ -97,7 +113,7 @@ namespace Stroika::Foundation::Cache {
          *  \note   kTrackExpiration not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
          */
         template <typename TRAITS, typename KEY, typename VALUE>
-        concept ITraits = copyable<KEY> and IValue<VALUE> and
+        concept ITraits = IKey<KEY> and IValue<VALUE> and
                           requires (TRAITS) {
                               typename TRAITS::KeyType;
                               typename TRAITS::ResultType;
@@ -134,7 +150,7 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \see ITraits<> above
          */
-        template <typename KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER,
+        template <IKey KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER,
                   bool TRACK_FRESHNESS, bool TRACK_EXPIRATION, Cache::Statistics::IStatsType STATS_TYPE, typename TIMESTAMP_TYPE,
                   typename TIMESTAMP_DIFFERENCE_TYPE, TIMESTAMP_TYPE (*GET_CURRENT_TIMESTAMP) (),
 // IDEALLY if I can - TIMESTAMP_DIFFERENCE_TYPE DEFAULT_MAX_AGE;
@@ -234,7 +250,7 @@ namespace Stroika::Foundation::Cache {
          * @tparam KEY 
          * @tparam VALUE 
          */
-        template <typename KEY, IValue VALUE>
+        template <IKey KEY, IValue VALUE>
         using DefaultTraits =
             ExplicitTraits<KEY, VALUE, InternallySynchronized::eNotKnownInternallySynchronized, less<KEY>, true, false, Statistics::StatsType_DEFAULT,
                            Time::TimePointSeconds, Time::DurationSeconds, &Time::GetTickCount, kDefaultMaxAge, true, kDefaultAutomaticPurgeFrequency, false>;
@@ -454,7 +470,7 @@ namespace Stroika::Foundation::Cache {
      *  @see CallerStalenessCache
      *  @see LRUCache
      */
-    template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class TimedCache {
     public:
         using TraitsType = TRAITS;
@@ -537,16 +553,24 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note difference between const and non-const overloads is just that some extra bookkeeping can be done and kAutomaticallyMarkDataAsRefreshedEachTimeAccessed respected in non-const overload.
          */
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key) const
-            requires (TRAITS::kTrackExpiration);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key)
-            requires (TRAITS::kTrackExpiration);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key) const
-            requires (TRAITS::kTrackFreshness);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key)
-            requires (TRAITS::kTrackFreshness);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampDifferenceType maxAge) const
-            requires (TRAITS::kTrackFreshness);
+        template <typename K = KEY>
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key) const
+            requires (TRAITS::kTrackExpiration and TimedCacheSupport::IsKeyedCache<K>);
+        template <typename K = KEY>
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key)
+            requires (TRAITS::kTrackExpiration and TimedCacheSupport::IsKeyedCache<K>);
+        template <typename K = KEY>
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key) const
+            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IsKeyedCache<K>);
+        template <typename K = KEY>
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key)
+            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IsKeyedCache<K>);
+        template <typename K = KEY>
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
+            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IsKeyedCache<K>);
+        template <typename K = KEY>
+        nonvirtual optional<VALUE> Lookup () const
+            requires (not TimedCacheSupport::IsKeyedCache<K>);
 
     public:
         /**
@@ -785,8 +809,9 @@ namespace Stroika::Foundation::Cache {
                 i->second = MyResult_{.fResult = result, .fLastRefreshedAt = TRAITS::GetCurrentTimestamp ()}; // overwrite if its already there
             }
         }
+        template <typename K = KEY>
         [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* lastRefreshedAt) const
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampType* lastRefreshedAt) const
             requires (TRAITS::kTrackFreshness)
         {
             if (auto r = LookupDetails (key)) {
@@ -796,8 +821,9 @@ namespace Stroika::Foundation::Cache {
                 return get<1> (*r);
             }
         }
+        template <typename K = KEY>
         [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* lastRefreshedAt)
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampType* lastRefreshedAt)
             requires (TRAITS::kTrackFreshness)
         {
             if (auto r = LookupDetails (key)) {
@@ -807,8 +833,9 @@ namespace Stroika::Foundation::Cache {
                 return get<1> (*r);
             }
         }
+        template <typename K = KEY>
         [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* expiresAt) const
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampType* expiresAt) const
             requires (TRAITS::kTrackExpiration)
         {
             if (auto r = LookupDetails (key)) {
@@ -818,8 +845,9 @@ namespace Stroika::Foundation::Cache {
                 return get<1> (*r);
             }
         }
+        template <typename K = KEY>
         [[deprecated ("Since Stroika v3.0d23 - use LookupDetails")]]
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampType* expiresAt)
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampType* expiresAt)
             requires (TRAITS::kTrackExpiration)
         {
             if (auto r = LookupDetails (key)) {
