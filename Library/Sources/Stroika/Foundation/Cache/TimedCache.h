@@ -77,6 +77,8 @@ namespace Stroika::Foundation::Cache {
          */
         constexpr float kNoAutomaticPurgeSentinal = -1.0f;
 
+        constexpr float kDefaultMaxAge = 30.0;
+
         /**
          * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - default to purging every 30 seconds
          * 
@@ -135,6 +137,13 @@ namespace Stroika::Foundation::Cache {
         template <typename KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IInOrderComparer<KEY> STRICT_INORDER_COMPARER,
                   bool TRACK_FRESHNESS, bool TRACK_EXPIRATION, Cache::Statistics::IStatsType STATS_TYPE, typename TIMESTAMP_TYPE,
                   typename TIMESTAMP_DIFFERENCE_TYPE, TIMESTAMP_TYPE (*GET_CURRENT_TIMESTAMP) (),
+// IDEALLY if I can - TIMESTAMP_DIFFERENCE_TYPE DEFAULT_MAX_AGE;
+#if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
+                  int DEFAULT_MAX_AGE,
+#else
+                  float DEFAULT_MAX_AGE,
+#endif
+                  bool PER_CACHE_MAX_AGE,
 #if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
                   int AUTOMATIC_PURGE_FREQUENCY_SECONDS,
 #else
@@ -159,6 +168,16 @@ namespace Stroika::Foundation::Cache {
              * @brief Get the Current Timestamp object - defaults to Time::GetTickCount ()
              */
             static constexpr auto GetCurrentTimestamp{GET_CURRENT_TIMESTAMP};
+
+            /**
+             * @brief specifies a default MAX_AGE (can be UNDEFINED or Empty). If defined 
+             */
+            static constexpr conditional_t<(DEFAULT_MAX_AGE < 0), Common::Empty, TimeStampDifferenceType> kDefaultMaxAge{DEFAULT_MAX_AGE};
+
+            /**
+             * @brief allow a per-cache MAX_AGE to be defined. If allowed, and the default (traits) is specified, that is the default for the cache instance.
+             */
+            static constexpr bool kPerCacheMaxAge{PER_CACHE_MAX_AGE};
 
             /**
              */
@@ -218,7 +237,7 @@ namespace Stroika::Foundation::Cache {
         template <typename KEY, IValue VALUE>
         using DefaultTraits =
             ExplicitTraits<KEY, VALUE, InternallySynchronized::eNotKnownInternallySynchronized, less<KEY>, true, false, Statistics::StatsType_DEFAULT,
-                           Time::TimePointSeconds, Time::DurationSeconds, &Time::GetTickCount, kDefaultAutomaticPurgeFrequency, false>;
+                           Time::TimePointSeconds, Time::DurationSeconds, &Time::GetTickCount, kDefaultMaxAge, true, kDefaultAutomaticPurgeFrequency, false>;
 
         /**
          * @brief InternallySynchronizedTraits same as argument traits, but resetting the kInternallySynchronized to eInternallySynchronized

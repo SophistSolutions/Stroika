@@ -430,7 +430,7 @@ namespace Stroika::Foundation::Cache {
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
     VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY> key, TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller)
-            requires (TRAITS::kTrackFreshness)
+        requires (TRAITS::kTrackFreshness)
     {
         auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
         if (optional<VALUE> o = Lookup (key, maxAge)) {
