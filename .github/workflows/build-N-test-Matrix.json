@@ -252,12 +252,11 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS-14-XCode-15.3-Debug",
+        "displayTargetName": "MacOS-14-XCode-15.4-Debug",
         "runs_on": "macos-14",
-        "xcode": "15.3",
+        "xcode": "15.4",
         "config_name": "Debug",
-        "#": "no boost cuz stopped building just on xcode 15.3 and PITA for me to debug right now",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --boost no --mongo-cxx-driver no",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
         "run_on_branch": "always"
     },
     {
