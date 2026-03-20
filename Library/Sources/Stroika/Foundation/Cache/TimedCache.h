@@ -454,7 +454,7 @@ namespace Stroika::Foundation::Cache {
         /**
          * Note that TimedCache is copyable and moveable by value.
          */
-        explicit TimedCache (const Time::Duration& minimumAllowedFreshness);
+        explicit TimedCache (const TimeStampDifferenceType& maxAge);
         TimedCache (TimedCache&& src) noexcept;
         TimedCache (const TimedCache& src);
 
@@ -472,13 +472,13 @@ namespace Stroika::Foundation::Cache {
          *  So an item added 30 seconds ago (freshness = 30s), would be thrown away/not returned as part of the cache
          *  if the minimum allowed freshness was 5 seconds.
          */
-        nonvirtual Time::Duration GetMaxAge () const;
+        nonvirtual TimeStampDifferenceType GetMaxAge () const;
 
     public:
         /**
          *  @see GetMaxAge ()
          */
-        nonvirtual void SetMaxAge (Time::Duration minimumAllowedFreshness);
+        nonvirtual void SetMaxAge (TimeStampDifferenceType maxAge);
 
     public:
         /**
@@ -546,13 +546,15 @@ namespace Stroika::Foundation::Cache {
          *  \note difference between const and non-const overloads is just that some extra bookkeeping can be done and kAutomaticallyMarkDataAsRefreshedEachTimeAccessed respected in non-const overload.
          */
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key) const
+            requires (TRAITS::kTrackExpiration);
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key)
+            requires (TRAITS::kTrackExpiration);
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key) const
             requires (TRAITS::kTrackFreshness);
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key)
             requires (TRAITS::kTrackFreshness);
-        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key) const
-            requires (TRAITS::kTrackExpiration);
-        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> ke)
-            requires (TRAITS::kTrackExpiration);
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<KEY> key, TimeStampDifferenceType maxAge) const
+            requires (TRAITS::kTrackFreshness);
 
     public:
         /**
