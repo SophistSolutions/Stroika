@@ -693,7 +693,8 @@ sub     NeedsFmtLib_
 		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER);
 		if ("$^O" eq "darwin") {
 			my $xcodeVer = getXCodeVersion_ ();
-			return $xcodeVer < 15.3;	## seems to work as of xcode 15.3, but not 15.2
+			# No longer appears to work in 15.3 and 15.4 as of 2026-03-20
+			return $xcodeVer < 15.5;	## seems to work as of xcode 15.3, but not 15.2
 		}
 		else {
 			# For <format> support - in clang++15 - appears good enuf (if you enable --experimental...) - but that is sometimes unvailable, so dont count on it
