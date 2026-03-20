@@ -256,7 +256,8 @@
         "runs_on": "macos-14",
         "xcode": "15.4",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
+        "#": "no mongo-cxx-driver cuz stopped building just on xcode 15.4 and PITA for me to debug right now",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --mongo-cxx-driver no",
         "run_on_branch": "always"
     },
     {
