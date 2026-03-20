@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Cache {
             using StatsType = STATS_TYPE;
 
             /**
-             *  How often TimedCache-modifying operations will automatically trigger a call to PurgeExpiredData ()
+             *  How often TimedCache-modifying operations will automatically trigger a call to ClearExpiredData ()
              * 
              *  This defaults to kDefaultAutomaticPurgeFrequency (but can be set to NEVER (kNoAutomaticPurgeSentinal)).
              * 
@@ -637,7 +637,7 @@ namespace Stroika::Foundation::Cache {
          * 
          *  Can be triggered automatically - see TRAITS::kAutomaticPurgeFrequency
          */
-        nonvirtual void PurgeExpiredData ();
+        nonvirtual void ClearExpiredData ();
 
     public:
         /**
@@ -645,7 +645,7 @@ namespace Stroika::Foundation::Cache {
         nonvirtual typename TRAITS::StatsType GetStats () const;
 
     private:
-        nonvirtual void AutomaticallyPurgeExpiredDataSometimes_ ();
+        nonvirtual void AutomaticallyClearExpiredDataSometimes_ ();
 
     public:
         DISABLE_COMPILER_MSC_WARNING_START (4996);
@@ -657,9 +657,9 @@ namespace Stroika::Foundation::Cache {
         using PurgeSpoiledDataFlagType
             [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]] =
                 TimedCacheSupport::PurgeSpoiledDataFlagType;
-        [[deprecated ("Since Stroika v3.0d1, use PurgeExpiredData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
+        [[deprecated ("Since Stroika v3.0d1, use ClearExpiredData or count on Add's purgeSpoiledData parameter)")]] nonvirtual void DoBookkeeping ()
         {
-            PurgeExpiredData ();
+            ClearExpiredData ();
         }
         [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] Time::Duration GetTimeout () const
         {
@@ -735,7 +735,7 @@ namespace Stroika::Foundation::Cache {
         {
             scoped_lock critSec{fMaybeMutex_};
             if (purgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
-                AutomaticallyPurgeExpiredDataSometimes_ ();
+                AutomaticallyClearExpiredDataSometimes_ ();
             }
             typename MyMapType_::iterator i = fMap_.find (key);
             if (i == fMap_.end ()) {
@@ -803,7 +803,9 @@ namespace Stroika::Foundation::Cache {
         TimeStampType           fNextAutoClearAt_;
 
     private:
-        nonvirtual void ClearOld_ ();
+        nonvirtual void ClearExpired_ ();
+        nonvirtual void ClearExpired_ (TimeStampDifferenceType minFreshness)
+            requires (TRAITS::kTrackFreshness);
 
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
@@ -816,7 +818,7 @@ namespace Stroika::Foundation::Cache {
         };
 
     private:
-        bool Expired_ (const MyResult_& r, TimeStampType now) const
+        static bool Expired_ (const MyResult_& r, TimeStampType now, TimeStampDifferenceType minFreshness)
             requires (TRAITS::kTrackFreshness);
         static bool Expired_ (const MyResult_& r, TimeStampType now)
             requires (TRAITS::kTrackExpiration);
