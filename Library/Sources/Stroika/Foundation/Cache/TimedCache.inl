@@ -428,6 +428,52 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<KEY> key, TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller)
+            requires (TRAITS::kTrackFreshness)
+    {
+        auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
+        if (optional<VALUE> o = Lookup (key, maxAge)) {
+            return *o;
+        }
+        else {
+            /**
+             *  unlocking the shared lock while fetching the new value (optionally with a write lock).
+             */
+            readLock.unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
+
+            constexpr bool kHoldWriteLockDuringCacheFill = false;
+            // never used true, and caused some trouble- need to invesigate
+            // possibly add to TRAITS and retry
+#if 0
+            *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
+            *  This is because typically, filling the cache
+            *  will be slow (otherwise you would be us using the SynchronizedTimedCache).
+            *
+            *  But this has the downside, that you could try filling the cache multiple times with the same value.
+            *
+            *  Thats perfectly safe, but not speedy.
+            *
+            *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
+            *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
+            *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
+#endif
+            if constexpr (kHoldWriteLockDuringCacheFill) {
+                // Avoid two threds calling cache for same key value at the same time
+                [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
+                VALUE                   v         = cacheFiller (key);
+                newRWLock.unlock ();
+                Add (key, v); // public API so will re-acquire lock
+                return v;
+            }
+            else {
+                VALUE v = cacheFiller (key);
+                Add (key, v, maxAge); // public API so will re-acquire lock
+                return v;
+            }
+        }
+    }
+    template <copyable KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key)
         requires (same_as<VALUE, void>)
     {

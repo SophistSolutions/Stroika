@@ -583,6 +583,9 @@ namespace Stroika::Foundation::Cache {
          */
         template <Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
         nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, CACHE_FILLTER_T&& cacheFiller);
+        template <Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<KEY> key, TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller)
+            requires (TRAITS::kTrackFreshness);
 
     public:
         /**
