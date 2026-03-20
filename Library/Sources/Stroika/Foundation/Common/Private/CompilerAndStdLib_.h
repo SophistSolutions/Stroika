@@ -2275,8 +2275,8 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Ch
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #if defined(__clang_major__) && !defined(__APPLE__)
 // broken on ubuntu clang++-15, but the xcode version of clang++ (uses much newer LIBCPP_VERSION) - seems OK
-// appears fixed in XCode16
-#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// appears fixed in XCode16 (but broken in XCode 15.3 which now inculudes clang++ version: 15.0.7 and reports as > 15????--LGP 2026-03-20)
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
 #endif
