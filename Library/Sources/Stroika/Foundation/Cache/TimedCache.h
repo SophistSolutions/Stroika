@@ -111,6 +111,9 @@ namespace Stroika::Foundation::Cache {
                               {
                                   declval<typename TRAITS::TimeStampType> () - declval<typename TRAITS::TimeStampType> ()
                               } -> convertible_to<typename TRAITS::TimeStampDifferenceType>;
+                              {
+                                  declval<typename TRAITS::TimeStampType> () + declval<typename TRAITS::TimeStampDifferenceType> ()
+                              } -> convertible_to<typename TRAITS::TimeStampType>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
                           TRAITS::kTrackFreshness != TRAITS::kTrackExpiration and totally_ordered<typename TRAITS::TimeStampType> and
                           (not TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed or not TRAITS::kTrackExpiration) and
@@ -162,14 +165,12 @@ namespace Stroika::Foundation::Cache {
             static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
 
             /**
-             * SO FAR ALL WE HAVE IMPLEMENTED
              * @brief freshness means when last added/updated (or if kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) then last accessed too)
              */
             static constexpr inline bool kTrackFreshness{TRACK_FRESHNESS};
 
             /**
-             * SO FAR NOT IMPLEMENTED
-             * @brief Track on a per-item when it expires. If not tracked, we use expiresAt as whenAdded + minFreshness
+             * @brief Track on a per-item when it expires. If not tracked, we use expiresAt as whenAdded + maxAge
              */
             static constexpr inline bool kTrackExpiration{TRACK_EXPIRATION};
 
@@ -471,13 +472,13 @@ namespace Stroika::Foundation::Cache {
          *  So an item added 30 seconds ago (freshness = 30s), would be thrown away/not returned as part of the cache
          *  if the minimum allowed freshness was 5 seconds.
          */
-        nonvirtual Time::Duration GetMinimumAllowedFreshness () const;
+        nonvirtual Time::Duration GetMaxAge () const;
 
     public:
         /**
-         *  @see GetMinimumAllowedFreshness ()
+         *  @see GetMaxAge ()
          */
-        nonvirtual void SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness);
+        nonvirtual void SetMaxAge (Time::Duration minimumAllowedFreshness);
 
     public:
         /**
@@ -517,14 +518,16 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note difference between const and non-const overloads is just that some extra bookkeeping can be done and kAutomaticallyMarkDataAsRefreshedEachTimeAccessed respected in non-const overload.
          */
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> keybd_event) const
-            requires (TRAITS::kTrackFreshness);
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key)
-            requires (TRAITS::kTrackFreshness);
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key) const
             requires (TRAITS::kTrackExpiration);
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key)
             requires (TRAITS::kTrackExpiration);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key) const
+            requires (TRAITS::kTrackFreshness);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key)
+            requires (TRAITS::kTrackFreshness);
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, TimeStampDifferenceType maxAge) const
+            requires (TRAITS::kTrackFreshness);
 
     public:
         /**
@@ -638,6 +641,8 @@ namespace Stroika::Foundation::Cache {
          *  Can be triggered automatically - see TRAITS::kAutomaticPurgeFrequency
          */
         nonvirtual void ClearExpiredData ();
+        nonvirtual void ClearExpiredData (TimeStampDifferenceType maxAge)
+            requires (TRAITS::kTrackFreshness);
 
     public:
         /**
@@ -661,14 +666,25 @@ namespace Stroika::Foundation::Cache {
         {
             ClearExpiredData ();
         }
-        [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] Time::Duration GetTimeout () const
+        [[deprecated ("Since Stroika 3.0d1 use GetMaxAge")]] Time::Duration GetTimeout () const
         {
-            return GetMinimumAllowedFreshness ();
+            return GetMaxAge ();
         }
-        [[deprecated ("Since Stroika 3.0d1 use GetMinimumAllowedFreshness")]] void SetTimeout (Time::Duration timeout)
+        [[deprecated ("Since Stroika 3.0d1 use GetMaxAge")]] void SetTimeout (Time::Duration timeout)
         {
-            SetMinimumAllowedFreshness (timeout);
+            SetMaxAge (timeout);
         }
+        [[deprecated ("Since Stroika 3.0d23 use GetMaxAge")]]
+        nonvirtual Time::Duration GetMinimumAllowedFreshness () const
+        {
+            return GetMaxAge ();
+        }
+        [[deprecated ("Since Stroika 3.0d23 use SetMaxAge")]]
+        nonvirtual void SetMinimumAllowedFreshness (Time::Duration minimumAllowedFreshness)
+        {
+            SetMaxAge (minimumAllowedFreshness);
+        }
+
         [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]]
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
         {
@@ -681,7 +697,7 @@ namespace Stroika::Foundation::Cache {
                 return nullopt;
             }
             else {
-                TimeStampType lastAccessThreshold = now - fMinimumAllowedFreshness_;
+                TimeStampType lastAccessThreshold = now - fMaxAge_;
                 if (i->second.fLastRefreshedAt < lastAccessThreshold) {
                     /**
                      *  Before Stroika 3.0d1, we used to remove the entry from the list (an optimization). But
@@ -799,12 +815,12 @@ namespace Stroika::Foundation::Cache {
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE MaybeMutexType_ fMaybeMutex_;
 
     private:
-        TimeStampDifferenceType fMinimumAllowedFreshness_;
+        TimeStampDifferenceType fMaxAge_;
         TimeStampType           fNextAutoClearAt_;
 
     private:
         nonvirtual void ClearExpired_ ();
-        nonvirtual void ClearExpired_ (TimeStampDifferenceType minFreshness)
+        nonvirtual void ClearExpired_ (TimeStampDifferenceType maxAge)
             requires (TRAITS::kTrackFreshness);
 
     private:
@@ -818,7 +834,7 @@ namespace Stroika::Foundation::Cache {
         };
 
     private:
-        static bool Expired_ (const MyResult_& r, TimeStampType now, TimeStampDifferenceType minFreshness)
+        static bool Expired_ (const MyResult_& r, TimeStampType now, TimeStampDifferenceType maxAge)
             requires (TRAITS::kTrackFreshness);
         static bool Expired_ (const MyResult_& r, TimeStampType now)
             requires (TRAITS::kTrackExpiration);
