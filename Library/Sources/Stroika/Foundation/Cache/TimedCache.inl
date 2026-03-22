@@ -470,6 +470,24 @@ namespace Stroika::Foundation::Cache {
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
+    auto TimedCache<KEY, VALUE, TRAITS>::GetExpiration () const -> optional<TimeStampType>
+        requires (not TimedCacheSupport::IKeyedCache<K>)
+    {
+        if (optional<MyResult_> ov = fMap_) {
+            if (Expired_ (*ov, fMaxAge_)) {
+                /**
+                 *  Cannot update fMap_ to indicate item expired const constant overload
+                 */
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            fStats_.IncrementHits ();
+            return ov->fResult;
+        }
+        return nullopt;
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::GetExpiration (typename Common::ArgByValueType<K> key) const -> optional<TimeStampType>
         requires (TimedCacheSupport::IKeyedCache<K>)
     {

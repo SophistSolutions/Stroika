@@ -624,6 +624,9 @@ namespace Stroika::Foundation::Cache {
          * @brief Get the Expiration of object or nullopt of item expired/not in cache
          */
         template <typename K = KEY>
+        nonvirtual optional<TimeStampType> GetExpiration () const
+            requires (not TimedCacheSupport::IKeyedCache<K>);
+        template <typename K = KEY>
         nonvirtual optional<TimeStampType> GetExpiration (typename Common::ArgByValueType<K> key) const
             requires (TimedCacheSupport::IKeyedCache<K>);
 
