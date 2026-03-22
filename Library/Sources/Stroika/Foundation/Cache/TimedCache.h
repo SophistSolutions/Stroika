@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Cache {
          *          using Cache::SynchronizedCallerStalenessCache;
          *          // one cache of network interfaces - but dont recompute it periodically
          *          static SynchronizedCallerStalenessCache<void, Collection<NetworkInterface>> sCache_;
-         *          results = sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (kDefaultItemCacheLifetime_)),
+         *          results = sCache_.LookupValue (allowedStaleness.value_or (kDefaultItemCacheLifetime_),
          *                                  [] () -> Collection<NetworkInterface> { return CollectAllNetworkInterfaces_ (); });
          *      \endcode
          */
@@ -306,15 +306,9 @@ namespace Stroika::Foundation::Cache {
      *        With a TimedCache, its evicted only when its overly aged. With an LRUCache, its more random, and depends a
      *        bit on luck (when using hashing) and how recently an item was last accessed.
      *
-     *  \note   Principal difference between CallerStalenessCache and TimedCache lies in where you specify the
-     *          max-age for an item: with CallerStalenessCache, its specified on each lookup call (ie with the caller), and with
-     *          TimedCache, the expiry is stored with each cached item.
-     *
-     *          Because of this, when you use either of these caches with a KEY=void (essentially to cache a single thing)
-     *          they become indistinguishable.
-     *
-     *          N.B. the KEY=void functionality is NYI for TimedCache, so best to use CallerStalenessCache for that, at least for
-     *          now.
+     *  \note   TimedCache (since Stroika v3.0d23) fully supports the caching model from the Stroika v2.1
+     *          CallerStalenessCache (which is now obsolete). If the cache uses 'Freshness' instead of 'Expired' (the default)
+     *          then the various Lookup APIs fully support specifying a (non-defaulted, caller specified) 'staleness'.
      *
      *  \par Example Usage
      *      Use TimedCache to avoid needlessly redundant lookups
@@ -469,7 +463,6 @@ namespace Stroika::Foundation::Cache {
      *  \note   we REQUIRE (without a way to enforce) - that the STATS object be internally synchronized, so that we can
      *          maintain statistics, without requiring the lookup method be non-const; this is only for tuning/debugging, anyhow...
      *
-     *  @see CallerStalenessCache
      *  @see LRUCache
      */
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
@@ -1011,7 +1004,7 @@ namespace Stroika::Foundation::Cache {
      *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
      *          {
      *              static CallerStalenessCache<void, optional<InternetAddress>> sCache_;
-     *              return sCache_.Lookup (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<InternetAddress> {
+     *              return sCache_.Lookup (allowedStaleness.value_or (30), []() -> optional<InternetAddress> {
      *                  ...
      *                  return IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()};
      *              });
@@ -1026,7 +1019,7 @@ namespace Stroika::Foundation::Cache {
      *          {
      *              static CallerStalenessCache<int, optional<int>> sCache_;
      *              try {
-     *                  return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=](int v) -> optional<int> {
+     *                  return sCache_.LookupValue (value, allowedStaleness.value_or (30), [=](int v) -> optional<int> {
      *                      return v;   // typically more expensive computation
      *                  });
      *              }
@@ -1047,7 +1040,7 @@ namespace Stroika::Foundation::Cache {
      *          {
      *              using Cache::CallerStalenessCache;
      *              static CallerStalenessCache<void, optional<int>> sCache_;
-     *              return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), [] () -> optional<int> {
+     *              return sCache_.LookupValue (allowedStaleness.value_or (30), [] () -> optional<int> {
      *                  ++sCalls1_;
      *                  return 1;
      *              });
@@ -1076,7 +1069,6 @@ namespace Stroika::Foundation::Cache {
             : inherited{30s} // @todo fix
         {
         }
-        // @todo everything here likely deprecated
         [[deprecated ("Since Stroika v3.0d23, usually just get rid of call and argument can be used directly in situ")]]
         static TimeStampType Ago (TimeStampDifferenceType backThisTime)
         {
