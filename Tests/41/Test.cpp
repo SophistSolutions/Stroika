@@ -686,7 +686,7 @@ namespace {
                 using namespace Cache;
                 SynchronizedCallerStalenessCache<int, int> cache;
                 auto mapValue = [&cache] (int value, optional<Time::DurationSeconds> allowedStaleness = {}) -> int {
-                    return cache.LookupValue (value, cache.Ago (allowedStaleness.value_or (30s)), [=] (int v) {
+                    return cache.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) {
                         return v; // could be more expensive computation
                     });
                 };
