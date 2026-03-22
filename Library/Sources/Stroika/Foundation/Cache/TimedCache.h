@@ -249,9 +249,13 @@ namespace Stroika::Foundation::Cache {
          * @tparam VALUE 
          */
         template <IKey KEY, IValue VALUE>
-        using DefaultTraits =
-            ExplicitTraits<KEY, VALUE, InternallySynchronized::eNotKnownInternallySynchronized, less<KEY>, true, false, Statistics::StatsType_DEFAULT,
-                           Time::TimePointSeconds, Time::DurationSeconds, &Time::GetTickCount, kDefaultMaxAge, true, kDefaultAutomaticPurgeFrequency, false>;
+        using DefaultTraits = ExplicitTraits<KEY, VALUE, InternallySynchronized::eNotKnownInternallySynchronized, less<KEY>, true, false,
+                                             Statistics::StatsType_DEFAULT, Time::TimePointSeconds, Time::DurationSeconds, &Time::GetTickCount,
+#if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
+                                             (int)
+#endif
+                                                 kDefaultMaxAge,
+                                             true, kDefaultAutomaticPurgeFrequency, false>;
 
         /**
          * @brief InternallySynchronizedTraits same as argument traits, but resetting the kInternallySynchronized to eInternallySynchronized
