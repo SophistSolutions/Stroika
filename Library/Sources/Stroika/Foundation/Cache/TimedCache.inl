@@ -86,10 +86,16 @@ namespace Stroika::Foundation::Cache {
         return *this;
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    inline bool TimedCache<KEY, VALUE, TRAITS>::Expired_ (const MyResult_& r, TimeStampType expireIfOlder)
+        requires (TRAITS::kTrackFreshness)
+    {
+        return r.fLastRefreshedAt < expireIfOlder;
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline bool TimedCache<KEY, VALUE, TRAITS>::Expired_ (const MyResult_& r, TimeStampType now, TimeStampDifferenceType maxAge)
         requires (TRAITS::kTrackFreshness)
     {
-        return now > r.fLastRefreshedAt + maxAge;
+        return Expired_ (r, now - maxAge);
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline bool TimedCache<KEY, VALUE, TRAITS>::Expired_ (const MyResult_& r, TimeStampType now)
@@ -241,6 +247,29 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
         requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const
+    {
+        shared_lock                         critSec{fMaybeMutex_};
+        typename MyMapType_::const_iterator i = fMap_.find (key);
+        if (i == fMap_.end ()) {
+            fStats_.IncrementMisses ();
+            return nullopt;
+        }
+        else {
+            if (Expired_ (i->second, maxAge)) {
+                /**
+                 *  Cannot update fMap_ to indicate item expired const constant overload
+                 */
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            fStats_.IncrementHits ();
+            return i->second.fResult;
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K>
+        requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
     {
         shared_lock                         critSec{fMaybeMutex_};
@@ -304,11 +333,10 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
         requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (TimeStampDifferenceType maxAge) const
+    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (TimeStampType maxAge) const
     {
         if (optional<MyResult_> ov = fMap_) {
-            TimeStampType now = TRAITS::GetCurrentTimestamp ();
-            if (Expired_ (*ov, now, maxAge)) {
+            if (Expired_ (*ov, maxAge)) {
                 /**
                  *  Cannot update fMap_ to indicate item expired const constant overload
                  */
@@ -319,6 +347,13 @@ namespace Stroika::Foundation::Cache {
             return ov->fResult;
         }
         return nullopt;
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K>
+        requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+    inline optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (TimeStampDifferenceType maxAge) const
+    {
+        return Lookup (TRAITS::GetCurrentTimestamp () - maxAge);
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
@@ -470,40 +505,7 @@ namespace Stroika::Foundation::Cache {
             return *o;
         }
         else {
-            /**
-             *  unlocking the shared lock while fetching the new value (optionally with a write lock).
-             */
-            readLock.unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
-
-            constexpr bool kHoldWriteLockDuringCacheFill = false;
-            // never used true, and caused some trouble- need to invesigate
-            // possibly add to TRAITS and retry
-#if 0
-            *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
-            *  This is because typically, filling the cache
-            *  will be slow (otherwise you would be us using the SynchronizedTimedCache).
-            *
-            *  But this has the downside, that you could try filling the cache multiple times with the same value.
-            *
-            *  Thats perfectly safe, but not speedy.
-            *
-            *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
-            *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
-            *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
-#endif
-            if constexpr (kHoldWriteLockDuringCacheFill) {
-                // Avoid two threds calling cache for same key value at the same time
-                [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
-                VALUE                   v         = cacheFiller (key);
-                newRWLock.unlock ();
-                Add (key, v); // public API so will re-acquire lock
-                return v;
-            }
-            else {
-                VALUE v = cacheFiller (key);
-                Add (key, v); // public API so will re-acquire lock
-                return v;
-            }
+            return LookupValueAdder_<KEY> (key, &readLock, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -516,14 +518,81 @@ namespace Stroika::Foundation::Cache {
             return *o;
         }
         else {
-            /**
-             *  unlocking the shared lock while fetching the new value (optionally with a write lock).
-             */
-            readLock.unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
+            return LookupValueAdder_<KEY> (key, &readLock, forward<CACHE_FILLTER_T> (cacheFiller));
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+        requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<K> key, TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
+    {
+        auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
+        if (optional<VALUE> o = Lookup (key, maxAge)) {
+            return *o;
+        }
+        else {
+            return LookupValueAdder_<KEY> (key, &readLock, forward<CACHE_FILLTER_T> (cacheFiller));
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
+        requires (not TimedCacheSupport::IKeyedCache<K>)
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (CACHE_FILLTER_T&& cacheFiller)
+    {
+        if (optional<VALUE> ov = Lookup ()) {
+            return *ov;
+        }
+        else {
+            return LookupValueAdder_ (forward<CACHE_FILLTER_T> (cacheFiller));
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
+        requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller)
+    {
+        if (optional<VALUE> ov = Lookup (maxAge)) {
+            return *ov;
+        }
+        else {
+            return LookupValueAdder_ (forward<CACHE_FILLTER_T> (cacheFiller));
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
+        requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
+    {
+        if (optional<VALUE> ov = Lookup (maxAge)) {
+            return *ov;
+        }
+        else {
+            return LookupValueAdder_ (forward<CACHE_FILLTER_T> (cacheFiller));
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
+        requires (not TimedCacheSupport::IKeyedCache<K>)
+    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller)
+    {
+        VALUE r = forward<CACHE_FILLTER_T> (cacheFiller) ();
+        Add (r);
+        return r;
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+        requires (TimedCacheSupport::IKeyedCache<K>)
+    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValueAdder_ (typename Common::ArgByValueType<K> key,
+                                                                    shared_lock<MaybeMutexType_>* lock, CACHE_FILLTER_T&& cacheFiller)
+    {
+        /**
+         *  unlocking the shared lock while fetching the new value (optionally with a write lock).
+         */
+        lock->unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
 
-            constexpr bool kHoldWriteLockDuringCacheFill = false;
-            // never used true, and caused some trouble- need to invesigate
-            // possibly add to TRAITS and retry
+        constexpr bool kHoldWriteLockDuringCacheFill = false;
+        // never used true, and caused some trouble- need to invesigate
+        // possibly add to TRAITS and retry
 #if 0
             *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
             *  This is because typically, filling the cache
@@ -537,60 +606,19 @@ namespace Stroika::Foundation::Cache {
             *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
             *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
 #endif
-            if constexpr (kHoldWriteLockDuringCacheFill) {
-                // Avoid two threds calling cache for same key value at the same time
-                [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
-                VALUE                   v         = cacheFiller (key);
-                newRWLock.unlock ();
-                Add (key, v); // public API so will re-acquire lock
-                return v;
-            }
-            else {
-                VALUE v = cacheFiller (key);
-                Add (key, v); // public API so will re-acquire lock
-                return v;
-            }
+        if constexpr (kHoldWriteLockDuringCacheFill) {
+            // Avoid two threds calling cache for same key value at the same time
+            [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
+            VALUE                   v         = forward<CACHE_FILLTER_T> (cacheFiller) (key);
+            newRWLock.unlock ();
+            Add (key, v); // public API so will re-acquire lock
+            return v;
         }
-    }
-    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
-        requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<K> key, TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
-    {
-        // API DEPRECATED - DIFF based one easier? Or deprecate the other? @todo
-        return LookupValue (key, TraitsType::GetCurrentTimestamp () - maxAge, forward<CACHE_FILLTER_T> (cacheFiller));
-    }
-    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
-        requires (not TimedCacheSupport::IKeyedCache<K>)
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (CACHE_FILLTER_T&& cacheFiller)
-    {
-        if (optional<VALUE> ov = Lookup ()) {
-            return *ov;
+        else {
+            VALUE v = forward<CACHE_FILLTER_T> (cacheFiller) (key);
+            Add (key, v); // public API so will re-acquire lock
+            return v;
         }
-        VALUE r = forward<CACHE_FILLTER_T> (cacheFiller) ();
-        Add (r);
-        return r;
-    }
-    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
-        requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller)
-    {
-        if (optional<VALUE> ov = Lookup (maxAge)) {
-            return *ov;
-        }
-        VALUE r = forward<CACHE_FILLTER_T> (cacheFiller) ();
-        Add (r);
-        return r;
-    }
-    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
-        requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
-    {
-        // API DEPRECATED - DIFF based one easier? Or deprecate the other? @todo
-        return LookupValue (TraitsType::GetCurrentTimestamp () - maxAge, forward<CACHE_FILLTER_T> (cacheFiller));
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>

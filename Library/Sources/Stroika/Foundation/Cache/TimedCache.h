@@ -567,6 +567,9 @@ namespace Stroika::Foundation::Cache {
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key);
         template <typename K = KEY>
             requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const;
+        template <typename K = KEY>
+            requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const;
         template <typename K = KEY>
             requires (not TimedCacheSupport::IKeyedCache<K>)
@@ -574,6 +577,9 @@ namespace Stroika::Foundation::Cache {
         template <typename K = KEY>
             requires (not TimedCacheSupport::IKeyedCache<K>)
         nonvirtual optional<VALUE> Lookup ();
+        template <typename K = KEY>
+            requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+        nonvirtual optional<VALUE> Lookup (TimeStampType maxAge) const;
         template <typename K = KEY>
             requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual optional<VALUE> Lookup (TimeStampDifferenceType maxAge) const;
@@ -607,6 +613,9 @@ namespace Stroika::Foundation::Cache {
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key)
             requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const
+            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
+        template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
             requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
@@ -623,11 +632,8 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Usually one will use this as:
-         *      \code
-         *          VALUE v = cache.LookupValue (key, ts, [this] () -> VALUE {return this->realLookup(key); });
-         *      \endcode
-         * 
+         * @brief Lookup value, and if missing, fetch it with argument cacheFiller (and add/return its value).
+         *
          *  This operates as if:
          *      if (auto ov = Lookup (key)) {
          *          return *ov;
@@ -638,7 +644,14 @@ namespace Stroika::Foundation::Cache {
          *          return r;
          *      }
          *
+         *  Usually one will use this as:
+         *      \code
+         *          VALUE v = cache.LookupValue (key, ts, [this] () -> VALUE {return this->realLookup(key); });
+         *      \endcode
+         * 
          *  \note   This function may update the TimedCache (which is why it is non-const).
+         * 
+         *  \note   Any time arguments given constrain the lookup. They are not used for the Add ().
          */
         template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
             requires (TimedCacheSupport::IKeyedCache<K>)
@@ -917,6 +930,8 @@ namespace Stroika::Foundation::Cache {
     private:
         static bool Expired_ (const MyResult_& r, TimeStampType now, TimeStampDifferenceType maxAge)
             requires (TRAITS::kTrackFreshness);
+        static bool Expired_ (const MyResult_& r, TimeStampType expireIfOlder)
+            requires (TRAITS::kTrackFreshness);
         static bool Expired_ (const MyResult_& r, TimeStampType now)
             requires (TRAITS::kTrackExpiration);
 
@@ -926,6 +941,15 @@ namespace Stroika::Foundation::Cache {
         using MyMapType_ =
             conditional_t<TimedCacheSupport::IKeyedCache<KEY>, Common::LazyType_t<map, KEY, MyResult_, typename TRAITS::InOrderComparerType>, optional<MyResult_>>;
         MyMapType_ fMap_;
+
+    private:
+        // pass in readLock can can be 'upgraded' to full lock
+        template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
+            requires (not TimedCacheSupport::IKeyedCache<K>)
+        nonvirtual VALUE LookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller);
+        template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+            requires (TimedCacheSupport::IKeyedCache<K>)
+        nonvirtual VALUE LookupValueAdder_ (typename Common::ArgByValueType<K> key, shared_lock<MaybeMutexType_>* lock, CACHE_FILLTER_T&& cacheFiller);
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
@@ -1049,11 +1073,13 @@ namespace Stroika::Foundation::Cache {
         {
         }
         // @todo everything here likely deprecated
+        [[deprecated ("Since Stroika v3.0d23, usually just get rid of call and argument can be used directly in situ")]]
         static TimeStampType Ago (TimeStampDifferenceType backThisTime)
         {
             Require (backThisTime >= 0s);
             return TraitsType::GetCurrentTimestamp () - backThisTime;
         }
+        [[deprecated ("Since Stroika v3.0d23, use TraitsType::GetCurrentStamp")]]
         static TimeStampType GetCurrentTimestamp ()
         {
             return TraitsType::GetCurrentTimestamp ();
@@ -1089,11 +1115,13 @@ namespace Stroika::Foundation::Cache {
         {
         }
         // @todo everything here likely deprecated
+        [[deprecated ("Since Stroika v3.0d23, usually just get rid of call and argument can be used directly in situ")]]
         static TimeStampType Ago (TimeStampDifferenceType backThisTime)
         {
             Require (backThisTime >= 0s);
             return TraitsType::GetCurrentTimestamp () - backThisTime;
         }
+        [[deprecated ("Since Stroika v3.0d23, use TraitsType::GetCurrentStamp")]]
         static TimeStampType GetCurrentTimestamp ()
         {
             return TraitsType::GetCurrentTimestamp ();

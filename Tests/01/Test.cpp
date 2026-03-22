@@ -304,7 +304,7 @@ namespace {
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<void, optional<int>> sCache_;
-                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30s)), [] () -> optional<int> {
+                return sCache_.LookupValue (allowedStaleness.value_or (30s), [] () -> optional<int> {
                     sCalls1_++;
                     return 1;
                 });
@@ -321,7 +321,7 @@ namespace {
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<int, optional<int>> sCache_;
-                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30s)), [=] (int v) -> optional<int> {
+                return sCache_.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) -> optional<int> {
                     sCalls2_++;
                     return v;
                 });
@@ -340,7 +340,7 @@ namespace {
             {
                 using Cache::SynchronizedCallerStalenessCache;
                 static SynchronizedCallerStalenessCache<void, optional<int>> sCache_;
-                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30s)), [] () -> optional<int> {
+                return sCache_.LookupValue (allowedStaleness.value_or (30s), [] () -> optional<int> {
                     sCalls1_++;
                     return 1;
                 });
@@ -357,7 +357,7 @@ namespace {
             {
                 using Cache::SynchronizedCallerStalenessCache;
                 static SynchronizedCallerStalenessCache<int, optional<int>> sCache_;
-                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30s)), [=] (int v) -> optional<int> {
+                return sCache_.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) -> optional<int> {
                     sCalls2_++;
                     return v;
                 });

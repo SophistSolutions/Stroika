@@ -7,12 +7,12 @@
 #include <syslog.h>
 #endif
 
-#include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/SDKChar.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Debug/Debugger.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -68,9 +68,9 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     };
     Synchronized<Mapping<PriorityAndMessageType_, LastMsgInfoType_>> fLastMessages_; // if suppressing duplicates, must save all messages in timerange of suppression to compare with, and track suppression counts
 
-    Synchronized<Execution::Thread::Ptr>                                  fBookkeepingThread_;
-    atomic<Time::DurationSeconds>                                         fMaxWindow_{};
-    Cache::SynchronizedCallerStalenessCache<pair<Priority, String>, bool> fMsgSentMaybeSuppressed_;
+    Synchronized<Execution::Thread::Ptr> fBookkeepingThread_;
+    // atomic<Time::DurationSeconds>                                         fMaxWindow_{};
+    // Cache::SynchronizedCallerStalenessCache<pair<Priority, String>, bool> fMsgSentMaybeSuppressed_;
 
     Rep_ () = default;
     void FlushSuppressedDuplicates_ (bool forceEvenIfNotOutOfDate = false)
