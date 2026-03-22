@@ -8,10 +8,8 @@
 #include <random>
 
 #include "Stroika/Foundation/Cache/BloomFilter.h"
-#include "Stroika/Foundation/Cache/CallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/Memoizer.h"
-#include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"

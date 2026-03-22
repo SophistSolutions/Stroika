@@ -7,7 +7,7 @@
 #include <syslog.h>
 #endif
 
-#include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
+#include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/SDKChar.h"
