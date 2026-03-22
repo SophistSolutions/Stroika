@@ -6,6 +6,7 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
@@ -41,6 +42,35 @@ namespace Stroika::Foundation::Cache {
         using TimeStampDifferenceType = Time::DurationSeconds;
         static TimeStampType GetCurrentTimestamp ();
     };
+
+#if 1
+    template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
+    class CallerStalenessCache : public TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>> {
+    private:
+        using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>>;
+
+    public:
+        using TraitsType              = inherited::TraitsType;
+        using TimeStampType           = inherited::TimeStampType;
+        using TimeStampDifferenceType = inherited::TimeStampDifferenceType;
+
+    public:
+        CallerStalenessCache ()
+            : inherited{30s} // @todo fix
+        {
+        }
+        // @todo everything here likely deprecated
+        static TimeStampType Ago (TimeStampDifferenceType backThisTime)
+        {
+            Require (backThisTime >= 0s);
+            return TraitsType::GetCurrentTimestamp () - backThisTime;
+        }
+        static TimeStampType GetCurrentTimestamp ()
+        {
+            return TraitsType::GetCurrentTimestamp ();
+        }
+    };
+#else
 
     /**
      *  The idea behind this cache is to track when something is added, and that the lookup function can avoid
@@ -261,6 +291,7 @@ namespace Stroika::Foundation::Cache {
         using DT_ = typename MyLazyConditional_<same_as<void, KEY>, optional, Containers::Mapping>::type;
         DT_ fData_;
     };
+#endif
 
 }
 
@@ -269,6 +300,6 @@ namespace Stroika::Foundation::Cache {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "CallerStalenessCache.inl"
+//#include "CallerStalenessCache.inl"
 
 #endif /*_Stroika_Foundation_Cache_CallerStalenessCache_h_*/

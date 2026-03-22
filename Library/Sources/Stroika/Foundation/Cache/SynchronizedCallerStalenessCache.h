@@ -20,6 +20,35 @@
 
 namespace Stroika::Foundation::Cache {
 
+#if 1
+    template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
+    class SynchronizedCallerStalenessCache
+        : public TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>> {
+    private:
+        using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>>;
+
+    public:
+        using TraitsType              = inherited::TraitsType;
+        using TimeStampType           = inherited::TimeStampType;
+        using TimeStampDifferenceType = inherited::TimeStampDifferenceType;
+
+    public:
+        SynchronizedCallerStalenessCache ()
+            : inherited{30s} // @todo fix
+        {
+        }
+        // @todo everything here likely deprecated
+        static TimeStampType Ago (TimeStampDifferenceType backThisTime)
+        {
+            Require (backThisTime >= 0s);
+            return TraitsType::GetCurrentTimestamp () - backThisTime;
+        }
+        static TimeStampType GetCurrentTimestamp ()
+        {
+            return TraitsType::GetCurrentTimestamp ();
+        }
+    };
+#else
     /**
      *  \brief simple wrapper on CallerStalenessCache (with the same API) - but internally synchronized in a way that is
      *         more performant than using RWSyncrhonzied<CallerStalenessCache<...>>
@@ -132,6 +161,7 @@ namespace Stroika::Foundation::Cache {
     private:
         mutable shared_timed_mutex fMutex_;
     };
+#endif
 
 }
 
@@ -140,6 +170,6 @@ namespace Stroika::Foundation::Cache {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "SynchronizedCallerStalenessCache.inl"
+//#include "SynchronizedCallerStalenessCache.inl"
 
 #endif /*_Stroika_Foundation_Cache_SynchronizedCallerStalenessCache_h_*/
