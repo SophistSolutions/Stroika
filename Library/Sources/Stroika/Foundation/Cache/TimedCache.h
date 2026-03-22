@@ -1063,9 +1063,9 @@ namespace Stroika::Foundation::Cache {
         using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>>;
 
     public:
-        using TraitsType              = inherited::TraitsType;
-        using TimeStampType           = inherited::TimeStampType;
-        using TimeStampDifferenceType = inherited::TimeStampDifferenceType;
+        using TraitsType              = typename inherited::TraitsType;
+        using TimeStampType           = typename inherited::TimeStampType;
+        using TimeStampDifferenceType = typename inherited::TimeStampDifferenceType;
 
     public:
         CallerStalenessCache ()
@@ -1104,9 +1104,9 @@ namespace Stroika::Foundation::Cache {
         using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>>;
 
     public:
-        using TraitsType              = inherited::TraitsType;
-        using TimeStampType           = inherited::TimeStampType;
-        using TimeStampDifferenceType = inherited::TimeStampDifferenceType;
+        using TraitsType              = typename inherited::TraitsType;
+        using TimeStampType           = typename inherited::TimeStampType;
+        using TimeStampDifferenceType = typename inherited::TimeStampDifferenceType;
 
     public:
         SynchronizedCallerStalenessCache ()
