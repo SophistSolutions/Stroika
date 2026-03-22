@@ -958,7 +958,7 @@ namespace Stroika::Foundation::Cache {
     static_assert (copyable<TimedCache<int, int>>);
 
     /**
-     * @brief SynchronizedTimedCache just adds eInternallySynchronized to the argument TRAITS - handy shortcut
+     * @brief SynchronizedTimedCache just adds eInternallySynchronized to a regular 'TimedCache' (just short-hand).
      * 
      * @tparam KEY 
      * @tparam VALUE 
@@ -968,6 +968,10 @@ namespace Stroika::Foundation::Cache {
     using SynchronizedTimedCache = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TRAITS>>;
 
     /**
+     * 
+     * @todo MERGE DOCS FROM HERE TO TIMEDCACHE AND EXAMPLES, and then DEPRECATE!
+     * 
+     * 
      *  The idea behind this cache is to track when something is added, and that the lookup function can avoid
      *  a costly call to compute something if its been recently enough added.
      *
