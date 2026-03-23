@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Cache {
         constexpr float kNoAutomaticPurgeSentinal = -1.0f;
 
         /**
-         * @brief @todo
+         * @brief The default 'TTL'/Max-Age of items added to a TimedCache, if not specified/overriden anyplace else (1 minute)
          * 
          *  \note float due to qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy.
          *        if we can stop supporting compilers with this issue, we can probably redeclare this as TimeStampDifferenceType --LGP 2026-03-23
@@ -112,6 +112,7 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \note   ONE of (but not both) - kTrackFreshness or kTrackExpiration
          *  \note   kTrackExpiration not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
+         *  \note   valid meaningful TRAITS::kDefaultMaxAge or TRAITS::kPerCacheMaxAge
          */
         template <typename TRAITS, typename KEY, typename VALUE>
         concept ITraits = IKey<KEY> and IValue<VALUE> and
@@ -133,10 +134,12 @@ namespace Stroika::Foundation::Cache {
                               {
                                   declval<typename TRAITS::TimeStampType> () + declval<typename TRAITS::TimeStampDifferenceType> ()
                               } -> convertible_to<typename TRAITS::TimeStampType>;
+                              { TRAITS::kPerCacheMaxAge } -> convertible_to<bool>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ResultType, VALUE> and
                           TRAITS::kTrackFreshness != TRAITS::kTrackExpiration and totally_ordered<typename TRAITS::TimeStampType> and
                           (not TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed or not TRAITS::kTrackExpiration) and
                           (not IKeyedCache<KEY> or Common::IInOrderComparer<typename TRAITS::InOrderComparerType, typename TRAITS::KeyType>) and
+                          (not std::is_empty_v<decltype (TRAITS::kDefaultMaxAge)> or TRAITS::kPerCacheMaxAge) and
                           Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
 
         /**
@@ -334,6 +337,23 @@ namespace Stroika::Foundation::Cache {
      *      Keeps track of all items - indexed by Key - but throws away items which are any more
      *      stale than given by the staleness limit.
      *
+     *  When/Why to use?:
+     *      (@todo revise these docs - next 15 lines)
+     *      The idea behind this cache is to track when something is added, and that the lookup function can avoid
+     *      a costly call to compute something if its been recently enough added.
+     *
+     *      For example, consider a system where memory is stored across a slow bus, and several components need to read data from
+     *      across that bus. But the different components have different tolerance for staleness (e.g. PID loop needs fresh temperature sensor
+     *      data but GUI can use more stale data).
+     *
+     *      This CallerStalenessCache will store when the value is updated, and let the caller either return the
+     *      value from cache, or fetch it and update the cache if needed.
+     *
+     *      This differs from other forms of caches in that:
+     *          o   It records the timestamp when a value is last-updated
+     *          o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
+     *          o   The lookup caller specifies its tolerance for data staleness, and refreshes the data as needed.
+     *
      *  \note Comparison with LRUCache
      *        The main difference beweeen an LRUCache and TimedCache has to do with when an element is evicted from the Cache.
      *        With a TimedCache, its evicted only when its overly aged. With an LRUCache, its more random, and depends a
@@ -424,6 +444,39 @@ namespace Stroika::Foundation::Cache {
      *                  return DNS::kThe.ReverseLookup (inetAddr);
      *              });
      *          }
+     *      \endcode
+     *
+     *  \par Example Usage (caller specifies staleness in each context where lookup happens)
+     *      \code
+     *          // keyed cache
+     *          optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
+     *          {
+     *              static CallerStalenessCache<int, optional<int>> sCache_;
+     *              try {
+     *                  return sCache_.LookupValue (value, allowedStaleness.value_or (30), [=](int v) -> optional<int> {
+     *                      return v;   // typically more expensive computation
+     *                  });
+     *              }
+     *              catch (...) {
+     *                  // NOTE - to NEGATIVELY CACHE failure, you could call sCache_.Add (value, nullopt);
+     *                  // return null here, or Execution::ReThrow ()
+     *              }
+     *          }
+     *          EXPECT_EQ (MapValue_ (1), 1);  // skips 'more expensive computation' if in cache
+     *          EXPECT_EQ (MapValue_ (2), 2);  // ''
+     *      \endcode
+     * 
+     *  \par Example Usage (no key, and 'caller staleness' style)
+     *      \code
+     *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
+     *          {
+     *              static TimedCache<void, optional<InternetAddress>> sCache_;
+     *              return sCache_.Lookup (allowedStaleness.value_or (30), []() -> optional<InternetAddress> {
+     *                  ...
+     *                  return IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()};
+     *              });
+     *          }
+     *          optional<InternetAddress> iaddr = LookupExternalInternetAddress_ ();    // only invoke connection logic if timed out
      *      \endcode
      *
      *  \par Example Usage
@@ -1044,172 +1097,26 @@ namespace Stroika::Foundation::Cache {
      * @tparam KEY 
      * @tparam VALUE 
      * @tparam TRAITS 
+     * 
+     *  \par Example Usage
+     *      Use TimedCache to avoid needlessly redundant lookups
+     *      \code
+     *          optional<String> ReverseDNSLookup_ (const InternetAddress& inetAddr)
+     *          {
+     *              static SynchronizedTimedCache<InternetAddress, optional<String>> sCache_;
+     *              // Or could write like this
+     *              static TimedCache<InternetAddress, optional<String>, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<InternetAddress, optional<String>>>> sCache2_;
+     *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
+     *                  return DNS::kThe.ReverseLookup (inetAddr);
+     *              });
+     *          }
+     *      \endcode
+     * 
+     *      \note this CAN be done pretty easily without defining SynchronizedTimedCache, but this is enough more terse
+     *             and common enough to be useful.
      */
     template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     using SynchronizedTimedCache = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TRAITS>>;
-
-    /**
-     * 
-     * @todo MERGE DOCS FROM HERE TO TIMEDCACHE AND EXAMPLES, and then DEPRECATE!
-     * 
-     * 
-     *  The idea behind this cache is to track when something is added, and that the lookup function can avoid
-     *  a costly call to compute something if its been recently enough added.
-     *
-     *  For example, consider a system where memory is stored across a slow bus, and several components need to read data from
-     *  across that bus. But the different components have different tolerance for staleness (e.g. PID loop needs fresh temperature sensor
-     *  data but GUI can use more stale data).
-     *
-     *  This CallerStalenessCache will store when the value is updated, and let the caller either return the
-     *  value from cache, or fetch it and update the cache if needed.
-     *
-     *  This differs from other forms of caches in that:
-     *      o   It records the timestamp when a value is last-updated
-     *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
-     *      o   The lookup caller specifies its tolerance for data staleness, and refreshes the data as needed.
-     *
-     *  \note   Principal difference between CallerStalenessCache and TimedCache lies in where you specify the
-     *          max-age for an item: with CallerStalenessCache, its specified on each lookup call (ie with the caller), and with
-     *          TimedCache, the expiry is stored with each cached item.
-     *
-     *          Because of this, when you use either of these caches with a KEY=void (essentially to cache a single thing)
-     *          they become indistinguishable.
-     *
-     *          N.B. the KEY=void functionality is NYI for TimedCache, so best to use CallerStalenessCache for that, at least for
-     *          now.
-     *
-     *  \note   KEY may be 'void' - and if so, the KEY parameter to the various Add/Lookup etc functions - is omitted.
-     *
-     *  \note   Why take 'valid-since' argument to lookup functions, and not just 'backThisTime' - in other words, why force
-     *          the use of 'Ago()'. The reason is that in a complex system (say web services) - where the final requester
-     *          of the data specifies the allowed staleness, you want the 'ago' computation based on ITS time (not the time
-     *          the lookup happens). This is only approximate too, since it doesn't take into account the latency of the return
-     *          but its a little closer to accurate.
-     *
-     *  \par Example Usage
-     *      \code
-     *          // no key cache
-     *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
-     *          {
-     *              static CallerStalenessCache<void, optional<InternetAddress>> sCache_;
-     *              return sCache_.Lookup (allowedStaleness.value_or (30), []() -> optional<InternetAddress> {
-     *                  ...
-     *                  return IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()};
-     *              });
-     *          }
-     *          optional<InternetAddress> iaddr = LookupExternalInternetAddress_ ();    // only invoke connection logic if timed out
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          // keyed cache
-     *          optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
-     *          {
-     *              static CallerStalenessCache<int, optional<int>> sCache_;
-     *              try {
-     *                  return sCache_.LookupValue (value, allowedStaleness.value_or (30), [=](int v) -> optional<int> {
-     *                      return v;   // typically more expensive computation
-     *                  });
-     *              }
-     *              catch (...) {
-     *                  // NOTE - to NEGATIVELY CACHE failure, you could call sCache_.Add (value, nullopt);
-     *                  // return null here, or Execution::ReThrow ()
-     *              }
-     *          }
-     *          EXPECT_EQ (MapValue_ (1), 1);  // skips 'more expensive computation' if in cache
-     *          EXPECT_EQ (MapValue_ (2), 2);  // ''
-     *      \endcode
-     * 
-     *  \par Example Usage
-     *      \code
-     *          // using KEY=void (so singleton cache)
-     *          unsigned int  sCalls1_{0};
-     *          optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
-     *          {
-     *              using Cache::CallerStalenessCache;
-     *              static CallerStalenessCache<void, optional<int>> sCache_;
-     *              return sCache_.LookupValue (allowedStaleness.value_or (30), [] () -> optional<int> {
-     *                  ++sCalls1_;
-     *                  return 1;
-     *              });
-     *          }
-     *      \endcode
-     *
-     *  \note   Implementation Note - no reason to bother using Debug::AssertExternallySynchronized since uses Mapping,
-     *          which does that internally.
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
-     *  @see TimedCache, SynchronizedCallerStalenessCache
-     */
-    template <typename KEY, typename VALUE, typename TIME_TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class CallerStalenessCache : public TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>> {
-    private:
-        using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>>;
-
-    public:
-        using TraitsType              = typename inherited::TraitsType;
-        using TimeStampType           = typename inherited::TimeStampType;
-        using TimeStampDifferenceType = typename inherited::TimeStampDifferenceType;
-
-    public:
-        CallerStalenessCache ()
-            : inherited{30s} // @todo fix
-        {
-        }
-        [[deprecated ("Since Stroika v3.0d23, usually just get rid of call and argument can be used directly in situ")]]
-        static TimeStampType Ago (TimeStampDifferenceType backThisTime)
-        {
-            Require (backThisTime >= 0s);
-            return TraitsType::GetCurrentTimestamp () - backThisTime;
-        }
-        [[deprecated ("Since Stroika v3.0d23, use TraitsType::GetCurrentStamp")]]
-        static TimeStampType GetCurrentTimestamp ()
-        {
-            return TraitsType::GetCurrentTimestamp ();
-        }
-    };
-
-    /**
-     *  \brief simple wrapper on CallerStalenessCache (with the same API) - but internally synchronized in a way that is
-     *         more performant than using RWSyncrhonzied<CallerStalenessCache<...>>
-     *
-     *  @see CallerStalenessCache<> - for unsynchronized base version
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
-     * 
-     *  TODO:
-     *      o   @todo consider if better hiding using aggregation instead of private inheritance.
-     */
-    template <typename KEY, typename VALUE, typename TIME_TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class SynchronizedCallerStalenessCache
-        : public TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>> {
-    private:
-        using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>>;
-
-    public:
-        using TraitsType              = typename inherited::TraitsType;
-        using TimeStampType           = typename inherited::TimeStampType;
-        using TimeStampDifferenceType = typename inherited::TimeStampDifferenceType;
-
-    public:
-        SynchronizedCallerStalenessCache ()
-            : inherited{30s} // @todo fix
-        {
-        }
-        // @todo everything here likely deprecated
-        [[deprecated ("Since Stroika v3.0d23, usually just get rid of call and argument can be used directly in situ")]]
-        static TimeStampType Ago (TimeStampDifferenceType backThisTime)
-        {
-            Require (backThisTime >= 0s);
-            return TraitsType::GetCurrentTimestamp () - backThisTime;
-        }
-        [[deprecated ("Since Stroika v3.0d23, use TraitsType::GetCurrentStamp")]]
-        static TimeStampType GetCurrentTimestamp ()
-        {
-            return TraitsType::GetCurrentTimestamp ();
-        }
-    };
 
 }
 

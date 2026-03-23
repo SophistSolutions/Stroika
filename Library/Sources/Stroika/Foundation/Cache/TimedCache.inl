@@ -43,10 +43,12 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     TimedCache<KEY, VALUE, TRAITS>::TimedCache ()
         requires (not is_empty_v<decltype (TRAITS::kDefaultMaxAge)>)
-        : fNextAutoClearAt_{TRAITS::GetCurrentTimestamp () + TRAITS::kAutomaticPurgeFrequency} // hopefully optimized away if kNoAutomaticPurgeSentinal
     {
         if constexpr (TRAITS::kPerCacheMaxAge) {
-            fMaxAge_ = TRAITS::kPerCacheMaxAge;
+            fMaxAge_ = TRAITS::kDefaultMaxAge;
+        }
+        if constexpr (TRAITS::kAutomaticPurgeFrequency != TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}) {
+            fNextAutoClearAt_ = TRAITS::GetCurrentTimestamp () + TRAITS::kAutomaticPurgeFrequency;
         }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -748,5 +750,58 @@ namespace Stroika::Foundation::Cache {
             fNextAutoClearAt_ = now + TRAITS::kAutomaticPurgeFrequency;
         }
     }
+
+    ///////////////////
+    // DEPRECATED APIS
+    ///////////////////
+    template <typename KEY, typename VALUE, typename TIME_TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    class CallerStalenessCache [[deprecated ("Since Stroika v3.0d23 - TimedCache has the same functionality and mostly the same names")]]
+        : public TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>> {
+    private:
+        using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>>;
+
+    public:
+        using TraitsType              = typename inherited::TraitsType;
+        using TimeStampType           = typename inherited::TimeStampType;
+        using TimeStampDifferenceType = typename inherited::TimeStampDifferenceType;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d23, usually just get rid of call and argument can be used directly in situ")]]
+        static TimeStampType Ago (TimeStampDifferenceType backThisTime)
+        {
+            Require (backThisTime >= 0s);
+            return TraitsType::GetCurrentTimestamp () - backThisTime;
+        }
+        [[deprecated ("Since Stroika v3.0d23, use TraitsType::GetCurrentStamp")]]
+        static TimeStampType GetCurrentTimestamp ()
+        {
+            return TraitsType::GetCurrentTimestamp ();
+        }
+    };
+    template <typename KEY, typename VALUE, typename TIME_TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
+    class SynchronizedCallerStalenessCache [[deprecated (
+        "Since Stroika v3.0d23 - TimedCache (or SyncrhonizedTimedCache) has the same functionality and mostly the same names")]]
+        : public TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>> {
+    private:
+        using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>>;
+
+    public:
+        using TraitsType              = typename inherited::TraitsType;
+        using TimeStampType           = typename inherited::TimeStampType;
+        using TimeStampDifferenceType = typename inherited::TimeStampDifferenceType;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d23, usually just get rid of call and argument can be used directly in situ")]]
+        static TimeStampType Ago (TimeStampDifferenceType backThisTime)
+        {
+            Require (backThisTime >= 0s);
+            return TraitsType::GetCurrentTimestamp () - backThisTime;
+        }
+        [[deprecated ("Since Stroika v3.0d23, use TraitsType::GetCurrentStamp")]]
+        static TimeStampType GetCurrentTimestamp ()
+        {
+            return TraitsType::GetCurrentTimestamp ();
+        }
+    };
 
 }

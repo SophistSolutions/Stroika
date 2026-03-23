@@ -302,8 +302,8 @@ namespace {
             unsigned int  sCalls1_{0};
             optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::CallerStalenessCache;
-                static CallerStalenessCache<void, optional<int>> sCache_;
+                using Cache::TimedCache;
+                static TimedCache<void, optional<int>> sCache_;
                 return sCache_.LookupValue (allowedStaleness.value_or (30s), [] () -> optional<int> {
                     sCalls1_++;
                     return 1;
@@ -319,8 +319,8 @@ namespace {
             unsigned int  sCalls2_{0};
             optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::CallerStalenessCache;
-                static CallerStalenessCache<int, optional<int>> sCache_;
+                using Cache::TimedCache;
+                static TimedCache<int, optional<int>> sCache_;
                 return sCache_.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) -> optional<int> {
                     sCalls2_++;
                     return v;
@@ -338,8 +338,8 @@ namespace {
             unsigned int  sCalls1_{0};
             optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::SynchronizedCallerStalenessCache;
-                static SynchronizedCallerStalenessCache<void, optional<int>> sCache_;
+                using Cache::SynchronizedTimedCache;
+                static SynchronizedTimedCache<void, optional<int>> sCache_;
                 return sCache_.LookupValue (allowedStaleness.value_or (30s), [] () -> optional<int> {
                     sCalls1_++;
                     return 1;
@@ -355,8 +355,8 @@ namespace {
             unsigned int  sCalls2_{0};
             optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::SynchronizedCallerStalenessCache;
-                static SynchronizedCallerStalenessCache<int, optional<int>> sCache_;
+                using Cache::SynchronizedTimedCache;
+                static SynchronizedTimedCache<int, optional<int>> sCache_;
                 return sCache_.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) -> optional<int> {
                     sCalls2_++;
                     return v;
@@ -373,6 +373,8 @@ namespace {
     }
     GTEST_TEST (Foundation_Caching, CallerStalenessCache_)
     {
+        // CallerStaleness functionality - used to be separate C++ class - CallerStalenessCache,
+        // but still makes sense to test separately (not crazy at least).
         using namespace Test6_CallerStalenessCache_;
         Private_::Test_void_ ();
         Private_::Test_keyed_ ();
