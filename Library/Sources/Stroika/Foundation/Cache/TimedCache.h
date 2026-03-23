@@ -26,21 +26,13 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
- *              Basically - KEY=RESULT? And then the arg to add/lookup don't take key? Maybe key is void?
- *
- *              That maybe best. Template specialization where KEY=void?
- *
- *              THEN - maybe reverse order of template params? VALUE/KEY - so then we can have KEY=void as default
- *              arg?
- *
- *              NOTE - I DID this already for CallerStalenessCache, so pretty easy, but for the case where KEY=void, you can
- *              really use either so LOW PRIORITY.
- *
  *      @todo   Perhaps use Stroika Mapping<> instead of std::map<> - and in that way - we can use aribtrary externally
  *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we don't ahve problem with
  *              creating the default, specify default type to create in the TRAITS object (so for example, if using Hash,
  *              we don't force having operator< for BTREE map).
+ * 
+ *              AND RELATED cleanup to spec using InOrderComparerType - as opposed to EQUALS COMPARER or other stuff like HashFunctions!
+ *              MAYBE LOSE inorder comparer arg - and INSTEAD have template / template for creating container (for now its map<>??)
  *
  *  Implementation Note:
  *
@@ -149,6 +141,9 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \note this class was incompatibly changed in Stroika 3.0d23. It used to have the STRICT_INORDER_COPARER as third arugment
          *        but InternallySynchronized added as new third pushing comarer to fourth.
+         * 
+         *  \note Use of this directly IS allowed, but its fragile, as there isn't a good way to overload or evolve definition over time
+         *        so code using this directly will be more likely to not be backward compatible in the future. Better to use adapters like InternallySynchronizedTraits
          * 
          *  \see ITraits<> above
          */
@@ -297,6 +292,7 @@ namespace Stroika::Foundation::Cache {
             eTreatFoundThroughLookupAsRefreshed,
             eDontTreatFoundThroughLookupAsRefreshed
         };
+
     }
 
     /**
@@ -517,7 +513,7 @@ namespace Stroika::Foundation::Cache {
          *  allowed to be before thrown away).
          * 
          *  \alias Note - 'allowed freshness' == 'time to live' == 'TTL'.
-         *         GetMinimumFreshness, GetTimeout, TTL.
+         *         GetMinimumFreshness, GetTimeout, TTL, GetDefaultMaxAge ().
          * 
          *  So an item added 30 seconds ago (freshness = 30s), would be thrown away/not returned as part of the cache
          *  if the minimum allowed freshness was 5 seconds.
