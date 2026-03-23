@@ -81,23 +81,30 @@ namespace Stroika::Foundation::Cache {
          * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - disable automatic purging
          * 
          *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
+         * 
+         *  \note TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal} all over place due to qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy.
+         *        if we can stop supporting compilers with this issue, we can probably redeclare this as TimeStampDifferenceType --LGP 2026-03-23
          */
         constexpr float kNoAutomaticPurgeSentinal = -1.0f;
 
         /**
          * @brief @todo
+         * 
+         *  \note float due to qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy.
+         *        if we can stop supporting compilers with this issue, we can probably redeclare this as TimeStampDifferenceType --LGP 2026-03-23
          */
-        constexpr float kDefaultMaxAge = 30.0;
+        constexpr float kDefaultMaxAge = 60.0;
 
         /**
-         * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - default to purging every 30 seconds
+         * @brief  see TimedCache<>::TraitsType::kAutomaticPurgeFrequency - default to purging every 5 minutes
          * 
-         *  \note would be nice to declare as of type Time::DurationSeconds, but then won't work as template parameter
+         *  \note float due to qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy.
+         *        if we can stop supporting compilers with this issue, we can probably redeclare this as TimeStampDifferenceType --LGP 2026-03-23
          */
 #if qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
-        constexpr int kDefaultAutomaticPurgeFrequency = 30;
+        constexpr int kDefaultAutomaticPurgeFrequency = 5 * 60;
 #else
-        constexpr float kDefaultAutomaticPurgeFrequency = 30.0f;
+        constexpr float kDefaultAutomaticPurgeFrequency = 5 * 60.0f;
 #endif
 
         /**
@@ -182,26 +189,40 @@ namespace Stroika::Foundation::Cache {
             static constexpr auto GetCurrentTimestamp{GET_CURRENT_TIMESTAMP};
 
             /**
-             * @brief specifies a default MAX_AGE (can be UNDEFINED or Empty). If defined 
+             * @brief specifies a default MAX_AGE (can be UNDEFINED or Empty). If defined, its the default value returned by/used by
+             *        the TimedCache as the max age (TTL) of an item added to the cache. It can generally be overridden (by Lookup or Add or LookupValue)
+             *        functions (which depends on kTrackFreshness or TrackExpiration).
+             * 
+             *  \note TimedCache MAY have kDefaultMaxAge, but MUST have EITHER (inclusive or) kDefaultMaxAge or kPerCacheMaxAge.
              */
             static constexpr conditional_t<(DEFAULT_MAX_AGE < 0), Common::Empty, TimeStampDifferenceType> kDefaultMaxAge{DEFAULT_MAX_AGE};
 
             /**
              * @brief allow a per-cache MAX_AGE to be defined. If allowed, and the default (traits) is specified, that is the default for the cache instance.
+             * 
+             *  \note TimedCache MAY have kDefaultMaxAge, but MUST have EITHER (inclusive or) kDefaultMaxAge or kPerCacheMaxAge.
              */
             static constexpr bool kPerCacheMaxAge{PER_CACHE_MAX_AGE};
 
             /**
+             * @brief This 'automatic synchronization' feature is off (eNotKnownInternallySynchronized) by default, but can easily
+             *        be turned on with InternallySynchronizedTraits
              */
             static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
 
             /**
              * @brief freshness means when last added/updated (or if kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) then last accessed too)
+             *        This is true by default
+             * 
+             *  \note kTrackFreshness and kTrackExpiration are mutually exclusive
              */
             static constexpr inline bool kTrackFreshness{TRACK_FRESHNESS};
 
             /**
              * @brief Track on a per-item when it expires. If not tracked, we use expiresAt as whenAdded + maxAge
+             *        This is false by default
+             * 
+             *  \note kTrackFreshness and kTrackExpiration are mutually exclusive
              */
             static constexpr inline bool kTrackExpiration{TRACK_EXPIRATION};
 
@@ -299,15 +320,14 @@ namespace Stroika::Foundation::Cache {
      *  \brief Keep track of a bunch of objects, each with an associated time used to allow data to 'expire'.
      * 
      *  This expiration time is handled PRINCIPALLY, in one of two ways:
-     * 
-     *      TRAITS::kTrackExpiration:
+     *      kTrackExpiration:
      *          In this case, at the time the data is ADDED, a time of expiration is captured and associated with the datum.
      * 
-     *      TRAITS::kTrackFreshness:
-     *          In this case, the time the data is Added is associated with the datum, and expiration computed later.
+     *      kTrackFreshness:
+     *          In this case, the time the data is Added (last-refreshed) is associated with the datum, and expiration computed later.
      *          **this is the default**
      *  
-     *  More about TRAITS::kTrackFreshness:
+     *  More about kTrackFreshness:
      *      We define 'fresheness' somewhat arbitrarily, but by default, this means since the item was added. However, the TimedCache
      *      also provides other apis to update the 'freshness' of a stored object, depending on application needs.
      *
@@ -497,15 +517,42 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         * Note that TimedCache is copyable and moveable by value.
+         * @brief Track on a per-item when it expires. If not tracked, we use expiresAt as whenAdded + maxAge
+         *        This is false by default
+         * 
+         *  \note kTrackFreshness and kTrackExpiration are mutually exclusive
          */
-        explicit TimedCache (const TimeStampDifferenceType& maxAge);
+        static constexpr bool kTrackExpiration = TRAITS::kTrackExpiration;
+
+    public:
+        /**
+         * @brief freshness means when last added/updated (or if kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) then last accessed too)
+         *        This is true by default
+         * 
+         *  \note kTrackFreshness and kTrackExpiration are mutually exclusive
+         */
+        static constexpr bool kTrackFreshness = TRAITS::kTrackFreshness;
+
+    public:
+        /**
+         * Note that TimedCache is copyable and moveable by value.
+         * 
+         *  It MAYBE default constructible (if there is a kDefaultMaxAge - defaults to true).
+         */
+        TimedCache ()
+            requires (not is_empty_v<decltype (TRAITS::kDefaultMaxAge)>);
+        explicit TimedCache (TimeStampDifferenceType maxAge)
+            requires (TRAITS::kPerCacheMaxAge);
         TimedCache (TimedCache&& src) noexcept;
         TimedCache (const TimedCache& src);
 
     public:
         nonvirtual TimedCache& operator= (TimedCache&& rhs) noexcept;
         nonvirtual TimedCache& operator= (const TimedCache& rhs);
+
+    private:
+        // same as GetMaxAge, but doesnt do locking
+        constexpr TimeStampDifferenceType GetMaxAge_ () const;
 
     public:
         /**
@@ -528,7 +575,8 @@ namespace Stroika::Foundation::Cache {
         /**
          *  @see GetMaxAge ()
          */
-        nonvirtual void SetMaxAge (TimeStampDifferenceType maxAge);
+        nonvirtual void SetMaxAge (TimeStampDifferenceType maxAge)
+            requires (TRAITS::kPerCacheMaxAge);
 
     public:
         /**
@@ -537,8 +585,8 @@ namespace Stroika::Foundation::Cache {
         struct CacheElement {
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<KEY, void>, Common::Empty, KEY> fKey;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fValue;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
         };
 
     public:
@@ -610,19 +658,19 @@ namespace Stroika::Foundation::Cache {
          */
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key) const
-            requires (TRAITS::kTrackExpiration and TimedCacheSupport::IKeyedCache<K>);
+            requires (kTrackExpiration and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key)
-            requires (TRAITS::kTrackExpiration and TimedCacheSupport::IKeyedCache<K>);
+            requires (kTrackExpiration and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key) const
-            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
+            requires (kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key)
-            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
+            requires (kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
-            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
+            requires (kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (TimeStampDifferenceType maxAge) const
             requires (not TimedCacheSupport::IKeyedCache<K>);
@@ -681,12 +729,15 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Updates/adds the given value associated with key.
-         *      if TRAITS::kTrackFreshness (the default)
+         *  Adds/Updates the given value associated with key.
+         *      if kTrackFreshness (the default)
          *          o   The new items freshness is TRAITS::GetCurrentTimestamp (), or the value given as argument
-         *      if TRAITS::kTrackExpiration
+         *      if kTrackExpiration
          *          o   The new item's expiration is either given by expiresAt or now+ttl, or defaults to
          *              GetMaxAge()
+         * 
+         *  \note this API supports overloads of Add () where either the KEY or the VALUE is missing, depending on how
+         *        the TimedCache TRAITS were declared.
          */
         template <typename K = KEY>
             requires (TimedCacheSupport::IKeyedCache<K> and same_as<VALUE, void>)
@@ -745,7 +796,7 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void ClearExpiredData ();
         nonvirtual void ClearExpiredData (TimeStampDifferenceType maxAge)
-            requires (TRAITS::kTrackFreshness);
+            requires (kTrackFreshness);
 
     public:
         /**
@@ -943,19 +994,21 @@ namespace Stroika::Foundation::Cache {
 
     private:
         TimeStampDifferenceType fMaxAge_;
-        TimeStampType           fNextAutoClearAt_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
+            conditional_t<TRAITS::kAutomaticPurgeFrequency == TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}, Common::Empty, TimeStampType>
+                fNextAutoClearAt_;
 
     private:
         nonvirtual void ClearExpired_ ();
         nonvirtual void ClearExpired_ (TimeStampDifferenceType maxAge)
-            requires (TRAITS::kTrackFreshness);
+            requires (kTrackFreshness);
 
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fResult;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
 
             template <typename K = KEY>
             nonvirtual CacheElement MakeCacheElement (const K& key) const;

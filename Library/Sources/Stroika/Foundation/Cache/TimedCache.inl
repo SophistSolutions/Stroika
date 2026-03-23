@@ -17,20 +17,20 @@ namespace Stroika::Foundation::Cache {
     template <typename K>
     inline auto TimedCache<KEY, VALUE, TRAITS>::MyResult_::MakeCacheElement (const K& key) const -> CacheElement
     {
-        if constexpr (TRAITS::kTrackFreshness) {
-            if constexpr (same_as<void, VALUE>) {
-                return CacheElement{.fKey = key, .fLastRefreshedAt = fLastRefreshedAt};
-            }
-            else {
-                return CacheElement{.fKey = key, .fValue = fResult, .fLastRefreshedAt = fLastRefreshedAt};
-            }
-        }
-        else if constexpr (TRAITS::kTrackExpiration) {
+        if constexpr (kTrackExpiration) {
             if constexpr (same_as<void, VALUE>) {
                 return CacheElement{.fKey = key, .fExpiresAt = fExpiresAt};
             }
             else {
                 return CacheElement{.fKey = key, .fValue = fResult, .fExpiresAt = fExpiresAt};
+            }
+        }
+        else if constexpr (kTrackFreshness) {
+            if constexpr (same_as<void, VALUE>) {
+                return CacheElement{.fKey = key, .fLastRefreshedAt = fLastRefreshedAt};
+            }
+            else {
+                return CacheElement{.fKey = key, .fValue = fResult, .fLastRefreshedAt = fLastRefreshedAt};
             }
         }
     }
@@ -41,9 +41,19 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    TimedCache<KEY, VALUE, TRAITS>::TimedCache (const TimeStampDifferenceType& maxAge)
+    TimedCache<KEY, VALUE, TRAITS>::TimedCache ()
+        requires (not is_empty_v<decltype (TRAITS::kDefaultMaxAge)>)
+        : fNextAutoClearAt_{TRAITS::GetCurrentTimestamp () + TRAITS::kAutomaticPurgeFrequency} // hopefully optimized away if kNoAutomaticPurgeSentinal
+    {
+        if constexpr (TRAITS::kPerCacheMaxAge) {
+            fMaxAge_ = TRAITS::kPerCacheMaxAge;
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    TimedCache<KEY, VALUE, TRAITS>::TimedCache (TimeStampDifferenceType maxAge)
+        requires (TRAITS::kPerCacheMaxAge)
         : fMaxAge_{maxAge}
-        , fNextAutoClearAt_{TRAITS::GetCurrentTimestamp () + maxAge}
+        , fNextAutoClearAt_{TRAITS::GetCurrentTimestamp () + TRAITS::kAutomaticPurgeFrequency} // hopefully optimized away if kNoAutomaticPurgeSentinal
     {
         Require (fMaxAge_ > 0.0s);
     }
@@ -89,22 +99,38 @@ namespace Stroika::Foundation::Cache {
     inline bool TimedCache<KEY, VALUE, TRAITS>::Expired_ (const MyResult_& r, TimeStampType now) const
     {
         qStroika_ATTRIBUTE_INDETERMINATE TimeStampType expiresAt;
-        if constexpr (TRAITS::kTrackExpiration) {
+        if constexpr (kTrackExpiration) {
             expiresAt = r.fExpiresAt;
         }
-        else if constexpr (TRAITS::kTrackFreshness) {
-            expiresAt = r.fLastRefreshedAt + fMaxAge_;
+        else if constexpr (kTrackFreshness) {
+            expiresAt = r.fLastRefreshedAt + GetMaxAge_ ();
         }
         return now > expiresAt;
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    constexpr auto TimedCache<KEY, VALUE, TRAITS>::GetMaxAge_ () const -> TimeStampDifferenceType
+    {
+        if constexpr (TRAITS::kPerCacheMaxAge) {
+            return fMaxAge_;
+        }
+        else {
+            return TRAITS::kDefaultMaxAge;
+        }
+    }
+    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline auto TimedCache<KEY, VALUE, TRAITS>::GetMaxAge () const -> TimeStampDifferenceType
     {
-        shared_lock critSec{fMaybeMutex_};
-        return fMaxAge_;
+        if constexpr (TRAITS::kPerCacheMaxAge) {
+            shared_lock critSec{fMaybeMutex_};
+            return GetMaxAge_ ();
+        }
+        else {
+            return TRAITS::kDefaultMaxAge;
+        }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::SetMaxAge (TimeStampDifferenceType maxAge)
+        requires (TRAITS::kPerCacheMaxAge)
     {
         Require (maxAge > 0.0s);
         scoped_lock critSec{fMaybeMutex_};
@@ -279,7 +305,7 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) const -> optional<tuple<VALUE, TimeStampType>>
-        requires (TRAITS::kTrackExpiration and TimedCacheSupport::IKeyedCache<K>)
+        requires (kTrackExpiration and TimedCacheSupport::IKeyedCache<K>)
     {
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i = fData_.find (key);
@@ -302,7 +328,7 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) -> optional<tuple<VALUE, TimeStampType>>
-        requires (TRAITS::kTrackExpiration and TimedCacheSupport::IKeyedCache<K>)
+        requires (kTrackExpiration and TimedCacheSupport::IKeyedCache<K>)
     {
         shared_lock                   critSec{fMaybeMutex_};
         typename MyMapType_::iterator i = fData_.find (key);
@@ -326,7 +352,7 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) const -> optional<tuple<VALUE, TimeStampType>>
-        requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>)
+        requires (kTrackFreshness and TimedCacheSupport::IKeyedCache<K>)
     {
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i = fData_.find (key);
@@ -349,15 +375,36 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     inline auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) -> optional<tuple<VALUE, TimeStampType>>
-        requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>)
+        requires (kTrackFreshness and TimedCacheSupport::IKeyedCache<K>)
     {
-        return LookupDetails (key, fMaxAge_);
+        shared_lock                   critSec{fMaybeMutex_};
+        typename MyMapType_::iterator i = fData_.find (key);
+        if (i == fData_.end ()) {
+            fStats_.IncrementMisses ();
+            return nullopt;
+        }
+        else {
+            if (Expired_ (i->second)) {
+                /*
+                 * since expired, remove from cache
+                 */
+                (void)fData_.erase (i);
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            // unclear if we should do this test before or after expired check above???
+            if constexpr (TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) {
+                i->second.fLastRefreshedAt = TRAITS::GetCurrentTimestamp ();
+            }
+            fStats_.IncrementHits ();
+            return make_tuple (i->second.fResult, i->second.fLastRefreshedAt);
+        }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
         -> optional<tuple<VALUE, TimeStampType>>
-        requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>)
+        requires (kTrackFreshness and TimedCacheSupport::IKeyedCache<K>)
     {
         shared_lock                         critSec{fMaybeMutex_};
         typename MyMapType_::const_iterator i   = fData_.find (key);
@@ -416,11 +463,11 @@ namespace Stroika::Foundation::Cache {
         if (Expired_ (i->second)) {
             return nullopt;
         }
-        if constexpr (TRAITS::kTrackExpiration) {
+        if constexpr (kTrackExpiration) {
             return i->second.fExpiresAt;
         }
-        else if constexpr (TRAITS::kTrackFreshness) {
-            return i->second.fLastRefreshedAt + fMaxAge_;
+        else if constexpr (kTrackFreshness) {
+            return i->second.fLastRefreshedAt + GetMaxAge_ ();
         }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -532,10 +579,10 @@ namespace Stroika::Foundation::Cache {
         scoped_lock critSec{fMaybeMutex_};
         AutomaticallyClearExpiredDataSometimes_ ();
         TimeStampType now = TRAITS::GetCurrentTimestamp ();
-        if constexpr (TRAITS::kTrackExpiration) {
-            fData_.insert_or_assign (key, MyResult_{.fExpiresAt = now + fMaxAge_});
+        if constexpr (kTrackExpiration) {
+            fData_.insert_or_assign (key, MyResult_{.fExpiresAt = now + GetMaxAge_ ()});
         }
-        else if constexpr (TRAITS::kTrackFreshness) {
+        else if constexpr (kTrackFreshness) {
             fData_.insert_or_assign (key, MyResult_{.fLastRefreshedAt = now});
         }
     }
@@ -547,10 +594,10 @@ namespace Stroika::Foundation::Cache {
         scoped_lock critSec{fMaybeMutex_};
         AutomaticallyClearExpiredDataSometimes_ ();
         TimeStampType now = TRAITS::GetCurrentTimestamp ();
-        if constexpr (TRAITS::kTrackExpiration) {
-            fData_.insert_or_assign (key, MyResult_{.fResult = result, .fExpiresAt = now + fMaxAge_});
+        if constexpr (kTrackExpiration) {
+            fData_.insert_or_assign (key, MyResult_{.fResult = result, .fExpiresAt = now + GetMaxAge_ ()});
         }
-        else if constexpr (TRAITS::kTrackFreshness) {
+        else if constexpr (kTrackFreshness) {
             fData_.insert_or_assign (key, MyResult_{.fResult = result, .fLastRefreshedAt = now});
         }
     }
@@ -578,10 +625,10 @@ namespace Stroika::Foundation::Cache {
     inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<V> result)
     {
         TimeStampType now = TRAITS::GetCurrentTimestamp ();
-        if constexpr (TRAITS::kTrackExpiration) {
-            Add (result, now + fMaxAge_);
+        if constexpr (kTrackExpiration) {
+            Add (result, now + GetMaxAge_ ());
         }
-        else if constexpr (TRAITS::kTrackFreshness) {
+        else if constexpr (kTrackFreshness) {
             Add (result, now);
         }
     }
@@ -646,7 +693,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::ClearExpiredData (TimeStampDifferenceType maxAge)
-        requires (TRAITS::kTrackFreshness)
+        requires (kTrackFreshness)
     {
         scoped_lock critSec{fMaybeMutex_};
         ClearExpired_ (maxAge);
@@ -660,9 +707,11 @@ namespace Stroika::Foundation::Cache {
     inline void TimedCache<KEY, VALUE, TRAITS>::AutomaticallyClearExpiredDataSometimes_ ()
     {
         if constexpr (TRAITS::kAutomaticPurgeFrequency != TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}) {
-            if (fNextAutoClearAt_ < TRAITS::GetCurrentTimestamp ()) [[unlikely]] {
-                ClearExpired_ ();
-                WeakAssert (fNextAutoClearAt_ > TRAITS::GetCurrentTimestamp ()); // note internally resets fNextAutoClearAt_
+            if constexpr (TRAITS::kAutomaticPurgeFrequency != TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}) {
+                if (fNextAutoClearAt_ < TRAITS::GetCurrentTimestamp ()) [[unlikely]] {
+                    ClearExpired_ ();
+                    WeakAssert (fNextAutoClearAt_ > TRAITS::GetCurrentTimestamp ()); // note internally resets fNextAutoClearAt_
+                }
             }
         }
     }
@@ -671,7 +720,7 @@ namespace Stroika::Foundation::Cache {
     {
         TimeStampType now = TRAITS::GetCurrentTimestamp ();
         for (typename MyMapType_::iterator i = fData_.begin (); i != fData_.end ();) {
-            if (Expired_ (i->second)) {
+            if (Expired_ (i->second, now)) {
                 i = fData_.erase (i);
             }
             else {
@@ -684,7 +733,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::ClearExpired_ (TimeStampDifferenceType maxAge)
-        requires (TRAITS::kTrackFreshness)
+        requires (kTrackFreshness)
     {
         TimeStampType now = TRAITS::GetCurrentTimestamp ();
         for (typename MyMapType_::iterator i = fData_.begin (); i != fData_.end ();) {
