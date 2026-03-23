@@ -498,9 +498,14 @@ namespace Stroika::Foundation::Cache {
          *  allowed to be before thrown away).
          * 
          *  \alias Note - 'allowed freshness' == 'time to live' == 'TTL'.
+         *         GetMinimumFreshness, GetTimeout, TTL.
          * 
          *  So an item added 30 seconds ago (freshness = 30s), would be thrown away/not returned as part of the cache
          *  if the minimum allowed freshness was 5 seconds.
+         * 
+         *  \note if kTrackFreshness, this is used in CHECKS of freshness (provides a default 'maxage' at the point of Lookup call).
+         *        if kTrackExpiration, this is applied to the added item, as its default expiration. In both cases, these values
+         *        can be overridden (either in Add or Lookup depending on which you are tracking).
          */
         nonvirtual TimeStampDifferenceType GetMaxAge () const;
 
@@ -512,9 +517,10 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         * @brief everything here is optional ;-) But typically, its fKey, fValue, fLastRefreshedAt
          */
         struct CacheElement {
-            KEY                                          fKey;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<KEY, void>, Common::Empty, KEY> fKey;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fValue;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
@@ -523,12 +529,16 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          *  \note This returns the non-expired elements of the current cache object.
+         * 
+         *      @todo could use overload taking TTL argumnet (if track freshness)
          */
         nonvirtual Traversal::Iterable<CacheElement> Elements () const;
 
     public:
         /**
          *  \note This returns the non-expired keys of the current cache object.
+         * 
+         *      @todo could use overload taking TTL argumnet (if track freshness)
          */
         template <typename K = KEY>
         nonvirtual Traversal::Iterable<K> Keys () const
@@ -537,10 +547,6 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          *  \brief Returns the value associated with argument 'key', or nullopt, if its missing (missing same as expired). Can be used to retrieve lastRefreshedAt
-         * 
-         *  If lastRefreshedAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain the last time
-         *  the data was refreshed.
-         *  If expiresAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain expiresAt value.
          * 
          *  \note that the non-const overload of Lookup respects TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed, and will
          *        auto-refresh the item (similar to LRUCache) if found.
@@ -555,6 +561,10 @@ namespace Stroika::Foundation::Cache {
          *  \note for Lookup (key,maxAge)
          *        only possible if you track freshness
          *        no non-const version of this, cuz no bookkeeping. If you are using this, the caller decides what gets cleaned up, explicitly.
+         * 
+         * 
+         * 
+         * @todo MARK AS DEPRECATED TimeStampType maxAge overloads (keep TimeDifferenceStampOnes)
          */
         template <typename K = KEY>
             requires (TimedCacheSupport::IKeyedCache<K>)
@@ -574,9 +584,6 @@ namespace Stroika::Foundation::Cache {
         template <typename K = KEY>
             requires (not TimedCacheSupport::IKeyedCache<K>)
         nonvirtual optional<VALUE> Lookup ();
-        template <typename K = KEY>
-            requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-        nonvirtual optional<VALUE> Lookup (TimeStampType maxAge) const;
         template <typename K = KEY>
             requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual optional<VALUE> Lookup (TimeStampDifferenceType maxAge) const;
@@ -622,6 +629,9 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          * @brief Get the Expiration of object or nullopt of item expired/not in cache
+         * 
+         * in the case of IKeyedCache, it returns the expiration of the given key (or nullopt if not present or expired).
+         * in the case of NOT IKeyedCache, it refers to the single cached item, but otherwise acts the same.
          */
         template <typename K = KEY>
         nonvirtual optional<TimeStampType> GetExpiration () const
@@ -786,9 +796,9 @@ namespace Stroika::Foundation::Cache {
         {
             // DEPRECATED API
             scoped_lock                   critSec{fMaybeMutex_};
-            typename MyMapType_::iterator i   = fMap_.find (key);
+            typename MyMapType_::iterator i   = fData_.find (key);
             TimeStampType                 now = TRAITS::GetCurrentTimestamp ();
-            if (i == fMap_.end ()) {
+            if (i == fData_.end ()) {
                 fStats_.IncrementMisses ();
                 return nullopt;
             }
@@ -801,7 +811,7 @@ namespace Stroika::Foundation::Cache {
                      * So instead, count on PurgeUnusedData being called automatically on future adds,
                      * explicit user calls to purge unused data.
                      *
-                     *      i = fMap_.erase (i);
+                     *      i = fData_.erase (i);
                      */
                     fStats_.IncrementMisses ();
                     return nullopt;
@@ -841,9 +851,9 @@ namespace Stroika::Foundation::Cache {
             if (purgeSpoiledData == PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData) {
                 AutomaticallyClearExpiredDataSometimes_ ();
             }
-            typename MyMapType_::iterator i = fMap_.find (key);
-            if (i == fMap_.end ()) {
-                fMap_.insert ({key, MyResult_{.fResult = result, .fLastRefreshedAt = TRAITS::GetCurrentTimestamp ()}});
+            typename MyMapType_::iterator i = fData_.find (key);
+            if (i == fData_.end ()) {
+                fData_.insert ({key, MyResult_{.fResult = result, .fLastRefreshedAt = TRAITS::GetCurrentTimestamp ()}});
             }
             else {
                 i->second = MyResult_{.fResult = result, .fLastRefreshedAt = TRAITS::GetCurrentTimestamp ()}; // overwrite if its already there
@@ -928,19 +938,13 @@ namespace Stroika::Foundation::Cache {
         };
 
     private:
-        static bool Expired_ (const MyResult_& r, TimeStampType now, TimeStampDifferenceType maxAge)
-            requires (TRAITS::kTrackFreshness);
-        static bool Expired_ (const MyResult_& r, TimeStampType expireIfOlder)
-            requires (TRAITS::kTrackFreshness);
-        static bool Expired_ (const MyResult_& r, TimeStampType now)
-            requires (TRAITS::kTrackExpiration);
+        nonvirtual bool Expired_ (const MyResult_& r, TimeStampType now = TRAITS::GetCurrentTimestamp ()) const;
 
     private:
         // @todo could consider using Stroika Mapping<> - or TRAITS specified Mapper strategy
-        //typename MyLazyConditional_<same_as<void, KEY>, optional, Containers::Mapping>::type;
         using MyMapType_ =
             conditional_t<TimedCacheSupport::IKeyedCache<KEY>, Common::LazyType_t<map, KEY, MyResult_, typename TRAITS::InOrderComparerType>, optional<MyResult_>>;
-        MyMapType_ fMap_;
+        MyMapType_ fData_;
 
     private:
         // pass in readLock can can be 'upgraded' to full lock
