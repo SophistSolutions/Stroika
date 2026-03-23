@@ -197,16 +197,6 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
         requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-    optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const
-    {
-        AssertNotReached ();
-        // convert timestamp maxAge into a number of seconds maxAge
-        // maybe lose this API - seems possibly confusing
-        return Lookup (key, TRAITS::GetCurrentTimestamp () - maxAge); // IS THIS BACKWARDS
-    }
-    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K>
-        requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
     {
         shared_lock                         critSec{fMaybeMutex_};
@@ -460,19 +450,6 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
-        requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<K> key, TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
-    {
-        auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
-        if (optional<VALUE> o = Lookup (key, maxAge)) {
-            return *o;
-        }
-        else {
-            return LookupValueAdder_<KEY> (key, &readLock, forward<CACHE_FILLTER_T> (cacheFiller));
-        }
-    }
-    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
         requires (not TimedCacheSupport::IKeyedCache<K>)
     VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (CACHE_FILLTER_T&& cacheFiller)
@@ -488,18 +465,6 @@ namespace Stroika::Foundation::Cache {
     template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
         requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
     VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller)
-    {
-        if (optional<VALUE> ov = Lookup (maxAge)) {
-            return *ov;
-        }
-        else {
-            return LookupValueAdder_ (forward<CACHE_FILLTER_T> (cacheFiller));
-        }
-    }
-    template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
-        requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-    VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
     {
         if (optional<VALUE> ov = Lookup (maxAge)) {
             return *ov;

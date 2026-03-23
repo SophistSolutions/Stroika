@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Cache {
         using Execution::InternallySynchronized;
 
         /**
-         * @brief @todo maybe allow void KEY - but some work todo this!
+         * @brief A KEY is any copyable value (or the sentinal type void - indicating a keyless - single valued - cache)
          */
         template <typename T>
         concept IKey = same_as<T, void> or copyable<T>;
@@ -92,6 +92,9 @@ namespace Stroika::Foundation::Cache {
          */
         constexpr float kNoAutomaticPurgeSentinal = -1.0f;
 
+        /**
+         * @brief @todo
+         */
         constexpr float kDefaultMaxAge = 30.0;
 
         /**
@@ -208,6 +211,10 @@ namespace Stroika::Foundation::Cache {
             static constexpr inline bool kTrackExpiration{TRACK_EXPIRATION};
 
             /**
+             * @brief if IKeyedCache, this is a how the KEY type elements are compared (for Lookup purposes).
+             * 
+             *  @todo - historical that we use INORDER comparer - cuz impl uses std::map<> - but could loosen this to be ANY EQUALITY_COMPARER or other - if we use
+             *          different kinds of MAP (Mapping...) --LGP 2026-03-23
              */
             using InOrderComparerType = STRICT_INORDER_COMPARER;
 
@@ -243,7 +250,7 @@ namespace Stroika::Foundation::Cache {
         };
 
         /**
-         * @brief 
+         * @brief Default choices for TimedCache, if you don't specify anything else.
          * 
          * @tparam KEY 
          * @tparam VALUE 
@@ -293,13 +300,23 @@ namespace Stroika::Foundation::Cache {
     }
 
     /**
-     *  \brief Keep track of a bunch of objects, each with an associated 'freshness' which meet a TimedCache-associated minimal reshness limit.
+     *  \brief Keep track of a bunch of objects, each with an associated time used to allow data to 'expire'.
      * 
-     *  We define 'fresheness' somewhat arbitrarily, but by default, this means since the item was added. However, the TimedCache
-     *  also provides other apis to update the 'freshness' of a stored object, depending on application needs.
+     *  This expiration time is handled PRINCIPALLY, in one of two ways:
+     * 
+     *      TRAITS::kTrackExpiration:
+     *          In this case, at the time the data is ADDED, a time of expiration is captured and associated with the datum.
+     * 
+     *      TRAITS::kTrackFreshness:
+     *          In this case, the time the data is Added is associated with the datum, and expiration computed later.
+     *          **this is the default**
+     *  
+     *  More about TRAITS::kTrackFreshness:
+     *      We define 'fresheness' somewhat arbitrarily, but by default, this means since the item was added. However, the TimedCache
+     *      also provides other apis to update the 'freshness' of a stored object, depending on application needs.
      *
-     *  Keeps track of all items - indexed by Key - but throws away items which are any more
-     *  stale than given by the staleness limit.
+     *      Keeps track of all items - indexed by Key - but throws away items which are any more
+     *      stale than given by the staleness limit.
      *
      *  \note Comparison with LRUCache
      *        The main difference beweeen an LRUCache and TimedCache has to do with when an element is evicted from the Cache.
@@ -317,22 +334,6 @@ namespace Stroika::Foundation::Cache {
      *          {
      *              const Time::Duration                                        kCacheTTL_{5min};
      *              static Cache::TimedCache<InternetAddress, optional<String>> sCache_{kCacheTTL_};    // not threadsafe (not internally synchronized) by default - but checked with Debug::AssertExternallySyncrhonizedMutex
-     *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
-     *                  return DNS::kThe.ReverseLookup (inetAddr);
-     *              });
-     *          }
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      Same as above, but adding internal syncrhonization (automatic thread safety)
-     *      \code
-     *          optional<String> ReverseDNSLookup_ThreadSafe_ (const InternetAddress& inetAddr)
-     *          {
-     *              const Time::Duration                                        kCacheTTL_{5min};
-     *              struct CACHE_TRAITS_ : Cache::TimedCacheSupport::DefaultTraits<InternetAddress, optional<String>> {
-     *                  static constexpr inline InternallySynchronized kInternallySynchronized{InternallySynchronized::eInternallySynchronized};
-     *              };
-     *              static Cache::TimedCache<InternetAddress, optional<String>, CACHE_TRAITS_> sCache_{kCacheTTL_};    // NOW the cache is threadsafe
      *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
      *                  return DNS::kThe.ReverseLookup (inetAddr);
      *              });
@@ -394,6 +395,24 @@ namespace Stroika::Foundation::Cache {
      *      \endcode
      *
      *  \par Example Usage
+     *      Same as above, but adding internal syncrhonization (automatic thread safety)
+     *      \code
+     *          optional<String> ReverseDNSLookup_ThreadSafe_ (const InternetAddress& inetAddr)
+     *          {
+     *              const Time::Duration                                        kCacheTTL_{5min};
+     *              struct CACHE_TRAITS_ : Cache::TimedCacheSupport::DefaultTraits<InternetAddress, optional<String>> {
+     *                  static constexpr inline InternallySynchronized kInternallySynchronized{InternallySynchronized::eInternallySynchronized};
+     *              };
+     *              static Cache::TimedCache<InternetAddress, optional<String>, CACHE_TRAITS_> sCache_{kCacheTTL_};    // NOW the cache is threadsafe
+     *              return sCache_.LookupValue (inetAddr, [] (const InternetAddress& inetAddr) {
+     *                  return DNS::kThe.ReverseLookup (inetAddr);
+     *              });
+     *          }
+     *      \endcode
+     *
+     *  \par Example Usage
+     * @todo REVIEW DOCS FROM HERE DOWN
+     * 
      *      To use TimedCache<> to 'own' a set of objects (say a set caches where we are the only
      *      possible updater) - you can make the 'VALUE' type a shared_ptr<X>, and  use Lookup (...,eTreatFoundThroughLookupAsRefreshed) instead 
      *      of Lookup ().
@@ -561,10 +580,6 @@ namespace Stroika::Foundation::Cache {
          *  \note for Lookup (key,maxAge)
          *        only possible if you track freshness
          *        no non-const version of this, cuz no bookkeeping. If you are using this, the caller decides what gets cleaned up, explicitly.
-         * 
-         * 
-         * 
-         * @todo MARK AS DEPRECATED TimeStampType maxAge overloads (keep TimeDifferenceStampOnes)
          */
         template <typename K = KEY>
             requires (TimedCacheSupport::IKeyedCache<K>)
@@ -572,9 +587,6 @@ namespace Stroika::Foundation::Cache {
         template <typename K = KEY>
             requires (TimedCacheSupport::IKeyedCache<K>)
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key);
-        template <typename K = KEY>
-            requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const;
         template <typename K = KEY>
             requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const;
@@ -590,11 +602,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  \brief Returns the value associated with argument 'key', or nullopt, if its missing (missing same as expired). Can be used to retrieve lastRefreshedAt
-         * 
-         *  If lastRefreshedAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain the last time
-         *  the data was refreshed.
-         *  If expiresAt is provided, it is ignored, except if Lookup returns true, the value pointed to will contain expiresAt value.
+         *  \brief Returns the value associated with argument 'key' (if IKeyedCache), or nullopt, if its missing (missing same as expired). Like Lookup but also returns expiration information.
          * 
          *  \note that the non-const overload of Lookup respects TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed, and will
          *        auto-refresh the item (similar to LRUCache) if found.
@@ -615,9 +623,6 @@ namespace Stroika::Foundation::Cache {
             requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key)
-            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
-        template <typename K = KEY>
-        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const
             requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>);
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge) const
@@ -653,6 +658,8 @@ namespace Stroika::Foundation::Cache {
          *          Add (r);
          *          return r;
          *      }
+         * 
+         *  \note **this is the PREFERRED API for adding/looking up in TimedCache**
          *
          *  Usually one will use this as:
          *      \code
@@ -669,18 +676,12 @@ namespace Stroika::Foundation::Cache {
         template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
             requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual VALUE LookupValue (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller);
-        template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
-            requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<K> key, TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller);
         template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
             requires (not TimedCacheSupport::IKeyedCache<K>)
         nonvirtual VALUE LookupValue (CACHE_FILLTER_T&& cacheFiller);
         template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
             requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual VALUE LookupValue (TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller);
-        template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
-            requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
-        nonvirtual VALUE LookupValue (TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller);
 
     public:
         /**
@@ -689,7 +690,7 @@ namespace Stroika::Foundation::Cache {
          *          o   The new items freshness is TRAITS::GetCurrentTimestamp (), or the value given as argument
          *      if TRAITS::kTrackExpiration
          *          o   The new item's expiration is either given by expiresAt or now+ttl, or defaults to
-         *              GetMinimumFreshness()
+         *              GetMaxAge()
          */
         template <typename K = KEY>
             requires (TimedCacheSupport::IKeyedCache<K> and same_as<VALUE, void>)
@@ -698,11 +699,11 @@ namespace Stroika::Foundation::Cache {
             requires (TimedCacheSupport::IKeyedCache<K> and not same_as<V, void>)
         nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result);
         template <typename K = KEY, typename V = VALUE>
-            requires (TimedCacheSupport::IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackFreshness)
-        nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType freshAsOf);
-        template <typename K = KEY, typename V = VALUE>
             requires (TimedCacheSupport::IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackExpiration)
         nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType expiresAt);
+        template <typename K = KEY, typename V = VALUE>
+            requires (TimedCacheSupport::IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackFreshness)
+        nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType freshAsOf);
         template <typename K = KEY, typename V = VALUE>
             requires (not TimedCacheSupport::IKeyedCache<K> and not same_as<V, void>)
         nonvirtual void Add (typename Common::ArgByValueType<V> result);
@@ -791,10 +792,37 @@ namespace Stroika::Foundation::Cache {
             SetMaxAge (minimumAllowedFreshness);
         }
         template <typename K = KEY>
+            requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+        [[deprecated ("Since Stroika 3.0d23 use maxAge DURATION directly")]]
+        optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const
+        {
+            return Lookup (key, Ago (maxAge)); // IS THIS BACKWARDS
+        }
+        template <typename K = KEY>
+        [[deprecated ("Since Stroika 3.0d23 use maxAge DURATION directly")]]
+        nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key, TimeStampType maxAge) const
+            requires (TRAITS::kTrackFreshness and TimedCacheSupport::IKeyedCache<K>)
+        {
+            AssertNotImplemented ();
+            return nullopt;
+        }
+        template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
+            requires (not TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+        nonvirtual VALUE LookupValue (TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
+        {
+            return Lookup (Ago (maxAge), forward<CACHE_FILLTER_T> (cacheFiller));
+        }
+        template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
+            requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
+        [[deprecated ("Since Stroika 3.0d23 use maxAge DURATION directly")]]
+        nonvirtual VALUE LookupValue (typename Common::ArgByValueType<K> key, TimeStampType maxAge, CACHE_FILLTER_T&& cacheFiller)
+        {
+            return Lookup (key, Ago (maxAge), forward<CACHE_FILLTER_T> (cacheFiller));
+        }
+        template <typename K = KEY>
         [[deprecated ("Since Stroika v3.0d23 - use TRAITS::kAutomaticallyMarkDataAsRefreshedEachTimeAccessed instead")]]
         nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<K> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
         {
-            // DEPRECATED API
             scoped_lock                   critSec{fMaybeMutex_};
             typename MyMapType_::iterator i   = fData_.find (key);
             TimeStampType                 now = TRAITS::GetCurrentTimestamp ();
@@ -912,7 +940,7 @@ namespace Stroika::Foundation::Cache {
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     private:
-        // note if shared_mutex, it must be mutable, cuz shared locks still mustbe done
+        // note if shared_mutex, it must be mutable, cuz shared locks still must be done
         using MaybeMutexType_ =
             conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized, shared_timed_mutex, Debug::AssertExternallySynchronizedMutex>;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
@@ -1104,7 +1132,6 @@ namespace Stroika::Foundation::Cache {
      *  TODO:
      *      o   @todo consider if better hiding using aggregation instead of private inheritance.
      */
-
     template <typename KEY, typename VALUE, typename TIME_TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class SynchronizedCallerStalenessCache
         : public TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>> {
