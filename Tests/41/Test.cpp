@@ -684,7 +684,7 @@ namespace {
             {
                 Debug::TraceContextBumper traceCtx{"{}SyncCallerStalenessCacheT1_..."};
                 using namespace Cache;
-                SynchronizedCallerStalenessCache<int, int> cache;
+                SynchronizedTimedCache<int, int> cache;
                 auto mapValue = [&cache] (int value, optional<Time::DurationSeconds> allowedStaleness = {}) -> int {
                     return cache.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) {
                         return v; // could be more expensive computation
