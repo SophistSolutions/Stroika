@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Cache {
          * @tparam TRAITS 
          */
         template <typename TRAITS>
-            requires (TimedCacheSupport::ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
+            requires (ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
         struct InternallySynchronizedTraits : TRAITS {
             static constexpr inline Execution::InternallySynchronized kInternallySynchronized{Execution::InternallySynchronized::eInternallySynchronized};
         };
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Cache {
          * @tparam TRAITS 
          */
         template <typename TRAITS>
-            requires (TimedCacheSupport::ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
+            requires (ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
         struct TrackExpirationTraits : TRAITS {
             static constexpr inline bool kTrackFreshness{false};
             static constexpr inline bool kTrackExpiration{true};
@@ -1112,7 +1112,7 @@ namespace Stroika::Foundation::Cache {
      *          }
      *      \endcode
      * 
-     *      \note this CAN be done pretty easily without defining SynchronizedTimedCache, but this is enough more terse
+     *      \note this CAN be done pretty easily without defining SynchronizedTimedCache (e.g. InternallySynchronizedTraits), but this is enough more terse
      *             and common enough to be useful.
      */
     template <typename KEY, typename VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
