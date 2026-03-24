@@ -849,7 +849,7 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void ClearExpiredData ();
         nonvirtual void ClearExpiredData (TimeStampDifferenceType maxAge)
-            requires (kTrackFreshness);
+            requires (TRAITS::kTrackFreshness);
 
     public:
         /**
@@ -1054,7 +1054,7 @@ namespace Stroika::Foundation::Cache {
     private:
         nonvirtual void ClearExpired_ ();
         nonvirtual void ClearExpired_ (TimeStampDifferenceType maxAge)
-            requires (kTrackFreshness);
+            requires (TRAITS::kTrackFreshness);
 
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information

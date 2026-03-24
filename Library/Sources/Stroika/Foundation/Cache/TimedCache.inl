@@ -695,7 +695,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::ClearExpiredData (TimeStampDifferenceType maxAge)
-        requires (kTrackFreshness)
+        requires (TRAITS::kTrackFreshness)
     {
         scoped_lock critSec{fMaybeMutex_};
         ClearExpired_ (maxAge);
@@ -735,7 +735,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void TimedCache<KEY, VALUE, TRAITS>::ClearExpired_ (TimeStampDifferenceType maxAge)
-        requires (kTrackFreshness)
+        requires (TRAITS::kTrackFreshness)
     {
         TimeStampType now = TRAITS::GetCurrentTimestamp ();
         for (typename MyMapType_::iterator i = fData_.begin (); i != fData_.end ();) {
