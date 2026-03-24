@@ -532,8 +532,7 @@ namespace Stroika::Foundation::Cache {
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
         requires (TimedCacheSupport::IKeyedCache<K>)
-    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValueAdder_ (typename Common::ArgByValueType<K> key,
-                                                                    CACHE_FILLTER_T&& cacheFiller)
+    inline VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller)
     {
         // /**
         //  *  unlocking the shared lock while fetching the new value (optionally with a write lock).
