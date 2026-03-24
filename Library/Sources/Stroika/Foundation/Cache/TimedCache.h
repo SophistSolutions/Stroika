@@ -1077,13 +1077,13 @@ namespace Stroika::Foundation::Cache {
         MyMapType_ fData_;
 
     private:
-        // pass in readLock can can be 'upgraded' to full lock
+        // @todo MAYBE - pass in readLock can can be 'upgraded' to full lock
         template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
             requires (not TimedCacheSupport::IKeyedCache<K>)
         nonvirtual VALUE LookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller);
         template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
             requires (TimedCacheSupport::IKeyedCache<K>)
-        nonvirtual VALUE LookupValueAdder_ (typename Common::ArgByValueType<K> key, shared_lock<MaybeMutexType_>* lock, CACHE_FILLTER_T&& cacheFiller);
+        nonvirtual VALUE LookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;

@@ -477,12 +477,11 @@ namespace Stroika::Foundation::Cache {
         requires (TimedCacheSupport::IKeyedCache<K>)
     VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller)
     {
-        auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
         if (optional<VALUE> o = Lookup (key)) {
             return *o;
         }
         else {
-            return LookupValueAdder_ (key, &readLock, forward<CACHE_FILLTER_T> (cacheFiller));
+            return LookupValueAdder_ (key, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -490,12 +489,11 @@ namespace Stroika::Foundation::Cache {
         requires (TimedCacheSupport::IKeyedCache<K> and TRAITS::kTrackFreshness)
     VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<K> key, TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller)
     {
-        auto&& readLock = shared_lock{fMaybeMutex_}; // try shared_lock for case where present, and then lose it if we need to update object
         if (optional<VALUE> o = Lookup (key, maxAge)) {
             return *o;
         }
         else {
-            return LookupValueAdder_ (key, &readLock, forward<CACHE_FILLTER_T> (cacheFiller));
+            return LookupValueAdder_ (key, forward<CACHE_FILLTER_T> (cacheFiller));
         }
     }
     template <TimedCacheSupport::IKey KEY, TimedCacheSupport::IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
@@ -535,12 +533,12 @@ namespace Stroika::Foundation::Cache {
     template <typename K, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
         requires (TimedCacheSupport::IKeyedCache<K>)
     inline VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValueAdder_ (typename Common::ArgByValueType<K> key,
-                                                                    shared_lock<MaybeMutexType_>* lock, CACHE_FILLTER_T&& cacheFiller)
+                                                                    CACHE_FILLTER_T&& cacheFiller)
     {
-        /**
-         *  unlocking the shared lock while fetching the new value (optionally with a write lock).
-         */
-        lock->unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
+        // /**
+        //  *  unlocking the shared lock while fetching the new value (optionally with a write lock).
+        //  */
+        // lock->unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
 
         constexpr bool kHoldWriteLockDuringCacheFill = false;
         // never used true, and caused some trouble- need to invesigate
