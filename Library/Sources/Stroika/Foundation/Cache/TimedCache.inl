@@ -755,7 +755,7 @@ namespace Stroika::Foundation::Cache {
     // DEPRECATED APIS
     ///////////////////
     template <typename KEY, typename VALUE, typename TIME_TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class [[deprecated ("Since Stroika v3.0d23 - TimedCache has the same functionality and mostly the same names")]] CallerStalenessCache 
+    class [[deprecated ("Since Stroika v3.0d23 - TimedCache has the same functionality and mostly the same names")]] CallerStalenessCache
         : public TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>> {
     private:
         using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::DefaultTraits<KEY, VALUE>>;
@@ -779,8 +779,8 @@ namespace Stroika::Foundation::Cache {
         }
     };
     template <typename KEY, typename VALUE, typename TIME_TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class [[deprecated (
-        "Since Stroika v3.0d23 - TimedCache (or SyncrhonizedTimedCache) has the same functionality and mostly the same names")]] SynchronizedCallerStalenessCache 
+    class [[deprecated ("Since Stroika v3.0d23 - TimedCache (or SyncrhonizedTimedCache) has the same functionality and mostly the same "
+                        "names")]] SynchronizedCallerStalenessCache
         : public TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>> {
     private:
         using inherited = TimedCache<KEY, VALUE, TimedCacheSupport::InternallySynchronizedTraits<TimedCacheSupport::DefaultTraits<KEY, VALUE>>>;
