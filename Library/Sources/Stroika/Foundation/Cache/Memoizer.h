@@ -34,8 +34,8 @@ namespace Stroika::Foundation::Cache {
         using DEFAULT_CACHE_BWA_ = LRUCache<T1, T2>;
     }
 #endif
-#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy || qCompilerAndStdLib_template_template_auto_deduced_Buggy
-#define qStroika_template_template_BWA(...) __VA_ARGS__,typename...
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy || qCompilerAndStdLib_template_template_auto_deduced_Buggy ||1
+#define qStroika_template_template_BWA(...) __VA_ARGS__, typename...
 #else
 #define qStroika_template_template_BWA(...) __VA_ARGS__
 #endif
@@ -90,14 +90,14 @@ namespace Stroika::Foundation::Cache {
     };
 
     namespace Private_ {
-        template <typename CACHE, typename F, typename Tuple>
+        template <template <typename...> typename  CACHE, typename F, typename Tuple>
         struct memoizer_builder;
-        template <typename CACHE, typename F,   typename... Args>
-        struct memoizer_builder<F, std::tuple<Args...>> {
-            using type = Memoizer<typename Common::FunctionTraits<F>::result_type, CACHE, Args...>;
+        template < template <typename...> typename  CACHE, typename F, typename... Args>
+        struct memoizer_builder<CACHE, F, std::tuple<Args...>> {
+            using type = Memoizer<typename Common::FunctionTraits<F>::result_type, LRUCache, Args...>;
         };
     }
-    template <typename F, template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache>
+    template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache, typename F>
     auto MakeMemoizer (F&& f)
     {
         using ArgsTuple = typename Common::FunctionTraits<F>::args_tuple;
