@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Cache {
 
         template <typename F, typename... Args>
         struct memoizer_builder<F, std::tuple<Args...>> {
-            using type = Memoizer<typename Common::FunctionTraits<F>::result_type, MemoizerSupport::DEFAULT_CACHE_BWA_, Args...>;
+            using type = Memoizer<typename Common::FunctionTraits<F>::result_type, LRUCache, Args...>;
         };
     }
     template <typename F, template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache>
