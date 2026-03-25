@@ -51,24 +51,24 @@ namespace Stroika::Foundation::Cache {
      *
      *      o   @todo   maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
      *
-     *  \note   Memoizer works well wtih LRUCache, or TimedCache.
+     *  \par Example Usage
+     *      \code
+     *          unsigned int                      totalCallsCount{};
+     *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { ++totalCallsCount;  return a + b; }};
+     *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+     *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+     *      \endcode
+     * 
+     *  \see    Factory::Memoizer::Make () for more simple to use examples.
      *
+     *  \note   Memoizer works well with LRUCache, or TimedCache.
+     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache.</a>
      */
     template <typename RESULT, template <qStroika_template_template_BWA (typename, typename)> class CACHE = LRUCache, typename... ARGS>
     class Memoizer {
     public:
         /**
-         *  \note see Tests use of qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy if you get the message
-         *        "template template argument has different template parameters than its corresponding template template parameter"
-         *
-         *  \par Example Usage
-         *      \code
-         *          unsigned int                      totalCallsCount{};
-         *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { ++totalCallsCount;  return a + b; }};
-         *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
-         *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
-         *      \endcode
          */
         Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache = CACHE<tuple<ARGS...>, RESULT>{});
         Memoizer (Memoizer&& from) noexcept = default;
@@ -89,11 +89,69 @@ namespace Stroika::Foundation::Cache {
         CACHE<tuple<ARGS...>, RESULT> fCache_;
     };
 
-    /**
-     *  
-     */
-    template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache, typename FUNCTION>
-    auto MakeMemoizer (FUNCTION&& f);
+    namespace Factory::Memoizer {
+
+        /**
+         *  @brief Factory function to make a memoizer out of any argument function.
+         * 
+         *  \par Example Usage (simple):
+         * 
+         *  \code
+         *      unsigned int totalCallsCount{};
+         *      Memoizer         memoizer = Cache::Factory::Memoizer::Make ([&totalCallsCount] (int a, int b) {
+         *          totalCallsCount++;
+         *          return a + b;
+         *      });
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *  \endcode
+         *
+         *  \par Example Usage (force using LRUCache):
+         * 
+         *  \code
+         *      unsigned int totalCallsCount{};
+         *      Memoizer         memoizer = Cache::Factory::Memoizer::Make<Cache::LRUCache> ([&totalCallsCount] (int a, int b) {
+         *          totalCallsCount++;
+         *          return a + b;
+         *      });
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *  \endcode
+         *
+         *  \par Example Usage (force using TimedCache):
+         * 
+         *  \code
+         *      unsigned int totalCallsCount{};
+         *      Memoizer         memoizer = Cache::Factory::Memoizer::Make<Cache::TimedCache> ([&totalCallsCount] (int a, int b) {
+         *          totalCallsCount++;
+         *          return a + b;
+         *      });
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *  \endcode
+         * 
+         *
+         *  \par Example Usage (use InternallySyncrhonized - or other special/custom cache):
+         * 
+         *  \code
+         *      using namespace Cache::LRUCacheSupport;
+         *      unsigned int totalCallsCount{};
+         *      // use internally synchronized cache for memoizer
+         *      template <typename K, typename V>
+         *      using MyCache_ = Cache::LRUCache<K,V,InternallySynchronizedTraits<DefaultTraits<K,V>>>;
+         *      Memoizer     memoizer = Cache::Factory::Memoizer::Make<MyCache_> ([&totalCallsCount] (int a, int b) {
+         *          totalCallsCount++;
+         *          return a + b;
+         *      });
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *  \endcode
+         * 
+         */
+        template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache, typename FUNCTION>
+        auto Make (FUNCTION&& f);
+
+    }
 
 }
 

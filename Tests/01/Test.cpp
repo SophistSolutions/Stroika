@@ -265,6 +265,12 @@ namespace {
 }
 
 namespace {
+    namespace Test5_Memoizer_Private_ {
+        using namespace Cache::LRUCacheSupport;
+        // use internally synchronized cache for memoizer
+        template <typename K, typename V>
+        using MyCache_ = Cache::LRUCache<K, V, InternallySynchronizedTraits<DefaultTraits<K, V>>>;
+    }
     GTEST_TEST (Foundation_Caching, Test5_Memoizer_)
     {
         {
@@ -297,7 +303,34 @@ namespace {
 
         {
             unsigned int totalCallsCount{};
-            auto         memoizer = Cache::MakeMemoizer ([&totalCallsCount] (int a, int b) {
+            Memoizer     memoizer = Cache::Factory::Memoizer::Make ([&totalCallsCount] (int a, int b) {
+                totalCallsCount++;
+                return a + b;
+            });
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+        }
+        {
+            unsigned int totalCallsCount{};
+            Memoizer     memoizer = Cache::Factory::Memoizer::Make<Cache::LRUCache> ([&totalCallsCount] (int a, int b) {
+                totalCallsCount++;
+                return a + b;
+            });
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+        }
+        {
+            unsigned int totalCallsCount{};
+            Memoizer     memoizer = Cache::Factory::Memoizer::Make<Cache::TimedCache> ([&totalCallsCount] (int a, int b) {
+                totalCallsCount++;
+                return a + b;
+            });
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+        }
+        {
+            unsigned int totalCallsCount{};
+            Memoizer     memoizer = Cache::Factory::Memoizer::Make<Test5_Memoizer_Private_::MyCache_> ([&totalCallsCount] (int a, int b) {
                 totalCallsCount++;
                 return a + b;
             });

@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Cache {
 
     /*
      ********************************************************************************
-     **************************** Cache::MakeMemoizer *******************************
+     ************************ Cache::Factory::Memoizer::Make ************************
      ********************************************************************************
      */
     namespace Private_ {
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Cache {
         };
     }
     template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE, typename FUNCTION>
-    auto MakeMemoizer (FUNCTION&& f)
+    auto Factory::Memoizer::Make (FUNCTION&& f)
     {
         using ArgsTuple = typename Common::FunctionTraits<FUNCTION>::args_tuple;
         typename Private_::memoizer_builder<CACHE, FUNCTION, ArgsTuple>::type m (forward<FUNCTION> (f));

@@ -516,8 +516,9 @@ namespace Stroika::Foundation::Cache {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
         static
 #endif
-            auto operator() (Execution::InternallySynchronized internallySynchronized, size_t maxCacheSize, size_t hashTableSize,
-                             KEY_HASH_FUNCTION&& hashFunction = {})
+            auto
+            operator() (Execution::InternallySynchronized internallySynchronized, size_t maxCacheSize, size_t hashTableSize,
+                        KEY_HASH_FUNCTION&& hashFunction = {})
 #if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
                 const
 #endif
@@ -536,8 +537,9 @@ namespace Stroika::Foundation::Cache {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
         static
 #endif
-            auto operator() (Execution::InternallySynchronized internallySynchronized, size_t maxCacheSize,
-                             KEY_EQUALS_COMPARER&& keyComparer, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {})
+            auto
+            operator() (Execution::InternallySynchronized internallySynchronized, size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer,
+                        size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {})
 #if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
                 const
 #endif
@@ -557,7 +559,8 @@ namespace Stroika::Foundation::Cache {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
         static
 #endif
-            auto operator() (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {})
+            auto
+            operator() (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {})
 #if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
                 const
 #endif
@@ -568,8 +571,8 @@ namespace Stroika::Foundation::Cache {
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
         static
 #endif
-            auto operator() (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyComparer, size_t hashTableSize,
-                             const KEY_HASH_FUNCTION& hashFunction = {})
+            auto
+            operator() (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyComparer, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {})
 #if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
                 const
 #endif
