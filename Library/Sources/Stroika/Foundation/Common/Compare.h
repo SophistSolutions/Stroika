@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
+#include "Stroika/Foundation/Common/TemplateUtilities.h"
 
 /**
  *  \file
@@ -32,7 +33,7 @@ namespace Stroika::Foundation::Common {
      *
      *  \par Total Ordering (http://mathworld.wolfram.com/TotallyOrderedSet.html)
      *          o   Reflexivity: a <= a
-     *          o   Antisymmetry:  a <= b and b <= a implies a=b
+     *          o   Antisymmetry: a <= b and b <= a implies a=b
      *          o   Transitivity: a <= b and b <= c implies a <= c
      *          o   Comparability: either a <= b or b <= a
      *
