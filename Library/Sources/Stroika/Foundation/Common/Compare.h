@@ -371,7 +371,7 @@ namespace Stroika::Foundation::Common {
     };
     template <typename BASE_COMPARER>
     EqualsComparerAdapter (BASE_COMPARER bc)
-        -> EqualsComparerAdapter<remove_cvref_t<typename FunctionTraits<BASE_COMPARER>::template arg<0>::type>, remove_cvref_t<BASE_COMPARER>>;
+        -> EqualsComparerAdapter<remove_cvref_t<typename FunctionTraits<BASE_COMPARER>::template arg_t<0>>, remove_cvref_t<BASE_COMPARER>>;
 
     /**
      *  \brief Use this to wrap any basic comparer, and produce a Less comparer
@@ -401,7 +401,7 @@ namespace Stroika::Foundation::Common {
     };
     template <typename BASE_COMPARER>
     InOrderComparerAdapter (BASE_COMPARER bc)
-        -> InOrderComparerAdapter<remove_cvref_t<typename FunctionTraits<BASE_COMPARER>::template arg<0>::type>, remove_cvref_t<BASE_COMPARER>>;
+        -> InOrderComparerAdapter<remove_cvref_t<typename FunctionTraits<BASE_COMPARER>::template arg_t<0>>, remove_cvref_t<BASE_COMPARER>>;
 
     /**
      *  \brief Use this to wrap a basic (ITotallyOrderingComparer) comparer, and produce a Three-Way comparer
@@ -429,7 +429,7 @@ namespace Stroika::Foundation::Common {
     };
     template <typename BASE_COMPARER>
     ThreeWayComparerAdapter (BASE_COMPARER bc)
-        -> ThreeWayComparerAdapter<remove_cvref_t<typename FunctionTraits<BASE_COMPARER>::template arg<0>::type>, remove_cvref_t<BASE_COMPARER>>;
+        -> ThreeWayComparerAdapter<remove_cvref_t<typename FunctionTraits<BASE_COMPARER>::template arg_t<0>>, remove_cvref_t<BASE_COMPARER>>;
 
     /**
      *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explicit 'T' comparer for the T in optional<T>
