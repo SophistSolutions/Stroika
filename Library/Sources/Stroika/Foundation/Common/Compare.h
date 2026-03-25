@@ -17,7 +17,6 @@
 #include "Stroika/Foundation/Common/Enumeration.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
-#include "Stroika/Foundation/Common/TemplateUtilities.h"
 
 /**
  *  \file
