@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Common {
      *
      *          static_assert (traits::kArity == 1);
      *          static_assert (same_as<long, traits::result_type>);
-     *          static_assert (same_as<int, traits::arg<0>::type>);
+     *          static_assert (same_as<int, traits::arg_t<0>>);
      *      \endcode
      * 
      *  CREDITS:
@@ -114,37 +114,29 @@ namespace Stroika::Foundation::Common {
         using result_type = RETURN_TYPE;
 
         /**
-         *  type of the ith 'arg';
+         * @brief Since you cannot use a parameter-pack as type directly, wrap it in a tuple, and then
+         *        it can be used (e.g. as KEY in a map).
+         */
+        using args_tuple = tuple<ARGS...>;
+
+        /**
+         * @brief Return the ith argument type
          * 
          *  \note UNCLEAR if/how this might work if the function is overloaded...
          * 
-         *  \see arg_t, ArgOrVoid, ArgOrVoid_t
+         *  \see arg_t, ArgOrVoid_t
+         * 
+         * @tparam I 
          */
-        template <size_t i>
-        struct arg {
-            using type = typename tuple_element<i, tuple<ARGS...>>::type;
-            // the i-th argument is equivalent to the i-th tuple element of a tuple
-            // composed of those arguments.
-        };
-
-        /**
-         */
-        template <size_t i>
-        using arg_t = typename arg<i>::type;
+        template <size_t I>
+        using arg_t = tuple_element_t<I, args_tuple>;
 
         /**
          *  \brief like 'arg' - except that if index > max legal, instead of failing to compile, will return void. Helpful
          *         sometimes in contexts where c++ templates run more code than you might want.
          */
-        template <size_t i>
-        struct ArgOrVoid {
-            using type = typename conditional_t<(i < sizeof...(ARGS)), tuple_element<i, tuple<ARGS...>>, Private_::void_type>::type;
-        };
-
-        /**
-         */
-        template <size_t i>
-        using ArgOrVoid_t = typename ArgOrVoid<i>::type;
+        template <size_t I>
+        using ArgOrVoid_t = conditional_t<(I < sizeof...(ARGS)), arg_t<I>, void>;
     };
 
     /**

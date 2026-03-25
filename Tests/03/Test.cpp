@@ -417,7 +417,7 @@ namespace {
             using traits = FunctionTraits<decltype (lambda)>;
             static_assert (traits::kArity == 1);
             static_assert (same_as<long, traits::result_type>);
-            static_assert (same_as<int, traits::arg<0>::type>);
+            static_assert (same_as<int, traits::arg_t<0>>);
         }
         {
             static_assert (Traversal::IIterable<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
