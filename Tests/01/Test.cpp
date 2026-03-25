@@ -52,7 +52,8 @@ namespace {
         }
         void T2_ ()
         {
-            using CACHE = LRUCache<string, string, equal_to<string>, hash<string>>;
+            // using CACHE = LRUCache<string, string, equal_to<string>, hash<string>>;
+            using CACHE = LRUCache<string, string, LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<string, string>>>;
             CACHE tmp{10, equal_to<string>{}, 10};
             tmp.Add ("a", "1");
             tmp.Add ("b", "2");
@@ -274,6 +275,7 @@ namespace {
                 return a + b;
             }};
 #else
+            // @todo debug why this broke memoizer
             Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) {
                 totalCallsCount++;
                 return a + b;
@@ -292,6 +294,16 @@ namespace {
                 EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
             }
 #endif
+
+        {
+            unsigned int totalCallsCount{};
+            auto         memoizer = Cache::MakeMemoizer ([&totalCallsCount] (int a, int b) {
+                totalCallsCount++;
+                return a + b;
+            });
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+            EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+        }
     }
 }
 
@@ -616,9 +628,10 @@ namespace {
             constexpr auto kStringCIComparer_ = String::EqualsComparer{eCaseInsensitive};
             {
                 // explicit or defaulted params
-                LRUCache<string, string>                         t0{};
-                LRUCache<string, string>                         t1{3};
-                LRUCache<String, string, String::EqualsComparer> t2{3, kStringCIComparer_};
+                LRUCache<string, string> t0{};
+                LRUCache<string, string> t1{3};
+                LRUCache<String, string, LRUCacheSupport::WithKeyComparerTraits<LRUCacheSupport::DefaultTraits<String, string>, String::EqualsComparer>> t2{
+                    3, kStringCIComparer_};
             }
             {
                 // DEDUCTION using Factory approach
@@ -643,9 +656,11 @@ namespace {
 
             {
                 // explicit or defaulted params
-                LRUCache<string, string, equal_to<string>, hash<string>>            t0{3, 3};
-                LRUCache<string, string, equal_to<string>, decltype (hashFunction)> t1{3, 3, hashFunction};
-                LRUCache<string, string, equal_to<string>, hash<string>>            t2{3, equal_to<string>{}, 3};
+                LRUCache<string, string, LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<string, string>>> t0{3, 3};
+                LRUCache<string, string, LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<string, string>, decltype (hashFunction)>> t1{
+                    3, 3, hashFunction};
+                LRUCache<string, string, LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<string, string>>> t2{
+                    3, equal_to<string>{}, 3};
             }
             {
                 // DEDUCTION using Factory approach

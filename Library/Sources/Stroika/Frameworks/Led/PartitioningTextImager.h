@@ -305,8 +305,8 @@ namespace Stroika::Frameworks::Led {
         public:
             struct COMPARE_ITEM {
                 COMPARE_ITEM (PartitionMarker* pm, size_t startingRowAt)
-                    : fPM (pm)
-                    , fRowStartingAt (startingRowAt)
+                    : fPM{pm}
+                    , fRowStartingAt{startingRowAt}
                 {
                 }
                 PartitionMarker* fPM;
@@ -322,7 +322,7 @@ namespace Stroika::Frameworks::Led {
             COMPARE_ITEM fValidFor;
 
         public:
-            Foundation::Memory::InlineBuffer<DistanceType> fMeasurementsCache; // for just the given PM
+            Memory::InlineBuffer<DistanceType> fMeasurementsCache; // for just the given PM
 
         private:
             friend struct CacheEltLRUCacheTraits;
@@ -330,13 +330,15 @@ namespace Stroika::Frameworks::Led {
         };
 
     private:
-        struct CacheElt_COMPARE_ITEM_KeyEqualsCompareFunctionType_ {
+        struct CacheElt_COMPARE_ITEM_EQComparer_ {
             bool operator() (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs) const
             {
                 return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
             };
         };
-        mutable Foundation::Cache::LRUCache<CacheElt::COMPARE_ITEM, CacheElt, CacheElt_COMPARE_ITEM_KeyEqualsCompareFunctionType_> fCache;
+        using TRAITS_ =
+            Cache::LRUCacheSupport::WithKeyComparerTraits<Cache::LRUCacheSupport::DefaultTraits<CacheElt::COMPARE_ITEM, CacheElt>, CacheElt_COMPARE_ITEM_EQComparer_>;
+        mutable Cache::LRUCache<CacheElt::COMPARE_ITEM, CacheElt, TRAITS_> fCache;
 
     public:
         nonvirtual void ClearAll ();

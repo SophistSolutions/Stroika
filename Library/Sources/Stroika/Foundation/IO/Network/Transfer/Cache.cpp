@@ -3,7 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
+#include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
@@ -14,14 +14,13 @@
 #include "Cache.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Cache;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Time;
-
-using Stroika::Foundation::Cache::SynchronizedLRUCache;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 // #define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -179,7 +178,9 @@ namespace {
 
         DefaultOptions fOptions_;
 
-        SynchronizedLRUCache<URI, MyElement_, equal_to<URI>, hash<URI>> fCache_;
+        using TRAITS_ =
+            LRUCacheSupport::InternallySynchronizedTraits<LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<URI, MyElement_>>>;
+        mutable LRUCache<URI, MyElement_, TRAITS_> fCache_; // lookups DO mutate the cache so mark mutable, but safe threadwise cuz of InternallySynchronizedTraits
     };
 
 }

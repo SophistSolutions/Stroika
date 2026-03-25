@@ -7,7 +7,7 @@
 #include <iostream>
 #include <mutex>
 
-#include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
+#include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Containers/Bijection.h"

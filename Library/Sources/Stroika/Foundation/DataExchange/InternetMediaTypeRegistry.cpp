@@ -5,7 +5,7 @@
 
 #include <filesystem>
 
-#include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
+#include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
@@ -24,6 +24,7 @@
 #include "InternetMediaTypeRegistry.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Cache;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
@@ -682,6 +683,12 @@ auto InternetMediaTypeRegistry::CloneAsSharedPtr_ (const IFrontendRep_& t) -> sh
     return Memory::MakeSharedPtr<FrontendRep_> (t.GetBackendRep (), t.GetOverrides ());
 }
 
+namespace {
+    template <typename K, typename V>
+    using SynchronizedHashingCache_ =
+        LRUCache<K, V, LRUCacheSupport::InternallySynchronizedTraits<LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<K, V>>>>;
+}
+
 #if qStroika_Foundation_Common_Platform_Windows
 auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<IBackendRep>
 {
@@ -703,14 +710,10 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::WindowsRegistryDefaultBackend"};
     struct WinRep_ : IBackendRep {
         // underlying windows code fast so use small cache sizes
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>, equal_to<FileSuffixType>, hash<FileSuffixType>> fFileSuffix2PrettyNameCache_{
-            25, 7};
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>> fSuffix2MediaTypeCache_{
-            25, 7};
-        mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixCache_{
-            25, 7};
-        mutable Cache::SynchronizedLRUCache<InternetMediaType, Containers::Set<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixesCache_{
-            25, 7};
+        mutable SynchronizedHashingCache_<FileSuffixType, optional<String>>                   fFileSuffix2PrettyNameCache_{25, 7};
+        mutable SynchronizedHashingCache_<FileSuffixType, optional<InternetMediaType>>        fSuffix2MediaTypeCache_{25, 7};
+        mutable SynchronizedHashingCache_<InternetMediaType, optional<FileSuffixType>>        fContentType2FileSuffixCache_{25, 7};
+        mutable SynchronizedHashingCache_<InternetMediaType, Containers::Set<FileSuffixType>> fContentType2FileSuffixesCache_{25, 7};
 
         virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
