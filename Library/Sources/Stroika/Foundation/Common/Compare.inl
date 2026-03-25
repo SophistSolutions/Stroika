@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
     {
-        static_assert (IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
+        static_assert (IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg_t<0>>);
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Common {
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>
     DeclareInOrderComparer (FUNCTOR&& f)
     {
-        static_assert (IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
+        static_assert (IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg_t<0>>);
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Common {
         if constexpr (FunctionTraits<FUNCTOR>::kArity == 2) {
             using TRAITS = FunctionTraits<FUNCTOR>;
             return same_as<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
-                   IsPotentiallyComparerRelation<FUNCTOR, typename FunctionTraits<FUNCTOR>::template arg<0>::type> ();
+                   IsPotentiallyComparerRelation<FUNCTOR, typename FunctionTraits<FUNCTOR>::template arg_t<0>> ();
         }
         else {
             return false;
