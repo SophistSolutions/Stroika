@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
 
@@ -33,6 +34,11 @@ namespace Stroika::Foundation::Cache {
         using DEFAULT_CACHE_BWA_ = LRUCache<T1, T2>;
     }
 #endif
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy || 1
+#define qStroika_template_template_BWA(...) typename, typename
+#else
+#define qStroika_template_template_BWA(...) typename...
+#endif
 
     /**
      * \brief Cache the results of expensive computations transparently
@@ -45,13 +51,11 @@ namespace Stroika::Foundation::Cache {
      *
      *      o   @todo   maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
      *
-     *  \note   Memoizer works well wtih LRUCache, SynchronizedLRUCache, TimedCache, or SynchronizedTimeCache. But
-     *          it does NOT work with CallerStalenessCache, because that cache requires the caller to specify an allowed staleness on each
-     *          call.
+     *  \note   Memoizer works well wtih LRUCache, or TimedCache.
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md">Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache. Used with SynchronizedLRUCache and a typical function, for example, this is fully re-entrant</a>
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md">Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache.</a>
      */
-    template <typename RESULT, template <typename, typename> class CACHE = LRUCache, typename... ARGS>
+    template <typename RESULT, template <qStroika_template_template_BWA (typename, typename)> class CACHE = LRUCache, typename... ARGS>
     class Memoizer {
     public:
         /**
@@ -84,6 +88,23 @@ namespace Stroika::Foundation::Cache {
         function<RESULT (ARGS...)>    fFunction_;
         CACHE<tuple<ARGS...>, RESULT> fCache_;
     };
+
+    namespace Private_ {
+        template <typename F, typename Tuple>
+        struct memoizer_builder;
+
+        template <typename F, typename... Args>
+        struct memoizer_builder<F, std::tuple<Args...>> {
+            using type = Memoizer<typename Common::FunctionTraits<F>::result_type, MemoizerSupport::DEFAULT_CACHE_BWA_, Args...>;
+        };
+    }
+    template <typename F, template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache>
+    auto MakeMemoizer (F&& f)
+    {
+        using ArgsTuple = typename Common::FunctionTraits<F>::args_tuple;
+        typename Private_::memoizer_builder<F, ArgsTuple>::type m (f);
+        return m;
+    }
 
 }
 
