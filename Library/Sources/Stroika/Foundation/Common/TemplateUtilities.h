@@ -19,6 +19,12 @@
 
 namespace Stroika::Foundation::Common {
 
+    namespace Private_ {
+        struct void_type {
+            using type = void;
+        };
+    }
+
     /**
      *  Create a singleton of a class initialized once, but whose DTOR is never called.
      *

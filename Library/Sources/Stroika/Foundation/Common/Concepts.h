@@ -56,12 +56,6 @@
 
 namespace Stroika::Foundation::Common {
 
-    namespace Private_ {
-        struct void_type {
-            using type = void;
-        };
-    }
-
     /**
      * \brief ClassNotFinal
      */
