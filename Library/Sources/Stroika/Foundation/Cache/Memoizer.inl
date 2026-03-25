@@ -23,15 +23,12 @@ namespace Stroika::Foundation::Cache {
         return fCache_.LookupValue (make_tuple (args...), [&] (const tuple<ARGS...>& t) { return apply (fFunction_, t); });
     }
 
-
-  
-
     /*
      ********************************************************************************
      **************************** Cache::MakeMemoizer *******************************
      ********************************************************************************
      */
-      namespace Private_ {
+    namespace Private_ {
         template <template <typename...> typename CACHE, typename F, typename Tuple>
         struct memoizer_builder;
         template <template <typename...> typename CACHE, typename F, typename... Args>
