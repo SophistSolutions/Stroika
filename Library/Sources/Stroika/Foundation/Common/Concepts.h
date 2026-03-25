@@ -103,22 +103,32 @@ namespace Stroika::Foundation::Common {
     struct FunctionTraits : public FunctionTraits<decltype (&T::operator())> {};
     template <typename CLASS_TYPE, typename RETURN_TYPE, typename... ARGS>
     struct FunctionTraits<RETURN_TYPE (CLASS_TYPE::*) (ARGS...) const> {
+    private:
+        template <size_t i>
+        struct arg_ {
+            using type = typename tuple_element<i, tuple<ARGS...>>::type;
+        };
+
+    public:
         /**
          *  \brief Number of arguments
          */
         static inline constexpr size_t kArity = sizeof...(ARGS);
 
+    public:
         /**
          *  Function return type.
          */
         using result_type = RETURN_TYPE;
 
+    public:
         /**
          * @brief Since you cannot use a parameter-pack as type directly, wrap it in a tuple, and then
          *        it can be used (e.g. as KEY in a map).
          */
         using args_tuple = tuple<ARGS...>;
 
+    public:
         /**
          * @brief Return the ith argument type
          * 
@@ -129,8 +139,9 @@ namespace Stroika::Foundation::Common {
          * @tparam I 
          */
         template <size_t I>
-        using arg_t = tuple_element_t<I, args_tuple>;
+        using arg_t = typename arg_<I>::type;
 
+    public:
         /**
          *  \brief like 'arg' - except that if index > max legal, instead of failing to compile, will return void. Helpful
          *         sometimes in contexts where c++ templates run more code than you might want.
