@@ -34,13 +34,13 @@ namespace Stroika::Foundation::Cache {
         using DEFAULT_CACHE_BWA_ = LRUCache<T1, T2>;
     }
 #endif
-#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy || qCompilerAndStdLib_template_template_auto_deduced_Buggy || 1
+#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy || qCompilerAndStdLib_template_template_auto_deduced_Buggy
 #define qStroika_template_template_BWA(...) __VA_ARGS__, typename...
 #else
 #define qStroika_template_template_BWA(...) __VA_ARGS__
 #endif
 
-        /**
+    /**
      * \brief Cache the results of expensive computations transparently
      *
      *  @see https://en.wikipedia.org/wiki/Memoization
@@ -55,8 +55,8 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache.</a>
      */
-        template <typename RESULT, template <qStroika_template_template_BWA (typename, typename)> class CACHE = LRUCache, typename... ARGS>
-        class Memoizer {
+    template <typename RESULT, template <qStroika_template_template_BWA (typename, typename)> class CACHE = LRUCache, typename... ARGS>
+    class Memoizer {
     public:
         /**
          *  \note see Tests use of qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy if you get the message
@@ -89,6 +89,12 @@ namespace Stroika::Foundation::Cache {
         CACHE<tuple<ARGS...>, RESULT> fCache_;
     };
 
+    /**
+     *  
+     */
+    template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache, typename FUNCTION>
+    auto MakeMemoizer (FUNCTION&& f);
+
     namespace Private_ {
         template <template <typename...> typename CACHE, typename F, typename Tuple>
         struct memoizer_builder;
@@ -97,11 +103,11 @@ namespace Stroika::Foundation::Cache {
             using type = Memoizer<typename Common::FunctionTraits<F>::result_type, LRUCache, Args...>;
         };
     }
-    template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache, typename F>
-    auto MakeMemoizer (F&& f)
+    template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE, typename FUNCTION>
+    auto MakeMemoizer (FUNCTION&& f)
     {
-        using ArgsTuple = typename Common::FunctionTraits<F>::args_tuple;
-        typename Private_::memoizer_builder<CACHE, F, ArgsTuple>::type m (f);
+        using ArgsTuple = typename Common::FunctionTraits<FUNCTION>::args_tuple;
+        typename Private_::memoizer_builder<CACHE, FUNCTION, ArgsTuple>::type m (forward<FUNCTION> (f));
         return m;
     }
 }
