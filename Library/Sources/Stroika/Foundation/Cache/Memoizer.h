@@ -28,12 +28,6 @@
 
 namespace Stroika::Foundation::Cache {
 
-#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
-    namespace MemoizerSupport {
-        template <typename T1, typename T2>
-        using DEFAULT_CACHE_BWA_ = LRUCache<T1, T2>;
-    }
-#endif
 #if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy || qCompilerAndStdLib_template_template_auto_deduced_Buggy
 #define qStroika_template_template_BWA(...) __VA_ARGS__, typename...
 #else
