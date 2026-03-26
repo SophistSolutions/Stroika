@@ -462,19 +462,8 @@ namespace Stroika::Foundation::Cache {
     ///  DEPRECATED CLASS TEMPLATES
     ///
     namespace Factory {
-        /*
-         *  \note - no way to extract the KEY from the typename TRAITS::KeyEqualsCompareFunctionType, because this comparer might have templated operator(), such
-         *          as String::EqualsComparer.
-         * 
-         *  \par Example Usage
-         *      \code
-         *          auto t0{Factory::LRUCache_NoHash<string, string>{}()};
-         *          auto t1{Factory::LRUCache_NoHash<string, string>{}(3)};
-         *          LRUCache t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
-         *      \endcode
-         */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-        struct LRUCache_NoHash [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker")]] {
+        struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker")]] LRUCache_NoHash  {
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
             {
@@ -526,15 +515,11 @@ namespace Stroika::Foundation::Cache {
          *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-        struct SynchronizedLRUCache_NoHash [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker")]] {
+        struct  [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY, VALUE,InternallySynchronized::eInternallySynchronized>")]] SynchronizedLRUCache_NoHash {
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
             {
-                return Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>{}(Execution::InternallySynchronized::eInternallySynchronized,
-                                                                          maxCacheSize, keyComparer);
-                // using namespace LRUCacheSupport;
-                // using TRAITS_ = InternallySynchronizedTraits<WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, KEY_EQUALS_COMPARER>>;
-                // return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, keyComparer};
+                return Factory::LRUCache::Maker<KEY, VALUE, Execution::InternallySynchronized::eInternallySynchronized,STATS_TYPE>{}(maxCacheSize, keyComparer);
             }
         };
 
