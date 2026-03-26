@@ -2776,6 +2776,47 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
 
 #endif
 
+
+
+
+
+
+
+/**
+ Compiling Tests/42/Test.cpp ... 
+Test.cpp:642:38: error: alias template 'SynchronizedLRUCache' requires template arguments; argument deduction only allowed for class templates
+                SynchronizedLRUCache cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
+                                     ^
+/Users/runner/work/Stroika/Stroika/Library/Sources/Stroika/Foundation/Cache/LRUCache.h:710:5: note: template is declared here
+    using SynchronizedLRUCache = LRUCache<KEY, VALUE, LRUCacheSupport::InternallySynchronizedTraits<TRAITS>>;
+    ^
+      Linking Test Builds/Debug/Tests/Test40 (Foundation::Execution::Threads) ... 
+      Compiling Tests/43/Test.cpp ... 
+1 error generated.
+ */
+
+#ifndef qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// Appears broken on XCode 15
+#define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+// #elif defined(__clang__) && !defined(__APPLE__)
+// // appears still broken in clang++-???
+// #define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 18))
+#elif defined(__GNUC__) && !defined(__clang__)
+// appears BROKEN IN GCC 11
+#define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#else
+#define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy 0
+#endif
+
+#endif
+
+
+
+
+
+
 /*
 
 /usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23

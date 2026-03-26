@@ -639,7 +639,12 @@ namespace {
             {
                 Debug::TraceContextBumper traceCtx{"{}SyncLRUCacheT1_..."};
                 using namespace Cache;
-                SynchronizedLRUCache cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
+                #if qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
+                auto
+                #else
+                SynchronizedLRUCache
+                #endif
+                 cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
                 Thread::Ptr          writerThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
