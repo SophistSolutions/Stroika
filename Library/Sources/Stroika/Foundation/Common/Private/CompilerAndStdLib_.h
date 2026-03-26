@@ -2794,7 +2794,6 @@ Test.cpp:642:38: error: alias template 'SynchronizedLRUCache' requires template 
       Compiling Tests/43/Test.cpp ... 
 1 error generated.
  */
-
 #ifndef qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -2806,7 +2805,8 @@ Test.cpp:642:38: error: alias template 'SynchronizedLRUCache' requires template 
 #elif defined(__GNUC__) && !defined(__clang__)
 // appears BROKEN IN GCC 11
 // appears BROKEN IN GCC 12
-#define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+// appears BROKEN IN GCC 13
+#define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy 0
 #endif
