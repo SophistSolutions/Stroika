@@ -52,7 +52,6 @@ namespace {
         }
         void T2_ ()
         {
-            // using CACHE = LRUCache<string, string, equal_to<string>, hash<string>>;
             using CACHE = LRUCache<string, string, LRUCacheSupport::WithKeyHashTraits<LRUCacheSupport::DefaultTraits<string, string>>>;
             CACHE tmp{10, equal_to<string>{}, 10};
             tmp.Add ("a", "1");
@@ -74,9 +73,9 @@ namespace {
             // using C++17 deduction guides
             //LRUCache tmp{pair<string, string>{}, 10, 10, hash<string>{}};
 #if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
-            auto tmp = Cache::Factory::LRUCache_WithHash<string, string>{}(10, 10, hash<string>{});
+            auto tmp = Cache::Factory::Factory::LRUCache::Maker<string, string>{}(10, 10, hash<string>{});
 #else
-            LRUCache tmp = Cache::Factory::LRUCache_WithHash<string, string>{}(10, 10, hash<string>{});
+            LRUCache tmp = Cache::Factory::Factory::LRUCache::Maker<string, string>{}(10, 10, hash<string>{});
 #endif
             tmp.Add ("a", "1");
             tmp.Add ("b", "2");
@@ -95,6 +94,7 @@ namespace {
     }
     GTEST_TEST (Foundation_Caching, Simple_LRUCache_)
     {
+        Debug::TraceContextBumper ctx{"Simple_LRUCache_"};
         Test1_Simple_Private_::T1_ ();
         Test1_Simple_Private_::T2_ ();
         Test1_Simple_Private_::T3_ ();
@@ -104,6 +104,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Caching, LRUCache_ObjWithNoArgCTORs_)
     {
+        Debug::TraceContextBumper ctx{"LRUCache_ObjWithNoArgCTORs_"};
         struct TNoCTOR_ {
             TNoCTOR_ (int)
             {
@@ -138,8 +139,9 @@ namespace {
         
     }
 #endif
-    GTEST_TEST (Foundation_Caching, Test3_LRUCache_Elements)
+    GTEST_TEST (Foundation_Caching, LRUCache_Elements_)
     {
+        Debug::TraceContextBumper ctx{"LRUCache_Elements_"};
         LRUCache<string, string> tmp{3};
         tmp.Add ("a", "1");
         tmp.Add ("b", "2");
@@ -271,8 +273,9 @@ namespace {
         template <typename K, typename V>
         using MyCache_ = Cache::LRUCache<K, V, InternallySynchronizedTraits<DefaultTraits<K, V>>>;
     }
-    GTEST_TEST (Foundation_Caching, Test5_Memoizer_)
+    GTEST_TEST (Foundation_Caching, Memoizer_)
     {
+        Debug::TraceContextBumper ctx{"Memoizer_"};
         {
             unsigned int                      totalCallsCount{};
             Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) {
@@ -410,6 +413,7 @@ namespace {
     }
     GTEST_TEST (Foundation_Caching, CallerStalenessCache_)
     {
+        Debug::TraceContextBumper ctx{"CallerStalenessCache_"};
         // CallerStaleness functionality - used to be separate C++ class - CallerStalenessCache,
         // but still makes sense to test separately (not crazy at least).
         using namespace Test6_CallerStalenessCache_;
@@ -636,7 +640,7 @@ namespace {
     }
     GTEST_TEST (Foundation_Caching, BloomFilter_)
     {
-        Debug::TraceContextBumper ctx{"Test7_BloomFilter_"};
+        Debug::TraceContextBumper ctx{"BloomFilter_"};
         Test7_BloomFilter_PRivate_::SimpleBasic ();
         Test7_BloomFilter_PRivate_::SimpleInternetAddressTestWithExplicitHash ();
         Test7_BloomFilter_PRivate_::SimpleInternetAddressTest ();
