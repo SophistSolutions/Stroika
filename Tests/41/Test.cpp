@@ -642,7 +642,7 @@ namespace {
 #if qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
                 auto
 #else
-                SynchronizedLRUCache
+                LRUCache
 #endif
                             cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
                 Thread::Ptr writerThread = Thread::New (
@@ -675,7 +675,7 @@ namespace {
 #if qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
                             auto
 #else
-                            SynchronizedLRUCache
+                            LRUCache
 #endif
                                  tmp2 = cache;
                             auto oa   = tmp2.Lookup ("a");
