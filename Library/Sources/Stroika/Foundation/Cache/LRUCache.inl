@@ -461,6 +461,12 @@ namespace Stroika::Foundation::Cache {
     ///
     ///  DEPRECATED CLASS TEMPLATES
     ///
+    template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS = LRUCacheSupport::DefaultTraits<KEY, VALUE>>
+    using SynchronizedLRUCache
+        [[deprecated ("Since Stroika v3.0d23 - use LRUCacheSupport::InternallySynchronizedTraits or Factory::LRUCache::Maker<string, "
+                      "string,InternallySynchronized::eInternallySynchronized>{}(3)")]] =
+            LRUCache<KEY, VALUE, LRUCacheSupport::InternallySynchronizedTraits<TRAITS>>;
+
     namespace Factory {
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
         struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY,VALUE>")]] LRUCache_NoHash {
@@ -487,18 +493,6 @@ namespace Stroika::Foundation::Cache {
                     maxCacheSize, keyComparer, hashTableSize, hashFunction);
             }
         };
-
-        /**
-         *  \note - no way to extract the KEY from the KEY_EQUALS_COMPARER, because this comparer might have templated operator(), such
-         *          as String::EqualsComparer.
-         * 
-         *  \par Example Usage
-         *      \code
-         *          auto                 t0{Factory::SynchronizedLRUCache_NoHash<string, string>{}()};
-         *          auto                 t1{Factory::SynchronizedLRUCache_NoHash<string, string>{}(3)};
-         *          SynchronizedLRUCache t2{Factory::SynchronizedLRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
-         *      \endcode
-         */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
         struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY, "
                              "VALUE,InternallySynchronized::eInternallySynchronized>")]] SynchronizedLRUCache_NoHash {
@@ -508,17 +502,6 @@ namespace Stroika::Foundation::Cache {
                 return Factory::LRUCache::Maker<KEY, VALUE, Execution::InternallySynchronized::eInternallySynchronized, STATS_TYPE>{}(maxCacheSize, keyComparer);
             }
         };
-
-        /**
-         *  \par Example Usage
-         *      \code
-         *          auto                 t0{Factory::SynchronizedLRUCache_WithHash<string, string>{}(3, 3)};
-         *          auto                 t1{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
-         *          SynchronizedLRUCache t2{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
-         *          SynchronizedLRUCache t3{Factory::SynchronizedLRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
-         *          SynchronizedLRUCache t4{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
-         *      \endcode
-         */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
         struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY, "
                              "VALUE,Execution::InternallySynchronized::eInternallySynchronized>")]] SynchronizedLRUCache_WithHash {

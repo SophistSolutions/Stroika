@@ -24,6 +24,8 @@
 /**
  *      \file
  *
+ *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
+ *
  * TODO:
  *      @todo   Find some reasonable/simple way to get
  *              LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
@@ -90,7 +92,7 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \see ITraits<> above
          */
-        template <IKey KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+        template <IKey KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, Cache::Statistics::IStatsType STATS_TYPE>
         struct ExplicitTraits {
             /**
              */
@@ -498,6 +500,8 @@ namespace Stroika::Foundation::Cache {
          *          auto t0{Factory::LRUCache::Maker<string, string>{}()};
          *          auto t1{Factory::LRUCache::Maker<string, string>{}(3)};
          *          LRUCache t2{Factory::LRUCache::Maker<string, string>{}(3, kStringCIComparer_)};
+         *          // Add eInternallySynchronized just as 3rd template arg to Maker<>
+         *          LRUCache t3{Factory::LRUCache::Maker<string, string,InternallySynchronized::eInternallySynchronized>{}(3, kStringCIComparer_)};
          *      \endcode
          * 
          *  \par Example Usage
@@ -508,7 +512,6 @@ namespace Stroika::Foundation::Cache {
          *          LRUCache t3{Factory::LRUCache::Maker<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
          *          LRUCache t4{Factory::LRUCache::Maker<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
          *      \endcode
-
          */
         template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized,
                   typename STATS_TYPE = Statistics::StatsType_DEFAULT>
@@ -542,22 +545,6 @@ namespace Stroika::Foundation::Cache {
 #endif
         };
     }
-
-    /**
-     * @brief SynchronizedLRUCache just adds eInternallySynchronized to a regular 'TimedCache' (just short-hand).
-     * 
-     * @tparam KEY 
-     * @tparam VALUE 
-     * @tparam TRAITS 
-     * 
-     *  \par Example Usage
-     *      \code
-     *      \endcode
-     * 
-     * &&&& @todo fix NYI
-     */
-    template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS = LRUCacheSupport::DefaultTraits<KEY, VALUE>>
-    using SynchronizedLRUCache = LRUCache<KEY, VALUE, LRUCacheSupport::InternallySynchronizedTraits<TRAITS>>;
 
 }
 

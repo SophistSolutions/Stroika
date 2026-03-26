@@ -104,9 +104,9 @@ namespace {
             Thread::Start ({iterateThread, overwriteThread});
             Thread::WaitForDone ({iterateThread, overwriteThread});
         }
-        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, AssignAndIterateAtSameTimeTest_1_)
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, AssignAndIterateAtSameTimeTest_)
         {
-            Debug::TraceContextBumper traceCtx{"AssignAndIterateAtSameTimeTest_1_::DoIt ()"};
+            Debug::TraceContextBumper traceCtx{"AssignAndIterateAtSameTimeTest_"};
             static const unsigned int kRepeatCount_ = kVerySlow_ ? 100u : 500u;
             //const unsigned int kRepeatCount_ = 1;
             static const initializer_list<int>            kOrigValueInit_       = {1, 3, 4, 5, 6, 33, 12, 13};
@@ -154,11 +154,11 @@ namespace {
             Thread::Start ({iterateThread, mutateThread});
             Thread::WaitForDone ({iterateThread, mutateThread});
         }
-        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, IterateWhileMutatingContainer_Test_2_)
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, IterateWhileMutatingContainer_)
         {
             // This test (used to) demonstrate the need for qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
             // but been fixed
-            Debug::TraceContextBumper traceCtx{"IterateWhileMutatingContainer_Test_2_::DoIt ()"};
+            Debug::TraceContextBumper traceCtx{"IterateWhileMutatingContainer_"};
 
             const unsigned int kRepeatCount_ = kVerySlow_ ? 20 : 250;
 
@@ -212,9 +212,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test3_SynchronizedOptional_)
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, SynchronizedOptional_)
     {
-        Debug::TraceContextBumper traceCtx{"{}::Test3_SynchronizedOptional_::DoIt ()"};
+        Debug::TraceContextBumper traceCtx{"SynchronizedOptional_"};
         using namespace Memory;
         try {
             Synchronized<optional<int>> sharedValue{0};
