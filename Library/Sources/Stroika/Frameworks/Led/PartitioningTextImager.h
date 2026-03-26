@@ -330,7 +330,7 @@ namespace Stroika::Frameworks::Led {
         };
 
     private:
-        struct CacheElt_COMPARE_ITEM_EQComparer_ {
+        struct CacheElt_COMPARE_ITEM_EQComparer_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             bool operator() (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs) const
             {
                 return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
