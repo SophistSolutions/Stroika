@@ -463,7 +463,7 @@ namespace Stroika::Foundation::Cache {
     ///
     namespace Factory {
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-        struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker")]] LRUCache_NoHash  {
+        struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY,VALUE>")]] LRUCache_NoHash {
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
             {
@@ -483,7 +483,7 @@ namespace Stroika::Foundation::Cache {
          *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
-        struct LRUCache_WithHash [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker")]] {
+        struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY,VALUE>")]] LRUCache_WithHash {
             template <typename KEY_HASH_FUNCTION = hash<KEY>>
             auto operator() (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
             {
@@ -511,11 +511,12 @@ namespace Stroika::Foundation::Cache {
          *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-        struct  [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY, VALUE,InternallySynchronized::eInternallySynchronized>")]] SynchronizedLRUCache_NoHash {
+        struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY, "
+                             "VALUE,InternallySynchronized::eInternallySynchronized>")]] SynchronizedLRUCache_NoHash {
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
             {
-                return Factory::LRUCache::Maker<KEY, VALUE, Execution::InternallySynchronized::eInternallySynchronized,STATS_TYPE>{}(maxCacheSize, keyComparer);
+                return Factory::LRUCache::Maker<KEY, VALUE, Execution::InternallySynchronized::eInternallySynchronized, STATS_TYPE>{}(maxCacheSize, keyComparer);
             }
         };
 
@@ -530,8 +531,8 @@ namespace Stroika::Foundation::Cache {
          *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
-        struct SynchronizedLRUCache_WithHash [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY, VALUE, "
-                                                           "Execution::InternallySynchronized::eInternallySynchronized>")]] {
+        struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY, "
+                             "VALUE,Execution::InternallySynchronized::eInternallySynchronized>")]] SynchronizedLRUCache_WithHash {
             template <typename KEY_HASH_FUNCTION = hash<KEY>>
             auto operator() (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
             {
