@@ -485,97 +485,45 @@ namespace Stroika::Foundation::Cache {
      */
     namespace Factory::LRUCache {
         using Execution::InternallySynchronized;
-        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-        struct Maker {
-            // SIMPLEST VERSIONS FIRST
 
+        /**
+         * @brief 
+         * 
+         * @tparam KEY 
+         * @tparam VALUE 
+         * @tparam STATS_TYPE 
+         */
+        template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized,
+                  typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+        struct Maker {
             /**
              * @brief  NOHASH versions
              */
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            static auto operator() (size_t maxCacheSize);
-            static auto operator() (InternallySynchronized internallySynchronized, size_t maxCacheSize);
             template <typename KEY_EQUALS_COMPARER = equal_to<KEY>>
             static auto operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer = {});
-            template <typename KEY_EQUALS_COMPARER = equal_to<KEY>>
-            static auto operator() (InternallySynchronized internallySynchronized, size_t maxCacheSize,
-                                    KEY_EQUALS_COMPARER&& keyComparer = {});
 #else
-            auto operator() (size_t maxCacheSize) const;
-            auto operator() (InternallySynchronized internallySynchronized, size_t maxCacheSize) const;
             template <typename KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer = {}) const;
-            template <typename KEY_EQUALS_COMPARER = equal_to<KEY>>
-            auto operator() (InternallySynchronized internallySynchronized, size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer = {}) const;
 #endif
 
-            // HASHTABLE VERSIONS
-
+            /**
+             * @brief  Hashing versions
+             */
             template <typename KEY_HASH_FUNCTION = hash<KEY>>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            static
-#endif
-                auto operator() (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {})
-#if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
-                    const
-#endif
-            {
-                return operator() (InternallySynchronized::eNotKnownInternallySynchronized, maxCacheSize, hashTableSize, hashFunction);
-            }
-            template <typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = hash<KEY>>
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            static
-#endif
-                auto operator() (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyComparer, size_t hashTableSize,
-                                 const KEY_HASH_FUNCTION& hashFunction = {})
-#if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
-                    const
-#endif
-            {
-                return operator() (InternallySynchronized::eNotKnownInternallySynchronized, maxCacheSize, keyComparer,
-                                   hashTableSize, hashFunction);
-            }
+            static auto operator() (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {});
+#else
+            auto operator() (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {}) const;
 
-            template <typename KEY_HASH_FUNCTION = hash<KEY>>
-#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            static
 #endif
-                auto operator() (InternallySynchronized internallySynchronized, size_t maxCacheSize, size_t hashTableSize,
-                                 KEY_HASH_FUNCTION&& hashFunction = {})
-#if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
-                    const
-#endif
-            {
-                Require (maxCacheSize >= hashTableSize);
-                using namespace LRUCacheSupport;
-                using TRAITS_ = WithKeyHashTraits<DefaultTraits<KEY, VALUE>, KEY_HASH_FUNCTION>;
-                if (internallySynchronized == InternallySynchronized::eInternallySynchronized) {
-                    return Cache::LRUCache<KEY, VALUE, InternallySynchronizedTraits<TRAITS_>>{maxCacheSize, equal_to<KEY>{}, hashTableSize, hashFunction};
-                }
-                else {
-                    return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, equal_to<KEY>{}, hashTableSize, hashFunction};
-                }
-            }
             template <typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = hash<KEY>>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            static
+            static auto operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer, size_t hashTableSize,
+                                    KEY_HASH_FUNCTION&& hashFunction = {});
+#else
+            auto operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {}) const;
 #endif
-                auto operator() (InternallySynchronized internallySynchronized, size_t maxCacheSize,
-                                 KEY_EQUALS_COMPARER&& keyComparer, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {})
-#if !(__cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23)
-                    const
-#endif
-            {
-                Require (maxCacheSize >= hashTableSize);
-                using namespace LRUCacheSupport;
-                using TRAITS_ = WithKeyHashTraits<WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, KEY_EQUALS_COMPARER>, KEY_HASH_FUNCTION>;
-                if (internallySynchronized == InternallySynchronized::eInternallySynchronized) {
-                    return Cache::LRUCache<KEY, VALUE, InternallySynchronizedTraits<TRAITS_>>{maxCacheSize, keyComparer, hashTableSize, hashFunction};
-                }
-                else {
-                    return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, keyComparer, hashTableSize, hashFunction};
-                }
-            }
         };
     }
 
