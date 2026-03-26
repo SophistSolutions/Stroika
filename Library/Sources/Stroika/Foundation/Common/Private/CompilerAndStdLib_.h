@@ -2776,12 +2776,6 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
 
 #endif
 
-
-
-
-
-
-
 /**
  Compiling Tests/42/Test.cpp ... 
 Test.cpp:642:38: error: alias template 'SynchronizedLRUCache' requires template arguments; argument deduction only allowed for class templates
@@ -2812,11 +2806,6 @@ Test.cpp:642:38: error: alias template 'SynchronizedLRUCache' requires template 
 #endif
 
 #endif
-
-
-
-
-
 
 /*
 
