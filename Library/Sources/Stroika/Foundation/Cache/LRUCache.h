@@ -477,21 +477,20 @@ namespace Stroika::Foundation::Cache {
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
 
-    /// TEST DEDUCTION GUIDES
-
-    // NEW EXPERIMENTAL WAY TO FACTORY LRUCache and workaround difficult rules on template using = etc..., and all or nothing deduction
     /**
-     *  TEST
      */
     namespace Factory::LRUCache {
         using Execution::InternallySynchronized;
 
         /**
-         * @brief 
+         * @brief Utility to make it easier to construct a LRUCache constexpr/type name from a few parameters and types.
+         * 
+         *  \note MAYBE replace this with deduction guides, but not clear how? 
          * 
          * @tparam KEY 
          * @tparam VALUE 
-         * @tparam STATS_TYPE 
+         * @param InternallySynchronized (defaults to eNotKnownInternallySynchronized) 
+         * @tparam STATS_TYPE (defaults to Statistics::StatsType_DEFAULT)
          */
         template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized,
                   typename STATS_TYPE = Statistics::StatsType_DEFAULT>
@@ -515,7 +514,6 @@ namespace Stroika::Foundation::Cache {
             static auto operator() (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {});
 #else
             auto operator() (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction = {}) const;
-
 #endif
             template <typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = hash<KEY>>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
@@ -527,7 +525,6 @@ namespace Stroika::Foundation::Cache {
         };
     }
 
-    // @todo PROBABLY DPRECATE THIS AND REPLACE WITH deduction guides???
     /**
      * @brief SynchronizedLRUCache just adds eInternallySynchronized to a regular 'TimedCache' (just short-hand).
      * 

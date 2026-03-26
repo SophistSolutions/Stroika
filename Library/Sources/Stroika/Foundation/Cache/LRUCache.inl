@@ -408,7 +408,7 @@ namespace Stroika::Foundation::Cache {
 #endif
         {
             using namespace LRUCacheSupport;
-            using TRAITS_ = WithKeyComparerTraits< DefaultTraits<KEY, VALUE>,KEY_EQUALS_COMPARER>;
+            using TRAITS_ = WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, KEY_EQUALS_COMPARER>;
             if constexpr (internallySynchronized == Execution::InternallySynchronized::eInternallySynchronized) {
                 return Cache::LRUCache<KEY, VALUE, InternallySynchronizedTraits<TRAITS_>>{maxCacheSize, forward<KEY_EQUALS_COMPARER> (keyComparer)};
             }
@@ -478,7 +478,8 @@ namespace Stroika::Foundation::Cache {
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
             {
-                return Factory::LRUCache::Maker<KEY, VALUE, Execution::InternallySynchronized::eNotKnownInternallySynchronized, STATS_TYPE>{}(maxCacheSize, keyComparer);
+                return Factory::LRUCache::Maker<KEY, VALUE, Execution::InternallySynchronized::eNotKnownInternallySynchronized, STATS_TYPE>{}(
+                    maxCacheSize, keyComparer);
             }
         };
 
