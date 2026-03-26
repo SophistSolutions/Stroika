@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Cache/Statistics.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -145,7 +146,7 @@ namespace Stroika::Foundation::Cache {
          * 
          * @tparam TRAITS 
          */
-        template <typename TRAITS, typename KEY_EQUALS_COMPARER = equal_to<typename TRAITS::KeyType>>
+        template <typename TRAITS, Common::IEqualsComparer<typename TRAITS::KeyType> KEY_EQUALS_COMPARER = equal_to<typename TRAITS::KeyType>>
             requires (ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ValueType>)
         struct WithKeyComparerTraits : TRAITS {
             using KeyEqualsCompareFunctionType = KEY_EQUALS_COMPARER; // @todo support function TYPE and VALUE
@@ -491,6 +492,13 @@ namespace Stroika::Foundation::Cache {
          * @tparam VALUE 
          * @param InternallySynchronized (defaults to eNotKnownInternallySynchronized) 
          * @tparam STATS_TYPE (defaults to Statistics::StatsType_DEFAULT)
+         * 
+         *  \par Example Usage
+         *      \code
+         *          auto t0{Factory::LRUCache::Maker<string, string>{}()};
+         *          auto t1{Factory::LRUCache::Maker<string, string>{}(3)};
+         *          LRUCache t2{Factory::LRUCache::Maker<string, string>{}(3, kStringCIComparer_)};
+         *      \endcode
          */
         template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized,
                   typename STATS_TYPE = Statistics::StatsType_DEFAULT>
@@ -499,11 +507,11 @@ namespace Stroika::Foundation::Cache {
              * @brief  NOHASH versions
              */
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
-            template <typename KEY_EQUALS_COMPARER = equal_to<KEY>>
-            static auto operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer = {});
+            template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
+            static auto operator() (size_t maxCacheSize = 1, KEY_EQUALS_COMPARER&& keyComparer = {});
 #else
-            template <typename KEY_EQUALS_COMPARER = equal_to<KEY>>
-            auto operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer = {}) const;
+            template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
+            auto operator() (size_t maxCacheSize = 1, KEY_EQUALS_COMPARER&& keyComparer = {}) const;
 #endif
 
             /**

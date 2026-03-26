@@ -665,6 +665,16 @@ namespace {
                 auto t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
             }
             {
+                // DEDUCTION using Factory approach (REPLACES ABOVE - TESTING)
+                auto t0{Factory::LRUCache::Maker<string, string>{}()};
+                auto t1{Factory::LRUCache::Maker<string, string>{}(3)};
+#if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
+                auto t2{Factory::LRUCache::Maker<string, string>{}(3, kStringCIComparer_)};
+#else
+                LRUCache t2{Factory::LRUCache::Maker<string, string>{}(3, kStringCIComparer_)};
+#endif
+            }
+            {
                 // DEDUCTION alt syntax
 #if !qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
                 LRUCache t0{Factory::LRUCache_NoHash<string, string>{}()};

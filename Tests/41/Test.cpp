@@ -644,7 +644,7 @@ namespace {
 #else
                 LRUCache
 #endif
-                            cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
+                            cache        = Cache::Factory::LRUCache::Maker<string, string,InternallySynchronized::eInternallySynchronized>{}(10u, 10u);
                 Thread::Ptr writerThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
