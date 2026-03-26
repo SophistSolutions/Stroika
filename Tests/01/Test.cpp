@@ -274,7 +274,7 @@ namespace {
     GTEST_TEST (Foundation_Caching, Test5_Memoizer_)
     {
         {
-            unsigned int totalCallsCount{};
+            unsigned int                      totalCallsCount{};
             Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) {
                 totalCallsCount++;
                 return a + b;
