@@ -425,7 +425,7 @@ namespace {
 }
 
 namespace {
-    namespace Test7_BloomFilter_PRivate_ {
+    namespace Test7_BloomFilter_Private_ {
         void SimpleBasic ()
         {
             Debug::TraceContextBumper ctx{"SimpleBasic"};
@@ -641,11 +641,11 @@ namespace {
     GTEST_TEST (Foundation_Caching, BloomFilter_)
     {
         Debug::TraceContextBumper ctx{"BloomFilter_"};
-        Test7_BloomFilter_PRivate_::SimpleBasic ();
-        Test7_BloomFilter_PRivate_::SimpleInternetAddressTestWithExplicitHash ();
-        Test7_BloomFilter_PRivate_::SimpleInternetAddressTest ();
-        Test7_BloomFilter_PRivate_::SimpleBloomTestWithStroikaDigester ();
-        Test7_BloomFilter_PRivate_::TestSuggestionsForFilterSize ();
+        Test7_BloomFilter_Private_::SimpleBasic ();
+        Test7_BloomFilter_Private_::SimpleInternetAddressTestWithExplicitHash ();
+        Test7_BloomFilter_Private_::SimpleInternetAddressTest ();
+        Test7_BloomFilter_Private_::SimpleBloomTestWithStroikaDigester ();
+        Test7_BloomFilter_Private_::TestSuggestionsForFilterSize ();
     }
 }
 
