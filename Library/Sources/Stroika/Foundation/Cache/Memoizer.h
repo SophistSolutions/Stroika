@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "Stroika/Foundation/Cache/Common.h"
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Common/Common.h"
@@ -21,6 +22,7 @@
  *
  * TODO:
  *      @todo   maybe allow passing in Cache object as CTOR parameter as a way to specify the hash function etc (for LRUCache with hash)
+ *              (to a large degree DONE by Stroika v3.0d23)
  *
  *      @todo   Investigate if better arg order for template or instantiation guide might reduce number of explicit 
  *              args needed for template
@@ -51,6 +53,9 @@ namespace Stroika::Foundation::Cache {
      *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { ++totalCallsCount;  return a + b; }};
      *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
      *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+     * 
+     *          // or even simpler declare memoizer as:
+     *          Memoizer  memoizer = Cache::Factory::Memoizer::Make ([&totalCallsCount] (int a, int b) { totalCallsCount++; return a + b; });
      *      \endcode
      * 
      *  \see    Factory::Memoizer::Make () for more simple to use examples.
@@ -60,6 +65,7 @@ namespace Stroika::Foundation::Cache {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">Same as (worse case of) underlying CACHE template argument, and argument function. Since the function will typically be fully reentrant, this comes down to the re-entrancy of the argument Cache.</a>
      */
     template <typename RESULT, template <qStroika_template_template_BWA (typename, typename)> class CACHE = LRUCache, typename... ARGS>
+        requires (ICache<CACHE<tuple<ARGS...>, RESULT>, tuple<ARGS...>, RESULT>)
     class Memoizer {
     public:
         /**
@@ -89,7 +95,6 @@ namespace Stroika::Foundation::Cache {
          *  @brief Factory function to make a memoizer out of any argument function.
          * 
          *  \par Example Usage (simple):
-         * 
          *  \code
          *      unsigned int totalCallsCount{};
          *      Memoizer         memoizer = Cache::Factory::Memoizer::Make ([&totalCallsCount] (int a, int b) {
@@ -101,7 +106,6 @@ namespace Stroika::Foundation::Cache {
          *  \endcode
          *
          *  \par Example Usage (force using LRUCache):
-         * 
          *  \code
          *      unsigned int totalCallsCount{};
          *      Memoizer         memoizer = Cache::Factory::Memoizer::Make<Cache::LRUCache> ([&totalCallsCount] (int a, int b) {
@@ -113,7 +117,6 @@ namespace Stroika::Foundation::Cache {
          *  \endcode
          *
          *  \par Example Usage (force using TimedCache):
-         * 
          *  \code
          *      unsigned int totalCallsCount{};
          *      Memoizer         memoizer = Cache::Factory::Memoizer::Make<Cache::TimedCache> ([&totalCallsCount] (int a, int b) {
@@ -124,9 +127,7 @@ namespace Stroika::Foundation::Cache {
          *      EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
          *  \endcode
          * 
-         *
          *  \par Example Usage (use InternallySyncrhonized - or other special/custom cache):
-         * 
          *  \code
          *      using namespace Cache::LRUCacheSupport;
          *      unsigned int totalCallsCount{};
@@ -142,7 +143,7 @@ namespace Stroika::Foundation::Cache {
          *  \endcode
          * 
          */
-        template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE = LRUCache, typename FUNCTION>
+        template <template <qStroika_template_template_BWA (typename, typename)> typename CACHE = Cache::LRUCache, typename FUNCTION>
         auto Make (FUNCTION&& f);
 
     }

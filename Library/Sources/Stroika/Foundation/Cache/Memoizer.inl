@@ -11,12 +11,14 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename RESULT, template <qStroika_template_template_BWA (typename, typename)> class CACHE, typename... ARGS>
+        requires (ICache<CACHE<tuple<ARGS...>, RESULT>, tuple<ARGS...>, RESULT>)
     Memoizer<RESULT, CACHE, ARGS...>::Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache)
         : fFunction_{f}
         , fCache_{forward<CACHE<tuple<ARGS...>, RESULT>> (cache)}
     {
     }
     template <typename RESULT, template <qStroika_template_template_BWA (typename, typename)> class CACHE, typename... ARGS>
+        requires (ICache<CACHE<tuple<ARGS...>, RESULT>, tuple<ARGS...>, RESULT>)
     RESULT Memoizer<RESULT, CACHE, ARGS...>::operator() (ARGS... args)
     {
         // Lookup the value in the cache, and if that fails, call fFunction_ (and add that to the cache)
