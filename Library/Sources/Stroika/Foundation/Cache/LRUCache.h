@@ -499,6 +499,16 @@ namespace Stroika::Foundation::Cache {
          *          auto t1{Factory::LRUCache::Maker<string, string>{}(3)};
          *          LRUCache t2{Factory::LRUCache::Maker<string, string>{}(3, kStringCIComparer_)};
          *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          auto     t0{Factory::LRUCache::Maker<string, string>{}(3, 3)};
+         *          auto     t1{Factory::LRUCache::Maker<String, string>{}(3, 3, hashFunction)};
+         *          LRUCache t2{Factory::LRUCache::Maker<String, string>{}(3, equal_to<String>{}, 3)};
+         *          LRUCache t3{Factory::LRUCache::Maker<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+         *          LRUCache t4{Factory::LRUCache::Maker<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
+         *      \endcode
+
          */
         template <typename KEY, typename VALUE, InternallySynchronized internallySynchronized = InternallySynchronized::eNotKnownInternallySynchronized,
                   typename STATS_TYPE = Statistics::StatsType_DEFAULT>

@@ -471,17 +471,6 @@ namespace Stroika::Foundation::Cache {
                     maxCacheSize, keyComparer);
             }
         };
-
-        /**
-         *  \par Example Usage
-         *      \code
-         *          auto     t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
-         *          auto     t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
-         *          LRUCache t2{Factory::LRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
-         *          LRUCache t3{Factory::LRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
-         *          LRUCache t4{Factory::LRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
-         *      \endcode
-         */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
         struct [[deprecated ("Since Stroika v3.0d23 use Factory::LRUCache::Maker<KEY,VALUE>")]] LRUCache_WithHash {
             template <typename KEY_HASH_FUNCTION = hash<KEY>>

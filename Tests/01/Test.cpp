@@ -73,9 +73,9 @@ namespace {
             // using C++17 deduction guides
             //LRUCache tmp{pair<string, string>{}, 10, 10, hash<string>{}};
 #if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
-            auto tmp = Cache::Factory::Factory::LRUCache::Maker<string, string>{}(10, 10, hash<string>{});
+            auto tmp = Factory::LRUCache::Maker<string, string>{}(10, 10, hash<string>{});
 #else
-            LRUCache tmp = Cache::Factory::Factory::LRUCache::Maker<string, string>{}(10, 10, hash<string>{});
+            LRUCache tmp = Factory::LRUCache::Maker<string, string>{}(10, 10, hash<string>{});
 #endif
             tmp.Add ("a", "1");
             tmp.Add ("b", "2");
@@ -142,7 +142,7 @@ namespace {
     GTEST_TEST (Foundation_Caching, LRUCache_Elements_)
     {
         Debug::TraceContextBumper ctx{"LRUCache_Elements_"};
-        LRUCache<string, string> tmp{3};
+        LRUCache<string, string>  tmp{3};
         tmp.Add ("a", "1");
         tmp.Add ("b", "2");
         tmp.Add ("c", "3");
@@ -222,10 +222,10 @@ namespace {
                 int size; // ...info to cache about a folder
             };
 
-            struct CACHE_TRAITS_ : Cache::TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>> {
+            struct CACHE_TRAITS_ : TimedCacheSupport::DefaultTraits<ScanFolderKey_, shared_ptr<FolderDetails_>> {
                 static constexpr inline bool kAutomaticallyMarkDataAsRefreshedEachTimeAccessed = true; // override one value from default
             };
-            Cache::TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>, CACHE_TRAITS_> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
+            TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>, CACHE_TRAITS_> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
 
             shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
             {
@@ -258,8 +258,8 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_Caching, TimedCache_void_result)
     {
-        Debug::TraceContextBumper                   ctx{"TimedCache_void_result"};
-        Cache::TimedCache<Characters::String, void> validAccessKeyCache{30s};
+        Debug::TraceContextBumper            ctx{"TimedCache_void_result"};
+        TimedCache<Characters::String, void> validAccessKeyCache{30s};
         EXPECT_TRUE (validAccessKeyCache.GetExpiration ("fred") == nullopt);
         validAccessKeyCache.Add ("fred");
         EXPECT_TRUE (validAccessKeyCache.GetExpiration ("fred"));
@@ -268,10 +268,10 @@ namespace {
 
 namespace {
     namespace Test5_Memoizer_Private_ {
-        using namespace Cache::LRUCacheSupport;
+        using namespace LRUCacheSupport;
         // use internally synchronized cache for memoizer
         template <typename K, typename V>
-        using MyCache_ = Cache::LRUCache<K, V, InternallySynchronizedTraits<DefaultTraits<K, V>>>;
+        using MyCache_ = LRUCache<K, V, InternallySynchronizedTraits<DefaultTraits<K, V>>>;
     }
     GTEST_TEST (Foundation_Caching, Memoizer_)
     {
@@ -298,7 +298,7 @@ namespace {
 
         {
             unsigned int totalCallsCount{};
-            Memoizer     memoizer = Cache::Factory::Memoizer::Make ([&totalCallsCount] (int a, int b) {
+            Memoizer     memoizer = Factory::Memoizer::Make ([&totalCallsCount] (int a, int b) {
                 totalCallsCount++;
                 return a + b;
             });
@@ -307,7 +307,7 @@ namespace {
         }
         {
             unsigned int totalCallsCount{};
-            Memoizer     memoizer = Cache::Factory::Memoizer::Make<Cache::LRUCache> ([&totalCallsCount] (int a, int b) {
+            Memoizer     memoizer = Factory::Memoizer::Make<LRUCache> ([&totalCallsCount] (int a, int b) {
                 totalCallsCount++;
                 return a + b;
             });
@@ -316,7 +316,7 @@ namespace {
         }
         {
             unsigned int totalCallsCount{};
-            Memoizer     memoizer = Cache::Factory::Memoizer::Make<Cache::TimedCache> ([&totalCallsCount] (int a, int b) {
+            Memoizer     memoizer = Factory::Memoizer::Make<TimedCache> ([&totalCallsCount] (int a, int b) {
                 totalCallsCount++;
                 return a + b;
             });
@@ -325,7 +325,7 @@ namespace {
         }
         {
             unsigned int totalCallsCount{};
-            Memoizer     memoizer = Cache::Factory::Memoizer::Make<Test5_Memoizer_Private_::MyCache_> ([&totalCallsCount] (int a, int b) {
+            Memoizer     memoizer = Factory::Memoizer::Make<Test5_Memoizer_Private_::MyCache_> ([&totalCallsCount] (int a, int b) {
                 totalCallsCount++;
                 return a + b;
             });
@@ -342,7 +342,6 @@ namespace {
             unsigned int  sCalls1_{0};
             optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::TimedCache;
                 static TimedCache<void, optional<int>> sCache_;
                 return sCache_.LookupValue (allowedStaleness.value_or (30s), [] () -> optional<int> {
                     sCalls1_++;
@@ -359,7 +358,6 @@ namespace {
             unsigned int  sCalls2_{0};
             optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::TimedCache;
                 static TimedCache<int, optional<int>> sCache_;
                 return sCache_.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) -> optional<int> {
                     sCalls2_++;
@@ -378,7 +376,6 @@ namespace {
             unsigned int  sCalls1_{0};
             optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::SynchronizedTimedCache;
                 static SynchronizedTimedCache<void, optional<int>> sCache_;
                 return sCache_.LookupValue (allowedStaleness.value_or (30s), [] () -> optional<int> {
                     sCalls1_++;
@@ -395,7 +392,6 @@ namespace {
             unsigned int  sCalls2_{0};
             optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
             {
-                using Cache::SynchronizedTimedCache;
                 static SynchronizedTimedCache<int, optional<int>> sCache_;
                 return sCache_.LookupValue (value, allowedStaleness.value_or (30s), [=] (int v) -> optional<int> {
                     sCalls2_++;
@@ -664,12 +660,6 @@ namespace {
             }
             {
                 // DEDUCTION using Factory approach
-                auto t0{Factory::LRUCache_NoHash<string, string>{}()};
-                auto t1{Factory::LRUCache_NoHash<string, string>{}(3)};
-                auto t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
-            }
-            {
-                // DEDUCTION using Factory approach (REPLACES ABOVE - TESTING)
                 auto t0{Factory::LRUCache::Maker<string, string>{}()};
                 auto t1{Factory::LRUCache::Maker<string, string>{}(3)};
 #if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
@@ -677,14 +667,6 @@ namespace {
 #else
                 LRUCache t2{Factory::LRUCache::Maker<string, string>{}(3, kStringCIComparer_)};
 #endif
-            }
-            {
-                // DEDUCTION alt syntax
-#if !qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
-                LRUCache t0{Factory::LRUCache_NoHash<string, string>{}()};
-                LRUCache t1{Factory::LRUCache_NoHash<string, string>{}(3)};
-#endif
-                auto t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
             }
         }
         void T_WithHashTableCTORs1_ ()
@@ -703,13 +685,14 @@ namespace {
             }
             {
                 // DEDUCTION using Factory approach
-                auto t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
-                auto t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
+                auto t0{Factory::LRUCache::Maker<string, string>{}(3, 3)};
+                auto t1{Factory::LRUCache::Maker<String, string>{}(3, 3, hashFunction)};
 #if !qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
-                LRUCache t2{Factory::LRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
-                LRUCache t3{Factory::LRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+                LRUCache t2{Factory::LRUCache::Maker<String, string>{}(3, equal_to<String>{}, 3)};
+                LRUCache t3{Factory::LRUCache::Maker<String, string, Execution::eNotKnownInternallySynchronized, Statistics::Stats_Basic>{}(
+                    3, equal_to<String>{}, 3)}; // throw in stats object
 #endif
-                auto t4{Factory::LRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
+                auto t4{Factory::LRUCache::Maker<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
             }
         }
     }

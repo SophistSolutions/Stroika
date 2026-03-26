@@ -261,9 +261,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test4_CvtOp_BehaviorNeededforSyncronize_)
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, CvtOp_BehaviorNeededforSyncronize_)
     {
-        Debug::TraceContextBumper traceCtx{"{}::Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ()"};
+        Debug::TraceContextBumper traceCtx{"CvtOp_BehaviorNeededforSyncronize_"};
 #if 0
             struct  Base {
                 mutable bool    fCalledOp_ = false;
@@ -284,9 +284,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test5_SetSpecificSyncMethods)
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, SetSpecificSyncMethods)
     {
-        Debug::TraceContextBumper           traceCtx{"{}::Test5_SetSpecificSyncMethods::DoIt ()"};
+        Debug::TraceContextBumper           traceCtx{"{}::SetSpecificSyncMethods"};
         Set<int>                            sensorsToActuallyRead{2, 3};
         static const Synchronized<Set<int>> kACUSensors_{Set<int>{1, 2}};
         Set<int>                            acufpgaSensors1 = kACUSensors_ ^ sensorsToActuallyRead;
@@ -297,9 +297,9 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test6_OverloadsWithSyncMethods_)
+    GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, OverloadsWithSyncMethods_)
     {
-        Debug::TraceContextBumper traceCtx{"{}::Test6_OverloadsWithSyncMethods_::DoIt ()"};
+        Debug::TraceContextBumper traceCtx{"{}::OverloadsWithSyncMethods_"};
         String                    xx;
         Synchronized<String>      yy;
         if (xx != yy) {
@@ -419,9 +419,9 @@ namespace {
                 }
             }
         }
-        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Test7_Synchronized_)
+        GTEST_TEST (Foundation_Execution_ThreadSafetyBuiltinObject, Synchronized_)
         {
-            Debug::TraceContextBumper traceCtx{"{}::Test7_Synchronized_::DoIt ()"};
+            Debug::TraceContextBumper traceCtx{"{}::Synchronized_"};
             Private_::TestBasics_ ();
             Private_::DoThreadTest_ ();
             Private_::TestSynchronizedNotCopyable_ ();
