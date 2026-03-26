@@ -269,6 +269,17 @@ namespace Stroika::Foundation::Cache {
         };
 
         /**
+         * @brief add the argument bool PER_CACHE_MAX_AGE as the kPerCacheMaxAge property.
+         * 
+         * @tparam TRAITS 
+         */
+        template <typename TRAITS, bool PER_CACHE_MAX_AGE = true>
+            requires (ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
+        struct PerInstanceMaxAgeTraits : TRAITS {
+            static constexpr bool kPerCacheMaxAge{PER_CACHE_MAX_AGE};
+        };
+
+        /**
          * @brief take argument TRAITS, and set to track-expires-at mode.
          * 
          * @tparam TRAITS 
@@ -1021,7 +1032,7 @@ namespace Stroika::Foundation::Cache {
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
 
     private:
-        TimeStampDifferenceType fMaxAge_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCEconditional_t<TRAITS::kPerCacheMaxAge, TimeStampDifferenceType, Common::Empty> fMaxAge_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
             conditional_t<TRAITS::kAutomaticPurgeFrequency == TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}, Common::Empty, TimeStampType>
                 fNextAutoClearAt_;

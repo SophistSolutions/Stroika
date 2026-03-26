@@ -92,7 +92,8 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \see ITraits<> above
          */
-        template <IKey KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, Cache::Statistics::IStatsType STATS_TYPE>
+        template <IKey KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER,
+                  typename KEY_HASH_FUNCTION, Cache::Statistics::IStatsType STATS_TYPE>
         struct ExplicitTraits {
             /**
              */
