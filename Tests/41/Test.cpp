@@ -639,13 +639,13 @@ namespace {
             {
                 Debug::TraceContextBumper traceCtx{"{}SyncLRUCacheT1_..."};
                 using namespace Cache;
-                #if qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
+#if qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
                 auto
-                #else
+#else
                 SynchronizedLRUCache
-                #endif
-                 cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
-                Thread::Ptr          writerThread = Thread::New (
+#endif
+                            cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
+                Thread::Ptr writerThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             cache.Add ("a", "1");
@@ -672,8 +672,13 @@ namespace {
                                 auto od = cache.Lookup ("d");
                                 EXPECT_TRUE (not od.has_value () or od == "4"); // ""
                             }
-                            SynchronizedLRUCache tmp2 = cache;
-                            auto                 oa   = tmp2.Lookup ("a");
+#if qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
+                            auto
+#else
+                            SynchronizedLRUCache
+#endif
+                                 tmp2 = cache;
+                            auto oa   = tmp2.Lookup ("a");
                             EXPECT_TRUE (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
                             auto ob = tmp2.Lookup ("b");
                             EXPECT_TRUE (not ob.has_value () or ob == "2"); // ""
