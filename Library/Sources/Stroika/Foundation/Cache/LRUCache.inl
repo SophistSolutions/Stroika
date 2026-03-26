@@ -393,4 +393,177 @@ namespace Stroika::Foundation::Cache {
         return &fCachedElts_First_[chainIdx]->fElement;
     }
 
+    /*
+     ********************************************************************************
+     *********** Factory::LRUCache::Maker<KEY,VALUE,STATS_TYPE> *********************
+     ********************************************************************************
+     */
+    template <typename KEY, typename VALUE, typename STATS_TYPE>
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+    inline static auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (size_t maxCacheSize)
+#else
+    inline auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (size_t maxCacheSize) const
+#endif
+    {
+        return operator() (Execution::InternallySynchronized::eNotKnownInternallySynchronized, maxCacheSize);
+    }
+    template <typename KEY, typename VALUE, typename STATS_TYPE>
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+    inline static auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (Execution::InternallySynchronized internallySynchronized, size_t maxCacheSize)
+#else
+    inline auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (Execution::InternallySynchronized internallySynchronized, size_t maxCacheSize) const
+#endif
+    {
+        using namespace LRUCacheSupport;
+        using TRAITS_ = DefaultTraits<KEY, VALUE>;
+        if (internallySynchronized == Execution::InternallySynchronized::eInternallySynchronized) {
+            return Cache::LRUCache<KEY, VALUE, InternallySynchronizedTraits<TRAITS_>>{maxCacheSize, equal_to<KEY>{}};
+        }
+        else {
+            return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, equal_to<KEY>{}};
+        }
+    }
+    template <typename KEY, typename VALUE, typename STATS_TYPE>
+    template <typename KEY_EQUALS_COMPARER>
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+    inline static auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer)
+#else
+    inline auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer) const
+#endif
+    {
+        return operator() (Execution::InternallySynchronized::eNotKnownInternallySynchronized, maxCacheSize, forward<KEY_EQUALS_COMPARER> (keyComparer));
+    }
+    template <typename KEY, typename VALUE, typename STATS_TYPE>
+    template <typename KEY_EQUALS_COMPARER>
+#if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
+    inline static auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (Execution::InternallySynchronized internallySynchronized,
+                                                                                     size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer)
+#else
+    inline auto Factory::LRUCache::Maker<KEY, VALUE, STATS_TYPE>::operator() (Execution::InternallySynchronized internallySynchronized,
+                                                                              size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer) const
+#endif
+    {
+        using namespace LRUCacheSupport;
+        using TRAITS_ = DefaultTraits<KEY, VALUE>;
+        if (internallySynchronized == Execution::InternallySynchronized::eInternallySynchronized) {
+            return Cache::LRUCache<KEY, VALUE, InternallySynchronizedTraits<TRAITS_>>{maxCacheSize, forward<KEY_EQUALS_COMPARER> (keyComparer)};
+        }
+        else {
+            return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, forward<KEY_EQUALS_COMPARER> (keyComparer)};
+        }
+    }
+
+    // @todo PROBABLY TO BE DEPRECATED
+    namespace Factory {
+        /*
+         *  \note - no way to extract the KEY from the typename TRAITS::KeyEqualsCompareFunctionType, because this comparer might have templated operator(), such
+         *          as String::EqualsComparer.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          auto t0{Factory::LRUCache_NoHash<string, string>{}()};
+         *          auto t1{Factory::LRUCache_NoHash<string, string>{}(3)};
+         *          LRUCache t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+         *      \endcode
+         */
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+        struct LRUCache_NoHash {
+            template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
+            auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
+            {
+                //    return Factory::LRUCache::Maker<KEY,VALUE,STATS_TYPE>{} (maxCacheSize, keyComparer);
+                using namespace LRUCacheSupport;
+                using TRAITS_ = WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, KEY_EQUALS_COMPARER>;
+                return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, keyComparer};
+            }
+        };
+
+        /**
+         *  \par Example Usage
+         *      \code
+         *          auto     t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
+         *          auto     t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
+         *          LRUCache t2{Factory::LRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
+         *          LRUCache t3{Factory::LRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+         *          LRUCache t4{Factory::LRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
+         *      \endcode
+         */
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
+        struct LRUCache_WithHash {
+            template <typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                Require (maxCacheSize >= hashTableSize);
+                using namespace LRUCacheSupport;
+                using TRAITS_ = WithKeyHashTraits<WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, DEFAULT_KEY_EQUALS_COMPARER>, KEY_HASH_FUNCTION>;
+                return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, DEFAULT_KEY_EQUALS_COMPARER{}, hashTableSize, hashFunction};
+            }
+            template <typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyComparer, size_t hashTableSize,
+                             const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                Require (maxCacheSize >= hashTableSize);
+                using namespace LRUCacheSupport;
+                using TRAITS_ = WithKeyHashTraits<WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, KEY_EQUALS_COMPARER>, KEY_HASH_FUNCTION>;
+                return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, keyComparer, hashTableSize, hashFunction};
+            }
+        };
+
+        /**
+         *  \note - no way to extract the KEY from the KEY_EQUALS_COMPARER, because this comparer might have templated operator(), such
+         *          as String::EqualsComparer.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          auto                 t0{Factory::SynchronizedLRUCache_NoHash<string, string>{}()};
+         *          auto                 t1{Factory::SynchronizedLRUCache_NoHash<string, string>{}(3)};
+         *          SynchronizedLRUCache t2{Factory::SynchronizedLRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+         *      \endcode
+         */
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+        struct SynchronizedLRUCache_NoHash {
+            template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
+            auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
+            {
+                using namespace LRUCacheSupport;
+                using TRAITS_ = InternallySynchronizedTraits<WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, KEY_EQUALS_COMPARER>>;
+                return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, keyComparer};
+            }
+        };
+
+        /**
+         *  \par Example Usage
+         *      \code
+         *          auto                 t0{Factory::SynchronizedLRUCache_WithHash<string, string>{}(3, 3)};
+         *          auto                 t1{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
+         *          SynchronizedLRUCache t2{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
+         *          SynchronizedLRUCache t3{Factory::SynchronizedLRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+         *          SynchronizedLRUCache t4{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
+         *      \endcode
+         */
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
+        struct SynchronizedLRUCache_WithHash {
+            template <typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                Require (maxCacheSize >= hashTableSize);
+                using namespace LRUCacheSupport;
+                using TRAITS_ =
+                    InternallySynchronizedTraits<WithKeyHashTraits<WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, DEFAULT_KEY_EQUALS_COMPARER>, KEY_HASH_FUNCTION>>;
+                return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, DEFAULT_KEY_EQUALS_COMPARER{}, hashTableSize, hashFunction};
+            }
+            template <typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyComparer, size_t hashTableSize,
+                             const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                Require (maxCacheSize >= hashTableSize);
+                using namespace LRUCacheSupport;
+                using TRAITS_ =
+                    InternallySynchronizedTraits<WithKeyHashTraits<WithKeyComparerTraits<DefaultTraits<KEY, VALUE>, KEY_EQUALS_COMPARER>, KEY_HASH_FUNCTION>>;
+                return Cache::LRUCache<KEY, VALUE, TRAITS_>{maxCacheSize, keyComparer, hashTableSize, hashFunction};
+            }
+        };
+
+    }
+
 }
