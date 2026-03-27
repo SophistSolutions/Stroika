@@ -182,6 +182,10 @@ namespace Stroika::Foundation::Cache {
      *        bit on luck (when using hashing) and how recently an item was last accessed.
      * 
      *        With a TimedCache, you track 'time' associated with each cache element. With LRUCache, no such timing association exists.
+     * 
+     * 
+     *  \note LRUCache (soon will) support(s) IValuelessCache, but requires IKeyedCache (cuz the KEY is critical to how LRUCache works - use TimedCache for
+     *        keyless cache)).
      *
      *  \par Example Usage
      *      \code
@@ -360,7 +364,12 @@ namespace Stroika::Foundation::Cache {
          *
          *  @see LookupValue ()
          */
-        nonvirtual optional<VALUE> Lookup (typename Common::ArgByValueType<KEY> key);
+        template <typename V = VALUE>
+            requires (not IValuelessCache<V>)
+        nonvirtual optional<V> Lookup (typename Common::ArgByValueType<KEY> key);
+        template <typename V = VALUE>
+            requires (IValuelessCache<V>)
+        nonvirtual optional<KEY> Lookup (typename Common::ArgByValueType<KEY> key);
 
     public:
         /**
@@ -411,6 +420,8 @@ namespace Stroika::Foundation::Cache {
         nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value);
         nonvirtual void Add (typename Common::ArgByValueType<KEY> key)
             requires (same_as<KEY, VALUE>);
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key)
+            requires (IValuelessCache<VALUE>);
 
     private:
         // like Add () but with no lock (assumes caller/public APIs lock)

@@ -260,7 +260,9 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    auto LRUCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key) -> optional<VALUE>
+    template <typename V>
+        requires (not IValuelessCache<V>)
+    auto LRUCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key) -> optional<V>
     {
         scoped_lock              critSec{fMaybeMutex_}; // subtle - WRITE cuz updates LRU
         optional<KeyValuePair_>* v = LookupElement_ (key);
@@ -269,6 +271,19 @@ namespace Stroika::Foundation::Cache {
         }
         Ensure (fKeyEqualsComparer_ (key, (*v)->fKey));
         return (*v)->fValue;
+    }
+    template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename V>
+        requires (IValuelessCache<V>)
+    auto LRUCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<KEY> key) -> optional<KEY>
+    {
+        scoped_lock              critSec{fMaybeMutex_}; // subtle - WRITE cuz updates LRU
+        optional<KeyValuePair_>* v = LookupElement_ (key);
+        if (v == nullptr) {
+            return optional<KEY>{};
+        }
+        Ensure (fKeyEqualsComparer_ (key, (*v)->fKey));
+        return (*v)->fKey;
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value)
@@ -281,6 +296,12 @@ namespace Stroika::Foundation::Cache {
         requires (same_as<KEY, VALUE>)
     {
         Add (key, key);
+    }
+    template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    inline void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key)
+        requires (IValuelessCache<VALUE>)
+    {
+        Add (key, key); //tmphack
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void LRUCache<KEY, VALUE, TRAITS>::Add_ (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value)
