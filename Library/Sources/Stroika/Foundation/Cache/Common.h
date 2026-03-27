@@ -55,19 +55,19 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename CACHE, typename KEY, typename VALUE>
     concept ICache = IKey<KEY> and IValue<VALUE> and
-                         // IKeyedCache
-                         (IKeyedCache<KEY> and
-                          requires (CACHE c, KEY k, VALUE v) {
-                              { c.Add (k, v) };
-                              { c.Lookup (k) } -> convertible_to<optional<VALUE>>;
-                              { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<VALUE>;
-                          })
-                     // not IKeyedCache
-                     or (not IKeyedCache<KEY> and requires (CACHE c, VALUE v) {
-                            { c.Add (v) };
-                            { c.Lookup () } -> convertible_to<optional<VALUE>>;
-                            { c.LookupValue (function<VALUE ()>{}) } -> convertible_to<VALUE>;
-                        });
+                     // IKeyedCache
+                     ((IKeyedCache<KEY> and
+                       requires (CACHE c, KEY k, VALUE v) {
+                           { c.Add (k, v) };
+                           { c.Lookup (k) } -> convertible_to<optional<VALUE>>;
+                           { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<VALUE>;
+                       })
+                      // not IKeyedCache
+                      or (not IKeyedCache<KEY> and requires (CACHE c, VALUE v) {
+                             { c.Add (v) };
+                             { c.Lookup () } -> convertible_to<optional<VALUE>>;
+                             { c.LookupValue (function<VALUE ()>{}) } -> convertible_to<VALUE>;
+                         }));
 
 }
 
