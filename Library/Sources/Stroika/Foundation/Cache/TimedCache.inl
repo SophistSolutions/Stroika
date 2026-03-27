@@ -534,30 +534,10 @@ namespace Stroika::Foundation::Cache {
         requires (IKeyedCache<K>)
     inline VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller)
     {
-        // /**
-        //  *  unlocking the shared lock while fetching the new value (optionally with a write lock).
-        //  */
-        // lock->unlock (); // don't hold read lock, upgrade to write, and condition when we hold the write lock
-
-        constexpr bool kHoldWriteLockDuringCacheFill = false;
-        // never used true, and caused some trouble- need to invesigate
-        // possibly add to TRAITS and retry
-#if 0
-            *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
-            *  This is because typically, filling the cache
-            *  will be slow (otherwise you would be us using the SynchronizedTimedCache).
-            *
-            *  But this has the downside, that you could try filling the cache multiple times with the same value.
-            *
-            *  Thats perfectly safe, but not speedy.
-            *
-            *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
-            *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
-            *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
-#endif
-        if constexpr (kHoldWriteLockDuringCacheFill) {
+        if constexpr (TRAITS::kHoldWriteLockDuringCacheFill) {
             // @todo LOOK AT UPGRADELOCK CODE - I DONT THINK ITS LEGAL TO LOCK while holding sharedLock with real lock!
             // Avoid two threds calling cache for same key value at the same time
+            // Also - consider if we should be releasing/re-acquiring lock all the time so locally - pros and cons... --LGP 2026-03-27
             [[maybe_unused]] auto&& newRWLock = scoped_lock{fMaybeMutex_};
             VALUE                   v         = forward<CACHE_FILLTER_T> (cacheFiller) (key);
             newRWLock.unlock ();

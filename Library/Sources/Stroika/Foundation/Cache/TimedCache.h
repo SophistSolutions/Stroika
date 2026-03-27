@@ -187,6 +187,24 @@ namespace Stroika::Foundation::Cache {
              */
             static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
 
+
+            /**
+             * @brief This just applies to LookupValue() calls; can increase latency setting to true
+             * 
+             *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
+             *  This is because typically, filling the cache
+             *  will be slow (otherwise you would be us using the SynchronizedTimedCache).
+             *
+             *  But this has the downside, that you could try filling the cache multiple times with the same value.
+             *
+             *  Thats perfectly safe, but not speedy.
+             *
+             *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
+             *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
+             *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
+             */
+            static constexpr bool kHoldWriteLockDuringCacheFill = false;
+
             /**
              * @brief freshness means when last added/updated (or if kAutomaticallyMarkDataAsRefreshedEachTimeAccessed) then last accessed too)
              *        This is true by default
@@ -277,6 +295,16 @@ namespace Stroika::Foundation::Cache {
             requires (ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ResultType>)
         struct PerInstanceMaxAgeTraits : TRAITS {
             static constexpr bool kPerCacheMaxAge{PER_CACHE_MAX_AGE};
+        };
+
+        /**
+         * @brief add the argument bool WRITE_LOCK_DURING_CACHE_FILL as the kHoldWriteLockDuringCacheFill property.
+         * 
+         * @tparam TRAITS 
+         */
+        template <typename TRAITS, bool WRITE_LOCK_DURING_CACHE_FILL = true>
+        struct WriteLockDuringCacheFillTraits : TRAITS {
+            static constexpr bool kHoldWriteLockDuringCacheFill{WRITE_LOCK_DURING_CACHE_FILL};
         };
 
         /**
