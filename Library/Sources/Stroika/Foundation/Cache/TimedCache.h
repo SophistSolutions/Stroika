@@ -1032,7 +1032,7 @@ namespace Stroika::Foundation::Cache {
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable MaybeMutexType_ fMaybeMutex_;
 
     private:
-        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCEconditional_t<TRAITS::kPerCacheMaxAge, TimeStampDifferenceType, Common::Empty> fMaxAge_;
+        qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<TRAITS::kPerCacheMaxAge, TimeStampDifferenceType, Common::Empty> fMaxAge_;
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE
             conditional_t<TRAITS::kAutomaticPurgeFrequency == TimeStampDifferenceType{TimedCacheSupport::kNoAutomaticPurgeSentinal}, Common::Empty, TimeStampType>
                 fNextAutoClearAt_;

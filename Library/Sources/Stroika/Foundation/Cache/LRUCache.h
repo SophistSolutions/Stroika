@@ -66,6 +66,8 @@ namespace Stroika::Foundation::Cache {
          *  \note   ONE of (but not both) - kTrackFreshness or kTrackExpiration
          *  \note   kTrackExpiration not compatible with kAutomaticallyMarkDataAsRefreshedEachTimeAccessed
          *  \note   valid meaningful TRAITS::kDefaultMaxAge or TRAITS::kPerCacheMaxAge
+         *  \note   KeyEqualsCompareFunctionType must always be a valid key comparer (unless/until we support KEY=void)
+         *  \note   KeyHashFunctionType must be a valid hash function on KEY or nullptr_t, or KEY=void (NOT YET CHECKED)
          */
         template <typename TRAITS, typename KEY, typename VALUE>
         concept ITraits = IKey<KEY> and IValue<VALUE> and
@@ -73,8 +75,10 @@ namespace Stroika::Foundation::Cache {
                               typename TRAITS::KeyType;
                               typename TRAITS::ValueType;
                               typename TRAITS::StatsType;
+                              typename TRAITS::KeyEqualsCompareFunctionType;
                               { TRAITS::kInternallySynchronized } -> convertible_to<InternallySynchronized>;
                           } and same_as<typename TRAITS::KeyType, KEY> and same_as<typename TRAITS::ValueType, VALUE> and
+                          Common::IEqualsComparer<typename TRAITS::KeyEqualsCompareFunctionType, typename TRAITS::KeyType> and
                           Cache::Statistics::IStatsType<typename TRAITS::StatsType>;
 
         /**
@@ -90,10 +94,13 @@ namespace Stroika::Foundation::Cache {
          *  \note Use of this directly IS allowed, but its fragile, as there isn't a good way to overload or evolve definition over time
          *        so code using this directly will be more likely to not be backward compatible in the future. Better to use adapters like InternallySynchronizedTraits
          * 
+         *  \note We allow KEY_EQUALS_COMPARER to be invalid (not IEqualsComparable) - cuz ExplicitTraits maybe used as part of an expression
+         *        going through temporary invalid values (defaults) later overriden by WithKeyComparerTraits - for example. We just
+         *        require the final TRAITs object handed to LRUCache be VALID.
+         * 
          *  \see ITraits<> above
          */
-        template <IKey KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER,
-                  typename KEY_HASH_FUNCTION, Cache::Statistics::IStatsType STATS_TYPE>
+        template <IKey KEY, IValue VALUE, InternallySynchronized INTERNALLY_SYNCHRONIZED, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, Cache::Statistics::IStatsType STATS_TYPE>
         struct ExplicitTraits {
             /**
              */
@@ -150,17 +157,16 @@ namespace Stroika::Foundation::Cache {
          * @tparam TRAITS 
          */
         template <typename TRAITS, Common::IEqualsComparer<typename TRAITS::KeyType> KEY_EQUALS_COMPARER = equal_to<typename TRAITS::KeyType>>
-            requires (ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ValueType>)
         struct WithKeyComparerTraits : TRAITS {
             using KeyEqualsCompareFunctionType = KEY_EQUALS_COMPARER; // @todo support function TYPE and VALUE
         };
+
         /**
          * @brief WithKeyHashTraits same as argument traits, but resetting the KeyEqualsCompareFunctionType
          * 
          * @tparam TRAITS 
          */
         template <typename TRAITS, typename KEY_HASH_FUNCTION = hash<typename TRAITS::KeyType>>
-            requires (ITraits<TRAITS, typename TRAITS::KeyType, typename TRAITS::ValueType>)
         struct WithKeyHashTraits : TRAITS {
             using KeyHashFunctionType = KEY_HASH_FUNCTION; // @todo support function TYPE and VALUE
         };
