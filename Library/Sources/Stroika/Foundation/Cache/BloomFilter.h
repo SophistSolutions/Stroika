@@ -37,6 +37,8 @@ namespace Stroika::Foundation::Cache {
      *                  ... resize bloom filter - means losing all existing data...
      *          \endcode
      * 
+     *  \note BloomFilter does NOT support ICache<> API, due to not having a Lookup () function - because it
+     *        can generate false positives. MAY want to reconsider this stand???? --LGP 2026-03-27
      */
     template <typename T>
     class BloomFilter {
