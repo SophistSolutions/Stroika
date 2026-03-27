@@ -32,12 +32,6 @@ namespace Stroika::Foundation::Cache {
     concept IKey = same_as<T, NonKeyedKeySentinalType> or copyable<T>;
 
     /**
-     * @brief any copyable type can use used as the value, with 'void' being a special sentinal type, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
-     */
-    template <typename T>
-    concept IValue = same_as<T, void> or copyable<T>;
-
-    /**
      * @brief does this cache have a KEY type (overwhelming YES, but sometimes handy to have 'singleton' cache, where you cache something, but just one of them)
      * 
      *  \par Example Usage:
@@ -53,25 +47,62 @@ namespace Stroika::Foundation::Cache {
     static constexpr bool IKeyedCache = not same_as<KEY, NonKeyedKeySentinalType>;
 
     /**
+     * @brief This sentinal value can be used as the VALUE type for a Cache to indicate it just stores ONLY the KEYS (and sometimes related time/expiration) information.
+     * 
+     * Also, this can be used like KeyedCollection - where the main object acts like a KEY and value at the same time (often just internally has a KEY field).
+     */
+    using ValuelessSentinalType = void;
+
+    /**
+     * @brief any copyable type can use used as the value, with 'void' being a special sentinal type, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
+     */
+    template <typename T>
+    concept IValue = same_as<T, ValuelessSentinalType> or copyable<T>;
+
+    /**
+     * @brief 
+     * 
+     *  \par Example Usage:
+     *      \code
+     *      \endcode
+     */
+    template <typename VALUE>
+    static constexpr bool IValuelessCache = same_as<VALUE, ValuelessSentinalType>;
+
+    /**
      * @brief A KEY is any copyable value (or the sentinal type void - indicating a keyless - single valued - cache)
      * 
      *  Supports KEY=void means single value cache, VALUE=void means like a Set, not a Map<>.
+     * 
+     *  \note ICache allows for both Valueless and Keyless caches, but some cache implementations may not support
+     *        one or the other.
+     * 
+     *        Also, this API/Interface does NOT support BloomFilters, because they don't have the lookup () function
+     *        (due to false positives).
      */
     template <typename CACHE, typename KEY, typename VALUE>
-    concept ICache = IKey<KEY> and IValue<VALUE> and
-                     // IKeyedCache
-                     ((IKeyedCache<KEY> and
-                       requires (CACHE c, KEY k, VALUE v) {
-                           { c.Add (k, v) };
-                           { c.Lookup (k) } -> convertible_to<optional<VALUE>>;
-                           { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<VALUE>;
-                       })
-                      // not IKeyedCache
-                      or (not IKeyedCache<KEY> and requires (CACHE c, VALUE v) {
-                             { c.Add (v) };
-                             { c.Lookup () } -> convertible_to<optional<VALUE>>;
-                             { c.LookupValue (function<VALUE ()>{}) } -> convertible_to<VALUE>;
-                         }));
+    concept ICache = IKey<KEY> and IValue<VALUE> and not(not IKeyedCache<KEY> and IValuelessCache<VALUE>) and
+                         // IKeyedCache
+                         ((IKeyedCache<KEY> and
+                           // if keyed, diff requirements if valueless or not
+                           (IValuelessCache<VALUE> and
+                            requires (CACHE c, KEY k) {
+                                { c.Add (k) };
+                                { c.Lookup (k) } -> convertible_to<optional<KEY>>;
+                                { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<KEY>;
+                            })) or
+                          not IValuelessCache<VALUE> and
+                              requires (CACHE c, KEY k, VALUE v) {
+                                  { c.Add (k, v) };
+                                  { c.Lookup (k) } -> convertible_to<optional<VALUE>>;
+                                  { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<VALUE>;
+                              })
+                     // not IKeyedCache
+                     or (not IKeyedCache<KEY> and requires (CACHE c, VALUE v) {
+                            { c.Add (v) };
+                            { c.Lookup () } -> convertible_to<optional<VALUE>>;
+                            { c.LookupValue (function<VALUE ()>{}) } -> convertible_to<VALUE>;
+                        });
 
 }
 

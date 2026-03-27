@@ -650,7 +650,7 @@ namespace Stroika::Foundation::Cache {
          */
         struct CacheElement {
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<KEY, NonKeyedKeySentinalType>, Common::Empty, KEY> fKey;
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fValue;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fValue;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
         };
@@ -690,6 +690,9 @@ namespace Stroika::Foundation::Cache {
          *  \note for Lookup (key,maxAge)
          *        only possible if you track freshness
          *        no non-const version of this, cuz no bookkeeping. If you are using this, the caller decides what gets cleaned up, explicitly.
+         * 
+         *  \note @todo - Lookup () - for VALUELESS collection - argument K should be not just K, but anything COMPARABLE with K!!! - that way
+         *                strictly more flexible - but can fix this later, since compatible API
          */
         template <typename K = KEY>
             requires (IKeyedCache<K>)
@@ -709,6 +712,9 @@ namespace Stroika::Foundation::Cache {
         template <typename K = KEY>
             requires (not IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual optional<VALUE> Lookup (TimeStampDifferenceType maxAge) const;
+        template <typename K = KEY, typename V = VALUE>
+            requires (IKeyedCache<K> and IValuelessCache<V>)
+        nonvirtual optional<KEY> Lookup (typename Common::ArgByValueType<K> key) const;
 
     public:
         /**
@@ -740,6 +746,9 @@ namespace Stroika::Foundation::Cache {
         template <typename K = KEY>
         nonvirtual optional<tuple<VALUE, TimeStampType>> LookupDetails (TimeStampDifferenceType maxAge) const
             requires (not IKeyedCache<K>);
+        template <typename K = KEY, typename V = VALUE>
+            requires (IKeyedCache<K> and IValuelessCache<V>)
+        nonvirtual optional<tuple<KEY, TimeStampType>> LookupDetails (typename Common::ArgByValueType<K> key) const;
 
     public:
         /**
@@ -792,6 +801,9 @@ namespace Stroika::Foundation::Cache {
         template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
             requires (not IKeyedCache<K> and TRAITS::kTrackFreshness)
         nonvirtual VALUE LookupValue (TimeStampDifferenceType maxAge, CACHE_FILLTER_T&& cacheFiller);
+        template <typename K = KEY, typename V = VALUE, Common::invocable_r<K, K> CACHE_FILLTER_T>
+            requires (IKeyedCache<K> and IValuelessCache<V>)
+        nonvirtual KEY LookupValue (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
 
     public:
         /**
@@ -806,25 +818,25 @@ namespace Stroika::Foundation::Cache {
          *        the TimedCache TRAITS were declared.
          */
         template <typename K = KEY>
-            requires (IKeyedCache<K> and same_as<VALUE, void>)
+            requires (IKeyedCache<K> and IValuelessCache<VALUE>)
         nonvirtual void Add (typename Common::ArgByValueType<K> key);
         template <typename K = KEY, typename V = VALUE>
-            requires (IKeyedCache<K> and not same_as<V, void>)
+            requires (IKeyedCache<K> and not IValuelessCache<V>)
         nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result);
         template <typename K = KEY, typename V = VALUE>
-            requires (IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackExpiration)
+            requires (IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackExpiration)
         nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType expiresAt);
         template <typename K = KEY, typename V = VALUE>
-            requires (IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackFreshness)
+            requires (IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackFreshness)
         nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType freshAsOf);
         template <typename K = KEY, typename V = VALUE>
-            requires (not IKeyedCache<K> and not same_as<V, void>)
+            requires (not IKeyedCache<K> and not IValuelessCache<V>)
         nonvirtual void Add (typename Common::ArgByValueType<V> result);
         template <typename K = KEY, typename V = VALUE>
-            requires (not IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackFreshness)
+            requires (not IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackFreshness)
         nonvirtual void Add (typename Common::ArgByValueType<V> result, TimeStampType freshAsOf);
         template <typename K = KEY, typename V = VALUE>
-            requires (not IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackExpiration)
+            requires (not IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackExpiration)
         nonvirtual void Add (typename Common::ArgByValueType<V> result, TimeStampType expiresAt);
 
     public:
@@ -984,7 +996,7 @@ namespace Stroika::Foundation::Cache {
             }
         }
         template <typename K = KEY, typename V = VALUE>
-            requires (IKeyedCache<K> and not same_as<V, void>)
+            requires (IKeyedCache<K> and not IValuelessCache<V>)
         [[deprecated ("Since Stroika v3.0d23 - use kAutomaticPurgeFrequency in TRAITS instead of PurgeSpoiledDataFlagType")]]
         nonvirtual void Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, PurgeSpoiledDataFlagType purgeSpoiledData)
         {
@@ -1072,7 +1084,7 @@ namespace Stroika::Foundation::Cache {
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
         struct MyResult_ {
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fResult;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fResult;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
 

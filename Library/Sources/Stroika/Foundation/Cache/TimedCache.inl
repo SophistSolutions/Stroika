@@ -305,6 +305,31 @@ namespace Stroika::Foundation::Cache {
         return nullopt;
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, typename V>
+        requires (IKeyedCache<K> and IValuelessCache<V>)
+    optional<KEY> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Common::ArgByValueType<K> key) const
+    {
+        static_assert (not IKeyedCache<KEY>); // cuz cannot be both unkeyed and valueless
+        shared_lock                         critSec{fMaybeMutex_};
+        typename MyMapType_::const_iterator i = fData_.find (key);
+        if (i == fData_.end ()) {
+            fStats_.IncrementMisses ();
+            return nullopt;
+        }
+        else {
+            if (Expired_ (*i)) {
+                /*
+                 *  Cannot update fData_ to indicate item expired const constant overload
+                 */
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            fStats_.IncrementHits ();
+            // return the STORED key object, which could contain more fields/data than the argument KEY
+            return i->first;
+        }
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) const -> optional<tuple<VALUE, TimeStampType>>
         requires (kTrackExpiration and IKeyedCache<K>)
@@ -436,6 +461,31 @@ namespace Stroika::Foundation::Cache {
         return nullopt;
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, typename V>
+        requires (IKeyedCache<K> and IValuelessCache<V>)
+    auto TimedCache<KEY, VALUE, TRAITS>::LookupDetails (typename Common::ArgByValueType<K> key) const -> optional<tuple<KEY, TimeStampType>>
+    {
+        static_assert (not IKeyedCache<KEY>); // cuz cannot be both unkeyed and valueless
+        shared_lock                         critSec{fMaybeMutex_};
+        typename MyMapType_::const_iterator i = fData_.find (key);
+        if (i == fData_.end ()) {
+            fStats_.IncrementMisses ();
+            return nullopt;
+        }
+        else {
+            if (Expired_ (*i)) {
+                /*
+                 *  Cannot update fData_ to indicate item expired const constant overload
+                 */
+                fStats_.IncrementMisses ();
+                return nullopt;
+            }
+            fStats_.IncrementHits ();
+            // return the STORED key object, which could contain more fields/data than the argument KEY
+            return i->first;
+        }
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
     auto TimedCache<KEY, VALUE, TRAITS>::GetExpiration () const -> optional<TimeStampType>
         requires (not IKeyedCache<K>)
@@ -521,6 +571,20 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <typename K, typename V, Common::invocable_r<K, K> CACHE_FILLTER_T>
+        requires (IKeyedCache<K> and IValuelessCache<V>)
+    KEY TimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller)
+    {
+        if (optional<KEY> ok = Lookup (key)) {
+            return *ok;
+        }
+        else {
+            KEY kr = forward<CACHE_FILLTER_T> (cacheFiller) (key);
+            Add (kr);
+            return kr;
+        }
+    }
+    template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, Common::invocable_r<VALUE> CACHE_FILLTER_T>
         requires (not IKeyedCache<K>)
     inline VALUE TimedCache<KEY, VALUE, TRAITS>::LookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller)
@@ -552,7 +616,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K>
-        requires (IKeyedCache<K> and same_as<VALUE, void>)
+        requires (IKeyedCache<K> and IValuelessCache<VALUE>)
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<K> key)
     {
         scoped_lock critSec{fMaybeMutex_};
@@ -567,7 +631,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
-        requires (IKeyedCache<K> and not same_as<V, void>)
+        requires (IKeyedCache<K> and not IValuelessCache<V>)
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result)
     {
         scoped_lock critSec{fMaybeMutex_};
@@ -582,7 +646,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
-        requires (IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackFreshness)
+        requires (IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackFreshness)
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType freshAsOf)
     {
         scoped_lock critSec{fMaybeMutex_};
@@ -591,7 +655,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
-        requires (IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackExpiration)
+        requires (IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackExpiration)
     void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType expiresAt)
     {
         scoped_lock critSec{fMaybeMutex_};
@@ -600,7 +664,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
-        requires (not IKeyedCache<K> and not same_as<V, void>)
+        requires (not IKeyedCache<K> and not IValuelessCache<V>)
     inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<V> result)
     {
         TimeStampType now = TRAITS::GetCurrentTimestamp ();
@@ -613,14 +677,14 @@ namespace Stroika::Foundation::Cache {
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
-        requires (not IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackFreshness)
+        requires (not IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackFreshness)
     inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<V> result, TimeStampType freshAsOf)
     {
         fData_ = MyResult_{.fResult = result, .fLastRefreshedAt = freshAsOf};
     }
     template <IKey KEY, IValue VALUE, TimedCacheSupport::ITraits<KEY, VALUE> TRAITS>
     template <typename K, typename V>
-        requires (not IKeyedCache<K> and not same_as<V, void> and TRAITS::kTrackExpiration)
+        requires (not IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackExpiration)
     inline void TimedCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<V> result, TimeStampType expiresAt)
     {
         fData_ = MyResult_{.fResult = result, .fExpiresAt = expiresAt};
