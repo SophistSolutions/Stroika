@@ -417,11 +417,12 @@ namespace Stroika::Foundation::Cache {
          *  Add the given value to the cache. This is rarely directly used. 
          *  Typically you Lookup with something like LookupValue() which implicitly does the adds.
          */
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value);
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key)
-            requires (same_as<KEY, VALUE>);
-        nonvirtual void Add (typename Common::ArgByValueType<KEY> key)
-            requires (IValuelessCache<VALUE>);
+        template <typename V = VALUE>
+            requires (not IValuelessCache<V>)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> value);
+        template <typename V = VALUE>
+            requires (IValuelessCache<V>)
+        nonvirtual void Add (typename Common::ArgByValueType<KEY> key);
 
     private:
         // like Add () but with no lock (assumes caller/public APIs lock)
@@ -456,8 +457,8 @@ namespace Stroika::Foundation::Cache {
 
     private:
         struct KeyValuePair_ {
-            KEY   fKey;
-            VALUE fValue;
+            KEY                                          fKey;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<IValuelessCache<VALUE>, Common::Empty, VALUE> fValue;
         };
 
     private:
@@ -489,7 +490,7 @@ namespace Stroika::Foundation::Cache {
          *  up element is first, and because of this re-ordering, its illegal to do a Lookup while
          *  a @'LRUCache_<ELEMENT>::CacheIterator_' exists for this LRUCache_.</p>
          */
-        nonvirtual optional<KeyValuePair_>* AddNew_ (typename Common::ArgByValueType<KeyType> item);
+        nonvirtual optional<KeyValuePair_>* AddNewButDontFillIn_ (typename Common::ArgByValueType<KeyType> item);
 
         /*
          * Check and see if the given element is in the cache. Return that element if its there, and nullptr otherwise.

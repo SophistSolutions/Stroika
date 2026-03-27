@@ -286,28 +286,27 @@ namespace Stroika::Foundation::Cache {
         return (*v)->fKey;
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value)
+        template <typename V >
+        requires (not IValuelessCache<V>)
+    void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> value)
     {
         scoped_lock critSec{fMaybeMutex_};
         Add_ (key, value);
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
+        template <typename V >
+        requires (IValuelessCache<V>)
     inline void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key)
-        requires (same_as<KEY, VALUE>)
     {
-        Add (key, key);
-    }
-    template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    inline void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key)
-        requires (IValuelessCache<VALUE>)
-    {
-        Add (key, key); //tmphack
+        scoped_lock              critSec{fMaybeMutex_};
+        optional<KeyValuePair_>* v = AddNewButDontFillIn_ (key);
+        v->emplace (KeyValuePair_{.fKey = key});
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
     void LRUCache<KEY, VALUE, TRAITS>::Add_ (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<VALUE> value)
     {
-        optional<KeyValuePair_>* v = AddNew_ (key);
-        *v                         = KeyValuePair_{key, value};
+        optional<KeyValuePair_>* v = AddNewButDontFillIn_ (key);
+        v->emplace (KeyValuePair_{.fKey = key, .fValue = value});
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
     inline size_t LRUCache<KEY, VALUE, TRAITS>::H_ ([[maybe_unused]] typename Common::ArgByValueType<KEY> k) const
@@ -415,7 +414,7 @@ namespace Stroika::Foundation::Cache {
         return nullptr;
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    inline auto LRUCache<KEY, VALUE, TRAITS>::AddNew_ (typename Common::ArgByValueType<KeyType> item) -> optional<KeyValuePair_>*
+    inline auto LRUCache<KEY, VALUE, TRAITS>::AddNewButDontFillIn_ (typename Common::ArgByValueType<KeyType> item) -> optional<KeyValuePair_>*
     {
         size_t chainIdx = H_ (item);
         Assert (0 <= chainIdx and chainIdx < fHashtableSize_);
