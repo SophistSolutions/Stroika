@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Cache {
         requires (same_as<typename TRAITS::KeyHashFunctionType, nullptr_t>)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction ()}
     {
-        shared_lock lockSrc{from.fMaybeMutex_};     // no need to lock THIS guy cuz CTOR, nobody could have reference to it yet
+        shared_lock lockSrc{from.fMaybeMutex_}; // no need to lock THIS guy cuz CTOR, nobody could have reference to it yet
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {
                 Add_ ((*i)->fKey, (*i)->fValue);
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Cache {
         requires (not same_as<typename TRAITS::KeyHashFunctionType, nullptr_t>)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ()}
     {
-        shared_lock lockSrc{from.fMaybeMutex_};     // no need to lock THIS guy cuz CTOR, nobody could have reference to it yet
+        shared_lock lockSrc{from.fMaybeMutex_}; // no need to lock THIS guy cuz CTOR, nobody could have reference to it yet
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {
                 Add_ ((*i)->fKey, (*i)->fValue);
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
-    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (predicate <KEY>) PREDICATE>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (predicate<KEY>) PREDICATE>
     void LRUCache<KEY, VALUE, TRAITS>::RemoveAll (PREDICATE&& removeIfReturnsTrue)
     {
         scoped_lock critSec{fMaybeMutex_};
