@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Cache {
         requires (same_as<typename TRAITS::KeyHashFunctionType, nullptr_t>)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction ()}
     {
-        scoped_lock critSec{fMaybeMutex_};
+        shared_lock lockSrc{from.fMaybeMutex_};     // no need to lock THIS guy cuz CTOR, nobody could have reference to it yet
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {
                 Add_ ((*i)->fKey, (*i)->fValue);
@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Cache {
         requires (not same_as<typename TRAITS::KeyHashFunctionType, nullptr_t>)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ()}
     {
-        scoped_lock critSec{fMaybeMutex_};
+        shared_lock lockSrc{from.fMaybeMutex_};     // no need to lock THIS guy cuz CTOR, nobody could have reference to it yet
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {
                 Add_ ((*i)->fKey, (*i)->fValue);
@@ -152,10 +152,10 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
     auto LRUCache<KEY, VALUE, TRAITS>::operator= (const LRUCache& rhs) -> LRUCache&
     {
-        scoped_lock critSec{fMaybeMutex_};
-        //        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         if (this != &rhs) {
+            //shared_lock lockSrc{rhs.fMaybeMutex_};    -- lock should not be needed cuz rhs.Elements() locks and makes a copy
             SetMaxCacheSize (rhs.GetMaxCacheSize ());
+            scoped_lock critSec{fMaybeMutex_};
             ClearCache_ ();
             for (const auto& i : rhs.Elements ()) {
                 if (i.fKey) {
@@ -242,9 +242,19 @@ namespace Stroika::Foundation::Cache {
     void LRUCache<KEY, VALUE, TRAITS>::clear (function<bool (typename Common::ArgByValueType<KEY>)> clearPredicate)
     {
         scoped_lock critSec{fMaybeMutex_};
-        //        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySynchronized_};
         for (auto i = begin_ (); i != end_ (); ++i) {
             if (i->has_value () and clearPredicate ((*i)->fKey)) {
+                *i = nullopt;
+            }
+        }
+    }
+    template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
+    template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (predicate <KEY>) PREDICATE>
+    void LRUCache<KEY, VALUE, TRAITS>::RemoveAll (PREDICATE&& removeIfReturnsTrue)
+    {
+        scoped_lock critSec{fMaybeMutex_};
+        for (auto i = begin_ (); i != end_ (); ++i) {
+            if (i->has_value () and forward<PREDICATE> (removeIfReturnsTrue) ((*i)->fKey)) {
                 *i = nullopt;
             }
         }
@@ -292,9 +302,8 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
     auto LRUCache<KEY, VALUE, TRAITS>::Elements () const -> Containers::Mapping<KEY, VALUE>
     {
-        shared_lock critSec{fMaybeMutex_};
-        //        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySynchronized_};
         Containers::Mapping<KEY, VALUE> result;
+        shared_lock                     critSec{fMaybeMutex_};
         for (CacheIterator_ i = begin_ (); i != end_ (); ++i) {
             if (*i) {
                 result.Add ((*i)->fKey, (*i)->fValue);

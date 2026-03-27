@@ -214,6 +214,10 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        o No comparison of LRUCache objects is currently supported. It might make sense, but would be of questionable use.
+     * 
+     *  \par Implementation Note:
+     *       Private (_) routines dont hold locks - the public ones do. And in unsyncrhonized builds, the 'locks' aren't really locks
+     *       but Debug::AssertExternallySyncrhonizedMutex - to detect bad usage.
      *
      *  \note   \em Thread-Safety   if (TRAITS::kInternallySynchronized == eInternallySynchronized)           <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
      *  \note   \em Thread-Safety   if (TRAITS::kInternallySynchronized == eNotKnownInternallySynchronized)   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
@@ -270,8 +274,8 @@ namespace Stroika::Foundation::Cache {
          *  \par Example Usage
          *      \code
          *          LRUCache<string, string> tmp{3};    // no hashing, size 3, no deduced types (just defaulted ones)
-         *          LRUCache                 t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
-         *          LRUCache                 t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};  // types (except key/value) deducted from arguments
+         *          LRUCache                 t0{Factory::LRUCache::Maker<string, string>{}(3, 3)};
+         *          LRUCache                 t1{Factory::LRUCache::Maker<String, string>{}(3, 3, hashFunction)};  // types (except key/value) deducted from arguments
          *      \endcode
          * 
          *  \todo default CTOR requires no hashing, but we could make hashing work in this case with default params - just not worth it yet --LGP 2023-12-06
@@ -334,10 +338,19 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          *  Clear all, or just the given elements from the cache.
+         * 
+         *      @todo unsure about best naming - TimedCache uses RemoveAll () - clear nice, but doesn't match usual meaning in STL, which is my convention for lower-case stl names...
          */
         nonvirtual void clear ();
         nonvirtual void clear (typename Common::ArgByValueType<KEY> key);
         nonvirtual void clear (function<bool (typename Common::ArgByValueType<KEY>)> clearPredicate);
+
+    public:
+        /**
+         *  @todo see clear(function) and resolve...
+         */
+        template <qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA (predicate<KEY>) PREDICATE>
+        nonvirtual void RemoveAll (PREDICATE&& removeIfReturnsTrue);
 
     public:
         /**
@@ -441,7 +454,6 @@ namespace Stroika::Foundation::Cache {
         nonvirtual size_t H_ (typename Common::ArgByValueType<KEY> k) const;
 
     private:
-        //qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronized_;
         // note if shared_mutex, it must be mutable, cuz shared locks still must be done
         using MaybeMutexType_ =
             conditional_t<TRAITS::kInternallySynchronized == Execution::InternallySynchronized::eInternallySynchronized, shared_timed_mutex, Debug::AssertExternallySynchronizedMutex>;
