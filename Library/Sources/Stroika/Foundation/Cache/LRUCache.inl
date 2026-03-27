@@ -429,7 +429,7 @@ namespace Stroika::Foundation::Cache {
         template <typename KEY_HASH_FUNCTION>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, size_t hashTableSize,
-                                                                                              KEY_HASH_FUNCTION&& hashFunction)
+                                                                                       KEY_HASH_FUNCTION&& hashFunction)
 #else
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, size_t hashTableSize,
                                                                                        KEY_HASH_FUNCTION&& hashFunction) const
@@ -449,7 +449,7 @@ namespace Stroika::Foundation::Cache {
         template <typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION>
 #if __cplusplus >= kStrokia_Foundation_Common_cplusplus_23 || _HAS_CXX23 /*vis studio uses _HAS_CXX23 */
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer,
-                                                                                              size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction)
+                                                                                       size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction)
 #else
         inline auto Maker<KEY, VALUE, internallySynchronized, STATS_TYPE>::operator() (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyComparer,
                                                                                        size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction) const
