@@ -8,12 +8,8 @@
 
 #include <type_traits>
 
-#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Common/Common.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
-#include "Stroika/Foundation/Containers/Sequence.h"
-#include "Stroika/Foundation/Containers/Set.h"
-#include "Stroika/Foundation/Cryptography/Digest/Hash.h"
 
 /**
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
@@ -22,10 +18,15 @@
 namespace Stroika::Foundation::Cache {
 
     /**
+     * @brief This sentinal value can be used as the KEY type for a Cache to indicate it is un-keyed, and there is just one.
+     */
+    using NonKeyedKeySentinalType = void;
+
+    /**
      * @brief A KEY is any copyable value (or the sentinal type void - indicating a keyless - single valued - cache)
      */
     template <typename T>
-    concept IKey = same_as<T, void> or copyable<T>;
+    concept IKey = same_as<T, NonKeyedKeySentinalType> or copyable<T>;
 
     /**
      * @brief any copyable type can use used as the value, with 'void' being a special sentinal type, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
@@ -46,7 +47,7 @@ namespace Stroika::Foundation::Cache {
      *      \endcode
      */
     template <typename KEY>
-    static constexpr bool IKeyedCache = not same_as<KEY, void>;
+    static constexpr bool IKeyedCache = not same_as<KEY, NonKeyedKeySentinalType>;
 
     /**
      * @brief A KEY is any copyable value (or the sentinal type void - indicating a keyless - single valued - cache)

@@ -455,7 +455,7 @@ namespace Stroika::Foundation::Cache {
      *      \code
      *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
      *          {
-     *              static TimedCache<void, optional<InternetAddress>> sCache_;
+     *              static TimedCache<NonKeyedKeySentinalType, optional<InternetAddress>> sCache_;
      *              return sCache_.Lookup (allowedStaleness.value_or (30), []() -> optional<InternetAddress> {
      *                  ...
      *                  return IO::Network::InternetAddress{connection.GET ().GetDataTextInputStream ().ReadAll ().Trim ()};
@@ -622,7 +622,7 @@ namespace Stroika::Foundation::Cache {
          * @brief everything here is optional ;-) But typically, its fKey, fValue, fLastRefreshedAt
          */
         struct CacheElement {
-            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<KEY, void>, Common::Empty, KEY> fKey;
+            qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<KEY, NonKeyedKeySentinalType>, Common::Empty, KEY> fKey;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<same_as<VALUE, void>, Common::Empty, VALUE> fValue;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackFreshness, TimeStampType, Common::Empty> fLastRefreshedAt;
             qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE conditional_t<kTrackExpiration, TimeStampType, Common::Empty> fExpiresAt;
