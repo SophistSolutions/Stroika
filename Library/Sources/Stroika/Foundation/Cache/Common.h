@@ -6,9 +6,12 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <functional>
+#include <optional>
 #include <type_traits>
 
 #include "Stroika/Foundation/Common/Common.h"
+#include "Stroika/Foundation/Common/Concepts.h"
 #include "Stroika/Foundation/Common/TypeHints.h"
 
 /**
@@ -39,9 +42,9 @@ namespace Stroika::Foundation::Cache {
      * 
      *  \par Example Usage:
      *      \code
-     *          using Cache::SynchronizedCallerStalenessCache;
+     *          using Cache::SynchronizedTimedCache;
      *          // one cache of network interfaces - but dont recompute it periodically
-     *          static SynchronizedCallerStalenessCache<void, Collection<NetworkInterface>> sCache_;
+     *          static SynchronizedTimedCache<NonKeyedKeySentinalType, Collection<NetworkInterface>> sCache_;
      *          results = sCache_.LookupValue (allowedStaleness.value_or (kDefaultItemCacheLifetime_),
      *                                  [] () -> Collection<NetworkInterface> { return CollectAllNetworkInterfaces_ (); });
      *      \endcode
