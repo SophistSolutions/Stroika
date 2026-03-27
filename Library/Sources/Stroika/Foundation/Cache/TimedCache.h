@@ -187,7 +187,6 @@ namespace Stroika::Foundation::Cache {
              */
             static constexpr inline InternallySynchronized kInternallySynchronized{INTERNALLY_SYNCHRONIZED};
 
-
             /**
              * @brief This just applies to LookupValue() calls; can increase latency setting to true
              * 
