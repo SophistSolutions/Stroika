@@ -85,19 +85,18 @@ namespace Stroika::Foundation::Cache {
                          // IKeyedCache
                          (IKeyedCache<KEY> and
                           // if keyed, diff requirements if valueless or not
-                          (
-                              IValuelessCache<VALUE> and
-                                  requires (CACHE c, KEY k) {
-                                      { c.Add (k) };
-                                      { c.Lookup (k) } -> convertible_to<optional<KEY>>;
-                                      { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<KEY>;
-                                  } or
-                              not IValuelessCache<VALUE> and
-                                  requires (CACHE c, KEY k, VALUE v) {
-                                      { c.Add (k, v) };
-                                      { c.Lookup (k) } -> convertible_to<optional<VALUE>>;
-                                      { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<VALUE>;
-                                  }))
+                          ((IValuelessCache<VALUE> and
+                            requires (CACHE c, KEY k) {
+                                { c.Add (k) };
+                                { c.Lookup (k) } -> convertible_to<optional<KEY>>;
+                                { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<KEY>;
+                            }) or
+                           (not IValuelessCache<VALUE> and
+                            requires (CACHE c, KEY k, VALUE v) {
+                                { c.Add (k, v) };
+                                { c.Lookup (k) } -> convertible_to<optional<VALUE>>;
+                                { c.LookupValue (k, function<VALUE (KEY)>{}) } -> convertible_to<VALUE>;
+                            })))
                      // not IKeyedCache
                      or (not IKeyedCache<KEY> and requires (CACHE c, VALUE v) {
                             { c.Add (v) };
