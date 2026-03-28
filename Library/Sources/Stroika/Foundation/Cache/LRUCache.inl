@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Cache {
         return (*v)->fKey;
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
-        template <typename V >
+    template <typename V>
         requires (not IValuelessCache<V>)
     void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key, typename Common::ArgByValueType<V> value)
     {
@@ -294,7 +294,7 @@ namespace Stroika::Foundation::Cache {
         Add_ (key, value);
     }
     template <typename KEY, typename VALUE, LRUCacheSupport::ITraits<KEY, VALUE> TRAITS>
-        template <typename V >
+    template <typename V>
         requires (IValuelessCache<V>)
     inline void LRUCache<KEY, VALUE, TRAITS>::Add (typename Common::ArgByValueType<KEY> key)
     {
