@@ -1113,8 +1113,8 @@ namespace Stroika::Foundation::Cache {
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
     };
-    static_assert (ICache<TimedCache<int, int>, int, int>);
-    static_assert (movable<TimedCache<int, int>>); // see Satisfies Concepts
+    static_assert (ICache<TimedCache<int, int>, int, int>); // see Satisfies Concepts
+    static_assert (movable<TimedCache<int, int>>);
     static_assert (copyable<TimedCache<int, int>>);
 
     /**

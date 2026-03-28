@@ -54,13 +54,13 @@ namespace Stroika::Foundation::Cache {
     using ValuelessSentinalType = void;
 
     /**
-     * @brief any copyable type can use used as the value, with 'void' being a special sentinal type, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
+     * @brief any copyable type can use used as the value, or the special sentinal type - ValuelessSentinalType, used to indicate we are just caching presence/absense of the KEY in the cache (and its expiration date).
      */
     template <typename T>
     concept IValue = same_as<T, ValuelessSentinalType> or copyable<T>;
 
     /**
-     * @brief 
+     * @brief Some caches (rare) only support a KEY, with no associated value (the value is stored INSIDE the key itself)
      * 
      *  \par Example Usage:
      *      \code
@@ -70,11 +70,9 @@ namespace Stroika::Foundation::Cache {
     static constexpr bool IValuelessCache = same_as<VALUE, ValuelessSentinalType>;
 
     /**
-     * @brief A KEY is any copyable value (or the sentinal type void - indicating a keyless - single valued - cache)
+     * @brief Check if the argument CACHE is a valid 'stroika cache' class, following its api
      * 
-     *  Supports KEY=void means single value cache, VALUE=void means like a Set, not a Map<>.
-     * 
-     *  \note ICache allows for both Valueless and Keyless caches, but some cache implementations may not support
+     *  \note ICache allows for both Valueless (IValuelessCache) and Keyless (IKeyedCache) caches, but some cache implementations may not support
      *        one or the other.
      * 
      *        Also, this API/Interface does NOT support BloomFilters, because they don't have the lookup () function

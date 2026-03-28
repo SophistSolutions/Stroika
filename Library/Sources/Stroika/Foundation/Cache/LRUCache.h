@@ -27,17 +27,6 @@
  *  \note Code-Status:  <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Find some reasonable/simple way to get
- *              LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
- *              Working with ONE T argument
- *              Add(elt2cache).
- *
- *              PROBABLY add overload of Add() with one argument, IF VALUETYPE == KEYTYPE?
- *
- *              ADDED EXPERIMENTALLY in v2.1d6
- *
- *              But - REVIEW that usage to make sure it makes sense. Explain better here if/why it does.
- *
  *      @todo   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
  *              has first/last, or do our own storage managemnet with secondary array? - we do the mallocs/frees.
  *              To re-free, even though order distorted by shuffles, we can always figure out which was
@@ -46,9 +35,6 @@
  *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward
  *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why
  *              its better.
- * 
- *      @todo   Support same_as<void> for KEY and VALUE (and IKeyedCache) as I did with TimedCache
- *              This probably replaces the BAD logic about having KEY and VALUE being the same type!!!
  */
 
 namespace Stroika::Foundation::Cache {
@@ -218,6 +204,11 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note <a href="Design-Overview.md#Comparisons">Comparisons</a>:
      *        o No comparison of LRUCache objects is currently supported. It might make sense, but would be of questionable use.
+     * 
+     *  \note Satisfies Concepts:
+     *      o   ICache<LRUCache<KEY,VALUE>,KEY,VALUE>
+     *      o   moveable<LRUCache<KEY,VALUE>>
+     *      o   copyable<LRUCache<KEY,VALUE>>
      * 
      *  \par Implementation Note:
      *       Private (_) routines dont hold locks - the public ones do. And in unsyncrhonized builds, the 'locks' aren't really locks
@@ -510,6 +501,9 @@ namespace Stroika::Foundation::Cache {
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
+    static_assert (ICache<LRUCache<int, int>, int, int>);    // see Satisfies Concepts
+    static_assert (movable<LRUCache<int, int>>);
+    static_assert (copyable<LRUCache<int, int>>);
 
     /**
      */
