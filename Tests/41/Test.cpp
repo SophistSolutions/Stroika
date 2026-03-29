@@ -58,7 +58,6 @@ namespace {
         return Thread::New ([iterable, lock, repeatCount] () {
             Debug::TraceContextBumper traceCtx{"{}IterateOverThread::MAIN..."};
             for (unsigned int i = 0; i < repeatCount; ++i) {
-                //DbgTrace ("Iterate thread loop %d", i);
                 lock_guard critSec{*lock};
                 for (value_type e : iterable->load ()) {
                     [[maybe_unused]] value_type e2 = e; // do something
