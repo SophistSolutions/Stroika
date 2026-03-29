@@ -108,10 +108,16 @@ namespace Stroika::Frameworks::Auth::OAuth {
          */
         static TokenRequest FromWireFormat (const TypedBLOB& src);
 
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
         /**
          * @brief Compare by string value of various fields.
          */
         auto operator<=> (const TokenRequest& rhs) const = default;
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
 
         static const ObjectVariantMapper kMapper;
     };
