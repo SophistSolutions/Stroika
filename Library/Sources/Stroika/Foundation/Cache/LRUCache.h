@@ -501,7 +501,7 @@ namespace Stroika::Foundation::Cache {
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
-    static_assert (ICache<LRUCache<int, int>, int, int>);    // see Satisfies Concepts
+    static_assert (ICache<LRUCache<int, int>, int, int>); // see Satisfies Concepts
     static_assert (movable<LRUCache<int, int>>);
     static_assert (copyable<LRUCache<int, int>>);
 
