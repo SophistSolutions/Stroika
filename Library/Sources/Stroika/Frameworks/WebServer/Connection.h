@@ -156,8 +156,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  Mostly for debugging, but also for ongoing operational diagnostics (late season debugging ;-)).
          * 
-         *  \todo - https://stroika.atlassian.net/browse/STK-1025 - Stats should have STATE flag
-         *  \todo - Consider ALSO adding a Request URI - which might be helpful for debugging when deadlocks happen.
+         *  \note these are stats about the state of this connection, not connections in general
          */
         struct Stats {
             /**
@@ -167,7 +166,7 @@ namespace Stroika::Frameworks::WebServer {
             Socket::PlatformNativeHandle fSocketID;
 
             /**
-             *  Is this connection object currently 'connected' (socket level listen or accept returned).
+             *  Connection being processed, with data present (if false, then connection in list of polled connections waiting for data to be available)
              */
             optional<bool> fActive;
 
@@ -177,6 +176,55 @@ namespace Stroika::Frameworks::WebServer {
             TimePointSeconds fCreatedAt;
 
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
+            /**
+             * A given connection can be used for mutliple messages. Track what message number this is on this connection.
+             */
+            unsigned int fMessageNumberOnThisConnection{0};
+
+            /**
+             * @brief Experimental state information - dont count on details or names. Subject to change.
+             *        This is intended to be used for debugging and diagnostics.
+             */
+            enum class State : uint8_t {
+                /**
+                 *  This should almost never happen. Tiny window.
+                 */
+                eNew,
+
+                /**
+                 *  In the middle of reading/parsing headers (data available, actively processing)
+                 */
+                eReadingHeaders,
+
+                /**
+                 *
+                 */
+                ePausedIncompleteHeaders,
+
+                /**
+                 * @brief done reading (header part), now processing the message (interceptor chain)
+                 */
+                eProcessingInterceptorChain,
+
+                /**
+                 * @brief Finished processing message, and in process of flushing response, and checking/updating response headers.
+                 */
+                eFlushing,
+
+                /**
+                 * @brief Re-using connection for next message (keep-alive).
+                 */
+                eReadyForNextMessage,
+
+                /**
+                 * @brief Done with connection and ready to close it down
+                 */
+                eClosing,
+
+                Stroika_Define_Enum_Bounds (eNew, eClosing)
+            };
+            State fState{State::eNew};
+
             /**
              */
             optional<Traversal::Range<TimePointSeconds>> fMostRecentMessage;
@@ -284,6 +332,20 @@ namespace Stroika::Frameworks::WebServer {
         unique_ptr<MyMessage_>                                 fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>                              fRemaining_;
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
+        enum class State_Flag_ : uint8_t {
+            eNew,
+            eReadingHeaders_Started,
+            eFinishedReadingHeaders_Success,
+            eFinishedReadingHeaders_Incomplete,
+            eFinishedReadingHeaders_Failed,
+            eInterceptorChain_Start,
+            eInterceptorChain_Complete,
+            eFlushing_Start,
+            eFlushing_Done,
+        };
+        atomic<State_Flag_> fState_{State_Flag_::eNew}; // always increases during a single ReadHeaders invocation (but it reversts between).
+        atomic<unsigned int> fMessageNumberOnThisConnection_{0};
+        atomic<bool>         fKeepAlive_{true};
         struct Stats2Capture_ {
             optional<TimePointSeconds> fMessageStart;
             optional<TimePointSeconds> fMessageCompleted;

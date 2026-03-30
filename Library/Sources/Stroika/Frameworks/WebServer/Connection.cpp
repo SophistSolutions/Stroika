@@ -158,13 +158,17 @@ String Connection::Stats::ToString () const
     sb << ", createdAt: " << fCreatedAt;
     if (fActive) {
         if (*fActive) {
-            sb << ", active ";
+            sb << ", active";
         }
         else {
-            sb << ", inactive ";
+            sb << ", inactive";
         }
     }
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
+    if (fMessageNumberOnThisConnection != 0) {
+        sb << ", connectionMessageNumber: " << fMessageNumberOnThisConnection;
+    }
+    sb << ", state: " << fState;
     if (fMostRecentMessage) {
         sb << ", mostRecentMessage: " << *fMostRecentMessage;
     }
@@ -225,23 +229,57 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
     , stats{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Stats {
         const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::stats);
         // NO - INTERNALLY SYNCHRONIZED!!! AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        // typically called from thread OTHER than the one filling in these variables
         auto uniqueID = thisObj->fSocket_.GetNativeSocket (); // safe because fSocket_ is a const Ptr, and GetNativeSocket () is a const method, so never modified and can be safely used without synchronization
         TimePointSeconds createdAt{thisObj->fConnectionStartedAt_}; // also similar logic - const
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
         Stats2Capture_ statsCapturedDuringMessageProcessing = thisObj->fExtraStats_.load ();
+        using State                                         = Stats::State;
+        State state                                         = [thisObj] () {
+            switch (thisObj->fState_) {
+                case State_Flag_::eNew:
+                    return State::eNew;
+                case State_Flag_::eReadingHeaders_Started:
+                    return State::eReadingHeaders;
+                case State_Flag_::eFinishedReadingHeaders_Success:
+                    return State::eProcessingInterceptorChain;
+                case State_Flag_::eFinishedReadingHeaders_Incomplete:
+                    return State::ePausedIncompleteHeaders;
+                case State_Flag_::eFinishedReadingHeaders_Failed:
+                    return State::eClosing;
+                case State_Flag_::eInterceptorChain_Start:
+                    return State::eProcessingInterceptorChain;
+                case State_Flag_::eInterceptorChain_Complete:
+                    return State::eFlushing;
+                case State_Flag_::eFlushing_Start:
+                    return State::eFlushing;
+                case State_Flag_::eFlushing_Done:
+                    if (thisObj->fKeepAlive_) {
+                        return State::eReadyForNextMessage;
+                    }
+                    else {
+                        return State::eClosing;
+                    }
+                default:
+                    AssertNotReached ();
+                    return State::eNew; // silence compiler warning
+            }
+        }();
 #endif
         Stats stats{
             .fSocketID  = uniqueID,
             .fCreatedAt = createdAt,
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-            .fMostRecentMessage = statsCapturedDuringMessageProcessing.fMessageStart
-                                      ? Range<TimePointSeconds>{statsCapturedDuringMessageProcessing.fMessageStart,
-                                                                statsCapturedDuringMessageProcessing.fMessageCompleted}
-                                      : optional<Range<TimePointSeconds>>{},
-            .fHandlingThread    = statsCapturedDuringMessageProcessing.fHandlingThread,
-            .fRemotePeerAddress = statsCapturedDuringMessageProcessing.fPeer,
-            .fRequestWebMethod  = statsCapturedDuringMessageProcessing.fWebMethod,
-            .fRequestURI        = statsCapturedDuringMessageProcessing.fRequestURI,
+            .fMessageNumberOnThisConnection = thisObj->fMessageNumberOnThisConnection_,
+            .fState                         = state,
+            .fMostRecentMessage             = statsCapturedDuringMessageProcessing.fMessageStart
+                                                  ? Range<TimePointSeconds>{statsCapturedDuringMessageProcessing.fMessageStart,
+                                                                            statsCapturedDuringMessageProcessing.fMessageCompleted}
+                                                  : optional<Range<TimePointSeconds>>{},
+            .fHandlingThread                = statsCapturedDuringMessageProcessing.fHandlingThread,
+            .fRemotePeerAddress             = statsCapturedDuringMessageProcessing.fPeer,
+            .fRequestWebMethod              = statsCapturedDuringMessageProcessing.fWebMethod,
+            .fRequestURI                    = statsCapturedDuringMessageProcessing.fRequestURI,
 #endif
         };
         return stats;
@@ -326,7 +364,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         fMessage_->SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
 #endif
 
+        // readHeaders returns nullopt if it completed successfully (usually the case)
         auto readHeaders = [&] () -> optional<ReadAndProcessResult> {
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+            fState_ = State_Flag_::eReadingHeaders_Started;
+            fExtraStats_.store (Stats2Capture_{
+                .fMessageStart = Time::GetTickCount (), .fPeer = fSocket_.GetPeerAddress (), .fHandlingThread = std::this_thread::get_id ()});
+#endif
             switch (fMessage_->ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
                 [this] (const String& i) -> void { WriteLogConnectionMsg_ (i); }
@@ -335,14 +379,23 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                 case MyMessage_::eIncompleteDeadEnd: {
                     DbgTrace ("ReadHeaders failed (socket {}) - incomplete data read from client."_f,
                               fSocket_); // sometimes because the client closed the connection before we could handle: e.g. user in web browser hitting refresh button fast
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+                    fState_ = State_Flag_::eFinishedReadingHeaders_Failed;
+#endif
                     return eClose; // don't keep-alive - so this closes connection
                 } break;
                 case MyMessage_::eIncompleteButMoreMayBeAvailable: {
                     DbgTrace ("ReadHeaders failed - incomplete header (most likely a DOS attack)."_f);
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+                    fState_ = State_Flag_::eFinishedReadingHeaders_Incomplete;
+#endif
                     return ReadAndProcessResult::eTryAgainLater;
                 } break;
                 case MyMessage_::eCompleteGood: {
                     // fall through and actually process the request
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+                    fState_ = State_Flag_::eFinishedReadingHeaders_Success;
+#endif
                     return nullopt;
                 } break;
                 default:
@@ -468,6 +521,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("Handing request {} to interceptor chain"_f, request ().ToString ());
 #endif
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+            [[maybe_unused]] auto&& cleanupFlags = Finally ([&] () noexcept {
+                Assert (fState_ < State_Flag_::eInterceptorChain_Complete);
+                fState_ = State_Flag_::eInterceptorChain_Complete;
+            });
+            fState_                              = State_Flag_::eInterceptorChain_Start;
+#endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
             WriteLogConnectionMsg_ ("Handing request {} to interceptor chain"_f(request ()));
 #endif
@@ -518,6 +578,10 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          *  comparing the ETag with the ifNoneMatch header.
          */
         auto completeResponse = [&] () {
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { fState_ = State_Flag_::eFlushing_Done; });
+            fState_                         = State_Flag_::eFlushing_Start;
+#endif
             if (not this->response ().responseStatusSent () and HTTP::IsOK (this->response ().status)) {
                 if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
                     if (auto actualETag = this->response ().headers ().ETag ()) {
@@ -540,6 +604,11 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
         };
         completeResponse ();
+
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+        fKeepAlive_ = thisMessageKeepAlive;
+        ++fMessageNumberOnThisConnection_;
+#endif
 
         return thisMessageKeepAlive ? eTryAgainLater : eClose;
     }
