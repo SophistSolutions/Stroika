@@ -165,8 +165,8 @@ String Connection::Stats::ToString () const
         }
     }
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-    if (fMessageNumberOnThisConnection != 0) {
-        sb << ", connectionMessageNumber: " << fMessageNumberOnThisConnection;
+    if (fReadAndProcessMessageNumber != 0) {
+        sb << ", connectionMessageNumber: " << fReadAndProcessMessageNumber;
     }
     sb << ", state: " << fState;
     if (fMostRecentMessage) {
@@ -260,6 +260,8 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
                     else {
                         return State::eClosing;
                     }
+                case State_Flag_::eAborting:
+                    return State::eClosing;
                 default:
                     AssertNotReached ();
                     return State::eNew; // silence compiler warning
@@ -270,7 +272,7 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
             .fSocketID  = uniqueID,
             .fCreatedAt = createdAt,
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-            .fMessageNumberOnThisConnection = thisObj->fMessageNumberOnThisConnection_,
+            .fReadAndProcessMessageNumber = thisObj->fReadAndProcessMessageNumber_,
             .fState                         = state,
             .fMostRecentMessage             = statsCapturedDuringMessageProcessing.fMessageStart
                                                   ? Range<TimePointSeconds>{statsCapturedDuringMessageProcessing.fMessageStart,
@@ -367,6 +369,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         // readHeaders returns nullopt if it completed successfully (usually the case)
         auto readHeaders = [&] () -> optional<ReadAndProcessResult> {
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
+            ++fReadAndProcessMessageNumber_;
             fState_ = State_Flag_::eReadingHeaders_Started;
             fExtraStats_.store (Stats2Capture_{
                 .fMessageStart = Time::GetTickCount (), .fPeer = fSocket_.GetPeerAddress (), .fHandlingThread = std::this_thread::get_id ()});
@@ -577,13 +580,12 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
          *  By this point, the response has been fully built, and so we can potentially redo the response as a 304-not-modified, by
          *  comparing the ETag with the ifNoneMatch header.
          */
-        auto completeResponse = [&] () {
+        [&] () {
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
-            [[maybe_unused]] auto&& cleanup = Finally ([&] () noexcept { fState_ = State_Flag_::eFlushing_Done; });
-            fState_                         = State_Flag_::eFlushing_Start;
+            fState_ = State_Flag_::eFlushing_Start;
 #endif
             if (not this->response ().responseStatusSent () and HTTP::IsOK (this->response ().status)) {
-                if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
+                if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch) {
                     if (auto actualETag = this->response ().headers ().ETag ()) {
                         bool ctm = this->response ().chunkedTransferMode ();
                         if (ctm) {
@@ -599,22 +601,23 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             if (not this->rwResponse ().End ()) {
                 thisMessageKeepAlive = false;
             }
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+            fKeepAlive_ = thisMessageKeepAlive;
+            fState_     = State_Flag_::eFlushing_Done;
+#endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
             WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
 #endif
-        };
-        completeResponse ();
-
-#if qStroika_Framework_WebServer_Connection_TrackExtraStats
-        fKeepAlive_ = thisMessageKeepAlive;
-        ++fMessageNumberOnThisConnection_;
-#endif
+        }();
 
         return thisMessageKeepAlive ? eTryAgainLater : eClose;
     }
     catch (...) {
         DbgTrace ("ReadAndProcessMessage Exception caught ({}), so returning ReadAndProcessResult::eClose"_f, current_exception ());
         this->rwResponse ().Abort ();
+#if qStroika_Framework_WebServer_Connection_TrackExtraStats
+        fState_ = State_Flag_::eAborting;
+#endif
         return Connection::ReadAndProcessResult::eClose;
     }
 }

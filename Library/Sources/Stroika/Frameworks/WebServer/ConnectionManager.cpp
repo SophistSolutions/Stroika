@@ -374,9 +374,9 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
                 /*
-                     *  This ENTIRE lambda runs in a single threadpool task, and is the only thing that reads/writes
-                     *  the readyConnection object, so no locking needed for that object.
-                     */
+                 *  This ENTIRE lambda runs in a single threadpool task, and is the only thing that reads/writes
+                 *  the readyConnection object, so no locking needed for that object.
+                 */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
                         "ConnectionManager::...handleActivatedConnection", "readyConnection={}"_f, readyConnection)};
@@ -406,18 +406,6 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                         AssertNotReached (); // these two lists need to be kept in sync, so really assume updating them cannot fail/break
                         ReThrow ();
                     }
-
-// @todo lose this code after a bit of testing that never triggered - LGP 2021-03-02
-// I think logic was corner case and backwards (sb if keep alive)
-//anyhow should never happen  except for incomplete header in which case we dont want to END
-#if 0
-                    if (not keepAlive) {
-                        Assert (readyConnection->response ().responseCompleted ()); // don't think this test is needed - I think we always assure this in Connection - LGP 2021-03-02
-                        if (not readyConnection->response ().responseCompleted ()) {
-                            IgnoreExceptionsForCall (readyConnection->rwResponse ().End ());
-                        }
-                    }
-#endif
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_DANGEROUS_ASSERT_FAILURY_
                     {

@@ -178,8 +178,11 @@ namespace Stroika::Frameworks::WebServer {
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
             /**
              * A given connection can be used for mutliple messages. Track what message number this is on this connection.
+             *
+             *  \note for weird cases (pathological?) - this can be larger than the actual message number. If you have several
+             *        failed calls to ReadHeaders(), for example, which should basically never happen (except for abuse).
              */
-            unsigned int fMessageNumberOnThisConnection{0};
+            unsigned int fReadAndProcessMessageNumber{0};
 
             /**
              * @brief Experimental state information - dont count on details or names. Subject to change.
@@ -217,7 +220,7 @@ namespace Stroika::Frameworks::WebServer {
                 eReadyForNextMessage,
 
                 /**
-                 * @brief Done with connection and ready to close it down
+                 * @brief Done with connection and ready to close it down (maybe cleanly closing, or maybe with exception)
                  */
                 eClosing,
 
@@ -342,9 +345,10 @@ namespace Stroika::Frameworks::WebServer {
             eInterceptorChain_Complete,
             eFlushing_Start,
             eFlushing_Done,
+            eAborting,
         };
         atomic<State_Flag_> fState_{State_Flag_::eNew}; // always increases during a single ReadHeaders invocation (but it reversts between).
-        atomic<unsigned int> fMessageNumberOnThisConnection_{0};
+        atomic<unsigned int> fReadAndProcessMessageNumber_{0};
         atomic<bool>         fKeepAlive_{true};
         struct Stats2Capture_ {
             optional<TimePointSeconds> fMessageStart;
