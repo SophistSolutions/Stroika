@@ -190,7 +190,8 @@ namespace Stroika::Frameworks::WebServer {
              */
             enum class State : uint8_t {
                 /**
-                 *  This should almost never happen. Tiny window.
+                 *  This means the socket was created in response to an Accept() returning, but we never got any bytes of data
+                 *  available on the socket (so far).
                  */
                 eNew,
 
@@ -356,7 +357,7 @@ namespace Stroika::Frameworks::WebServer {
             optional<SocketAddress>    fPeer;
             optional<String>           fWebMethod;
             optional<URI>              fRequestURI;
-            thread::id                 fHandlingThread; // thread::id{} sentinel
+            optional<thread::id>       fHandlingThread;
         };
         static_assert (is_default_constructible_v<Stats2Capture_>);
         Execution::Synchronized<Stats2Capture_> fExtraStats_;
