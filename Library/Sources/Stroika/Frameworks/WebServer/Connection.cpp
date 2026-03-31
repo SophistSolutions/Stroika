@@ -273,15 +273,15 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Opti
             .fCreatedAt = createdAt,
 #if qStroika_Framework_WebServer_Connection_TrackExtraStats
             .fReadAndProcessMessageNumber = thisObj->fReadAndProcessMessageNumber_,
-            .fState                         = state,
-            .fMostRecentMessage             = statsCapturedDuringMessageProcessing.fMessageStart
-                                                  ? Range<TimePointSeconds>{statsCapturedDuringMessageProcessing.fMessageStart,
-                                                                            statsCapturedDuringMessageProcessing.fMessageCompleted}
-                                                  : optional<Range<TimePointSeconds>>{},
-            .fHandlingThread                = statsCapturedDuringMessageProcessing.fHandlingThread,
-            .fRemotePeerAddress             = statsCapturedDuringMessageProcessing.fPeer,
-            .fRequestWebMethod              = statsCapturedDuringMessageProcessing.fWebMethod,
-            .fRequestURI                    = statsCapturedDuringMessageProcessing.fRequestURI,
+            .fState                       = state,
+            .fMostRecentMessage           = statsCapturedDuringMessageProcessing.fMessageStart
+                                                ? Range<TimePointSeconds>{statsCapturedDuringMessageProcessing.fMessageStart,
+                                                                          statsCapturedDuringMessageProcessing.fMessageCompleted}
+                                                : optional<Range<TimePointSeconds>>{},
+            .fHandlingThread              = statsCapturedDuringMessageProcessing.fHandlingThread,
+            .fRemotePeerAddress           = statsCapturedDuringMessageProcessing.fPeer,
+            .fRequestWebMethod            = statsCapturedDuringMessageProcessing.fWebMethod,
+            .fRequestURI                  = statsCapturedDuringMessageProcessing.fRequestURI,
 #endif
         };
         return stats;
@@ -585,7 +585,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             fState_ = State_Flag_::eFlushing_Start;
 #endif
             if (not this->response ().responseStatusSent () and HTTP::IsOK (this->response ().status)) {
-                if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch) {
+                if (auto requestedINoneMatch = this->request ().headers ().ifNoneMatch ()) {
                     if (auto actualETag = this->response ().headers ().ETag ()) {
                         bool ctm = this->response ().chunkedTransferMode ();
                         if (ctm) {
