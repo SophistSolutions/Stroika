@@ -561,7 +561,6 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             if (doRun) {
                 stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
                                                Debug::TraceContextBumper ctx1{"Thread::Ptr::Rep_::ThreadMain_ - stop_callback"};
-                                               //  if (doRun) {
                                                DbgTrace ("Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state."_f);
                                                // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
                                                if (not thisThreadRep->fAbortRequested_) [[unlikely]] {
@@ -570,15 +569,18 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                                                else {
                                                    DbgTrace ("skipped abort cuz done already"_f);
                                                }
-                                               //  }
                                            }};
+                DbgTrace ("In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
+                thisThreadRep->Run_ ();
+                DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
             }
-#endif
+#else
             if (doRun) {
                 DbgTrace ("In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
                 thisThreadRep->Run_ ();
                 DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
             }
+#endif
         }
         catch (const AbortException&) {
             SuppressInterruptionInContext suppressCtx;
