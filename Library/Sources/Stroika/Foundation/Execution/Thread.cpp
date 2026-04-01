@@ -556,15 +556,23 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
             // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
             // --LGP 2023-10-03
-            stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
-                                           if (doRun) {
+            // @todo CONSIDER - maybe write call to stop_callback with if doRun - not sure why if do run test INSIDE callback?
+            // but I believe harmless --LGP 2026-04-01
+            if (doRun) {
+                stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
+                                               Debug::TraceContextBumper ctx1{"Thread::Ptr::Rep_::ThreadMain_ - stop_callback"};
+                                               //  if (doRun) {
                                                DbgTrace ("Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state."_f);
                                                // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
                                                if (not thisThreadRep->fAbortRequested_) [[unlikely]] {
                                                    IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
                                                }
-                                           }
-                                       }};
+                                               else {
+                                                   DbgTrace ("skipped abort cuz done already"_f);
+                                               }
+                                               //  }
+                                           }};
+            }
 #endif
             if (doRun) {
                 DbgTrace ("In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
