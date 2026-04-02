@@ -552,13 +552,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
             bool doRun = not thisThreadRep->fAbortRequested_ and not thisThreadRep->IsDone_ ();
 
-#if __cpp_lib_jthread >= 201911
-            // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
-            // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
-            // --LGP 2023-10-03
-            // @todo CONSIDER - maybe write call to stop_callback with if doRun - not sure why if do run test INSIDE callback?
-            // but I believe harmless --LGP 2026-04-01
             if (doRun) {
+#if __cpp_lib_jthread >= 201911
+                // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
+                // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
+                // --LGP 2023-10-03
                 stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
                                                Debug::TraceContextBumper ctx1{"Thread::Ptr::Rep_::ThreadMain_ - stop_callback"};
                                                DbgTrace ("Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state."_f);
@@ -570,17 +568,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                                                    DbgTrace ("skipped abort cuz done already"_f);
                                                }
                                            }};
-                DbgTrace ("In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
-                thisThreadRep->Run_ ();
-                DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
-            }
-#else
-            if (doRun) {
-                DbgTrace ("In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
-                thisThreadRep->Run_ ();
-                DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
-            }
 #endif
+                DbgTrace ("In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: {}"_f, thisThreadRep->ToString ());
+                thisThreadRep->Run_ ();
+                DbgTrace ("In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: {}"_f, thisThreadRep->ToString ());
+            }
         }
         catch (const AbortException&) {
             SuppressInterruptionInContext suppressCtx;
