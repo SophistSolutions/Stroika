@@ -120,7 +120,13 @@ namespace Stroika::Foundation::Database::Document::LocalDocumentDB {
              */
             filesystem::path fRoot;
 
-#if qStroika_Foundation_Common_Platform_Windows
+            /**
+             * If true, the database connection will ignore any existing file (not read it). Either way
+             * a new file will be created (whether one was there before or not).
+             */
+            bool fForceCreateNew{false};
+
+            #if qStroika_Foundation_Common_Platform_Windows
             /**
              * \see IO::FileSystem::ThroughTmpFileWriter::fRetryOnSharingViolationFor
              */

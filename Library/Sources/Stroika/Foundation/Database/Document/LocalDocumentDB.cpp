@@ -771,6 +771,11 @@ namespace {
         {
             TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::DirectoryFilesystemDatabaseRep_"};
             filesystem::create_directories (fRoot_);
+            if (dfOptions.fForceCreateNew) {
+                for (const auto& entry : filesystem::directory_iterator{fRoot_}) {
+                    filesystem::remove_all (entry.path ());
+                }
+            }
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
         {
