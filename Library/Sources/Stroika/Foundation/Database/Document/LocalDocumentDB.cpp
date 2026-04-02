@@ -429,6 +429,7 @@ namespace {
             , fRetryOnSharingViolationFor_{sfOptions.fRetryOnSharingViolationFor}
 #endif
         {
+            TraceContextBumper ctx{"LocalDocumentDB::SingleFileDatabaseRep_::SingleFileDatabaseRep_"};
             if (not sfOptions.fForceCreateNew) {
                 DoReadFromFS ();
             }
@@ -768,6 +769,7 @@ namespace {
             , fRetryOnSharingViolationFor_{dfOptions.fRetryOnSharingViolationFor}
 #endif
         {
+            TraceContextBumper ctx{"LocalDocumentDB::DirectoryFilesystemDatabaseRep_::DirectoryFilesystemDatabaseRep_"};
             filesystem::create_directories (fRoot_);
         }
         virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
