@@ -82,10 +82,14 @@ namespace Stroika::Foundation::Execution {
 #endif
         Ensure (*remainingInSleep <= seconds2Wait);
         Ensure (*remainingInSleep >= 0s);
-        // Consider if THIS is truly needed - doing BOTH at start and end appears excessive!
-        // But we don't want to wait at all if interrupted. And if we've waited a while and had low level sleep return because
-        // of a thread interruption, we want to translate that to an exception.
-        // So - maybe both really needed.
+        /*
+         *  \note - appearances to the contrary notwithstanding, this is NOT EXCESSIVE (doing at start AND end).
+         *          We don't want to wait at all if interrupted. And if we've waited a while and had low level
+         *          sleep return because of a thread interruption, we want to translate that to an exception.
+         * 
+         *          And the CONTEXT is the user said to SLEEP - so they expect us to take a 'while'. Checking twice
+         *          is a small cost.
+         */
         Thread::CheckForInterruption ();
     }
 
