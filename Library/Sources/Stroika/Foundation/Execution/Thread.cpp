@@ -550,22 +550,20 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
             Assert (thisThreadID == thisThreadRep->GetID ()); // By now we know thisThreadRep->fThread_ has been assigned so it can be accessed
 
-            bool doRun = not thisThreadRep->fAbortRequested_ and not thisThreadRep->IsDone_ ();
-
-            if (doRun) {
+            if (not thisThreadRep->fAbortRequested_ and not thisThreadRep->IsDone_ ()) {
 #if __cpp_lib_jthread >= 201911
                 // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
                 // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
                 // --LGP 2023-10-03
                 stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
                                                Debug::TraceContextBumper ctx1{"Thread::Ptr::Rep_::ThreadMain_ - stop_callback"};
-                                               DbgTrace ("Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state."_f);
-                                               // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
-                                               if (not thisThreadRep->fAbortRequested_) [[unlikely]] {
-                                                   IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
+                                               if (thisThreadRep->fAbortRequested_) [[likely]] {
+                                                   DbgTrace ("skipped abort cuz done already"_f);
                                                }
                                                else {
-                                                   DbgTrace ("skipped abort cuz done already"_f);
+                                                   DbgTrace ("Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state."_f);
+                                                   // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
+                                                   IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
                                                }
                                            }};
 #endif
