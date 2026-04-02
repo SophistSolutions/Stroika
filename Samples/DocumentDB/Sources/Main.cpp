@@ -219,7 +219,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "Starting trivial document db employees sample:" << endl;
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-test.json";
         auto             internallySynchronizedDBConnection = LocalDocumentDB::New (LocalDocumentDB::Options{
-                        .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p}});
+                        .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::SingleFileStorage{.fFile = p, .fForceCreateNew = true}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
             return internallySynchronizedDBConnection; // re-used multiple times from different threads
@@ -235,7 +235,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         cerr << "Starting trivial document db employees sample:" << endl;
         filesystem::path p = IO::FileSystem::WellKnownLocations::GetTemporary () / "employees-trivialdb-dir-test";
         auto             internallySynchronizedDBConnection = LocalDocumentDB::New (LocalDocumentDB::Options{
-                        .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p}});
+                        .fInternallySynchronizedLetter = eInternallySynchronized, .fStorage = LocalDocumentDB::Options::DirectoryFileStorage{.fRoot = p, .fForceCreateNew = true}});
         EmployeesDB ([=] () {
             cerr << "\tConnecting to trivial document db: {}"_f(p) << endl;
             return internallySynchronizedDBConnection; // re-used multiple times from different threads
