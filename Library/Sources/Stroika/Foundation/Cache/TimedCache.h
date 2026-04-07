@@ -563,6 +563,8 @@ namespace Stroika::Foundation::Cache {
      * 
      *  \note   we REQUIRE (without a way to enforce) - that the STATS object be internally synchronized, so that we can
      *          maintain statistics, without requiring the lookup method be non-const; this is only for tuning/debugging, anyhow...
+     * 
+     *  \note   Implementation Note: '_' private routines assume called with locks in place, and just do the minimal function (except when otherwise noted).
      *
      *  @see LRUCache
      */
@@ -839,6 +841,28 @@ namespace Stroika::Foundation::Cache {
             requires (not IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackExpiration)
         nonvirtual void Add (typename Common::ArgByValueType<V> result, TimeStampType expiresAt);
 
+    private:
+        // no locking or bookkeeping - just add the item
+        template <typename K = KEY>
+            requires (IKeyedCache<K> and IValuelessCache<VALUE> and TRAITS::kTrackExpiration)
+        nonvirtual void Add_ (typename Common::ArgByValueType<K> key, TimeStampType expiresAt);
+        template <typename K = KEY>
+            requires (IKeyedCache<K> and IValuelessCache<VALUE> and TRAITS::kTrackFreshness)
+        nonvirtual void Add_ (typename Common::ArgByValueType<K> key, TimeStampType freshAsOf);
+
+        template <typename K = KEY, typename V = VALUE>
+            requires (IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackFreshness)
+        nonvirtual void Add_ (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType freshAsOf);
+        template <typename K = KEY, typename V = VALUE>
+            requires (IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackExpiration)
+        nonvirtual void Add_ (typename Common::ArgByValueType<K> key, typename Common::ArgByValueType<V> result, TimeStampType expiresAt);
+        template <typename K = KEY, typename V = VALUE>
+            requires (not IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackFreshness)
+        nonvirtual void Add_ (typename Common::ArgByValueType<V> result, TimeStampType freshAsOf);
+        template <typename K = KEY, typename V = VALUE>
+            requires (not IKeyedCache<K> and not IValuelessCache<V> and TRAITS::kTrackExpiration)
+        nonvirtual void Add_ (typename Common::ArgByValueType<V> result, TimeStampType expiresAt);
+
     public:
         /**
          */
@@ -882,7 +906,8 @@ namespace Stroika::Foundation::Cache {
         nonvirtual typename TRAITS::StatsType GetStats () const;
 
     private:
-        nonvirtual void AutomaticallyClearExpiredDataSometimes_ ();
+        nonvirtual void AutomaticallyClearExpiredDataSometimes_ ()
+            requires (IKeyedCache<KEY>);
 
     public:
         DISABLE_COMPILER_MSC_WARNING_START (4996);
@@ -1077,9 +1102,10 @@ namespace Stroika::Foundation::Cache {
                 fNextAutoClearAt_;
 
     private:
-        nonvirtual void ClearExpired_ ();
+        nonvirtual void ClearExpired_ ()
+            requires (IKeyedCache<KEY>);
         nonvirtual void ClearExpired_ (TimeStampDifferenceType maxAge)
-            requires (TRAITS::kTrackFreshness);
+            requires (IKeyedCache<KEY> and TRAITS::kTrackFreshness);
 
     private:
         // per-key 'value' data we track - includes both the 'VALUE' in expiration/time information
@@ -1102,13 +1128,13 @@ namespace Stroika::Foundation::Cache {
         MyMapType_ fData_;
 
     private:
-        // @todo MAYBE - pass in readLock can can be 'upgraded' to full lock
+        // most PRIVATE(_) routines assume locking done externally, but these 'Locking' ones do the locking themselves.
         template <typename K = KEY, Common::invocable_r<VALUE> CACHE_FILLTER_T>
             requires (not IKeyedCache<K>)
-        nonvirtual VALUE LookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller);
+        nonvirtual VALUE LockingLookupValueAdder_ (CACHE_FILLTER_T&& cacheFiller);
         template <typename K = KEY, Common::invocable_r<VALUE, KEY> CACHE_FILLTER_T>
             requires (IKeyedCache<K>)
-        nonvirtual VALUE LookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
+        nonvirtual VALUE LockingLookupValueAdder_ (typename Common::ArgByValueType<K> key, CACHE_FILLTER_T&& cacheFiller);
 
     private:
         qStroika_ATTRIBUTE_NO_UNIQUE_ADDRESS_VCFORCE mutable typename TRAITS::StatsType fStats_;
