@@ -11,35 +11,6 @@ especially those they need to be aware of when upgrading.
 
 
 #if 0
-commit 2343b0e4e18af738e2bf16afcd9e565a748035b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 7 11:10:55 2026 -0400
-
-    TimedCache: refactoring, added Add_ method, docs, and fixed bug where :Add (typename Common::ArgByValueType<V> result, TimeStampType was missing LOCK (probably caused crash I was seeing on WTF / UNIX)
-
-commit a3e5dafe8815d1f463325141f5c71972d15d567e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 2 13:06:32 2026 -0400
-
-    fixed Samples/DocumentDB/Sources/Main to use fForceCreateNew on tests since else uses files from previous run, and gets slower over time (problems with regtests)
-
-commit 03710ed15b2fddfa4194bab1ce71a5dc79266598
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 2 12:16:15 2026 -0400
-
-    fForceCreateNew support for LocalDocumentDB::DirectoryFilesystem...
-
-commit 51694db22da1c43d96bdf48abd828c219fdca94c
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Apr 1 19:47:25 2026 -0400
-
-    fixed serious bug (but risky fix so test) to stop_callback handling (__cpp_lib_jthread) in Thread::Ptr::Rep_::ThreadMain_
-
-commit 167be7f720d6b7332bf8b6b2f93c5545f9dde25c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 1 16:12:21 2026 -0400
-
-    slightly dangerous change to Execution/Thread. ThreadMain_ - conditions on when invoke stop_callback and DbgTrace inside callback
 
 commit 0de52a198230a04d7bf551d89e065f6d47420da4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -59,12 +30,6 @@ Date:   Mon Mar 30 08:15:13 2026 -0400
 
     WebServer framework: added 'state' (https://stroika.atlassian.net/browse/STK-1025) and messageOnConnectionNumber tracking to help debug issue with AWS/HearHE
 
-commit ac593502d909ab29053d77629b738f1df06a7336
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Mar 29 09:24:59 2026 -0400
-
-    qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
-
 commit 50759b279ffb9db6e1a0cecc89ff7fb7302244bf
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 27 16:11:13 2026 -0400
@@ -83,18 +48,6 @@ Date:   Fri Mar 27 12:56:29 2026 -0400
 
     Cache logic - support (for timedcache only so far) IValuelessCache (already basically supported, but did a bit more and added to concept/traits and used the names
 
-commit b7f535279d14fc44efa4693a0be73146c72b6ca9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 27 09:34:45 2026 -0400
-
-    TimedCache<>  - expose kHoldWriteLockDuringCacheFill through traits - though no change by default - just allows external testing of this 'feature'
-
-commit 98ce1dcff4eddd3602f60239095d78627b665fb4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 27 09:25:43 2026 -0400
-
-    fixed include regressions and comments
-
 commit 2590e20e2a8954f354cf86d2ad94fc04457d7f27
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
 Date:   Fri Mar 27 08:56:32 2026 -0400
@@ -112,12 +65,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 26 21:08:26 2026 -0400
 
     fixed typos and small regresison in traints checking in LRUCache
-
-commit a7d0dea90d1f1fba2bd2149aaf46a8c4572ac7c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 26 19:58:38 2026 -0400
-
-    TimedCache fMaxAge_ now optionally removed/empty if TRAITS set to remove it (not by default)
 
 commit 479b7c68db8403f23572c6314978974f0db68f97
 Author: Lewis Pringle <lewis@sophists.com>
@@ -155,36 +102,6 @@ Date:   Thu Mar 26 11:06:37 2026 -0400
 
     refacored Cache stuff again - new module Cache::Common, and added new concept ICache there
 
-commit e520de74b86d345750c68d586270d6d37d0aab3d
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Thu Mar 26 09:24:15 2026 -0400
-
-    updated qCompilerAndStdLib_deduce_template_arguments_Using_Buggy bug define
-
-commit 8f82dc6bf7548718d76a09c61c51839a3adcaac7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Mar 26 08:37:22 2026 -0400
-
-    Another qCompilerAndStdLib_deduce_template_arguments_Using_Buggy BWA
-
-commit ed58cfd316f991002c8623b09bd3bb9a803a5b7c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 22:44:22 2026 -0400
-
-    updated bug define qCompilerAndStdLib_deduce_template_arguments_Using_Buggy
-
-commit a7dce8249397f48c130ca17345cee0d38f8074ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 20:51:57 2026 -0400
-
-    qCompilerAndStdLib_deduce_template_arguments_Using_Buggy new bug define and BWA
-
-commit 41e777cec85852e73fbd9dfdfcc662e865b7e951
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 25 17:47:04 2026 -0400
-
-    fewer qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy simpler BWAs
-
 commit 1cfcce52df448b81cff1ed542bb9f9b60cd29b5c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 25 17:42:55 2026 -0400
@@ -202,12 +119,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Mar 25 15:48:39 2026 -0400
 
     more cleanups to new MakeMemoizer code
-
-commit 87c6fae2d72b1ccf634034c696f7e2a6e0d51a6c
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Wed Mar 25 15:44:49 2026 -0400
-
-    more cleanups of qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy BWA for Memorizer
 
 commit 26147045b8f540d413989f75c7ed39992b7bfbec
 Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
@@ -251,96 +162,6 @@ Date:   Wed Mar 25 11:49:12 2026 -0400
 
     use FunctionTraits arg_t instead of arg<N>::type
 
-commit 764bdea25df90bc7deaf7458abad90fe2d253d4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 24 13:10:27 2026 -0400
-
-    simplify TimedLock upgradeLock/LookupValue code cuz sporadically fails on MacOSX (not sure why - looked fine) - but test with simpler code and see if works better
-
-commit ccdac23881e68b5f9ee761f65d58c33fcc96254d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 23 16:47:52 2026 -0400
-
-    More progress on TimedCache: deprecated templates SynchronizedCallerStalenessCache and CallerStalenessCache, improved kDefaultMaxAge support, and kAutomaticPurgeFrequency supportand kPerCacheMaxAge support and docs
-
-commit 1f40ab20d826d1cb8223c02b935218aae97437cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 23 12:23:47 2026 -0400
-
-    TimedCache: tweaked some defaults, better supported kAutomaticPurgeFrequency, minor cleanups, and respected kPerCacheMaxAge and kDefaultMaxAge - sometimes copying that as default and supporting default CTOR often
-
-commit fea5de4c2616a84cc4b9c424246309705baa6267
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 23 10:49:15 2026 -0400
-
-    TimedCache - minor cleanups - mostly docs - deprecated APIs using TimeStampType maxAge - cuz were in CallerStalenssCache
-
-commit b6ed1b6b150f21245f9e6782633555bbedbb4d29
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Mar 23 08:40:32 2026 -0400
-
-    TimedCache - lots more cleanups - docs, and expiration logic, and other internals
-
-commit 07b0288abc80d83a163f56996f21ceba16a2ad03
-Author: Lewis G. Pringle, Jr. <lewis@sophists.com>
-Date:   Sun Mar 22 14:11:10 2026 -0400
-
-    another BWA needed for qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
-
-commit 7a5b602af3394ed3a2512e3fb0cc2003ac8ac0e2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Mar 22 10:32:19 2026 -0400
-
-    More TimedCache celanups and got regtest passing again
-
-commit bab9642570d5d95b0bbd352d686b5eadb3e9e554
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 21 23:02:42 2026 -0400
-
-    deprecated files SynchronizedCallerStalenessCache.h CallerStalenessCache.h
-
-commit cb041bdd92c186d981f5f70ee8c02808b75d622e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 21 20:16:52 2026 -0400
-
-    replaced impl of CallerStalenessCache SynchronizedCallerStalenessCache with use of TimedCache - not marked deprecated yet but testing
-
-commit 0b3b414175ca2685617a1250f062069a7447620c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 21 17:15:40 2026 -0400
-
-    Major revsions to TimedCache to support void KEY, and prepare for replacing CallerStalenessCache
-
-commit 7a2f031630fcdad9d6b81732822e55d013f59dbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 19:05:51 2026 -0400
-
-    Progress on TimedCache supported void KEY
-
-commit bcd1a482666154cc662b1e021410aacf005f529c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 16:18:02 2026 -0400
-
-    progress on TimedCache to replace CallerStalenessCache
-
-commit 5f53de605c6f006ff2c66f75835359637d17d2c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 12:38:07 2026 -0400
-
-    More incomplete TimedCache callerstalenesscache prep/support(still incomplete)
-
-commit 431e8ef2c42c7ff883f5d7fa69f68991ec314317
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 12:19:36 2026 -0400
-
-    TimedCache<> callerstalenessCache support
-
-commit 6c436015f6b644aeb4d8bffb820da86923fd298a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 10:59:59 2026 -0400
-
-    more progress on TimedCache getting read to replace CallerStalenssCache - deprecated anme MinimumAllowedFreshness (use MaxAge instead)
-
 commit ff4becbfeee6755a64716d1f65498a44a0b0a0e0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 20 10:14:48 2026 -0400
@@ -353,12 +174,6 @@ Date:   Fri Mar 20 09:57:35 2026 -0400
 
     see if using fmtlib fixes issues on xcode 15
 
-commit 8cdf6c2836e7ca3d3a7d76fad06abbf445958f85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 08:49:42 2026 -0400
-
-    TimedCache clear expiration changes internally to prepare for merging out CallerStalenessCache code
-
 commit dc062dd9f04fc6a0a0fc9788d390e42d1a51b840
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 20 08:47:56 2026 -0400
@@ -370,12 +185,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Mar 20 08:36:03 2026 -0400
 
     oldest supported xcode is now 15.4 (not 15.3)
-
-commit 880ee666a46ec16a1634b2c3187588dc737cedc8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Mar 20 08:23:05 2026 -0400
-
-    try marking qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy broken for clang16 on macos cuz xcode 15.3 clang++ 15.0.7 now apprears to report clangMAJOR == 16?
 
 commit bbdb05db63174f9c0a47abf35fb5a1c0fba94316
 Author: Lewis Pringle <lewis@sophists.com>
@@ -400,18 +209,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Mar 19 14:30:04 2026 -0400
 
     disable boost on XCode 15 for now - cuz PITA to debug why failing
-
-commit f1992ade6330e8ca0e81c9f33e36533fe5f62aa7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Mar 19 11:47:07 2026 -0400
-
-    TimedCache: support RESULT type = void, and document examples, and regtest example
-
-commit 5ef17821bffeb3572014a9cbbc21145637f7f2d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Mar 18 16:38:54 2026 -0400
-
-    another tweak to ECHO_TIMESTAMPS in top level Makefile
 
 commit 42455b18dfb08cd06ac72efb573859fcd8c1f949
 Author: Lewis Pringle <lewis@sophists.com>
@@ -447,38 +244,12 @@ commit 21a207e7a0e30ff9f9ff38e481da09c3e222c5dc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 17 22:45:56 2026 -0400
 
-    another qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
 
 commit f449294eff9b7ebb58f46cc92f94a5028fd0fb58
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Mar 17 20:54:18 2026 -0400
 
     Frameworks/Auth/OAuth/Client using new TimedCacheSupport::TrackExpirationTraits TimedCache code
-
-commit e0582a82853c99aed47251547418c508be084427
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 17 17:54:39 2026 -0400
-
-    ECHO_TIMESTAMPS experimental feature in top-level Makefile
-
-commit b04c6f91e08d73fd0b1aaa45c0b6d2076ab3099c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 17 16:26:46 2026 -0400
-
-
-commit 5008ae4e6bd4afda891717c53ed63b6b1f12b89e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Mar 17 08:52:19 2026 -0400
-
-    qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy still broken in clang++-17
-
-commit 573453b53d249761669ab02e82b8b0275c2ad6a5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Mar 16 17:29:27 2026 -0400
-
-    qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy and first BWA
-
-
 
 #endf
 
@@ -523,6 +294,7 @@ Date:   Mon Mar 16 17:29:27 2026 -0400
   - Makefile
     - added new top level makefile target library-clobber and used it in .vscode/tasks.json for rebuild task
     - fixed (by simplifying makefile) mkaefile for top level make of all or libraries when QUICK_BUILD=1 is on (now that default so more prominent when it was broken) - handling failures
+    - ECHO_TIMESTAMPS experimental feature in top-level Makefile (show how long many/most makes took)
   - Scripts
     - configure
       - fixed configure script so test for presence of python doesn't hang on latest msys under docker
@@ -537,10 +309,18 @@ Date:   Mon Mar 16 17:29:27 2026 -0400
   - new qCompilerAndStdLib_float2string_defaultfmt_scientificNotStripped_Buggy BWA
   - Simplify/enahance BWA for qCompilerAndStdLib_template_template_auto_deduced_Buggy
   - new qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy
-  - BWA  issue with crasher in g++13 release build was compiler bug, but worked around by cleaning up general case code (more tolerant of bad data from sql) - hard to isolate bug - and only appears to happen with sanitizers and optimization and g++13
+  - BWA issue with crasher in g++13 release build was compiler bug, but worked around by cleaning up general case code (more tolerant of bad data from sql) - hard to isolate bug - and only appears to happen with sanitizers and optimization and g++13
   - lose define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy and qCompilerAndStdLib_lambdas_in_unevaluatedContext2_Buggy cuz no more BWAs for it, and no way (effectively) to test anymore if its still there
   - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
   - bug defines qCompilerAndStdLib_NO_UNIQUE_ADDR_IgnoredAndMustUseMSVCNOUNIQUE_Buggy and qCompilerAndStdLib_NO_UNIQUE_ADDR_REALLYREALLY_Buggy)
+  - another BWA needed for qCompilerAndStdLib_FloatNonTypeTemplateArgument_Buggy
+  - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy BWA
+  - updated qCompilerAndStdLib_deduce_template_arguments_Using_Buggy bug define
+  - qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy simpler BWAs
+  - try marking qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy broken for clang16 on macos cuz xcode 15.3 clang++ 15.0.7 now apprears to report clangMAJOR == 16?
+  - another qCompilerAndStdLib_ConstraintDiffersInTemplateRedeclaration_BWA BWA
+
+
 - Library
   - Foundation
     - Cache
@@ -554,10 +334,18 @@ Date:   Mon Mar 16 17:29:27 2026 -0400
         - new traits feature kAutomaticPurgeFrequency to replace deprecated PurgeSpoiledDataFlagType
         - new GetExpiration API
         - IValue support so can use void for value
-
+        - expose kHoldWriteLockDuringCacheFill through traits - though no change by default - just allows external testing of this 'feature'
+        - fMaxAge_ now optionally removed/empty if TRAITS set to remove it (not by default)
+        - simplify upgradeLock/LookupValue code cuz sporadically fails on MacOSX (not sure why - looked fine) - but test with simpler code and see if works better
+        - deprecated templates SynchronizedCallerStalenessCache and CallerStalenessCache, improved kDefaultMaxAge support, and kAutomaticPurgeFrequency supportand kPerCacheMaxAge support
+        - etter supported kAutomaticPurgeFrequency, minor cleanups, and respected kPerCacheMaxAge and kDefaultMaxAge - sometimes copying that as default and supporting default CTOR often
+        - deprecated APIs using TimeStampType maxAge - cuz were in CallerStalenssCache
+        - deprecated files SynchronizedCallerStalenessCache.h CallerStalenessCache.h
+        - replaced impl of CallerStalenessCache SynchronizedCallerStalenessCache with use of TimedCache
+        - Major revsions to TimedCache to support void KEY (for replacing CallerStalenessCache)
+        - TimedCache<> callerstalenessCache support (TrackFreshness)
       - Statistics (for Cache code)
         - minor copy/move cleanups to cache Stats_Basic code
-
     - Characters
       - CodeCvt
         - tweaked weakassert in CodeCvt.inl
@@ -609,6 +397,7 @@ Date:   Mon Mar 16 17:29:27 2026 -0400
           - new fReadInitialData option for LocalDocumentDB::SingleFile variant
           - renamed recent LocalDB option fReadInitialData -> fForceCreateNew
           - Database::Document::LocalDocumentDB FlushOnEachWrite option and explicit Flush API
+          - new option fForceCreateNew support for LocalDocumentDB::DirectoryFilesystem...
         - MongoDBClient
           - fixed to handle either oid _id or string _id field, and other cleanups
           - support for WrapExecute_/logging/tracking
@@ -670,6 +459,7 @@ Date:   Mon Mar 16 17:29:27 2026 -0400
       - Thread
         - Suppressed interrupt throw DBGTRACE message now has stacktrace too
         - improved DbgTrace with CheckForInterruption
+        - **fixed serious bug to stop_callback handling** (__cpp_lib_jthread) in Thread::Ptr::Rep_::ThreadMain_
       - VirtualLockable
         **new utility class**
       - WaitForIOReady
@@ -733,6 +523,7 @@ Date:   Mon Mar 16 17:29:27 2026 -0400
     - #if qStroika_Foundation_Debug_TraceToFile LOGGER output GetTraceFileName
   - DocumentDB
     - fixed to use new .fInternallySynchronizedLetter = eInternallySynchronized for internally synchronized connections
+    - fixed Samples/DocumentDB/Sources/Main to use fForceCreateNew on tests since else uses files from previous run, and gets slower over time (problems with regtests)
   - HTMLUI
     - cleanups
     - Backend
